@@ -1,651 +1,693 @@
 <?xml version="1.0"?>
 <project name="Specify 6.0 Build File" basedir=".">
 
-	<!-- Set up properties containing important project directories -->
-	
-	<property name="source.root" value="src" />
-	
-	<property name="compile.src.root" value="compile-src" />
-	<property name="compile.dst.root" value="compile-dst" />
-	
-	<property name="class.root" value="bin" />
-	
-	<!-- software revision number -->
-	<property name="version" value="6.2.02"/>
+  <!-- Set up properties containing important project directories -->
+
+  <property name="source.root" value="src" />
+
+  <property name="compile.src.root" value="compile-src" />
+  <property name="compile.dst.root" value="compile-dst" />
+
+  <property name="class.root" value="bin" />
+
+  <!-- software revision number -->
+  <property name="version" value="6.2.02"/>
 
 
-	<property name="installer.dir" value="InstallerFiles" />
-	<property name="lib.dir" value="libs" />
-	<property name="hibernatelib.dir" value="hibernate_libs" />
-	<property name="externallib.dir" value="external_libs" />
-	<property name="ireport.dir" value="iReportLibs" />
-	<property name="system.dep.libs.dir" value="system_dep_libs" />
-	<property name="hibernate.properties" value="hibernate.properties" />
-	<property name="hibernate.cfg" value="hibernate.cfg.xml" />
-	<property name="dir.dest" value="dest" />
-	<property name="hibernate.generated.code.destdir" value="generated-src" />
-	
-
-	<property name="data.dir" value="data" />
-
-	<!-- Needed for building help search index -->
-	<property name ="javahelp-home" value="/home/specify/jh2.0" />
-	<property name ="javahelp-home-mac" value="/Applications/jh2.0" />
-	
-	<!-- Needed for Packing on the Mac -->
-	<property name="packaging" value="packaging" />
-	<property name="app.name" value="Specify" />
-	<property name="jar.name" value="specify" />
-	<property name="dist-mac" value="mac-dist" />
+  <property name="installer.dir" value="InstallerFiles" />
+  <property name="lib.dir" value="libs" />
+  <property name="hibernatelib.dir" value="hibernate_libs" />
+  <property name="externallib.dir" value="external_libs" />
+  <property name="ireport.dir" value="iReportLibs" />
+  <property name="system.dep.libs.dir" value="system_dep_libs" />
+  <property name="hibernate.properties" value="hibernate.properties" />
+  <property name="hibernate.cfg" value="hibernate.cfg.xml" />
+  <property name="dir.dest" value="dest" />
+  <property name="hibernate.generated.code.destdir" value="generated-src" />
 
 
-	<!-- Needed for Packing on the Windows -->
-	<property name="dist-win" value="win-dist" />
+  <property name="data.dir" value="data" />
 
-	<!-- Needed for Packing on the Linux -->
-	<property name="dist-linux" value="linux-dist" />
+  <!-- Needed for building help search index -->
+  <property name ="javahelp-home" value="/home/specify/jh2.0" />
+  <property name ="javahelp-home-mac" value="/Applications/jh2.0" />
 
-	<!-- Set up the class path for compilation and execution -->
-	<path id="project.class.path">
-		
-		<!-- Include jars in the project library directory -->
-		<fileset dir="${hibernatelib.dir}">
-			<include name="**/*.jar" />
-		</fileset>
-		
-	    <fileset dir="${lib.dir}">
-			<include name="**/*.jar" />
-		</fileset>
+  <!-- Needed for Packing on the Mac -->
+  <property name="packaging" value="packaging" />
+  <property name="app.name" value="Specify" />
+  <property name="jar.name" value="specify" />
+  <property name="dist-mac" value="mac-dist" />
 
-		<!-- Include our own classes, of course -->
-		<pathelement location="specify.jar"/>
-		
-	</path>
 
-	<!-- Prepare for Windows and Linux Compile -->
-	<target name="dist-prepare" description="Sets up build structures for Non Mac Platforms">
-		
-		<mkdir dir="${compile.dst.root}" />
-		<mkdir dir="${compile.src.root}" />
-		
-		<copy todir="${compile.src.root}">
-			<fileset dir="${source.root}">
-				<include name="**/*.properties" />
-				<include name="**/*.java" />
-                <include name="**/*.betwixt" />
-			</fileset>
-		</copy>
-		
-	</target>
-	
-	<!-- Jar up compiled classes -->
-    <target name="copy-for-jar" depends="">
-    	
-        <mkdir dir="${installer.dir}"/>
-        <mkdir dir="${installer.dir}/jar-src"/>
-        
-        <copy todir="${installer.dir}/jar-src">
-            <fileset dir="${class.root}">
-                <include name="**/*.class" />
-                <!-- <include name="**/*.properties" /> -->
-                <include name="**/*.xml" />
-                <include name="**/*.betwixt" />
-                <include name="**/images/**/*.*" />
-            </fileset>
-        </copy>
-    	
-    	<native2ascii src="${source.root}" dest="${installer.dir}/jar-src" includes="**/*.properties"/>
-    	
-    	<antcall target="buildinfo"/>
-    </target>
-	
-	<target name="dist-jar" depends="">
-		<antcall target="copy-for-jar"/>
-		<jar destfile="${jar.name}.jar">
-			<fileset dir="${installer.dir}/jar-src">
-				<include name="**/*.class" />
-				<include name="**/*.properties" />
-				<include name="**/*.xml" />
-                <include name="**/*.betwixt" />
-				<include name="**/images/**/*.*" />
-			</fileset>
-		</jar>
-        <delete dir="${installer.dir}/jar-src"/>
-		
-        <!-- <copy file="${jar.name}.jar" todir="webapp/WEB-INF/lib" />
-        <copy file="${jar.name}.jar" todir="upwebapp/WEB-INF/lib" /> -->
-	</target>
+  <!-- Needed for Packing on the Windows -->
+  <property name="dist-win" value="win-dist" />
 
-	<!-- Jar up compiled classes -->
-	<target name="dist-jar-mac" depends="">
-        <antcall target="copy-for-jar"/>
-		<jar destfile="${jar.name}.jar">
-			<fileset dir="${installer.dir}/jar-src">
-				<include name="**/*.class" />
-				<include name="**/*.properties" />
-                <include name="**/*.betwixt" />
-                <include name="**/*.xml" />
-				<include name="**/images/**/*.*" />
-			</fileset>
-	    </jar>
-		<delete dir="${installer.dir}/jar-src"/>
-	</target>
-	
-    <target name="ipad-jar" depends="">
-    	
-    	<delete file="ipad.jar"/>
-    	<delete dir="${installer.dir}"/>
-    	
-        <mkdir dir="${installer.dir}/ipad/edu/ku/brc/specify/plugins/ipadexporter"/>
-        
-        <copy todir="${installer.dir}/ipad/edu/ku/brc/specify/plugins/ipadexporter">
-            <fileset dir="${class.root}/edu/ku/brc/specify/plugins/ipadexporter">
-                <include name="**/*.class" />
-                <include name="**/*.xml" />
-                <include name="**/*.png" />
-                <include name="**/*.sql" />
-                <include name="**/*.properties" />
-            </fileset>
-        </copy>
-        
-        <jar destfile="ipad.jar">
-            <fileset dir="${installer.dir}/ipad">
-                <include name="**/*.class" />
-                <include name="**/*.properties" />
-                <include name="**/*.xml" />
-                <include name="**/*.png" />
-                <include name="**/*.sql" />
-            </fileset>
-        </jar>
-    </target>
-	
-	<target name="buildinfo">
-	    <tstamp>
-	        <format property="builtat" pattern="MM/dd/yyyy hh:mm aa" timezone="America/Chicago"/>
-	    </tstamp>        
-	    <exec executable="svnversion" outputproperty="svnversion"/>
-	    <exec executable="whoami" outputproperty="whoami"/>
-	    <exec executable="uname" outputproperty="buildsystem"><arg value="-a"/></exec>
+  <!-- Needed for Packing on the Linux -->
+  <property name="dist-linux" value="linux-dist" />
 
-	    <propertyfile file="${installer.dir}/jar-src/bld.properties"
-	        comment="This file is automatically generated - DO NOT EDIT">        
-	        <entry key="buildtime" value="${builtat}"/>
-	        <entry key="build" value="${svnversion}"/>
-	        <entry key="builder" value="${whoami}"/>
-	        <entry key="version" value="${version}"/>
-	        <entry key="system" value="${buildsystem}"/>
-	    </propertyfile>
-	</target>
+  <!-- Set up the class path for compilation and execution -->
+  <path id="project.class.path">
 
-	
-	<!-- Jar Clean Up -->
-	<target name="clean-jar">
-		<!-- <delete file="${jar.name}.jar" /> -->
-	</target>
-	
-	<!-- *************************************************************
-	     Mac Common Components Build
-	     ************************************************************* -->
-	
-    <target name="installer-localizer" depends="">
-        <antcall target="installer-minibase"/>
-        <copy file="./system_dep_libs/non-mac-application-adapter.jar" todir="${installer.dir}" />
-    </target>
-    
-    <target name="installer-linux" depends="">
-        <antcall target="installer-base"/>
-        <copy file="./system_dep_libs/non-mac-application-adapter.jar" todir="${installer.dir}" />
-        <!--
+    <!-- Include jars in the project library directory -->
+    <fileset dir="${hibernatelib.dir}">
+      <include name="**/*.jar" />
+    </fileset>
+
+    <fileset dir="${lib.dir}">
+      <include name="**/*.jar" />
+    </fileset>
+
+  <!-- Include our own classes, of course -->
+    <pathelement location="specify.jar"/>
+
+  </path>
+
+  <path id="classpath">
+    <fileset dir="${hibernatelib.dir}">
+      <include name="**/*.jar" />
+    </fileset>
+
+    <fileset dir="${lib.dir}">
+      <include name="**/*.jar" />
+    </fileset>
+
+    <fileset dir="${externallib.dir}">
+      <include name="**/*.jar" />
+    </fileset>
+
+    <fileset dir="${ireport.dir}">
+      <include name="**/*.jar" />
+    </fileset>
+
+    <fileset dir="${system.dep.libs.dir}">
+      <include name="**/*.jar" />
+    </fileset>
+
+    <fileset dir="wwlibs">
+      <include name="**/*.jar" />
+    </fileset>
+
+    <fileset dir="embedded_libs">
+      <include name="**/*.jar" />
+    </fileset>
+  </path>
+
+  <!-- Prepare for Windows and Linux Compile -->
+  <target name="dist-prepare" description="Sets up build structures for Non Mac Platforms">
+
+    <mkdir dir="${compile.dst.root}" />
+    <mkdir dir="${compile.src.root}" />
+
+    <copy todir="${compile.src.root}">
+      <fileset dir="${source.root}">
+	<include name="**/*.properties" />
+	<include name="**/*.java" />
+        <include name="**/*.betwixt" />
+      </fileset>
+    </copy>
+
+  </target>
+
+  <target name="compile">
+    <mkdir dir="${class.root}"/>
+    <javac srcdir="${source.root}" destdir="${class.root}" classpathref="classpath">
+      <compilerarg value="-XDignore.symbol.file"/>
+      <compilerarg value="-Xlint:all"/>
+    </javac>
+  </target>
+
+  <target name="clean">
+      <delete dir="${class.root}"/>
+  </target>
+
+  <!-- Jar up compiled classes -->
+  <target name="copy-for-jar" depends="">
+
+    <mkdir dir="${installer.dir}"/>
+    <mkdir dir="${installer.dir}/jar-src"/>
+
+    <copy todir="${installer.dir}/jar-src">
+      <fileset dir="${class.root}">
+        <include name="**/*.class" />
+        <!-- <include name="**/*.properties" /> -->
+        <include name="**/*.xml" />
+        <include name="**/*.betwixt" />
+        <include name="**/images/**/*.*" />
+      </fileset>
+    </copy>
+
+    <native2ascii src="${source.root}" dest="${installer.dir}/jar-src" includes="**/*.properties"/>
+
+    <antcall target="buildinfo"/>
+  </target>
+
+  <target name="dist-jar" depends="">
+    <antcall target="copy-for-jar"/>
+    <jar destfile="${jar.name}.jar">
+      <fileset dir="${installer.dir}/jar-src">
+	<include name="**/*.class" />
+	<include name="**/*.properties" />
+	<include name="**/*.xml" />
+        <include name="**/*.betwixt" />
+	<include name="**/images/**/*.*" />
+      </fileset>
+    </jar>
+    <delete dir="${installer.dir}/jar-src"/>
+
+    <!-- <copy file="${jar.name}.jar" todir="webapp/WEB-INF/lib" />
+         <copy file="${jar.name}.jar" todir="upwebapp/WEB-INF/lib" /> -->
+  </target>
+
+  <!-- Jar up compiled classes -->
+  <target name="dist-jar-mac" depends="">
+    <antcall target="copy-for-jar"/>
+    <jar destfile="${jar.name}.jar">
+      <fileset dir="${installer.dir}/jar-src">
+	<include name="**/*.class" />
+	<include name="**/*.properties" />
+        <include name="**/*.betwixt" />
+        <include name="**/*.xml" />
+	<include name="**/images/**/*.*" />
+      </fileset>
+    </jar>
+    <delete dir="${installer.dir}/jar-src"/>
+  </target>
+
+  <target name="ipad-jar" depends="">
+
+    <delete file="ipad.jar"/>
+    <delete dir="${installer.dir}"/>
+
+    <mkdir dir="${installer.dir}/ipad/edu/ku/brc/specify/plugins/ipadexporter"/>
+
+    <copy todir="${installer.dir}/ipad/edu/ku/brc/specify/plugins/ipadexporter">
+      <fileset dir="${class.root}/edu/ku/brc/specify/plugins/ipadexporter">
+        <include name="**/*.class" />
+        <include name="**/*.xml" />
+        <include name="**/*.png" />
+        <include name="**/*.sql" />
+        <include name="**/*.properties" />
+      </fileset>
+    </copy>
+
+    <jar destfile="ipad.jar">
+      <fileset dir="${installer.dir}/ipad">
+        <include name="**/*.class" />
+        <include name="**/*.properties" />
+        <include name="**/*.xml" />
+        <include name="**/*.png" />
+        <include name="**/*.sql" />
+      </fileset>
+    </jar>
+  </target>
+
+  <target name="buildinfo">
+    <tstamp>
+      <format property="builtat" pattern="MM/dd/yyyy hh:mm aa" timezone="America/Chicago"/>
+    </tstamp>
+    <exec executable="svnversion" outputproperty="svnversion"/>
+    <exec executable="whoami" outputproperty="whoami"/>
+    <exec executable="uname" outputproperty="buildsystem"><arg value="-a"/></exec>
+
+    <propertyfile file="${installer.dir}/jar-src/bld.properties"
+	          comment="This file is automatically generated - DO NOT EDIT">
+      <entry key="buildtime" value="${builtat}"/>
+      <entry key="build" value="${svnversion}"/>
+      <entry key="builder" value="${whoami}"/>
+      <entry key="version" value="${version}"/>
+      <entry key="system" value="${buildsystem}"/>
+    </propertyfile>
+  </target>
+
+
+  <!-- Jar Clean Up -->
+  <target name="clean-jar">
+    <!-- <delete file="${jar.name}.jar" /> -->
+  </target>
+
+  <!-- *************************************************************
+       Mac Common Components Build
+       ************************************************************* -->
+
+  <target name="installer-localizer" depends="">
+    <antcall target="installer-minibase"/>
+    <copy file="./system_dep_libs/non-mac-application-adapter.jar" todir="${installer.dir}" />
+  </target>
+
+  <target name="installer-linux" depends="">
+    <antcall target="installer-base"/>
+    <copy file="./system_dep_libs/non-mac-application-adapter.jar" todir="${installer.dir}" />
+    <!--
         <antcall target="build-help-index"/>
         <antcall target="build-help-fulltext-linux"/>
-        -->
-    </target>
-    
-    <target name="installer-mac" depends="">
-        <antcall target="installer-base"/>
-        <!--
+    -->
+  </target>
+
+  <target name="installer-mac" depends="">
+    <antcall target="installer-base"/>
+    <!--
         <antcall target="build-help-index"/>
         <antcall target="build-help-fulltext-mac"/>
-        -->
-    </target>
-    
-    <target name="installer-linux-jaronly" depends="">
-        <delete dir="${installer.dir}"/>
-         <mkdir dir="${installer.dir}" />
-         <antcall target="clean-jar"/>
-         <antcall target="dist-jar-mac"/>
-    	<copy file="${jar.name}.jar" todir="${installer.dir}" />
-    </target>
-    
-    <target name="installer-mac-jaronly" depends="">
-        <delete dir="${installer.dir}"/>
-         <mkdir dir="${installer.dir}" />
-         <antcall target="clean-jar"/>
-         <antcall target="dist-jar-mac"/>
-    	<copy file="${jar.name}.jar" todir="${installer.dir}" />
-    </target>
-    
-	<target name="installer-base" depends="">
-		
-		<delete dir="${installer.dir}"/>
-		<mkdir dir="${installer.dir}" />
-		<mkdir dir="${installer.dir}/demo_files"/>
-		<mkdir dir="${installer.dir}/plugins" />
-		
-		<antcall target="clean-jar"/>
-		<antcall target="dist-jar-mac"/>
-		
-		<!-- Copy config dir -->
-		<copy todir="${installer.dir}/config">
-			<fileset dir="config">
-				<exclude name="**/*.svn" />
-			</fileset>
-		</copy>
-        <copy todir="${installer.dir}/hibernate_libs">
-			<fileset dir="hibernate_libs">
-				<exclude name="**/*.svn" />
-			</fileset>
-		</copy>
-        <copy todir="${installer.dir}/iReportLibs">
-			<fileset dir="iReportLibs">
-				<exclude name="**/*.svn" />
-			</fileset>
-		</copy>
-        <copy todir="${installer.dir}/libs">
-			<fileset dir="libs">
-                <exclude name="**/*.svn" />
-                <exclude name="**/derby.jar" />
-			</fileset>
-		</copy>
-        <copy todir="${installer.dir}/wwlibs">
-			<fileset dir="wwlibs">
-				<exclude name="**/*.svn" />
-			</fileset>
-		</copy>
-        <copy todir="${installer.dir}/embedded_libs">
-			<fileset dir="embedded_libs">
-				<exclude name="**/*.svn" />
-			</fileset>
-		</copy>
-		
-		<!-- Copy Help -->
-		<copy todir="${installer.dir}/help">
-			<fileset dir="help">
-				<include name="**/*" />
-				<exclude name="**/.svn" />
-				<exclude name="**/*.psd" />
-			</fileset>
-		</copy>
-		
-		<copy file="${jar.name}.jar" todir="${installer.dir}" />
-		
-		<!-- LINUX icons
-		<copy file="${source.root}/edu/ku/brc/specify/images/specify16.png" todir="${installer.dir}/images" />
-		<copy file="${source.root}/edu/ku/brc/specify/images/specify32.png" todir="${installer.dir}/images" />
-		
-		<copy file="${source.root}/edu/ku/brc/specify/images/spireport32.png" todir="${installer.dir}/images" />
-		<copy file="${source.root}/edu/ku/brc/specify/images/spireport16.png" todir="${installer.dir}/images" />
+    -->
+  </target>
 
-		<copy file="${source.root}/edu/ku/brc/specify/images/spbackup32.png" todir="${installer.dir}/images" />
-		<copy file="${source.root}/edu/ku/brc/specify/images/spbackup16.png" todir="${installer.dir}/images" />
+  <target name="installer-linux-jaronly" depends="">
+    <delete dir="${installer.dir}"/>
+    <mkdir dir="${installer.dir}" />
+    <antcall target="clean-jar"/>
+    <antcall target="dist-jar-mac"/>
+    <copy file="${jar.name}.jar" todir="${installer.dir}" />
+  </target>
 
-		<copy file="${source.root}/edu/ku/brc/specify/images/spwizard32.png" todir="${installer.dir}/images" />
-		<copy file="${source.root}/edu/ku/brc/specify/images/spwizard16.png" todir="${installer.dir}/images" />
+  <target name="installer-mac-jaronly" depends="">
+    <delete dir="${installer.dir}"/>
+    <mkdir dir="${installer.dir}" />
+    <antcall target="clean-jar"/>
+    <antcall target="dist-jar-mac"/>
+    <copy file="${jar.name}.jar" todir="${installer.dir}" />
+  </target>
 
-		<copy file="${source.root}/edu/ku/brc/specify/images/spbuilder32.png" todir="${installer.dir}/images" />
-		<copy file="${source.root}/edu/ku/brc/specify/images/spbuilder16.png" todir="${installer.dir}/images" />
+  <target name="installer-base" depends="">
 
-		<copy file="${source.root}/edu/ku/brc/specify/images/spstatistics32x32.png" todir="${installer.dir}/images" />
-		<copy file="${source.root}/edu/ku/brc/specify/images/spstatistics16x16.png" todir="${installer.dir}/images" />	
+    <delete dir="${installer.dir}"/>
+    <mkdir dir="${installer.dir}" />
+    <mkdir dir="${installer.dir}/demo_files"/>
+    <mkdir dir="${installer.dir}/plugins" />
 
-		<copy file="${source.root}/edu/ku/brc/specify/images/data_split32.png" todir="${installer.dir}/images" />
-		<copy file="${source.root}/edu/ku/brc/specify/images/data_split16.png" todir="${installer.dir}/images" />			
-				
-		WINDOWS icons
-		<copy file="packaging/ico/specify128.ico" todir="${installer.dir}/images" />
-		<copy file="packaging/ico/spbackup128.ico" todir="${installer.dir}/images" />
-		<copy file="packaging/ico/spbuilder128.ico" todir="${installer.dir}/images" />
-		<copy file="packaging/ico/spireport128.ico" todir="${installer.dir}/images" />
-		<copy file="packaging/ico/spstatistics128.ico" todir="${installer.dir}/images" />
-		<copy file="packaging/ico/spwizard128.ico" todir="${installer.dir}/images" />
-		<copy file="packaging/ico/data_split.ico" todir="${installer.dir}/images" />				
-		
-		MAC OS X icons
-		<copy file="packaging/icns/specify.icns" todir="${installer.dir}/images" />
-		<copy file="packaging/icns/spwizard.icns" todir="${installer.dir}/images" />
-		<copy file="packaging/icns/images/backuprestore.icns" todir="${installer.dir}/images" />
-		<copy file="packaging/icns/images/spireports.icns" todir="${installer.dir}/images" />
-		<copy file="packaging/icns/images/spbuilder.icns" todir="${installer.dir}/images" />
-		<copy file="packaging/icns/images/statistics.icns" todir="${installer.dir}/images" />
-		<copy file="packaging/icns/images/data_split.icns" todir="${installer.dir}/images" />
-		-->
-		
-		<copy file="packaging/readme.html" todir="${installer.dir}" />
-		<copy file="packaging/license_agreement.html" todir="${installer.dir}" />
-		<copy file="./packaging/SpecifyBigSplashBordered.png" todir="${installer.dir}" />
-		<rename src="${installer.dir}/SpecifyBigSplashBordered.png" dest="${installer.dir}/SpecifyBigSplash.png"/>
-     <!--  
-     	<copy file="./demo_files/Stratigraphy.csv" todir="${installer.dir}/config" />
-        <copy file="./demo_files/Stratigraphy.csv" todir="${installer.dir}/config" /> -->
-		<copy file="./demo_files/topbrc4.jpg" todir="${installer.dir}/demo_files" />
-        <copy file="./demo_files/topbrc195x68.png" todir="${installer.dir}/demo_files" />
-        <copy file="./demo_files/chronostrat_tree.xls" todir="${installer.dir}/demo_files" />
-        <copy file="./demo_files/my.cnf" todir="${installer.dir}/demo_files" />
-		
-		<!-- Copy of Wizard Taxon Information
-		<copy todir="${installer.dir}/demo_files/taxonomy">
-			<fileset dir="demo_files/taxonomy">
-				<include name="**/*" />
-			</fileset>
-		</copy>  -->
-	</target>
-	
-    <target name="installer-minibase" depends="">
-        
-        <delete dir="${installer.dir}"/>
-        <mkdir dir="${installer.dir}" />
-        
-        <antcall target="clean-jar"/>
-        <antcall target="dist-jar-mac"/>
-        
-        <!-- Copy config dir -->
-        <copy todir="${installer.dir}/config">
-            <fileset dir="config">
-                <exclude name="**/*.svn" />
-            </fileset>
-        </copy>
-        
-        <copy todir="${installer.dir}/libs">
-            <fileset dir="libs">
-                <exclude name="**/*.svn" />
-                <exclude name="**/derby.jar" />
-            </fileset>
-        </copy>
-        
-        <copy file="${jar.name}.jar" todir="${installer.dir}" />
-        
-        <copy file="hibernate_libs/dom4j.jar" todir="${installer.dir}/libs" />
-        
-        
-        <copy file="packaging/readme.html" todir="${installer.dir}" />
-        <copy file="packaging/license_agreement.html" todir="${installer.dir}" />
-        <copy file="./packaging/SpecifyBigSplashBordered.png" todir="${installer.dir}" />
-        <rename src="${installer.dir}/SpecifyBigSplashBordered.png" dest="${installer.dir}/SpecifyBigSplash.png"/>
-     </target>
-		
-	<target name="installer-updater" depends="">
-		<delete dir="UpdaterInstall"/>
-		<mkdir dir="UpdaterInstall" />
-		
-		<antcall target="dist-jar"/>
-		
-        <copy todir="UpdaterInstall/libs">
-			<fileset dir="libs">
-				<exclude name="**/*.svn" />
-			</fileset>
-		</copy>
-		
-        <copy todir="UpdaterInstall/hibernate_libs">
-			<fileset dir="hibernate_libs">
-				<exclude name="**/*.svn" />
-			</fileset>
-		</copy>
-		
-		<copy todir="UpdaterInstall/config">
-			<fileset dir="config">
-				<exclude name="**/*.svn" />
-			</fileset>
-		</copy>
+    <antcall target="clean-jar"/>
+    <antcall target="dist-jar-mac"/>
 
-        <copy todir="UpdaterInstall/iReportLibs">
-			<fileset dir="iReportLibs">
-				<exclude name="**/*.svn" />
-			</fileset>
-		</copy>
-		
-		<copy file="${jar.name}.jar" todir="UpdaterInstall" />
-    </target>
-	
+    <!-- Copy config dir -->
+    <copy todir="${installer.dir}/config">
+      <fileset dir="config">
+	<exclude name="**/*.svn" />
+      </fileset>
+    </copy>
+    <copy todir="${installer.dir}/hibernate_libs">
+      <fileset dir="hibernate_libs">
+	<exclude name="**/*.svn" />
+      </fileset>
+    </copy>
+    <copy todir="${installer.dir}/iReportLibs">
+      <fileset dir="iReportLibs">
+	<exclude name="**/*.svn" />
+      </fileset>
+    </copy>
+    <copy todir="${installer.dir}/libs">
+      <fileset dir="libs">
+        <exclude name="**/*.svn" />
+        <exclude name="**/derby.jar" />
+      </fileset>
+    </copy>
+    <copy todir="${installer.dir}/wwlibs">
+      <fileset dir="wwlibs">
+	<exclude name="**/*.svn" />
+      </fileset>
+    </copy>
+    <copy todir="${installer.dir}/embedded_libs">
+      <fileset dir="embedded_libs">
+	<exclude name="**/*.svn" />
+      </fileset>
+    </copy>
 
-		
+    <!-- Copy Help -->
+    <copy todir="${installer.dir}/help">
+      <fileset dir="help">
+	<include name="**/*" />
+	<exclude name="**/.svn" />
+	<exclude name="**/*.psd" />
+      </fileset>
+    </copy>
 
-	<!-- *************************************************************
-	     Schema Export (Doesn't work at the moment)
-	     ************************************************************* -->
-	<target name="schemaexport" description="Generates the database schema with hbm2ddl to a file" depends="">
-			<taskdef name="schemaexport" classname="org.hibernate.tool.hbm2ddl.SchemaExportTask">
-				<classpath refid="project.class.path" />
-				</taskdef>
-				<!-- Use the Hibernate configuration from source directory. -->
-				 <schemaexport 
-				
-				     config="src/hibernate.cfg.xml"
-				     quiet="yes"
-				     text="no"
-				     drop="no" 
-				     delimiter=";"
-			         output="${build.dir}/schema-export.sql"/>
-	</target>
+    <copy file="${jar.name}.jar" todir="${installer.dir}" />
 
-	<!-- *************************************************************
-	     Build Help Index
-	     ************************************************************* -->
-	<target name="build-help-index">		
-		<java classname="edu.ku.brc.util.HelpIndexer" fork="true">
-		    <classpath refid="project.class.path" />
-			<arg value="${appdir}/help/SpecifyHelp.jhm"/>
-			<arg value="${appdir}/help/SpecifyHelp"/>
-			<arg value="${appdir}/help/SpecifyHelpIndex.xml"/>
-		</java>
-	</target>
-	
+    <!-- LINUX icons
+	 <copy file="${source.root}/edu/ku/brc/specify/images/specify16.png" todir="${installer.dir}/images" />
+	 <copy file="${source.root}/edu/ku/brc/specify/images/specify32.png" todir="${installer.dir}/images" />
 
-	<!-- *************************************************************
-	     Build Help FullText Index
-	     ************************************************************* -->
-	
-	<target name="delete-config-files">
-		  <delete file="${appdir}/help/${dist-linux}SearchConfig.txt"/>		
-		  <delete file="${appdir}/help/${dist-mac}SearchConfig.txt"/>		
-		  <delete file="${appdir}/help/${dist-win}SearchConfig.txt"/>		
-	</target>
+	 <copy file="${source.root}/edu/ku/brc/specify/images/spireport32.png" todir="${installer.dir}/images" />
+	 <copy file="${source.root}/edu/ku/brc/specify/images/spireport16.png" todir="${installer.dir}/images" />
 
-	<target name="build-help-fulltext-linux">
-	  <java jar="${javahelp-home}/javahelp/bin/jhindexer.jar" fork="true" dir="${appdir}/help/">
-	  	<!-- if definitions for dist-linux,dist-mac, or dist-win change then
-	  		contents of xxxSearchConfig.txt files will need to be changed accordingly -->
-	  	<arg value="-c" />
-	  	<arg value="${dist-linux}SearchConfig.txt"/>
-	  	<arg value="-db" />
-	  	<arg value="SpecifyHelpSearchIndex"/>
-	    <arg value="SpecifyHelp"/>
-	  </java>
-		<antcall target="delete-config-files"/>
-	</target>
-	
-	<target name="build-help-fulltext-mac">
-	  <java jar="${javahelp-home-mac}/javahelp/bin/jhindexer.jar" fork="true">
-	  	<!-- if definitions for dist-linux,dist-mac, or dist-win change then
-	  		contents of xxxSearchConfig.txt files will need to be changed accordingly -->
-	  	<arg value="-c" />
-	  	<arg value="${installer.dir}/help/${dist-mac}SearchConfig.txt"/>
-	  	<arg value="-db" />
-	  	<arg value="${installer.dir}/help/SpecifyHelpSearchIndex"/>
-	    <arg value="${installer.dir}/help/SpecifyHelp"/>
-	  </java>
-		<antcall target="delete-config-files"/>
-	</target>
-	
-	<target name="build-help-fulltext-win">
-	  <java jar="${javahelp-home}/javahelp/bin/jhindexer.jar" fork="true" dir="${appdir}/help/">
-	  	<!-- if definitions for dist-linux,dist-mac, or dist-win change then
-	  		contents of xxxSearchConfig.txt files will need to be changed accordingly -->
-	  	<arg value="-c" />
-	  	<arg value="${installer.dir}SearchConfig.txt"/>
-	  	<arg value="-db" />
-	  	<arg value="SpecifyHelpSearchIndex"/>
-	    <arg value="SpecifyHelp"/>
-	  </java>
-		<antcall target="delete-config-files"/>
-	</target>
-	
-	<!-- *************************************************************
-	       Common files between Windows and Linux
-	     ************************************************************* -->
-	     
-	<target name="basic-non-mac-dist">
+<copy file="${source.root}/edu/ku/brc/specify/images/spbackup32.png" todir="${installer.dir}/images" />
+<copy file="${source.root}/edu/ku/brc/specify/images/spbackup16.png" todir="${installer.dir}/images" />
 
-		<mkdir dir="${appdir}/classes" />
-		<!--<copy file="${source.root}/log4j.properties" todir="${appdir}/classes/." />-->
-		
-		<!-- Copy config dir -->
-		<copy todir="${appdir}/config">
-			<fileset dir="config">
-				<exclude name="**/.svn" />
-				<exclude name="**/.csv" />
-			</fileset>
-		</copy>
-		
-		<!-- Copy demo_files dir -->
-		<copy todir="${appdir}/demo_files">
-			<fileset dir="demo_files">
-				<exclude name="**/.svn" />
-				<exclude name="**/.csv" />
-				<exclude name="**/.jrxml" />
-				<include name="**/topbrc195x68.png" />
-				<include name="**/Stratigraphy.csv" />
-			</fileset>
-		</copy>
-		
-		<!-- Copy the main app jar -->
-        <copy file="${jar.name}.jar" todir="${appdir}/libs" />
+<copy file="${source.root}/edu/ku/brc/specify/images/spwizard32.png" todir="${installer.dir}/images" />
+<copy file="${source.root}/edu/ku/brc/specify/images/spwizard16.png" todir="${installer.dir}/images" />
 
-		<copy todir="${appdir}/libs">
-			<fileset dir="libs">
-				<include name="*.jar" />
-				<exclude name="**/json-lib.jar" />
-				<exclude name="**/ezmorph.jar" />
-			</fileset>
-			<fileset dir="${hibernatelib.dir}">
-				<include name="*.jar" />
-			</fileset>
-			<fileset dir="${ireport.dir}">
-				<include name="*.jar" />
-			</fileset>
-			<fileset dir="${system.dep.libs.dir}">
-				<include name="*.jar" />
-			</fileset>
-		</copy>
+<copy file="${source.root}/edu/ku/brc/specify/images/spbuilder32.png" todir="${installer.dir}/images" />
+<copy file="${source.root}/edu/ku/brc/specify/images/spbuilder16.png" todir="${installer.dir}/images" />
 
-		<!-- Copy Help -->
-		<copy todir="${appdir}/help">
-			<fileset dir="help">
-				<exclude name="**/.svn" />
-			</fileset>
-		</copy>
+<copy file="${source.root}/edu/ku/brc/specify/images/spstatistics32x32.png" todir="${installer.dir}/images" />
+<copy file="${source.root}/edu/ku/brc/specify/images/spstatistics16x16.png" todir="${installer.dir}/images" />
 
-	</target>
+<copy file="${source.root}/edu/ku/brc/specify/images/data_split32.png" todir="${installer.dir}/images" />
+<copy file="${source.root}/edu/ku/brc/specify/images/data_split16.png" todir="${installer.dir}/images" />
 
-	<!-- *************************************************************
-	     Windows Distribution
-	     ************************************************************* -->
-	
-	<target name="dist-win-update" description="Updates the Specify.jat, images, help etc.">
-		<property name="appdir" value="${dist-win}/Specify" />
-		<property name="derby.data.path" value="${dist-win}/DerbyDatabases" />
-		<antcall target="clean-jar"/>
-		<antcall target="dist-jar"/>
-		<antcall target="basic-non-mac-dist"/>
-		<!-- Copy Alt Help Image Files -->
-        <property name="alt.help.img.dir" value="AltHelpImages/Windows"/>
-        <antcall target="copy-alt-help-images"/>
-    </target>
-	
+WINDOWS icons
+<copy file="packaging/ico/specify128.ico" todir="${installer.dir}/images" />
+<copy file="packaging/ico/spbackup128.ico" todir="${installer.dir}/images" />
+<copy file="packaging/ico/spbuilder128.ico" todir="${installer.dir}/images" />
+<copy file="packaging/ico/spireport128.ico" todir="${installer.dir}/images" />
+<copy file="packaging/ico/spstatistics128.ico" todir="${installer.dir}/images" />
+<copy file="packaging/ico/spwizard128.ico" todir="${installer.dir}/images" />
+<copy file="packaging/ico/data_split.ico" todir="${installer.dir}/images" />
 
-	<target name="dist-win" description="Builds for Windows">
-		<property name="appdir" value="${dist-win}/Specify" />
-		<property name="derby.data.path" value="${dist-win}/DerbyDatabases" />
-		
-		<antcall target="clean-jar"/>
-		<antcall target="dist-win-clean"/>
-		<antcall target="dist-jar"/>
-		
-		<mkdir dir="${dist-win}" />
-		<mkdir dir="${appdir}/libs" />
-		<mkdir dir="${dist-win}/examples" />
-		
-		<antcall target="basic-non-mac-dist"/>
+MAC OS X icons
+<copy file="packaging/icns/specify.icns" todir="${installer.dir}/images" />
+<copy file="packaging/icns/spwizard.icns" todir="${installer.dir}/images" />
+<copy file="packaging/icns/images/backuprestore.icns" todir="${installer.dir}/images" />
+<copy file="packaging/icns/images/spireports.icns" todir="${installer.dir}/images" />
+<copy file="packaging/icns/images/spbuilder.icns" todir="${installer.dir}/images" />
+<copy file="packaging/icns/images/statistics.icns" todir="${installer.dir}/images" />
+<copy file="packaging/icns/images/data_split.icns" todir="${installer.dir}/images" />
+    -->
 
-		<antcall target="build-help-index"/>
-		<antcall target="build-help-fulltext-win"/>
+    <copy file="packaging/readme.html" todir="${installer.dir}" />
+    <copy file="packaging/license_agreement.html" todir="${installer.dir}" />
+    <copy file="./packaging/SpecifyBigSplashBordered.png" todir="${installer.dir}" />
+    <rename src="${installer.dir}/SpecifyBigSplashBordered.png" dest="${installer.dir}/SpecifyBigSplash.png"/>
+    <!--
+     	 <copy file="./demo_files/Stratigraphy.csv" todir="${installer.dir}/config" />
+         <copy file="./demo_files/Stratigraphy.csv" todir="${installer.dir}/config" /> -->
+    <copy file="./demo_files/topbrc4.jpg" todir="${installer.dir}/demo_files" />
+    <copy file="./demo_files/topbrc195x68.png" todir="${installer.dir}/demo_files" />
+    <copy file="./demo_files/chronostrat_tree.xls" todir="${installer.dir}/demo_files" />
+    <copy file="./demo_files/my.cnf" todir="${installer.dir}/demo_files" />
 
-		<!-- Copy Alt Help Image Files -->
-		<property name="alt.help.img.dir" value="AltHelpImages/Windows"/>
-	    <antcall target="copy-alt-help-images"/>
-		
-		<!-- Demo Files -->
-		<copy file="demo_files/workbench/FishCollectingTrip.csv" todir="${dist-win}/examples" />
-		<copy file="demo_files/workbench/JohsonCountyTrip.csv" todir="${dist-win}/examples" />
-	    <copy file="demo_files/workbench/SaipanTrip.xls" todir="${dist-win}/examples" />
-		<copy file="demo_files/Reports/ImportExample.jrxml" todir="${dist-win}/examples" />
-		
-		<!-- This is NOT for the release -->
-		<!-- Copy demo_files dir -->
-		<copy todir="${appdir}/demo_files">
-			<fileset dir="demo_files">
-				<exclude name="**/.svn" />
-				<exclude name="**/.csv" />
-				<exclude name="**/.jrxml" />
-				<include name="**/*.jpg" />
-			</fileset>
-		</copy>
+    <!-- Copy of Wizard Taxon Information
+	 <copy todir="${installer.dir}/demo_files/taxonomy">
+	 <fileset dir="demo_files/taxonomy">
+	 <include name="**/*" />
+	 </fileset>
+	 </copy>  -->
+  </target>
 
-	</target>
+  <target name="installer-minibase" depends="">
 
-	<target name="dist-win-jar">
-		
-		<property name="appdir" value="${dist-win}/Specify" />
-		<property name="derby.data.path" value="${dist-win}/DerbyDatabases" />
-		
-		<antcall target="clean-jar"/>
-		<antcall target="dist-jar"/>
-		
-		<copy file="${jar.name}.jar" todir="${appdir}/libs" />
-		
-	</target>
-	
-	<!--*************************************************************
-	     Copy Alternate Help Images
-	    ************************************************************* -->
-	<target name="copy-alt-help-images">
-		
-		<!-- <property name="appdir" value="${dist-mac}/${app.name}.app" />
-		<property name="alt.help.img.dir" value="AltHelpImages/Windows"/>
-		<copy todir="${appdir}/Contents/Resources/Java/help/SpecifyHelp/images" flatten="true" overwrite="true"> -->
-		<copy todir="${appdir}/help/SpecifyHelp/images" flatten="true" overwrite="true">
-			<fileset dir="${alt.help.img.dir}">
-				<exclude name="**/.svn" />
-				<include name="**/*.png" />
-			</fileset>
-		</copy>
-		
-	</target>
+    <delete dir="${installer.dir}"/>
+    <mkdir dir="${installer.dir}" />
+
+    <antcall target="clean-jar"/>
+    <antcall target="dist-jar-mac"/>
+
+    <!-- Copy config dir -->
+    <copy todir="${installer.dir}/config">
+      <fileset dir="config">
+        <exclude name="**/*.svn" />
+      </fileset>
+    </copy>
+
+    <copy todir="${installer.dir}/libs">
+      <fileset dir="libs">
+        <exclude name="**/*.svn" />
+        <exclude name="**/derby.jar" />
+      </fileset>
+    </copy>
+
+    <copy file="${jar.name}.jar" todir="${installer.dir}" />
+
+    <copy file="hibernate_libs/dom4j.jar" todir="${installer.dir}/libs" />
+
+
+    <copy file="packaging/readme.html" todir="${installer.dir}" />
+    <copy file="packaging/license_agreement.html" todir="${installer.dir}" />
+    <copy file="./packaging/SpecifyBigSplashBordered.png" todir="${installer.dir}" />
+    <rename src="${installer.dir}/SpecifyBigSplashBordered.png" dest="${installer.dir}/SpecifyBigSplash.png"/>
+  </target>
+
+  <target name="installer-updater" depends="">
+    <delete dir="UpdaterInstall"/>
+    <mkdir dir="UpdaterInstall" />
+
+    <antcall target="dist-jar"/>
+
+    <copy todir="UpdaterInstall/libs">
+      <fileset dir="libs">
+	<exclude name="**/*.svn" />
+      </fileset>
+    </copy>
+
+    <copy todir="UpdaterInstall/hibernate_libs">
+      <fileset dir="hibernate_libs">
+	<exclude name="**/*.svn" />
+      </fileset>
+    </copy>
+
+    <copy todir="UpdaterInstall/config">
+      <fileset dir="config">
+	<exclude name="**/*.svn" />
+      </fileset>
+    </copy>
+
+    <copy todir="UpdaterInstall/iReportLibs">
+      <fileset dir="iReportLibs">
+	<exclude name="**/*.svn" />
+      </fileset>
+    </copy>
+
+    <copy file="${jar.name}.jar" todir="UpdaterInstall" />
+  </target>
 
 
 
-	<!--*************************************************************
-	     Clean Distributions
-	    ************************************************************* -->
-	<target name="dist-mac-clean">
-		<delete dir="${dist-mac}"/>
-    </target>
-	
-	<target name="dist-win-clean">
-		<delete dir="${dist-win}"/>
-    </target>
-	
-	<target name="dist-linux-clean">
-		<delete dir="${dist-linux}"/>
-    </target>
-	
+
+  <!-- *************************************************************
+       Schema Export (Doesn't work at the moment)
+       ************************************************************* -->
+  <target name="schemaexport" description="Generates the database schema with hbm2ddl to a file" depends="">
+    <taskdef name="schemaexport" classname="org.hibernate.tool.hbm2ddl.SchemaExportTask">
+      <classpath refid="project.class.path" />
+    </taskdef>
+    <!-- Use the Hibernate configuration from source directory. -->
+    <schemaexport
+
+	config="src/hibernate.cfg.xml"
+	quiet="yes"
+	text="no"
+	drop="no"
+	delimiter=";"
+	output="${build.dir}/schema-export.sql"/>
+  </target>
+
+  <!-- *************************************************************
+       Build Help Index
+       ************************************************************* -->
+  <target name="build-help-index">
+    <java classname="edu.ku.brc.util.HelpIndexer" fork="true">
+      <classpath refid="project.class.path" />
+      <arg value="${appdir}/help/SpecifyHelp.jhm"/>
+      <arg value="${appdir}/help/SpecifyHelp"/>
+      <arg value="${appdir}/help/SpecifyHelpIndex.xml"/>
+    </java>
+  </target>
+
+
+  <!-- *************************************************************
+       Build Help FullText Index
+       ************************************************************* -->
+
+  <target name="delete-config-files">
+    <delete file="${appdir}/help/${dist-linux}SearchConfig.txt"/>
+    <delete file="${appdir}/help/${dist-mac}SearchConfig.txt"/>
+    <delete file="${appdir}/help/${dist-win}SearchConfig.txt"/>
+  </target>
+
+  <target name="build-help-fulltext-linux">
+    <java jar="${javahelp-home}/javahelp/bin/jhindexer.jar" fork="true" dir="${appdir}/help/">
+      <!-- if definitions for dist-linux,dist-mac, or dist-win change then
+	   contents of xxxSearchConfig.txt files will need to be changed accordingly -->
+      <arg value="-c" />
+      <arg value="${dist-linux}SearchConfig.txt"/>
+      <arg value="-db" />
+      <arg value="SpecifyHelpSearchIndex"/>
+      <arg value="SpecifyHelp"/>
+    </java>
+    <antcall target="delete-config-files"/>
+  </target>
+
+  <target name="build-help-fulltext-mac">
+    <java jar="${javahelp-home-mac}/javahelp/bin/jhindexer.jar" fork="true">
+      <!-- if definitions for dist-linux,dist-mac, or dist-win change then
+	   contents of xxxSearchConfig.txt files will need to be changed accordingly -->
+      <arg value="-c" />
+      <arg value="${installer.dir}/help/${dist-mac}SearchConfig.txt"/>
+      <arg value="-db" />
+      <arg value="${installer.dir}/help/SpecifyHelpSearchIndex"/>
+      <arg value="${installer.dir}/help/SpecifyHelp"/>
+    </java>
+    <antcall target="delete-config-files"/>
+  </target>
+
+  <target name="build-help-fulltext-win">
+    <java jar="${javahelp-home}/javahelp/bin/jhindexer.jar" fork="true" dir="${appdir}/help/">
+      <!-- if definitions for dist-linux,dist-mac, or dist-win change then
+	   contents of xxxSearchConfig.txt files will need to be changed accordingly -->
+      <arg value="-c" />
+      <arg value="${installer.dir}SearchConfig.txt"/>
+      <arg value="-db" />
+      <arg value="SpecifyHelpSearchIndex"/>
+      <arg value="SpecifyHelp"/>
+    </java>
+    <antcall target="delete-config-files"/>
+  </target>
+
+  <!-- *************************************************************
+       Common files between Windows and Linux
+       ************************************************************* -->
+
+  <target name="basic-non-mac-dist">
+
+    <mkdir dir="${appdir}/classes" />
+    <!--<copy file="${source.root}/log4j.properties" todir="${appdir}/classes/." />-->
+
+    <!-- Copy config dir -->
+    <copy todir="${appdir}/config">
+      <fileset dir="config">
+	<exclude name="**/.svn" />
+	<exclude name="**/.csv" />
+      </fileset>
+    </copy>
+
+    <!-- Copy demo_files dir -->
+    <copy todir="${appdir}/demo_files">
+      <fileset dir="demo_files">
+	<exclude name="**/.svn" />
+	<exclude name="**/.csv" />
+	<exclude name="**/.jrxml" />
+	<include name="**/topbrc195x68.png" />
+	<include name="**/Stratigraphy.csv" />
+      </fileset>
+    </copy>
+
+    <!-- Copy the main app jar -->
+    <copy file="${jar.name}.jar" todir="${appdir}/libs" />
+
+    <copy todir="${appdir}/libs">
+      <fileset dir="libs">
+	<include name="*.jar" />
+	<exclude name="**/json-lib.jar" />
+	<exclude name="**/ezmorph.jar" />
+      </fileset>
+      <fileset dir="${hibernatelib.dir}">
+	<include name="*.jar" />
+      </fileset>
+      <fileset dir="${ireport.dir}">
+	<include name="*.jar" />
+      </fileset>
+      <fileset dir="${system.dep.libs.dir}">
+	<include name="*.jar" />
+      </fileset>
+    </copy>
+
+    <!-- Copy Help -->
+    <copy todir="${appdir}/help">
+      <fileset dir="help">
+	<exclude name="**/.svn" />
+      </fileset>
+    </copy>
+
+  </target>
+
+  <!-- *************************************************************
+       Windows Distribution
+       ************************************************************* -->
+
+  <target name="dist-win-update" description="Updates the Specify.jat, images, help etc.">
+    <property name="appdir" value="${dist-win}/Specify" />
+    <property name="derby.data.path" value="${dist-win}/DerbyDatabases" />
+    <antcall target="clean-jar"/>
+    <antcall target="dist-jar"/>
+    <antcall target="basic-non-mac-dist"/>
+    <!-- Copy Alt Help Image Files -->
+    <property name="alt.help.img.dir" value="AltHelpImages/Windows"/>
+    <antcall target="copy-alt-help-images"/>
+  </target>
+
+
+  <target name="dist-win" description="Builds for Windows">
+    <property name="appdir" value="${dist-win}/Specify" />
+    <property name="derby.data.path" value="${dist-win}/DerbyDatabases" />
+
+    <antcall target="clean-jar"/>
+    <antcall target="dist-win-clean"/>
+    <antcall target="dist-jar"/>
+
+    <mkdir dir="${dist-win}" />
+    <mkdir dir="${appdir}/libs" />
+    <mkdir dir="${dist-win}/examples" />
+
+    <antcall target="basic-non-mac-dist"/>
+
+    <antcall target="build-help-index"/>
+    <antcall target="build-help-fulltext-win"/>
+
+    <!-- Copy Alt Help Image Files -->
+    <property name="alt.help.img.dir" value="AltHelpImages/Windows"/>
+    <antcall target="copy-alt-help-images"/>
+
+    <!-- Demo Files -->
+    <copy file="demo_files/workbench/FishCollectingTrip.csv" todir="${dist-win}/examples" />
+    <copy file="demo_files/workbench/JohsonCountyTrip.csv" todir="${dist-win}/examples" />
+    <copy file="demo_files/workbench/SaipanTrip.xls" todir="${dist-win}/examples" />
+    <copy file="demo_files/Reports/ImportExample.jrxml" todir="${dist-win}/examples" />
+
+    <!-- This is NOT for the release -->
+    <!-- Copy demo_files dir -->
+    <copy todir="${appdir}/demo_files">
+      <fileset dir="demo_files">
+	<exclude name="**/.svn" />
+	<exclude name="**/.csv" />
+	<exclude name="**/.jrxml" />
+	<include name="**/*.jpg" />
+      </fileset>
+    </copy>
+
+  </target>
+
+  <target name="dist-win-jar">
+
+    <property name="appdir" value="${dist-win}/Specify" />
+    <property name="derby.data.path" value="${dist-win}/DerbyDatabases" />
+
+    <antcall target="clean-jar"/>
+    <antcall target="dist-jar"/>
+
+    <copy file="${jar.name}.jar" todir="${appdir}/libs" />
+
+  </target>
+
+  <!--*************************************************************
+      Copy Alternate Help Images
+      ************************************************************* -->
+  <target name="copy-alt-help-images">
+
+    <!-- <property name="appdir" value="${dist-mac}/${app.name}.app" />
+	 <property name="alt.help.img.dir" value="AltHelpImages/Windows"/>
+	 <copy todir="${appdir}/Contents/Resources/Java/help/SpecifyHelp/images" flatten="true" overwrite="true"> -->
+    <copy todir="${appdir}/help/SpecifyHelp/images" flatten="true" overwrite="true">
+      <fileset dir="${alt.help.img.dir}">
+	<exclude name="**/.svn" />
+	<include name="**/*.png" />
+      </fileset>
+    </copy>
+
+  </target>
+
+
+
+  <!--*************************************************************
+      Clean Distributions
+      ************************************************************* -->
+  <target name="dist-mac-clean">
+    <delete dir="${dist-mac}"/>
+  </target>
+
+  <target name="dist-win-clean">
+    <delete dir="${dist-win}"/>
+  </target>
+
+  <target name="dist-linux-clean">
+    <delete dir="${dist-linux}"/>
+  </target>
+
 </project>
