@@ -121,6 +121,11 @@
         <include name="**/*.betwixt" />
         <include name="**/images/**/*.*" />
       </fileset>
+      <fileset dir="${source.root}">
+        <include name="**/*.xml" />
+        <include name="**/*.betwixt" />
+        <include name="edu/ku/brc/specify/images/**/*.*" />
+      </fileset>
     </copy>
 
     <native2ascii src="${source.root}" dest="${installer.dir}/jar-src" includes="**/*.properties"/>
