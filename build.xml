@@ -359,6 +359,11 @@
     </exec>
     <move file="${packages.dir}/internal/updates.xml" tofile="${packages.dir}/internal/updates.xml.winlinfull64"/>
 
+    <move todir="${packages.dir}/internal">
+      <fileset dir="${packages.dir}/internal"/>
+      <mapper type="regexp" from="^(.*)-x64(.*)$" to="\1\2" />
+    </move>
+
     <!-- External  -->
     <exec executable="install4jc">
       <arg value="--release=${specify.SPECIFY_VERSION}" />
@@ -392,6 +397,10 @@
     </exec>
     <move file="${packages.dir}/external/updates.xml" tofile="${packages.dir}/external/updates.xml.winlinfull64"/>
 
+    <move todir="${packages.dir}/external">
+      <fileset dir="${packages.dir}/external"/>
+      <mapper type="regexp" from="^(.*)-x64(.*)$" to="\1\2" />
+    </move>
   </target>
 
 
