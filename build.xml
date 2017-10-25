@@ -281,129 +281,132 @@
     <delete dir="${packages.dir}" />
     <antcall target="compile" />
     <antcall target="installer-base" />
+
+    <antcall target="package-all">
+      <param name="packages.dir" value="${packages.dir}/internal"/>
+      <param name="packaging.dir" value="packaging"/>
+      <param name="ext-frag" value=""/>
+    </antcall>
+
+    <antcall target="package-all">
+      <param name="packages.dir" value="${packages.dir}/external"/>
+      <param name="packaging.dir" value="packaging"/>
+      <param name="ext-frag" value="-ext"/>
+    </antcall>
+  </target>
+
+  <target name="package-all">
     <antcall target="package-mac" />
     <antcall target="package-winlin" />
+    <antcall target="generate-updates-xml" />
   </target>
 
   <target name="package-mac" description="Generate install4j packages for mac">
     <delete file="${installer.dir}/non-mac-application-adapter.jar" />
 
-    <!-- Internal -->
     <exec executable="install4jc">
       <arg value="--release=${specify.SPECIFY_VERSION}" />
-      <arg value="--destination=${packages.dir}/internal" />
+      <arg value="--destination=${packages.dir}" />
       <arg value="--build-ids=24" />
-      <arg value="packaging/5-mac-update.install4j" />
+      <arg value="${packaging.dir}/5-mac-update${ext-frag}.install4j" />
     </exec>
-    <move file="${packages.dir}/internal/updates.xml" tofile="${packages.dir}/internal/updates.xml.macupdate"/>
+    <move file="${packages.dir}/updates.xml" tofile="${packages.dir}/updates.xml.macupdate"/>
 
     <exec executable="install4jc">
       <arg value="--release=${specify.SPECIFY_VERSION}" />
-      <arg value="--destination=${packages.dir}/internal" />
+      <arg value="--destination=${packages.dir}" />
       <arg value="--build-ids=24" />
-      <arg value="packaging/5-mac-full.install4j" />
+      <arg value="${packaging.dir}/5-mac-full${ext-frag}.install4j" />
     </exec>
-    <move file="${packages.dir}/internal/updates.xml" tofile="${packages.dir}/internal/updates.xml.macfull"/>
-
-    <!-- External -->
-    <exec executable="install4jc">
-      <arg value="--release=${specify.SPECIFY_VERSION}" />
-      <arg value="--destination=${packages.dir}/external" />
-      <arg value="--build-ids=24" />
-      <arg value="packaging/5-mac-update-ext.install4j" />
-    </exec>
-    <move file="${packages.dir}/external/updates.xml" tofile="${packages.dir}/external/updates.xml.macupdate"/>
-
-    <exec executable="install4jc">
-      <arg value="--release=${specify.SPECIFY_VERSION}" />
-      <arg value="--destination=${packages.dir}/external" />
-      <arg value="--build-ids=24" />
-      <arg value="packaging/5-mac-full-ext.install4j" />
-    </exec>
-    <move file="${packages.dir}/external/updates.xml" tofile="${packages.dir}/external/updates.xml.macfull"/>
+    <move file="${packages.dir}/updates.xml" tofile="${packages.dir}/updates.xml.macfull"/>
   </target>
 
 
   <target name="package-winlin" description="Generate install4j packages for windows/linux">
     <copy file="./system_dep_libs/non-mac-application-adapter.jar" todir="${installer.dir}" />
-    <!-- Internal -->
+
     <exec executable="install4jc">
       <arg value="--release=${specify.SPECIFY_VERSION}" />
-      <arg value="--destination=${packages.dir}/internal" />
+      <arg value="--destination=${packages.dir}" />
       <arg value="--build-ids=176,179" />
-      <arg value="packaging/5-winlin-update.install4j" />
+      <arg value="${packaging.dir}/5-winlin-update${ext-frag}.install4j" />
     </exec>
-    <move file="${packages.dir}/internal/updates.xml" tofile="${packages.dir}/internal/updates.xml.winlinupdate"/>
+    <move file="${packages.dir}/updates.xml" tofile="${packages.dir}/updates.xml.winlinupdate"/>
 
     <exec executable="install4jc">
       <arg value="--release=${specify.SPECIFY_VERSION}" />
-      <arg value="--destination=${packages.dir}/internal" />
+      <arg value="--destination=${packages.dir}" />
       <arg value="--build-ids=1965,1873" />
-      <arg value="packaging/5-winlin-update-64.install4j" />
+      <arg value="${packaging.dir}/5-winlin-update${ext-frag}-64.install4j" />
     </exec>
-    <move file="${packages.dir}/internal/updates.xml" tofile="${packages.dir}/internal/updates.xml.winlinupdate64"/>
+    <move file="${packages.dir}/updates.xml" tofile="${packages.dir}/updates.xml.winlinupdate64"/>
 
     <exec executable="install4jc">
       <arg value="--release=${specify.SPECIFY_VERSION}" />
-      <arg value="--destination=${packages.dir}/internal" />
+      <arg value="--destination=${packages.dir}" />
       <arg value="--build-ids=176,179" />
-      <arg value="packaging/5-winlin-full.install4j" />
+      <arg value="${packaging.dir}/5-winlin-full${ext-frag}.install4j" />
     </exec>
-    <move file="${packages.dir}/internal/updates.xml" tofile="${packages.dir}/internal/updates.xml.winlinfull"/>
+    <move file="${packages.dir}/updates.xml" tofile="${packages.dir}/updates.xml.winlinfull"/>
 
     <exec executable="install4jc">
       <arg value="--release=${specify.SPECIFY_VERSION}" />
-      <arg value="--destination=${packages.dir}/internal" />
+      <arg value="--destination=${packages.dir}" />
       <arg value="--build-ids=1965,1873" />
-      <arg value="packaging/5-winlin-full-64.install4j" />
+      <arg value="${packaging.dir}/5-winlin-full${ext-frag}-64.install4j" />
     </exec>
-    <move file="${packages.dir}/internal/updates.xml" tofile="${packages.dir}/internal/updates.xml.winlinfull64"/>
+    <move file="${packages.dir}/updates.xml" tofile="${packages.dir}/updates.xml.winlinfull64"/>
 
-    <move todir="${packages.dir}/internal">
-      <fileset dir="${packages.dir}/internal"/>
-      <mapper type="regexp" from="^(.*)-x64(.*)$" to="\1\2" />
-    </move>
-
-    <!-- External  -->
-    <exec executable="install4jc">
-      <arg value="--release=${specify.SPECIFY_VERSION}" />
-      <arg value="--destination=${packages.dir}/external" />
-      <arg value="--build-ids=176,179" />
-      <arg value="packaging/5-winlin-update-ext.install4j" />
-    </exec>
-    <move file="${packages.dir}/external/updates.xml" tofile="${packages.dir}/external/updates.xml.winlinupdate"/>
-
-    <exec executable="install4jc">
-      <arg value="--release=${specify.SPECIFY_VERSION}" />
-      <arg value="--destination=${packages.dir}/external" />
-      <arg value="--build-ids=1965,1873" />
-      <arg value="packaging/5-winlin-update-ext-64.install4j" />
-    </exec>
-    <move file="${packages.dir}/external/updates.xml" tofile="${packages.dir}/external/updates.xml.winlinupdate64"/>
-
-    <exec executable="install4jc">
-      <arg value="--release=${specify.SPECIFY_VERSION}" />
-      <arg value="--destination=${packages.dir}/external" />
-      <arg value="--build-ids=176,179" />
-      <arg value="packaging/5-winlin-full-ext.install4j" />
-    </exec>
-    <move file="${packages.dir}/external/updates.xml" tofile="${packages.dir}/external/updates.xml.winlinfull"/>
-
-    <exec executable="install4jc">
-      <arg value="--release=${specify.SPECIFY_VERSION}" />
-      <arg value="--destination=${packages.dir}/external" />
-      <arg value="--build-ids=1965,1873" />
-      <arg value="packaging/5-winlin-full-ext-64.install4j" />
-    </exec>
-    <move file="${packages.dir}/external/updates.xml" tofile="${packages.dir}/external/updates.xml.winlinfull64"/>
-
-    <move todir="${packages.dir}/external">
-      <fileset dir="${packages.dir}/external"/>
+    <move todir="${packages.dir}">
+      <fileset dir="${packages.dir}"/>
       <mapper type="regexp" from="^(.*)-x64(.*)$" to="\1\2" />
     </move>
   </target>
 
+  <target name="generate-updates-xml">
+    <local name="macos-package-file"/>
+    <local name="windows64-package-file"/>
+    <local name="windows-package-file"/>
+    <local name="unix64-package-file"/>
+    <local name="unix-package-file"/>
 
+    <exec executable="find" outputproperty="macos-package-file" dir="${packages.dir}">
+      <arg line="-name '*macos*' -and -not -name '*update*' -printf %f" />
+    </exec>
+
+    <exec executable="find" outputproperty="windows64-package-file" dir="${packages.dir}">
+      <arg line="-name '*windows*64*' -and -not -name '*update*' -printf %f" />
+    </exec>
+
+    <exec executable="find" outputproperty="windows-package-file" dir="${packages.dir}">
+      <arg line="-name '*windows*' -and -not -name '*64*' -and -not -name '*update*' -printf %f" />
+    </exec>
+
+    <exec executable="find" outputproperty="unix64-package-file" dir="${packages.dir}">
+      <arg line="-name '*unix*64*' -and -not -name '*update*' -printf %f" />
+    </exec>
+
+    <exec executable="find" outputproperty="unix-package-file" dir="${packages.dir}">
+      <arg line="-name '*unix*' -and -not -name '*64*' -and -not -name '*update*' -printf %f" />
+    </exec>
+
+    <exec executable="./packaging/generate_updates_xml.sh">
+      <arg value="${packages.dir}"/>
+      <arg value="${specify.SPECIFY_VERSION}"/>
+      <arg value="24"/>
+      <arg value="${macos-package-file}"/>
+      <arg value="176"/>
+      <arg value="${windows-package-file}"/>
+      <arg value="1873"/>
+      <arg value="${windows64-package-file}"/>
+      <arg value="179"/>
+      <arg value="${unix-package-file}"/>
+      <arg value="1965"/>
+      <arg value="${unix64-package-file}"/>
+    </exec>
+
+    <move file="tmp.xml" tofile="${packages.dir}/updates.xml"/>
+  </target>
 
   <!-- *************************************************************
        Schema Export (Doesn't work at the moment)
