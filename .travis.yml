@@ -1,3 +1,28 @@
 language: java
 
-script: ant compile
+addons:
+  ssh_known_hosts: demo.specifycloud.org
+
+cache:
+  directories:
+    - install4j5
+
+install:
+  - |
+    if [ ! -d install4j5/bin ];
+    then
+      wget https://download-keycdn.ej-technologies.com/install4j/install4j_unix_5_1_15.tar.gz
+      tar -zxf install4j_unix_5_1_15.tar.gz
+    fi
+
+before_script:
+- openssl aes-256-cbc -K $encrypted_aa8174fba226_key -iv $encrypted_aa8174fba226_iv
+  -in travis-ci_rsa.enc -out /tmp/travis-ci_rsa -d
+- eval "$(ssh-agent -s)"
+- chmod 600 /tmp/travis-ci_rsa
+- ssh-add /tmp/travis-ci_rsa
+- ssh -L11862:localhost:11862 -N install4jtunnel@demo.specifycloud.org &
+- install4j5/bin/install4jc --license=FLOAT:localhost
+
+script:
+- ant package
