@@ -25,4 +25,4 @@ before_script:
 - install4j5/bin/install4jc --license=FLOAT:localhost
 
 script:
-- ant package
+- ant package -Dinstall4j.dir=./install4j5
