@@ -11,8 +11,8 @@ install:
   - |
     if [ ! -d install4j5/bin ];
     then
-      wget https://download-keycdn.ej-technologies.com/install4j/install4j_unix_5_1_15.tar.gz
-      tar -zxf install4j_unix_5_1_15.tar.gz
+      wget https://download-keycdn.ej-technologies.com/install4j/install4j_unix_5_1_15.tar.gz;
+      tar -zxvf install4j_unix_5_1_15.tar.gz;
     fi
 
 before_script:
