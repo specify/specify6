@@ -3865,9 +3865,10 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
 				String actualtable = XMLHelper.getAttr((Element)fld, "actualtable", table);
 				String field = XMLHelper.getAttr((Element )fld, "name", null);
 				String actualfield = XMLHelper.getAttr((Element)fld, "actualname", field);
-				Integer sequence =  Integer.valueOf(XMLHelper.getAttr((Element)fld, "onetomanysequence", null));
+				String seqStr = XMLHelper.getAttr((Element)fld, "onetomanysequence", null);
+				Integer sequence =  seqStr == null ? null : Integer.valueOf(seqStr);
 				if (sequence != null) {
-					String seqStr = String.valueOf(sequence + 1);
+					seqStr = String.valueOf(sequence + 1);
 					if (actualfield.endsWith(seqStr)) {
 						actualfield = actualfield.substring(0, actualfield.length() - seqStr.length() - 1);
 					}

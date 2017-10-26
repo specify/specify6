@@ -805,34 +805,27 @@ public class UploadTable implements Comparable<UploadTable>
      * @return the related classes which cannot be null.
      * @throws NoSuchMethodException
      */
-    protected Vector<RelatedClassSetter> buildReqRelClasses() throws NoSuchMethodException
-    {
+    protected Vector<RelatedClassSetter> buildReqRelClasses() throws NoSuchMethodException  {
         Vector<RelatedClassSetter> result = new Vector<RelatedClassSetter>();
-        for (Method m : tblClass.getMethods())
-        {
+        for (Method m : tblClass.getMethods())  {
             Annotation a = m.getAnnotation(javax.persistence.JoinColumn.class);
-            if (a != null)
-            {
+            if (a != null)  {
                 javax.persistence.JoinColumn jc = (javax.persistence.JoinColumn) a;
                 logDebug(jc.columnDefinition());
-                if (!jc.nullable() || m.getName().equals("getDivision"))
-                {
+                if (!jc.nullable() || m.getName().equals("getDivision"))  {
                     logDebug("adding required class: " + tblClass.getName() + " - " + m.getName());
                     javax.persistence.ManyToOne mto = m.getAnnotation(javax.persistence.ManyToOne.class);
-                    if (mto != null)
-                    {
+                    if (mto != null)  {
                         CascadeType[] ct = mto.cascade();
                         for (int c=0; c<ct.length; c++)
                             logDebug(ct[c]);
                     }
                     Method setter = getSetterForGetter(m);
                     String fldName = jc.referencedColumnName();
-                    if (fldName == null || fldName.equals(""))
-                    {
+                    if (fldName == null || fldName.equals(""))  {
                         fldName = jc.name();
                     }
-                    if (addToReqRelClasses(m.getReturnType()))
-                    {
+                    if (addToReqRelClasses(m.getReturnType()))  {
                         result
                                 .add(RelatedClassSetter.createRelatedClassSetter(this, m
                                         .getReturnType(), fldName, null, null, setter, uploadFields
@@ -883,15 +876,12 @@ public class UploadTable implements Comparable<UploadTable>
      * @return the required classes that are not present in the dataset being uploaded.
      * @throws ClassNotFoundException
      */
-    protected void bldMissingReqRelClasses() throws ClassNotFoundException, UploaderException
-    {
+    protected void bldMissingReqRelClasses() throws ClassNotFoundException, UploaderException {
         relatedClassDefaults = new Vector<RelatedClassSetter>();
-        for (RelatedClassSetter rce : this.requiredRelClasses)
-        {
+        for (RelatedClassSetter rce : this.requiredRelClasses) {
             //refresh for DeterminationStatusSetters...
             rce.refresh(this.uploadFields.size());
-            if (!findValueForReqRelClass(rce))
-            {
+            if (!findValueForReqRelClass(rce)) {
                 relatedClassDefaults.add(rce);
             }
         }

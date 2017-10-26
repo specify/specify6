@@ -986,6 +986,11 @@ protected List<java.lang.reflect.Field> getFldsForJSON() {
         return super.findValueForReqRelClass(rce);
     }
 
+    @Override
+    protected boolean addToReqRelClasses(Class<?> relatedClass) {
+        return super.addToReqRelClasses(relatedClass) && !relatedClass.isInterface();
+    }
+
     /**
      * @return the rank
      */
