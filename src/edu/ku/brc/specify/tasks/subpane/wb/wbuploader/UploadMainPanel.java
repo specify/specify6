@@ -322,7 +322,7 @@ public class UploadMainPanel extends JPanel
         setLayout(new FormLayout("3dlu:none, fill:50dlu:grow(0.30), 20dlu:none, fill:50dlu:grow(0.70), 5dlu:none, r:max(50dlu;pref), 3dlu:none", 
                 "2dlu:none, fill:m:none, 4dlu:none, t:m:none, 2dlu:none, fill:75dlu:grow, 5dlu:none"));
         
-        JLabel title = createLabel(getResourceString("WB_UPLOAD_FORM_TITLE"));
+        JLabel title = createLabel(getResourceString(isUpdateUpload ? "WB_UPLOAD_FORM_TITLE_BATCH_EDIT" : "WB_UPLOAD_FORM_TITLE"));
         title.setFont(title.getFont().deriveFont(Font.BOLD));
         title.setHorizontalAlignment(SwingConstants.LEFT);
         add(title, cc.xywh(2,2,5,1));
@@ -422,7 +422,7 @@ public class UploadMainPanel extends JPanel
         validateContentBtn.setActionCommand(VALIDATE_CONTENT);
         viewSettingsBtn = createButton(getResourceString("WB_UPLOAD_SETTINGS_BTN")); 
         viewSettingsBtn.setActionCommand(VIEW_SETTINGS);
-        doUploadBtn     = createButton(getResourceString("WB_UPLOAD_BTN"));
+        doUploadBtn     = createButton(getResourceString(isUpdateUpload ? "WB_UPLOAD_BATCH_EDIT_BTN" :"WB_UPLOAD_BTN"));
         doUploadBtn.setActionCommand(DO_UPLOAD);
         viewUploadBtn   = createButton(getResourceString("WB_UPLOAD_VIEW_BTN"));
         viewUploadBtn.setActionCommand(VIEW_UPLOAD);

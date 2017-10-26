@@ -65,6 +65,7 @@ import edu.ku.brc.ui.dnd.DragAndDropLock;
 import edu.ku.brc.ui.dnd.GhostActionable;
 import edu.ku.brc.ui.dnd.GhostMouseInputAdapter;
 import edu.ku.brc.ui.dnd.ShadowFactory;
+import edu.ku.brc.ui.dnd.Trash;
 
 /**
  *
@@ -972,7 +973,17 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
      */
     public List<DataFlavor> getDragDataFlavors()
     {
-        return dragFlavors;
+    	if (!isAccented) {
+    		return dragFlavors;
+    	} else {
+    		List<DataFlavor> result = new ArrayList<DataFlavor>();
+    		for (DataFlavor flavor : dragFlavors) {
+    			if (flavor != Trash.TRASH_FLAVOR) {
+    				result.add(flavor);
+    			}
+    		}
+    		return result;
+    	}
     }
 
     //-----------------------------------------------

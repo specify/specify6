@@ -21,6 +21,10 @@ public class CellRenderingAttributes
 	static public Color errorForeground = errorBorder;
 	static public Color errorBackground = new Color(errorBorder.getRed(),
 			errorBorder.getGreen(), errorBorder.getBlue(), 37);
+	static public Color editedBorder = Color.GREEN;
+	static public Color editedForeground = editedBorder;
+	static public Color editedBackground = new Color(editedBorder.getRed(),
+			editedBorder.getGreen(), errorBorder.getBlue(), 37);
 	static public Color newDataBorder = HUNTER_ORANGE;
 	static public Color newDataForeground = newDataBorder;
 	static public Color newDataBackground = new Color(newDataBorder.getRed(),
@@ -50,7 +54,7 @@ public class CellRenderingAttributes
 	}
 
 	protected Atts getAtts(int wbCellStatus, String statusText,
-			boolean doIncrementalValidation, boolean doIncrementalMatching) 
+			boolean doIncrementalValidation, boolean doIncrementalMatching, boolean doShowEditedCells) 
 	{
 		LineBorder bdr = null;
 		Color bg = null;
@@ -74,6 +78,9 @@ public class CellRenderingAttributes
 		{
 			bdr = new LineBorder(notMatchedBorder);
 			bg = notMatchedBackground;
+		} else if (doShowEditedCells && (wbCellStatus == WorkbenchDataItem.VAL_EDIT || wbCellStatus == WorkbenchDataItem.VAL_ERROR_EDIT)) {
+			bdr = new LineBorder(editedBorder);
+			bg = editedBackground;
 		}
 		return new Atts(statusText, bdr, bg);
 	}
@@ -92,7 +99,7 @@ public class CellRenderingAttributes
 	 * @param wbCell
 	 */
 	public void addAttributes(JLabel lbl, final WorkbenchDataItem wbCell,
-			boolean doIncrementalValidation, boolean doIncrementalMatching) 
+			boolean doIncrementalValidation, boolean doIncrementalMatching, boolean doShowEditedCells) 
 	{
 		if (doIncrementalValidation || doIncrementalMatching)
 		{
@@ -115,7 +122,7 @@ public class CellRenderingAttributes
 					&& cellStatus != WorkbenchDataItem.VAL_OK)
 			{
 				Atts atts = getAtts(cellStatus, cellStatusText,
-						doIncrementalValidation, doIncrementalMatching);
+						doIncrementalValidation, doIncrementalMatching, doShowEditedCells);
 				// System.out.println("pos " + wbCell.getRowNumber() + ", "+
 				// wbCell.getColumnNumber() + ":" + cellStatusText);
 				// lbl.setToolTipText(atts.toolTip);

@@ -43,6 +43,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
@@ -72,6 +73,7 @@ import edu.ku.brc.af.core.NavBoxItemIFace;
 import edu.ku.brc.af.core.NavBoxMgr;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
+import edu.ku.brc.af.core.SubPaneMgrListener;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.core.db.DBFieldInfo;
@@ -112,6 +114,7 @@ import edu.ku.brc.specify.tasks.subpane.qb.ERTICaptionInfoQB;
 import edu.ku.brc.specify.tasks.subpane.qb.QBLiveDataSource;
 import edu.ku.brc.specify.tasks.subpane.qb.QBQueryForIdResultsHQL;
 import edu.ku.brc.specify.tasks.subpane.qb.QBReportInfoPanel;
+import edu.ku.brc.specify.tasks.subpane.qb.QBResultsSubPane;
 import edu.ku.brc.specify.tasks.subpane.qb.QueryBldrPane;
 import edu.ku.brc.specify.tasks.subpane.qb.QueryFieldPanel;
 import edu.ku.brc.specify.tasks.subpane.qb.SearchResultReportServiceInfo;
@@ -132,6 +135,7 @@ import edu.ku.brc.ui.ToggleButtonChooserPanel;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.dnd.DataActionEvent;
 import edu.ku.brc.ui.dnd.Trash;
 import edu.ku.brc.util.Pair;
 
@@ -143,7 +147,7 @@ import edu.ku.brc.util.Pair;
  * @author rods
  *
  */
-public class QueryTask extends BaseTask 
+public class QueryTask extends BaseTask implements SubPaneMgrListener 
 {
     private static final Logger log = Logger.getLogger(QueryTask.class);
     
@@ -152,6 +156,7 @@ public class QueryTask extends BaseTask
     public static final String SAVE_QUERY           = "Save";
     public static final String REFRESH_QUERIES      = "RefreshQueries";
     public static final String QUERY_RESULTS_REPORT = "QueryResultsReport";
+    public static final String QUERY_RESULTS_BATCH_EDIT = "QueryResultsBatchEdit";
     protected static final String XML_PATH_PREF     = "Query.XML.Dir";
     
     public static final DataFlavor QUERY_FLAVOR = new DataFlavor(QueryTask.class, QUERY);
@@ -172,6 +177,9 @@ public class QueryTask extends BaseTask
     protected List<String>             extraQueries;
     protected List<String>             stdQueries       = new ArrayList<String>();
     protected int                        nonFavCount      = 0;
+    
+    protected AtomicReference<RecordSetIFace>  rsToDisplay = new AtomicReference<RecordSetIFace>(null);
+    protected AtomicBoolean previousQBldrPaneShuttingDown = new AtomicBoolean(false);
     
     //protected List<DBTableInfo>               tableInfos       = new ArrayList<DBTableInfo>();
     
@@ -195,6 +203,7 @@ public class QueryTask extends BaseTask
         CommandDispatcher.register(TreeDefinitionEditor.TREE_DEF_EDITOR, this);
         CommandDispatcher.register(SchemaLocalizerDlg.SCHEMA_LOCALIZER, this);
     }
+    
     
     /**
      * Ask the user for information needed to fill in the data object. (Could be refactored with WorkBench Task)
@@ -961,7 +970,8 @@ public class QueryTask extends BaseTask
      */
     protected void registerServices()
     {
-    	ContextMgr.registerService(new ReportServiceInfo());    
+    	ContextMgr.registerService(new ReportServiceInfo());   
+    	ContextMgr.registerService(new QueryBatchEditServiceInfo());
     }
     
     /**
@@ -1010,29 +1020,33 @@ public class QueryTask extends BaseTask
                 true, true);
         roc.setToolTip(getResourceString("QY_CLICK2EDIT"));
         roc.setData(recordSet);
-        roc.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(final ActionEvent e)
-            {
-                new EditQueryWorker(recordSet.getOnlyItem().getRecordId(), (RolloverCommand) e
-                        .getSource()).start();
+        roc.addActionListener(new ActionListener() {
+            public void actionPerformed(final ActionEvent e) {
+            	Object data = e instanceof DataActionEvent ? ((DataActionEvent)e).getData() : null;
+            	RecordSetIFace rs = null;
+            	if (data instanceof RecordSetProxy) {
+            		rs = RecordSetTask.loadRecordSet((RecordSetProxy)data);
+            	}
+            	Object src = rs == null ? e.getSource() : ((DataActionEvent)e).getDestObj();
+                new EditQueryWorker(recordSet.getOnlyItem().getRecordId(), (RolloverCommand)src, rs).start();
             }
         });
         NavBoxItemIFace nbi = (NavBoxItemIFace)roc;
         
         DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(recordSet.getTableId());
-        if (tblInfo != null)
-        {
+        if (tblInfo != null) {
             ImageIcon rsIcon = tblInfo.getIcon(IconManager.STD_ICON_SIZE);
-            if (rsIcon != null)
-            {
+            if (rsIcon != null) {
                 nbi.setIcon(rsIcon);
             }
         }
         
+        
         roc.addDragDataFlavor(new DataFlavorTableExt(getClass(), getQueryType(), recordSet.getTableId()));
-        if (canDelete)
-        {
+        Integer qId = recordSet.getRecordSetItems().iterator().next().getRecordId();
+        Integer tableId = BasicSQLUtils.querySingleObj("select contexttableid from spquery where spqueryid = " + qId);
+        roc.addDropDataFlavor(new DataFlavorTableExt(RecordSetTask.class, RecordSetTask.RECORD_SET, tableId));//RecordSetTask.RECORDSET_FLAVOR);
+        if (canDelete) {
             roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
         }        
         return nbi;
@@ -1243,6 +1257,7 @@ public class QueryTask extends BaseTask
 					starterPane = null;
 				} else if (queryBldrPane != null) 
 				{
+					previousQBldrPaneShuttingDown.set(true);
 					SubPaneMgr.getInstance().replacePane(queryBldrPane, newPane);
 				}
 				queryBldrPane = newPane;
@@ -1267,6 +1282,14 @@ public class QueryTask extends BaseTask
 
         extendedNavBoxes.clear();
         extendedNavBoxes.addAll(navBoxes);
+
+        RecordSetTask rsTask = (RecordSetTask)ContextMgr.getTaskByClass(RecordSetTask.class);
+
+        List<NavBoxIFace> nbs = rsTask.getNavBoxes();
+        if (nbs != null)
+        {
+            extendedNavBoxes.addAll(nbs);
+        }
 
         return extendedNavBoxes;
     }
@@ -1329,8 +1352,10 @@ public class QueryTask extends BaseTask
         rs.addItem(query.getSpQueryId());
         
         RolloverCommand roc = (RolloverCommand)addToNavBox(rs);
-        roc.setEnabled(enabled);
-
+        //roc.setEnabled(enabled);
+        roc.setEnabled(true);
+        roc.setIsAccented(!enabled);
+        
         NavBoxMgr.getInstance().addBox(navBox);
 
         // XXX this is pathetic and needs to be generized
@@ -1475,6 +1500,24 @@ public class QueryTask extends BaseTask
         	return;
         }
         
+        if (cmdAction.isAction(QUERY_RESULTS_BATCH_EDIT)) {
+        	System.out.println("Batch Edit Query Results");
+        	WorkbenchTask wbTask = (WorkbenchTask)ContextMgr.getTaskByClass(WorkbenchTask.class);
+        	wbTask.batchEditQueryResults(queryBldrPane.getQueryForBatchEdit(), (RecordSetIFace)cmdAction.getData());
+        	/*
+        	try {
+        		WorkbenchTemplate wt = wbTask.getTemplateFromQuery(queryBldrPane.getQuery());
+        		System.out.println(wt.getName());
+        		for (WorkbenchTemplateMappingItem mi : wt.getWorkbenchTemplateMappingItems()) {
+        			System.out.println(mi.getTableName() + ", " + mi.getFieldName() + ", " + mi.getViewOrder());
+        		}
+        	} catch (Exception e) {
+        		e.printStackTrace();
+        	}*/
+        	
+        	return;
+        }
+        
         if (cmdAction.isAction(QUERY_RESULTS_REPORT))
 		{
 			SearchResultReportServiceInfo selectedRep = null;
@@ -1587,32 +1630,26 @@ public class QueryTask extends BaseTask
      * @see edu.ku.brc.specify.ui.CommandListener#doCommand(edu.ku.brc.specify.ui.CommandAction)
      */
     @Override
-    public void doCommand(CommandAction cmdAction)
-    {
+    public void doCommand(CommandAction cmdAction) {
         super.doCommand(cmdAction);
         
-        if (cmdAction.isType(getQueryType()))
-        {
+        if (cmdAction.isType(getQueryType())) {
             processQueryCommands(cmdAction);
             
-        }
-        else if (cmdAction.isType(TreeDefinitionEditor.TREE_DEF_EDITOR))
-        {
+        } else if (cmdAction.isType(RecordSetTask.RECORD_SET) && cmdAction.isAction("Clicked")) {
+            processRecordSetCommand(cmdAction);
+            
+        } else if (cmdAction.isType(TreeDefinitionEditor.TREE_DEF_EDITOR)) {
             //all we care to know is that a treeDefintion got changed somehow 
             this.configurationHasChanged.set(true);
-        }
-        else if (cmdAction.isType(SchemaLocalizerDlg.SCHEMA_LOCALIZER))
-        {
+        } else if (cmdAction.isType(SchemaLocalizerDlg.SCHEMA_LOCALIZER)) {
             //XXX should check whether changed schema actually is the schema in use? 
             // e.g. If German schema was saved when English is in use then ignore??
             this.configurationHasChanged.set(true);
             SwingUtilities.invokeLater(new Runnable(){
-                public void run()
-                {
-                    if (SubPaneMgr.getInstance().getCurrentSubPane() == queryBldrPane)
-                    {
-                        if (queryBldrPane != null)
-                        {
+                public void run() {
+                    if (SubPaneMgr.getInstance().getCurrentSubPane() == queryBldrPane) {
+                        if (queryBldrPane != null) {
                             queryBldrPane.showingPane(true);
                         }
                     }                    
@@ -1621,7 +1658,13 @@ public class QueryTask extends BaseTask
         }
     }
 
-    
+    /**
+     * @param cmdAction
+     */
+    protected void processRecordSetCommand(CommandAction cmdAction) {
+        if (ContextMgr.getCurrentContext() == this && cmdAction.getSrcObj() instanceof RecordSetIFace) {
+        }
+    }
 
     //--------------------------------------------------------------
     // Inner Classes
@@ -2394,7 +2437,7 @@ public class QueryTask extends BaseTask
         SwingUtilities.invokeLater(new Runnable() {
             public void run()
             {
-                new EditQueryWorker(queryBldrPane.getQuery().getId(), queryBldrPane.getQueryNavBtn()).start();
+                new EditQueryWorker(queryBldrPane.getQuery().getId(), queryBldrPane.getQueryNavBtn(), null).start();
             }
         });
     }
@@ -2421,31 +2464,69 @@ public class QueryTask extends BaseTask
     {
         protected final Integer queryId;
         protected final RolloverCommand queryNavBtn;
+        protected final RecordSetIFace rs;
         
-        public EditQueryWorker(final Integer queryId, final RolloverCommand queryNavBtn)
+        public EditQueryWorker(final Integer queryId, final RolloverCommand queryNavBtn, final RecordSetIFace rs)
         {
             super();
             this.queryId = queryId;
             this.queryNavBtn = queryNavBtn;
+            this.rs = rs;
         }
 
         @Override
-        public void finished()
-        {
+        public void finished() {
             super.finished();
-            if (queryBldrPane == null || queryBldrPane.aboutToShutdown())
-            {
-                if (editQuery(queryId))
-                {
-                	queryNavBtn.setEnabled(false);
+    		rsToDisplay.set(rs);
+            if (queryBldrPane == null || queryBldrPane.aboutToShutdown()) {
+                if (editQuery(queryId)) {
+            		for (NavBoxItemIFace nb : navBox.getItems()) {
+            			if (nb instanceof RolloverCommand) {
+            				//RolloverCommand.class.cast(nb).setActive(nb == roc);
+            				RolloverCommand.class.cast(nb).setIsAccented(nb == queryNavBtn);
+            			}
+            		}
+                	//queryNavBtn.setEnabled(false);
                 	queryBldrPane.setQueryNavBtn(queryNavBtn);
+                	if (!previousQBldrPaneShuttingDown.get() && rsToDisplay.get() != null) {
+                		rsToDisplay.set(null);
+                		queryBldrPane.doSearch(rs);
+                	}
                 }
             }
         }
         
     }
     
-    protected class EditOtherQueryWorker extends OpenQueryWorker
+    /**
+     * @return
+     */
+    public void qBldrPaneShutDown() {
+    	previousQBldrPaneShuttingDown.set(false);
+		RecordSetIFace rs = rsToDisplay.getAndSet(null);
+		if (rs != null) {
+			queryBldrPane.doSearch(rs);
+		}
+    	
+    }
+
+    
+    /* (non-Javadoc)
+	 * @see edu.ku.brc.af.tasks.BaseTask#subPaneRemoved(edu.ku.brc.af.core.SubPaneIFace)
+	 */
+	@Override
+	public void subPaneRemoved(SubPaneIFace subPane) {
+		// TODO Auto-generated method stub
+		super.subPaneRemoved(subPane);
+		if (subPane instanceof QBResultsSubPane) {
+			RecordSetIFace rs = rsToDisplay.getAndSet(null);
+			if (rs != null) {
+				queryBldrPane.doSearch(rs);
+			}
+		}
+	}
+
+	protected class EditOtherQueryWorker extends OpenQueryWorker
     {
         protected final Integer queryId;
         

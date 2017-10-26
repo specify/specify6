@@ -138,6 +138,7 @@ public class DataEntryTask extends BaseTask
     public static final String     VIEW_WAS_SHOWN    = "ViewWasShown";
     public static final String     OPEN_NEW_VIEW     = "OpenNewView";
     public static final String     EDIT_DATA         = "Edit";
+    public static final String	   BATCH_EDIT_DATA   = "BatchEdit";
     //public static final String     EDIT_IN_DIALOG    = "EditInDialog";
     public static final String     DATA              = "Data"; // Sent by FormHelper for when new DataObject are created
     
@@ -150,10 +151,12 @@ public class DataEntryTask extends BaseTask
     // Data Members
     protected Vector<NavBoxIFace> extendedNavBoxes = new Vector<NavBoxIFace>();
     protected NavBox              viewsNavBox      = null;
+    protected NavBox              batchNavBox      = null;
     protected NavBox              containerNavBox  = null;
     
     protected Vector<DataEntryView> stdViews       = null;
     protected Vector<DataEntryView> miscViews      = null;
+    protected Vector<DataEntryView> batchViews      = null;
     protected Vector<DataEntryView> availMiscViews = new Vector<DataEntryView>();
     
     // These are needed for changes with the DisciplineType icon
@@ -175,6 +178,7 @@ public class DataEntryTask extends BaseTask
         
         // Do this here instead of in initialize because the static method will need to access the icon mapping first
         viewsNavBox = new NavBox(getResourceString("CreateAndUpdate"));
+        batchNavBox = new NavBox(getResourceString("DataEntryTask.BatchEdit"));
     }
 
     /* (non-Javadoc)
@@ -188,6 +192,7 @@ public class DataEntryTask extends BaseTask
             super.initialize(); // sets isInitialized to false
             
             navBoxes.add(viewsNavBox);
+            //navBoxes.add(batchNavBox);
             
             // Container Tree
             //NavBox navBox = new NavBox(getResourceString("Actions"));
@@ -761,7 +766,133 @@ public class DataEntryTask extends BaseTask
             }
         }
     }
-    
+   
+    /**
+     * @param devList
+     * @param doRegister
+     */
+    protected void buildBatchNavBoxes(final Vector<DataEntryView> devList,
+                                     final boolean doRegister)
+    {
+        SpecifyAppContextMgr appContextMgr = (SpecifyAppContextMgr)AppContextMgr.getInstance();
+        
+        boolean  isUsingInteractions = isUsingInteractions();
+        Taskable interactionsTask    = TaskMgr.getTask("InteractionsTaskInit");
+
+        for (DataEntryView dev : devList)
+        {
+            ViewIFace view = appContextMgr.getView(null, dev.getView());
+            if (view != null)
+            {
+                DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
+                dev.setTableInfo(tableInfo);
+            }
+            
+            //System.out.println(dev.getTableInfo()+"  "+(dev.getTableInfo() != null ? (dev.getTableInfo().getTableId()+"  "+CollectionObject.getClassTableId()) : ""));
+            boolean isColObj = dev.getTableInfo() != null && dev.getTableInfo().getTableId() == CollectionObject.getClassTableId();
+            
+            ImageIcon iconImage = IconManager.getIcon(dev.getIconName(), IconManager.STD_ICON_SIZE);
+            if (iconImage != null)
+            {
+                String iconNameStr;
+                if (isColObj)
+                {
+                    iconNameStr            = AppPreferences.getRemote().get(FormattingPrefsPanel.getDisciplineImageName(), "CollectionObject");
+                    ImageIcon colIconImage = IconManager.getIcon(iconNameStr, IconManager.STD_ICON_SIZE);
+                    if (colIconImage != null)
+                    {
+                        iconImage = colIconImage;
+                    }
+                    iconNameStr            = "CollectionObject";
+                    iconClassLookUpName = iconNameStr;
+                } else
+                {
+                    iconNameStr = dev.getView();
+                }
+                iconForFormClass.put(iconNameStr, iconImage);
+            } else
+            {
+                log.error("Icon ["+dev.getIconName()+"] could not be found.");
+            }
+            
+            if (view != null)
+            {
+                DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
+                dev.setTableInfo(tableInfo);
+                
+                if (AppContextMgr.isSecurityOn())
+                {
+                    if (!tableInfo.getPermissions().canView())
+                    {
+                        continue;
+                    }
+                }
+
+                if (tableInfo != null)
+                {
+                    if (!tableInfo.isHidden())
+                    {
+                        CommandAction cmdAction = new CommandAction(DATA_ENTRY, BATCH_EDIT_DATA);
+                        //cmdAction.setProperty("viewset", dev.getViewSet());
+                        cmdAction.setProperty("view",    dev.getView());
+                        
+                        if (doRegister)
+                        {
+                            // In the future we should check to see if Interactions is turned on
+                            // and if it isn't then 
+                            //log.debug("Registering: "+tableInfo.getTitle());
+                            
+                            int      tblId = tableInfo.getTableId();
+                            Taskable task  = isUsingInteractions ? AppContextMgr.getInstance().getTaskFromTableId(tblId) : null;
+                            if (task == interactionsTask && !isUsingInteractions)
+                            {
+                                task = this;
+                            }
+                            cmdAction.setProperty(NavBoxAction.ORGINATING_TASK, task);
+                            ContextMgr.registerService(10, dev.getView(), tblId, cmdAction, this, DATA_ENTRY, tableInfo.getTitle(), true); // the Name gets Hashed
+                        }
+                        
+                        if (dev.isSideBar())
+                        {
+                            cmdAction = new CommandAction(DATA_ENTRY, BATCH_EDIT_DATA);
+                            //cmdAction.setProperty("viewset",   dev.getViewSet());
+                            cmdAction.setProperty("view",      dev.getView());
+                            cmdAction.setProperty("tableInfo", dev.getTableInfo());
+                            
+                            NavBoxAction nba = new NavBoxAction(cmdAction);
+                            
+                            String          btnTitle = dev.getTableInfo() != null ? dev.getTableInfo().getTitle() : dev.getTitle();
+                            NavBoxItemIFace nbi      = NavBox.createBtnWithTT(btnTitle, dev.getIconName(), dev.getToolTip(), IconManager.STD_ICON_SIZE, nba);
+                            if (nbi instanceof NavBoxButton)
+                            {
+                                NavBoxButton nbb = (NavBoxButton)nbi;
+                                if (isColObj)
+                                {
+                                   colObjNavBtn = nbb; 
+                                }
+                                
+                                // When Being Dragged
+                                nbb.addDragDataFlavor(Trash.TRASH_FLAVOR);
+                                nbb.addDragDataFlavor(new DataFlavorTableExt(DataEntryTask.class, "Data_Entry", tableInfo.getTableId()));
+                        
+                                // When something is dropped on it
+                                nbb.addDropDataFlavor(new DataFlavorTableExt(RecordSetTask.class, RecordSetTask.RECORD_SET, tableInfo.getTableId()));//RecordSetTask.RECORDSET_FLAVOR);
+                            }
+                            batchNavBox.add(nbi);
+                        }
+                    }
+                } else 
+                {
+                    UIRegistry.showError("View's Class name["+view.getClassName()+"] was not found in the DBTableIdMgr");
+                }
+                
+            } else
+            {
+                UIRegistry.showError("View doesn't exist view["+dev.getView()+"] for entry in dataentry_task.xml");
+            }
+        }
+    }
+
     /**
      * @return whether the Interactions task is being used.
      */
@@ -942,6 +1073,7 @@ public class DataEntryTask extends BaseTask
                 
                 stdViews  = dataEntryXML.getStd();
                 miscViews = dataEntryXML.getMisc();
+                batchViews = dataEntryXML.getBatch();
                 
                 SpecifyAppContextMgr acm = (SpecifyAppContextMgr)AppContextMgr.getInstance();
                 for (DataEntryView dev : stdViews)
@@ -959,7 +1091,23 @@ public class DataEntryTask extends BaseTask
                         dev.setToolTip(dev.getToolTip());
                     }
                 }
-                
+
+                for (DataEntryView dev : batchViews)
+                {
+                    if (StringUtils.isEmpty(dev.getToolTip()))
+                    {
+                        ViewIFace view = acm.getView(dev.getView());
+                        if (view != null)
+                        {
+                            dev.setToolTip(getLocalizedMessage("DET_BATCH_EDIT", view.getObjTitle()));
+                        }
+                    } else
+                    {
+                        //dev.setToolTip(getLocalizedMessage(dev.getToolTip()));
+                        dev.setToolTip(dev.getToolTip());
+                    }
+                }
+
                 for (DataEntryView dev : miscViews)
                 {
                     if (StringUtils.isEmpty(dev.getToolTip()))
@@ -1005,7 +1153,7 @@ public class DataEntryTask extends BaseTask
                 //initDataEntryViews(stdViews);
                 //initDataEntryViews(miscViews);
                 
-                buildNavBoxes(stdViews, miscViews, true);
+                buildNavBoxes(stdViews, miscViews, batchViews, true);
                 
             } catch (Exception ex)
             {
@@ -1024,9 +1172,11 @@ public class DataEntryTask extends BaseTask
      */
     protected void buildNavBoxes(final Vector<DataEntryView> stdList,
                                  final Vector<DataEntryView> miscList,
+                                 final Vector<DataEntryView> batchList,
                                  final boolean doRegister)
     {
         buildFormNavBoxes(stdList, doRegister);
+        buildBatchNavBoxes(batchList, doRegister);
         
         if (miscList != null && !miscList.isEmpty())
         {
@@ -1268,6 +1418,7 @@ public class DataEntryTask extends BaseTask
 
         Vector<TaskConfigItemIFace> stdList  = new Vector<TaskConfigItemIFace>();
         Vector<TaskConfigItemIFace> miscList = new Vector<TaskConfigItemIFace>();
+        Vector<TaskConfigItemIFace> batchList = new Vector<TaskConfigItemIFace>();
         
         // Clone for undo (Cancel)
         try
@@ -1279,6 +1430,10 @@ public class DataEntryTask extends BaseTask
             for (DataEntryView de : miscViews)
             {
                 miscList.add((DataEntryView)de.clone());
+            }
+            for (DataEntryView de : batchViews)
+            {
+                batchList.add((DataEntryView)de.clone());
             }
 
         } catch (CloneNotSupportedException ex) {/*ignore*/}
@@ -1316,7 +1471,7 @@ public class DataEntryTask extends BaseTask
             unregisterServices(stdList, miscList);
 
             // This re-registers the items
-            buildNavBoxes(stdViews, miscViews, true);
+            buildNavBoxes(stdViews, miscViews, batchViews, true);
             
             viewsNavBox.validate();
             viewsNavBox.doLayout();
@@ -1325,7 +1480,7 @@ public class DataEntryTask extends BaseTask
             NavBoxMgr.getInstance().repaint();
             
             // Persist out to database
-            DataEntryXML dataEntryXML = new DataEntryXML(stdViews, miscViews);
+            DataEntryXML dataEntryXML = new DataEntryXML(stdViews, miscViews, null);
             
             XStream xstream = new XStream();
             config(xstream);
@@ -1543,6 +1698,14 @@ public class DataEntryTask extends BaseTask
         {
             Taskable task = (Taskable)cmdAction.getProperty(NavBoxAction.ORGINATING_TASK);
             editData(task != null ? task : this, cmdAction.getData(), null, cmdAction.getProperty("readonly") != null);
+        } else if (cmdAction.isAction(BATCH_EDIT_DATA)) {
+            Object   data      = cmdAction.getData();
+            if (data instanceof RecordSetIFace) {
+            	UIRegistry.displayInfoMsgDlg("Batch Edit this Recordset");
+            	((WorkbenchTask)TaskMgr.getTask(WorkbenchTask.WORKBENCH)).batchEditRS((RecordSetIFace)data);
+            } else {
+            	UIRegistry.displayInfoMsgDlg("Drag a Recordset to batch edit.");
+            }
         }
         else if (cmdAction.isAction("ShowView"))
         {

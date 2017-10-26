@@ -920,26 +920,32 @@ public class Uploader implements ActionListener, KeyListener
      * @return the 'root' or 'main' table for a dataset
      * 
      * This will be the table that has no one-to-many or one-to-one child tables or 'owns' all its child tables. 
+     * 
+     * OR... the ExportedFromTable...
      */
-    protected UploadTable getRootTable()
-    {
+    protected UploadTable getRootTable() {
     	//First, construct all tables that are 'owned' by other tables and their non-'owner' parents.
     	HashSet<UploadTable> ruledChildrenAndTheirReqs = new HashSet<UploadTable>();
-    	for (UploadTable ut : uploadTables)
-    	{
-    		if (ut.isMatchChild())
-    		{
+    	for (UploadTable ut : uploadTables) {
+    		if (ut.isMatchChild()) {
     			ruledChildrenAndTheirReqs.add(ut);
     			processParentsForRootTableSearch(ut, ruledChildrenAndTheirReqs);
     		}
     	}
     	//Then move backwards through the ALREADY ordered upload tables until we get to a table 
     	//that is not in the list constructed above 
-    	for (int t = uploadTables.size() - 1; t >= 0; t--)
-    	{
-    		if (!uploadTables.get(t).isMatchChild() && !ruledChildrenAndTheirReqs.contains(uploadTables.get(t)))
-    		{
-    			return uploadTables.get(t);
+    	if (theWb.getExportedFromTableName() == null) {
+    		for (int t = uploadTables.size() - 1; t >= 0; t--) {
+    			if (!uploadTables.get(t).isMatchChild() && !ruledChildrenAndTheirReqs.contains(uploadTables.get(t))) {
+    				return uploadTables.get(t);
+    			}
+    		}
+    	} else {
+    		for (int t = uploadTables.size() - 1; t >= 0; t--) {
+    			//Fingers crossed that the ExportedFromTable is not a MatchChild, RuledChild or RuledChildReq
+    			if (uploadTables.get(t).getTblClass().getName().equals(theWb.getExportedFromTableName())) {
+    				return uploadTables.get(t);
+    			}
     		}
     	}
     	return null;
@@ -1701,9 +1707,9 @@ public class Uploader implements ActionListener, KeyListener
      * @param col
      * @return list of invalid values
      */
-    public Vector<UploadTableInvalidValue> validateData(int row, int col)
+    public List<UploadTableInvalidValue> validateData(int row, int col)
     {
-        Vector<UploadTableInvalidValue> result = new Vector<UploadTableInvalidValue>();
+        List<UploadTableInvalidValue> result = new ArrayList<UploadTableInvalidValue>();
     	//XXX figure out which table is associated with col.
         for (UploadTable tbl : uploadTables) {
         	tbl.clearBlankness();
@@ -1724,24 +1730,54 @@ public class Uploader implements ActionListener, KeyListener
     	return result;
     }
     
-    public Vector<UploadField> checkChangedData(int row) throws Exception
-    {
+    /**
+     * @param row
+     * @return
+     * @throws Exception
+     */
+    public List<Pair<UploadField, Object>> checkChangedData(int row, boolean forceLoad) throws Exception {
+		List<Pair<UploadField, Object>> result = new ArrayList<Pair<UploadField, Object>>();
+    	//if (rowHasEdits(row)) {
+    		getRootTable().loadExportedRecord(row, theWb.getRow(row).getRecordId(), forceLoad);
     	
-    	getRootTable().loadExportedRecord(/*row, */theWb.getRow(row).getRecordId());
-    	
-    	Vector<UploadField> result = new Vector<UploadField>();
-    	for (UploadTable ut : uploadTables)
-    	{
-    		result.addAll(ut.getChangedFields(row));
+    		for (UploadTable ut : uploadTables) {
+    			loadRow(ut, row);
+    			result.addAll(ut.getChangedFields(row));
+    		}
+    	//}
+    	return result;
+    }
+    
+    /**
+     * @param row
+     * @return
+     */
+    protected boolean rowHasEdits(int row) {
+    	WorkbenchRow r = theWb.getRow(row);
+    	for (WorkbenchDataItem di : r.getWorkbenchDataItems()) {
+    		int stat = di.getEditorValidationStatus();
+    		if (stat == WorkbenchDataItem.VAL_EDIT || stat == WorkbenchDataItem.VAL_ERROR_EDIT) {
+    			return true;
+    		}
     	}
-    	if (result.size() > 0)
-    	{
-    		//for (UploadField fld : result)
-    		//{
-    			//System.out.println(fld.getWbFldName());
-    		//}
+    	return false;
+    }
+    
+    /**
+     * @param row
+     * @return
+     */
+    protected List<WorkbenchDataItem> getEditedItems(int row) {
+    	WorkbenchRow r = theWb.getRow(row);
+    	List<WorkbenchDataItem> result = new ArrayList<WorkbenchDataItem>();
+    	for (WorkbenchDataItem di : r.getWorkbenchDataItems()) {
+    		int stat = di.getEditorValidationStatus();
+    		if (stat == WorkbenchDataItem.VAL_EDIT || stat == WorkbenchDataItem.VAL_ERROR_EDIT) {
+    			result.add(di);
+    		}
     	}
     	return result;
+    	
     }
     
     /**
@@ -2269,9 +2305,9 @@ public class Uploader implements ActionListener, KeyListener
     /**
      * @return true if the upload is updating existing records
      */
-    public boolean isUpdateUpload()
-    {
+    public boolean isUpdateUpload() {
     	UploadTable root = getRootTable();
+    	//umm...shouldn't the root table just be the ExportedFromTable if it exists?? 
     	return theWb.getExportedFromTableName() != null && root != null && root.isUpdateMatches();
     }
     
@@ -2691,20 +2727,21 @@ public class Uploader implements ActionListener, KeyListener
         missingRequiredFields.clear();
         Iterator<RelatedClassSetter> rces;
         Iterator<DefaultFieldEntry> dfes;
+        UploadTable root = getRootTable();
+        boolean isUp = isUpdateUpload();
         for (UploadTable t : uploadTables)
         {
-            try
-            {
-                rces = t.getRelatedClassDefaults();
-            }
-            catch (ClassNotFoundException ex)
-            {
-                log.error(ex);
-                return null;
-            }
-            while (rces.hasNext())
-            {
-                missingRequiredClasses.add(rces.next());
+            if (!isUp || t != root) {
+            	try {
+            		rces = t.getRelatedClassDefaults();
+            	}
+            	catch (ClassNotFoundException ex) {
+            		log.error(ex);
+            		return null;
+            	}
+            	while (rces.hasNext()) {
+            		missingRequiredClasses.add(rces.next());
+            	}
             }
 
             try
@@ -3567,43 +3604,49 @@ public class Uploader implements ActionListener, KeyListener
         }
 
         if (result && shuttingDownSS == null && 
-        		(currentOp.equals(Uploader.SUCCESS)  || currentOp.equals(Uploader.SUCCESS_PARTIAL)) && getUploadedObjects() > 0 && !isUpdateUpload())
+        		(currentOp.equals(Uploader.SUCCESS)  || currentOp.equals(Uploader.SUCCESS_PARTIAL)) && getUploadedObjects() > 0)
         {
-            result = false;
-        	String msg = String.format(getResourceString("WB_UPLOAD_CONFIRM_SAVE"), theWb.getName());
-            JFrame topFrame = (JFrame)UIRegistry.getTopWindow();
-            int rv = JOptionPane.showConfirmDialog(topFrame,
+            if (!isUpdateUpload()) {
+            	result = false;
+            	String msg = String.format(getResourceString("WB_UPLOAD_CONFIRM_SAVE"), theWb.getName());
+            	JFrame topFrame = (JFrame)UIRegistry.getTopWindow();
+            	int rv = JOptionPane.showConfirmDialog(topFrame,
                                                    msg,
                                                    getResourceString("WB_UPLOAD_FORM_TITLE"),
                                                    JOptionPane.YES_NO_CANCEL_OPTION);
             
-            if (rv == JOptionPane.YES_OPTION)
-            {
-                saveRecordSets();
-                result = true;
-                wbSS.saveObject();
-            }
-            else if (rv == JOptionPane.NO_OPTION)
-            {
-                undoUpload(shuttingDownSS == null, true, true);
-                result = true;
-            }
-            //else rv equals JOptionPane.CANCEL_OPTION or CLOSED_OPTION
-            if (result)
-            {
-                for (UploadTable ut : uploadTables)
-                {
-                    try
-                    {
-                        ut.shutdown();
-                    }
-                    catch (UploaderException ex)
-                    {
-                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, ex);
-                        throw new RuntimeException(ex);
-                    }
-                }
+            	if (rv == JOptionPane.YES_OPTION)
+            	{
+            		saveRecordSets();
+            		result = true;
+            		wbSS.saveObject();
+            	}
+            	else if (rv == JOptionPane.NO_OPTION)
+            	{
+            		undoUpload(shuttingDownSS == null, true, true);
+            		result = true;
+            	}
+            	//else rv equals JOptionPane.CANCEL_OPTION or CLOSED_OPTION
+            	if (result)
+            	{
+            		for (UploadTable ut : uploadTables)
+            		{
+            			try
+            			{
+            				ut.shutdown();
+            			}
+            			catch (UploaderException ex)
+            			{
+            				edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            				edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, ex);
+            				throw new RuntimeException(ex);
+            			}
+            		}
+            	}
+            } else {
+        		saveRecordSets();
+        		result = true;
+        		wbSS.saveObject();
             }
         } 
         if (additionalLocksSet)
@@ -4288,87 +4331,75 @@ public class Uploader implements ActionListener, KeyListener
                 
                 @SuppressWarnings("synthetic-access")
                 @Override
-                public Object doInBackground()
-                {
+                public Object doInBackground() {
                     start();
-                	initProgressBar(0, uploadData.getRows(), true, 
-                        getResourceString("WB_UPLOAD_UPLOADING") + " " + getResourceString("WB_ROW"), false);
-                    try
-                    {
-                    	updateTblId = getUpdateTableId();
+                    updateTblId = getUpdateTableId();
+                    initProgressBar(0, uploadData.getRows(), true, getResourceString(updateTblId == null ? "WB_UPLOAD_UPLOADING" : "WB_UPLOAD_UPDATING") + " " + getResourceString("WB_ROW"), false);
+                    try {
                     	setupExportedTable();
-                        for (rowUploading = uploadStartRow; rowUploading < uploadData.getRows();)
-                        {
+                        for (rowUploading = uploadStartRow; rowUploading < uploadData.getRows();) {
                         	boolean rowAborted = false;
-                        	if (cancelled)
-                        	{
+                        	if (cancelled) {
                         		paused = true;
                         		break;
                         	}
-                        	logDebug("uploading row "
-								+ String.valueOf(rowUploading));
+                        	logDebug("uploading row " + String.valueOf(rowUploading));
 
-                        	if (rowUploading == 0)
-                        	{
+                        	if (rowUploading == 0) {
                         		showUploadProgress(1);
                         	}
 
-                        	if (!uploadData.isEmptyRow(rowUploading))
-                        	{
-                            	imagesForRow.clear();
-                            	if (updateTblId != null)
-                            	{
-                            		setExportedRecordIds();
+                        	if (!uploadData.isEmptyRow(rowUploading) && (updateTblId == null || rowHasEdits(rowUploading))) {
+                            	List<UploadTable> tblsWithChanges = new ArrayList<UploadTable>();
+                            	if (updateTblId != null) {
+                            		for (UploadTable t: uploadTables) {
+                            			loadRow(t, rowUploading);
+                            			if (t.rowHasChanges(rowUploading)) {
+                            				tblsWithChanges.add(t);
+                            			}
+                            		}
                             	}
-                            	imagesForRow.addAll(uploadData.getWbRow(rowUploading).getWorkbenchRowImages());
-                        		for (UploadTable t : uploadTables)
-                        		{
-                        			if (cancelled)
-                        			{
-                        				break;
-                        			}
-                        			try
-                        			{
-                        				if (theWb
-											.getRow(rowUploading)
-											.getUploadStatus() != WorkbenchRow.UPLD_SUCCESS)
-                        				{
-                        					uploadRow(t, rowUploading);
-                        				} else
-                        				{
-                        					throw new UploaderException(
-												getResourceString("WB_UPLOAD_ROW_ALREADY_UPLOADED"),
-												UploaderException.ABORT_ROW);
-                        				}
-                        			} catch (UploaderException ex)
-                        			{
-                        				if (ex.getStatus() == UploaderException.ABORT_ROW)
-                        				{
-                        					logDebug(ex.getMessage());
-                        					abortRow(ex, rowUploading);
-                        					rowAborted = true;
+                        		imagesForRow.clear();
+                        		if (updateTblId == null || tblsWithChanges.size() > 0) {
+                        			if (updateTblId != null) {
+                        				setExportedRecordIds();
+                        			}                            	
+                        			imagesForRow.addAll(uploadData.getWbRow(rowUploading).getWorkbenchRowImages());
+                        			for (UploadTable t : uploadTables) {
+                        				if (cancelled) {
                         					break;
                         				}
-                        				throw ex;
+                        				try {
+                        					if (theWb.getRow(rowUploading).getUploadStatus() != WorkbenchRow.UPLD_SUCCESS) {
+                        						uploadRow(t, rowUploading, tblsWithChanges, updateTblId);
+                        						tblsWithChanges.remove(t);
+                        					} else {
+                        						throw new UploaderException(getResourceString("WB_UPLOAD_ROW_ALREADY_UPLOADED"), UploaderException.ABORT_ROW);
+                        					}
+                        				} catch (UploaderException ex) {
+                        					if (ex.getStatus() == UploaderException.ABORT_ROW) {
+                        						logDebug(ex.getMessage());
+                        						abortRow(ex, rowUploading);
+                        						rowAborted = true;
+                        						break;
+                        					}
+                        					throw ex;
+                        				}
+                        				updateObjectsCreated();
                         			}
-                        			updateObjectsCreated();
                         		}
                         	}
 
-                            if (!rowAborted)
-                            {
-                            	theWb.getRow(rowUploading).setUploadStatus(
-                            			WorkbenchRow.UPLD_SUCCESS);
+                            if (!rowAborted) {
+                            	theWb.getRow(rowUploading).setUploadStatus(WorkbenchRow.UPLD_SUCCESS);
                             }
-                            if (!cancelled)
-                            {
+                            if (!cancelled) {
                             	rowUploading++;
                             }
                             showUploadProgress(rowUploading);
                         }
                     }
-                    catch (Exception ex)
-                    {
+                    catch (Exception ex) {
                         setOpKiller(ex);
                         return false;
                     }
@@ -4639,6 +4670,7 @@ public class Uploader implements ActionListener, KeyListener
             		}
             	}
             	int rowsSinceFlush = 0;
+            	List<UploadTable> changedTbls = new ArrayList<UploadTable>(); //used in Sp6 for batch edits
             	try {
             		Integer updateTblId = getUpdateTableId();
             		UploadTable exportedTable = setupExportedTableSansUI(updateTblId);
@@ -4654,7 +4686,7 @@ public class Uploader implements ActionListener, KeyListener
             				for (UploadTable t : uploadTables) {
             					try {
             						if (theWb.getRow(rowUploading).getUploadStatus() != WorkbenchRow.UPLD_SUCCESS) {
-            							uploadRow(t, rowUploading);
+            							uploadRow(t, rowUploading, changedTbls, null);
             						} else {
             							throw new UploaderException(getResourceString("WB_UPLOAD_ROW_ALREADY_UPLOADED"), UploaderException.ABORT_ROW);
             						}
@@ -5283,19 +5315,18 @@ public class Uploader implements ActionListener, KeyListener
      * 
      * imports data in row belonging to t's Table.
      */
-    protected void uploadRow(final UploadTable t, int row) throws UploaderException
-    {
-        loadRow(t, row);
-    	try
-        {
-            writeRow(t, row);
-        }
-        catch (UploaderException ex)
-        {
-            //ex.getCause().printStackTrace();
-        	logDebug(ex.getMessage() + " (" + t.getTable().getName() + ", row "
+    protected void uploadRow(final UploadTable t, int row, final List<UploadTable> tblsWithChanges, final Integer updateTblId) throws UploaderException {
+        if (updateTblId == null || tblsWithChanges.size() > 0) {
+        	loadRow(t, row);
+        	try {
+        		writeRow(t, row);
+        	}
+        	catch (UploaderException ex) {
+        		//ex.getCause().printStackTrace();
+        		logDebug(ex.getMessage() + " (" + t.getTable().getName() + ", row "
                     + Integer.toString(row) + ")");
-            throw ex;
+        		throw ex;
+        	}
         }
     }
 
@@ -5335,15 +5366,12 @@ public class Uploader implements ActionListener, KeyListener
      * 
      * writes data (if necessary) for t.
      */
-    protected void writeRow(final UploadTable t, int row) throws UploaderException
-    {
+    protected void writeRow(final UploadTable t, int row) throws UploaderException {
         t.writeRow(row);
         Set<WorkbenchRowImage> imagesToAttach = new HashSet<WorkbenchRowImage>();
-        for (int i = imagesForRow.size() -1; i >= 0; i--)
-        {
+        for (int i = imagesForRow.size() -1; i >= 0; i--) {
         	WorkbenchRowImage wri = imagesForRow.get(i);
-        	if (getAttachToTable(wri) == t)
-        	{
+        	if (getAttachToTable(wri) == t) {
         		imagesToAttach.add(wri);
         		imagesForRow.remove(i);
         	}
@@ -6092,13 +6120,10 @@ public class Uploader implements ActionListener, KeyListener
     	umsbp.applySettingToAll(uploadTables);
     }
     
-    public void loadRecordToWb(final DataModelObjBase rec, final Workbench wb) throws Exception
-    {
+    public void loadRecordToWb(final DataModelObjBase rec, final Workbench wb) throws Exception {
     	UploadTable t = null;
-    	for (UploadTable ut : uploadTables)
-    	{
-    		if (ut.getTblClass().equals(rec.getClass()))
-    		{
+    	for (UploadTable ut : uploadTables) {
+    		if (ut.getTblClass().equals(rec.getClass())){
     			t = ut;
     		}
     	}
@@ -6106,16 +6131,19 @@ public class Uploader implements ActionListener, KeyListener
     	t.loadRecord(rec, 0);
     	WorkbenchRow row = wb.addRow();
     	row.setRecordId(rec.getId());
-    	for (UploadTable ut : uploadTables)
-    	{
+    	for (UploadTable ut : uploadTables){
     		int seq = 0;
-    		boolean isOneToMany = ut.getUploadFields().size() > 1 || ut.getTable().getName().equalsIgnoreCase("address");
-    		for (Vector<UploadField> flds : ut.getUploadFields())
-    		{
-				if (ut.getCurrentRecord(seq) != null)
-				{
-					if (isOneToMany)
-					{
+    		//XXX!!! cheap trick. needs to check relationship type (don't forget zero-to-many) 
+    		boolean isOneToMany = ut.getUploadFields().size() > 1 || ut.getTable().getName().equalsIgnoreCase("address") 
+    				|| ut.getTable().getName().equalsIgnoreCase("localitydetail")
+    				|| ut.getTable().getName().equalsIgnoreCase("geocoorddetail")
+    				|| ut.getTable().getName().equalsIgnoreCase("preparation")
+    				|| ut.getTable().getName().equalsIgnoreCase("otheridentifier")
+    				|| ut.getTable().getName().equalsIgnoreCase("dnasequence")
+    				|| ut.getTable().getName().equalsIgnoreCase("determination");
+    		for (Vector<UploadField> flds : ut.getUploadFields()){
+				if (ut.getCurrentRecord(seq) != null){
+					if (isOneToMany){
 						WorkbenchRowExportedRelationship wber = new WorkbenchRowExportedRelationship();
 						wber.initialize();
 						wber.setWorkbenchRow(row);
@@ -6126,13 +6154,10 @@ public class Uploader implements ActionListener, KeyListener
 						wber.setRecordId(ut.getCurrentRecord(seq).getId());
 					}
 					//wber.setRelationshipName() ??? - skipping it: assuming that for uploader a table is only one-to-many'ed once from a parent.
-					for (UploadField fld : flds)
-					{
-						if (fld.getIndex() != -1)
-						{
+					for (UploadField fld : flds){
+						if (fld.getIndex() != -1){
     						Object value = fld.getGetter().invoke(ut.getCurrentRecord(seq));
-    						if (value != null)
-    						{
+    						if (value != null){
     							WorkbenchTemplateMappingItem mi = wb.getMappingFromColumn((short )fld.getIndex());
     							WorkbenchDataItem di = new WorkbenchDataItem();
     							di.initialize();

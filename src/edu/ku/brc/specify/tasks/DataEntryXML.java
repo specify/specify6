@@ -35,6 +35,7 @@ public class DataEntryXML
 {
     protected Vector<DataEntryView> std  = new Vector<DataEntryView>();
     protected Vector<DataEntryView> misc = new Vector<DataEntryView>();
+    protected Vector<DataEntryView> batch = new Vector<DataEntryView>();
     
     /**
      * 
@@ -48,11 +49,13 @@ public class DataEntryXML
      * 
      */
     public DataEntryXML(final Vector<DataEntryView> stds, 
-                        final Vector<DataEntryView> miscs)
+                        final Vector<DataEntryView> miscs,
+                        final Vector<DataEntryView> batches)
     {
         super();
         std.addAll(stds);
         misc.addAll(miscs);
+        batch.addAll(batches);
     }
     
     /**
@@ -85,6 +88,20 @@ public class DataEntryXML
     }
     
     /**
+	 * @return the batch
+	 */
+	public Vector<DataEntryView> getBatch() {
+		return batch;
+	}
+
+	/**
+	 * @param batch the batch to set
+	 */
+	public void setBatch(Vector<DataEntryView> batch) {
+		this.batch = batch;
+	}
+
+	/**
      * Configures inner classes for XStream.
      * @param xstream the xstream
      */

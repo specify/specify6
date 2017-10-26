@@ -3,18 +3,24 @@
  */
 package edu.ku.brc.specify.tasks.subpane.wb;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
+
+import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.DB;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadData;
+import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadField;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMappingDef;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMessage;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTableInvalidValue;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploaderException;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.WorkbenchUploadMapper;
+import edu.ku.brc.ui.UnhandledExceptionDialog;
+import edu.ku.brc.util.Pair;
 
 /**
  * @author timo
@@ -25,7 +31,9 @@ import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.WorkbenchUploadMapper;
  */
 public class WorkbenchValidator 
 {
-	protected final WorkbenchPaneSS wbPane;
+    protected static final Logger     log = Logger.getLogger(WorkbenchValidator.class);
+
+    protected final WorkbenchPaneSS wbPane;
 	protected final Workbench workbench;
 	protected final Uploader uploader;
 	
@@ -82,10 +90,23 @@ public class WorkbenchValidator
 	 * 
 	 * Perform validation after a cell is edited.
 	 */
-	public List<UploadTableInvalidValue> endCellEdit(int row, int col)
-	{
-		Vector<UploadTableInvalidValue> issues = uploader.validateData(row, col);
-		return issues;
+	public Pair<List<UploadTableInvalidValue>, List<Pair<UploadField, Object>>>  endCellEdit(int row, int col, boolean validate, boolean checkEdits) {
+		List<UploadTableInvalidValue> invalids = new ArrayList<UploadTableInvalidValue>();
+		List<Pair<UploadField, Object>> edits = new ArrayList<Pair<UploadField, Object>>();
+		if (validate) invalids.addAll(uploader.validateData(row, col));
+		if (checkEdits) {
+			try {
+				edits.addAll(uploader.checkChangedData(row, false));
+			} catch (Exception ex) {
+	            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+	            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchPaneSS.class, ex);
+	            log.error("******* " + ex);
+	            ex.printStackTrace();
+	            UnhandledExceptionDialog dlg = new UnhandledExceptionDialog(ex);
+	            dlg.setVisible(true);
+			}
+		}
+		return new Pair<List<UploadTableInvalidValue>, List<Pair<UploadField, Object>>>(invalids, edits);
 	}
 	
 	

@@ -1098,7 +1098,7 @@ protected List<java.lang.reflect.Field> getFldsForJSON() {
      * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#addInvalidValueMsgForOneToManySkip(java.util.Vector, edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadField, java.lang.String, int, int)
      */
     @Override
-    protected void addInvalidValueMsgForOneToManySkip(Vector<UploadTableInvalidValue> msgs,
+    protected void addInvalidValueMsgForOneToManySkip(List<UploadTableInvalidValue> msgs,
                                                       UploadField fld,
                                                       String name,
                                                       int row,
@@ -1191,7 +1191,7 @@ protected List<java.lang.reflect.Field> getFldsForJSON() {
     @Override
     public void validateRowValues(int row,
                                      UploadData uploadData,
-                                     Vector<UploadTableInvalidValue> invalidValues)
+                                     List<UploadTableInvalidValue> invalidValues)
     {
         super.validateRowValues(row, uploadData, invalidValues);
         //check that the "name" (currently the 'main' field for all specify trees) is not blank or that all other fields are.
@@ -1306,26 +1306,25 @@ protected List<java.lang.reflect.Field> getFldsForJSON() {
 	/* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#getMatchCriteria(edu.ku.brc.dbsupport.DataProviderSessionIFace.CriteriaIFace, int, java.util.Vector, java.util.HashMap)
      */
-    @Override
-    protected boolean getMatchCriteria(CriteriaIFace critter,
-                                       int recNum,
-                                       Vector<UploadTable.MatchRestriction> restrictedVals,
-                                       HashMap<UploadTable, DataModelObjBase> overrideParentParams)
-            throws UploaderException, IllegalAccessException, NoSuchMethodException,
-            InvocationTargetException
-    {
-        boolean result =  super.getMatchCriteria(critter, recNum, restrictedVals, overrideParentParams);
-        if (!allowUnacceptedMatches)
-        {
+	protected Pair<Boolean, CriteriaIFace> getMatchCriteria(final DataProviderSessionIFace session, final int recNum,
+			Vector<MatchRestriction> restrictedVals, 
+			HashMap<UploadTable, DataModelObjBase> overrideParentParams) throws UploaderException,
+			IllegalAccessException, NoSuchMethodException,
+			InvocationTargetException {
+		Pair<Boolean, CriteriaIFace>  result =  super.getMatchCriteria(session, recNum, restrictedVals, overrideParentParams);
+        if (!allowUnacceptedMatches) {
         //XXX It is possible for taxa (or other tree tables) to have null (interpreted as true) isAccepted
         //if they were entered outside of Specify or the Specify wizard. In that case this restriction
         //will fail and new tree nodes may be created unnecessarily.
+        	if (result.getSecond() == null) {
+        		result.setSecond(session.createCriteria(tblClass));
+        	}
         	restrictedVals.add(new UploadTable.MatchRestriction("isAccepted", addRestriction(
-                critter, "isAccepted", new Boolean(true), false), -1));
+                result.getSecond(), "isAccepted", new Boolean(true), false), -1));
         }
         return result;
-    }
-
+	}
+    
     
 	/* (non-Javadoc)
 	 * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#isMatchable(java.util.Set, int)

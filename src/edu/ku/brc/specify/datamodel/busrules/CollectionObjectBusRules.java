@@ -1091,13 +1091,15 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                 try 
                 {
                 	carryForwardCo = session.get(CollectionObject.class, ((CollectionObject)formViewObj.getDataObj()).getId());
+                	
                 } finally
                 {
                 	session.close();
                 }
+                Agent modifiedBy = carryForwardCo.getModifiedByAgent();
+                carryForwardCo = null;
                 
-                
-                Thread.sleep(666); //Perhaps this is unnecessary, but it seems
+                Thread.sleep(AppPreferences.getLocalPrefs().getInt("BatchEntryNapTimeMSecs", 666)); //Perhaps this is unnecessary, but it seems
                 //to prevent sporadic "illegal access to loading collection" hibernate errors.
                 try
                 {
@@ -1111,7 +1113,8 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                             //Collection doesn't get set in co.initialize(), or carryForward, but it needs to be set.
                             co.setCollection(AppContextMgr.getInstance().getClassObject(Collection.class));
                             //ditto, but doesn't so much need to be set
-                            co.setModifiedByAgent(carryForwardCo.getModifiedByAgent()); 
+                            //co.setModifiedByAgent(carryForwardCo.getModifiedByAgent()); 
+                            co.setModifiedByAgent(modifiedBy);
                             
                             co.setCatalogNumber(currentCat);
                             formViewObj.setNewObject(co);

@@ -11,7 +11,7 @@
                 <tables>
 		          <id>79</id>
 		        </tables>            
-              	<statement><![CDATA[SELECT Name,WorkbenchID FROM workbench WHERE SpecifyUserID = SPECIFYUSERID]]></statement>
+              	<statement><![CDATA[SELECT wb.Name,WorkbenchID FROM workbench wb inner join workbenchtemplate wbt on wbt.workbenchtemplateid = wb.workbenchtemplateid WHERE (wbt.SrcFilePath is null or wbt.SrcFilePath NOT LIKE '<<#spatch#>>%' ) and wb.SpecifyUserID = SPECIFYUSERID]]></statement>
               </sql>
               <command type="Workbench" action="WB.SelectedWorkbench" colid="2" class="edu.ku.brc.specify.datamodel.Workbench"/>
         </box>

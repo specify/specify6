@@ -61,6 +61,7 @@ public class WorkbenchDataItem implements java.io.Serializable, Comparable<Workb
     public static final short VAL_MULTIPLE_MATCH 	= 5;
     public static final short VAL_NOT_MATCHED 		= 6; //match not attempted, 
     													//most likely due to un-matched parent
+    public static final short VAL_EDIT              = 7; //edited cells in 'batch-update' datasets
     
     private static Integer maxWBCellLength = null;
 
@@ -224,7 +225,15 @@ public class WorkbenchDataItem implements java.io.Serializable, Comparable<Workb
      */
     public void setEditorValidationStatus(int editorValidationStatus)
     {
-    	this.editorValidationStatus = editorValidationStatus;
+		//maybe should be using some bitwise action for this property?
+		if (this.editorValidationStatus != editorValidationStatus) {
+			if ((editorValidationStatus == VAL_ERROR || editorValidationStatus == VAL_EDIT)
+					&& (this.editorValidationStatus == VAL_ERROR || this.editorValidationStatus == VAL_EDIT)) {
+				this.editorValidationStatus = VAL_ERROR_EDIT;
+			} else {
+				this.editorValidationStatus = editorValidationStatus;
+			}
+		}
     }
     
     /**
