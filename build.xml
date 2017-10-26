@@ -97,7 +97,6 @@
     <mkdir dir="${class.root}"/>
     <javac srcdir="${source.root}" destdir="${class.root}" classpathref="classpath">
       <compilerarg value="-XDignore.symbol.file"/>
-      <compilerarg value="-Xlint:all"/>
     </javac>
   </target>
 
@@ -306,6 +305,8 @@
     <delete file="${installer.dir}/non-mac-application-adapter.jar" />
 
     <exec executable="${install4j.dir}/bin/install4jc">
+      <arg value="--quiet"/>
+      <arg value="--faster"/>
       <arg value="--release=${specify.SPECIFY_VERSION}" />
       <arg value="--destination=${packages.dir}" />
       <arg value="--build-ids=24" />
@@ -314,6 +315,8 @@
     <move file="${packages.dir}/updates.xml" tofile="${packages.dir}/updates.xml.macupdate"/>
 
     <exec executable="${install4j.dir}/bin/install4jc">
+      <arg value="--quiet"/>
+      <arg value="--faster"/>
       <arg value="--release=${specify.SPECIFY_VERSION}" />
       <arg value="--destination=${packages.dir}" />
       <arg value="--build-ids=24" />
@@ -327,6 +330,8 @@
     <copy file="./system_dep_libs/non-mac-application-adapter.jar" todir="${installer.dir}" />
 
     <exec executable="${install4j.dir}/bin/install4jc">
+      <arg value="--quiet"/>
+      <arg value="--faster"/>
       <arg value="--release=${specify.SPECIFY_VERSION}" />
       <arg value="--destination=${packages.dir}" />
       <arg value="--build-ids=176,179" />
@@ -335,6 +340,8 @@
     <move file="${packages.dir}/updates.xml" tofile="${packages.dir}/updates.xml.winlinupdate"/>
 
     <exec executable="${install4j.dir}/bin/install4jc">
+      <arg value="--quiet"/>
+      <arg value="--faster"/>
       <arg value="--release=${specify.SPECIFY_VERSION}" />
       <arg value="--destination=${packages.dir}" />
       <arg value="--build-ids=1965,1873" />
@@ -343,6 +350,8 @@
     <move file="${packages.dir}/updates.xml" tofile="${packages.dir}/updates.xml.winlinupdate64"/>
 
     <exec executable="${install4j.dir}/bin/install4jc">
+      <arg value="--quiet"/>
+      <arg value="--faster"/>
       <arg value="--release=${specify.SPECIFY_VERSION}" />
       <arg value="--destination=${packages.dir}" />
       <arg value="--build-ids=176,179" />
@@ -351,6 +360,8 @@
     <move file="${packages.dir}/updates.xml" tofile="${packages.dir}/updates.xml.winlinfull"/>
 
     <exec executable="${install4j.dir}/bin/install4jc">
+      <arg value="--quiet"/>
+      <arg value="--faster"/>
       <arg value="--release=${specify.SPECIFY_VERSION}" />
       <arg value="--destination=${packages.dir}" />
       <arg value="--build-ids=1965,1873" />
