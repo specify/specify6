@@ -3857,33 +3857,37 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     	String tblId = tblIdCode.split("-")[0];
     	String tblName = DBTableIdMgr.getInstance().getInfoById(tblId).getName().toLowerCase();
 		List<Object> flds = (List<Object>)uploadDefs.selectNodes("field");
-		DBTableInfo ti = tblMgr.getInfoByTableName(tblName);
-		if (ti != null) {
-			for (Object fld : flds) {
-				String treeName = XMLHelper.getAttr((Element )fld, "treename", null);
-				String table = XMLHelper.getAttr((Element )fld, "table", treeName);
-				String actualtable = XMLHelper.getAttr((Element)fld, "actualtable", table);
-				String field = XMLHelper.getAttr((Element )fld, "name", null);
-				String actualfield = XMLHelper.getAttr((Element)fld, "actualname", field);
-				String seqStr = XMLHelper.getAttr((Element)fld, "onetomanysequence", null);
-				Integer sequence =  seqStr == null ? null : Integer.valueOf(seqStr);
-				if (sequence != null) {
-					seqStr = String.valueOf(sequence + 1);
-					if (actualfield.endsWith(seqStr)) {
-						actualfield = actualfield.substring(0, actualfield.length() - seqStr.length() - 1);
-					}
-				}
-				if (tblName.equalsIgnoreCase(actualtable) && f.getFieldName().equalsIgnoreCase(actualfield)) {
-					return new Pair<DBTableInfo, DBFieldInfo>(ti, ti.getFieldByColumnName(field));
-				}
-			}
-			//there is no additional info in upload_defs
-			DBFieldInfo fi = ti.getFieldByColumnName(f.getFieldName());
-			if (fi != null) {
-				return new Pair<DBTableInfo, DBFieldInfo>(ti, fi);
-			}
-		}
-    	return null;
+        for (Object fld : flds) {
+            String treeName = XMLHelper.getAttr((Element )fld, "treename", null);
+            String table = XMLHelper.getAttr((Element )fld, "table", null);
+            String actualtable = XMLHelper.getAttr((Element)fld, "actualtable", treeName != null ? treeName : table);
+            String field = XMLHelper.getAttr((Element )fld, "name", null);
+            String actualfield = XMLHelper.getAttr((Element)fld, "actualname", field);
+            String seqStr = XMLHelper.getAttr((Element)fld, "onetomanysequence", null);
+            Integer sequence =  seqStr == null ? null : Integer.valueOf(seqStr);
+            if (sequence != null) {
+                seqStr = String.valueOf(sequence + 1);
+                if (actualfield.endsWith(seqStr)) {
+                    actualfield = actualfield.substring(0, actualfield.length() - seqStr.length());
+                }
+            }
+             if (tblName.equalsIgnoreCase(actualtable) && f.getFieldName().equalsIgnoreCase(actualfield)) {
+                DBTableInfo ti = tblMgr.getInfoByTableName(table.toLowerCase());
+                if (ti != null) {
+                    return new Pair<DBTableInfo, DBFieldInfo>(ti, ti.getFieldByName(field));
+                }
+            }
+        }
+        //there is no additional info in upload_defs
+        DBTableInfo ti = tblMgr.getInfoByTableName(tblName);
+        if (ti != null) {
+            DBFieldInfo fi = ti.getFieldByColumnName(f.getFieldName());
+            if (fi != null) {
+                return new Pair<DBTableInfo, DBFieldInfo>(ti, fi);
+            }
+        }
+        return null;
+
     }
     /**
      * @param query

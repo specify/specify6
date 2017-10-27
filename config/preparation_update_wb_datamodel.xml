@@ -7,9 +7,9 @@
     <field column="Prepared Middle Initials By" name="preparedMiddleBy1" type="java.lang.String" length="50"/>
     <field column="Prepared Title By" name="preparedTitleBy1" type="java.lang.String" length="50"/>
     <field column="Prep Type" name="prepType1" type="text" length="64"/>
-    <field column="Count" name="count1" type="java.lang.Integer" length="10"/>
+    <field column="Count1" name="count1" type="java.lang.Integer" length="10"/>
     <field column="Storage Location" name="storageLocation1" type="java.lang.String" length="50"/>
-    <field column="Prep YesNo" name="prepYesNo1" type="boolean" />
+    <field column="Prep YesNo1" name="prepYesNo1" type="boolean" />
     <field column="Prep Text1" name="prep1Text1" type="java.lang.String" length="500"/>
     <field column="Prep Text2" name="prep1Text2" type="java.lang.String" length="500"/>
     <field column="Prep Integer1" name="prep1Integer1" type="java.lang.Integer" length="10"/>
