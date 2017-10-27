@@ -1616,30 +1616,23 @@ public class UploadTable implements Comparable<UploadTable>
      * Sets parent classes for rec.
      */
     protected boolean setParents(DataModelObjBase rec, int recNum, boolean isForWrite) throws InvocationTargetException,
-            IllegalArgumentException, IllegalAccessException, UploaderException
-    {
+            IllegalArgumentException, IllegalAccessException, UploaderException {
         boolean requirementsMet = true;
         boolean result = false;
         boolean isNewRecord = rec.getId() == null;    	
-        for (Vector<ParentTableEntry> ptes : parentTables)
-        {
-            for (ParentTableEntry pt : ptes)
-            {
+        for (List<ParentTableEntry> ptes : parentTables) {
+            for (ParentTableEntry pt : ptes) {
                 Object arg[] = new Object[1];
                 DataModelObjBase parentRec = pt.getImportTable().getParentRecord(recNum, this);
-                if (parentRec == null || parentRec.getId() == null)
-                {
+                if (parentRec == null || parentRec.getId() == null) {
                     arg[0] = null;
                 }
-                else
-                {
+                else {
                     arg[0] = parentRec;
                 }
-            	if (!isNewRecord && !result)
-            	{
+            	if (!isNewRecord && !result) {
             		result = valueChange(rec, pt.getGetter(), arg);
-            		if (isForWrite && result && !pt.getImportTable().matchRecordId && pt.getImportTable().deleteUnusedRecs)
-            		{
+            		if (isForWrite && result && !pt.getImportTable().matchRecordId && pt.getImportTable().deleteUnusedRecs) {
             			addDisusedRec(rec, pt);
             		}
             	}
@@ -1647,8 +1640,7 @@ public class UploadTable implements Comparable<UploadTable>
                 requirementsMet = requirementsMet && (arg[0] != null || !pt.isRequired());
             }
         }
-        if (!requirementsMet)
-        {
+        if (!requirementsMet) {
         	throw new UploaderException("MissingRequiredParent", UploaderException.ABORT_ROW);
         }
         return result;
@@ -5291,12 +5283,14 @@ public class UploadTable implements Comparable<UploadTable>
     	//XXX See comments for disUseRecs()
     	UploadTable parentTbl = pt.getImportTable();
     	DataModelObjBase parentRec = (DataModelObjBase )pt.getGetter().invoke(rec);
-    	Set<Pair<Integer, String>> parentDisUsed = pt.getImportTable().disUsedRecs;
-    	String text = DataObjFieldFormatMgr.getInstance().format(parentRec, parentTbl.getTable().getTableInfo().getDataObjFormatter());
-    	Pair<Integer, String> disused = new Pair<Integer, String>(parentRec.getId(), text);
-    	if (!parentDisUsed.contains(disused)) {
-    		parentDisUsed.add(disused);
-    	}
+    	if (parentRec != null) {
+            Set<Pair<Integer, String>> parentDisUsed = pt.getImportTable().disUsedRecs;
+            String text = DataObjFieldFormatMgr.getInstance().format(parentRec, parentTbl.getTable().getTableInfo().getDataObjFormatter());
+            Pair<Integer, String> disused = new Pair<Integer, String>(parentRec.getId(), text);
+            if (!parentDisUsed.contains(disused)) {
+                parentDisUsed.add(disused);
+            }
+        }
     }
     
     /**
@@ -5497,7 +5491,7 @@ public class UploadTable implements Comparable<UploadTable>
     /**
      * @return
      */
-    public boolean rowHasChanges(int row) {
+    public boolean rowHasChanges(int row, List<UploadTable> tblsWithChanges) {
     	//assumes loadrow has been called
     	List<WorkbenchDataItem> changedItems = uploader.getEditedItems(row);
     	List<Integer> editedCols = new ArrayList<Integer>();
@@ -5514,6 +5508,13 @@ public class UploadTable implements Comparable<UploadTable>
     			}
     		}
     	}
+    	for (List<ParentTableEntry> ptes : parentTables) {
+    	    for (ParentTableEntry pte : ptes) {
+    	        if (tblsWithChanges.indexOf(pte.getImportTable()) != -1) {
+    	            return true;
+                }
+            }
+        }
     	return false;
     }
     

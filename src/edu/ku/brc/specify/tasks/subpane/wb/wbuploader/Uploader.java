@@ -4354,7 +4354,7 @@ public class Uploader implements ActionListener, KeyListener
                             	if (updateTblId != null) {
                             		for (UploadTable t: uploadTables) {
                             			loadRow(t, rowUploading);
-                            			if (t.rowHasChanges(rowUploading)) {
+                            			if (t.rowHasChanges(rowUploading, tblsWithChanges)) {
                             				tblsWithChanges.add(t);
                             			}
                             		}
