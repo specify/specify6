@@ -2220,7 +2220,7 @@ public class UploadTable implements Comparable<UploadTable>
                             {
                                 if (StringUtils.isBlank(fldStr))
                                 {
-                                	if (ufld.isAutoAssignable() && ufld.isAutoAssignForUpload()) {
+                                	if (!this.validatingValues && ufld.isAutoAssignable() && ufld.isAutoAssignForUpload()) {
                                 		val = formatter.getNextNumber(formatter.formatToUI("").toString());
                                 	} else {
                                 		val = null;
