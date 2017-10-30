@@ -527,7 +527,8 @@ public class WorkbenchPaneSS extends BaseSubPane
         }
         boolean isForBatchEdit = this.isUpdateDataSet();
         doIncrementalMatching &= !isForBatchEdit;
-        
+        doIncrementalEditChecking &= isForBatchEdit;
+
         if (isReadOnly)
         {
             saveBtn = null;
