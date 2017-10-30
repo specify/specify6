@@ -164,4 +164,74 @@
     <field column="Bed" name="bed" type="java.lang.String" length="64"/>
   </table>
 
+  <table classname="edu.ku.brc.specify.datamodel.Locality" table="locality" tableid="2" lazy="true" >
+    <display objtitle="Locality" view="Locality" dataobjformatter="Locality" searchdlg="LocalitySearch" newobjdlg="LocalityDisplay"/>
+    <field column="Locality Name" name="localityName" type="java.lang.String" length="255"/>
+    <field column="Named Place" name="namedPlace" type="java.lang.String" length="255"/>
+    <field column="Short Name" name="shortName" type="java.lang.String"  length="32" />
+    <field column="Relation To Named Place" name="relationToNamedPlace" type="java.lang.String" length="120"/>
+    <field column="Minimum Elevation" name="minElevation" type="java.lang.Double"/>
+    <field column="Maximum Elevation" name="maxElevation" type="java.lang.Double"/>
+    <field column="Original Elevation Unit" name="originalElevationUnit" type="java.lang.String" length="50"/>
+    <field column="Elevation Method" name="elevationMethod" type="java.lang.String" length="50"/>
+    <field column="Elevation Accuracy" name="elevationAccuracy" type="java.lang.Double"/>
+    <field column="Verbatim Elevation" name="verbatimElevation" type="java.lang.String" length="50"/>
+
+    <field column="Latitude 1" name="latitude1" type="java.math.BigDecimal"/>
+    <field column="Longitude 1" name="longitude1" type="java.math.BigDecimal"/>
+    <field column="Latitude 2" name="latitude2" type="java.math.BigDecimal"/>
+    <field column="Longitude 2" name="longitude2" type="java.math.BigDecimal"/>
+    <field column="Lat Long Type" name="latLongType" type="java.lang.String" length="50"/>
+    <field column="Lat Long Method" name="latLongMethod" type="java.lang.String" length="50"/>
+    <field column="Lat Long Accuracy" name="latLongAccuracy" type="java.lang.Double"/>
+    <field column="Datum" name="datum" type="java.lang.String" length="50"/>
+    <field column="Verbatim Latitude" name="verbatimLatitude" type="java.lang.String" length="50"/>
+    <field column="Verbatim Longitude" name="verbatimLongitude" type="java.lang.String" length="50"/>
+
+    <field column="Remarks (Locality)" name="localityRemarks" type="text" length="4096"/>
+
+    <field column="Base Meridian" name="baseMeridian" type="java.lang.String" length="50"/>
+    <field column="Drainage" name="drainage" type="java.lang.String" length="64"/>
+    <field column="Island" name="island" type="java.lang.String" length="64"/>
+    <field column="Island Group" name="islandGroup" type="java.lang.String" length="64"/>
+    <field column="National Park Name" name="nationalParkName" type="java.lang.String" length="64"/>
+    <field column="Paleo Latitude" name="paleoLat" type="java.lang.String"/>
+    <field column="Paleo Longitude" name="paleoLng" type="java.lang.String"/>
+    <field column="Range" name="rangeDesc" type="java.lang.String" length="50"/>
+    <field column="Range Direction" name="rangeDirection" type="java.lang.String" length="50"/>
+    <field column="Section" name="section" type="java.lang.String" length="50"/>
+    <field column="Section Part" name="sectionPart" type="java.lang.String" length="50"/>
+    <field column="Township" name="township" type="java.lang.String" length="50"/>
+    <field column="Township Direction" name="townshipDirection" type="java.lang.String" length="50"/>
+    <field column="UtmDatum" name="utmDatum" type="java.lang.String" length="255"/>
+    <field column="UtmEasting" name="utmEasting" type="java.math.BigDecimal"/>
+    <field column="UtmNorthing" name="utmNorthing" type="java.math.BigDecimal"/>
+    <field column="UtmFalseEasting" name="utmFalseEasting" type="java.lang.Integer"/>
+    <field column="UtmFalseNorthing" name="utmFalseNorthing" type="java.lang.Integer"/>
+    <field column="UtmOrigLatitude" name="utmOrigLatitude" type="java.math.BigDecimal"/>
+    <field column="UtmOrigLongitude" name="utmOrigLongitude" type="java.math.BigDecimal"/>
+    <field column="UtmScale" name="utmScale" type="java.math.BigDecimal" />
+    <field column="UtmZone" name="utmZone" type="java.lang.Short" />
+    <field column="Water Body" name="waterBody" type="java.lang.String" length="64"/>
+    <field column="Number 1 (Locality)" name="localityNumber1" type="java.lang.Double"/>
+    <field column="Number 2 (Locality)" name="localityNumber2" type="java.lang.Double"/>
+    <field column="Text 1 (Locality)" name="localityText1" type="text" length="500"/>
+    <field column="Text 2 (Locality)" name="localityText2" type="text" length="500"/>
+    <field column="Text 3 (Locality)" name="localityText3" type="text" length="500"/>
+    <field column="Text 4 (Locality)" name="localityText4" type="text" length="500"/>
+    <field column="Text 5 (Locality)" name="localityText5" type="text" length="500"/>
+    <field column="Text 1 (Locality Detail)" name="localityDetailText1" type="text" length="300"/>
+    <field column="Text 2 (Locality Detail)" name="localityDetailText2" type="text" length="300"/>
+    <field column="YesNo 1 (Locality)" name="localityYesNo1" type="boolean"/>
+    <field column="YesNo 2 (Locality)" name="localityYesNo2" type="boolean"/>
+  </table>
+
+  <table classname="edu.ku.brc.specify.datamodel.Geography" table="geography" tableid="3" lazy="true">
+    <field column="Continent" name="continent" type="java.lang.String" length="64"/>
+    <field column="Country" name="country" type="java.lang.String" length="64"/>
+    <field column="State" name="state" type="java.lang.String" length="64"/>
+    <field column="County" name="county" type="java.lang.String" length="64"/>
+  </table>
+
+
 </database>
