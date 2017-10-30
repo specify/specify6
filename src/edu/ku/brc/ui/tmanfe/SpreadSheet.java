@@ -949,7 +949,8 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
                 			if (startRow + i < getRowCount() && startCol + j < getColumnCount())
                 			{
                 				int colInx = startCol + j;
-                				if (tokens[j].length() <= model.getColDataLen(colInx))
+                				int modelColLen = model.getColDataLen(colInx);
+                				if (tokens[j].length() <= modelColLen || modelColLen == -1)
                 				{
                 					String token = tokens[j];
                 					if ("\b".equals(token)) //is placeholder for empty cell
