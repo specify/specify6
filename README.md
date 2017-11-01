@@ -20,7 +20,7 @@ free software licensed under GNU General Public License 2
 
 ## Building Specify 6
 
-Building *Specify 6* requires the JDK v1.8 and *Apache Ant* v1.9.
+Building Specify 6 requires the **JDK v1.8** and **Apache Ant v1.9**.
 
 The following build targets are available:
 
@@ -39,15 +39,22 @@ The following build targets are available:
 * `ant run-specify-mac` - Execute the main Specify application on Mac
   systems.
   
-All build outputs will be found in `build/` directory.
+All build outputs will be found in the `build/` directory.
   
 ## Packaging Specify 6
 
-Packaging *Specify 6* requires *Install4J* v5 (evaluation or
-licensed). The path to *Install4J* should be provide to the *Ant*
+Packaging Specify 6 requires **Install4J  v5.1** (evaluation or
+licensed).
+
+Developers within the Biodiversity Institute network should
+use the floating license on *specify6-prod.nhm.ku.edu* by running
+`/path/to/install4j/bin/install4jc
+--license=FLOAT:specify6-prod.nhm.ku.edu` after installing Install4J.
+
+The path to Install4J must be provided to the Ant
 build through the `-Dinstall4j.dir=/path/to/install4j` parameter. 
 
-The following *Ant* build targets are available for packaging:
+The following Ant build targets are available for packaging:
 
 * `ant package-internal-nonmac` - Produce internal style installers
   and updaters for Windows and Linux 64 and 32 bit systems.
