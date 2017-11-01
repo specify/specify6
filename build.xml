@@ -313,9 +313,7 @@
     <attribute name="packages.dir"/>
     <attribute name="ext-frag"/>
     <sequential>
-      <copy file="${system.dep.libs.dir}/AppleJavaExtensions-1.4.jar"
-            tofile="${installer.dir}/non-mac-application-adapter.jar" />
-
+      <copy file="${system.dep.libs.dir}/non-mac-application-adapter.jar" todir="${installer.dir}" />
       <copy file="${build.root}/${jar.name}-nonmac.jar" tofile="${installer.dir}/${jar.name}.jar" />
 
       <exec executable="${install4j.dir}/bin/install4jc">
