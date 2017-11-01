@@ -1,5 +1,7 @@
 # Specify 6
 
+[![Build Status](https://travis-ci.org/specify/specify6.svg?branch=master)](https://travis-ci.org/specify/specify6)
+
 The Specify Software Project is funded by the Advances in
 Biological Informatics Program, U.S. National Science Foundation
 (NSF/BIO: 1565098).
