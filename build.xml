@@ -116,48 +116,46 @@
 
 
   <target name="make-jar-mac" depends="compile-mac, buildinfo">
-    <antcall target="make-jar">
-      <param name="platform" value="mac"/>
-    </antcall>
+    <make-jar platform="mac" />
   </target>
 
   <target name="make-jar-nonmac" depends="compile-nonmac, buildinfo">
-    <antcall target="make-jar">
-      <param name="platform" value="nonmac"/>
-    </antcall>
+    <make-jar platform="nonmac" />
   </target>
 
-  <target name="make-jar">
-    <mkdir dir="${build.root}/jar-src"/>
-    <copy todir="${build.root}/jar-src">
-      <fileset dir="${build.root}/classes-${platform}">
-        <include name="**/*.class" />
-        <include name="**/*.xml" />
-        <include name="**/*.betwixt" />
-        <include name="**/images/**/*.*" />
-      </fileset>
-      <fileset dir="${source.root}">
-        <include name="**/*.xml" />
-        <include name="**/*.betwixt" />
-        <include name="edu/ku/brc/specify/images/**/*.*" />
-      </fileset>
-      <file file="${build.root}/bld.properties"/>
-    </copy>
+  <macrodef name="make-jar">
+    <attribute name="platform"/>
+    <sequential>
+      <mkdir dir="${build.root}/jar-src"/>
+      <copy todir="${build.root}/jar-src">
+        <fileset dir="${build.root}/classes-@{platform}">
+          <include name="**/*.class" />
+          <include name="**/*.xml" />
+          <include name="**/*.betwixt" />
+          <include name="**/images/**/*.*" />
+        </fileset>
+        <fileset dir="${source.root}">
+          <include name="**/*.xml" />
+          <include name="**/*.betwixt" />
+          <include name="edu/ku/brc/specify/images/**/*.*" />
+        </fileset>
+        <file file="${build.root}/bld.properties"/>
+      </copy>
 
-    <native2ascii src="${source.root}" dest="${build.root}/jar-src" includes="**/*.properties"/>
+      <native2ascii src="${source.root}" dest="${build.root}/jar-src" includes="**/*.properties"/>
 
-    <jar destfile="${build.root}/${jar.name}-${platform}.jar">
-      <fileset dir="${build.root}/jar-src">
-	<include name="**/*.class" />
-	<include name="**/*.properties" />
-	<include name="**/*.xml" />
-        <include name="**/*.betwixt" />
-	<include name="**/images/**/*.*" />
-      </fileset>
-    </jar>
-    <delete dir="${build.root}/jar-src"/>
-  </target>
-
+      <jar destfile="${build.root}/${jar.name}-@{platform}.jar">
+        <fileset dir="${build.root}/jar-src">
+	  <include name="**/*.class" />
+	  <include name="**/*.properties" />
+	  <include name="**/*.xml" />
+          <include name="**/*.betwixt" />
+	  <include name="**/images/**/*.*" />
+        </fileset>
+      </jar>
+      <delete dir="${build.root}/jar-src"/>
+    </sequential>
+  </macrodef>
 
 
 
@@ -241,139 +239,132 @@
   </target>
 
 
-  <target name="package-all" description="Generate install4j packages">
+  <target name="package-all" description="Generate install4j packages"
+          depends="package-internal, package-external">
+  </target>
+
+  <target name="package-internal" depends="clean-packages, package-internal-mac, package-internal-nonmac">
+    <antcall target="generate-updates-xml">
+      <param name="packages.dir" value="${packages.dir}/internal"/>
+      <param name="ext-frag" value=""/>
+    </antcall>
+  </target>
+
+  <target name="package-external" depends="clean-packages, package-external-mac, package-external-nonmac">
+    <antcall target="generate-updates-xml">
+      <param name="packages.dir" value="${packages.dir}/external"/>
+      <param name="ext-frag" value="-ext"/>
+    </antcall>
+  </target>
+
+  <target name="clean-packages">
     <delete dir="${packages.dir}" />
-    <antcall target="package-internal"/>
-    <antcall target="package-external"/>
   </target>
 
-  <target name="package-internal">
-    <antcall target="package-internal-mac" />
-    <antcall target="package-internal-nonmac" />
-    <antcall target="generate-updates-xml">
-      <param name="packages.dir" value="${packages.dir}/internal"/>
-      <param name="ext-frag" value=""/>
-    </antcall>
+  <target name="package-internal-mac" depends="installer-common, make-jar-mac">
+    <package-mac packages.dir="${packages.dir}/internal" ext-frag=""/>
   </target>
 
-  <target name="package-external">
-    <antcall target="package-external-mac" />
-    <antcall target="package-external-nonmac" />
-    <antcall target="generate-updates-xml">
-      <param name="packages.dir" value="${packages.dir}/external"/>
-      <param name="ext-frag" value="-ext"/>
-    </antcall>
+  <target name="package-external-mac" depends="installer-common, make-jar-mac">
+    <package-mac packages.dir="${packages.dir}/external" ext-frag="-ext"/>
   </target>
 
-  <target name="package-internal-mac">
-    <antcall target="package-mac">
-      <param name="packages.dir" value="${packages.dir}/internal"/>
-      <param name="ext-frag" value=""/>
-    </antcall>
+  <target name="package-internal-nonmac" depends="installer-common, make-jar-nonmac">
+    <package-winlin packages.dir="${packages.dir}/internal" ext-frag=""/>
   </target>
 
-  <target name="package-external-mac">
-    <antcall target="package-mac">
-      <param name="packages.dir" value="${packages.dir}/external"/>
-      <param name="ext-frag" value="-ext"/>
-    </antcall>
-  </target>
-
-  <target name="package-internal-nonmac">
-    <antcall target="package-winlin">
-      <param name="packages.dir" value="${packages.dir}/internal"/>
-      <param name="ext-frag" value=""/>
-    </antcall>
-  </target>
-
-  <target name="package-external-nonmac">
-    <antcall target="package-winlin">
-      <param name="packages.dir" value="${packages.dir}/external"/>
-      <param name="ext-frag" value="-ext"/>
-    </antcall>
-  </target>
-
-  <target name="package-mac" description="Generate install4j packages for mac"
-          depends="installer-common, make-jar-mac">
-
-    <delete file="${installer.dir}/non-mac-application-adapter.jar" />
-    <copy file="${build.root}/${jar.name}-mac.jar" tofile="${installer.dir}/${jar.name}.jar" />
-
-    <exec executable="${install4j.dir}/bin/install4jc">
-      <arg value="--quiet"/>
-      <arg value="--faster"/>
-      <arg value="--release=${specify.SPECIFY_VERSION}" />
-      <arg value="--destination=${packages.dir}" />
-      <arg value="--build-ids=24" />
-      <arg value="${packaging.dir}/5-mac-update${ext-frag}.install4j" />
-    </exec>
-    <move file="${packages.dir}/updates.xml" tofile="${packages.dir}/updates.xml.macupdate"/>
-
-    <exec executable="${install4j.dir}/bin/install4jc">
-      <arg value="--quiet"/>
-      <arg value="--faster"/>
-      <arg value="--release=${specify.SPECIFY_VERSION}" />
-      <arg value="--destination=${packages.dir}" />
-      <arg value="--build-ids=24" />
-      <arg value="${packaging.dir}/5-mac-full${ext-frag}.install4j" />
-    </exec>
-    <move file="${packages.dir}/updates.xml" tofile="${packages.dir}/updates.xml.macfull"/>
+  <target name="package-external-nonmac" depends="installer-common, make-jar-nonmac">
+    <package-winlin packages.dir="${packages.dir}/external" ext-frag="-ext"/>
   </target>
 
 
-  <target name="package-winlin" description="Generate install4j packages for windows/linux"
-          depends="installer-common, make-jar-nonmac">
+  <macrodef name="package-mac">
+    <attribute name="packages.dir"/>
+    <attribute name="ext-frag"/>
+    <sequential>
+      <delete file="${installer.dir}/non-mac-application-adapter.jar" />
+      <copy file="${build.root}/${jar.name}-mac.jar" tofile="${installer.dir}/${jar.name}.jar" />
 
-    <copy file="${system.dep.libs.dir}/AppleJavaExtensions-1.4.jar"
-          tofile="${installer.dir}/non-mac-application-adapter.jar" />
+      <exec executable="${install4j.dir}/bin/install4jc">
+        <arg value="--quiet"/>
+        <arg value="--faster"/>
+        <arg value="--release=${specify.SPECIFY_VERSION}" />
+        <arg value="--destination=@{packages.dir}" />
+        <arg value="--build-ids=24" />
+        <arg value="${packaging.dir}/5-mac-update@{ext-frag}.install4j" />
+      </exec>
+      <move file="@{packages.dir}/updates.xml" tofile="@{packages.dir}/updates.xml.macupdate"/>
 
-    <copy file="${build.root}/${jar.name}-nonmac.jar" tofile="${installer.dir}/${jar.name}.jar" />
+      <exec executable="${install4j.dir}/bin/install4jc">
+        <arg value="--quiet"/>
+        <arg value="--faster"/>
+        <arg value="--release=${specify.SPECIFY_VERSION}" />
+        <arg value="--destination=@{packages.dir}" />
+        <arg value="--build-ids=24" />
+        <arg value="${packaging.dir}/5-mac-full@{ext-frag}.install4j" />
+      </exec>
+      <move file="@{packages.dir}/updates.xml" tofile="@{packages.dir}/updates.xml.macfull"/>
+    </sequential>
+  </macrodef>
 
-    <exec executable="${install4j.dir}/bin/install4jc">
-      <arg value="--quiet"/>
-      <arg value="--faster"/>
-      <arg value="--release=${specify.SPECIFY_VERSION}" />
-      <arg value="--destination=${packages.dir}" />
-      <arg value="--build-ids=176,179" />
-      <arg value="${packaging.dir}/5-winlin-update${ext-frag}.install4j" />
-    </exec>
-    <move file="${packages.dir}/updates.xml" tofile="${packages.dir}/updates.xml.winlinupdate"/>
 
-    <exec executable="${install4j.dir}/bin/install4jc">
-      <arg value="--quiet"/>
-      <arg value="--faster"/>
-      <arg value="--release=${specify.SPECIFY_VERSION}" />
-      <arg value="--destination=${packages.dir}" />
-      <arg value="--build-ids=1965,1873" />
-      <arg value="${packaging.dir}/5-winlin-update${ext-frag}-64.install4j" />
-    </exec>
-    <move file="${packages.dir}/updates.xml" tofile="${packages.dir}/updates.xml.winlinupdate64"/>
 
-    <exec executable="${install4j.dir}/bin/install4jc">
-      <arg value="--quiet"/>
-      <arg value="--faster"/>
-      <arg value="--release=${specify.SPECIFY_VERSION}" />
-      <arg value="--destination=${packages.dir}" />
-      <arg value="--build-ids=176,179" />
-      <arg value="${packaging.dir}/5-winlin-full${ext-frag}.install4j" />
-    </exec>
-    <move file="${packages.dir}/updates.xml" tofile="${packages.dir}/updates.xml.winlinfull"/>
+  <macrodef name="package-winlin">
+    <attribute name="packages.dir"/>
+    <attribute name="ext-frag"/>
+    <sequential>
+      <copy file="${system.dep.libs.dir}/AppleJavaExtensions-1.4.jar"
+            tofile="${installer.dir}/non-mac-application-adapter.jar" />
 
-    <exec executable="${install4j.dir}/bin/install4jc">
-      <arg value="--quiet"/>
-      <arg value="--faster"/>
-      <arg value="--release=${specify.SPECIFY_VERSION}" />
-      <arg value="--destination=${packages.dir}" />
-      <arg value="--build-ids=1965,1873" />
-      <arg value="${packaging.dir}/5-winlin-full${ext-frag}-64.install4j" />
-    </exec>
-    <move file="${packages.dir}/updates.xml" tofile="${packages.dir}/updates.xml.winlinfull64"/>
+      <copy file="${build.root}/${jar.name}-nonmac.jar" tofile="${installer.dir}/${jar.name}.jar" />
 
-    <move todir="${packages.dir}">
-      <fileset dir="${packages.dir}"/>
-      <mapper type="regexp" from="^(.*)-x64(.*)$" to="\1\2" />
-    </move>
-  </target>
+      <exec executable="${install4j.dir}/bin/install4jc">
+        <arg value="--quiet"/>
+        <arg value="--faster"/>
+        <arg value="--release=${specify.SPECIFY_VERSION}" />
+        <arg value="--destination=@{packages.dir}" />
+        <arg value="--build-ids=176,179" />
+        <arg value="${packaging.dir}/5-winlin-update@{ext-frag}.install4j" />
+      </exec>
+      <move file="@{packages.dir}/updates.xml" tofile="@{packages.dir}/updates.xml.winlinupdate"/>
+
+      <exec executable="${install4j.dir}/bin/install4jc">
+        <arg value="--quiet"/>
+        <arg value="--faster"/>
+        <arg value="--release=${specify.SPECIFY_VERSION}" />
+        <arg value="--destination=@{packages.dir}" />
+        <arg value="--build-ids=1965,1873" />
+        <arg value="${packaging.dir}/5-winlin-update@{ext-frag}-64.install4j" />
+      </exec>
+      <move file="@{packages.dir}/updates.xml" tofile="@{packages.dir}/updates.xml.winlinupdate64"/>
+
+      <exec executable="${install4j.dir}/bin/install4jc">
+        <arg value="--quiet"/>
+        <arg value="--faster"/>
+        <arg value="--release=${specify.SPECIFY_VERSION}" />
+        <arg value="--destination=@{packages.dir}" />
+        <arg value="--build-ids=176,179" />
+        <arg value="${packaging.dir}/5-winlin-full@{ext-frag}.install4j" />
+      </exec>
+      <move file="@{packages.dir}/updates.xml" tofile="@{packages.dir}/updates.xml.winlinfull"/>
+
+      <exec executable="${install4j.dir}/bin/install4jc">
+        <arg value="--quiet"/>
+        <arg value="--faster"/>
+        <arg value="--release=${specify.SPECIFY_VERSION}" />
+        <arg value="--destination=@{packages.dir}" />
+        <arg value="--build-ids=1965,1873" />
+        <arg value="${packaging.dir}/5-winlin-full@{ext-frag}-64.install4j" />
+      </exec>
+      <move file="@{packages.dir}/updates.xml" tofile="@{packages.dir}/updates.xml.winlinfull64"/>
+
+      <move todir="@{packages.dir}">
+        <fileset dir="@{packages.dir}"/>
+        <mapper type="regexp" from="^(.*)-x64(.*)$" to="\1\2" />
+      </move>
+    </sequential>
+  </macrodef>
+
 
   <target name="generate-updates-xml">
     <local name="macos-package-file"/>
