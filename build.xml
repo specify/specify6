@@ -1,10 +1,13 @@
 <?xml version="1.0"?>
 <project name="Specify 6 Build File" basedir=".">
+  <presetdef name="javac">
+    <javac includeantruntime="false" />
+  </presetdef>
 
   <!-- Set up properties containing important project directories -->
 
   <property name="source.root" value="src" />
-  <property name="class.root" value="bin" />
+  <property name="build.root" value="build" />
 
   <property name="installer.dir" value="InstallerFiles" />
   <property name="lib.dir" value="libs" />
@@ -14,14 +17,13 @@
   <property name="system.dep.libs.dir" value="system_dep_libs" />
   <property name="hibernate.properties" value="hibernate.properties" />
   <property name="hibernate.cfg" value="hibernate.cfg.xml" />
-  <property name="dir.dest" value="dest" />
-  <property name="hibernate.generated.code.destdir" value="generated-src" />
 
   <property file="src/resources_en.properties" prefix="specify."/>
   <fail unless="specify.SPECIFY_VERSION">Specify version not set.</fail>
 
   <property name="packages.dir" value="packages" />
   <property name="install4j.dir" value="${user.home}/install4j5" />
+  <property name="packaging.dir" value="packaging"/>
 
   <!-- Needed for building help search index -->
   <property name ="javahelp-home" value="/home/specify/jh2.0" />
@@ -60,7 +62,7 @@
 
 
 
-  <path id="classpath">
+  <path id="compile.classpath">
     <fileset dir="${hibernatelib.dir}">
       <include name="**/*.jar" />
     </fileset>
@@ -77,10 +79,6 @@
       <include name="**/*.jar" />
     </fileset>
 
-    <fileset dir="${system.dep.libs.dir}">
-      <include name="**/*.jar" />
-    </fileset>
-
     <fileset dir="wwlibs">
       <include name="**/*.jar" />
     </fileset>
@@ -90,32 +88,49 @@
     </fileset>
   </path>
 
+  <path id="compile.classpath.mac">
+    <path refid="compile.classpath"/>
+    <pathelement location="${system.dep.libs.dir}/AppleJavaExtensions-1.4.jar"/>
+  </path>
+
+  <path id="compile.classpath.nonmac">
+    <path refid="compile.classpath"/>
+    <pathelement location="${system.dep.libs.dir}/non-mac-application-adapter.jar"/>
+  </path>
 
 
-
-  <target name="compile">
-    <mkdir dir="${class.root}"/>
-    <javac srcdir="${source.root}" destdir="${class.root}" classpathref="classpath">
+  <target name="compile-mac">
+    <mkdir dir="${build.root}/classes-mac"/>
+    <javac srcdir="${source.root}" destdir="${build.root}/classes-mac" classpathref="compile.classpath.mac">
       <compilerarg value="-XDignore.symbol.file"/>
     </javac>
   </target>
 
 
-
-  <target name="clean">
-      <delete dir="${class.root}"/>
+  <target name="compile-nonmac">
+    <mkdir dir="${build.root}/classes-nonmac"/>
+    <javac srcdir="${source.root}" destdir="${build.root}/classes-nonmac" classpathref="compile.classpath.nonmac">
+      <compilerarg value="-XDignore.symbol.file"/>
+    </javac>
   </target>
 
 
+  <target name="make-jar-mac" depends="compile-mac, buildinfo">
+    <antcall target="make-jar">
+      <param name="platform" value="mac"/>
+    </antcall>
+  </target>
 
-  <!-- Jar up compiled classes -->
-  <target name="copy-for-jar" depends="">
+  <target name="make-jar-nonmac" depends="compile-nonmac, buildinfo">
+    <antcall target="make-jar">
+      <param name="platform" value="nonmac"/>
+    </antcall>
+  </target>
 
-    <mkdir dir="${installer.dir}"/>
-    <mkdir dir="${installer.dir}/jar-src"/>
-
-    <copy todir="${installer.dir}/jar-src">
-      <fileset dir="${class.root}">
+  <target name="make-jar">
+    <mkdir dir="${build.root}/jar-src"/>
+    <copy todir="${build.root}/jar-src">
+      <fileset dir="${build.root}/classes-${platform}">
         <include name="**/*.class" />
         <include name="**/*.xml" />
         <include name="**/*.betwixt" />
@@ -126,20 +141,13 @@
         <include name="**/*.betwixt" />
         <include name="edu/ku/brc/specify/images/**/*.*" />
       </fileset>
+      <file file="${build.root}/bld.properties"/>
     </copy>
 
-    <native2ascii src="${source.root}" dest="${installer.dir}/jar-src" includes="**/*.properties"/>
+    <native2ascii src="${source.root}" dest="${build.root}/jar-src" includes="**/*.properties"/>
 
-    <antcall target="buildinfo"/>
-  </target>
-
-
-
-
-  <target name="dist-jar" depends="">
-    <antcall target="copy-for-jar"/>
-    <jar destfile="${jar.name}.jar">
-      <fileset dir="${installer.dir}/jar-src">
+    <jar destfile="${build.root}/${jar.name}-${platform}.jar">
+      <fileset dir="${build.root}/jar-src">
 	<include name="**/*.class" />
 	<include name="**/*.properties" />
 	<include name="**/*.xml" />
@@ -147,37 +155,9 @@
 	<include name="**/images/**/*.*" />
       </fileset>
     </jar>
-    <delete dir="${installer.dir}/jar-src"/>
+    <delete dir="${build.root}/jar-src"/>
   </target>
 
-
-
-  <target name="ipad-jar" depends="">
-    <delete file="ipad.jar"/>
-    <delete dir="${installer.dir}"/>
-
-    <mkdir dir="${installer.dir}/ipad/edu/ku/brc/specify/plugins/ipadexporter"/>
-
-    <copy todir="${installer.dir}/ipad/edu/ku/brc/specify/plugins/ipadexporter">
-      <fileset dir="${class.root}/edu/ku/brc/specify/plugins/ipadexporter">
-        <include name="**/*.class" />
-        <include name="**/*.xml" />
-        <include name="**/*.png" />
-        <include name="**/*.sql" />
-        <include name="**/*.properties" />
-      </fileset>
-    </copy>
-
-    <jar destfile="ipad.jar">
-      <fileset dir="${installer.dir}/ipad">
-        <include name="**/*.class" />
-        <include name="**/*.properties" />
-        <include name="**/*.xml" />
-        <include name="**/*.png" />
-        <include name="**/*.sql" />
-      </fileset>
-    </jar>
-  </target>
 
 
 
@@ -186,11 +166,10 @@
       <format property="builtat" pattern="MM/dd/yyyy hh:mm aa" timezone="America/Chicago"/>
     </tstamp>
     <exec executable="git" outputproperty="commit.hash">
-      <arg value="show-ref" />
-      <arg value="--hash" />
+      <arg value="rev-parse" />
       <arg value="HEAD" />
     </exec>
-    <propertyfile file="${installer.dir}/jar-src/bld.properties"
+    <propertyfile file="${build.root}/bld.properties"
 	          comment="This file is automatically generated - DO NOT EDIT">
       <entry key="buildtime" value="${builtat}"/>
       <entry key="build" value="${commit.hash}"/>
@@ -201,25 +180,12 @@
   </target>
 
 
-  <target name="installer-linux" depends="">
-    <antcall target="installer-base"/>
-    <copy file="./system_dep_libs/non-mac-application-adapter.jar" todir="${installer.dir}" />
-  </target>
 
-
-  <target name="installer-mac" depends="">
-    <antcall target="installer-base"/>
-  </target>
-
-
-
-  <target name="installer-base" depends="">
+  <target name="installer-common">
     <delete dir="${installer.dir}"/>
     <mkdir dir="${installer.dir}" />
     <mkdir dir="${installer.dir}/demo_files"/>
     <mkdir dir="${installer.dir}/plugins" />
-
-    <antcall target="dist-jar"/>
 
     <!-- Copy config dir -->
     <copy todir="${installer.dir}/config">
@@ -263,8 +229,6 @@
       </fileset>
     </copy>
 
-    <copy file="${jar.name}.jar" todir="${installer.dir}" />
-
     <copy file="packaging/readme.html" todir="${installer.dir}" />
     <copy file="packaging/license_agreement.html" todir="${installer.dir}" />
     <copy file="./packaging/SpecifyBigSplashBordered.png" todir="${installer.dir}" />
@@ -277,32 +241,63 @@
   </target>
 
 
-  <target name="package" description="Generate install4j packages">
+  <target name="package-all" description="Generate install4j packages">
     <delete dir="${packages.dir}" />
-    <antcall target="compile" />
-    <antcall target="installer-base" />
+    <antcall target="package-internal"/>
+    <antcall target="package-external"/>
+  </target>
 
-    <antcall target="package-all">
+  <target name="package-internal">
+    <antcall target="package-internal-mac" />
+    <antcall target="package-internal-nonmac" />
+    <antcall target="generate-updates-xml">
       <param name="packages.dir" value="${packages.dir}/internal"/>
-      <param name="packaging.dir" value="packaging"/>
       <param name="ext-frag" value=""/>
     </antcall>
+  </target>
 
-    <antcall target="package-all">
+  <target name="package-external">
+    <antcall target="package-external-mac" />
+    <antcall target="package-external-nonmac" />
+    <antcall target="generate-updates-xml">
       <param name="packages.dir" value="${packages.dir}/external"/>
-      <param name="packaging.dir" value="packaging"/>
       <param name="ext-frag" value="-ext"/>
     </antcall>
   </target>
 
-  <target name="package-all">
-    <antcall target="package-mac" />
-    <antcall target="package-winlin" />
-    <antcall target="generate-updates-xml" />
+  <target name="package-internal-mac">
+    <antcall target="package-mac">
+      <param name="packages.dir" value="${packages.dir}/internal"/>
+      <param name="ext-frag" value=""/>
+    </antcall>
   </target>
 
-  <target name="package-mac" description="Generate install4j packages for mac">
+  <target name="package-external-mac">
+    <antcall target="package-mac">
+      <param name="packages.dir" value="${packages.dir}/external"/>
+      <param name="ext-frag" value="-ext"/>
+    </antcall>
+  </target>
+
+  <target name="package-internal-nonmac">
+    <antcall target="package-winlin">
+      <param name="packages.dir" value="${packages.dir}/internal"/>
+      <param name="ext-frag" value=""/>
+    </antcall>
+  </target>
+
+  <target name="package-external-nonmac">
+    <antcall target="package-winlin">
+      <param name="packages.dir" value="${packages.dir}/external"/>
+      <param name="ext-frag" value="-ext"/>
+    </antcall>
+  </target>
+
+  <target name="package-mac" description="Generate install4j packages for mac"
+          depends="installer-common, make-jar-mac">
+
     <delete file="${installer.dir}/non-mac-application-adapter.jar" />
+    <copy file="${build.root}/${jar.name}-mac.jar" tofile="${installer.dir}/${jar.name}.jar" />
 
     <exec executable="${install4j.dir}/bin/install4jc">
       <arg value="--quiet"/>
@@ -326,8 +321,13 @@
   </target>
 
 
-  <target name="package-winlin" description="Generate install4j packages for windows/linux">
-    <copy file="./system_dep_libs/non-mac-application-adapter.jar" todir="${installer.dir}" />
+  <target name="package-winlin" description="Generate install4j packages for windows/linux"
+          depends="installer-common, make-jar-nonmac">
+
+    <copy file="${system.dep.libs.dir}/AppleJavaExtensions-1.4.jar"
+          tofile="${installer.dir}/non-mac-application-adapter.jar" />
+
+    <copy file="${build.root}/${jar.name}-nonmac.jar" tofile="${installer.dir}/${jar.name}.jar" />
 
     <exec executable="${install4j.dir}/bin/install4jc">
       <arg value="--quiet"/>

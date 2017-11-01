@@ -118,7 +118,7 @@ import edu.ku.brc.af.auth.UserAndMasterPasswordMgr;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.FrameworkAppIFace;
 import edu.ku.brc.af.core.GenericGUIDGeneratorFactory;
-// import edu.ku.brc.af.core.MacOSAppHandler;
+import edu.ku.brc.af.core.MacOSAppHandler;
 import edu.ku.brc.af.core.MainPanel;
 import edu.ku.brc.af.core.RecordSetFactory;
 import edu.ku.brc.af.core.SchemaI18NService;
@@ -314,7 +314,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         //UIHelper.attachUnhandledException();
         
         // we simply need to create this class, not use it
-        // new MacOSAppHandler(this);
+        new MacOSAppHandler(this);
 
         // Name factories
         setUpSystemProperties();
