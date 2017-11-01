@@ -409,6 +409,24 @@
     <move file="tmp.xml" tofile="${packages.dir}/updates.xml"/>
   </target>
 
+  <target name="run-specify-nonmac" depends="make-jar-nonmac">
+    <java classname="edu.ku.brc.specify.Specify" fork="true" failonerror="true">
+      <classpath>
+        <path refid="compile.classpath.nonmac"/>
+        <pathelement location="${build.root}/${jar.name}-nonmac.jar"/>
+      </classpath>
+    </java>
+  </target>
+
+  <target name="run-specify-mac" depends="make-jar-mac">
+    <java classname="edu.ku.brc.specify.Specify" fork="true" failonerror="true">
+      <classpath>
+        <path refid="compile.classpath.mac"/>
+        <pathelement location="${build.root}/${jar.name}-mac.jar"/>
+      </classpath>
+    </java>
+  </target>
+
   <!-- *************************************************************
        Schema Export (Doesn't work at the moment)
        ************************************************************* -->
