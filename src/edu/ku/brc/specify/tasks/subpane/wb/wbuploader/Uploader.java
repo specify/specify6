@@ -19,56 +19,8 @@
 */
 package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 
-import static edu.ku.brc.ui.UIHelper.createLabel;
-import static edu.ku.brc.ui.UIRegistry.getResourceString;
-
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Frame;
-import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.sql.SQLException;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.Vector;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JMenuBar;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
-import javax.swing.SwingUtilities;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.SoftBevelBorder;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.hibernate.HibernateException;
-
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.ServiceInfo;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.db.DBFieldInfo;
@@ -82,42 +34,12 @@ import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.helpers.ImageMetaDataHelper;
 import edu.ku.brc.specify.SpecifyUserTypes;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
-import edu.ku.brc.specify.datamodel.Accession;
-import edu.ku.brc.specify.datamodel.Address;
-import edu.ku.brc.specify.datamodel.Agent;
-import edu.ku.brc.specify.datamodel.Attachment;
-import edu.ku.brc.specify.datamodel.AttachmentOwnerIFace;
-import edu.ku.brc.specify.datamodel.CollectingEvent;
-import edu.ku.brc.specify.datamodel.CollectingTrip;
+import edu.ku.brc.specify.datamodel.*;
 import edu.ku.brc.specify.datamodel.Collection;
-import edu.ku.brc.specify.datamodel.CollectionObject;
-import edu.ku.brc.specify.datamodel.DataModelObjBase;
-import edu.ku.brc.specify.datamodel.Determination;
-import edu.ku.brc.specify.datamodel.FieldNotebook;
-import edu.ku.brc.specify.datamodel.FieldNotebookPage;
-import edu.ku.brc.specify.datamodel.FieldNotebookPageSet;
-import edu.ku.brc.specify.datamodel.GeoCoordDetail;
-import edu.ku.brc.specify.datamodel.Locality;
-import edu.ku.brc.specify.datamodel.LocalityDetail;
-import edu.ku.brc.specify.datamodel.ObjectAttachmentIFace;
-import edu.ku.brc.specify.datamodel.RecordSet;
-import edu.ku.brc.specify.datamodel.SpecifyUser;
-import edu.ku.brc.specify.datamodel.Taxon;
-import edu.ku.brc.specify.datamodel.Treeable;
-import edu.ku.brc.specify.datamodel.Workbench;
-import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
-import edu.ku.brc.specify.datamodel.WorkbenchRow;
-import edu.ku.brc.specify.datamodel.WorkbenchRowExportedRelationship;
-import edu.ku.brc.specify.datamodel.WorkbenchRowImage;
-import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr.SCOPE;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr.USER_ACTION;
-import edu.ku.brc.specify.tasks.DataEntryTask;
-import edu.ku.brc.specify.tasks.InteractionsTask;
-import edu.ku.brc.specify.tasks.RecordSetTask;
-import edu.ku.brc.specify.tasks.ReportsBaseTask;
-import edu.ku.brc.specify.tasks.WorkbenchTask;
+import edu.ku.brc.specify.tasks.*;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS;
 import edu.ku.brc.specify.tasks.subpane.wb.graph.DirectedGraph;
 import edu.ku.brc.specify.tasks.subpane.wb.graph.DirectedGraphException;
@@ -127,17 +49,37 @@ import edu.ku.brc.specify.tasks.subpane.wb.schema.Field;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Relationship;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Table;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMappingDefRel.ImportMappingRelFld;
-import edu.ku.brc.ui.CommandAction;
-import edu.ku.brc.ui.CommandDispatcher;
-import edu.ku.brc.ui.CustomDialog;
-import edu.ku.brc.ui.JStatusBar;
-import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.*;
 import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.Pair;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRField;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.hibernate.HibernateException;
+
+import javax.swing.*;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.SoftBevelBorder;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.sql.SQLException;
+import java.text.ParseException;
+import java.util.*;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static edu.ku.brc.ui.UIHelper.createLabel;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 /**
  * @author timo
@@ -5604,39 +5546,31 @@ public class Uploader implements ActionListener, KeyListener
      */
     protected void createRecordSets()
     {
-        if (recordSets != null)
-        {
+        if (recordSets != null)  {
             recordSets.clear();
         }
-        else
-        {
+        else {
             recordSets = new Vector<RecordSet>(uploadTables.size());
         }
 
         UploadTable root = getRootTable();
-        for (UploadTable ut : uploadTables)
-        {
+        for (UploadTable ut : uploadTables)  {
             RecordSet rs = ut.getRecordSet(ut == root);
-            if (rs.getNumItems() > 0)
-            {
+            if (rs.getNumItems() > 0)  {
                 recordSets.add(rs);
             }
         }
         //combine recordSets with identical names...
-        Collections.sort(recordSets, new Comparator<RecordSet>()
-                {
+        Collections.sort(recordSets, new Comparator<RecordSet>()  {
                     public int compare(RecordSet rs1, RecordSet rs2)
                     {
                         return rs1.getName().compareTo(rs2.getName());
                     }
                 });
-        for (int rs=recordSets.size()-1; rs>0; rs--)
-        {
-            if (recordSets.get(rs).getName().equals(recordSets.get(rs-1).getName()))
-            {
+        for (int rs=recordSets.size()-1; rs>0; rs--)  {
+            if (recordSets.get(rs).getName().equals(recordSets.get(rs-1).getName()))  {
                 recordSets.get(rs-1).addAll(recordSets.get(rs).getItems());
-                for (RecordSetItemIFace rsi : recordSets.get(rs).getItems())
-                {
+                for (RecordSetItemIFace rsi : recordSets.get(rs).getItems())  {
                     recordSets.get(rs-1).addItem(rsi);
                 }
                 recordSets.remove(rs);
@@ -5650,45 +5584,36 @@ public class Uploader implements ActionListener, KeyListener
     /**
      * Saves recordSets to the database.
      */
-    protected void saveRecordSets()
-    {
-        if (recordSets == null || recordSets.size() == 0)
-        {
+    protected void saveRecordSets()  {
+        if (recordSets == null || recordSets.size() == 0)  {
             createRecordSets();
         }
 
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        try
-        {
+        try  {
             UploadTable root = getRootTable();
-        	for (RecordSet rs : recordSets)
-			{
+        	for (RecordSet rs : recordSets)  {
 				BusinessRulesIFace busRule = DBTableIdMgr.getInstance()
 						.getBusinessRule(RecordSet.class);
-				if (busRule != null)
-				{
+				if (busRule != null)  {
 					busRule.beforeSave(rs, session);
 				}
+				rs.setModifiedByAgent(rs.getCreatedByAgent());
 				session.beginTransaction();
-				try
-				{
+				try {
 					session.save(rs);
-					if (busRule != null)
-					{
-						if (!busRule.beforeSaveCommit(rs, session))
-						{
+					if (busRule != null)  {
+						if (!busRule.beforeSaveCommit(rs, session))  {
 							session.rollback();
 							throw new Exception(
 									"Business rules processing failed");
 						}
 					}
 					session.commit();
-					if (busRule != null)
-					{
+					if (busRule != null)  {
 						busRule.afterSaveCommit(rs, session);
 					}
-					if (rs.getType() == RecordSet.GLOBAL && rs.getDbTableId() == root.getTable().getTableInfo().getTableId())
-					{
+					if (rs.getType() == RecordSet.GLOBAL && rs.getDbTableId() == root.getTable().getTableInfo().getTableId())  {
 						final RecordSet mergedRs = session.merge(rs);
 		        		SwingUtilities.invokeLater(new Runnable() {
 
@@ -5697,15 +5622,19 @@ public class Uploader implements ActionListener, KeyListener
 							 */
 							@Override
 							public void run() {
-								CommandAction cmd = new CommandAction(RecordSetTask.RECORD_SET, RecordSetTask.ADD_TO_NAV_BOX);
-								cmd.setData(mergedRs);
-								CommandDispatcher.dispatch(cmd);
+							    RecordSetTask rsTsk = (RecordSetTask)ContextMgr.getTaskByClass(RecordSetTask.class);
+							    if (rsTsk != null) {
+							        rsTsk.addRecordSetToNavBox(mergedRs);
+                                } else {
+                                    CommandAction cmd = new CommandAction(RecordSetTask.RECORD_SET, RecordSetTask.ADD_TO_NAV_BOX);
+                                    cmd.setData(mergedRs);
+                                    CommandDispatcher.dispatch(cmd);
+                                }
 							}
 		        			
 		        		});
 					}
-				} catch (Exception ex)
-				{
+				} catch (Exception ex)  {
 					edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
 					edu.ku.brc.exceptions.ExceptionTracker.getInstance()
 							.capture(Uploader.class, ex);
@@ -5713,14 +5642,12 @@ public class Uploader implements ActionListener, KeyListener
 				}
 			}
         }
-        catch (Exception ex)
-        {
+        catch (Exception ex)  {
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, ex);
             throw new RuntimeException(ex);
         }
-        finally
-        {
+        finally {
             session.close();
         }
     }

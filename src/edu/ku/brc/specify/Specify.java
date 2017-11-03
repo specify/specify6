@@ -97,6 +97,7 @@ import javax.swing.event.HyperlinkListener;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
+import edu.ku.brc.specify.tasks.WorkbenchTask;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
@@ -1085,7 +1086,11 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                                 // Actually we really need to start over
                                 // "true" means that it should NOT use any cached values it can find to automatically initialize itself
                                 // instead it should ask the user any questions as if it were starting over
-                                restartApp(null, databaseName, userName, true, false);
+                                SwingUtilities.invokeLater(new Runnable() {
+                                    public void run() {
+                                        restartApp(null, databaseName, userName, true, false);
+                                    }
+                                });
                             }
                         }
                     });
@@ -2579,8 +2584,27 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             StatsTrackerTask statsTrackerTask = (StatsTrackerTask)TaskMgr.getTask("StatsTracker");
             if (statsTrackerTask != null)
             {
+                statsTrackerTask.initialize(); //sets domain ids from current appcontext, which will change as stats send runs in background.
                 statsTrackerTask.setSendSecondaryStatsAllowed(canSendISAStats);
-                statsTrackerTask.sendStats(false, true, false);
+                try {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            UIRegistry.writeSimpleGlassPaneMsg(
+                                    "CLOSING_COLLECTION",
+                                    WorkbenchTask.GLASSPANE_FONT_SIZE);
+                        }
+                    });
+                    statsTrackerTask.sendStats(false, true, false);
+
+                } finally {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            UIRegistry.clearSimpleGlassPaneMsg();
+                        }
+                    });
+                }
             }
         }
     }
@@ -2607,7 +2631,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
 
         if (!firstTime)
         {
-            checkAndSendStats();
+           checkAndSendStats();
         }
         
         UIRegistry.dumpPaths();

@@ -3842,8 +3842,17 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     		}
     	}
     }
-    	
-    
+
+    protected Pair<DBTableInfo, DBFieldInfo> getQueryRelFldWBMapping(final SpQueryField f, final DBTableIdMgr tblMgr,
+                                                                  final Map<String, List<Element>> defMap) {
+        if (f.getFieldName().equals("prepType")) {
+            //This is a bit of hack. Especially if 1-manies are implemented in the future.
+            DBTableInfo prepTbl = tblMgr.getInfoByTableName("preparation");
+            return new Pair<DBTableInfo, DBFieldInfo>(prepTbl, prepTbl.getFieldByName("prepType1"));
+        }
+        return null;
+    }
+
     /**
      * @param f
      * @param tblMgr
@@ -3853,7 +3862,11 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     @SuppressWarnings("unchecked")
     protected Pair<DBTableInfo, DBFieldInfo> getQueryFldWBMapping(final SpQueryField f, final DBTableIdMgr tblMgr,
                                                                     final Map<String, List<Element>> defMap) {
-    	String[] tblIdList = f.getTableList().split(",");
+    	if (f.getIsRelFld()) {
+    	    return getQueryRelFldWBMapping(f, tblMgr, defMap);
+        }
+
+        String[] tblIdList = f.getTableList().split(",");
     	String tblIdCode = tblIdList[tblIdList.length-1];
     	String tblId = tblIdCode.split("-")[0];
     	String tblName = DBTableIdMgr.getInstance().getInfoById(tblId).getName().toLowerCase();
@@ -3929,7 +3942,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         Map<String, List<Element>> defMap = buildUploadDefMap(uploadDefs);
     	for (SpQueryField f : query.getFields()) {
     		Pair<DBTableInfo, DBFieldInfo> fi = null;
-    		if (f.getIsDisplay() && !f.getIsRelFld()) {
+    		if (f.getIsDisplay()) {
     			fi = getQueryFldWBMapping(f, tblMgr, defMap);
     		}
     		if (fi == null || !f.getIsDisplay()) {

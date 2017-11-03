@@ -192,7 +192,7 @@ public class DataEntryTask extends BaseTask
             super.initialize(); // sets isInitialized to false
             
             navBoxes.add(viewsNavBox);
-            //navBoxes.add(batchNavBox);
+            navBoxes.add(batchNavBox);
             
             // Container Tree
             //NavBox navBox = new NavBox(getResourceString("Actions"));

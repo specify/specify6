@@ -5281,7 +5281,7 @@ public class UploadTable implements Comparable<UploadTable>
      	IllegalAccessException
     {
     	//XXX See comments for disUseRecs()
-    	UploadTable parentTbl = pt.getImportTable();
+        UploadTable parentTbl = pt.getImportTable();
     	DataModelObjBase parentRec = (DataModelObjBase )pt.getGetter().invoke(rec);
     	if (parentRec != null) {
             Set<Pair<Integer, String>> parentDisUsed = pt.getImportTable().disUsedRecs;
@@ -5296,29 +5296,23 @@ public class UploadTable implements Comparable<UploadTable>
     /**
      * @param theDisUsed
      */
-    protected void disUseRecs(Set<Pair<Integer, String>> theDisUsed)
-    {
+    protected void disUseRecs(Set<Pair<Integer, String>> theDisUsed) {
     	//This is called during FinishUpload, by the Uploader in reverse order of the upload graph.
     	//An attempt is made to delete any record that was dereferenced during the upload. 
     	//XXX should test if deletable before trying. Current process is to delete and see if it works.
     	//XXX Also need to recurse upwards. If a locality is disused, then it's geography needs to be disused, and the geography's parent, ...
-        if (tblClass.equals(Agent.class) || Treeable.class.isAssignableFrom(tblClass))
-        {
-        	System.out.println("Not attempting to remove disused recs for class: " + tblClass);
+        if (tblClass.equals(Agent.class) || Treeable.class.isAssignableFrom(tblClass) || tblClass.equals(PrepType.class))  {
         	log.warn("Not attempting to remove disused recs for class: " + tblClass);
         	return;
         }
 
     	
     	SpecifyDeleteHelper delhel = new SpecifyDeleteHelper();
-    	for (Pair<Integer, String> disUsedOne : theDisUsed)
-    	{
+    	for (Pair<Integer, String> disUsedOne : theDisUsed) {
     		disUseRec(disUsedOne, delhel);
     	}
     	delhel.done(true);
-    	for (Pair<Integer, String> deletedRec : deletedRecs)
-    	{
-    		System.out.println("Deleted " + tblClass.getSimpleName() + "[" + deletedRec.getFirst() + "]: " + deletedRec.getSecond());
+    	for (Pair<Integer, String> deletedRec : deletedRecs) {
         	log.info("Not attempting to remove disused recs for class: " + tblClass);
     	}
     }
@@ -5326,19 +5320,15 @@ public class UploadTable implements Comparable<UploadTable>
     /**
      * @param disUsee
      */
-    protected void disUseRec(final Pair<Integer, String> disUsedRec, final SpecifyDeleteHelper delhel)
-    {
-    	System.out.println("deleting " + disUsedRec);
+    protected void disUseRec(final Pair<Integer, String> disUsedRec, final SpecifyDeleteHelper delhel) {
     	log.info("deleting " + disUsedRec);
-    	try
-    	{
+        //XXX Delete helper absolutely blows for PrepType. Will let any preptype be deleted, deletes all associated preparations. WTF.
+        //disUseRecs() filters out preptype, but what other tables might be screwed??? Check persistence annotations??
+        try {
     		delhel.delRecordFromTable(tblClass, disUsedRec.getFirst(), true);
-    		//System.out.println("deleted " + tblClass.getSimpleName() + ":" + disUsedRec.getFirst());
     		deletedRecs.add(disUsedRec);
-    	} catch (SQLException sqex)
-    	{
+    	} catch (SQLException sqex) {
     		delhel.rollback();
-    		System.out.println("unable to delete " + tblClass.getSimpleName() + ":" + disUsedRec);
     		log.warn("unable to delete " + tblClass.getSimpleName() + ":" + disUsedRec);
     	}
     }
