@@ -19,10 +19,7 @@
 */
 package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 
-import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.af.core.ContextMgr;
-import edu.ku.brc.af.core.ServiceInfo;
-import edu.ku.brc.af.core.Taskable;
+import edu.ku.brc.af.core.*;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
@@ -3035,12 +3032,10 @@ public class Uploader implements ActionListener, KeyListener
      * 
      * Puts UI into correct state for current upload phase.
      */
-    public synchronized void setCurrentOp(final String opName)
-    {
+    public synchronized void setCurrentOp(final String opName) {
         previousOp = currentOp;
         currentOp = opName;
-        if (mainPanel == null)
-        {
+        if (mainPanel == null) {
             log.error("UI does not exist.");
             return;
         }
@@ -3376,25 +3371,46 @@ public class Uploader implements ActionListener, KeyListener
      * Shuts down upload UI.
      * @param notifyWB - If true, notify this Uploader's WorkBench.
      */
-    public void closeMainForm(boolean notifyWB)
-    {
-        try
-        {
+    public void closeMainForm(boolean notifyWB) {
+        try {
             logDebug("closing main form");
             mainPanel.setVisible(false);
             mainPanel = null;
             closeUploadedDataViewers();
 
-            for (Component c : keyListeningTo)
-            {
+            for (Component c : keyListeningTo) {
                 logDebug("removing key listener");
                 c.removeKeyListener(this);
             }
             keyListeningTo.clear();
 
-            if (notifyWB)
-            {
+            if (notifyWB) {
                 wbSS.uploadDone();
+                if (isUpdateUpload()) {
+                    QueryTask qt = (QueryTask) ContextMgr.getTaskByClass(QueryTask.class);
+                    final SubPaneIFace wbPane = SubPaneMgr.getInstance().getCurrentSubPane();
+                    SubPaneIFace qbp = null;
+                    if (qt != null) {
+                        java.util.Collection<SubPaneIFace> panes = SubPaneMgr.getInstance().getSubPanes();
+                        for (SubPaneIFace pane : panes) {
+                            if (pane.getTask() == qt) {
+                                qbp = pane;
+                                break;
+                            }
+                        }
+                    }
+                    final SubPaneIFace qbPane = qbp;
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (qbPane != null) {
+                                SubPaneMgr.getInstance().showPane(qbPane);
+                            }
+                            SubPaneMgr.getInstance().removePane(wbPane);
+                        }
+                    });
+                }
+
             }
         }
         finally
@@ -3474,8 +3490,7 @@ public class Uploader implements ActionListener, KeyListener
         }
         else if (e.getActionCommand().equals(UploadMainPanel.CLOSE_UI))
         {
-            if (aboutToShutdown(null))
-            {
+            if (aboutToShutdown(null)) {
                 closeMainForm(true);
             }
         }
@@ -3912,38 +3927,32 @@ public class Uploader implements ActionListener, KeyListener
 //        SwingUtilities.invokeLater(new Runnable() {
 //           public void run()
 //           {
-               if (mainPanel == null)
-               {
+               if (mainPanel == null) {
                    log.error("UI does not exist.");
                    return;
                }
                
-               if (op.equals(Uploader.RETRIEVING_UPLOADED_DATA))
-               {
+               if (op.equals(Uploader.RETRIEVING_UPLOADED_DATA)) {
             	   //There's really nothing to do in this case anymore
             	   return;
                }
                
                int uploadedObjects = getUploadedObjects();
                
-               if (op.equals(Uploader.SUCCESS) || op.equals(Uploader.SUCCESS_PARTIAL))
-               {
-                   if (mainPanel.getUploadTbls().getSelectedIndex() == -1)
-                   {
+               if (op.equals(Uploader.SUCCESS) || op.equals(Uploader.SUCCESS_PARTIAL)) {
+                   if (mainPanel.getUploadTbls().getSelectedIndex() == -1) {
                        // assuming list is not empty
                        mainPanel.getUploadTbls().setSelectedIndex(0);
                    }
                }
 
-               if (op.equals(Uploader.SUCCESS) || op.equals(Uploader.SUCCESS_PARTIAL)) 
-               {
-            	   if (uploadedObjects > 0 && !isUpdateUpload())
-            	   {
+               if (op.equals(Uploader.SUCCESS) || op.equals(Uploader.SUCCESS_PARTIAL)) {
+            	   if (uploadedObjects > 0 && !isUpdateUpload()) {
             		   mainPanel.closeBtn.setText(getResourceString("WB_UPLOAD.COMMIT"));
             	   }
-            	   else
-            	   {
+            	   else {
             		   mainPanel.closeBtn.setText(getResourceString("CLOSE"));
+                       //closeMainForm(true);
             	   }
                }
                
@@ -4210,7 +4219,7 @@ public class Uploader implements ActionListener, KeyListener
      */
     protected boolean canViewUpload(final String op)
     {
-        return (op.equals(Uploader.SUCCESS) || op.equals(Uploader.SUCCESS_PARTIAL)) && mainPanel.getUploadTbls().getSelectedIndex() != -1;
+        return !isUpdateUpload() && ((op.equals(Uploader.SUCCESS) || op.equals(Uploader.SUCCESS_PARTIAL)) && mainPanel.getUploadTbls().getSelectedIndex() != -1);
     }
 
     /**
@@ -4372,13 +4381,11 @@ public class Uploader implements ActionListener, KeyListener
                     }
                     super.done();
                     statusBar.setText("");
-                    if (success)
-                    {
-                        if (!paused)
-                        {
+                    if (success) {
+                        if (!paused) {
                         	setCurrentOp(Uploader.SUCCESS);
-                        } else
-                        {
+
+                        } else {
                         	setCurrentOp(Uploader.SUCCESS_PARTIAL);
                         }
                     }
