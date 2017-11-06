@@ -251,8 +251,13 @@ public class Uploader implements ActionListener, KeyListener
     
     protected boolean 	                            additionalLocksSet = false;
     protected static final Logger                   log                      = Logger.getLogger(Uploader.class);
-   
-      
+
+    public List<UploadTable> getUploadedTablesForCurrentRow() {
+        return uploadedTablesForCurrentRow;
+    }
+
+    private List<UploadTable> uploadedTablesForCurrentRow;
+
     private class SkippedAttachment extends BaseUploadMessage
     {
     	protected int row;
@@ -4252,20 +4257,17 @@ public class Uploader implements ActionListener, KeyListener
                 /**
                  * 
                  */
-                protected void setExportedRecordIds() throws Exception
-                {
+                protected void setExportedRecordIds() throws Exception {
                 	DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
                 	Class<?> cls = DBTableIdMgr.getInstance().getInfoById(updateTblId).getClassObj();
-                	try
-                	{
+                	try {
                 		DataModelObjBase obj = (DataModelObjBase )session.get(cls, getRowRecordId(rowUploading));
                 		if (obj != null)
                 		{
                 			obj.forceLoad();
                 		}
                 		exportedTable.setExportedRecordId(obj);
-                	} finally
-                	{
+                	} finally {
                 		session.close();
                 	}
                 	
@@ -4293,6 +4295,7 @@ public class Uploader implements ActionListener, KeyListener
 
                         	if (!uploadData.isEmptyRow(rowUploading) && (updateTblId == null || rowHasEdits(rowUploading))) {
                             	List<UploadTable> tblsWithChanges = new ArrayList<UploadTable>();
+                            	List<UploadTable> tblsToSkip = new ArrayList<>();
                             	if (updateTblId != null) {
                             		for (UploadTable t: uploadTables) {
                             			loadRow(t, rowUploading);
@@ -4302,6 +4305,7 @@ public class Uploader implements ActionListener, KeyListener
                             		}
                             	}
                         		imagesForRow.clear();
+                            	uploadedTablesForCurrentRow.clear();
                         		if (updateTblId == null || tblsWithChanges.size() > 0) {
                         			if (updateTblId != null) {
                         				setExportedRecordIds();
@@ -4313,7 +4317,9 @@ public class Uploader implements ActionListener, KeyListener
                         				}
                         				try {
                         					if (theWb.getRow(rowUploading).getUploadStatus() != WorkbenchRow.UPLD_SUCCESS) {
-                        						uploadRow(t, rowUploading, tblsWithChanges, updateTblId);
+                        						if (uploadRow(t, rowUploading, tblsWithChanges, updateTblId)) {
+                        						    uploadedTablesForCurrentRow.add(t);
+                                                }
                         						tblsWithChanges.remove(t);
                         					} else {
                         						throw new UploaderException(getResourceString("WB_UPLOAD_ROW_ALREADY_UPLOADED"), UploaderException.ABORT_ROW);
@@ -5091,7 +5097,8 @@ public class Uploader implements ActionListener, KeyListener
         protected boolean cancellable = false;
         protected long startTime;
         protected long endTime;
-        
+
+
         public UploaderTask(boolean cancellable, String cancelMsg)
         {
             super();
@@ -5103,6 +5110,7 @@ public class Uploader implements ActionListener, KeyListener
         public void start()
         {
             startTime = System.nanoTime();
+            uploadedTablesForCurrentRow = new ArrayList<UploadTable>();
         }
                 
         @Override
@@ -5235,16 +5243,11 @@ public class Uploader implements ActionListener, KeyListener
      * @param t
      * @param row
      */
-    public void loadRow(final UploadTable t, int row)
-    {
-        for (UploadField field : uploadFields)
-        {
+    public void loadRow(final UploadTable t, int row) {
+        for (UploadField field : uploadFields) {
             logDebug("   uploading field: " + field.getWbFldName());
-            //System.out.println("   uploading field: " + field.getWbFldName());
-        	if (field.getField().getTable().equals(t.getTable()))
-            {
-                if (field.getIndex() != -1)
-                {
+        	if (field.getField().getTable().equals(t.getTable())) {
+                if (field.getIndex() != -1) {
                     uploadCol(field, uploadData.get(row, field.getIndex()));
                 }
             }
@@ -5257,11 +5260,25 @@ public class Uploader implements ActionListener, KeyListener
      * 
      * imports data in row belonging to t's Table.
      */
-    protected void uploadRow(final UploadTable t, int row, final List<UploadTable> tblsWithChanges, final Integer updateTblId) throws UploaderException {
+    protected boolean uploadRow(final UploadTable t, int row, final List<UploadTable> tblsWithChanges, final Integer updateTblId) throws UploaderException {
+        boolean uploadedIt = false;
         if (updateTblId == null || tblsWithChanges.size() > 0) {
         	loadRow(t, row);
+        	boolean useExportedRec = false;
+            if (tblsWithChanges.size() > 0) {
+                if (tblsWithChanges.indexOf(t) == -1) {
+                    useExportedRec = true;
+                    for (UploadTable a : t.getAncestorTables()) {
+                        if (tblsWithChanges.indexOf(a) != -1) {
+                            useExportedRec = false;
+                            break;
+                        }
+                    }
+                }
+            }
         	try {
-        		writeRow(t, row);
+        		writeRow(t, row, useExportedRec);
+        		uploadedIt = !useExportedRec;
         	}
         	catch (UploaderException ex) {
         		//ex.getCause().printStackTrace();
@@ -5270,22 +5287,7 @@ public class Uploader implements ActionListener, KeyListener
         		throw ex;
         	}
         }
-    }
-
-    protected void uploadRowSavelessly(final UploadTable t, int row) throws UploaderException
-    {
-        loadRow(t, row);
-    	try
-        {
-            writeRowSavelessly(t, row);
-        }
-        catch (UploaderException ex)
-        {
-            //ex.getCause().printStackTrace();
-        	logDebug(ex.getMessage() + " (" + t.getTable().getName() + ", row "
-                    + Integer.toString(row) + ")");
-            throw ex;
-        }
+        return uploadedIt;
     }
 
     /**
@@ -5308,8 +5310,8 @@ public class Uploader implements ActionListener, KeyListener
      * 
      * writes data (if necessary) for t.
      */
-    protected void writeRow(final UploadTable t, int row) throws UploaderException {
-        t.writeRow(row);
+    protected void writeRow(final UploadTable t, int row, boolean useExportedRec) throws UploaderException {
+        t.writeRow(row, useExportedRec);
         Set<WorkbenchRowImage> imagesToAttach = new HashSet<WorkbenchRowImage>();
         for (int i = imagesForRow.size() -1; i >= 0; i--) {
         	WorkbenchRowImage wri = imagesForRow.get(i);
@@ -5321,27 +5323,6 @@ public class Uploader implements ActionListener, KeyListener
         attachImages(t, imagesToAttach);
     }
 
-    /**
-     * @param t
-     * @throws UploaderException
-     * 
-     * writes data (if necessary) for t.
-     */
-    protected void writeRowSavelessly(final UploadTable t, int row) throws UploaderException
-    {
-        t.writeRowSavelessly(row);
-        /*Set<WorkbenchRowImage> imagesToAttach = new HashSet<WorkbenchRowImage>();
-        for (int i = imagesForRow.size() -1; i >= 0; i--)
-        {
-        	WorkbenchRowImage wri = imagesForRow.get(i);
-        	if (getAttachToTable(wri) == t)
-        	{
-        		imagesToAttach.add(wri);
-        		imagesForRow.remove(i);
-        	}
-        }
-        attachImages(t, imagesToAttach);*/
-    }
 
     /**
      * @param cls
