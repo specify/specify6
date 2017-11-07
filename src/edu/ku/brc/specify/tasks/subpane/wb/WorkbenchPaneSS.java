@@ -812,14 +812,6 @@ public class WorkbenchPaneSS extends BaseSubPane
             }
         });
         
-        
-        for (int c = 0; c < spreadSheet.getTableHeader().getColumnModel().getColumnCount(); c++)
-		{
-			// TableColumn column =
-			// spreadSheet.getTableHeader().getColumnModel().getColumn(spreadSheet.getTableHeader().getColumnModel().getColumnCount()-1);
-			TableColumn column = spreadSheet.getTableHeader().getColumnModel().getColumn(c);
-			column.setCellRenderer(new WbCellRenderer());
-		}
 
         // setup the JFrame to show images attached to WorkbenchRows
         imageFrame = new ImageFrame(mapSize, this, this.workbench, task, isReadOnly);
@@ -3501,8 +3493,7 @@ public class WorkbenchPaneSS extends BaseSubPane
      * Adjust all the column width for the data in the column, this may be handles with JDK 1.6 (6.)
      * @param tableArg the table that should have it's columns adjusted
      */
-    private void initColumnSizes(final JTable tableArg, final JButton theSaveBtn) throws Exception
-    {
+    private void initColumnSizes(final JTable tableArg, final JButton theSaveBtn) throws Exception {
         TableModel  tblModel    = tableArg.getModel();
         TableColumn column      = null;
         Component   comp        = null;
@@ -3511,11 +3502,9 @@ public class WorkbenchPaneSS extends BaseSubPane
         
         
         Element uploadDefs = null;
-        if (WorkbenchTask.isCustomizedSchema()) 
-        {
+        if (WorkbenchTask.isCustomizedSchema()) {
         	uploadDefs = XMLHelper.readFileToDOM4J(new File(UIRegistry.getAppDataDir() + File.separator + "specify_workbench_upload_def.xml"));
-        } else
-        {
+        } else {
         	uploadDefs = XMLHelper.readDOMFromConfigDir("specify_workbench_upload_def.xml");
         }
         
@@ -3528,35 +3517,30 @@ public class WorkbenchPaneSS extends BaseSubPane
         DBTableIdMgr databaseSchema = WorkbenchTask.getDatabaseSchema();
         
         columnMaxWidths = new Integer[tableArg.getColumnCount()];
-        for (int i = 0; i < wbtmis.size() /*tableArg.getColumnCount()*/; i++) 
-        {
+        for (int i = 0; i < wbtmis.size() /*tableArg.getColumnCount()*/; i++)  {
             TableCellRenderer headerRenderer = tableArg.getColumnModel().getColumn(i).getHeaderRenderer();
             WorkbenchTemplateMappingItem wbtmi = wbtmis.elementAt(i);
             
             // Now go retrieve the data length
             int fieldWidth = WorkbenchDataItem.getMaxWBCellLength();
             DBTableInfo ti = databaseSchema.getInfoById(wbtmi.getSrcTableId());
-            if (ti != null)
-            {
+            if (ti != null) {
                 DBFieldInfo fi = ti.getFieldByName(wbtmi.getFieldName());
-                if (fi != null)
-                {
+                if (fi != null) {
                     wbtmi.setFieldInfo(fi);
                     //System.out.println(fi.getName()+"  "+fi.getLength()+"  "+fi.getType());
-                    if (RecordTypeCodeBuilder.getTypeCode(fi) == null && fi.getLength() > 0)
-                    {
+                    if (RecordTypeCodeBuilder.getTypeCode(fi) == null && fi.getLength() > 0) {
                         fieldWidth = Math.min(fi.getLength(), WorkbenchDataItem.getMaxWBCellLength());
                     }
-                } else
-                {
+                } else {
                     log.error("Can't find field with name ["+wbtmi.getFieldName()+"]");
                 }
-            } else
-            {
+            } else {
                 log.error("Can't find table ["+wbtmi.getSrcTableId()+"]");
             }
             columnMaxWidths[i] = new Integer(fieldWidth);
             GridCellEditor cellEditor = getCellEditor(wbtmi, fieldWidth, theSaveBtn, uploadDefs);
+            cellEditor.setEditable(wbtmi.getIsEditable());
             column = tableArg.getColumnModel().getColumn(i);
 
             comp = headerRenderer.getTableCellRendererComponent(
@@ -3587,6 +3571,10 @@ public class WorkbenchPaneSS extends BaseSubPane
             column.setPreferredWidth(Math.min(Math.max(maxWidth, cellWidth), 400));
             
             column.setCellEditor(cellEditor);
+            WbCellRenderer renderer = new WbCellRenderer();
+            renderer.setEditable(wbtmi.getIsEditable());
+            column.setCellRenderer(renderer);
+
         }
         //tableArg.setCellEditor(cellEditor);
     }
@@ -5550,6 +5538,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         protected int				  editCol = -1;
         protected int                 editRow = -1;
         //protected UndoManager undoManager = new UndoManager();
+        protected boolean             isEditable = true;
 
         public GridCellEditor(final JTextField textField, final String caption, final int length, final JButton gcSaveBtn)
         {
@@ -5562,13 +5551,21 @@ public class WorkbenchPaneSS extends BaseSubPane
         	super(combo);
         	init(combo, caption, length, gcSaveBtn);
         }
-        
+
+        public boolean isEditable() {
+            return isEditable;
+        }
+
+        public void setEditable(boolean editable) {
+            isEditable = editable;
+        }
+
         protected void init(final JComponent comp, final String caption, final int length, final JButton gcSaveBtn)
         {
            	this.uiComponent = comp;
             this.length    = length;
             this.ceSaveBtn = saveBtn;
-     
+
             
             //verifier = new LengthInputVerifier(caption, length);
             //uiComponent.setInputVerifier(verifier);
@@ -5672,7 +5669,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         @Override
         public boolean isCellEditable(EventObject e)
         {
-            return true;
+            return isEditable;
         }
 
         //
@@ -5866,8 +5863,15 @@ public class WorkbenchPaneSS extends BaseSubPane
 				lbl.setText(filename);
 				lbl.setHorizontalAlignment(SwingConstants.CENTER);
 			}
+			lbl.setEnabled(isEditable);
 			return lbl;
 		}
+
+		private boolean isEditable = true;
+
+        public void setEditable(boolean editable) {
+            isEditable = editable;
+        }
     }
     
     /**

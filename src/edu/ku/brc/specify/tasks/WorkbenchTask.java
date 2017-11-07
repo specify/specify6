@@ -3945,9 +3945,9 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     		if (f.getIsDisplay()) {
     			fi = getQueryFldWBMapping(f, tblMgr, defMap);
     		}
-    		if (fi == null || !f.getIsDisplay()) {
+    		if (fi == null) {
     			unMappedFlds.add(f);
-    		} else {
+    		} else if (f.getIsDisplay()){
     			fldMappings.add(new Pair<SpQueryField, Pair<DBTableInfo, DBFieldInfo>>(f, fi));
     		}
     	}
@@ -4015,7 +4015,8 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     		
     	});
     	for (Pair<SpQueryField, Pair<DBTableInfo, DBFieldInfo>> m : mappings) {
-    		WorkbenchTemplateMappingItem mi = createMappingItemForQueryField(m.getFirst(), m.getSecond(), q.getSecond(), viewOrder++);
+    		WorkbenchTemplateMappingItem mi = createMappingItemForQueryField(m.getFirst(), m.getSecond(), q.getSecond(), viewOrder++,
+                    isBatchEditableFld(query, m.getFirst(), m.getSecond()));
     		mi.setWorkbenchTemplate(wt);
     		wt.getWorkbenchTemplateMappingItems().add(mi);
     	}
@@ -4025,14 +4026,22 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     	wt.setName("Query Results Edit -- " + nowStr);
     	return wt;
     }
-    
+    /*
+    *
+    * */
+   private boolean isBatchEditableFld(final SpQuery q, final SpQueryField qf, final Pair<DBTableInfo, DBFieldInfo> fldInfo) {
+        //XXX first pass brute force approach
+       DBTableInfo tbl = fldInfo.getFirst();
+       DBFieldInfo fld = fldInfo.getSecond();
+       return !(tbl.getTableId() == CollectionObject.getClassTableId() && fld.getName().equalsIgnoreCase("catalognumber"));
+    }
     /**
      * @param f
      * @param fi
      * @return
      */
     protected WorkbenchTemplateMappingItem createMappingItemForQueryField(final SpQueryField f, final Pair<DBTableInfo, DBFieldInfo> tfi, 
-    		final Map<SpQueryField, String> headers, short viewOrder) {
+    		final Map<SpQueryField, String> headers, short viewOrder, boolean isEditable) {
 		WorkbenchTemplateMappingItem wmi = new WorkbenchTemplateMappingItem();
 		DBFieldInfo fi = tfi.getSecond();
 		wmi.initialize();
@@ -4046,6 +4055,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
 		wmi.setSrcTableId(tfi.getFirst().getTableId());
 		wmi.setTableName(tfi.getFirst().getName().toLowerCase());
 		wmi.setViewOrder(viewOrder);
+		wmi.setIsEditable(isEditable);
     	return wmi;
     }
     /**
