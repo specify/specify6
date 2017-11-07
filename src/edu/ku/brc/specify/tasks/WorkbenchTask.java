@@ -1878,7 +1878,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
      * @param wb
      * @return
      */
-    protected boolean loadRsIntoWb(final RecordSetIFace rs, final Workbench wb)
+    protected boolean loadRsIntoWb(final RecordSetIFace rs, final Workbench wb, final Vector<Vector<Object>> queryResults)
     {
     	boolean result = false;
     	DBTableInfo tbl = DBTableIdMgr.getInstance().getInfoById(rs.getDbTableId());
@@ -1888,24 +1888,22 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     	wb.setExportedFromTableName(tbl.getClassName());
     	DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
     	Class<?> cls =tbl.getClassObj();
-    	try
-    	{
-         	try
-        	{
+    	try {
+         	try {
         		WorkbenchValidator wbv = new WorkbenchValidator(wb);
-        		Set<Integer> itemIdsAdded = new TreeSet<Integer>(); 
-        		for (RecordSetItemIFace item : rs.getOrderedItems())
-        		{
+        		Set<Integer> itemIdsAdded = new TreeSet<Integer>();
+        		int r = 0;
+        		for (RecordSetItemIFace item : rs.getOrderedItems()) {
         			Integer id = item.getRecordId();
         			if (!itemIdsAdded.contains(id)) { //don't add duplicates 
         				DataModelObjBase obj = (DataModelObjBase )session.get(cls, item.getRecordId());
         				if (obj != null) {
         					obj.forceLoad();
-        					wbv.getUploader().loadRecordToWb(obj, wb);
+        					wbv.getUploader().loadRecordToWb(obj, wb, queryResults == null ? null : queryResults.get(r));
         				}
         				itemIdsAdded.add(id);
-        			} 
-        			
+        			}
+        			r++;
         		}
         	} catch (Exception ex)
         	{
@@ -2065,26 +2063,26 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             {
                 @SuppressWarnings("synthetic-access")
                 @Override
-                public Object construct()
-                {
-                    if (contents == null)
-                    {
+                public Object construct() {
+                    if (contents == null) {
                         workbench.addRow();
                         
-                    } else if (contents instanceof ImportDataFileInfo)
-                    {
-                    	if (((ImportDataFileInfo )contents).loadData(workbench) == DataImportIFace.Status.Error)
-                        {
+                    } else if (contents instanceof ImportDataFileInfo) {
+                    	if (((ImportDataFileInfo )contents).loadData(workbench) == DataImportIFace.Status.Error) {
                             return null;
                         }
                          
-                     } else if (contents instanceof RecordSetIFace)
-                     {
-                    	 if (!loadRsIntoWb((RecordSetIFace )contents, workbench))
-                    	 {
+                     } else if (contents instanceof RecordSetIFace) {
+                    	 if (!loadRsIntoWb((RecordSetIFace )contents, workbench, null)) {
                     		 return null;
                     	 }
-                     }
+                     } else if (contents instanceof Pair) {
+                        Pair<RecordSetIFace, Vector<Vector<Object>>> data = (Pair<RecordSetIFace, Vector<Vector<Object>>>)contents;
+                        if (!loadRsIntoWb(data.getFirst(), workbench, data.getSecond())) {
+                            return null;
+                        }
+
+                    }
                      
                      DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
                      
@@ -2119,8 +2117,18 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 public void finished()
                 {
                     UIRegistry.clearGlassPaneMsg();
-                    
+                    //if batch-editing qb results close qb results pane
+                    if (contents instanceof Pair) {
+                        for (SubPaneIFace pane : SubPaneMgr.getInstance().getSubPanes()) {
+                            if (pane instanceof QBResultsSubPane) {
+                                SubPaneMgr.getInstance().removePane(pane);
+                                break;
+                            }
+                        }
+                    }
+
                     createEditorForWorkbench(workbench, null, false, true);
+
                 }
             };
             worker.start();
@@ -3757,7 +3765,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
      * @param query
      * @param rs
      */
-    public void batchEditQueryResults(final Pair<SpQuery, Map<SpQueryField, String>> query, final RecordSetIFace rs) {
+    public void batchEditQueryResults(final Pair<SpQuery, Map<SpQueryField, String>> query, final RecordSetIFace rs, final Vector<Vector<Object>> results) {
     	try {
     		WorkbenchTemplate template = getTemplateFromQuery(query);
     		if (template != null) {
@@ -3766,13 +3774,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         		}
     			Workbench workbench = createNewWorkbenchDataObj(template.getName(), template, false);
     			if (workbench != null) {
-    				fillandSaveWorkbench(rs, workbench);
-    		        for (SubPaneIFace pane : SubPaneMgr.getInstance().getSubPanes()) {
-    		            if (pane instanceof QBResultsSubPane) {
-    		                SubPaneMgr.getInstance().removePane(pane);
-    		                break;
-    		            }
-    		        }
+    				fillandSaveWorkbench(new Pair<RecordSetIFace, Vector<Vector<Object>>>(rs, results), workbench);
     			}
     		}
 		} catch (Exception e) {
@@ -3941,15 +3943,14 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         }
         Map<String, List<Element>> defMap = buildUploadDefMap(uploadDefs);
     	for (SpQueryField f : query.getFields()) {
-    		Pair<DBTableInfo, DBFieldInfo> fi = null;
     		if (f.getIsDisplay()) {
-    			fi = getQueryFldWBMapping(f, tblMgr, defMap);
-    		}
-    		if (fi == null) {
-    			unMappedFlds.add(f);
-    		} else if (f.getIsDisplay()){
-    			fldMappings.add(new Pair<SpQueryField, Pair<DBTableInfo, DBFieldInfo>>(f, fi));
-    		}
+                Pair<DBTableInfo, DBFieldInfo> fi = getQueryFldWBMapping(f, tblMgr, defMap);
+                //if (fi == null) {
+                //    unMappedFlds.add(f);
+               // } else {
+                    fldMappings.add(new Pair<SpQueryField, Pair<DBTableInfo, DBFieldInfo>>(f, fi));
+                //}
+            }
     	}
     	return new Pair<List<Pair<SpQueryField, Pair<DBTableInfo, DBFieldInfo>>>, List<SpQueryField>>(fldMappings, unMappedFlds);
     }
@@ -4031,9 +4032,14 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     * */
    private boolean isBatchEditableFld(final SpQuery q, final SpQueryField qf, final Pair<DBTableInfo, DBFieldInfo> fldInfo) {
         //XXX first pass brute force approach
-       DBTableInfo tbl = fldInfo.getFirst();
-       DBFieldInfo fld = fldInfo.getSecond();
-       return !(tbl.getTableId() == CollectionObject.getClassTableId() && fld.getName().equalsIgnoreCase("catalognumber"));
+       if (fldInfo == null) {
+           return false;
+       } else {
+           DBTableInfo tbl = fldInfo.getFirst();
+           DBFieldInfo fld = fldInfo.getSecond();
+           return fld != null &&
+                   !(tbl.getTableId() == CollectionObject.getClassTableId() && fld.getName().equalsIgnoreCase("catalognumber"));
+       }
     }
     /**
      * @param f
@@ -4043,19 +4049,27 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     protected WorkbenchTemplateMappingItem createMappingItemForQueryField(final SpQueryField f, final Pair<DBTableInfo, DBFieldInfo> tfi, 
     		final Map<SpQueryField, String> headers, short viewOrder, boolean isEditable) {
 		WorkbenchTemplateMappingItem wmi = new WorkbenchTemplateMappingItem();
-		DBFieldInfo fi = tfi.getSecond();
+		DBFieldInfo fi = tfi != null ? tfi.getSecond() : null;
 		wmi.initialize();
-		String caption = headers.get(f);
-		wmi.setCaption(caption == null ? fi.getTitle() : caption);
-		wmi.setDataFieldLength(new Integer(fi.getLength()).shortValue());
-		wmi.setFieldName(fi.getName());
-		wmi.setFieldType(WorkbenchTemplateMappingItem.TEXTFIELD); //Don't think the fieldtype value matters
-		wmi.setImportedColName(caption == null ? fi.getTitle() : caption);
-		wmi.setOrigImportColumnIndex(new Integer(-1).shortValue());
-		wmi.setSrcTableId(tfi.getFirst().getTableId());
-		wmi.setTableName(tfi.getFirst().getName().toLowerCase());
-		wmi.setViewOrder(viewOrder);
-		wmi.setIsEditable(isEditable);
+		String caption = headers.get(f) != null ? headers.get(f)
+                : fi != null ? fi.getTitle() : null;
+		wmi.setCaption(caption);
+        wmi.setImportedColName(caption);
+        wmi.setFieldType(WorkbenchTemplateMappingItem.TEXTFIELD); //Don't think the fieldtype value matters
+        wmi.setOrigImportColumnIndex(new Integer(-1).shortValue());
+        wmi.setViewOrder(viewOrder);
+        wmi.setIsEditable(isEditable);
+        if (fi != null) {
+            wmi.setDataFieldLength(new Integer(fi.getLength()).shortValue());
+            wmi.setFieldName(fi.getName());
+            wmi.setSrcTableId(tfi.getFirst().getTableId());
+            wmi.setTableName(tfi.getFirst().getName().toLowerCase());
+        } else {
+            wmi.setDataFieldLength(Short.valueOf("500"));
+            wmi.setFieldName("none");
+            wmi.setSrcTableId(-1);
+            wmi.setTableName("none");
+        }
     	return wmi;
     }
     /**
@@ -4668,53 +4682,40 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     public static Class<?> getDataType(final WorkbenchTemplateMappingItem wbtmi)
     {
         // if this mapping item doesn't correspond to a DB field, return the java.lang.String class
-        if (wbtmi.getSrcTableId() == null)
-        {
+        if (wbtmi.getSrcTableId() == null || wbtmi.getSrcTableId() == -1) {
             return String.class;
         }
         
         DBTableIdMgr schema    = getDatabaseSchema();
         DBTableInfo  tableInfo = schema.getInfoById(wbtmi.getSrcTableId());
-        if (tableInfo == null)
-        {
-            throw new RuntimeException("Cannot find TableInfo in DBTableIdMgr for ID=" + wbtmi.getSrcTableId());
+        if (tableInfo == null) {
+            throw new RuntimeException ("Cannot find TableInfo in DBTableIdMgr for ID=" + wbtmi.getSrcTableId());
         }
         
-        for (DBFieldInfo fi : tableInfo.getFields())
-        {
-            if (fi.getName().equals(wbtmi.getFieldName()))
-            {
+        for (DBFieldInfo fi : tableInfo.getFields()) {
+            if (fi.getName().equals(wbtmi.getFieldName())) {
                 String type = fi.getType();
-                if (StringUtils.isNotEmpty(type))
-                {
-                    if (type.equals("calendar_date"))
-                    {
+                if (StringUtils.isNotEmpty(type)) {
+                    if (type.equals("calendar_date")) {
                         return Calendar.class;
                         
-                    } else if (type.equals("text"))
-                    {
+                    } else if (type.equals("text")) {
                         return String.class;
                         
-                    } else if (type.equals("boolean"))
-                    {
+                    } else if (type.equals("boolean")) {
                         return Boolean.class;
                         
-                    } else if (type.equals("short"))
-                    {
+                    } else if (type.equals("short")) {
                         return Short.class;
                         
-                    } else if (type.equals("byte"))
-                    {
+                    } else if (type.equals("byte")) {
                         return Byte.class;
                         
-                    } else
-                    {
-                        try
-                        {
+                    } else {
+                        try {
                             return Class.forName(type);
                             
-                        } catch (Exception e)
-                        {
+                        } catch (Exception e) {
                             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, e);
                             log.error(e);

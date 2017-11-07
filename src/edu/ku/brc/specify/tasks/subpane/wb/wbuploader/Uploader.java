@@ -5253,7 +5253,7 @@ public class Uploader implements ActionListener, KeyListener
     public void loadRow(final UploadTable t, int row) {
         for (UploadField field : uploadFields) {
             logDebug("   uploading field: " + field.getWbFldName());
-        	if (field.getField().getTable().equals(t.getTable())) {
+        	if (field.getField() != null && field.getField().getTable().equals(t.getTable())) {
                 if (field.getIndex() != -1) {
                     uploadCol(field, uploadData.get(row, field.getIndex()));
                 }
@@ -6035,7 +6035,7 @@ public class Uploader implements ActionListener, KeyListener
     	umsbp.applySettingToAll(uploadTables);
     }
     
-    public void loadRecordToWb(final DataModelObjBase rec, final Workbench wb) throws Exception {
+    public void loadRecordToWb(final DataModelObjBase rec, final Workbench wb, Vector<Object> queryResultRow) throws Exception {
     	UploadTable t = null;
     	for (UploadTable ut : uploadTables) {
     		if (ut.getTblClass().equals(rec.getClass())){
@@ -6090,6 +6090,23 @@ public class Uploader implements ActionListener, KeyListener
     			seq++;
     		}
     	}
+    	for (WorkbenchTemplateMappingItem mi : wb.getWorkbenchTemplate().getWorkbenchTemplateMappingItems()) {
+    	    if (mi.getSrcTableId() == -1) {
+    	        Object data = queryResultRow.get(mi.getViewOrder());
+    	        if (data != null) {
+                    WorkbenchDataItem di = new WorkbenchDataItem();
+                    di.initialize();
+                    di.setWorkbenchTemplateMappingItem(mi);
+                    di.setWorkbenchRow(row);
+                    di.setRowNumber(row.getRowNumber());
+                    di.setRequired(mi.getIsRequired());
+                    //XXX need to deal with formatting and stuff using fld.DBFieldInfo ...
+                    di.setCellData(data.toString());
+                    row.getWorkbenchDataItems().add(di);
+
+                }
+            }
+        }
     }
 
 

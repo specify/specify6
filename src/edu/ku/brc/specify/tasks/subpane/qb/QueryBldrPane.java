@@ -2175,7 +2175,15 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     	//the 'allowNulls' setting must be checked and left join used when it is true.
         return " left join ";
     }
-    
+
+    public Vector<Vector<Object>> getResultsCache() {
+        QBQueryForIdResultsHQL r = completedResults.get();
+        if (r != null) {
+            return r.getCache();
+        } else {
+            return null;
+        }
+    }
     /**
      * @param taxAlias
      * @return an alias for the acceptedParent joined table for table with alias taxAlias.
