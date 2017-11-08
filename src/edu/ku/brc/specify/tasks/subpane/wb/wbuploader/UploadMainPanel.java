@@ -86,6 +86,10 @@ public class UploadMainPanel extends JPanel
     public final static String MSG_CLICK = "MSG_CLICK";
     public final static String UNDO_UPLOAD = "UNDO_UPLOAD";
     public final static String PRINT_INVALID = "PRINT_INVALID";
+
+    public final static String CANCEL_AND_CLOSE_BATCH_UPDATE = "CANCEL_AND_CLOSE_BATCH_UPDATE";
+    public final static String COMMIT_AND_CLOSE_BATCH_UPDATE = "COMMIT_AND_CLOSE_BATCH_UPDATE";
+
     
     protected JLabel uploadTblLbl;
     protected JList uploadTbls;
@@ -99,8 +103,11 @@ public class UploadMainPanel extends JPanel
     protected JButton viewUploadBtn;
     protected JButton closeBtn;
     protected JButton cancelBtn;
+    protected JButton cancelCloseBatchUpdateBtn;
+    protected JButton commitCloseBatchUpdateBtn;
     protected JButton undoBtn;
     protected JButton printBtn;
+
     protected JPanel msgPane;
     protected JLabel msgLbl;
     protected JList msgList;
@@ -417,27 +424,46 @@ public class UploadMainPanel extends JPanel
 
         add(msgPane, cc.xy(4, 6));
                 
-        JPanel btnPane = new JPanel(new FormLayout("f:max(50dlu;pref)", "c:m, c:m, c:m, c:m, c:m, c:m"));
+        JPanel btnPane = new JPanel(new FormLayout("f:max(50dlu;pref)", "c:m, c:m, c:m, c:m, c:m, c:m, c:m, c:m"));
+
         validateContentBtn = createButton(getResourceString("WB_UPLOAD_VALIDATE_CONTENT_BTN"));
         validateContentBtn.setActionCommand(VALIDATE_CONTENT);
-        viewSettingsBtn = createButton(getResourceString("WB_UPLOAD_SETTINGS_BTN")); 
+
+        viewSettingsBtn = createButton(getResourceString("WB_UPLOAD_SETTINGS_BTN"));
         viewSettingsBtn.setActionCommand(VIEW_SETTINGS);
+
         doUploadBtn     = createButton(getResourceString(isUpdateUpload ? "WB_UPLOAD_BATCH_EDIT_BTN" :"WB_UPLOAD_BTN"));
         doUploadBtn.setActionCommand(DO_UPLOAD);
+
         viewUploadBtn   = createButton(getResourceString("WB_UPLOAD_VIEW_BTN"));
         viewUploadBtn.setActionCommand(VIEW_UPLOAD);
-        closeBtn        = createButton(getResourceString("CLOSE")); 
+        viewUploadBtn.setVisible(!isUpdateUpload);
+
+        closeBtn        = createButton(getResourceString("CLOSE"));
         closeBtn.setActionCommand(CLOSE_UI);
+        closeBtn.setVisible(!isUpdateUpload);
+
         undoBtn         = createButton(getResourceString("WB_UPLOAD_UNDO_BTN")); 
         undoBtn.setActionCommand(UNDO_UPLOAD);
         undoBtn.setVisible(!isUpdateUpload);
-        
+
+        cancelCloseBatchUpdateBtn = createButton(getResourceString("WB_UPLOAD_CANCEL_CLOSE_BATCH_UPDATE_BTN"));
+        cancelCloseBatchUpdateBtn.setActionCommand(CANCEL_AND_CLOSE_BATCH_UPDATE);
+        cancelCloseBatchUpdateBtn.setVisible(isUpdateUpload);
+
+        commitCloseBatchUpdateBtn = createButton(getResourceString("WB_UPLOAD_COMMIT_CLOSE_BATCH_UPDATE_BTN"));
+        commitCloseBatchUpdateBtn.setActionCommand(COMMIT_AND_CLOSE_BATCH_UPDATE);
+        commitCloseBatchUpdateBtn.setVisible(isUpdateUpload);
+        commitCloseBatchUpdateBtn.setEnabled(false);
+
         btnPane.add(validateContentBtn, cc.xy(1, 1));
         btnPane.add(doUploadBtn, cc.xy(1,2));
         btnPane.add(viewUploadBtn, cc.xy(1, 3));
         btnPane.add(viewSettingsBtn, cc.xy(1, 4));
-        btnPane.add(undoBtn, cc.xy(1, 5));
-        btnPane.add(closeBtn, cc.xy(1, 6));
+        btnPane.add(cancelCloseBatchUpdateBtn, cc.xy(1, 5));
+        btnPane.add(commitCloseBatchUpdateBtn, cc.xy(1, 6));
+        btnPane.add(undoBtn, cc.xy(1, 7));
+        btnPane.add(closeBtn, cc.xy(1, 8));
         add(btnPane, cc.xy(6, 6));
         
         
@@ -707,6 +733,8 @@ public class UploadMainPanel extends JPanel
         setBtnListener(cancelBtn, listener);
         setBtnListener(undoBtn, listener);
         setBtnListener(printBtn, listener);
+        setBtnListener(cancelCloseBatchUpdateBtn, listener);
+        setBtnListener(commitCloseBatchUpdateBtn, listener);
     }
     
     public void addMsg(UploadMessage msg)

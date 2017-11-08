@@ -3700,8 +3700,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
      * @param wbt
      * @return
      */
-    protected Integer getRootTblId(final WorkbenchTemplate wbt)
-    {
+    protected Integer getRootTblId(final WorkbenchTemplate wbt) {
     	//this is really stupid, but might work 99% of the time
     	Vector<Integer> tbls = new Vector<Integer>();
     	tbls.add(CollectionObject.getClassTableId());
@@ -3712,13 +3711,10 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     	tbls.add(Accession.getClassTableId());
     	tbls.add(ReferenceWork.getClassTableId());
     	tbls.add(Agent.getClassTableId());
-    	for (Integer tbl : tbls)
-    	{
-    		for (WorkbenchTemplateMappingItem mi : wbt.getWorkbenchTemplateMappingItems())
-    		{
-    			if (mi.getSrcTableId().equals(tbl)
-    					|| (mi.getSrcTableId() == 4000 /*TaxonImportOnly*/ && tbl == Taxon.getClassTableId()))
-    			{
+    	for (Integer tbl : tbls) {
+    		for (WorkbenchTemplateMappingItem mi : wbt.getWorkbenchTemplateMappingItems()) {
+    			if (mi.getSrcTableId() != null && (mi.getSrcTableId().equals(tbl)
+    					|| (mi.getSrcTableId() == 4000 /*TaxonImportOnly*/ && tbl == Taxon.getClassTableId()))) {
     				return tbl;
     			}
     		}
@@ -4654,7 +4650,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
 									@Override
 									public void run() 
 									{
-										Uploader.getCurrentUpload().closeMainForm(true);
+										Uploader.getCurrentUpload().closeMainForm(true, null);
 										SubPaneMgr.getInstance().removePane(wbSS);
 									}
 									

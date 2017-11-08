@@ -3844,7 +3844,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             }
         }
         
-        if (datasetUploader != null && !datasetUploader.aboutToShutdown(this))
+        if (datasetUploader != null && !datasetUploader.aboutToShutdown(this, null))
         {
             return false;
         }
