@@ -4008,7 +4008,6 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
 			@Override
 			public int compare(Pair<SpQueryField, Pair<DBTableInfo, DBFieldInfo>> o1,
 					Pair<SpQueryField, Pair<DBTableInfo, DBFieldInfo>> o2) {
-				// TODO Auto-generated method stub
 				SpQueryField f1 = o1.getFirst();
 				SpQueryField f2 = o2.getFirst();
 				return f1.getPosition().compareTo(f2.getPosition());
@@ -4027,10 +4026,13 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     	wt.setName("Query Results Edit -- " + nowStr);
     	return wt;
     }
+
     /*
-    *
-    * */
-   private boolean isBatchEditableFld(final SpQuery q, final SpQueryField qf, final Pair<DBTableInfo, DBFieldInfo> fldInfo) {
+    * @param q
+    * @param qf
+    * @param fldInfo
+     */
+    private boolean isBatchEditableFld(final SpQuery q, final SpQueryField qf, final Pair<DBTableInfo, DBFieldInfo> fldInfo) {
         //XXX first pass brute force approach
        if (fldInfo == null) {
            return false;

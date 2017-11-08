@@ -962,7 +962,12 @@ protected List<java.lang.reflect.Field> getFldsForJSON() {
     @Override
     public boolean needToRefreshAfterWrite()
     {
-        return incrementalNodeNumberUpdates;
+        //return incrementalNodeNumberUpdates;
+        /* calling refresh seems to ruin uploads/batch-updates when a single transaction is used for the entire process
+        * I don't think the NodeNumbers are relevant to uploading, and I don't really think refresh is necessary anyway
+        * because the current rec will contain the changes made by the business rules.
+         */
+        return false;
     }
 
     /* (non-Javadoc)

@@ -5803,12 +5803,11 @@ public class UploadTable implements Comparable<UploadTable>
         boolean tblTransactionOpen = false;
 		try
 		{
-			DataModelObjBase mergedRec = rec; 
-//			DataModelObjBase mergedRec = updateMatches ? theSession.merge(rec) : rec; //hopefully we will only be in this method if there are actually changes to save.
-//			if (updateMatches)
-//			{
-//				mergedRec.forceLoad();
-//			}
+			DataModelObjBase mergedRec = rec;
+			//DataModelObjBase mergedRec = updateMatches ? theSession.merge(rec) : rec; //hopefully we will only be in this method if there are actually changes to save.
+			//if (updateMatches) {
+			//	mergedRec.forceLoad();
+			//}
 
         	BusinessRulesIFace busRule = DBTableIdMgr.getInstance().getBusinessRule(tblClass);
         	if (busRule instanceof AttachmentOwnerBaseBusRules)
@@ -5824,10 +5823,8 @@ public class UploadTable implements Comparable<UploadTable>
             	tblTransactionOpen = true;
             }
             theSession.saveOrUpdate(mergedRec);
-            if (busRule != null)
-            {
-                if (!busRule.beforeSaveCommit(mergedRec, theSession))
-                {
+            if (busRule != null) {
+                if (!busRule.beforeSaveCommit(mergedRec, theSession)) {
                     if (sessObj.getSecond()) {
                     	theSession.rollback();
                     	tblTransactionOpen = false;
@@ -5839,12 +5836,10 @@ public class UploadTable implements Comparable<UploadTable>
             	theSession.commit();
             	tblTransactionOpen = false;
             }
-            if (busRule != null)
-            {
+            if (busRule != null) {
                 busRule.afterSaveCommit(mergedRec, theSession);
             }
-            if (needToRefreshAfterWrite() || updateMatches)
-            {
+            if (needToRefreshAfterWrite()) {
                 theSession.refresh(rec);
             }
         }
