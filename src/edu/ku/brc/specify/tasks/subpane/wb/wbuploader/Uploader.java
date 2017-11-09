@@ -37,6 +37,7 @@ import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr.SCOPE;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr.USER_ACTION;
 import edu.ku.brc.specify.tasks.*;
+import edu.ku.brc.specify.tasks.subpane.qb.QueryBldrPane;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS;
 import edu.ku.brc.specify.tasks.subpane.wb.graph.DirectedGraph;
 import edu.ku.brc.specify.tasks.subpane.wb.graph.DirectedGraphException;
@@ -76,6 +77,7 @@ import java.util.*;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
@@ -222,7 +224,7 @@ public class Uploader implements ActionListener, KeyListener
     /**
      * The currently executing upload task.
      */
-    protected UploaderTask                          currentTask = null;
+    protected AtomicReference<UploaderTask> currentTask = new AtomicReference<>(null);
 
     /**
      * the index of the currently processing row in the dataset.
@@ -2065,9 +2067,6 @@ public class Uploader implements ActionListener, KeyListener
         boolean tooLate = true;
         if (!task.isDone()) {
             tooLate = false;
-//            boolean undo = UIRegistry.displayConfirm(getResourceString("WB_UPLOAD_FORM_TITLE"),
-//                getResourceString(task.getCancelMsg()), getResourceString("YES"),
-//                getResourceString("NO"), JOptionPane.QUESTION_MESSAGE);
             if (!task.isDone()) {
                 task.setUndo(false);
                 task.cancelTask();
@@ -3383,7 +3382,7 @@ public class Uploader implements ActionListener, KeyListener
             keyListeningTo.clear();
 
             if (notifyWB) {
-                wbSS.uploadDone();
+                wbSS.uploadDone(action);
                 if (isUpdateUpload()) {
                     if (UploadMainPanel.COMMIT_AND_CLOSE_BATCH_UPDATE.equals(action)) {
                         QueryTask qt = (QueryTask) ContextMgr.getTaskByClass(QueryTask.class);
@@ -3404,6 +3403,21 @@ public class Uploader implements ActionListener, KeyListener
                             public void run() {
                                 if (qbPane != null) {
                                     SubPaneMgr.getInstance().showPane(qbPane);
+                                    final QueryBldrPane qb = (QueryBldrPane)qbPane;
+                                    SwingUtilities.invokeLater(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            //redisplay batch-edited recs.
+                                            /*
+                                            But, if using the recordset, only edited records will display
+                                            */
+                                            //qb.doSearch(getBatchEditRS());
+                                            /*
+                                            and, butter, if using the query, what if user edited conditions while batch editing?
+                                             */
+                                            qb.doSearch();
+                                        }
+                                    });
                                 }
                                 SubPaneMgr.getInstance().removePane(wbPane);
                             }
@@ -3455,10 +3469,6 @@ public class Uploader implements ActionListener, KeyListener
             		UIRegistry.showError("This dataset contains mappings which are not updateable");
             		return;
             	}
-//            	if (!UIRegistry.displayConfirm("Ready to Update", "This update cannot be undone. Are you sure you want to continue?", "Yes", "No", JOptionPane.WARNING_MESSAGE))
-//            	{
-//            		return;
-//            	}
             }
         	uploadIt(true);
         } else if (e.getActionCommand().equals(UploadMainPanel.VIEW_UPLOAD)) {
@@ -3474,13 +3484,47 @@ public class Uploader implements ActionListener, KeyListener
                 setCurrentOp(Uploader.READY_TO_UPLOAD);
             }
         } else if (e.getActionCommand().equals(UploadMainPanel.CLOSE_UI)) {
-            if (aboutToShutdown(null, UploadMainPanel.CLOSE_UI)) {
+            if (aboutToShutdown(null, UploadMainPanel.CLOSE_UI, false)) {
                 closeMainForm(true, UploadMainPanel.CLOSE_UI);
             }
         } else if (e.getActionCommand().equals(UploadMainPanel.CANCEL_AND_CLOSE_BATCH_UPDATE)
                 || e.getActionCommand().equals(UploadMainPanel.COMMIT_AND_CLOSE_BATCH_UPDATE)) {
-            if (aboutToShutdown(null, e.getActionCommand())) {
-                closeMainForm(true, e.getActionCommand());
+            if (currentTask.get() != null && currentTask.get().isCancellable()) {
+                int rv = showShutDownDlg(true, UploadMainPanel.CANCEL_AND_CLOSE_BATCH_UPDATE);
+                if (rv == JOptionPane.YES_OPTION) {
+                    cancelTask(currentTask.get());
+                    Runnable sleeper = new Runnable() {
+                        @Override
+                        public void run() {
+                            long now = System.currentTimeMillis();
+                            while (currentTask.get() != null && System.currentTimeMillis() - now < 15000L) {
+                                try {
+                                    Thread.sleep(171);
+                                } catch (InterruptedException ex) {
+                                    log.warn(ex);
+                                }
+                            }
+                            if (currentTask.get() != null) {
+                                throw new RuntimeException("Unable to stop batch edit process.");
+                            }
+                            SwingUtilities.invokeLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (aboutToShutdown(null, e.getActionCommand(), true)) {
+                                        closeMainForm(true, e.getActionCommand());
+                                    }
+                                }
+                            });
+                        }
+                    };
+                    new Thread(sleeper).start();
+                } else {
+                    return;
+                }
+            } else {
+                if (aboutToShutdown(null, e.getActionCommand(), false)) {
+                    closeMainForm(true, e.getActionCommand());
+                }
             }
         } else if (e.getActionCommand().equals(UploadMainPanel.UNDO_UPLOAD)) {
                 if (UIRegistry.displayConfirm(getResourceString("WB_UPLOAD_FORM_TITLE"),
@@ -3500,8 +3544,8 @@ public class Uploader implements ActionListener, KeyListener
         } else if (e.getActionCommand().equals(UploadMainPanel.PRINT_INVALID)) {
                 printInvalidValReport();
         } else if (e.getActionCommand().equals(UploadMainPanel.CANCEL_OPERATION)) {
-            if (currentTask != null && currentTask.isCancellable()) {
-                    cancelTask(currentTask);
+            if (currentTask.get() != null && currentTask.get().isCancellable()) {
+                    cancelTask(currentTask.get());
             } else {
                     log.info("ignoring action: " + e.getActionCommand());
             }
@@ -3510,6 +3554,22 @@ public class Uploader implements ActionListener, KeyListener
         }
     }
 
+    protected int showShutDownDlg(boolean isUpdate, final String action) {
+        String msg;
+        if (!isUpdate) {
+            msg = getResourceString("WB_UPLOAD_CONFIRM_SAVE");
+        } else if (UploadMainPanel.CANCEL_AND_CLOSE_BATCH_UPDATE.equals(action)) {
+            msg = getResourceString("WB_BATCH_EDIT_CONFIRM_CANCEL");
+        } else if (UploadMainPanel.COMMIT_AND_CLOSE_BATCH_UPDATE.equals(action)) {
+            msg = String.format(getResourceString("WB_BATCH_EDIT_CONFIRM_COMMIT"), theWb.getName());
+        } else {
+            msg = String.format(getResourceString("WB_UPLOAD_CONFIRM_SAVE"), theWb.getName());
+        }
+        String title = getResourceString(!isUpdate ? "WB_UPLOAD_FORM_TITLE" : "WB_BATCH_EDIT_FORM_TITLE");
+        JFrame topFrame = (JFrame) UIRegistry.getTopWindow();
+        return JOptionPane.showConfirmDialog(topFrame, msg, title,
+                isUpdate ? JOptionPane.YES_NO_OPTION : JOptionPane.YES_NO_CANCEL_OPTION);
+    }
     /**
      * Called when the WorkbenchPaneSS for the uploaded dataset is shutting down, and when
      * the Upload UI 'Close' button is clicked.
@@ -3517,12 +3577,12 @@ public class Uploader implements ActionListener, KeyListener
      * @param shuttingDownSS - the dataset that is shutting down.
      * @return true if the Uploader can be closed, otherwise false.
      */
-    public boolean aboutToShutdown(final WorkbenchPaneSS shuttingDownSS, final String action)
+    public boolean aboutToShutdown(final WorkbenchPaneSS shuttingDownSS, final String action, boolean force)
     {
         if (shuttingDownSS != null && shuttingDownSS != wbSS) {
             return true;
         }
-        if (currentTask != null || 
+        if (currentTask.get() != null ||
         		(shuttingDownSS != null && (currentOp.equals(Uploader.SUCCESS)  || currentOp.equals(Uploader.SUCCESS_PARTIAL)) && getUploadedObjects() > 0)) {
             JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), getResourceString("WB_UPLOAD_BUSY_CANNOT_CLOSE"));
             return false;
@@ -3540,25 +3600,10 @@ public class Uploader implements ActionListener, KeyListener
                 && getUploadedObjects() > 0) {
             result = false;
             boolean isUpdate = isUpdateUpload();
-            String msg;
-            if (!isUpdate) {
-                msg = String.format(getResourceString("WB_UPLOAD_CONFIRM_SAVE"), theWb.getName());
-            } else if (UploadMainPanel.CANCEL_AND_CLOSE_BATCH_UPDATE.equals(action)) {
-                msg = String.format(getResourceString("WB_UPLOAD_CONFIRM_CANCEL"), theWb.getName());
-            } else if (UploadMainPanel.COMMIT_AND_CLOSE_BATCH_UPDATE.equals(action)) {
-                msg = String.format(getResourceString("WB_UPLOAD_CONFIRM_COMMIT"), theWb.getName());
-            } else {
-                msg = String.format(getResourceString("WB_UPLOAD_CONFIRM_SAVE"), theWb.getName());
-            }
-
-            JFrame topFrame = (JFrame) UIRegistry.getTopWindow();
-            int rv = JOptionPane.showConfirmDialog(topFrame,
-                    msg,
-                    getResourceString("WB_UPLOAD_FORM_TITLE"),
-                    JOptionPane.YES_NO_CANCEL_OPTION);
+            int rv = force ? JOptionPane.YES_OPTION : showShutDownDlg(isUpdate, action);
             if (rv == JOptionPane.YES_OPTION) {
                 saveRecordSets();
-                if (isUpdateUpload()) {
+                if (isUpdate) {
                     boolean rollBack = UploadMainPanel.CANCEL_AND_CLOSE_BATCH_UPDATE.equals(action);
                     if (theUploadBatchEditSession != null) {
                         Session s = ((edu.ku.brc.specify.dbsupport.HibernateDataProviderSession)theUploadBatchEditSession).getSession();
@@ -3980,7 +4025,7 @@ public class Uploader implements ActionListener, KeyListener
             	   }
                }
             	   
-               mainPanel.getCancelBtn().setVisible(mainPanel.getCancelBtn().isEnabled());
+               mainPanel.getCancelBtn().setVisible(!isUpdateUpload() && mainPanel.getCancelBtn().isEnabled());
 
                mainPanel.getDoUploadBtn().setEnabled(canUpload(op));
 
@@ -4358,11 +4403,13 @@ public class Uploader implements ActionListener, KeyListener
                         return false;
                     }
                     success = !cancelled || (cancelled && paused);
+                    System.out.println("Upload Task Returning");
                     return success;
                 }
 
                 @Override
                 public void done() {
+                    System.out.println("Upload Task Done");
                     try {
                     	//for (UploadTable t : uploadTables)
                     	for (int t = uploadTables.size() - 1; t >= 0; t--) {
@@ -4700,7 +4747,7 @@ public class Uploader implements ActionListener, KeyListener
                 		}
                 	}
                 }
-            	currentTask = null;
+            	currentTask.set(null);
             	if (success) {
             		if (doCommit) {
             			theSession.commit();
@@ -5058,7 +5105,7 @@ public class Uploader implements ActionListener, KeyListener
             super();
             this.cancellable = cancellable;
             this.cancelMsg = cancelMsg;
-            currentTask = this;
+            currentTask.set(this);
         }
         
         public void start()
@@ -5071,7 +5118,7 @@ public class Uploader implements ActionListener, KeyListener
         public void done()
         {
             super.done();
-            currentTask = null;
+            currentTask.set(null);
             done = true;
             endTime = System.nanoTime();
             logDebug("UploaderTask time elapsed: " + Long.toString((endTime-startTime)/1000000000L));

@@ -2043,20 +2043,23 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
 //    	return result;
 //    }
 
+    protected void fillandSaveWorkbench(final Object contents, final Workbench workbench) {
+        fillandSaveWorkbench(contents, workbench, false);
+    }
+
     /**
      * XXX FIX ME
      * @param contents the ImportDataFileInfo Object that contains all the information about the file
      * @param workbench the Workbench
      * @return the new Workbench data object
      */
-    protected void fillandSaveWorkbench(final Object contents, 
-                                        final Workbench workbench)
+    protected void fillandSaveWorkbench(final Object contents, final Workbench workbench, boolean isBatchEdit)
     {
         if (workbench != null)
         {
             String msg = contents instanceof ImportDataFileInfo 
             	? String.format(getResourceString("WB_IMPORTING_DATASET"), workbench.getName())
-            	: String.format(getResourceString("WB_LOADING_RS_TO_DB"), workbench.getName());		
+            	: String.format(getResourceString("WB_LOADING_RS_TO_DB"), isBatchEdit ? "" : workbench.getName());
         	UIRegistry.writeGlassPaneMsg(msg, GLASSPANE_FONT_SIZE);
             
             final SwingWorker worker = new SwingWorker()
@@ -2127,7 +2130,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                         }
                     }
 
-                    createEditorForWorkbench(workbench, null, false, true);
+                    createEditorForWorkbench(workbench, null, false, true, isBatchEdit);
 
                 }
             };
@@ -2362,6 +2365,14 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
 //        
 //        return workbenchPane;
 //    }
+
+    protected void createEditorForWorkbench(final Workbench workbench,
+                                            final DataProviderSessionIFace session,
+                                            final boolean showImageView,
+                                            final boolean doInbackground) {
+        createEditorForWorkbench(workbench, session, showImageView, doInbackground, false);
+    }
+
     /**
      * Creates the Pane for editing a Workbench.
      * @param workbench the workbench to be edited
@@ -2371,7 +2382,8 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     protected void createEditorForWorkbench(final Workbench workbench, 
                                             final DataProviderSessionIFace session,
                                             final boolean showImageView,
-                                            final boolean doInbackground)
+                                            final boolean doInbackground,
+                                            final boolean isUpdate)
     {
     	//Hack for IN-HOUSE ONLY batch uploading
 //    	if (testingJUNK)
@@ -2389,7 +2401,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         if (workbench == null) return;
 
         final SimpleGlassPane glassPane = doInbackground ? 
-        		UIRegistry.writeSimpleGlassPaneMsg(String.format(getResourceString("WB_LOADING_DATASET"), new Object[] {workbench.getName()}), GLASSPANE_FONT_SIZE) :
+        		UIRegistry.writeSimpleGlassPaneMsg(String.format(getResourceString("WB_LOADING_DATASET"), isUpdate ? "" : new Object[] {workbench.getName()}), GLASSPANE_FONT_SIZE) :
         		null;
         
 
@@ -3770,7 +3782,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         		}
     			Workbench workbench = createNewWorkbenchDataObj(template.getName(), template, false);
     			if (workbench != null) {
-    				fillandSaveWorkbench(new Pair<RecordSetIFace, Vector<Vector<Object>>>(rs, results), workbench);
+    				fillandSaveWorkbench(new Pair<RecordSetIFace, Vector<Vector<Object>>>(rs, results), workbench,  true);
     			}
     		}
 		} catch (Exception e) {
@@ -3834,7 +3846,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     			//load the data
     			Workbench workbench = createNewWorkbenchDataObj(null, template);
     			if (workbench != null) {
-    					fillandSaveWorkbench(rs, workbench);
+                    fillandSaveWorkbench(rs, workbench, true);
     			}
         		return;    			
     		}

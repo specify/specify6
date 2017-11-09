@@ -427,10 +427,9 @@ public class WorkbenchPaneSS extends BaseSubPane
                 final boolean uploadAfterSave = isForBatchEdit;
             	public void actionPerformed(ActionEvent ae) {
                     UsageTracker.incrUsageCount("WB.SaveDataSet");
-
-                    UIRegistry.writeSimpleGlassPaneMsg(String.format(getResourceString("WB_SAVING"),
-                            new Object[] { workbench.getName() }),
-                            WorkbenchTask.GLASSPANE_FONT_SIZE);
+                    String msg = isForBatchEdit ? getResourceString("WB_BATCH_EDIT_PREP")
+                            : String.format(getResourceString("WB_SAVING"), new Object[] { workbench.getName() });
+                    UIRegistry.writeSimpleGlassPaneMsg(msg, WorkbenchTask.GLASSPANE_FONT_SIZE);
                     UIRegistry.getStatusBar().setIndeterminate(workbench.getName(), true);
                     final SwingWorker worker = new SwingWorker() {
                         @SuppressWarnings("synthetic-access")
@@ -3844,7 +3843,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             }
         }
         
-        if (datasetUploader != null && !datasetUploader.aboutToShutdown(this, null))
+        if (datasetUploader != null && !datasetUploader.aboutToShutdown(this, null, false))
         {
             return false;
         }
@@ -3893,13 +3892,10 @@ public class WorkbenchPaneSS extends BaseSubPane
 	                                                   JOptionPane.YES_NO_CANCEL_OPTION);
             }
             
-            if (rv == JOptionPane.YES_OPTION)
-            {
+            if (rv == JOptionPane.YES_OPTION) {
                 //GlassPane and Progress bar currently don't show up during shutdown
-                SwingUtilities.invokeLater(new Runnable()
-                {
-                    public void run()
-                    {
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
                         UIRegistry.writeSimpleGlassPaneMsg(String.format(
                                 getResourceString("WB_SAVING"),
                                 new Object[] { workbench.getName() }),
@@ -4563,28 +4559,25 @@ public class WorkbenchPaneSS extends BaseSubPane
             setAllUploadDatasetBtnEnabled(canUpload());
         }
     }
-    
+
+    public void uploadDone() {
+        uploadDone(null);
+    }
     /**
      * Removes uploader ui and redisplays standard wb ui
      */
-    public void uploadDone()
-    {
+    public void uploadDone(final String action) {
         datasetUploader = null;
         Uploader.unlockApp();
-        if (!Uploader.unlockUpload())
-        {
+        if (!Uploader.unlockUpload()) {
             log.error("unable to unlock upload task semaphore.");
             //inform the user??
         }
-        if (uploadPane != null)
-        {
+        if (uploadPane != null) {
             List<SubPaneIFace> badPanes = checkOpenTasksForUploadClose();
-            if (badPanes.size() > 0)
-            {
-                for (SubPaneIFace badPane : badPanes)
-                {
-                    if (!SubPaneMgr.getInstance().removePane(badPane, true))
-                    {
+            if (badPanes.size() > 0) {
+                for (SubPaneIFace badPane : badPanes) {
+                    if (!SubPaneMgr.getInstance().removePane(badPane, true)) {
                         log.error("unable to close " + badPane.getClass().getName() + " after uploader close.");
                     }
                 }
@@ -4599,13 +4592,21 @@ public class WorkbenchPaneSS extends BaseSubPane
         ssFormSwitcher.setEnabled(true);
         spreadSheet.setEnabled(true);
         setToolBarBtnsEnabled(true);
-        if (restoreUploadToolPanel)
-        {
+        if (restoreUploadToolPanel) {
         	showUploadToolPanel();
         	showHideUploadToolBtn.setToolTipText(getResourceString("WB_HIDE_UPLOADTOOLPANEL"));
         	restoreUploadToolPanel = false;
         }
         setAllUploadDatasetBtnEnabled(true);
+
+        if (UploadMainPanel.CANCEL_AND_CLOSE_BATCH_UPDATE.equals(action)) {
+            saveBtn.setEnabled(true); //this should be safe
+            for (WorkbenchRow r : workbench.getWorkbenchRows()) {
+                r.setUploadStatus(WorkbenchRow.UPLD_NONE);
+            }
+            //And other stuff to restore state existing prior to opening the upload pane...
+            //???
+        }
     }
         
     /**
@@ -5144,7 +5145,8 @@ public class WorkbenchPaneSS extends BaseSubPane
 			if (useGlassPane)
 			{
 	            this.glassPane = UIRegistry.writeSimpleGlassPaneMsg(
-	            		String.format(getResourceString("WorkbenchPaneSS.Validating"), new Object[] {workbench.getName()}), 
+	            		String.format(getResourceString("WorkbenchPaneSS.Validating"),
+                                new Object[] {isUpdateDataSet() ? "" : workbench.getName()}),
 	            		WorkbenchTask.GLASSPANE_FONT_SIZE, true);
 				if (allowCancel)
 				{
