@@ -3492,39 +3492,12 @@ public class Uploader implements ActionListener, KeyListener
             if (currentTask.get() != null && currentTask.get().isCancellable()) {
                 int rv = showShutDownDlg(true, UploadMainPanel.CANCEL_AND_CLOSE_BATCH_UPDATE);
                 if (rv == JOptionPane.YES_OPTION) {
-                    cancelTask(currentTask.get());
-                    Runnable sleeper = new Runnable() {
-                        @Override
-                        public void run() {
-                            long now = System.currentTimeMillis();
-                            while (currentTask.get() != null && System.currentTimeMillis() - now < 15000L) {
-                                try {
-                                    Thread.sleep(171);
-                                } catch (InterruptedException ex) {
-                                    log.warn(ex);
-                                }
-                            }
-                            if (currentTask.get() != null) {
-                                throw new RuntimeException("Unable to stop batch edit process.");
-                            }
-                            SwingUtilities.invokeLater(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if (aboutToShutdown(null, e.getActionCommand(), true)) {
-                                        closeMainForm(true, e.getActionCommand());
-                                    }
-                                }
-                            });
-                        }
-                    };
-                    new Thread(sleeper).start();
+                    cancelRunningBatchEdit();
                 } else {
                     return;
                 }
             } else {
-                if (aboutToShutdown(null, e.getActionCommand(), false)) {
-                    closeMainForm(true, e.getActionCommand());
-                }
+                rollBackOrCommitBatchEdit(e.getActionCommand(), false);
             }
         } else if (e.getActionCommand().equals(UploadMainPanel.UNDO_UPLOAD)) {
                 if (UIRegistry.displayConfirm(getResourceString("WB_UPLOAD_FORM_TITLE"),
@@ -3551,6 +3524,88 @@ public class Uploader implements ActionListener, KeyListener
             }
         } else {
                 log.error("Unrecognized action: " + e.getActionCommand());
+        }
+    }
+
+    protected void cancelRunningBatchEdit() {
+        cancelTask(currentTask.get());
+        Runnable sleeper = new Runnable() {
+            @Override
+            public void run() {
+                long now = System.currentTimeMillis();
+                while (currentTask.get() != null && System.currentTimeMillis() - now < 15000L) {
+                    try {
+                        Thread.sleep(171);
+                    } catch (InterruptedException ex) {
+                        log.warn(ex);
+                    }
+                }
+                if (currentTask.get() != null) {
+                    throw new RuntimeException("Unable to stop batch edit process.");
+                }
+                rollBackOrCommitBatchEdit(UploadMainPanel.CANCEL_AND_CLOSE_BATCH_UPDATE, true);
+            }
+        };
+        new Thread(sleeper).start();
+    }
+
+    protected void rollBackOrCommitBatchEdit(final String action, boolean force) {
+        int rv = force ? JOptionPane.YES_OPTION : showShutDownDlg(true, action);
+        if (rv == JOptionPane.YES_OPTION) {
+            boolean rollBack = UploadMainPanel.CANCEL_AND_CLOSE_BATCH_UPDATE.equals(action);
+            if (theUploadBatchEditSession != null) {
+                Session s = ((edu.ku.brc.specify.dbsupport.HibernateDataProviderSession) theUploadBatchEditSession).getSession();
+                Transaction t = s.getTransaction();
+                if (!t.wasCommitted() && !t.wasRolledBack()) {
+                    final ProgressDialog progDlg = new ProgressDialog(getResourceString("WB_BATCH_EDIT_FORM_TITLE"), false, false);
+                    progDlg.setResizable(false);
+                    progDlg.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+                    progDlg.setModal(true);
+                    progDlg.setProcessPercent(false);
+                    progDlg.getProcessProgress().setIndeterminate(true);
+                    progDlg.getProcessProgress().setStringPainted(false);
+                    progDlg.setDesc(getResourceString(rollBack ? "WB_BATCH_EDIT_ROLLING_BACK" : "WB_BATCH_EDIT_COMMITTING"));
+                    progDlg.setAlwaysOnTop(true);
+                    Thread rollComT = new Thread() {
+                        @Override
+                        public void run() {
+                            super.run();
+                            SwingUtilities.invokeLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    UIHelper.centerAndShow(progDlg);
+                                }
+                            });
+                            if (rollBack) {
+                                theUploadBatchEditSession.rollback();
+                            } else {
+                                try {
+                                    theUploadBatchEditSession.commit();
+                                } catch (Exception ex) {
+                                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, ex);
+                                    throw new RuntimeException(ex);
+                                }
+                            }
+                            theUploadBatchEditSession.close();
+                            theUploadBatchEditSession = null;
+                            SwingUtilities.invokeLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    progDlg.setVisible(false);
+                                }
+                            });
+                            if (aboutToShutdown(null, action, true))
+                                closeMainForm(true, action);
+                        }
+                    };
+                    rollComT.start();
+
+                }
+            } else {
+                log.error("the transaction was already rolled back or committed.");
+                throw new RuntimeException("the transaction was already rolled back or committed.");
+            }
         }
     }
 
@@ -3584,7 +3639,7 @@ public class Uploader implements ActionListener, KeyListener
         }
         if (currentTask.get() != null ||
         		(shuttingDownSS != null && (currentOp.equals(Uploader.SUCCESS)  || currentOp.equals(Uploader.SUCCESS_PARTIAL)) && getUploadedObjects() > 0)) {
-            JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), getResourceString("WB_UPLOAD_BUSY_CANNOT_CLOSE"));
+            JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), getResourceString(isUpdateUpload() ? "WB_BATCH_EDIT_PENDING_EDITS" :"WB_UPLOAD_BUSY_CANNOT_CLOSE"));
             return false;
         }
         
@@ -3603,34 +3658,7 @@ public class Uploader implements ActionListener, KeyListener
             int rv = force ? JOptionPane.YES_OPTION : showShutDownDlg(isUpdate, action);
             if (rv == JOptionPane.YES_OPTION) {
                 saveRecordSets();
-                if (isUpdate) {
-                    boolean rollBack = UploadMainPanel.CANCEL_AND_CLOSE_BATCH_UPDATE.equals(action);
-                    if (theUploadBatchEditSession != null) {
-                        Session s = ((edu.ku.brc.specify.dbsupport.HibernateDataProviderSession)theUploadBatchEditSession).getSession();
-                        Transaction t = s.getTransaction();
-                        if (!t.wasCommitted() && !t.wasRolledBack()) {
-                            if (rollBack) {
-                                theUploadBatchEditSession.rollback();
-                            } else {
-                                try {
-                                    theUploadBatchEditSession.commit();
-                                } catch (Exception ex) {
-                                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, ex);
-                                    throw new RuntimeException(ex);
-                                }
-                            }
-                            result = true;
-                            theUploadBatchEditSession.close();
-                            theUploadBatchEditSession = null;
-                        } else {
-                            log.error("the transaction was already rolled back or committed.");
-                            throw new RuntimeException("the transaction was already rolled back or committed.");
-                        }
-                    }
-                } else {
-                    result = true;
-                }
+                result = true;
                 wbSS.saveObject();
             } else if (rv == JOptionPane.NO_OPTION) {
                 undoUpload(shuttingDownSS == null, true, true);
