@@ -21,10 +21,13 @@ package edu.ku.brc.ui;
 
 import java.util.regex.Pattern;
 
+import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.ui.tmanfe.SearchReplacePanel;
 import edu.ku.brc.ui.tmanfe.SpreadSheet;
+
+import javax.swing.table.TableCellRenderer;
 
 /**
  * @author megkumin
@@ -54,7 +57,10 @@ public class TableSearcher
         this.initialCol         = -1;
         reset();
     }
-    
+
+    public SpreadSheet getTable() {
+        return table;
+    }
     /**
      * sets first pass to true and clears replacement count
      */
@@ -324,7 +330,9 @@ public class TableSearcher
             log.debug("                         matchcase[" + isMatchCaseOn + "] ");
         }
         Object cellValue = table.getValueAt(row, column);
-        if (cellValue != null)
+        TableCellRenderer renderer = table.getColumnModel().getColumn(column).getCellRenderer();
+        boolean isEditable = ((WorkbenchPaneSS.WbCellRenderer)renderer).isEditable();
+        if (cellValue != null && isEditable)
         {
             String valueInTable = cellValue.toString();
             if (debugging)

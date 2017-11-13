@@ -580,11 +580,11 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
         for (int c : getSelectedColumns()) {
             int cm = convertColumnIndexToModel(c);
             TableCellRenderer renderer = columnModel.getColumn(cm).getCellRenderer();
-            if (((WorkbenchPaneSS.WbCellRenderer)renderer).isEditable()){
-                return false;
+            if (!((WorkbenchPaneSS.WbCellRenderer)renderer).isEditable()){
+                return true;
             }
         }
-        return true;
+        return false;
     }
     /**
      * CReates the popup menu for a cell. (THis really needs to be moved outside of this class).
