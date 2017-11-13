@@ -581,8 +581,7 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
      * @param pnt the point to pop it up
      * @return the popup menu
      */
-    protected JPopupMenu createMenuForSelection(final Point pnt)
-    {
+    protected JPopupMenu createMenuForSelection(final Point pnt) {
         //final int row = rowAtPoint(pnt);
         
         Class<?> cellClass = getModel().getColumnClass(convertColumnIndexToModel(columnAtPoint(pnt)));
@@ -590,52 +589,39 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
         
         JPopupMenu pMenu = new JPopupMenu();
         UsageTracker.incrUsageCount("WB.SpreadsheetContextMenu");
-        if (getSelectedColumnCount() == 1)
-        {
+        if (getSelectedColumnCount() == 1) {
             final int[] rows = getSelectedRowModelIndexes();
-            if (rows.length > 1)
-            {
-                //if (row == rows[0])
-                //{
-                    if (!isImage)
-                    {
-                        JMenuItem mi = pMenu.add(new JMenuItem(UIRegistry.getResourceString("SpreadSheet.FillDown")));
-                        mi.addActionListener(new ActionListener() {
-                            public void actionPerformed(ActionEvent ae)
-                            {
-                                int selectedUICol = getSelectedColumn();
-                                int selectedModelCol = convertColumnIndexToModel(selectedUICol);
-                                model.fill(selectedModelCol, rows[0], rows);
-                                popupMenu.setVisible(false);
-                            }
-                        });
-                    }
-                //} else if (row == rows[rows.length-1])
-                //{
-                    if (!isImage)
-                    {
-                        JMenuItem mi = pMenu.add(new JMenuItem(UIRegistry.getResourceString("Spreadsheet.FillUp"))); 
-                        mi.addActionListener(new ActionListener() {
-                            public void actionPerformed(ActionEvent ae)
-                            {
-                                int selectedUICol = getSelectedColumn();
-                                int selectedModelCol = convertColumnIndexToModel(selectedUICol);
-                                model.fill(selectedModelCol, rows[rows.length-1], rows);
-                                popupMenu.setVisible(false);
-                            }
-                        });
-                    }
-                //}
+            if (rows.length > 1) {
+               if (!isImage) {
+                    JMenuItem mi = pMenu.add(new JMenuItem(UIRegistry.getResourceString("SpreadSheet.FillDown")));
+                    mi.addActionListener(new ActionListener() {
+                        public void actionPerformed(ActionEvent ae) {
+                            int selectedUICol = getSelectedColumn();
+                            int selectedModelCol = convertColumnIndexToModel(selectedUICol);
+                            model.fill(selectedModelCol, rows[0], rows);
+                            popupMenu.setVisible(false);
+                        }
+                    });
+                }
+                if (!isImage) {
+                    JMenuItem mi = pMenu.add(new JMenuItem(UIRegistry.getResourceString("Spreadsheet.FillUp")));
+                    mi.addActionListener(new ActionListener() {
+                        public void actionPerformed(ActionEvent ae) {
+                            int selectedUICol = getSelectedColumn();
+                            int selectedModelCol = convertColumnIndexToModel(selectedUICol);
+                            model.fill(selectedModelCol, rows[rows.length-1], rows);
+                            popupMenu.setVisible(false);
+                        }
+                    });
+                }
             }
         }
         
         
-        if (!isImage)
-        {        
+        if (!isImage) {
             JMenuItem mi = pMenu.add(new JMenuItem(UIRegistry.getResourceString("SpreadSheet.ClearCells")));
             mi.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent ae)
-                {
+                public void actionPerformed(ActionEvent ae) {
                     int[] rows = getSelectedRowModelIndexes();
                     int[] cols = getSelectedColumnModelIndexes();
 
@@ -645,12 +631,10 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
             });
         }
         
-        if (deleteAction != null)
-        {
+        if (deleteAction != null) {
             JMenuItem mi = pMenu.add(new JMenuItem(UIRegistry.getResourceString("SpreadSheet.DeleteRows"))); 
             mi.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent ae)
-                {
+                public void actionPerformed(ActionEvent ae) {
                     deleteAction.actionPerformed(ae);
                     popupMenu.setVisible(false);
                 }
@@ -658,11 +642,9 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
         }
 
         //add copy, paste, cut
-        if (!isImage) //copy, paste currently only implemented for string data
-        {
+        if (!isImage) { //copy, paste currently only implemented for string data
         	boolean isSelection = getSelectedColumnCount() > 0 && getSelectedRowCount() > 0;
-        	if (pMenu.getComponentCount() > 0)
-        	{
+        	if (pMenu.getComponentCount() > 0) {
         		pMenu.add(new JPopupMenu.Separator());
         	}
         	JMenuItem mi = pMenu.add(new JMenuItem(UIRegistry
@@ -671,8 +653,7 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
 													// only implemented for
 													// string data
 			mi.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent ae)
-				{
+				public void actionPerformed(ActionEvent ae) {
 					SwingUtilities.invokeLater(new Runnable() {
 
 						/*
@@ -681,8 +662,7 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
 						 * @see java.lang.Runnable#run()
 						 */
 						@Override
-						public void run()
-						{
+						public void run() {
 							cutOrCopy(true);
 
 						}
@@ -693,8 +673,7 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
 			mi = pMenu.add(new JMenuItem(UIRegistry.getResourceString("CopyMenu")));
 			mi.setEnabled(isSelection && !isImage);
 			mi.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent ae)
-				{
+				public void actionPerformed(ActionEvent ae) {
 					SwingUtilities.invokeLater(new Runnable() {
 
 						/*
@@ -716,8 +695,7 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
 					.add(new JMenuItem(UIRegistry.getResourceString("PasteMenu")));
 			mi.setEnabled(isSelection && !isImage && canPasteFromClipboard());
 			mi.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent ae)
-				{
+				public void actionPerformed(ActionEvent ae) {
 					SwingUtilities.invokeLater(new Runnable() {
 
 						/*
@@ -726,8 +704,7 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
 						 * @see java.lang.Runnable#run()
 						 */
 						@Override
-						public void run()
-						{
+						public void run() {
 							paste();
 
 						}
