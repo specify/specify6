@@ -69,10 +69,10 @@ import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
+import javax.swing.table.*;
 import javax.swing.text.JTextComponent;
 
+import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 /*import org.jdesktop.swingx.decorator.Filter;
@@ -575,7 +575,17 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
     {
         return scrollPane;
     }
-    
+
+    protected boolean unEditableColumnsInSelection() {
+        for (int c : getSelectedColumns()) {
+            int cm = convertColumnIndexToModel(c);
+            TableCellRenderer renderer = columnModel.getColumn(cm).getCellRenderer();
+            if (((WorkbenchPaneSS.WbCellRenderer)renderer).isEditable()){
+                return false;
+            }
+        }
+        return true;
+    }
     /**
      * CReates the popup menu for a cell. (THis really needs to be moved outside of this class).
      * @param pnt the point to pop it up
@@ -586,7 +596,7 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
         
         Class<?> cellClass = getModel().getColumnClass(convertColumnIndexToModel(columnAtPoint(pnt)));
         boolean isImage =  cellClass == ImageIcon.class || cellClass == Image.class;
-        
+        boolean unEditableCellsSelected = unEditableColumnsInSelection();
         JPopupMenu pMenu = new JPopupMenu();
         UsageTracker.incrUsageCount("WB.SpreadsheetContextMenu");
         if (getSelectedColumnCount() == 1) {
@@ -594,6 +604,7 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
             if (rows.length > 1) {
                if (!isImage) {
                     JMenuItem mi = pMenu.add(new JMenuItem(UIRegistry.getResourceString("SpreadSheet.FillDown")));
+                    mi.setEnabled(!unEditableCellsSelected);
                     mi.addActionListener(new ActionListener() {
                         public void actionPerformed(ActionEvent ae) {
                             int selectedUICol = getSelectedColumn();
@@ -605,6 +616,7 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
                 }
                 if (!isImage) {
                     JMenuItem mi = pMenu.add(new JMenuItem(UIRegistry.getResourceString("Spreadsheet.FillUp")));
+                    mi.setEnabled(!unEditableCellsSelected);
                     mi.addActionListener(new ActionListener() {
                         public void actionPerformed(ActionEvent ae) {
                             int selectedUICol = getSelectedColumn();
@@ -620,6 +632,7 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
         
         if (!isImage) {
             JMenuItem mi = pMenu.add(new JMenuItem(UIRegistry.getResourceString("SpreadSheet.ClearCells")));
+            mi.setEnabled(!unEditableCellsSelected);
             mi.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent ae) {
                     int[] rows = getSelectedRowModelIndexes();
@@ -633,6 +646,7 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
         
         if (deleteAction != null) {
             JMenuItem mi = pMenu.add(new JMenuItem(UIRegistry.getResourceString("SpreadSheet.DeleteRows"))); 
+            mi.setEnabled(unEditableCellsSelected);
             mi.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent ae) {
                     deleteAction.actionPerformed(ae);
@@ -649,7 +663,7 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
         	}
         	JMenuItem mi = pMenu.add(new JMenuItem(UIRegistry
 					.getResourceString("CutMenu")));
-			mi.setEnabled(isSelection && !isImage); // copy, paste currently
+			mi.setEnabled(isSelection && !isImage && !unEditableCellsSelected); // copy, paste currently
 													// only implemented for
 													// string data
 			mi.addActionListener(new ActionListener() {
@@ -693,7 +707,7 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
 			});
 			mi = pMenu
 					.add(new JMenuItem(UIRegistry.getResourceString("PasteMenu")));
-			mi.setEnabled(isSelection && !isImage && canPasteFromClipboard());
+			mi.setEnabled(isSelection && !isImage && canPasteFromClipboard() && !unEditableCellsSelected);
 			mi.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent ae) {
 					SwingUtilities.invokeLater(new Runnable() {

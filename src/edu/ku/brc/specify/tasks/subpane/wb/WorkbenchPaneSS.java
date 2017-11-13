@@ -5874,6 +5874,10 @@ public class WorkbenchPaneSS extends BaseSubPane
         public void setEditable(boolean editable) {
             isEditable = editable;
         }
+
+        public boolean isEditable() {
+            return isEditable;
+        }
     }
     
     /**
