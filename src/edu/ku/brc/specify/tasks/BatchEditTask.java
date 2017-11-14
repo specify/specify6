@@ -82,57 +82,57 @@ public class BatchEditTask extends QueryTask {
         ContextMgr.registerService(new QueryBatchEditServiceInfo());
     }
 
-   protected String getBatchEditType()
-    {
-        return BATCHEDIT;
-    }
-
-    @Override
-    public void doCommand(CommandAction cmdAction) {
-        super.doCommand(cmdAction);
-
-        if (cmdAction.isType(getBatchEditType())) {
-            processBatchEditCommands(cmdAction);
-
-        } else if (cmdAction.isType(RecordSetTask.RECORD_SET) && cmdAction.isAction("Clicked")) {
-            processRecordSetCommand(cmdAction);
-
-        } else if (cmdAction.isType(TreeDefinitionEditor.TREE_DEF_EDITOR)) {
-            //all we care to know is that a treeDefintion got changed somehow
-            this.configurationHasChanged.set(true);
-        } else if (cmdAction.isType(SchemaLocalizerDlg.SCHEMA_LOCALIZER)) {
-            //XXX should check whether changed schema actually is the schema in use?
-            // e.g. If German schema was saved when English is in use then ignore??
-            this.configurationHasChanged.set(true);
-            SwingUtilities.invokeLater(new Runnable(){
-                public void run() {
-                    if (SubPaneMgr.getInstance().getCurrentSubPane() == queryBldrPane) {
-                        if (queryBldrPane != null) {
-                            queryBldrPane.showingPane(true);
-                        }
-                    }
-                }
-            });
-        }
-    }
-
-    protected void processBatchEditCommands(final CommandAction cmdAction) {
-        if (cmdAction.isAction(QUERY_RESULTS_BATCH_EDIT)) {
-            JTable dataTbl = (JTable) cmdAction.getProperties().get("jtable");
-            if (dataTbl != null) {
-                ResultSetTableModel rsm = (ResultSetTableModel) dataTbl.getModel();
-                if (rsm.isLoadingCells()) {
-                    UIRegistry.writeTimedSimpleGlassPaneMsg(UIRegistry.getResourceString("QB_NO_BATCH_EDIT_WHILE_LOADING_RESULTS"),
-                            5000, null, null, true);
-                    return;
-                }
-            }
-            WorkbenchTask wbTask = (WorkbenchTask) ContextMgr.getTaskByClass(WorkbenchTask.class);
-            wbTask.batchEditQueryResults(queryBldrPane.getQueryForBatchEdit(), (RecordSetIFace) cmdAction.getData(), queryBldrPane.getResultsCache());
-            return;
-        }
-
-    }
+//   protected String getBatchEditType()
+//    {
+//        return BATCHEDIT;
+//    }
+//
+//    @Override
+//    public void doCommand(CommandAction cmdAction) {
+//        super.doCommand(cmdAction);
+//
+//        if (cmdAction.isType(getBatchEditType())) {
+//            processBatchEditCommands(cmdAction);
+//
+//        } else if (cmdAction.isType(RecordSetTask.RECORD_SET) && cmdAction.isAction("Clicked")) {
+//            processRecordSetCommand(cmdAction);
+//
+//        } else if (cmdAction.isType(TreeDefinitionEditor.TREE_DEF_EDITOR)) {
+//            //all we care to know is that a treeDefintion got changed somehow
+//            this.configurationHasChanged.set(true);
+//        } else if (cmdAction.isType(SchemaLocalizerDlg.SCHEMA_LOCALIZER)) {
+//            //XXX should check whether changed schema actually is the schema in use?
+//            // e.g. If German schema was saved when English is in use then ignore??
+//            this.configurationHasChanged.set(true);
+//            SwingUtilities.invokeLater(new Runnable(){
+//                public void run() {
+//                    if (SubPaneMgr.getInstance().getCurrentSubPane() == queryBldrPane) {
+//                        if (queryBldrPane != null) {
+//                            queryBldrPane.showingPane(true);
+//                        }
+//                    }
+//                }
+//            });
+//        }
+//    }
+//
+//    protected void processBatchEditCommands(final CommandAction cmdAction) {
+//        if (cmdAction.isAction(QUERY_RESULTS_BATCH_EDIT)) {
+//            JTable dataTbl = (JTable) cmdAction.getProperties().get("jtable");
+//            if (dataTbl != null) {
+//                ResultSetTableModel rsm = (ResultSetTableModel) dataTbl.getModel();
+//                if (rsm.isLoadingCells()) {
+//                    UIRegistry.writeTimedSimpleGlassPaneMsg(UIRegistry.getResourceString("QB_NO_BATCH_EDIT_WHILE_LOADING_RESULTS"),
+//                            5000, null, null, true);
+//                    return;
+//                }
+//            }
+//            WorkbenchTask wbTask = (WorkbenchTask) ContextMgr.getTaskByClass(WorkbenchTask.class);
+//            wbTask.batchEditQueryResults(queryBldrPane.getQueryForBatchEdit(), (RecordSetIFace) cmdAction.getData(), queryBldrPane.getResultsCache());
+//            return;
+//        }
+//
+//    }
 
     protected final class UpWBFilenameFilter implements FilenameFilter {
 
