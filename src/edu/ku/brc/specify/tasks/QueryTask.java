@@ -150,7 +150,7 @@ import edu.ku.brc.util.Pair;
 public class QueryTask extends BaseTask implements SubPaneMgrListener 
 {
     private static final Logger log = Logger.getLogger(QueryTask.class);
-    
+
     // Static Data Members
     public static final String QUERY                = "Query";
     public static final String SAVE_QUERY           = "Save";
@@ -971,7 +971,6 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
     protected void registerServices()
     {
     	ContextMgr.registerService(new ReportServiceInfo());   
-    	ContextMgr.registerService(new QueryBatchEditServiceInfo());
     }
     
     /**

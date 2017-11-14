@@ -48,6 +48,7 @@ import edu.ku.brc.specify.tasks.subpane.wb.schema.Relationship;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Table;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMappingDefRel.ImportMappingRelFld;
 import edu.ku.brc.ui.*;
+import edu.ku.brc.ui.dnd.SimpleGlassPane;
 import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.Pair;
 import net.sf.jasperreports.engine.JRDataSource;
@@ -3385,13 +3386,13 @@ public class Uploader implements ActionListener, KeyListener
                 wbSS.uploadDone(action);
                 if (isUpdateUpload()) {
                     if (UploadMainPanel.COMMIT_AND_CLOSE_BATCH_UPDATE.equals(action)) {
-                        QueryTask qt = (QueryTask) ContextMgr.getTaskByClass(QueryTask.class);
+                        BatchEditTask beTask = (BatchEditTask) ContextMgr.getTaskByClass(BatchEditTask.class);
                         final SubPaneIFace wbPane = SubPaneMgr.getInstance().getCurrentSubPane();
                         SubPaneIFace qbp = null;
-                        if (qt != null) {
+                        if (beTask != null) {
                             java.util.Collection<SubPaneIFace> panes = SubPaneMgr.getInstance().getSubPanes();
                             for (SubPaneIFace pane : panes) {
-                                if (pane.getTask() == qt) {
+                                if (pane.getTask() == beTask) {
                                     qbp = pane;
                                     break;
                                 }
@@ -3552,20 +3553,20 @@ public class Uploader implements ActionListener, KeyListener
     protected void rollBackOrCommitBatchEdit(final String action, boolean force) {
         int rv = force ? JOptionPane.YES_OPTION : showShutDownDlg(true, action);
         if (rv == JOptionPane.YES_OPTION) {
-            boolean rollBack = UploadMainPanel.CANCEL_AND_CLOSE_BATCH_UPDATE.equals(action);
+            final boolean rollBack = UploadMainPanel.CANCEL_AND_CLOSE_BATCH_UPDATE.equals(action);
             if (theUploadBatchEditSession != null) {
                 Session s = ((edu.ku.brc.specify.dbsupport.HibernateDataProviderSession) theUploadBatchEditSession).getSession();
                 Transaction t = s.getTransaction();
                 if (!t.wasCommitted() && !t.wasRolledBack()) {
-                    final ProgressDialog progDlg = new ProgressDialog(getResourceString("WB_BATCH_EDIT_FORM_TITLE"), false, false);
-                    progDlg.setResizable(false);
-                    progDlg.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
-                    progDlg.setModal(true);
-                    progDlg.setProcessPercent(false);
-                    progDlg.getProcessProgress().setIndeterminate(true);
-                    progDlg.getProcessProgress().setStringPainted(false);
-                    progDlg.setDesc(getResourceString(rollBack ? "WB_BATCH_EDIT_ROLLING_BACK" : "WB_BATCH_EDIT_COMMITTING"));
-                    progDlg.setAlwaysOnTop(true);
+//                    final ProgressDialog progDlg = new ProgressDialog(getResourceString("WB_BATCH_EDIT_FORM_TITLE"), false, false);
+//                    progDlg.setResizable(false);
+//                    progDlg.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+//                    progDlg.setModal(true);
+//                    progDlg.setProcessPercent(false);
+//                    progDlg.getProcessProgress().setIndeterminate(true);
+//                    progDlg.getProcessProgress().setStringPainted(false);
+//                    progDlg.setDesc(getResourceString(rollBack ? "WB_BATCH_EDIT_ROLLING_BACK" : "WB_BATCH_EDIT_COMMITTING"));
+//                    progDlg.setAlwaysOnTop(true);
                     Thread rollComT = new Thread() {
                         @Override
                         public void run() {
@@ -3573,7 +3574,10 @@ public class Uploader implements ActionListener, KeyListener
                             SwingUtilities.invokeLater(new Runnable() {
                                 @Override
                                 public void run() {
-                                    UIHelper.centerAndShow(progDlg);
+                                    //UIHelper.centerAndShow(progDlg);
+                                    //GlassPane's don't come with indeterminate progress bars, so maybe progDlg is better???
+                                    UIRegistry.writeSimpleGlassPaneMsg(getResourceString(rollBack ? "WB_BATCH_EDIT_ROLLING_BACK" : "WB_BATCH_EDIT_COMMITTING"),
+                                            WorkbenchTask.GLASSPANE_FONT_SIZE);
                                 }
                             });
                             if (rollBack) {
@@ -3592,7 +3596,8 @@ public class Uploader implements ActionListener, KeyListener
                             SwingUtilities.invokeLater(new Runnable() {
                                 @Override
                                 public void run() {
-                                    progDlg.setVisible(false);
+                                    //progDlg.setVisible(false);
+                                    UIRegistry.clearSimpleGlassPaneMsg();
                                 }
                             });
                             if (aboutToShutdown(null, action, true))
