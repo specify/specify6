@@ -16,7 +16,8 @@
 		<plugin name="InteractionsTask" class="edu.ku.brc.specify.tasks.InteractionsTask" addui="true"/>
 		<plugin name="StatsTask" class="edu.ku.brc.af.tasks.StatsTask" addui="true"/>
 		<plugin name="QueryTask" class="edu.ku.brc.specify.tasks.QueryTask" addui="true"/>
-		
+		<plugin name="BatchEditTask" class="edu.ku.brc.specify.tasks.BatchEditTask" addui="true"/>
+
 		<plugin name="ExportMappingTask" class="edu.ku.brc.specify.tasks.ExportMappingTask" addui="true"/>
 		<plugin name="SymbiotaTask" class="edu.ku.brc.specify.tasks.SymbiotaTask" addui="true" />
 		
