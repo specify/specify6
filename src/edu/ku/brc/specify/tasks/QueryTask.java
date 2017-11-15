@@ -207,7 +207,6 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
     
     /**
      * Ask the user for information needed to fill in the data object. (Could be refactored with WorkBench Task)
-     * @param data the data object
      * @return true if OK, false if cancelled
      */
     public static boolean askUserForInfo(final String viewSetName, 
@@ -330,8 +329,7 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
         
     /**
      * Reads a single list from the database.
-     * @param resName the name of the resource to use to save it.
-     * @return the list 
+     * @return the list
      */
     @SuppressWarnings("unchecked")
     protected Vector<String> readResourceForList(final String resourceName)
@@ -968,9 +966,8 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
     /**
      * register services at initialization.
      */
-    protected void registerServices()
-    {
-    	ContextMgr.registerService(new ReportServiceInfo());   
+    protected void registerServices() {
+    	ContextMgr.registerService(new ReportServiceInfo());
     }
     
     /**
@@ -1006,7 +1003,6 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
     
     /**
      * Adds a Query to the Left Pane NavBox (Refactor this with Workbench)
-     * @param query the Query to be added
      * @return the nav box
      */
     protected NavBoxItemIFace addToNavBox(final RecordSet recordSet)
@@ -1332,7 +1328,6 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
     
     /**
      * Save a record set.
-     * @param recordSets the rs to be saved
      */
     public RolloverCommand saveNewQuery(final SpQuery query, final SpExportSchemaMapping schemaMapping, final boolean enabled)
     {        
@@ -1461,8 +1456,7 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
      * This method first checks to see if the boxItem is not null and uses that, if
      * it is null then it looks the box up by name and used that
      * @param boxItem the box item to be deleted
-     * @param recordSets the record set that is "owned" by some UI object that needs to be deleted (used for secondary lookup
-     */
+    */
     protected void deleteQueryFromUI(final NavBoxItemIFace boxItem, final RecordSet rs)
     {
         deleteDnDBtn(navBox, boxItem != null ? boxItem : getBoxByTitle(navBox, rs.getName()));
@@ -1498,6 +1492,27 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
         	UIRegistry.forceTopFrameRepaint();
         	return;
         }
+
+        if (cmdAction.isAction(QUERY_RESULTS_BATCH_EDIT)) {
+            if (queryBldrPane != null) {
+                JTable dataTbl = (JTable) cmdAction.getProperties().get("jtable");
+                if (dataTbl != null) {
+                    ResultSetTableModel rsm = (ResultSetTableModel) dataTbl.getModel();
+                    if (rsm.getQueryForIdResults() == queryBldrPane.getCompletedResults()) {
+                        if (rsm.isLoadingCells()) {
+                            UIRegistry.writeTimedSimpleGlassPaneMsg(UIRegistry.getResourceString("QB_NO_BATCH_EDIT_WHILE_LOADING_RESULTS"),
+                                    5000, null, null, true);
+                            return;
+                        }
+                        WorkbenchTask wbTask = (WorkbenchTask) ContextMgr.getTaskByClass(WorkbenchTask.class);
+                        wbTask.batchEditQueryResults(queryBldrPane.getQueryForBatchEdit(), (RecordSetIFace) cmdAction.getData(), queryBldrPane.getResultsCache());
+                        return;
+                    }
+                }
+            }
+        }
+
+
 
         if (cmdAction.isAction(QUERY_RESULTS_REPORT))
 		{

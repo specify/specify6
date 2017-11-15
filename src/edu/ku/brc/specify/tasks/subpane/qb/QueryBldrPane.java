@@ -459,7 +459,11 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 //    		ex.printStackTrace();
 //    	}
 //    }
-    
+
+    public QBQueryForIdResultsHQL getCompletedResults() {
+        return completedResults.get();
+    }
+
     /**
      * @return
      */
@@ -962,7 +966,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     }
     
     /**
-     * @param schemaItem
      * @return true if schemaItem was removed
      */
     protected boolean removeSchemaItemMapping(SpExportSchemaItemMapping itemMapping)
@@ -1350,7 +1353,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      */
     /**
      * @param saveBtnEnabled
-     * @param selected
      */
     protected void adjustPanelUI(boolean saveBtnEnabled, boolean isPostSave)
     {
@@ -2371,7 +2373,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     }
     
     /**
-     * @param fqri
      * @param forSchemaExport
      * @return the formatter for the column displaying fqri's data.
      * Generally the default or user-defined formatter is used, except in special cases for
@@ -3094,8 +3095,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     
     /**
      * @param queryFieldItemsArg
-     * @param sql
-     * @param params
      * @param rootTable
      * @param distinct
      */
@@ -3668,8 +3667,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 
 
     /**
-     * @param parentQRI
-     * @param tableTree
      * @param model
      */
     protected void createNewList(final TableQRI tblQRI, final DefaultListModel model)
@@ -4555,8 +4552,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     }
     
     /**
-     * @param kids
-     * @param field
      * @param tableIds
      * @param level
      * @return
@@ -5041,7 +5036,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     /**
      * Add QueryFieldItem to the list created with a TableFieldPair.
      * 
-     * @param fieldItem the TableFieldPair to be in the list
      */
     protected QueryFieldPanel addQueryFieldItem(final FieldQRI fieldQRI, final SpQueryField queryField, final boolean loading)
     {
