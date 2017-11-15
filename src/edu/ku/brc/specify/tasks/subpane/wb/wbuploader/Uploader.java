@@ -791,7 +791,6 @@ public class Uploader implements ActionListener, KeyListener
 
     /**
      * @param db
-     * @param uploadData
      * @throws UploaderException
      */
     public Uploader(DB db, UploadData importData, final WorkbenchPaneSS wbSS, final Workbench theWb, final java.util.Collection<WorkbenchTemplateMappingItem> wbItems,
@@ -1605,7 +1604,6 @@ public class Uploader implements ActionListener, KeyListener
     }
     	
     /**
-     * @param fld
      * @return msg describing current cell contents length and max length for the mapped fld
      */
     protected String getInvalidLengthErrMsg(String value, int maxlen) {
@@ -2409,7 +2407,7 @@ public class Uploader implements ActionListener, KeyListener
     }
 
     /**
-     * @param tblClass
+     * @param uploadTable
      * @return true if attachments can be uploaded for tblClass
      * 
      * Lots of UI work needs to be done before we can support attachments
@@ -3608,8 +3606,9 @@ public class Uploader implements ActionListener, KeyListener
 
                 }
             } else {
-                log.error("the transaction was already rolled back or committed.");
-                throw new RuntimeException("the transaction was already rolled back or committed.");
+                if (aboutToShutdown(null, action, true)) {
+                    closeMainForm(true, action);
+                }
             }
         }
     }
