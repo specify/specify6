@@ -767,8 +767,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
      * 
      * @param hqlStr the HQL query string
      */
-    protected void doHQLQuery(final QueryForIdResultsIFace  results, final Boolean reusePanel, final Boolean isBatchEdit)
-    {
+    protected void doHQLQuery(final QueryForIdResultsIFace  results, final Boolean reusePanel, final Boolean isBatchEdit) {
         if (reusePanel == null || !reusePanel) {
             ESResultsSubPane expressSearchPane = new ESResultsSubPane(getResourceString("ES_QUERY_RESULTS"), this, true);
             addSubPaneToMgr(expressSearchPane);
@@ -1471,7 +1470,16 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
             searchBox.resetSearchIcon();
         }
     }
-    
+
+    protected ESResultsSubPane getQResultsPane(final QueryForIdResultsIFace results) {
+        if (queryResultsPane != null && results != null && queryResultsPane.contains(results)) {
+            return queryResultsPane;
+        } else if (batchEditResultsPane != null && results != null && batchEditResultsPane.contains(results)) {
+            return batchEditResultsPane;
+        } else {
+            return null;
+        }
+    }
     /**
      * @param results
      * @return
@@ -1484,23 +1492,25 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
          * (same reason esrto.hasResults() in doSearchComplete() returns false),
          * so must check type of results.
          */
-    	return (queryResultsPane != null || batchEditResultsPane != null) && results instanceof QBQueryForIdResultsHQL;
+    	//return (queryResultsPane != null || batchEditResultsPane != null) && results instanceof QBQueryForIdResultsHQL;
+        /* pretty sure the issue above had to do with an class exposing itself before its constructor had completed
+        and is fixed, so returning to the original strategy
+         */
+        return (queryResultsPane != null && results != null && queryResultsPane.contains(results))
+                || (batchEditResultsPane != null && results != null && batchEditResultsPane.contains(results));
     }
     /**
      * @param cmdAction
      */
-    protected void doSearchComplete(final CommandAction cmdAction)
-    {
-        if (statusBar != null)
-        {
+    protected void doSearchComplete(final CommandAction cmdAction) {
+        if (statusBar != null) {
             statusBar.setProgressDone(EXPRESSSEARCH);
-            if (cmdAction.getData() instanceof JPAQuery)
-            {
+            if (cmdAction.getData() instanceof JPAQuery) {
                 QueryForIdResultsIFace   results = (QueryForIdResultsIFace)cmdAction.getProperty("QueryForIdResultsIFace");
                 ESResultsTablePanelIFace esrto   = (ESResultsTablePanelIFace)cmdAction.getProperty("ESResultsTablePanelIFace");
-                
-                if (!isQueryBuilderResults(results) && esrto != null && !esrto.hasResults())
-                {
+
+                ESResultsSubPane qResults = getQResultsPane(results);
+                if (qResults == null && esrto != null && !esrto.hasResults()) {
                 /* hmmmmmm.... A strange, seemingly windows-only issue has been occurring where
                  * the propertyChange event that updates the table used in the esrto.hasResults() call
                  * has not finished when the if statement above is executed, so esrto.hasResults() incorrectly
@@ -1518,45 +1528,31 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                 }
 
                 //Only execute this block for QueryBuilder results...
-                if (isQueryBuilderResults(results))
-                {
+                if (qResults != null) {
                     int     rowCount = ((JPAQuery) cmdAction.getData()).getDataObjects().size();
                     boolean isError  = ((JPAQuery) cmdAction.getData()).isInError();
                     boolean isCancelled = ((JPAQuery) cmdAction.getData()).isCancelled();
                     boolean showPane = !isError && !isCancelled && rowCount > 0;
                     //print status bar msg if error or rowCount == 0, 
                     //else show the queryResults pane if rowCount > 0
-                    int index = SubPaneMgr.getInstance().indexOfComponent(queryResultsPane.getUIComponent());
-                    if (index == -1)
-                    {
-                        if (showPane)
-                        {
-                            addSubPaneToMgr(queryResultsPane);
+                    int index = SubPaneMgr.getInstance().indexOfComponent(qResults.getUIComponent());
+                    if (index == -1) {
+                        if (showPane) {
+                            addSubPaneToMgr(qResults);
                         }
-                    }
-                    else
-                    {
-                        if (showPane)
-                        {
-                            SubPaneMgr.getInstance().showPane(queryResultsPane);
-                        }
-                        else
-                        {
-                            SubPaneMgr.getInstance().removePane(queryResultsPane, false);
+                    } else {
+                        if (showPane) {
+                            SubPaneMgr.getInstance().showPane(qResults);
+                        } else {
+                            SubPaneMgr.getInstance().removePane(qResults, false);
                         }
                     }
                     results.complete();
-                    if (isError)
-                    {
+                    if (isError) {
                         statusBar.setErrorMessage(getResourceString("QB_RUN_ERROR"));
-                    }
-                    
-                    else if (rowCount == 0)
-                    {
+                    } else if (rowCount == 0) {
                         displayNoResults("QB_NO_RESULTS");
-                    }
-                    else
-                    {
+                    } else {
                         statusBar.setText(null);
                     }
                 }
