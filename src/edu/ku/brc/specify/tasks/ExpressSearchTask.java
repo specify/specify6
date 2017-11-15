@@ -1472,6 +1472,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
     }
 
     protected ESResultsSubPane getQResultsPane(final QueryForIdResultsIFace results) {
+        //see earlier revision for comments if problems arise with contains(results) calls.
         if (queryResultsPane != null && results != null && queryResultsPane.contains(results)) {
             return queryResultsPane;
         } else if (batchEditResultsPane != null && results != null && batchEditResultsPane.contains(results)) {
@@ -1479,25 +1480,6 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
         } else {
             return null;
         }
-    }
-    /**
-     * @param results
-     * @return
-     */
-    protected boolean isQueryBuilderResults(final QueryForIdResultsIFace results)
-    {
-    	//return queryResultsPane != null && results != null && queryResultsPane.contains(results);
-        /* strange, seemingly windows-only issue (see doSearchComplete()) also arises when
-         * the results have not yet been added to the queryResultsPane when doSearchComplete() is executed
-         * (same reason esrto.hasResults() in doSearchComplete() returns false),
-         * so must check type of results.
-         */
-    	//return (queryResultsPane != null || batchEditResultsPane != null) && results instanceof QBQueryForIdResultsHQL;
-        /* pretty sure the issue above had to do with an class exposing itself before its constructor had completed
-        and is fixed, so returning to the original strategy
-         */
-        return (queryResultsPane != null && results != null && queryResultsPane.contains(results))
-                || (batchEditResultsPane != null && results != null && batchEditResultsPane.contains(results));
     }
     /**
      * @param cmdAction
@@ -1511,17 +1493,6 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
 
                 ESResultsSubPane qResults = getQResultsPane(results);
                 if (qResults == null && esrto != null && !esrto.hasResults()) {
-                /* hmmmmmm.... A strange, seemingly windows-only issue has been occurring where
-                 * the propertyChange event that updates the table used in the esrto.hasResults() call
-                 * has not finished when the if statement above is executed, so esrto.hasResults() incorrectly
-                 * returns false. I have added the !isQueryBuilderResults() condition because so far this problem has only
-                 * occurred for the QueryBuilder and I don't know if the method for determining 'hasResults()'
-                 * in the QueryBuilder results block below are applicable for all types of results.
-                 * 
-                 * We occasionally see this on a Virtual machine, more investigation is needed.
-                 * 
-                 */
-                    //displayNoResults("QB_NO_RESULTS");
                     results.complete();
                     UIRegistry.showLocalizedError("QB_NO_RESULTS_UNK");
                     return;
