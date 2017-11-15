@@ -230,8 +230,9 @@ public class WorkbenchPaneSS extends BaseSubPane
      * 
      * @param name the name of the pane
      * @param task the owning task
-     * @param workbench the workbench to be edited
+     * @param workbenchArg the workbench to be edited
      * @param showImageView shows image window when first showing the window
+     * @param isReadOnly
      */
     public WorkbenchPaneSS(final String    name,
                            final Taskable  task,
@@ -1293,7 +1294,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 	}
 
 	/**
-	 * @param forward
+	 * @param isNext
 	 */
 	public void goToEditedCell(final boolean isNext) {
     	Set<Short> stats = new HashSet<Short>();
@@ -2097,7 +2098,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     
     /**
      * Shows the grid or the form.
-     * @param value the panel number
+     * @param panelType
      */
     public void showPanel(final PanelType panelType)
     {
@@ -3854,7 +3855,9 @@ public class WorkbenchPaneSS extends BaseSubPane
             {
                 datasetUploader = null;
                 Uploader.unlockApp();
-                Uploader.unlockUpload();
+                if (!isUpdateDataSet()) {
+                    Uploader.unlockUpload();
+                }
             }
         }
 
@@ -4483,8 +4486,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         {
             Vector<UploadMappingDef> maps = importMapper.getImporterMapping();
             DB db = new DB();
-            if (Uploader.lockUpload(null, true) != Uploader.LOCKED)
-            {
+            if (!isUpdateDataSet() && Uploader.lockUpload(null, true) != Uploader.LOCKED) {
                 return;
             }
             Uploader.lockApp();
@@ -4569,7 +4571,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     public void uploadDone(final String action) {
         datasetUploader = null;
         Uploader.unlockApp();
-        if (!Uploader.unlockUpload()) {
+        if (!isUpdateDataSet() && !Uploader.unlockUpload()) {
             log.error("unable to unlock upload task semaphore.");
             //inform the user??
         }
@@ -5110,30 +5112,6 @@ public class WorkbenchPaneSS extends BaseSubPane
 			this.allowCancel = allowCancel;
 		}
 
-		/**
-		 * @param row
-		 * @return row adjusted to account for deletes. Or -1 if the row has been deleted.
-		 */
-		/*private int adjustRow(int row)
-		{
-			int result = row;
-			//Not sure what happens if deletedRows is added to during the following loop.
-			//Doesn't seem important enough to worry about.
-			for (Integer deleted : deletedRows)
-			{
-				if (deleted == row)
-				{
-					result = -1;
-					break;
-					
-				} else if (row > deleted)
-				{
-					result--;
-				}
-			} 
-			return result;
-		}*/
-		
 		/*
 		 * (non-Javadoc)
 		 * 
@@ -5431,7 +5409,9 @@ public class WorkbenchPaneSS extends BaseSubPane
      * @param rows
      * @param startRow
      * @param endRow
-     * @param isDoInBackground
+     * @param doSecretly
+     * @param glassPane
+     * @param allowCancel
      */
     protected void validateRows(final int[] rows, final int startRow, final int endRow, boolean doSecretly, final SimpleGlassPane glassPane, final boolean allowCancel)
     {

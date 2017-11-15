@@ -5869,8 +5869,7 @@ public class Uploader implements ActionListener, KeyListener
      * 
      * @return true if successful.
      */
-    public static boolean unlockUpload()
-    {
+    public static boolean unlockUpload() {
         return TaskSemaphoreMgr.unlock(getLockTitle(), "WORKBENCHUPLOAD",  TaskSemaphoreMgr.SCOPE.Discipline);
     }
 
