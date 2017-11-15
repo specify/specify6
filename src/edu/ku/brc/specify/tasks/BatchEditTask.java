@@ -46,6 +46,7 @@ public class BatchEditTask extends QueryTask {
 
     public BatchEditTask(final String name, final String title) {
         super(name, title);
+        CommandDispatcher.register(QueryTask.QUERY, this);
     }
 
     @Override
@@ -80,6 +81,27 @@ public class BatchEditTask extends QueryTask {
     @Override
     protected void registerServices()  {
         ContextMgr.registerService(new QueryBatchEditServiceInfo());
+    }
+
+    @Override
+    protected void processQueryCommands(final CommandAction cmdAction) {
+        super.processQueryCommands(cmdAction);
+        if (!cmdAction.isConsumed()) {
+            if (cmdAction.isAction(QUERY_RESULTS_BATCH_EDIT)) {
+                JTable dataTbl = (JTable) cmdAction.getProperties().get("jtable");
+                if (dataTbl != null) {
+                    ResultSetTableModel rsm = (ResultSetTableModel) dataTbl.getModel();
+                    if (rsm.isLoadingCells()) {
+                        UIRegistry.writeTimedSimpleGlassPaneMsg(UIRegistry.getResourceString("QB_NO_BATCH_EDIT_WHILE_LOADING_RESULTS"),
+                                5000, null, null, true);
+                        return;
+                    }
+                }
+                WorkbenchTask wbTask = (WorkbenchTask)ContextMgr.getTaskByClass(WorkbenchTask.class);
+                wbTask.batchEditQueryResults(queryBldrPane.getQueryForBatchEdit(), (RecordSetIFace)cmdAction.getData(), queryBldrPane.getResultsCache());
+                return;
+            }
+        }
     }
 
 //   protected String getBatchEditType()

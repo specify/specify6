@@ -88,6 +88,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.MouseInputAdapter;
 
+import edu.ku.brc.specify.tasks.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -143,10 +144,6 @@ import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.dbsupport.RecordTypeCodeBuilder;
-import edu.ku.brc.specify.tasks.ExportMappingTask;
-import edu.ku.brc.specify.tasks.ExpressSearchTask;
-import edu.ku.brc.specify.tasks.QueryTask;
-import edu.ku.brc.specify.tasks.ReportsBaseTask;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
 import edu.ku.brc.specify.tasks.subpane.JasperCompilerRunnable;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchJRDataSource;
@@ -3197,7 +3194,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 if (esrp == null)
                 {
                     CommandAction cmdAction = new CommandAction("Express_Search", "HQL", qri);
-                    cmdAction.setProperty("reuse_panel", true); 
+                    cmdAction.setProperty("reuse_panel", true);
+                    cmdAction.setProperty("is_batch_edit", task.getClass().equals(BatchEditTask.class));
                     CommandDispatcher.dispatch(cmdAction);
                 } else
                 {

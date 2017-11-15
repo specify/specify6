@@ -162,6 +162,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
     
     
     protected ESResultsSubPane              queryResultsPane      = null;
+    protected ESResultsSubPane              batchEditResultsPane  = null;
     protected SIQueryForIdResults           searchWarningsResults = null;
     protected JStatusBar                    statusBar             = null;
     protected boolean                       doingDebug            = false;
@@ -766,27 +767,27 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
      * 
      * @param hqlStr the HQL query string
      */
-    protected void doHQLQuery(final QueryForIdResultsIFace  results, final Boolean reusePanel)
+    protected void doHQLQuery(final QueryForIdResultsIFace  results, final Boolean reusePanel, final Boolean isBatchEdit)
     {
-        if (reusePanel == null || !reusePanel)
-        {
+        if (reusePanel == null || !reusePanel) {
             ESResultsSubPane expressSearchPane = new ESResultsSubPane(getResourceString("ES_QUERY_RESULTS"), this, true);
             addSubPaneToMgr(expressSearchPane);
             expressSearchPane.addSearchResults(results);
             
-        } else
-        {
-            if (queryResultsPane == null)
-            {
-                //queryResultsPane = new ESResultsSubPane(getResourceString("ES_QUERY_RESULTS"), this, true);
-                queryResultsPane = new QBResultsSubPane(getResourceString("ES_QUERY_RESULTS"), this, true);
-                queryResultsPane.setIcon(IconManager.getIcon("Query", IconManager.IconSize.Std16));
-                
-            } else
-            {
-                queryResultsPane.reset();
+        } else {
+            ESResultsSubPane pane = isBatchEdit ? batchEditResultsPane : queryResultsPane;
+            if (pane == null) {
+                pane = new QBResultsSubPane(getResourceString("ES_QUERY_RESULTS"), this, true);
+                pane.setIcon(IconManager.getIcon(isBatchEdit? "BatchEdit" : "Query", IconManager.IconSize.Std16));
+                if (isBatchEdit) {
+                    batchEditResultsPane = pane;
+                } else {
+                    queryResultsPane = pane;
+                }
+            } else {
+                pane.reset();
             }
-            queryResultsPane.addSearchResults(results);
+            pane.addSearchResults(results);
         }
     }
 
@@ -960,7 +961,8 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
             
             if (cmdAction.isAction("HQL"))
             {
-                doHQLQuery((QueryForIdResultsIFace)cmdAction.getData(), (Boolean)cmdAction.getProperty("reuse_panel"));
+                doHQLQuery((QueryForIdResultsIFace)cmdAction.getData(), (Boolean)cmdAction.getProperty("reuse_panel"),
+                        (Boolean)cmdAction.getProperty("is_batch_edit"));
                 
             } else if (cmdAction.isAction("ExpressSearch"))
             {
@@ -1005,9 +1007,10 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
     @Override
     public void subPaneRemoved(SubPaneIFace subPane)
     {
-        if (subPane == queryResultsPane)
-        {
+        if (subPane == queryResultsPane) {
             queryResultsPane = null;
+        } else if (subPane == batchEditResultsPane) {
+            batchEditResultsPane = null;
         }
         super.subPaneRemoved(subPane);
     }
@@ -1481,7 +1484,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
          * (same reason esrto.hasResults() in doSearchComplete() returns false),
          * so must check type of results.
          */
-    	return queryResultsPane != null && results instanceof QBQueryForIdResultsHQL;
+    	return (queryResultsPane != null || batchEditResultsPane != null) && results instanceof QBQueryForIdResultsHQL;
     }
     /**
      * @param cmdAction

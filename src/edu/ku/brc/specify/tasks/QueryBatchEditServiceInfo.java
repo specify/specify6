@@ -38,7 +38,7 @@ public class QueryBatchEditServiceInfo extends ServiceInfo {
                 new CommandAction(QueryTask.QUERY, QueryTask.QUERY_RESULTS_BATCH_EDIT, 
                 		null),
                 ContextMgr.getTaskByClass(QueryTask.class),
-                "CleanUp",
+                "BatchEdit",
                 UIRegistry.getResourceString("QB_RESULTS_BATCH_EDIT_TT"));
 	}
 
@@ -52,7 +52,12 @@ public class QueryBatchEditServiceInfo extends ServiceInfo {
 		}
 		//XXX security anyone?
 		WorkbenchTask wbTask = (WorkbenchTask)ContextMgr.getTaskByClass(WorkbenchTask.class);
-		return wbTask != null && wbTask.getUpdateSchemaForTable(tableIdArg) != null;
+		if (!(wbTask != null && wbTask.getUpdateSchemaForTable(tableIdArg) != null)) {
+			return false;
+		};
+
+		//BatchEditTask beTask = (BatchEditTask) ContextMgr.getTaskByClass(BatchEditTask.class);
+		return true;
 	}
 
 	/**

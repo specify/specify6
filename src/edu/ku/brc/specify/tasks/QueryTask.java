@@ -1498,22 +1498,7 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
         	UIRegistry.forceTopFrameRepaint();
         	return;
         }
-        
-        if (cmdAction.isAction(QUERY_RESULTS_BATCH_EDIT)) {
-            JTable dataTbl = (JTable) cmdAction.getProperties().get("jtable");
-            if (dataTbl != null) {
-                ResultSetTableModel rsm = (ResultSetTableModel) dataTbl.getModel();
-                if (rsm.isLoadingCells()) {
-                    UIRegistry.writeTimedSimpleGlassPaneMsg(UIRegistry.getResourceString("QB_NO_BATCH_EDIT_WHILE_LOADING_RESULTS"),
-                            5000, null, null, true);
-                    return;
-                }
-            }
-        	WorkbenchTask wbTask = (WorkbenchTask)ContextMgr.getTaskByClass(WorkbenchTask.class);
-        	wbTask.batchEditQueryResults(queryBldrPane.getQueryForBatchEdit(), (RecordSetIFace)cmdAction.getData(), queryBldrPane.getResultsCache());
-        	return;
-        }
-        
+
         if (cmdAction.isAction(QUERY_RESULTS_REPORT))
 		{
 			SearchResultReportServiceInfo selectedRep = null;
