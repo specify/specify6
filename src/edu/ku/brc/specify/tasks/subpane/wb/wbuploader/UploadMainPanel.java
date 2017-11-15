@@ -326,7 +326,7 @@ public class UploadMainPanel extends JPanel
     public void buildUI()
     {
         CellConstraints cc = new CellConstraints();
-        setLayout(new FormLayout("3dlu:none, fill:50dlu:grow(0.30), 20dlu:none, fill:50dlu:grow(0.70), 5dlu:none, r:max(50dlu;pref), 3dlu:none", 
+        setLayout(new FormLayout("3dlu:none, fill:50dlu:grow(0.50), 20dlu:none, fill:50dlu:grow(0.50), 5dlu:none, r:max(50dlu;pref), 3dlu:none",
                 "2dlu:none, fill:m:none, 4dlu:none, t:m:none, 2dlu:none, fill:75dlu:grow, 5dlu:none"));
         
         JLabel title = createLabel(getResourceString(isUpdateUpload ? "WB_UPLOAD_FORM_TITLE_BATCH_EDIT" : "WB_UPLOAD_FORM_TITLE"));
