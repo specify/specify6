@@ -34,6 +34,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Vector;
 
+import edu.ku.brc.dbsupport.DataProviderFactory;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.NonUniqueResultException;
 
@@ -50,6 +51,7 @@ import edu.ku.brc.specify.tasks.subpane.wb.schema.Field;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Table;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader.ParentTableEntry;
 import edu.ku.brc.util.Pair;
+import org.hibernate.criterion.Restrictions;
 
 /**
  * @author timbo
@@ -555,23 +557,37 @@ protected List<java.lang.reflect.Field> getFldsForJSON() {
             throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
         }
     }
-    
+
+    @Override
+    protected boolean shouldSetExportedRec(DataModelObjBase rec) {
+        boolean result = super.shouldSetExportedRec(rec);
+        if (result) {
+            return this.getRank().equals(((Treeable)rec).getRankId());
+        }
+        return result;
+    }
+
+    @Override
+    protected DataModelObjBase getExportedRecIdForParent(final ParentTableEntry pte, final DataModelObjBase rec, boolean idWasSet) throws Exception {
+        if (idWasSet) {
+            return super.getExportedRecIdForParent(pte, rec, idWasSet);
+        } else {
+            return rec;
+        }
+    }
+
     /**
      * Loads the root of the tree for this.tblClass.
      */
-    protected void loadTreeRoot() throws UploaderException
-    {
+    protected void loadTreeRoot() throws UploaderException {
         String hql = "from " + tblClass.getName() + " where " + getTreeDefFld() + "=" + getTreeDef().getTreeDefId() + " and " + getTreeDefItemFld() + "=" +
             getTreeDef().getDefItemByRank(0).getTreeDefItemId();
-    	Pair<DataProviderSessionIFace,Boolean> sessObj = getSession();
-    	DataProviderSessionIFace session = sessObj.getFirst();
-        try
-        {
+        Pair<DataProviderSessionIFace,Boolean> sessObj = getSession();
+        DataProviderSessionIFace session = sessObj.getFirst();
+        try {
             QueryIFace q = session.createQuery(hql, false);
             treeRoot = (Treeable<?,?,?>)q.list().get(0);
-        }
-        finally
-        {
+        } finally {
             getRidOfSession(sessObj);
         }
     }
@@ -884,17 +900,19 @@ protected List<java.lang.reflect.Field> getFldsForJSON() {
      * 
      * This method should be called by the highest level in the tree.
      */
-    protected boolean needToUpdateTree()
+    protected boolean needToUpdateTree(boolean isCancelled)
     {
     	//XXX may need to check other things when 'update' uploads are implemented
-    	if (uploadedRecs.size() > 0)
-    	{
+        if (isCancelled && uploader.theUploadBatchEditSession != null) {
+    	    return false;
+        }
+
+        if (uploadedRecs.size() > 0) {
     		return true;
     	}
     	
-    	if (child != null)
-    	{
-    		return child.needToUpdateTree();
+    	if (child != null) {
+    		return child.needToUpdateTree(isCancelled);
     	}
     	
     	return false;
@@ -904,23 +922,17 @@ protected List<java.lang.reflect.Field> getFldsForJSON() {
      * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#finishUpload()
      */
     @Override
-    public void finishUpload(boolean cancelled, DataProviderSessionIFace theSession) throws UploaderException
-    {
+    public void finishUpload(boolean cancelled, DataProviderSessionIFace theSession) throws UploaderException {
         super.finishUpload(cancelled, theSession);
-        if (this.parent == null  && !this.incrementalNodeNumberUpdates && !cancelled)
-        {
-        	if (needToUpdateTree())
-        	{
-        		try
-        		{
+        if (this.parent == null  && !this.incrementalNodeNumberUpdates && !cancelled) {
+        	if (needToUpdateTree(cancelled)) {
+        		try {
         			if (theSession == null) {
         				getTreeDef().updateAllNodes((DataModelObjBase)getTreeRoot(), true, false);
         			} else {
         				getTreeDef().updateAllNodes((DataModelObjBase)getTreeRoot(), false, true, true, false, theSession);
         			}
-        		}
-        		catch (Exception ex)
-        		{
+        		} catch (Exception ex) {
         			if (ex instanceof UploaderException) 
         			{ 
         				throw (UploaderException) ex; 

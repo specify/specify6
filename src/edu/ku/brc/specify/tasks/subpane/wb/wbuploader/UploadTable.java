@@ -50,6 +50,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.persistence.CascadeType;
 import javax.swing.SwingUtilities;
 
+import edu.ku.brc.sgr.datamodel.DataModel;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.ObjectDeletedException;
@@ -1493,14 +1494,31 @@ public class UploadTable implements Comparable<UploadTable>
 			}
 		}
 	}
-	
+
+    /**
+     *
+     * @param rec
+     * @return
+     */
+	protected boolean shouldSetExportedRec(final DataModelObjBase rec) {
+	   return rec != null;
+    }
+
+    /**
+     *
+     * @param rec
+     * @param idWasSet
+     */
+    protected DataModelObjBase getExportedRecIdForParent(final ParentTableEntry pte, final DataModelObjBase rec, boolean idWasSet) throws Exception {
+        return (DataModelObjBase )pte.getGetter().invoke(rec, (Object[] )null);
+    }
     /**
      * @param rec
      * @throws Exception
      */
-    public void setExportedRecordId(DataModelObjBase rec) throws Exception
-    {
-    	if (rec == null) {
+    public void setExportedRecordId(DataModelObjBase rec) throws Exception {
+    	boolean shouldSetExportedRec = shouldSetExportedRec(rec);
+        if (!shouldSetExportedRec) {
     		exportedRecordId = null;
     	} else {
     		exportedRecordId = rec.getId();
@@ -1510,7 +1528,7 @@ public class UploadTable implements Comparable<UploadTable>
     			if (rec == null) {
     				pte.getImportTable().setExportedRecordId(null);
     			} else {
-    				pte.getImportTable().setExportedRecordId((DataModelObjBase )pte.getGetter().invoke(rec, (Object[] )null));
+    				pte.getImportTable().setExportedRecordId(getExportedRecIdForParent(pte, rec, shouldSetExportedRec));
     			}
     		}
     	}
@@ -4195,7 +4213,7 @@ public class UploadTable implements Comparable<UploadTable>
      * @param recNum
      */
     protected void setCurrentRecordFromMatch(final DataModelObjBase match, int recNum)
-    	throws IllegalAccessException, InstantiationException, SQLException {
+    	throws IllegalAccessException, InstantiationException, SQLException, UploaderException {
         if (updateMatches && !matchRecordId) {
         	DataModelObjBase expRec = getExportedRecord(); //Assumes updateExportedRecInfo has been called for recNum
         	
@@ -4241,12 +4259,17 @@ public class UploadTable implements Comparable<UploadTable>
         		}
         	} else {
         		if (match == null) {
-                    DataModelObjBase newRec = createRecord();
-        			if (expRec != null) {
-                        try {
+                    DataModelObjBase newRec = null;
+        		    if (expRec == null) {
+                        newRec = createRecord();
+                    } else {
+        		        try {
                             newRec = (DataModelObjBase)expRec.clone();
+                            if (!newRec.initializeClone(expRec, false, getSession().getFirst())) {
+                                throw new UploaderException("Failed to initialize clone", UploaderException.ABORT_IMPORT);
+                            }
                         } catch (Exception e) {
-                            log.error(e);
+                            throw new UploaderException(e,  UploaderException.ABORT_IMPORT);
                         }
                     }
     				setCurrentRecord(newRec, recNum);

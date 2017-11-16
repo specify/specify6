@@ -222,7 +222,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         
     protected AtomicInteger         shutdownLock               = new AtomicInteger(0);
     private TableColumnExt          sgrColExt;
-    
+    private Taskable                srcTask;
     
 
     /**
@@ -1161,7 +1161,15 @@ public class WorkbenchPaneSS extends BaseSubPane
         	((SGRTask) ContextMgr.getTaskByClass(SGRTask.class)).opening(this);
         }
     }
-    
+
+    public Taskable getSrcTask() {
+        return srcTask;
+    }
+
+    public void setSrcTask(Taskable srcTask) {
+        this.srcTask = srcTask;
+    }
+
     /**
      * re-load selected rows or all rows if none are selected
      */

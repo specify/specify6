@@ -2982,22 +2982,17 @@ public class Uploader implements ActionListener, KeyListener
      * 
      * Sets up for upload.
      */
-    protected void prepareToUpload(DataProviderSessionIFace theSession) throws UploaderException
-    {
+    protected void prepareToUpload() throws UploaderException {
         //XXX What is the dbTableId field in workbench for? ExportedFromTableName may not even be necessary. Based on use of dbTableId in recordset
     	//it looks like it was designed to for exported records...
         Integer updateTblId = isUpdateUpload() ? DBTableIdMgr.getInstance().getIdByClassName(theWb.getExportedFromTableName()) : null;
         setUpdateTableId(updateTblId);
-    	if (currentOp != SUCCESS_PARTIAL)
-        {
-            for (UploadTable t : uploadTables)
-            {
-                t.setTblSession(theSession);
+    	if (currentOp != SUCCESS_PARTIAL) {
+            for (UploadTable t : uploadTables) {
             	t.setMatchRecordId(t.isMatchRecordId() || (updateTblId != null && updateTblId == t.getTable().getTableInfo().getTableId()));
                 if (updateTblId != null && updateTblId == CollectionObject.getClassTableId() 
                 		&& t.getTable().getTableInfo().getTableId() == CollectingEvent.getClassTableId()
-                		&& AppContextMgr.getInstance().getClassObject(Collection.class).getIsEmbeddedCollectingEvent())
-                {
+                		&& AppContextMgr.getInstance().getClassObject(Collection.class).getIsEmbeddedCollectingEvent()) {
                 	t.setMatchRecordId(true);
                 }
                 t.setUpdateMatches(isUpdateUpload());
@@ -3008,19 +3003,26 @@ public class Uploader implements ActionListener, KeyListener
             skippedRows.clear();
             messages.clear();
             uploadStartRow = 0;
-        } else
-        {
+        } else {
         	uploadStartRow = rowUploading;
-        	if (theWb.getRow(rowUploading).getUploadStatus() == WorkbenchRow.UPLD_SUCCESS)
-        	{
+        	if (theWb.getRow(rowUploading).getUploadStatus() == WorkbenchRow.UPLD_SUCCESS) {
         		uploadStartRow++; //never should be more than row behind.
         	}
         }
-        if (uploadedObjectViewer != null)
-        {
+        if (uploadedObjectViewer != null) {
         	uploadedObjectViewer.closeView();
         }
         newMessages.clear();
+    }
+
+    /**
+     *
+     * @param session
+     */
+    protected void setSession(final DataProviderSessionIFace session) {
+        for (UploadTable t : uploadTables) {
+            t.setTblSession(session);
+        }
     }
 
     /**
@@ -3384,7 +3386,7 @@ public class Uploader implements ActionListener, KeyListener
                 wbSS.uploadDone(action);
                 if (isUpdateUpload()) {
                     if (UploadMainPanel.COMMIT_AND_CLOSE_BATCH_UPDATE.equals(action)) {
-                        BatchEditTask beTask = (BatchEditTask) ContextMgr.getTaskByClass(BatchEditTask.class);
+                        Taskable beTask = wbSS.getSrcTask();
                         final SubPaneIFace wbPane = SubPaneMgr.getInstance().getCurrentSubPane();
                         SubPaneIFace qbp = null;
                         if (beTask != null) {
@@ -4224,7 +4226,7 @@ public class Uploader implements ActionListener, KeyListener
     protected boolean canValidateContent(final String op)
     {
         return /*op.equals(Uploader.USER_INPUT) ||*/ op.equals(Uploader.INITIAL_STATE)
-                || op.equals(Uploader.FAILURE);
+                /*|| op.equals(Uploader.FAILURE)*/;
     }
 
     /**
@@ -4298,12 +4300,11 @@ public class Uploader implements ActionListener, KeyListener
      */
     public void uploadIt(boolean doInBackground) 
     {
-        theUploadBatchEditSession = isUpdateUpload() ? DataProviderFactory.getInstance().createSession() : null;
-        final int toiletSize = 200;
+        final int toiletSize = 25;
         try {
         	buildIdentifier();
             setOpKiller(null);
-            prepareToUpload(theUploadBatchEditSession);
+            prepareToUpload();
 
             final UploaderTask uploadTask = new UploaderTask(true, "WB_CANCEL_UPLOAD_MSG") {
                 boolean success = false;
@@ -4350,8 +4351,9 @@ public class Uploader implements ActionListener, KeyListener
                 @Override
                 public Object doInBackground() {
                     start();
+                    theUploadBatchEditSession = isUpdateUpload() ? DataProviderFactory.getInstance().createSession() : null;
                     updateTblId = getUpdateTableId();
-
+                    setSession(theUploadBatchEditSession);
                     initProgressBar(0, uploadData.getRows(), true, getResourceString(updateTblId == null ? "WB_UPLOAD_UPLOADING" : "WB_UPLOAD_UPDATING") + " " + getResourceString("WB_ROW"), false);
                     try {
                     	setupExportedTable();
@@ -4435,22 +4437,20 @@ public class Uploader implements ActionListener, KeyListener
                         return false;
                     }
                     success = !cancelled || (cancelled && paused);
-                    System.out.println("Upload Task Returning");
+                    try {
+                        for (int t = uploadTables.size() - 1; t >= 0; t--) {
+                            uploadTables.get(t).finishUpload(cancelled && !paused, theUploadBatchEditSession);
+                        }
+                    } catch (Exception ex) {
+                        success = false;
+                        setOpKiller(ex);
+                    }
+
                     return success;
                 }
 
                 @Override
                 public void done() {
-                    System.out.println("Upload Task Done");
-                    try {
-                    	//for (UploadTable t : uploadTables)
-                    	for (int t = uploadTables.size() - 1; t >= 0; t--) {
-                    		uploadTables.get(t).finishUpload(cancelled && !paused, theUploadBatchEditSession);
-                    	}
-                    } catch (Exception ex) {
-                    	success = false;
-                    	setOpKiller(ex);
-                    }
                     super.done();
                     statusBar.setText("");
                     if (success) {
@@ -4672,13 +4672,14 @@ public class Uploader implements ActionListener, KeyListener
                 matchSet.setRemember(true);
                 matchSet.setMatchEmptyValues(true);
             }
-            int toiletSize = 200;
+            int toiletSize = 25;
             DataProviderSessionIFace theSession = DataProviderFactory.getInstance().createSession();
             try {
             	theSession.beginTransaction();
             	buildIdentifier();
             	setOpKiller(null);
-            	prepareToUpload(theSession);
+            	prepareToUpload();
+            	setSession(theSession);
             	HashMap<UploadTable, HashMap<Integer,Integer>> uploadedRecs = new HashMap<UploadTable, HashMap<Integer,Integer>>();
             	for (UploadTable ut : uploadTables) {
             		if (ut.isCheckMatchInfo()) {
@@ -5060,8 +5061,10 @@ public class Uploader implements ActionListener, KeyListener
                     if (success) {
                         if (removeObjects) {
                             setCurrentOp(Uploader.READY_TO_UPLOAD);
-                        } else {
+                        } else if (!isUpdateUpload()){
                             setCurrentOp(Uploader.SUCCESS_PARTIAL);
+                        } else {
+                            setCurrentOp(Uploader.FAILURE);
                         }
                     } else {
                         setCurrentOp(Uploader.FAILURE);

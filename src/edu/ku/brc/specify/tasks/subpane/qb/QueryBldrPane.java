@@ -1491,17 +1491,10 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 																					// also?????????
 					{
 						parent = parent.getParent();
-						if (isSchemaExport && lastExportTime != null)
-						{
-							addToList = true;
-						}
-						else
-						{
-						// parent will initially point to the related table
-						// and don't need to add related table unless it has
-						// children displayed/queried,
-							addToList = false;
-						}
+                        // parent will initially point to the related table
+// and don't need to add related table unless it has
+// children displayed/queried,
+                        addToList = isSchemaExport && lastExportTime != null;
 					} else
 					{
 						DataObjDataFieldFormatIFace formatter = relQRI.getDataObjFormatter(qfi.getFormatName());
@@ -1970,7 +1963,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             		td = d.getGeologicTimePeriodTreeDef();
             	}
             	if (td == null && "storage".equalsIgnoreCase(tbl)) {
-            		td = ((Institution)AppContextMgr.getInstance().getClassObject(Institution.class)).getStorageTreeDef();
+            		td = AppContextMgr.getInstance().getClassObject(Institution.class).getStorageTreeDef();
             	}
             	if (td != null) {
             		List<Object> ranks = BasicSQLUtils.querySingleCol("select rankid from " + tbl.toLowerCase() + "treedefitem where " + tbl.toLowerCase() + "treedefid = " + td.getTreeDefId() + " order by 1 desc"); 
@@ -3989,12 +3982,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         		return true;
         	//This allows CreatedByAgent and ModifiedByAgent to be expanded. But there is another check somewhere that prevents "loop backs":
         	//If you expand CreatedByAgent, in the resulting fields list CreatedByAgent is not expandable.
-        	} else if (/*alias.getParent() != null && alias.getParent().getTableInfo().getTableId() != Agent.getClassTableId() 
-        			&& */("modifiedByAgent".equals(alias.getField()) || "createdByAgent".equals(alias.getField()))) {
-        		return true;
-        	} else {
-        		return false;
-        	}
+        	} else /*alias.getParent() != null && alias.getParent().getTableInfo().getTableId() != Agent.getClassTableId()
+        			&& */
+                return ("modifiedByAgent".equals(alias.getField()) || "createdByAgent".equals(alias.getField()));
         }
         
         return false;
@@ -4174,7 +4164,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 JLabel colHeaderLbl = (JLabel)sp.getColumnHeader().getComponent(0);
                 if (item instanceof TableQRI)
                 {
-                    colHeaderLbl.setText(((TableQRI)item).getTitle());
+                    colHeaderLbl.setText(item.getTitle());
                 }
                 else
                 {
@@ -4282,8 +4272,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             		return new RelQRI((TableQRI) qri, relInfo);
             	}
                 throw new RuntimeException(QueryBldrPane.class.getName() + ": unable to determine relationship."
-                		+ ((TableQRI )qri).getTableTree().getField() + " <-> " 
-            			+ ((TableQRI )qri).getTableTree().getParent().getField());
+                		+ qri.getTableTree().getField() + " <-> "
+            			+ qri.getTableTree().getParent().getField());
             }
         }
         return null;
@@ -4373,10 +4363,10 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 					{
 						if (lb.isVisible())
 						{
-							for (int i = 0; i < ((DefaultListModel) lb
-									.getModel()).getSize(); i++)
+							for (int i = 0; i < lb
+									.getModel().getSize(); i++)
 							{
-								BaseQRI qriI = (BaseQRI )((DefaultListModel) lb.getModel()).getElementAt(i);
+								BaseQRI qriI = (BaseQRI ) lb.getModel().getElementAt(i);
 								if (qriI != null)
 								{
 									boolean match = qriI == qri;
@@ -4569,7 +4559,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         for (int k=0; k<tbl.getKids(); k++)
         {
             TableTree kid = tbl.getKid(k);
-            boolean checkKid = kid.isAlias() ? fixAliases(kid, ttHash) : true;
+            boolean checkKid = !kid.isAlias() || fixAliases(kid, ttHash);
             if (checkKid && (kid.getTableQRI().getRelationship() == null 
             		|| !kid.getTableQRI().getRelationship().isHidden()))
             {

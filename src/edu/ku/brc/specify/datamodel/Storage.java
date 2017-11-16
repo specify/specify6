@@ -40,6 +40,9 @@ import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import org.apache.log4j.Logger;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -137,9 +140,27 @@ public class Storage extends DataModelObjBase implements AttachmentOwnerIFace<St
         storageAttachments = new HashSet<StorageAttachment>();
     }
 
+    @Override
+    public boolean initializeClone(DataModelObjBase originalObj, boolean deep, final DataProviderSessionIFace session) {
+        storageId = null;
+        if (deep) {
+            log.error(getClass().getName() + ": initializeClone not supported when deep parameter is true.");
+            return false;
+        } else {
+            preparations = new HashSet<Preparation>();
+            containers = new HashSet<Container>();
+            children = new HashSet<Storage>();
+            acceptedChildren = new HashSet<Storage>();
+
+            storageAttachments = new HashSet<StorageAttachment>();
+
+            return true;
+        }
+    }
+
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.AttachmentOwnerIFace#getAttachmentReferences()
-     */
+         * @see edu.ku.brc.specify.datamodel.AttachmentOwnerIFace#getAttachmentReferences()
+         */
     @Override
     @Transient
     public Set<StorageAttachment> getAttachmentReferences() {

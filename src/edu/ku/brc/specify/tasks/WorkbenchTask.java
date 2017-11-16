@@ -2044,7 +2044,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
 //    }
 
     protected void fillandSaveWorkbench(final Object contents, final Workbench workbench) {
-        fillandSaveWorkbench(contents, workbench, false);
+        fillandSaveWorkbench(contents, workbench, false, null);
     }
 
     /**
@@ -2053,7 +2053,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
      * @param workbench the Workbench
      * @return the new Workbench data object
      */
-    protected void fillandSaveWorkbench(final Object contents, final Workbench workbench, boolean isBatchEdit)
+    protected void fillandSaveWorkbench(final Object contents, final Workbench workbench, boolean isBatchEdit, final Taskable srcTask)
     {
         if (workbench != null)
         {
@@ -2130,7 +2130,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                         }
                     }
 
-                    createEditorForWorkbench(workbench, null, false, true, isBatchEdit);
+                    createEditorForWorkbench(workbench, null, false, true, isBatchEdit, srcTask);
 
                 }
             };
@@ -2370,7 +2370,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                                             final DataProviderSessionIFace session,
                                             final boolean showImageView,
                                             final boolean doInbackground) {
-        createEditorForWorkbench(workbench, session, showImageView, doInbackground, false);
+        createEditorForWorkbench(workbench, session, showImageView, doInbackground, false, null);
     }
 
     /**
@@ -2383,7 +2383,8 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                                             final DataProviderSessionIFace session,
                                             final boolean showImageView,
                                             final boolean doInbackground,
-                                            final boolean isUpdate)
+                                            final boolean isUpdate,
+                                            final Taskable srcTask)
     {
     	//Hack for IN-HOUSE ONLY batch uploading
 //    	if (testingJUNK)
@@ -2406,7 +2407,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         
 
         WorkbenchEditorCreator wbec = new WorkbenchEditorCreator(workbench,
-                session, showImageView, this, !isPermitted())
+                session, showImageView, this, !isPermitted(), srcTask)
         {
             @Override
             public void progressUpdated(java.util.List<Integer> chunks) 
@@ -3773,7 +3774,8 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
      * @param query
      * @param rs
      */
-    public void batchEditQueryResults(final Pair<SpQuery, Map<SpQueryField, String>> query, final RecordSetIFace rs, final Vector<Vector<Object>> results) {
+    public void batchEditQueryResults(final Pair<SpQuery, Map<SpQueryField, String>> query, final RecordSetIFace rs,
+                                      final Vector<Vector<Object>> results, final Taskable srcTask) {
     	try {
     		WorkbenchTemplate template = getTemplateFromQuery(query);
     		if (template != null) {
@@ -3782,7 +3784,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         		}
     			Workbench workbench = createNewWorkbenchDataObj(template.getName(), template, false);
     			if (workbench != null) {
-    				fillandSaveWorkbench(new Pair<RecordSetIFace, Vector<Vector<Object>>>(rs, results), workbench,  true);
+    				fillandSaveWorkbench(new Pair<RecordSetIFace, Vector<Vector<Object>>>(rs, results), workbench,  true, srcTask);
     			}
     		}
 		} catch (Exception e) {
@@ -3846,7 +3848,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     			//load the data
     			Workbench workbench = createNewWorkbenchDataObj(null, template);
     			if (workbench != null) {
-                    fillandSaveWorkbench(rs, workbench, true);
+                    fillandSaveWorkbench(rs, workbench, true, null);
     			}
         		return;    			
     		}

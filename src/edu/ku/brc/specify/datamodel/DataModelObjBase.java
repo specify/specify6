@@ -103,7 +103,20 @@ public abstract class DataModelObjBase implements FormDataObjIFace,
         createdByAgent    = AppContextMgr.getInstance() == null? null : (AppContextMgr.getInstance().hasContext() ? Agent.getUserAgent() : null);
         modifiedByAgent   = null;
     }
-    
+
+    /**
+     * sets up a cloned object for (re-)use
+     *
+     * @param obj
+     * @param deep  if true then copy and clone children
+     * @param session
+     * @return  true if successful
+     */
+    public boolean initializeClone(DataModelObjBase originalObj, boolean deep, final DataProviderSessionIFace session) {
+        log.error(getClass().getName() + ": initializeClone is not implemented.");
+        return false;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getId()
      */
