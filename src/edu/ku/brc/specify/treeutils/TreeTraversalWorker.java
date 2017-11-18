@@ -23,6 +23,7 @@ import java.util.List;
 
 import javax.swing.SwingWorker;
 
+import edu.ku.brc.specify.Specify;
 import org.hibernate.HibernateException;
 
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -48,7 +49,7 @@ public abstract class TreeTraversalWorker<T extends Treeable<T, D, I>, D extends
 	/**
 	 * The number of db operations that can occur before the session should be flushed.
 	 */
-	protected static int               writesPerFlush = 25;
+	protected static int               writesPerFlush = Specify.HIBERNATE_BATCH_SIZE;
 	
     protected QueryIFace               childrenQuery     = null;
     protected QueryIFace               ancestorQuery     = null;

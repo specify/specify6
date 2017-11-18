@@ -19,7 +19,6 @@
     <field column="Integer 2" name="integer2" type="java.lang.Integer" length="10"/>
     <field column="Verbatim Locality" name="verbatimLocality" type="text" length="2048"/>
     <field column="Remarks (Collecting Event)" name="collectingEventRemarks" type="text" length="4096"/>
-    <!--
     <field column="Collector First Name 1" name="collectorFirstName1" type="java.lang.String" length="50"/>
     <field column="Collector Last Name 1"  name="collectorLastName1" type="java.lang.String" length="120"/>
     <field column="Collector Middle Initials 1" name="collectorMiddle1" type="java.lang.String" length="50"/>
@@ -52,7 +51,6 @@
     <field column="Collector Last Name 8"  name="collectorLastName8" type="java.lang.String" length="120"/>
     <field column="Collector Middle Initials 8" name="collectorMiddle8" type="java.lang.String" length="50"/>
     <field column="Collector Title 8"  name="collectorTitle8" type="java.lang.String" length="50"/>
-    -->
   </table>
 
   <table classname="edu.ku.brc.specify.datamodel.CollectingEventAttribute" table="collectingeventattribute" tableid="92" lazy="true" query="false">

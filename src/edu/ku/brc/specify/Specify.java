@@ -261,13 +261,15 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
     private static final Logger  log                = Logger.getLogger(Specify.class);
     
     public static final boolean IS_DEVELOPMENT       = true;
+    public static final int HIBERNATE_BATCH_SIZE     = 25; //should match the hibernate.jdbc.batch_size setting in hibernate.cfg.xml
+
     private static final String sendStatsPrefName    = "usage_tracking.send_stats";
     private static final String sendISAStatsPrefName = "usage_tracking.send_isa_stats";
     private static final String UPDATE_CHK_ERROR     = "Specify.UPDATE_CHK_ERROR";
     private static final String ERRMSG               = "ERRMSG";
     private static final String STATS_SEND_DONE      = "STATS_SEND_DONE";
     private static final String MANAGED_RELEASES     = "MANAGED_RELEASES";  
-    
+
     // The preferred size of the demo
     private static final int    PREFERRED_WIDTH    = 1024;
     private static final int    PREFERRED_HEIGHT   = 768;

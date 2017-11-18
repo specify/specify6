@@ -29,6 +29,7 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.helpers.ImageMetaDataHelper;
+import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.SpecifyUserTypes;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.*;
@@ -48,7 +49,6 @@ import edu.ku.brc.specify.tasks.subpane.wb.schema.Relationship;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Table;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMappingDefRel.ImportMappingRelFld;
 import edu.ku.brc.ui.*;
-import edu.ku.brc.ui.dnd.SimpleGlassPane;
 import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.Pair;
 import net.sf.jasperreports.engine.JRDataSource;
@@ -60,6 +60,8 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
+import javax.sound.midi.MidiSystem;
+import javax.sound.midi.Synthesizer;
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
@@ -76,6 +78,7 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.*;
 import java.util.List;
+import java.util.Timer;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -1975,14 +1978,14 @@ public class Uploader implements ActionListener, KeyListener
                 {
                     int progress = 0;
                     initProgressBar(0, uploadTables.size(), true, 
-                            getResourceString("WB_UPLOAD_VALIDATING") + " " + getResourceString("ERD_TABLE"), false);
+                            getResourceString("WB_UPLOAD_VALIDATING") + " " + getResourceString("ERD_TABLE"), mainPanel.getCurrOpProgress());
                     for (UploadTable tbl : uploadTables)
                     {
                     	tbl.clearBlankness();
                     }
                     for (UploadTable tbl : uploadTables)
                     {
-                        setCurrentOpProgress(++progress);
+                        setCurrentOpProgress(++progress, mainPanel.getCurrOpProgress());
                         issues.addAll(validateLengths(tbl, -1, -1));
                         issues.addAll(tbl.validateValues(uploadData));
                     }
@@ -3069,13 +3072,12 @@ public class Uploader implements ActionListener, KeyListener
                                    final int max,
                                    final boolean paintString,
                                    final String itemName,
-                                   final boolean useAppProgress)
+                                   final JProgressBar progBar)
     {
         SwingUtilities.invokeLater(new Runnable() {
-           public void run()
-           {
-               if (!useAppStatBar && mainPanel == null)
-               {
+           final boolean useAppProgress = progBar == null;
+            public void run() {
+               if (!useAppStatBar && mainPanel == null) {
                    log.error("UI does not exist.");
                    return;
                }
@@ -3083,40 +3085,28 @@ public class Uploader implements ActionListener, KeyListener
                maxProgVal = max;
                indeterminateProgress = minProgVal == 0 && maxProgVal == 0;
                useAppStatBar = useAppProgress;
-               if (useAppStatBar)
-               {
-                   if (indeterminateProgress)
-                   {
+               if (useAppStatBar) {
+                   if (indeterminateProgress) {
                        UIRegistry.getStatusBar().setIndeterminate("UPLOADER", indeterminateProgress);
-                   }
-                   else
-                   {
+                   } else {
                        UIRegistry.getStatusBar().setProgressRange("UPLOADER", minProgVal, maxProgVal);
                    }
-               }
-               else
-               {
-                   JProgressBar pb = mainPanel.getCurrOpProgress();
-                   pb.setVisible(true);
-                   if (indeterminateProgress)
-                   {
-                       pb.setIndeterminate(true);
-                       pb.setString("");
-                   }
-                   else
-                   {
-                       if (pb.isIndeterminate())
-                       {
-                           pb.setIndeterminate(false);
+               } else {
+                   progBar.setVisible(true);
+                   if (indeterminateProgress) {
+                       progBar.setIndeterminate(true);
+                       progBar.setString("");
+                   } else {
+                       if (progBar.isIndeterminate()) {
+                           progBar.setIndeterminate(false);
                        }
-                       pb.setStringPainted(paintString);
-                       if (paintString)
-                       {
-                           pb.setName(itemName);
+                       progBar.setStringPainted(paintString);
+                       if (paintString) {
+                           progBar.setName(itemName);
                        }
-                       pb.setMinimum(minProgVal);
-                       pb.setMaximum(maxProgVal);
-                       pb.setValue(minProgVal);
+                       progBar.setMinimum(minProgVal);
+                       progBar.setMaximum(maxProgVal);
+                       progBar.setValue(minProgVal);
                    }}
                }
         });
@@ -3127,38 +3117,25 @@ public class Uploader implements ActionListener, KeyListener
      * 
      * Sets progress bar progress.
      */
-    protected void setCurrentOpProgress(final int val)
-    {
-        SwingUtilities.invokeLater(new Runnable()
-        {
-            public void run()
-            {
+    protected void setCurrentOpProgress(final int val, final JProgressBar pb) {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
 
-                if (mainPanel == null && !useAppStatBar)
-                {
+                if (mainPanel == null && !useAppStatBar) {
                     log.error("UI does not exist.");
                     return;
                 }
-                if (!indeterminateProgress)
-                {
-                    if (useAppStatBar && !indeterminateProgress)
-                    {
-                        if (val == -1)
-                        {
+                if (!indeterminateProgress) {
+                    if (useAppStatBar && !indeterminateProgress) {
+                        if (val == -1) {
                             UIRegistry.getStatusBar().incrementValue("UPLOADER");
-                        }
-                        else
-                        {
+                        } else {
                             UIRegistry.getStatusBar().setValue("UPLOADER", val);
                         }
-                    }
-                    else
-                    {
-                        JProgressBar pb = mainPanel.getCurrOpProgress();
+                    } else {
                         int newVal = val == -1 ? Math.min(pb.getValue()+1, pb.getMaximum()) : val;
                         pb.setValue(newVal);
-                        if (pb.isStringPainted())
-                        {
+                        if (pb.isStringPainted()) {
                             pb.setString(String.format(getResourceString("WB_UPLOAD_PROGRESSBAR_TEXT"),
                                 new Object[] { pb.getName(), Integer.toString(newVal),
                                         Integer.toString(pb.getMaximum()) }));
@@ -3169,20 +3146,15 @@ public class Uploader implements ActionListener, KeyListener
         });
     }
 
-    protected void showUploadProgress(final int val)
-    {
-        SwingUtilities.invokeLater(new Runnable()
-        {
-            public void run()
-            {
-                if (mainPanel == null)
-                {
+    protected void showUploadProgress(final int val, final JProgressBar pb) {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                if (mainPanel == null) {
                     log.error("UI does not exist.");
                     return;
                 }
-                setCurrentOpProgress(val);
-                synchronized (Uploader.this)
-                {
+                setCurrentOpProgress(val, pb);
+                synchronized (Uploader.this) {
                 	for (UploadMessage newMsg : newMessages)
                 	{
                 		mainPanel.addMsg(newMsg);
@@ -3196,7 +3168,7 @@ public class Uploader implements ActionListener, KeyListener
 
     public void undoStep()
     {
-        setCurrentOpProgress(-1);
+        setCurrentOpProgress(-1, mainPanel.getCurrOpProgress());
     }
     
     protected void updateObjectsCreated()
@@ -4300,7 +4272,7 @@ public class Uploader implements ActionListener, KeyListener
      */
     public void uploadIt(boolean doInBackground) 
     {
-        final int toiletSize = 25;
+        final int toiletSize = Specify.HIBERNATE_BATCH_SIZE;
         try {
         	buildIdentifier();
             setOpKiller(null);
@@ -4351,10 +4323,37 @@ public class Uploader implements ActionListener, KeyListener
                 @Override
                 public Object doInBackground() {
                     start();
-                    theUploadBatchEditSession = isUpdateUpload() ? DataProviderFactory.getInstance().createSession() : null;
+                    boolean isUpdate = isUpdateUpload();
+                    theUploadBatchEditSession = isUpdate ? DataProviderFactory.getInstance().createSession() : null;
                     updateTblId = getUpdateTableId();
                     setSession(theUploadBatchEditSession);
-                    initProgressBar(0, uploadData.getRows(), true, getResourceString(updateTblId == null ? "WB_UPLOAD_UPLOADING" : "WB_UPLOAD_UPDATING") + " " + getResourceString("WB_ROW"), false);
+                    final BatchEditProgressDialog progDlg =  isUpdate
+                            ? new BatchEditProgressDialog(getResourceString("WB_BATCH_EDIT_FORM_TITLE"), "Shut the fuck up.")
+                            : null;
+                    if (isUpdate) {
+                        progDlg.setResizable(false);
+                        progDlg.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+                        progDlg.setModal(true);
+                        progDlg.setAlwaysOnTop(true);
+
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                UIHelper.centerAndShow(progDlg);
+                            }
+                        });
+                    }
+
+
+                    initProgressBar(0, uploadData.getRows(), true,
+                            getResourceString(updateTblId == null ? "WB_UPLOAD_UPLOADING" : "WB_UPLOAD_UPDATING") + " " + getResourceString("WB_ROW"),
+                            mainPanel.getCurrOpProgress());
+                    if (progDlg != null) {
+                        initProgressBar(0, uploadData.getRows(), true,
+                                getResourceString(updateTblId == null ? "WB_UPLOAD_UPLOADING" : "WB_UPLOAD_UPDATING") + " " + getResourceString("WB_ROW"),
+                                progDlg.getProgress());
+
+                    }
                     try {
                     	setupExportedTable();
                         if (theUploadBatchEditSession != null) {
@@ -4370,7 +4369,10 @@ public class Uploader implements ActionListener, KeyListener
                         	logDebug("uploading row " + String.valueOf(rowUploading));
 
                         	if (rowUploading == 0) {
-                        		showUploadProgress(1);
+                        		showUploadProgress(1, mainPanel.getCurrOpProgress());
+                        		if (progDlg != null) {
+                                    showUploadProgress(1, progDlg.getProgress());
+                                }
                         	}
 
                         	if (!uploadData.isEmptyRow(rowUploading) && (updateTblId == null || rowHasEdits(rowUploading))) {
@@ -4429,7 +4431,10 @@ public class Uploader implements ActionListener, KeyListener
                                     rowsSinceFlush = 0;
                                 }
                             }
-                            showUploadProgress(rowUploading);
+                            showUploadProgress(rowUploading, mainPanel.getCurrOpProgress());
+                        	if (progDlg != null) {
+                                showUploadProgress(rowUploading, progDlg.getProgress());
+                            }
                         }
                     }
                     catch (Exception ex) {
@@ -4445,7 +4450,40 @@ public class Uploader implements ActionListener, KeyListener
                         success = false;
                         setOpKiller(ex);
                     }
-
+                    if (progDlg != null) {
+                        progDlg.batchEditDone();
+                        long doneTime = System.currentTimeMillis();
+                        long waitTime = 0L;
+                        while (waitTime < 10000L && !progDlg.isCancelPressed() && !progDlg.isCommitPressed()) {
+                            try {
+                                Thread.sleep(79);
+                                waitTime = System.currentTimeMillis() - doneTime;
+                            } catch (InterruptedException ie){
+                                log.error(ie);
+                                break;
+                            }
+                        }
+                        boolean commit = progDlg.isCommitPressed();
+                        if (commit) {
+                            try {
+                                theUploadBatchEditSession.commit();
+                                theUploadBatchEditSession.close();
+                                theUploadBatchEditSession = null;
+                                SwingUtilities.invokeLater(() -> rollBackOrCommitBatchEdit(UploadMainPanel.COMMIT_AND_CLOSE_BATCH_UPDATE, true));
+                            } catch (Exception ex) {
+                                //Oh no.
+                                ex.printStackTrace();
+                                theUploadBatchEditSession.close();
+                                theUploadBatchEditSession = null;
+                                SwingUtilities.invokeLater(() -> rollBackOrCommitBatchEdit(UploadMainPanel.CANCEL_AND_CLOSE_BATCH_UPDATE, true));
+                            }
+                        } else {
+                            theUploadBatchEditSession.rollback();
+                            theUploadBatchEditSession.close();
+                            theUploadBatchEditSession = null;
+                            SwingUtilities.invokeLater(() -> rollBackOrCommitBatchEdit(UploadMainPanel.CANCEL_AND_CLOSE_BATCH_UPDATE, true));
+                        }
+                    }
                     return success;
                 }
 
@@ -4672,7 +4710,7 @@ public class Uploader implements ActionListener, KeyListener
                 matchSet.setRemember(true);
                 matchSet.setMatchEmptyValues(true);
             }
-            int toiletSize = 25;
+            int toiletSize = Specify.HIBERNATE_BATCH_SIZE;
             DataProviderSessionIFace theSession = DataProviderFactory.getInstance().createSession();
             try {
             	theSession.beginTransaction();
@@ -4972,7 +5010,7 @@ public class Uploader implements ActionListener, KeyListener
                                     initProgressBar(0, getUploadedObjects(), true,
                                             getResourceString("WB_UPLOAD_UNDOING") + " "
                                                     + getResourceString("WB_UPLOAD_OBJECT"),
-                                            shuttingDown);
+                                            mainPanel.getCurrOpProgress());
                                 }
                             });
                         } else {
@@ -4981,7 +5019,7 @@ public class Uploader implements ActionListener, KeyListener
                                     initProgressBar(0, getUploadedObjects(), true,
                                             getResourceString("WB_UPLOAD_CLEANING_UP") + " "
                                                     + getResourceString("WB_UPLOAD_OBJECT"),
-                                            shuttingDown);
+                                            mainPanel.getCurrOpProgress());
                                 }
                             });
                         }
