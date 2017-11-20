@@ -215,9 +215,11 @@ public class UploadToolPanel extends JPanel implements TimingTarget
     	this.isForUpdate = wbSS.isUpdateDataSet();
     	
     	autoMatchPanel.setVisible(!isForUpdate);
-    	
+    	autoValidateChk.setEnabled(!isForUpdate);
+
     	showEditedCellsChk = UIHelper.createI18NCheckBox("");
     	showEditedCellsChk.setSelected(wbSS.isDoIncrementalEditChecking());
+    	showEditedCellsChk.setEnabled(false);
     	showEditedCellsChk.addActionListener(new ActionListener() {
     	
     		@Override

@@ -411,8 +411,11 @@ public class WorkbenchPaneSS extends BaseSubPane
         	buildValidator();
         }
         boolean isForBatchEdit = this.isUpdateDataSet();
-        doIncrementalMatching &= !isForBatchEdit;
-        doIncrementalEditChecking &= isForBatchEdit;
+        if (isForBatchEdit) {
+            doIncrementalValidation = true;
+            doIncrementalEditChecking = true;
+            doIncrementalMatching = false;
+        }
 
         if (isReadOnly)
         {
@@ -445,6 +448,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                                 }
                                 saveObject();
                                 if (uploadAfterSave) {
+                                    revertBtn.setEnabled(false);
                                 	doDatasetUpload();
                                 }
                             }
@@ -4553,7 +4557,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 			if (doIncrementalValidation && invalidCellCount.get() == 0)
 			{
 				datasetUploader.validateData(true);
-			}
+            }
 		}
         catch (Exception ex)
         {
@@ -4611,6 +4615,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 
         if (UploadMainPanel.CANCEL_AND_CLOSE_BATCH_UPDATE.equals(action)) {
             saveBtn.setEnabled(true); //this should be safe
+            revertBtn.setEnabled(true); //so should this
             for (WorkbenchRow r : workbench.getWorkbenchRows()) {
                 r.setUploadStatus(WorkbenchRow.UPLD_NONE);
             }

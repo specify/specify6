@@ -36,6 +36,9 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import org.apache.log4j.Logger;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
@@ -57,7 +60,9 @@ import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 @SuppressWarnings("serial")
 public class CollectingTrip extends DisciplineMember implements java.io.Serializable
 {
-     // Fields    
+    protected static final Logger log = Logger.getLogger(CollectingTrip.class);
+
+     // Fields
     protected Integer               collectingTripId;
     protected String                remarks;
     protected Calendar              startDate;
@@ -506,7 +511,32 @@ public class CollectingTrip extends DisciplineMember implements java.io.Serializ
     {
         this.collectingEvents = collectingEvents;
     }
-    
+
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        CollectingTrip obj = (CollectingTrip)super.clone();
+        initialize();
+        obj.collectingTripId = null;
+
+        for (FundingAgent fa : fundingAgents) {
+            FundingAgent newFa = (FundingAgent)fa.clone();
+            newFa.setCollectingTrip(obj);
+            obj.fundingAgents.add(newFa);
+        }
+
+        return obj;
+    }
+
+    @Override
+    public boolean initializeClone(DataModelObjBase originalObj, boolean deep, DataProviderSessionIFace session) {
+        if (deep) {
+            log.error(getClass().getName() + ": initializeClone is not implemented for deep = true.");
+            return false;
+        }
+        return true;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */

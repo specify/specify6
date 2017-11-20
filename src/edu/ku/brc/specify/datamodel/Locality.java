@@ -38,6 +38,7 @@ import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.apache.log4j.Logger;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
@@ -72,7 +73,9 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
                                                           MapLocationIFace,
                                                           Cloneable
 {
-    // Fields    
+    protected static final Logger log = Logger.getLogger(Locality.class);
+
+    // Fields
     protected Integer               localityId;
     protected String                namedPlace;
     protected String                shortName;
@@ -1258,7 +1261,17 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
         }
         return l;
     }
-    
+
+    @Override
+    public boolean initializeClone(DataModelObjBase originalObj, boolean deep, DataProviderSessionIFace session) {
+        if (deep) {
+            log.error(getClass().getName() + ": initializeClone is not implemented for deep = true.");
+            return false;
+        }
+        return true;
+    }
+
+
     // //////////////////////////////
     // MapLocationIFace methods
     // //////////////////////////////
