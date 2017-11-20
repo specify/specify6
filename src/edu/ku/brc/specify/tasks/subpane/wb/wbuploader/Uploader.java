@@ -3615,7 +3615,7 @@ public class Uploader implements ActionListener, KeyListener
         if (shuttingDownSS != null && shuttingDownSS != wbSS) {
             return true;
         }
-        if (currentTask.get() != null ||
+        if (!force && currentTask.get() != null ||
         		(shuttingDownSS != null && (currentOp.equals(Uploader.SUCCESS)  || currentOp.equals(Uploader.SUCCESS_PARTIAL)) && getUploadedObjects() > 0)) {
             JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), getResourceString(isUpdateUpload() ? "WB_BATCH_EDIT_PENDING_EDITS" :"WB_UPLOAD_BUSY_CANNOT_CLOSE"));
             return false;
