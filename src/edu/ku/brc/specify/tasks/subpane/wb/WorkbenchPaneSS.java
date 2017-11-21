@@ -4613,7 +4613,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         }
         setAllUploadDatasetBtnEnabled(true);
 
-        if (UploadMainPanel.CANCEL_AND_CLOSE_BATCH_UPDATE.equals(action)) {
+        if (UploadMainPanel.CANCEL_AND_CLOSE_BATCH_UPDATE.equals(action) || (isUpdateDataSet() && UploadMainPanel.CLOSE_UI.equals(action))) {
             saveBtn.setEnabled(true); //this should be safe
             revertBtn.setEnabled(true); //so should this
             for (WorkbenchRow r : workbench.getWorkbenchRows()) {

@@ -635,13 +635,11 @@ protected List<java.lang.reflect.Field> getFldsForJSON() {
      * Gets ready for an upload.
      */
     @Override
-    public void prepareToUpload() throws UploaderException
-    {
-        super.prepareToUpload();
+    public void prepareToUpload(boolean inTransaction) throws UploaderException {
+        super.prepareToUpload(inTransaction);
         defaultParents.clear();
         
-        if (parent == null && !this.incrementalNodeNumberUpdates && tblSession == null)
-        {
+        if (parent == null && !this.incrementalNodeNumberUpdates && !inTransaction) {
         	getTreeDef().setDoNodeNumberUpdates(false);
             getTreeDef().setUploadInProgress(true);
         }

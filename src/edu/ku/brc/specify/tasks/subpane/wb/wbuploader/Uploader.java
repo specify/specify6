@@ -2990,6 +2990,7 @@ public class Uploader implements ActionListener, KeyListener
     	//it looks like it was designed to for exported records...
         Integer updateTblId = isUpdateUpload() ? DBTableIdMgr.getInstance().getIdByClassName(theWb.getExportedFromTableName()) : null;
         setUpdateTableId(updateTblId);
+        boolean isUpdate = isUpdateUpload();
     	if (currentOp != SUCCESS_PARTIAL) {
             for (UploadTable t : uploadTables) {
             	t.setMatchRecordId(t.isMatchRecordId() || (updateTblId != null && updateTblId == t.getTable().getTableInfo().getTableId()));
@@ -2999,7 +3000,7 @@ public class Uploader implements ActionListener, KeyListener
                 	t.setMatchRecordId(true);
                 }
                 t.setUpdateMatches(isUpdateUpload());
-                t.prepareToUpload();
+                t.prepareToUpload(isUpdate);
             }
             newAttachments.clear();
             // But may want option to ONLY upload rows that were skipped...
@@ -3460,7 +3461,7 @@ public class Uploader implements ActionListener, KeyListener
                 setCurrentOp(Uploader.READY_TO_UPLOAD);
             }
         } else if (e.getActionCommand().equals(UploadMainPanel.CLOSE_UI)) {
-            if (aboutToShutdown(null, UploadMainPanel.CLOSE_UI, false)) {
+            if (aboutToShutdown(null, UploadMainPanel.CLOSE_UI, getCurrentOp().equals(Uploader.FAILURE))) {
                 closeMainForm(true, UploadMainPanel.CLOSE_UI);
             }
         } else if (e.getActionCommand().equals(UploadMainPanel.CANCEL_AND_CLOSE_BATCH_UPDATE)
@@ -3473,7 +3474,7 @@ public class Uploader implements ActionListener, KeyListener
                     return;
                 }
             } else {
-                rollBackOrCommitBatchEdit(e.getActionCommand(), false);
+                rollBackOrCommitBatchEdit(e.getActionCommand(), false, true);
             }
         } else if (e.getActionCommand().equals(UploadMainPanel.UNDO_UPLOAD)) {
                 if (UIRegistry.displayConfirm(getResourceString("WB_UPLOAD_FORM_TITLE"),
@@ -3503,6 +3504,9 @@ public class Uploader implements ActionListener, KeyListener
         }
     }
 
+    /**
+     *
+     */
     protected void cancelRunningBatchEdit() {
         cancelTask(currentTask.get());
         Runnable sleeper = new Runnable() {
@@ -3519,13 +3523,13 @@ public class Uploader implements ActionListener, KeyListener
                 if (currentTask.get() != null) {
                     throw new RuntimeException("Unable to stop batch edit process.");
                 }
-                rollBackOrCommitBatchEdit(UploadMainPanel.CANCEL_AND_CLOSE_BATCH_UPDATE, true);
+                rollBackOrCommitBatchEdit(UploadMainPanel.CANCEL_AND_CLOSE_BATCH_UPDATE, true, true);
             }
         };
         new Thread(sleeper).start();
     }
 
-    protected void rollBackOrCommitBatchEdit(final String action, boolean force) {
+    protected void rollBackOrCommitBatchEdit(final String action, boolean force, boolean closeUploadPanel) {
         int rv = force ? JOptionPane.YES_OPTION : showShutDownDlg(true, action);
         if (rv == JOptionPane.YES_OPTION) {
             final boolean rollBack = UploadMainPanel.CANCEL_AND_CLOSE_BATCH_UPDATE.equals(action);
@@ -3533,16 +3537,7 @@ public class Uploader implements ActionListener, KeyListener
                 Session s = ((edu.ku.brc.specify.dbsupport.HibernateDataProviderSession) theUploadBatchEditSession).getSession();
                 Transaction t = s.getTransaction();
                 if (!t.wasCommitted() && !t.wasRolledBack()) {
-//                    final ProgressDialog progDlg = new ProgressDialog(getResourceString("WB_BATCH_EDIT_FORM_TITLE"), false, false);
-//                    progDlg.setResizable(false);
-//                    progDlg.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
-//                    progDlg.setModal(true);
-//                    progDlg.setProcessPercent(false);
-//                    progDlg.getProcessProgress().setIndeterminate(true);
-//                    progDlg.getProcessProgress().setStringPainted(false);
-//                    progDlg.setDesc(getResourceString(rollBack ? "WB_BATCH_EDIT_ROLLING_BACK" : "WB_BATCH_EDIT_COMMITTING"));
-//                    progDlg.setAlwaysOnTop(true);
-                    Thread rollComT = new Thread() {
+                   Thread rollComT = new Thread() {
                         @Override
                         public void run() {
                             super.run();
@@ -3575,7 +3570,7 @@ public class Uploader implements ActionListener, KeyListener
                                     UIRegistry.clearSimpleGlassPaneMsg();
                                 }
                             });
-                            if (aboutToShutdown(null, action, true))
+                            if (closeUploadPanel && aboutToShutdown(null, action, true))
                                 closeMainForm(true, action);
                         }
                     };
@@ -3583,9 +3578,18 @@ public class Uploader implements ActionListener, KeyListener
 
                 }
             } else {
-                if (aboutToShutdown(null, action, true)) {
+                if (closeUploadPanel && aboutToShutdown(null, action, true)) {
                     closeMainForm(true, action);
                 }
+            }
+            if (!closeUploadPanel) {
+                SwingUtilities.invokeLater(() -> {
+                    mainPanel.getBtnPane().setVisible(true);
+                    mainPanel.closeBtn.setVisible(true);
+                    mainPanel.cancelBtn.setVisible(false);
+                    mainPanel.commitCloseBatchUpdateBtn.setVisible(false);
+                    mainPanel.cancelCloseBatchUpdateBtn.setVisible(false);
+                });
             }
         }
     }
@@ -4352,6 +4356,7 @@ public class Uploader implements ActionListener, KeyListener
                 public Object doInBackground() {
                     start();
                     boolean isUpdate = isUpdateUpload();
+                    boolean crashed = false;
                     theUploadBatchEditSession = isUpdate ? DataProviderFactory.getInstance().createSession() : null;
                     updateTblId = getUpdateTableId();
                     setSession(theUploadBatchEditSession);
@@ -4450,14 +4455,16 @@ public class Uploader implements ActionListener, KeyListener
                     }
                     catch (Exception ex) {
                         setOpKiller(ex);
-                        return false;
+                        crashed = true;
                     }
-                    success = !cancelled || (cancelled && paused);
+                    success = !crashed && (!cancelled || (cancelled && paused));
                     try {
-                        for (int t = uploadTables.size() - 1; t >= 0; t--) {
-                            uploadTables.get(t).finishUpload(cancelled && !paused, theUploadBatchEditSession);
+                        if (!crashed) {
+                            for (int t = uploadTables.size() - 1; t >= 0; t--) {
+                                uploadTables.get(t).finishUpload(cancelled && !paused, theUploadBatchEditSession);
+                            }
                         }
-                        finishTransaction(progDlg, cancelled);
+                        finishTransaction(progDlg, cancelled, crashed);
                     } catch (Exception ex) {
                         success = false;
                         setOpKiller(ex);
@@ -4465,9 +4472,9 @@ public class Uploader implements ActionListener, KeyListener
                     return success;
                 }
 
-                protected void finishTransaction(final BatchEditProgressDialog progDlg, boolean cancelled) {
+                protected void finishTransaction(final BatchEditProgressDialog progDlg, boolean cancelled, boolean crashed) {
                     if (progDlg != null) {
-                        if (!cancelled) {
+                        if (!cancelled && !crashed) {
                             progDlg.batchEditDone();
                             long doneTime = System.currentTimeMillis();
                             long waitTime = 0L;
@@ -4492,7 +4499,7 @@ public class Uploader implements ActionListener, KeyListener
                                 theUploadBatchEditSession.close();
                                 theUploadBatchEditSession = null;
                                 wasCommitted = true;
-                                SwingUtilities.invokeLater(() -> rollBackOrCommitBatchEdit(UploadMainPanel.COMMIT_AND_CLOSE_BATCH_UPDATE, true));
+                                SwingUtilities.invokeLater(() -> rollBackOrCommitBatchEdit(UploadMainPanel.COMMIT_AND_CLOSE_BATCH_UPDATE, true, true));
                             } catch (Exception ex) {
                                 //Oh no.
                                 success = false;
@@ -4500,7 +4507,7 @@ public class Uploader implements ActionListener, KeyListener
                                 theUploadBatchEditSession.close();
                                 theUploadBatchEditSession = null;
                                 wasRolledBack = true;
-                                SwingUtilities.invokeLater(() -> rollBackOrCommitBatchEdit(UploadMainPanel.CANCEL_AND_CLOSE_BATCH_UPDATE, true));
+                                SwingUtilities.invokeLater(() -> rollBackOrCommitBatchEdit(UploadMainPanel.CANCEL_AND_CLOSE_BATCH_UPDATE, true, true));
                             }
                         } else {
                             if (!progDlg.isCancelPressed()) {
@@ -4510,7 +4517,7 @@ public class Uploader implements ActionListener, KeyListener
                             theUploadBatchEditSession.close();
                             theUploadBatchEditSession = null;
                             wasRolledBack = true;
-                            SwingUtilities.invokeLater(() -> rollBackOrCommitBatchEdit(UploadMainPanel.CANCEL_AND_CLOSE_BATCH_UPDATE, true));
+                            SwingUtilities.invokeLater(() -> rollBackOrCommitBatchEdit(UploadMainPanel.CANCEL_AND_CLOSE_BATCH_UPDATE, true, !crashed));
                         }
                         SwingUtilities.invokeLater(() -> progDlg.setVisible(false));
                     }

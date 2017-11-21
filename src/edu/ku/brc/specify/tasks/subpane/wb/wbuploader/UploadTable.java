@@ -576,7 +576,7 @@ public class UploadTable implements Comparable<UploadTable>
      * Gets ready for an upload.
      * @throws UploaderException
      */
-    public void prepareToUpload() throws UploaderException
+    public void prepareToUpload(boolean inTransaction) throws UploaderException
     {
         //XXX TESTING
     	//updateMatches = tblClass.equals(CollectionObject.class) 
@@ -4266,7 +4266,7 @@ public class UploadTable implements Comparable<UploadTable>
         		        try {
                             newRec = (DataModelObjBase)expRec.clone();
                             if (!newRec.initializeClone(expRec, false, getSession().getFirst())) {
-                                throw new UploaderException("Failed to initialize clone", UploaderException.ABORT_IMPORT);
+                                throw new UploaderException("Failed to initialize " + this.tblClass.getSimpleName() + " clone", UploaderException.ABORT_IMPORT);
                             }
                         } catch (Exception e) {
                             throw new UploaderException(e,  UploaderException.ABORT_IMPORT);
