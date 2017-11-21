@@ -3443,9 +3443,9 @@ public class Uploader implements ActionListener, KeyListener
             		UIRegistry.showError("This dataset contains mappings which are not updateable");
             		return;
             	}
-            }
-            if (mainPanel != null) {
-                SwingUtilities.invokeLater(() -> mainPanel.getBtnPane().setVisible(false));
+                if (mainPanel != null) {
+                    SwingUtilities.invokeLater(() -> mainPanel.getBtnPane().setVisible(false));
+                }
             }
         	uploadIt(true);
         } else if (e.getActionCommand().equals(UploadMainPanel.VIEW_UPLOAD)) {

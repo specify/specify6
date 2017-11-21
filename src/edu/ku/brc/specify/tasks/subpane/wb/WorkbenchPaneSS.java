@@ -415,6 +415,8 @@ public class WorkbenchPaneSS extends BaseSubPane
             doIncrementalValidation = true;
             doIncrementalEditChecking = true;
             doIncrementalMatching = false;
+        } else {
+            doIncrementalEditChecking = false;
         }
 
         if (isReadOnly)
@@ -3529,6 +3531,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         DBTableIdMgr databaseSchema = WorkbenchTask.getDatabaseSchema();
         
         columnMaxWidths = new Integer[tableArg.getColumnCount()];
+        boolean isUpdateable = isUpdateDataSet();
         for (int i = 0; i < wbtmis.size() /*tableArg.getColumnCount()*/; i++)  {
             TableCellRenderer headerRenderer = tableArg.getColumnModel().getColumn(i).getHeaderRenderer();
             WorkbenchTemplateMappingItem wbtmi = wbtmis.elementAt(i);
@@ -3552,7 +3555,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             }
             columnMaxWidths[i] = new Integer(fieldWidth);
             GridCellEditor cellEditor = getCellEditor(wbtmi, fieldWidth, theSaveBtn, uploadDefs);
-            cellEditor.setEditable(wbtmi.getIsEditable());
+            cellEditor.setEditable(!isUpdateable || wbtmi.getIsEditable());
             column = tableArg.getColumnModel().getColumn(i);
 
             comp = headerRenderer.getTableCellRendererComponent(
@@ -3584,7 +3587,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             
             column.setCellEditor(cellEditor);
             WbCellRenderer renderer = new WbCellRenderer();
-            renderer.setEditable(wbtmi.getIsEditable());
+            renderer.setEditable(!isUpdateable || wbtmi.getIsEditable());
             column.setCellRenderer(renderer);
 
         }
