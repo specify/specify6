@@ -96,6 +96,8 @@ public class BatchEditProgressDialog extends JDialog {
         cancelPressed.set(true);
         progress.setStringPainted(false);
         progress.setIndeterminate(true);
+        cancelBtn.setEnabled(false);
+        commitBtn.setEnabled(false);
         desc.setText(UIRegistry.getResourceString("WB_BATCH_EDIT_ROLLING_BACK"));
     }
 
@@ -106,6 +108,8 @@ public class BatchEditProgressDialog extends JDialog {
         commitPressed.set(true);
         progress.setStringPainted(false);
         progress.setIndeterminate(true);
+        cancelBtn.setEnabled(false);
+        commitBtn.setEnabled(false);
         desc.setText(UIRegistry.getResourceString("WB_BATCH_EDIT_COMMITTING"));
     }
 

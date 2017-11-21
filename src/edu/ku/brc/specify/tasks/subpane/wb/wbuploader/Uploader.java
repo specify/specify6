@@ -3443,6 +3443,9 @@ public class Uploader implements ActionListener, KeyListener
             		return;
             	}
             }
+            if (mainPanel != null) {
+                SwingUtilities.invokeLater(() -> mainPanel.getBtnPane().setVisible(false));
+            }
         	uploadIt(true);
         } else if (e.getActionCommand().equals(UploadMainPanel.VIEW_UPLOAD)) {
             if (currentOp.equals(Uploader.SUCCESS) || currentOp.equals(Uploader.SUCCESS_PARTIAL)) {

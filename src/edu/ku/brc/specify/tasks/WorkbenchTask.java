@@ -59,6 +59,7 @@ import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.SoftBevelBorder;
 
+import edu.ku.brc.af.core.*;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -71,18 +72,6 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.auth.BasicPermisionPanel;
 import edu.ku.brc.af.auth.PermissionEditorIFace;
-import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.af.core.AppResourceIFace;
-import edu.ku.brc.af.core.ContextMgr;
-import edu.ku.brc.af.core.NavBox;
-import edu.ku.brc.af.core.NavBoxAction;
-import edu.ku.brc.af.core.NavBoxItemIFace;
-import edu.ku.brc.af.core.SubPaneIFace;
-import edu.ku.brc.af.core.SubPaneMgr;
-import edu.ku.brc.af.core.TaskCommandDef;
-import edu.ku.brc.af.core.Taskable;
-import edu.ku.brc.af.core.ToolBarItemDesc;
-import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
@@ -2432,6 +2421,9 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 	{
                 		workbenchPane.validateAll(null);
                 	}
+                	if (workbenchPane.isUpdateDataSet()) {
+                	    NavBoxMgr.getInstance().closeSplitter();
+                    }
                 } //else something went wrong during the creation. Assume/hope execptions or warnings have already occurred. Better than hanging.
                 {
                 	if (glassPane != null)
