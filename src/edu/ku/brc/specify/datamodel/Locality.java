@@ -1078,7 +1078,7 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
     }
 
     /**
-     * @param localityDetail the localityDetail to set
+     * @param localityDetails the localityDetails to set
      */
     public void setLocalityDetails(Set<LocalityDetail> localityDetails)
     {
@@ -1096,7 +1096,7 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
     }
 
     /**
-     * @param geoCoordDetail the geoCoordDetail to set
+     * @param geoCoordDetails the geoCoordDetails to set
      */
     public void setGeoCoordDetails(Set<GeoCoordDetail> geoCoordDetails)
     {
@@ -1262,6 +1262,13 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
         return l;
     }
 
+    /**
+     *
+     * @param originalObj
+     * @param deep  if true then copy and clone children
+     * @param session
+     * @return
+     */
     @Override
     public boolean initializeClone(DataModelObjBase originalObj, boolean deep, DataProviderSessionIFace session) {
         if (deep) {
@@ -1374,7 +1381,7 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
     }
     
     /**
-     * @param errPolygon
+     * @param errorPolygon
      */
     public void setErrorPolygon(final String errorPolygon)
     {
