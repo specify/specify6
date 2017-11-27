@@ -45,6 +45,7 @@ import javax.swing.JProgressBar;
 import javax.swing.SwingWorker;
 import javax.swing.WindowConstants;
 
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import org.apache.commons.lang.StringUtils;
 import org.jfree.util.Log;
 
@@ -336,29 +337,64 @@ public class SpecifyDeleteHelper
         
         return false;
     }
-    
-    
+
     /**
-     * @param rec
+     *
+     * @param cls
+     * @param id
+     * @param session
      * @return
+     * @throws SQLException
      */
-    public boolean isRecordShared(final Class<?> cls, final Integer id) throws SQLException
-    {
+    public boolean isRecordReferenced(final Class<?> cls, final Integer id, final DataProviderSessionIFace session) throws SQLException {
+        return isRecordShared(cls, id, false, session, 0);
+    }
+
+    /**
+     *
+     * @param cls
+     * @param id
+     * @return
+     * @throws SQLException
+     */
+    public boolean isRecordShared(final Class<?> cls, final Integer id) throws SQLException {
+        return isRecordShared(cls, id, true, null, 1);
+    }
+
+    /**
+     *
+     * @param cls
+     * @param id
+     * @param recurse
+     * @param session
+     * @return
+     * @throws SQLException
+     */
+    public boolean isRecordShared(final Class<?> cls, final Integer id, boolean recurse, final DataProviderSessionIFace session) throws SQLException {
+        return isRecordShared(cls, id, recurse, session, 1);
+    }
+
+        /**
+         *
+         * @param cls
+         * @param id
+         * @param recurse
+         * @param session
+         * @return
+         * @throws SQLException
+         */
+    public boolean isRecordShared(final Class<?> cls, final Integer id, boolean recurse, final DataProviderSessionIFace session, int refCount) throws SQLException {
     	StackItem root      = new StackItem(null, null, null);
         getSubTables(root, cls, id, null, null, 0, null, true);
         StackItem s = root.getStack().peek();
-    	for (StackItem si : s.getStack())
-    	{
+    	for (StackItem si : s.getStack()) {
     		System.out.println(si.getSql() + id);
-    		Vector<Integer> ids = getIds(si.getSql() + id, -1);
-    		if (ids != null && ids.size() > 1)
-    		{
+    		Vector<Integer> ids = getIds(si.getSql() + id, -1, session);
+    		if (ids != null && ids.size() > refCount) {
     			return true;
     		}
-    		if (ids != null && ids.size() == 1)
-    		{
-    			if (isRecordShared(si.getTableInfo().getClassObj(), ids.get(0)))
-    			{
+    		if (recurse && ids != null && ids.size() == 1) {
+    			if (isRecordShared(si.getTableInfo().getClassObj(), ids.get(0), recurse, session)) {
     				return true;
     			}
     		}
@@ -895,42 +931,61 @@ public class SpecifyDeleteHelper
             System.out.println(si.getSql());
         }
     }
-    
+
     /**
-     * @param stmt
+     *
      * @param sqlArg
-     * @param id
      * @param level
      * @return
      * @throws SQLException
      */
     protected Vector<Integer> getIds(final String    sqlArg,
-                                     final int       level) throws SQLException
-    {
+                                     final int       level) throws SQLException {
+        return getIds(sqlArg, level, null);
+    }
+
+    /**
+     *
+     * @param sqlArg
+     * @param level
+     * @param session
+     * @return
+     * @throws SQLException
+     */
+    protected Vector<Integer> getIds(final String    sqlArg,
+                                     final int       level,
+                                     final DataProviderSessionIFace session) throws SQLException {
         int             cnt = 0;
         Vector<Integer> ids = null;
-        if (sqlArg != null)
-        {
+        if (sqlArg != null) {
             ids = new Vector<Integer>();
             
             //if (debugUpdate) System.err.println(sqlArg);
             
-            Statement stmt = connection.createStatement();
-            ResultSet rs   = stmt.executeQuery(sqlArg);
-            while (rs.next())
-            {
-                int rowId = rs.getInt(1);
-                ids.add(rowId);
+            if (session == null) {
+                Statement stmt = connection.createStatement();
+                ResultSet rs = stmt.executeQuery(sqlArg);
+                while (rs.next()) {
+                    int rowId = rs.getInt(1);
+                    ids.add(rowId);
                 
                 /*if (debugUpdate)
                 {
                     printLevel(level);
                     System.out.println("Deleting ID: "+rowId);
                 }*/
-                cnt++;
+                    cnt++;
+                }
+                rs.close();
+                stmt.close();
+            } else {
+                DataProviderSessionIFace.QueryIFace q = session.createQuery(sqlArg, true);
+                for (Object id : q.list()) {
+                    ids.add((Integer)id);
+                    cnt++;
+                }
+
             }
-            rs.close();
-            stmt.close();
             counter += cnt;
         }
         return ids;
@@ -1180,12 +1235,15 @@ public class SpecifyDeleteHelper
         statement.close();
             
     }
-    
+
     /**
-     * @param divisionId
+     *
+     * @param treeDefClass
+     * @param treeDefId
+     * @param dispName
      * @throws SQLException
      */
-    protected void cleanUpTree(final Class<?> treeDefClass, 
+    protected void cleanUpTree(final Class<?> treeDefClass,
                                final int      treeDefId,
                                final String dispName) throws SQLException
     {
@@ -1355,7 +1413,8 @@ public class SpecifyDeleteHelper
     }
 
     /**
-     * @param appResDirId
+     *
+     * @param specifyUserId
      * @throws SQLException
      */
     protected void deleteReportsAndQueries(final int specifyUserId) throws SQLException
@@ -1609,7 +1668,7 @@ public class SpecifyDeleteHelper
         }
 
         /**
-         * @param isBuildingSQL the isBuildingSQL to set
+         * @param isBuildingDelSQL the isBuildingSQL to set
          */
         public void setBuildingDelSQL(boolean isBuildingDelSQL)
         {

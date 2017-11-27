@@ -149,6 +149,15 @@ public class BatchEditProgressDialog extends JDialog {
     /**
      *
      */
+    public synchronized void finishingTouches() {
+        desc.setText(String.format(UIRegistry.getResourceString("WB_BATCH_EDIT_DONE_FINISHING")));
+        progress.setIndeterminate(true);
+        progress.setString(null);
+    }
+
+    /**
+     *
+     */
     public synchronized void tick() {
         progress.setString(String.format(UIRegistry.getResourceString("WB_BATCH_EDIT_ROLLBACK_COUNTDOWN"), ticks.decrementAndGet()));
         progress.setValue(progress.getValue() + 1);

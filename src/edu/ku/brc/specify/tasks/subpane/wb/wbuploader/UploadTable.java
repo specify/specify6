@@ -272,6 +272,8 @@ public class UploadTable implements Comparable<UploadTable>
 		return matchCountForCurrentRow;
 	}
 
+
+
 	/**
      * Used in processing new objects added as result of the UploadMatchSetting.ADD_NEW_MODE option.
      */
@@ -492,36 +494,34 @@ public class UploadTable implements Comparable<UploadTable>
         finalizer = findFinalizer();
     }
 
-    
-    public void findPrecisionDateFields()
-    {
-        for (UploadField fld : uploadFields.get(0)) //assuming all 'seqs' in uploadFields have the same fields.
-        {
-            if (fld.getField() != null && fld.getField().getFieldInfo() != null)
-            {
+
+    /**
+     *
+     */
+    public void findPrecisionDateFields() {
+        for (UploadField fld : uploadFields.get(0)) { //assuming all 'seqs' in uploadFields have the same fields.
+            if (fld.getField() != null && fld.getField().getFieldInfo() != null) {
                 DBFieldInfo precFld = this.getDatePrecisionFld(fld.getField().getFieldInfo());
-                if (precFld != null)
-                {
+                if (precFld != null) {
                     this.precisionDateFields.add(new Pair<UploadField, Method>(fld, this.getFldSetter(precFld)));
                 }
             }
         }
     }
-    
-    protected UploadedRecFinalizerIFace findFinalizer() throws UploaderException
-    {
+
+    /**
+     *
+     * @return
+     * @throws UploaderException
+     */
+    protected UploadedRecFinalizerIFace findFinalizer() throws UploaderException {
         String className = this.getClass().getPackage().getName() + "." + tblClass.getSimpleName() + "RecFinalizer";
-        try
-        {
+        try {
             Class<?> cls = Class.forName(className);
             return (UploadedRecFinalizerIFace )cls.newInstance();
-        }
-        catch (ClassNotFoundException ex)
-        {
+        } catch (ClassNotFoundException ex) {
             return null;
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
         }
     }
@@ -531,14 +531,10 @@ public class UploadTable implements Comparable<UploadTable>
      * 
      * @throws UploaderException
      */
-    protected void determineTblClass() throws UploaderException
-    {
-        try
-        {
+    protected void determineTblClass() throws UploaderException {
+        try {
             tblClass = Class.forName("edu.ku.brc.specify.datamodel." + table.getName());
-        }
-        catch (ClassNotFoundException cnfEx)
-        {
+        } catch (ClassNotFoundException cnfEx) {
             throw new UploaderException(cnfEx, UploaderException.ABORT_IMPORT);
         }
     }
@@ -839,7 +835,7 @@ public class UploadTable implements Comparable<UploadTable>
     }
 
     /**
-     * @param relatedClass.
+     * @param relatedClass
      * @return true if the related class needs to be added as a requirement.
      */
     protected boolean addToReqRelClasses(Class<?> relatedClass)
@@ -2017,14 +2013,13 @@ public class UploadTable implements Comparable<UploadTable>
     }
     
     /**
-     * @param fld
+     *
+     * @param ufld
      * @return values of the correct class for fld's setter.
      * @throws NoSuchMethodException
      * @throws InvocationTargetException
-     * @throws IllegalArgumentException
      * @throws IllegalAccessException
-     * @throws ParseException
-     * 
+     * @throws UploaderException
      * Converts fld's string value to the correct class for the field being uploaded to.
      */
     protected Object[] getArgForSetter(final UploadField ufld) throws NoSuchMethodException,
@@ -2316,14 +2311,15 @@ public class UploadTable implements Comparable<UploadTable>
     }
 
     /**
-     * @param fld
+     *
      * @param rec
+     * @param getter
      * @param newVal
      * @return true if fields value has changed.
      * @throws InvocationTargetException
      * @throws IllegalAccessException
      */
-	@SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked")
     protected boolean valueChange(DataModelObjBase rec, Method getter, Object[] newVal) 
     	throws InvocationTargetException, IllegalAccessException {
 		boolean result = false;
@@ -3085,7 +3081,7 @@ public class UploadTable implements Comparable<UploadTable>
 	}
 
     /**
-     * @param criteriam
+     * @param criteria
      * @throws UploaderException
      * 
      * Adds extra criteria related to 'domain'
@@ -3116,8 +3112,9 @@ public class UploadTable implements Comparable<UploadTable>
     }
     
     /**
-     * @param ut
+     *
      * @param unmatchableCols
+     * @param seq
      * @return
      */
     protected boolean isMatchable(Set<Integer> unmatchableCols, int seq)
@@ -3224,17 +3221,19 @@ public class UploadTable implements Comparable<UploadTable>
     	return gotIt;	
     }
     
-	/**
-	 * @param critter
-	 * @param recNum
-	 * @param restrictedVals
-	 * @return
-	 * @throws UploaderException
-	 * @throws IllegalAccessException
-	 * @throws NoSuchMethodException
-	 * @throws InvocationTargetException
-	 */
-	protected Pair<Boolean, CriteriaIFace> getUpdateMatchCriteria(final DataProviderSessionIFace session, 
+    /**
+     *
+     * @param session
+     * @param recNum
+     * @param restrictedVals
+     * @param overrideParentParams
+     * @return
+     * @throws UploaderException
+     * @throws IllegalAccessException
+     * @throws NoSuchMethodException
+     * @throws InvocationTargetException
+     */
+	protected Pair<Boolean, CriteriaIFace> getUpdateMatchCriteria(final DataProviderSessionIFace session,
 					final int recNum, Vector<MatchRestriction> restrictedVals,
 					HashMap<UploadTable, DataModelObjBase> overrideParentParams)
 					throws UploaderException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
@@ -3389,11 +3388,11 @@ public class UploadTable implements Comparable<UploadTable>
       			: pte.getImportTable().getParentRecord(recNum, this);
 	}
     /**
-     * 
-     * 
-     * @param critter
+     *
+     * @param session
      * @param recNum
      * @param restrictedVals
+     * @param overrideParentParams
      * @return true if blank cells were ignored when matching
      * @throws UploaderException
      * @throws IllegalAccessException
@@ -3610,10 +3609,15 @@ public class UploadTable implements Comparable<UploadTable>
     	protected boolean isSkipped; //true if matching was not attempted because of un-matched parent
     	protected final int recNum;
     	protected final boolean stoppedAlready;
-		/**
-		 * @param matches
-		 * @param parent
-		 */
+        /**
+         *
+         * @param matches
+         * @param table
+         * @param isBlank
+         * @param isSkipped
+         * @param recNum
+         * @param stoppedAlready
+         */
 		public ParentMatchInfo(List<DataModelObjBase> matches,
 				UploadTable table, boolean isBlank, boolean isSkipped, int recNum, boolean stoppedAlready)
 		{
@@ -4175,21 +4179,16 @@ public class UploadTable implements Comparable<UploadTable>
 //                }
             }
         	setCurrentRecordFromMatch(match, recNum);
-            if (match != null)
-            {
-                if (updateMatches && matchRecordId)
-                {
+            if (match != null) {
+                if (updateMatches && matchRecordId && !reusingExportedRec) {
                 	match.forceLoad();
                 }
                 //XXX Updates
                 // if a match was found matchChildren don't need to do anything. (assuming
                 // !updateMatches!!!)
-                if (!updateMatches)
-                {
-                	for (UploadTable child : specialChildren)
-                	{
-                		if (needToMatchChild(child.tblClass) && (!child.isOneToOneChild() || child.isZeroToOneMany()))
-                		{
+                if (!updateMatches) {
+                	for (UploadTable child : specialChildren) {
+                		if (needToMatchChild(child.tblClass) && (!child.isOneToOneChild() || child.isZeroToOneMany())) {
                 			child.skipRow = true;
                 		}
                 	}
@@ -4205,50 +4204,74 @@ public class UploadTable implements Comparable<UploadTable>
         }
     }
 
-    
-    
-    
+
+    /**
+     *
+     * @param rec
+     * @return
+     */
+    protected boolean isThisRecordShared(final DataModelObjBase rec) throws SQLException {
+        //boolean recIsShared = true;
+        //DeleteHelper can return records using a record - I think - could possibly do something
+        //similar to what uploader.recIsShared does - note the recursion - that would
+        //work for ALL related tables not just those in the upload.
+        //boolean recIsShared = expRec == null ? false
+        //		: uploader.recIsShared(this, expRec.getId());
+        //Get currently used rec. If it is not used by any other records, use it as current.
+        //If it is used by other recs, then copy its current non-system contents to a new rec
+
+        boolean recIsShared = false;
+
+        if (rec != null) {
+            if (tblClass.equals(Agent.class) || Treeable.class.isAssignableFrom(tblClass)) {
+                //System.out.println("Assuming shared for class: " + tblClass);
+                recIsShared = true;
+            }
+
+            SpecifyDeleteHelper delhel = uploader.getDeleteHelper();
+            recIsShared = rec == null ? false : delhel.isRecordShared(tblClass, rec.getId(), false, tblSession);
+            delhel.done(false);
+        }
+        return recIsShared;
+
+    }
+
+
     /**
      * @param match
      * @param recNum
      */
     protected void setCurrentRecordFromMatch(final DataModelObjBase match, int recNum)
     	throws IllegalAccessException, InstantiationException, SQLException, UploaderException {
-        if (updateMatches && !matchRecordId) {
+        if (updateMatches && !isUploadRoot) {
         	DataModelObjBase expRec = getExportedRecord(); //Assumes updateExportedRecInfo has been called for recNum
         	
         	if (expRec == null && match == null) {
         		setCurrentRecord(null, recNum);
         		return;
         	}
-        	
+
+            boolean recIsShared = isThisRecordShared(expRec);
+
+        	//No. Don't do this. Fuck the match.
+            /* old school...
         	if (expRec != null && match != null && expRec.getId().equals(match.getId())) {
         		setCurrentRecord(match, recNum);
         		return;
         	}
+             */
         	
-        	//boolean recIsShared = true;
-        	//DeleteHelper can return records using a record - I think - could possibly do something
-        	//similar to what uploader.recIsShared does - note the recursion - that would
-        	//work for ALL related tables not just those in the upload.
-        	//boolean recIsShared = expRec == null ? false
-        	//		: uploader.recIsShared(this, expRec.getId());
-        	//Get currently used rec. If it is not used by any other records, use it as current.
-        	//If it is used by other recs, then copy its current non-system contents to a new rec
-        	
-        	boolean recIsShared = false;
-        	
-            if (tblClass.equals(Agent.class) || Treeable.class.isAssignableFrom(tblClass)) {
-            	//System.out.println("Assuming shared for class: " + tblClass);
-            	recIsShared = true;
-            }
-
-        	//XXX need to create SpecifyHelperObject - probably in Uploader so UploadTables can share it.
-        	SpecifyDeleteHelper delhel = new SpecifyDeleteHelper();
-        	recIsShared = expRec == null ? false : delhel.isRecordShared(tblClass, expRec.getId());
-        	delhel.done(true);
         	if (!recIsShared)  {
-        		if (match == null) {
+        		//fuck the match.
+                //But:
+                //really need to match on ALL the fields in the exported rec
+                //what if the exprec is null here? Does it get corrected later??
+                setCurrentRecord(expRec, recNum);
+                reusingExportedRec = true;
+
+
+                /* old school...
+                if (match == null) {
         		//Changes have been made, no other records use the current record, so apply the changes to it
         			setCurrentRecord(expRec, recNum);
         			reusingExportedRec = true;
@@ -4257,7 +4280,25 @@ public class UploadTable implements Comparable<UploadTable>
         			//to disUsedRecs by child...
             		setCurrentRecord(match, recNum);
         		}
+        		*/
         	} else {
+                //Seriously: Fuck the match.
+                DataModelObjBase newRec = null;
+                if (expRec == null) {
+                    newRec = createRecord();
+                } else {
+                    try {
+                        newRec = (DataModelObjBase)expRec.clone();
+                        if (!newRec.initializeClone(expRec, false, getSession().getFirst())) {
+                            throw new UploaderException("Failed to initialize " + this.tblClass.getSimpleName() + " clone", UploaderException.ABORT_IMPORT);
+                        }
+                    } catch (Exception e) {
+                        throw new UploaderException(e,  UploaderException.ABORT_IMPORT);
+                    }
+                }
+                setCurrentRecord(newRec, recNum);
+
+                /* old school...
         		if (match == null) {
                     DataModelObjBase newRec = null;
         		    if (expRec == null) {
@@ -4275,7 +4316,7 @@ public class UploadTable implements Comparable<UploadTable>
     				setCurrentRecord(newRec, recNum);
         		} else {
                 	setCurrentRecord(match, recNum); 
-        		}
+        		}*/
         	}
         } else {
         	setCurrentRecord(match, recNum);
@@ -4679,9 +4720,11 @@ public class UploadTable implements Comparable<UploadTable>
 
     
     /**
+     *
      * @param row
      * @param uploadData
-     * @param ignorControllingParents
+     * @param ignoreControllingParents
+     * @param seq
      * @return
      */
     protected boolean parentTableIsNonBlank(final int row, final UploadData uploadData, final Boolean ignoreControllingParents, final int seq)
@@ -5295,11 +5338,13 @@ public class UploadTable implements Comparable<UploadTable>
             }
         }
     }
-    
+
     /**
+     *
      * @param theDisUsed
+     * @param session
      */
-    protected void disUseRecs(Set<Pair<Integer, String>> theDisUsed) {
+    protected void disUseRecs(Set<Pair<Integer, String>> theDisUsed, final DataProviderSessionIFace session) {
     	//This is called during FinishUpload, by the Uploader in reverse order of the upload graph.
     	//An attempt is made to delete any record that was dereferenced during the upload. 
     	//XXX should test if deletable before trying. Current process is to delete and see if it works.
@@ -5310,26 +5355,32 @@ public class UploadTable implements Comparable<UploadTable>
         }
 
     	
-    	SpecifyDeleteHelper delhel = new SpecifyDeleteHelper();
+    	SpecifyDeleteHelper delhel = uploader.getDeleteHelper();
     	for (Pair<Integer, String> disUsedOne : theDisUsed) {
-    		disUseRec(disUsedOne, delhel);
+    		disUseRec(disUsedOne, delhel, session);
     	}
-    	delhel.done(true);
+    	delhel.done(false);
     	for (Pair<Integer, String> deletedRec : deletedRecs) {
         	log.info("Not attempting to remove disused recs for class: " + tblClass);
     	}
     }
-    
+
     /**
-     * @param disUsee
+     *
+     * @param disUsedRec
+     * @param delhel
+     * @param session
      */
-    protected void disUseRec(final Pair<Integer, String> disUsedRec, final SpecifyDeleteHelper delhel) {
+    protected void disUseRec(final Pair<Integer, String> disUsedRec, final SpecifyDeleteHelper delhel, final DataProviderSessionIFace session) {
     	log.info("deleting " + disUsedRec);
         //XXX Delete helper absolutely blows for PrepType. Will let any preptype be deleted, deletes all associated preparations. WTF.
         //disUseRecs() filters out preptype, but what other tables might be screwed??? Check persistence annotations??
         try {
-    		delhel.delRecordFromTable(tblClass, disUsedRec.getFirst(), true);
-    		deletedRecs.add(disUsedRec);
+    		//XXX what will isRecordReferenced() do for a locality with no ces, but with locdet/geocoorddet??
+            if (!delhel.isRecordReferenced(tblClass, disUsedRec.getFirst(), session)) {
+                delhel.delRecordFromTable(tblClass, disUsedRec.getFirst(), true);
+                deletedRecs.add(disUsedRec);
+            }
     	} catch (SQLException sqex) {
     		delhel.rollback();
     		log.warn("unable to delete " + tblClass.getSimpleName() + ":" + disUsedRec);
@@ -5338,7 +5389,6 @@ public class UploadTable implements Comparable<UploadTable>
     
 
     /**
-     * @param uploadTable
      * @param blankSeq
      * @param row
      * @param uploadData
@@ -5374,8 +5424,7 @@ public class UploadTable implements Comparable<UploadTable>
      * @param uploadData
      * @param row
      * @param seq
-     * @param parentClasses
-     * 
+     *
      * @return true if blank and blankness matters
      * 
      * Checks relationships and datatype to see if table data for row and sequence is really blank and/or
@@ -5446,8 +5495,9 @@ public class UploadTable implements Comparable<UploadTable>
     }
 
     /**
+     *
      * @param wbRow
-     * 
+     * @param restore
      * reads data from the dataset to fields in this table and it's parent tables
      */
     protected void readFromDataSet(int wbRow, boolean restore)
@@ -5466,7 +5516,9 @@ public class UploadTable implements Comparable<UploadTable>
     }
     
     /**
+     *
      * @param row
+     * @param useExportedData
      * @throws UploaderException
      */
     protected void writeRow(int row, boolean useExportedData) throws UploaderException {
@@ -5482,6 +5534,9 @@ public class UploadTable implements Comparable<UploadTable>
     }
     
     /**
+     *
+     * @param row
+     * @param tblsWithChanges
      * @return
      */
     public boolean rowHasChanges(int row, List<UploadTable> tblsWithChanges) {
@@ -5515,7 +5570,11 @@ public class UploadTable implements Comparable<UploadTable>
     /**
      * Searches for matching record in database. If match is found it is set to be the current
      * record. If no match then a record is initialized and populated and written to the database.
-     * 
+     *
+     *
+     * @param doNotWrite
+     * @param skipMatch
+     * @param useExportedData
      * @throws UploaderException
      */
     protected void writeRowOrNot(boolean doNotWrite, boolean skipMatch, boolean useExportedData) throws UploaderException
@@ -5530,7 +5589,7 @@ public class UploadTable implements Comparable<UploadTable>
         boolean matchRecordIdBackup = this.matchRecordId;
         if (updateMatches) {
         	doSkipMatch = skipMatch;
-        	if (useExportedData && !this.matchRecordId) {
+        	if ((useExportedData || exportedRecordId != null)&& !this.matchRecordId) {
         	    this.matchRecordId = true;
             }
         	if (this.matchRecordId) {
@@ -5634,7 +5693,6 @@ public class UploadTable implements Comparable<UploadTable>
 
     /**
      * @param rec
-     * @throws Exception
      */
     protected boolean dealWithUpdatedRecord(final DataModelObjBase rec) {
     	Timestamp recStamp = rec.getTimestampModified() == null ? rec.getTimestampCreated() : rec.getTimestampModified();
@@ -5813,11 +5871,9 @@ public class UploadTable implements Comparable<UploadTable>
     }
 
     /**
+     *
      * @param rec
-     * @param recNum
      * @throws UploaderException
-     * 
-     * Creates session and saves rec.
      */
     protected void doWrite(DataModelObjBase rec) throws UploaderException
     {
@@ -5896,7 +5952,7 @@ public class UploadTable implements Comparable<UploadTable>
         return false; 
     }
     
-    /**
+    /*
      * Creates a new Hibernate session and associates the given objects with it. NOTE: Static for
      * testing reasons only.
      * 
@@ -6465,7 +6521,7 @@ public class UploadTable implements Comparable<UploadTable>
         protected UploadTable uploadTable;
 
         /**
-         * @param matchVals
+         * @param cellVals
          * @param matchedText
          * @param row
          * @param uploadTable
@@ -6593,9 +6649,8 @@ public class UploadTable implements Comparable<UploadTable>
     public void finishUpload(boolean cancelled, DataProviderSessionIFace theSession) throws UploaderException
     {
         //nothing to do here.
-    	if (updateMatches)
-    	{
-    		disUseRecs(disUsedRecs);
+    	if (updateMatches) {
+    		disUseRecs(disUsedRecs, theSession);
     	}
     }
     

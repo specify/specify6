@@ -34,6 +34,7 @@ import edu.ku.brc.specify.SpecifyUserTypes;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.*;
 import edu.ku.brc.specify.datamodel.Collection;
+import edu.ku.brc.specify.dbsupport.SpecifyDeleteHelper;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr.SCOPE;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr.USER_ACTION;
@@ -267,6 +268,19 @@ public class Uploader implements ActionListener, KeyListener
     protected boolean wasRolledBack = false;
 
     protected DataProviderSessionIFace theUploadBatchEditSession;
+
+    protected SpecifyDeleteHelper deleteHelper = null;
+
+    /**
+     *
+     * @return
+     */
+    protected SpecifyDeleteHelper getDeleteHelper() {
+        if (deleteHelper == null) {
+            deleteHelper = new SpecifyDeleteHelper();
+        }
+        return deleteHelper;
+    }
 
     private class SkippedAttachment extends BaseUploadMessage
     {
@@ -3662,6 +3676,9 @@ public class Uploader implements ActionListener, KeyListener
                     }
                 }
             }
+            if (deleteHelper != null) {
+                deleteHelper.done(true);
+            }
         }
         if (additionalLocksSet) {
         	freeAdditionalLocks();
@@ -4460,6 +4477,9 @@ public class Uploader implements ActionListener, KeyListener
                     success = !crashed && (!cancelled || (cancelled && paused));
                     try {
                         if (!crashed) {
+                            if (progDlg != null) {
+                                progDlg.finishingTouches();
+                            }
                             for (int t = uploadTables.size() - 1; t >= 0; t--) {
                                 uploadTables.get(t).finishUpload(cancelled && !paused, theUploadBatchEditSession);
                             }
