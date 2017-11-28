@@ -1079,7 +1079,8 @@ protected List<java.lang.reflect.Field> getFldsForJSON() {
     protected boolean isBlankVal(UploadField fld, int seq, int row, UploadData uploadData)
     {
         boolean result = super.isBlankVal(fld, seq, row, uploadData);
-        if (!result || uploadFields.size() == 1 || (parent != null && !parent.blankSeqs.get(seq)))
+        if (!result || uploadFields.size() == 1
+                || (parent != null && !parent.blankSeqs.get(seq >= parent.getUploadFields().size() ? 0: seq)))
         {
             return false;
         }
