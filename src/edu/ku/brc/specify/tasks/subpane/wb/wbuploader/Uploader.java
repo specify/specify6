@@ -1755,43 +1755,35 @@ public class Uploader implements ActionListener, KeyListener
      * @return true if other records than the current exported rec for child tables use 
      * the specified ut record.
      */
-    public boolean recIsShared(final UploadTable ut, final Integer recID)
-    {
+    public boolean recIsShared(final UploadTable ut, final Integer recID) {
     	int utIndex = -1;
     	boolean result = false;
-    	for (int t = 0; t < uploadTables.size(); t++)
-    	{
+    	for (int t = 0; t < uploadTables.size(); t++) {
     		if (ut == uploadTables.get(t))
     		{
     			utIndex = t;
     			break;
     		}
     	}
-    	if (utIndex != -1)
-    	{
-    		for (int t = utIndex+1; t < uploadTables.size(); t++)
-    		{
+    	if (utIndex != -1) {
+    		for (int t = utIndex+1; t < uploadTables.size(); t++) {
     			UploadTable tbl = uploadTables.get(t);
     			ParentTableEntry pte = tbl.getParentTableEntry(ut);
-    			if (pte != null)
-    			{
+    			if (pte != null) {
     				String sql = "select count(*) from " + tbl.getTblClass().getSimpleName().toLowerCase() 
     					+ " where " + pte.getParentRel().getRelatedField() + " = " 
     					+ ut.getExportedRecord().getId() + " and " 
     					+ tbl.getTable().getTableInfo().getPrimaryKeyName() + " != "
     					+ tbl.getExportedRecord().getId();
     				Integer cnt = BasicSQLUtils.getCount(sql);
-    				if (cnt != null && cnt > 0)
-    				{
+    				if (cnt != null && cnt > 0) {
     					return true;
-    				} else if (recIsShared(tbl, tbl.getExportedRecord().getId()))
-    				{
+    				} else if (recIsShared(tbl, tbl.getExportedRecord().getId())) {
     					return true;
     				}
     			}
     		}
     	}
-    	
     	return result;
     }
     
@@ -4393,6 +4385,7 @@ public class Uploader implements ActionListener, KeyListener
                             theUploadBatchEditSession.beginTransaction();
                         }
                         int writesSinceFlush = 0;
+                        String recSql = RecordMatchUtils.getDistinctRecSql(DBTableIdMgr.getInstance().getByShortClassName("CollectingEvent"), false, true, 3);
                         for (rowUploading = uploadStartRow; rowUploading < uploadData.getRows();) {
                         	boolean rowAborted = false;
                         	if (cancelled) {

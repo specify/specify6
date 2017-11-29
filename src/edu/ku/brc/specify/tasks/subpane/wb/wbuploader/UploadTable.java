@@ -316,9 +316,9 @@ public class UploadTable implements Comparable<UploadTable>
     	
     });
 
-    protected List<Pair<Integer, String>>           	deletedRecs		             = new Vector<Pair<Integer, String>>();
+    protected List<Pair<Integer, String>>           	deletedRecs		             = new Vector<>();
 
-    protected Map<Integer, Pair<DataModelObjBase, Timestamp>> recordStash            = new HashMap<Integer, Pair<DataModelObjBase, Timestamp>>();
+    protected Map<Integer, Pair<DataModelObjBase, Timestamp>> recordStash            = new HashMap<>();
     
     /**
      * @author timbo
@@ -573,24 +573,16 @@ public class UploadTable implements Comparable<UploadTable>
      * Gets ready for an upload.
      * @throws UploaderException
      */
-    public void prepareToUpload(boolean inTransaction) throws UploaderException
-    {
-        //XXX TESTING
-    	//updateMatches = tblClass.equals(CollectionObject.class) 
-    	//	|| (tblClass.equals(CollectingEvent.class) 
-    	//			&& AppContextMgr.getInstance().getClassObject(Collection.class).getIsEmbeddedCollectingEvent());
-    	//XXX
-    	
+    public void prepareToUpload(boolean inTransaction) throws UploaderException {
     	isUploadRoot = uploader.getRootTable() == this;
         uploadedRecs.clear();
         matchSetting.clear();
         deletedRecs.clear();
         disUsedRecs.clear();
+        recordStash.clear();
         isSecurityOn = AppContextMgr.isSecurityOn();
-        if (matchRecordId)
-        {
-        	for (UploadTable ut : specialChildren)
-        	{
+        if (matchRecordId) {
+        	for (UploadTable ut : specialChildren) {
         		ut.setSkipMatching(false);
         		ut.setMatchRecordId(true);
         	}
@@ -1192,18 +1184,14 @@ public class UploadTable implements Comparable<UploadTable>
      * @param index Specifies the 'sequence' (for one-to-many relationships).
      * @return Current (or last uploaded) record for this table.
      */
-    public DataModelObjBase getCurrentRecord(int index)
-    {
-        if (currentRecords.size() == 0) 
-        { 
+    public DataModelObjBase getCurrentRecord(int index) {
+        if (currentRecords.size() == 0) {
             return null; 
         }
-        if (index < uploadFields.size() && index > currentRecords.size() - 1)
-        {
+        if (index < uploadFields.size() && index > currentRecords.size() - 1) {
         	return null;
         }
-        if (index > currentRecords.size() - 1) 
-        { 
+        if (index > currentRecords.size() - 1) {
             return currentRecords.get(0); 
         }
         return currentRecords.get(index);
@@ -1231,10 +1219,8 @@ public class UploadTable implements Comparable<UploadTable>
      * @param rec
      * @param index
      */
-    protected void setCurrentRecord(DataModelObjBase rec, int index)
-    {
-        while (currentRecords.size() < index + 1)
-        {
+    protected void setCurrentRecord(DataModelObjBase rec, int index) {
+        while (currentRecords.size() < index + 1) {
             currentRecords.add(null);
         }
         currentRecords.set(index, rec);
@@ -1244,8 +1230,7 @@ public class UploadTable implements Comparable<UploadTable>
      * @param rec
      * @param seq
      */
-    protected void loadMyRecord(DataModelObjBase rec, int seq)
-    {
+    protected void loadMyRecord(DataModelObjBase rec, int seq) {
     	setCurrentRecord(rec, seq);
     }
     
@@ -1323,51 +1308,83 @@ public class UploadTable implements Comparable<UploadTable>
     		sessObj.getFirst().close();
     	}
     }
-    
+
     /**
      * @return
      */
     protected DataModelObjBase getExportedRecord() {
+        return getExportedRecord(wbCurrentRow);
+    }
+
+    /**
+     *
+     * @param row
+     * @return
+     */
+    protected DataModelObjBase getExportedRecord(int row) {
+        return getExportedRecord(row, false);
+    }
+
+    /**
+     *
+     * @param row
+     * @param force
+     * @return
+     */
+    protected DataModelObjBase getExportedRecord(int row, boolean force) {
         if (exportedRecordId != null) {
             if (exportedRecord == null || !exportedRecord.getId().equals(exportedRecordId)) {
-                Pair<DataProviderSessionIFace, Boolean> sessObj = getSession();
-                DataProviderSessionIFace session = sessObj.getFirst();
-                try {
-                    DataModelObjBase obj = (DataModelObjBase) session.get(tblClass, exportedRecordId);
-                    if (obj != null) {
-                        obj.forceLoad();
-                        exportedRecord = obj;
+                Pair<DataModelObjBase, Timestamp> stashed = force ? null : recordStash.get(row);
+                if (stashed == null || stashed.getFirst() == null /*what if it got deleted */ || !stashed.getFirst().getId().equals(exportedRecordId)) {
+                    Pair<DataProviderSessionIFace, Boolean> sessObj = getSession();
+                    DataProviderSessionIFace session = sessObj.getFirst();
+                    try {
+                        DataModelObjBase obj = (DataModelObjBase) session.get(tblClass, exportedRecordId);
+                        if (obj != null) {
+                            obj.forceLoad();
+                            exportedRecord = obj;
+                            recordStash.put(row, new Pair<>(obj, new Timestamp(System.currentTimeMillis())));
+                        }
+                    } finally {
+                        getRidOfSession(sessObj);
                     }
-                } finally {
-                    getRidOfSession(sessObj);
+                } else {
+                    exportedRecord = stashed.getFirst();
                 }
             }
             return exportedRecord;
     	}
     	return null;
     }
-    	
+
     /**
      * @param row
      * @param id
      * @throws Exception
      */
     public void loadExportedRecord(final int row, final Integer id, boolean force) throws Exception { 
+/*
     	Pair<DataModelObjBase, Timestamp> stashed = force ? null : recordStash.get(row);
     	DataModelObjBase rec = null;
-    	if (stashed == null || stashed.getFirst() == null /*what if it got deleted */ || !stashed.getFirst().getId().equals(id)) {
+    	if (stashed == null || stashed.getFirst() == null */
+/*what if it got deleted *//*
+ || !stashed.getFirst().getId().equals(id)) {
     		exportedRecordId = id;
     		exportedRecord = null;
-    		rec = getExportedRecord();
+    		rec = getExportedRecord(row);
     		recordStash.put(row, new Pair<DataModelObjBase, Timestamp>(rec, new Timestamp(System.currentTimeMillis())));
     	} else {
     		rec = stashed.getFirst();
     	}
+*/
+        exportedRecordId = id;
+        DataModelObjBase rec = getExportedRecord(row, force);
     	if (rec != null) {
     		loadRecord(rec, 0);
     	}
     }
-    
+
+
     /**
      * @param c
      * @return
@@ -2444,56 +2461,41 @@ public class UploadTable implements Comparable<UploadTable>
         DataModelObjBase match = getCurrentRecord(recNum);
         Vector<UploadTable> deletes = new Vector<UploadTable>();
         logDebug("Checking to see if children match:" + tblClass.toString() + "=" + match.getId());
-        if (tblClass.equals(CollectingEvent.class))
-        {
-            for (UploadTable child : specialChildren)
-            {
+        if (tblClass.equals(CollectingEvent.class)) {
+            for (UploadTable child : specialChildren) {
                 logDebug(child.getTable().getName());
-                if (child.getTblClass().equals(Collector.class))
-                {
+                if (child.getTblClass().equals(Collector.class)) {
                     Pair<DataProviderSessionIFace, Boolean> sessObj = getSession();
             		DataProviderSessionIFace matchSession = sessObj.getFirst();
-                    try
-                    {
+                    try {
                         QueryIFace matchesQ = matchSession
                                 .createQuery("from Collector where collectingeventid = "
                                         + match.getId() + " order by orderNumber", false);
                         List<?> matches = matchesQ.list();
-                        try
-                        {
+                        try {
                         	child.loadFromDataSet(wbCurrentRow);
                         	int childCount = 0;
-                        	for (int c = 0; c < child.getUploadFields().size(); c++)
-                        	{
-                        		if (child.getCurrentRecord(c) != null)
-                        		{
+                        	for (int c = 0; c < child.getUploadFields().size(); c++) {
+                        		if (child.getCurrentRecord(c) != null) {
                         			childCount++;
                         		}
                         	}
-                        	if (matches.size() != childCount)
-                        	{
+                        	if (matches.size() != childCount) {
                         		result = false;
-                        	}
-                        	else
-                        	{
-                        		for (int rec = 0; rec < matches.size(); rec++)
-                        		{
+                        	} else {
+                        		for (int rec = 0; rec < matches.size(); rec++) {
                         			Collector coll1 = (Collector) matches.get(rec);
                         			Collector coll2 = (Collector) child.getCurrentRecord(rec);
-                        			if (!coll1.getOrderNumber().equals(coll2.getOrderNumber()))
-                        			{
+                        			if (!coll1.getOrderNumber().equals(coll2.getOrderNumber())) {
                         				// maybe this doesn't really need to be checked?
                         				return false;
                         			}
-                        			if (coll2.getAgent() == null || !coll1.getAgent().getId().equals(coll2.getAgent().getId()))
-                        			{
+                        			if (coll2.getAgent() == null || !coll1.getAgent().getId().equals(coll2.getAgent().getId())) {
                         				return false;
                         			}
-                        			if (coll2.getRemarks() == null ^ coll1.getRemarks() == null)
-                        			{
+                        			if (coll2.getRemarks() == null ^ coll1.getRemarks() == null) {
                         				return false;
-                        			} else if (coll2.getRemarks() != null && !coll2.getRemarks().equals(coll1.getRemarks()))
-                        			{
+                        			} else if (coll2.getRemarks() != null && !coll2.getRemarks().equals(coll1.getRemarks())) {
                         				return false;
                         			}
 //                        			if (!coll1.getIsPrimary().equals(coll2.getIsPrimary() == null ? false : coll2.getIsPrimary()))
@@ -2502,13 +2504,11 @@ public class UploadTable implements Comparable<UploadTable>
 //                        			}
                         		}
                         	} 
-                        } finally
-                        {
+                        } finally {
                         		child.loadFromDataSet(child.wbCurrentRow);
                         }
                     }
-                    finally
-                    {
+                    finally {
             			getRidOfSession(sessObj);
                     }
                 }
@@ -5551,7 +5551,7 @@ public class UploadTable implements Comparable<UploadTable>
                 if (updateMatches) {
                 	updateExportedRecInfo(recNum);
                 }
-            	if (needToWrite(recNum)) {
+            	if (needToWrite(recNum) || !tblAndAncestorsUnchanged) {
                     if (doSkipMatch || !findMatch(recNum, false, null, null) || updateMatches) {
                     	if (useExportedRecord) {
                     	    setCurrentRecordFromExportedRecord(recNum);
@@ -6594,8 +6594,7 @@ public class UploadTable implements Comparable<UploadTable>
      * cleans up and stuff?
      * Currently only used as a way of testing Tree updates.
      */
-    public void finishUpload(boolean cancelled, DataProviderSessionIFace theSession) throws UploaderException
-    {
+    public void finishUpload(boolean cancelled, DataProviderSessionIFace theSession) throws UploaderException {
         //nothing to do here.
     	if (updateMatches) {
     		disUseRecs(disUsedRecs, theSession);
@@ -6633,11 +6632,13 @@ public class UploadTable implements Comparable<UploadTable>
     {
         this.skipMatching = skipMatching;
     }
-    
-    private void logDebug(Object toLog)
-    {
-        if (debugging)
-        {
+
+    /**
+     *
+     * @param toLog
+     */
+    private void logDebug(Object toLog) {
+        if (debugging) {
             log.debug(toLog);
         }
     }
