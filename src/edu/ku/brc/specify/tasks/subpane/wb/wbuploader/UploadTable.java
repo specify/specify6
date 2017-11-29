@@ -243,6 +243,7 @@ public class UploadTable implements Comparable<UploadTable>
     protected UploadMatchSetting                        matchSetting;
     protected boolean 									matchRecordId = false;	
     protected Integer									exportedRecordId = null;
+    protected DataModelObjBase                          exportedRecord = null;
     protected boolean									reusingExportedRec = false;
     //for a one-to-many child, exportedRecordId will hold the parent's ID,
     //exportedOneToManyID stores the child's recordID for the current 'sequence' - 1st collector, 2nd collector... 
@@ -301,7 +302,7 @@ public class UploadTable implements Comparable<UploadTable>
     											                             //Eg. Prep2 fields are allowed to contain data when all prep1 fields are blank.
     protected List<Boolean>								blankSeqs = null;									
 
-    protected boolean									deleteUnusedRecs			 = true;
+    protected boolean									deleteUnusedRecs			 = false;
     protected Set<Pair<Integer, String>>           		disUsedRecs		             = new TreeSet<Pair<Integer, String>>(new Comparator<Pair<Integer, String>>() {
 
 		/* (non-Javadoc)
@@ -1327,19 +1328,21 @@ public class UploadTable implements Comparable<UploadTable>
      * @return
      */
     protected DataModelObjBase getExportedRecord() {
-    	if (exportedRecordId != null) {
-            Pair<DataProviderSessionIFace, Boolean> sessObj = getSession();
-    		DataProviderSessionIFace session = sessObj.getFirst();
-    		try {
-    			DataModelObjBase obj = (DataModelObjBase )session.get(tblClass, exportedRecordId);
-    			if (obj != null) {
-    				obj.forceLoad();
-    				return obj;
-    			}
-    		
-    		} finally {
-    			getRidOfSession(sessObj);
-    		}
+        if (exportedRecordId != null) {
+            if (exportedRecord == null || !exportedRecord.getId().equals(exportedRecordId)) {
+                Pair<DataProviderSessionIFace, Boolean> sessObj = getSession();
+                DataProviderSessionIFace session = sessObj.getFirst();
+                try {
+                    DataModelObjBase obj = (DataModelObjBase) session.get(tblClass, exportedRecordId);
+                    if (obj != null) {
+                        obj.forceLoad();
+                        exportedRecord = obj;
+                    }
+                } finally {
+                    getRidOfSession(sessObj);
+                }
+            }
+            return exportedRecord;
     	}
     	return null;
     }
@@ -1354,6 +1357,7 @@ public class UploadTable implements Comparable<UploadTable>
     	DataModelObjBase rec = null;
     	if (stashed == null || stashed.getFirst() == null /*what if it got deleted */ || !stashed.getFirst().getId().equals(id)) {
     		exportedRecordId = id;
+    		exportedRecord = null;
     		rec = getExportedRecord();
     		recordStash.put(row, new Pair<DataModelObjBase, Timestamp>(rec, new Timestamp(System.currentTimeMillis())));
     	} else {
@@ -1514,10 +1518,13 @@ public class UploadTable implements Comparable<UploadTable>
      */
     public void setExportedRecordId(DataModelObjBase rec) throws Exception {
     	boolean shouldSetExportedRec = shouldSetExportedRec(rec);
+
         if (!shouldSetExportedRec) {
     		exportedRecordId = null;
+    		exportedRecord = null;
     	} else {
     		exportedRecordId = rec.getId();
+    		exportedRecord = rec;
     	}
     	for (Vector<ParentTableEntry> ptes : parentTables) {
     		for (ParentTableEntry pte : ptes) {
@@ -3260,30 +3267,6 @@ public class UploadTable implements Comparable<UploadTable>
 							return getInsertMatchCriteria(session, recNum, restrictedVals, overrideParentParams);
 						}
 					}
-	
-						//XXX special situation for one-to-ones -- XXXXAttribute tables. ???...
-//					boolean gotIt = checkParentsForMatchCriteria(parentTables, critter, recNum, null);
-//					if (!gotIt && isOneToOneChild())
-//					{
-//						//This is SO lame...stinking Attribute tables.
-//						for (UploadTable ut : uploader.uploadTables)
-//						{
-//							for (UploadTable sc : ut.specialChildren)
-//							{
-//								if (sc == this)
-//								{
-//									checkParentsForMatchCriteria(ut.parentTables, critter, recNum, ut);
-//									gotIt = true;
-//									break;
-//								}
-//							}
-//							if (gotIt)
-//							{
-//								break;
-//							}
-//						}
-//					}
-					
 				}
 
 			} else { //an insert?
@@ -4238,86 +4221,52 @@ public class UploadTable implements Comparable<UploadTable>
 
 
     /**
-     * @param match
+     *
      * @param recNum
+     * @throws SQLException
+     * @throws UploaderException
      */
-    protected void setCurrentRecordFromMatch(final DataModelObjBase match, int recNum)
-    	throws IllegalAccessException, InstantiationException, SQLException, UploaderException {
-        if (updateMatches && !isUploadRoot) {
-        	DataModelObjBase expRec = getExportedRecord(); //Assumes updateExportedRecInfo has been called for recNum
-        	
-        	if (expRec == null && match == null) {
-        		setCurrentRecord(null, recNum);
-        		return;
-        	}
-
+    protected void setCurrentRecordFromExportedRecord(int recNum) throws SQLException, UploaderException, InstantiationException,
+        IllegalAccessException {
+        DataModelObjBase expRec = getExportedRecord(); //Assumes updateExportedRecInfo has been called for recNum
+        if (!isUploadRoot) {
+            if (expRec == null) {
+                setCurrentRecord(null, recNum);
+                return;
+            }
             boolean recIsShared = isThisRecordShared(expRec);
-
-        	//No. Don't do this. Fuck the match.
-            /* old school...
-        	if (expRec != null && match != null && expRec.getId().equals(match.getId())) {
-        		setCurrentRecord(match, recNum);
-        		return;
-        	}
-             */
-        	
-        	if (!recIsShared)  {
-        		//fuck the match.
-                //But:
-                //really need to match on ALL the fields in the exported rec
-                //what if the exprec is null here? Does it get corrected later??
+            if (!recIsShared)  {
                 setCurrentRecord(expRec, recNum);
                 reusingExportedRec = true;
-
-
-                /* old school...
-                if (match == null) {
-        		//Changes have been made, no other records use the current record, so apply the changes to it
-        			setCurrentRecord(expRec, recNum);
-        			reusingExportedRec = true;
-        		} else {
-        			//should delete the expRec - expRec should get added
-        			//to disUsedRecs by child...
-            		setCurrentRecord(match, recNum);
-        		}
-        		*/
-        	} else {
-                //Seriously: Fuck the match.
+            } else {
                 DataModelObjBase newRec = null;
                 if (expRec == null) {
                     newRec = createRecord();
                 } else {
                     try {
-                        newRec = (DataModelObjBase)expRec.clone();
+                        newRec = (DataModelObjBase) expRec.clone();
                         if (!newRec.initializeClone(expRec, false, getSession().getFirst())) {
                             throw new UploaderException("Failed to initialize " + this.tblClass.getSimpleName() + " clone", UploaderException.ABORT_IMPORT);
                         }
                     } catch (Exception e) {
-                        throw new UploaderException(e,  UploaderException.ABORT_IMPORT);
+                        throw new UploaderException(e, UploaderException.ABORT_IMPORT);
                     }
                 }
                 setCurrentRecord(newRec, recNum);
+            }
+        } else {
+            setCurrentRecord(expRec, recNum);
+        }
+    }
 
-                /* old school...
-        		if (match == null) {
-                    DataModelObjBase newRec = null;
-        		    if (expRec == null) {
-                        newRec = createRecord();
-                    } else {
-        		        try {
-                            newRec = (DataModelObjBase)expRec.clone();
-                            if (!newRec.initializeClone(expRec, false, getSession().getFirst())) {
-                                throw new UploaderException("Failed to initialize " + this.tblClass.getSimpleName() + " clone", UploaderException.ABORT_IMPORT);
-                            }
-                        } catch (Exception e) {
-                            throw new UploaderException(e,  UploaderException.ABORT_IMPORT);
-                        }
-                    }
-    				setCurrentRecord(newRec, recNum);
-        		} else {
-                	setCurrentRecord(match, recNum); 
-        		}*/
-        	}
+    /**
+     * @param match
+     * @param recNum
+     */
+    protected void setCurrentRecordFromMatch(final DataModelObjBase match, int recNum)
+    	throws IllegalAccessException, InstantiationException, SQLException, UploaderException {
+        if (match == null && updateMatches && !isUploadRoot) {
+            setCurrentRecordFromExportedRecord(recNum);
         } else {
         	setCurrentRecord(match, recNum);
         }
@@ -5324,8 +5273,7 @@ public class UploadTable implements Comparable<UploadTable>
      * @throws IllegalAccessException
      */
     protected void addDisusedRec(DataModelObjBase rec, ParentTableEntry pt) throws InvocationTargetException,
-     	IllegalAccessException
-    {
+     	IllegalAccessException {
     	//XXX See comments for disUseRecs()
         UploadTable parentTbl = pt.getImportTable();
     	DataModelObjBase parentRec = (DataModelObjBase )pt.getGetter().invoke(rec);
@@ -5378,11 +5326,15 @@ public class UploadTable implements Comparable<UploadTable>
         try {
     		//XXX what will isRecordReferenced() do for a locality with no ces, but with locdet/geocoorddet??
             if (!delhel.isRecordReferenced(tblClass, disUsedRec.getFirst(), session)) {
-                delhel.delRecordFromTable(tblClass, disUsedRec.getFirst(), true);
+                delhel.delRecordFromTable(tblClass, disUsedRec.getFirst(), true, session);
+                if (session != null) {
+                    session.flush();
+                    session.clear();
+                }
                 deletedRecs.add(disUsedRec);
             }
     	} catch (SQLException sqex) {
-    		delhel.rollback();
+            if (session == null) delhel.rollback();
     		log.warn("unable to delete " + tblClass.getSimpleName() + ":" + disUsedRec);
     	}
     }
@@ -5478,6 +5430,7 @@ public class UploadTable implements Comparable<UploadTable>
 	}
 
     /**
+     * @param wbRow
      * @throws UploaderException
      * 
      * This is loads values from dataset into current DataModelObj record, but does not save record
@@ -5500,15 +5453,11 @@ public class UploadTable implements Comparable<UploadTable>
      * @param restore
      * reads data from the dataset to fields in this table and it's parent tables
      */
-    protected void readFromDataSet(int wbRow, boolean restore)
-    {
+    protected void readFromDataSet(int wbRow, boolean restore) {
     	uploader.loadRow(this, wbRow);
-		for (Vector<ParentTableEntry> ptes : parentTables)
-		{
-			for (ParentTableEntry pt : ptes)
-			{
-				if (pt.getImportTable() != null)
-				{
+		for (Vector<ParentTableEntry> ptes : parentTables) {
+			for (ParentTableEntry pt : ptes) {
+				if (pt.getImportTable() != null) {
 					pt.getImportTable().readFromDataSet(restore ? pt.getImportTable().wbCurrentRow : wbRow, restore);
 				}
 			}
@@ -5518,16 +5467,16 @@ public class UploadTable implements Comparable<UploadTable>
     /**
      *
      * @param row
-     * @param useExportedData
+     * @param tblAndAncestorsUnchanged
      * @throws UploaderException
      */
-    protected void writeRow(int row, boolean useExportedData) throws UploaderException {
+    protected void writeRow(int row, boolean tblAndAncestorsUnchanged) throws UploaderException {
     	wbCurrentRow = row;
         for (int i = 0; i < matchCountForCurrentRow.length; i++) {
         	matchCountForCurrentRow[i] = 0;
         }
         if (!skipRow) {
-        	writeRowOrNot(false, false, useExportedData);
+        	writeRowOrNot(false, false, tblAndAncestorsUnchanged);
         } else {
         	skipRow = false;
        	}
@@ -5574,10 +5523,10 @@ public class UploadTable implements Comparable<UploadTable>
      *
      * @param doNotWrite
      * @param skipMatch
-     * @param useExportedData
+     * @param tblAndAncestorsUnchanged
      * @throws UploaderException
      */
-    protected void writeRowOrNot(boolean doNotWrite, boolean skipMatch, boolean useExportedData) throws UploaderException
+    protected void writeRowOrNot(boolean doNotWrite, boolean skipMatch, boolean tblAndAncestorsUnchanged) throws UploaderException
     {
         //int recNum = 0;
         logDebug("writeRowOrNot: " + this.table.getName());
@@ -5586,15 +5535,12 @@ public class UploadTable implements Comparable<UploadTable>
         reusingExportedRec = false;
         //for (Vector<UploadField> seq : uploadFields)
         boolean doSkipMatch;
-        boolean matchRecordIdBackup = this.matchRecordId;
+        boolean useExportedRecord = false;
         if (updateMatches) {
-        	doSkipMatch = skipMatch;
-        	if ((useExportedData || exportedRecordId != null)&& !this.matchRecordId) {
-        	    this.matchRecordId = true;
+        	if (exportedRecordId != null) {
+        	    useExportedRecord = true;
             }
-        	if (this.matchRecordId) {
-        		doSkipMatch = false;
-        	}
+            doSkipMatch = useExportedRecord;
         } else {
         	doSkipMatch = skipMatch || isMatchChild() //Bug #9375 don't prevent dup manies in 1-manies. May cause constraint violations for some tables.
             		|| (this.table.getTableInfo() != null && this.table.getTableInfo().getTableId() == 1 && this == uploader.getRootTable());
@@ -5607,11 +5553,14 @@ public class UploadTable implements Comparable<UploadTable>
                 }
             	if (needToWrite(recNum)) {
                     if (doSkipMatch || !findMatch(recNum, false, null, null) || updateMatches) {
-                    	if (isSecurityOn && !getWriteTable().getTableInfo().getPermissions().canAdd()) {
+                    	if (useExportedRecord) {
+                    	    setCurrentRecordFromExportedRecord(recNum);
+                        }
+                        if (isSecurityOn && !getWriteTable().getTableInfo().getPermissions().canAdd()) {
                     		throw new UploaderException(String.format(UIRegistry.getResourceString("WB_UPLOAD_NO_ADD_PERMISSION"), getWriteTable().getTableInfo().getTitle()),
                     				UploaderException.ABORT_ROW);
                     	}
-                    	if (!useExportedData) {
+                    	if (!tblAndAncestorsUnchanged) {
                             Pair<Boolean, DataModelObjBase> recObj = getCurrentRecordForSave(recNum);
                     	    DataModelObjBase rec = recObj.getSecond();
                             boolean isNewRecord = rec.getId() == null;
@@ -5688,7 +5637,6 @@ public class UploadTable implements Comparable<UploadTable>
                 throw new UploaderException(sqEx, UploaderException.ABORT_IMPORT);
             }
         }
-        this.matchRecordId = matchRecordIdBackup;
     }
 
     /**

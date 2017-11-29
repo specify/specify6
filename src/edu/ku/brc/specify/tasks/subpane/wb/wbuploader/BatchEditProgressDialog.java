@@ -143,6 +143,7 @@ public class BatchEditProgressDialog extends JDialog {
         progress.setIndeterminate(false);
         progress.setValue(1);
         progress.setMaximum(countDown.get());
+        progress.setStringPainted(true);
         progress.setString(String.format(UIRegistry.getResourceString("WB_BATCH_EDIT_ROLLBACK_COUNTDOWN"), countDown.get()));
     }
 
@@ -152,7 +153,7 @@ public class BatchEditProgressDialog extends JDialog {
     public synchronized void finishingTouches() {
         desc.setText(String.format(UIRegistry.getResourceString("WB_BATCH_EDIT_DONE_FINISHING")));
         progress.setIndeterminate(true);
-        progress.setString(null);
+        progress.setStringPainted(false);
     }
 
     /**

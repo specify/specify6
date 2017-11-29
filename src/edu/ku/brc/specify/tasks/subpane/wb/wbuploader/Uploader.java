@@ -4392,7 +4392,7 @@ public class Uploader implements ActionListener, KeyListener
                         if (theUploadBatchEditSession != null) {
                             theUploadBatchEditSession.beginTransaction();
                         }
-                        int rowsSinceFlush = 0;
+                        int writesSinceFlush = 0;
                         for (rowUploading = uploadStartRow; rowUploading < uploadData.getRows();) {
                         	boolean rowAborted = false;
                         	if (cancelled) {
@@ -4458,10 +4458,11 @@ public class Uploader implements ActionListener, KeyListener
                             }
                             if (!cancelled) {
                             	rowUploading++;
-                                if (theUploadBatchEditSession != null && rowsSinceFlush++ >= toiletSize) {
+                            	writesSinceFlush += uploadedTablesForCurrentRow.size();
+                                if (theUploadBatchEditSession != null && writesSinceFlush >= toiletSize) {
                                     theUploadBatchEditSession.flush();
                                     theUploadBatchEditSession.clear();
-                                    rowsSinceFlush = 0;
+                                    writesSinceFlush = 0;
                                 }
                             }
                             showUploadProgress(rowUploading, mainPanel.getCurrOpProgress());
@@ -5396,21 +5397,21 @@ public class Uploader implements ActionListener, KeyListener
         boolean uploadedIt = false;
         if (updateTblId == null || tblsWithChanges.size() > 0) {
         	loadRow(t, row);
-        	boolean useExportedRec = false;
+        	boolean tblAndAncestorsUnchanged = false;
             if (tblsWithChanges.size() > 0) {
                 if (tblsWithChanges.indexOf(t) == -1) {
-                    useExportedRec = true;
+                    tblAndAncestorsUnchanged = true;
                     for (UploadTable a : t.getAncestorTables()) {
                         if (tblsWithChanges.indexOf(a) != -1) {
-                            useExportedRec = false;
+                            tblAndAncestorsUnchanged = false;
                             break;
                         }
                     }
                 }
             }
         	try {
-        		writeRow(t, row, useExportedRec);
-        		uploadedIt = !useExportedRec;
+        		writeRow(t, row, tblAndAncestorsUnchanged);
+        		uploadedIt = !tblAndAncestorsUnchanged;
         	}
         	catch (UploaderException ex) {
         		//ex.getCause().printStackTrace();
@@ -5438,12 +5439,14 @@ public class Uploader implements ActionListener, KeyListener
 
     /**
      * @param t
+     * @param row
+     * @param tblAndAncestorsUnchanged
      * @throws UploaderException
      * 
      * writes data (if necessary) for t.
      */
-    protected void writeRow(final UploadTable t, int row, boolean useExportedRec) throws UploaderException {
-        t.writeRow(row, useExportedRec);
+    protected void writeRow(final UploadTable t, int row, boolean tblAndAncestorsUnchanged) throws UploaderException {
+        t.writeRow(row, tblAndAncestorsUnchanged);
         Set<WorkbenchRowImage> imagesToAttach = new HashSet<WorkbenchRowImage>();
         for (int i = imagesForRow.size() -1; i >= 0; i--) {
         	WorkbenchRowImage wri = imagesForRow.get(i);
