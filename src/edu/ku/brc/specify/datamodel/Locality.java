@@ -438,7 +438,7 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
     @Column(name = "OriginalLatLongUnit", unique = false, nullable = true, insertable = true, updatable = true)
     public Integer getOriginalLatLongUnit()
     {
-        return this.originalLatLongUnit == null ? 0 : this.originalLatLongUnit;
+        return this.originalLatLongUnit;
     }
     
     /**

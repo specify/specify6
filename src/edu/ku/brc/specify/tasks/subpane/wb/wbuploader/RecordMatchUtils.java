@@ -1,6 +1,8 @@
 package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 
 import edu.ku.brc.af.core.db.*;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.*;
 import edu.ku.brc.util.Pair;
@@ -93,7 +95,7 @@ public class RecordMatchUtils {
     private static List<Pair<DBTableInfo, DBRelationshipInfo>> getOwnedOneOrManyRelatedTables(DBTableInfo tbl) throws Exception {
         if (tbl.getTableId() != Locality.getClassTableId()) {
             //throw new Exception("getOwnedOneOrManyRelatedTables(): unsupported tbl " + tbl.getName());
-            System.out.println("getOwnedOneOrManyRelatedTables(): dup removal is kind of experimental for " + tbl.getName());
+            //System.out.println("getOwnedOneOrManyRelatedTables(): dup removal is kind of experimental for " + tbl.getName());
         }
         List<Pair<DBTableInfo, DBRelationshipInfo>> result = new ArrayList<>();
         if (tbl.getTableId() == Locality.getClassTableId()) {
@@ -128,16 +130,16 @@ public class RecordMatchUtils {
         return result;
     }
 
-    protected static List<Pair<Pair<DBTableInfo, DBRelationshipInfo>, List<DBInfoBase>>>
+    protected static List<Pair<DBRelationshipInfo, List<DBInfoBase>>>
     getTblsFldsForMatching(List<Pair<DBTableInfo, DBRelationshipInfo>> tbls) {
-        List<Pair<Pair<DBTableInfo, DBRelationshipInfo>, List<DBInfoBase>>> result = new ArrayList<>();
+        List<Pair<DBRelationshipInfo, List<DBInfoBase>>> result = new ArrayList<>();
         for (Pair<DBTableInfo, DBRelationshipInfo> tbl : tbls) {
             List<Pair<Pair<DBTableInfo, DBInfoBase>, Integer>> ughs = getFldsForTbl(tbl, true);
             List<DBInfoBase> ughughs = new ArrayList<>();
             for (Pair<Pair<DBTableInfo, DBInfoBase>, Integer> ugh : ughs) {
                 ughughs.add(ugh.getFirst().getSecond());
             }
-            result.add(new Pair<>(tbl, ughughs));
+            result.add(new Pair<>(tbl.getSecond(), ughughs));
         }
         return result;
     }
@@ -177,7 +179,7 @@ public class RecordMatchUtils {
         int maxR =  forMatching ? 1 : getRepsForTbl(tbl);
         for (int r = 0; r < maxR; r++) {
             for (DBFieldInfo fi : tbl.getFields()) {
-                System.out.println("getFldsForTable: checking " + tbl.getName() + "." + fi.getColumn());
+                //System.out.println("getFldsForTable: checking " + tbl.getName() + "." + fi.getColumn());
                 if (isFldToGet(getType, fi.getColumn()))	{
                     result.add(new Pair<>(new Pair<>(tbl, fi), r));
                 }
@@ -186,7 +188,7 @@ public class RecordMatchUtils {
                 if ((parRel == null || !(parRel.getOtherSide().equals(rel.getName()) && rel.getOtherSide().equals(parRel.getName())))
                         && isRelToGet(getType, rel)
                         && StringUtils.isNotBlank(rel.getColName())) {
-                    System.out.println("getFldsForTable: checking " + tbl.getName() + "." + rel.getColName());
+                    //System.out.println("getFldsForTable: checking " + tbl.getName() + "." + rel.getColName());
                     if (rel.getType().ordinal() == DBRelationshipInfo.RelationshipType.ManyToOne.ordinal() && !rel.getDataClass().getSimpleName().endsWith("Attribute")) {
                         result.add(new Pair<>(new Pair<>(tbl, rel), r));
                     }
@@ -329,19 +331,19 @@ public class RecordMatchUtils {
         return result;
     }
 
-    protected static String getJoinToOwnedChildrenForMatching(final DBTableInfo tbl, final List<Pair<Pair<DBTableInfo, DBRelationshipInfo>, Integer>> tbls) throws Exception {
+    protected static String getJoinToOwnedChildrenForMatching(final DBTableInfo tbl, final List<Pair<DBRelationshipInfo, Integer>> tbls) throws Exception {
         String result = " from " + tbl.getName() + " " + tbl.getAbbrev() + "0";
-        for (Pair<Pair<DBTableInfo, DBRelationshipInfo>, Integer> owned : tbls) {
+        for (Pair<DBRelationshipInfo, Integer> owned : tbls) {
             if (owned.getSecond() > 0) {
-                DBTableInfo info = owned.getFirst().getFirst();
-                DBRelationshipInfo rel = owned.getFirst().getSecond();
+                DBRelationshipInfo rel = owned.getFirst();
                 if (rel != null) {
-                    DBTableInfo other = DBTableIdMgr.getInstance().getByClassName(rel.getClassName());
-                    DBRelationshipInfo otherSide = other.getRelationshipByName(rel.getOtherSide());
-                    String colName = otherSide.getColName() == null ? other.getPrimaryKeyName() : otherSide.getColName();
+                    DBTableInfo info = DBTableIdMgr.getInstance().getByClassName(rel.getClassName());
+                    DBRelationshipInfo otherSide = info.getRelationshipByName(rel.getOtherSide());
+                    String joinToColName = otherSide.getColName() == null ? info.getPrimaryKeyName() : otherSide.getColName();
+                    String joinFromColName = rel.getColName() == null ? tbl.getIdColumnName() : rel.getColName();
                     for (int r = 0; r < owned.getSecond(); r++) {
                         result += " left join " + info.getName() + " " + info.getAbbrev() + r + " on "
-                                + info.getAbbrev() + r + "." + colName + " = " + tbl.getAbbrev() + "0." + tbl.getPrimaryKeyName()
+                                + info.getAbbrev() + r + "." + joinToColName + " = " + tbl.getAbbrev() + "0." + joinFromColName
                                 + getAddlJoinCriteria(info, r);
                     }
                 }
@@ -361,9 +363,9 @@ public class RecordMatchUtils {
         DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByClassName(rec.getClass().getName());
         List<Pair<DBTableInfo, DBRelationshipInfo>> tbls = getOwnedOneOrManyRelatedTables(tblInfo);
         tbls.add(0, new Pair<>(tblInfo, null));
-        List<Pair<Pair<DBTableInfo, DBRelationshipInfo>, List<DBInfoBase>>> flds = getTblsFldsForMatching(tbls);
+        List<Pair<DBRelationshipInfo, List<DBInfoBase>>> flds = getTblsFldsForMatching(tbls);
         StringBuilder condStr = new StringBuilder();
-        Pair<List<Pair<Pair<DBTableInfo, DBRelationshipInfo>, Integer>>, List<String>> joinsAndConds = getSqlConditions(rec, flds, overrides);
+        Pair<List<Pair<DBRelationshipInfo, Integer>>, List<String>> joinsAndConds = getSqlConditions(tblInfo, rec, flds, overrides);
         for (String condition : joinsAndConds.getSecond()) {
             if (condStr.length() > 0) condStr.append(" AND ");
             condStr.append(condition);
@@ -373,32 +375,34 @@ public class RecordMatchUtils {
                 + " where " + condStr;
     }
 
-    protected static Pair<List<Pair<Pair<DBTableInfo, DBRelationshipInfo>, Integer>>, List<String>> getSqlConditions(final DataModelObjBase rec,
-                                                   final List<Pair<Pair<DBTableInfo, DBRelationshipInfo>, List<DBInfoBase>>> flds,
-                                                   final Map<DBInfoBase, Object> overrides)
+    protected static Pair<List<Pair<DBRelationshipInfo, Integer>>, List<String>> getSqlConditions(
+            final DBTableInfo baseTbl,
+            final DataModelObjBase rec,
+            final List<Pair<DBRelationshipInfo, List<DBInfoBase>>> flds,
+            final Map<DBInfoBase, Object> overrides)
             throws InvocationTargetException, IllegalAccessException {
-        List<Pair<Pair<DBTableInfo, DBRelationshipInfo>, Integer>> joinInfo = new ArrayList<>();
+        List<Pair<DBRelationshipInfo, Integer>> joinInfo = new ArrayList<>();
         List<String> conditions = new ArrayList<>();
-        for (Pair<Pair<DBTableInfo, DBRelationshipInfo>, List<DBInfoBase>> tblFlds : flds) {
+        for (Pair<DBRelationshipInfo, List<DBInfoBase>> tblFlds : flds) {
             Pair<Integer, List<String>> subResult =
-                    getSqlConditionsForTbl(getRecsForCondition(rec, tblFlds.getFirst()), tblFlds, overrides);
+                    getSqlConditionsForTbl(baseTbl, getRecsForCondition(rec, tblFlds.getFirst()), tblFlds, overrides);
             joinInfo.add(new Pair<>(tblFlds.getFirst(), subResult.getFirst()));
             conditions.addAll(subResult.getSecond());
         }
         return new Pair<>(joinInfo, conditions);
     }
 
-    protected static List<DataModelObjBase> getRecsForCondition(final DataModelObjBase rec, final Pair<DBTableInfo, DBRelationshipInfo> rel)
+    protected static List<DataModelObjBase> getRecsForCondition(final DataModelObjBase rec, final DBRelationshipInfo rel)
             throws InvocationTargetException, IllegalAccessException {
         List<DataModelObjBase> result = new ArrayList<>();
-        if (rel.getSecond() == null) {
+        if (rel == null) {
             result.add(rec);
         } else {
-            Method getter = getFldGetter(rel.getSecond(), DBTableIdMgr.getInstance().getByClassName(rec.getDataClass().getName()));
+            Method getter = getFldGetter(rel, DBTableIdMgr.getInstance().getByClassName(rec.getDataClass().getName()));
             if (getter != null) {
                 Object invoked = getter.invoke(rec);
                 if (invoked instanceof java.util.Collection) {
-                    if (Comparable.class.isAssignableFrom(rel.getSecond().getDataClass())) {
+                    if (Comparable.class.isAssignableFrom(rel.getDataClass())) {
                         List tmp = new ArrayList((Collection)invoked);
                         Collections.sort(tmp);
                         result.addAll(tmp);
@@ -413,17 +417,17 @@ public class RecordMatchUtils {
         return result;
     }
 
-    protected static Pair<Integer, List<String>> getSqlConditionsForTbl(final List<DataModelObjBase> recs,
-                                                                        final Pair<Pair<DBTableInfo, DBRelationshipInfo>, List<DBInfoBase>> tblFlds,
+    protected static Pair<Integer, List<String>> getSqlConditionsForTbl(final DBTableInfo baseTbl, final List<DataModelObjBase> recs,
+                                                                        final Pair<DBRelationshipInfo, List<DBInfoBase>> tblFlds,
                                                                         final Map<DBInfoBase, Object> overrides)
             throws InvocationTargetException, IllegalAccessException {
         List<String> conditions = new ArrayList<>();
         Integer relatedCount = 0;
-        DBRelationshipInfo rel = tblFlds.getFirst().getSecond();
-        DBTableInfo tbl = tblFlds.getFirst().getFirst();
+        DBRelationshipInfo rel = tblFlds.getFirst();
+        DBTableInfo tbl = rel == null ? baseTbl : DBTableIdMgr.getInstance().getByClassName(rel.getClassName());
         if (recs.size() > 0) {
             if (recs.size() == 1 && recs.get(0) == null) {
-                conditions.add(tbl.getAbbrev() + "0." + rel.getColName() + " is null");
+                conditions.add(baseTbl.getAbbrev() + "0." + rel.getColName() + " is null");
             } else {
                 relatedCount = recs.size();
                 List<DBInfoBase> flds = tblFlds.getSecond();
@@ -439,9 +443,8 @@ public class RecordMatchUtils {
             }
         } else {
             //XXX add something requiring no related recs
-            relatedCount = 1;
-            DBTableInfo relTbl = DBTableIdMgr.getInstance().getByClassName(rel.getClassName());
-            conditions.add(relTbl.getAbbrev() + "0." + relTbl.getIdColumnName() + " is null");
+            relatedCount = 1; //to force a join to the related table.
+            conditions.add(tbl.getAbbrev() + "0." + tbl.getIdColumnName() + " is null");
         }
         return new Pair<>(relatedCount, conditions);
     }
@@ -522,6 +525,36 @@ public class RecordMatchUtils {
             // actually gets handled via the parentSetters
             return null;
         }
+    }
+
+    public static boolean testRecMatchingForTable(DBTableInfo tbl) {
+        List<Integer> recIds = BasicSQLUtils.queryForInts("select " + tbl.getPrimaryKeyName() + " from " + tbl.getName());
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        boolean result = true;
+        try {
+            for (Integer recId : recIds) {
+                DataModelObjBase rec = (DataModelObjBase)session.get(tbl.getClassObj(), recId);
+                if (rec != null) {
+                    String matchSql = RecordMatchUtils.getMatchingSql(rec, new HashMap<>());
+                    List<Integer> matches = BasicSQLUtils.queryForInts(matchSql);
+                    if (!(matches.size() == 1 && matches.get(0).equals(recId))) {
+                        result = false;
+                        if (matches.indexOf(recId) == -1) {
+                            System.out.println("no match for " + recId + ": " + matches.toString());
+                        } else {
+                            System.out.println("duplicates for " + recId + ": " + matches.toString());
+                        }
+                    }
+                } else {
+                    System.out.println("null record for " + recId + ". What the hell?");
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            session.close();
+        }
+        return result;
     }
 
 }
