@@ -70,25 +70,21 @@ public class UploadResultsQuery implements CustomQueryIFace
      * @param uploadTable
      * @param uploadData
      */
-    public UploadResultsQuery(final CustomQueryListener cql, final UploadTable uploadTable, final UploadData uploadData)
-    {
+    public UploadResultsQuery(final CustomQueryListener cql, final UploadTable uploadTable, final UploadData uploadData) {
         this.customQueryListener = cql;
         this.uploadTable = uploadTable;
         this.uploadData = uploadData;
-        dataObjects = new ArrayList<Object[]>(uploadTable.getUploadedRecs().size());
+        dataObjects = new ArrayList<Object[]>(uploadTable.getUploadedRecTotalCount());
     }
     
     /**
      * 
      */
-    protected void fillRows()
-    {
+    protected void fillRows() {
         Vector<Vector<edu.ku.brc.util.Pair<Integer, Integer>>> indexes = setupFldIdxInfo(uploadTable);
-        if (indexes != null)
-        {
+        if (indexes != null) {
             int row = 0;
-            for (UploadedRecordInfo rec : uploadTable.getUploadedRecs())
-            {
+            for (UploadedRecordInfo rec : uploadTable.getAllUploadedRecords()) {
                 Object[] rowData = new Object[maxFldIdx + 2];
                 rowData[0] = rec.getKey();
                 Vector<edu.ku.brc.util.Pair<Integer, Integer>> index = indexes.get(rec.getSeq());

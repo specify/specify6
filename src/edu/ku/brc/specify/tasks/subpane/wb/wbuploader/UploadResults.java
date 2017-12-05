@@ -88,7 +88,7 @@ public class UploadResults implements QueryForIdResultsIFace
      */
     public int getUploadedRecCount()
     {
-        return uploadTable.getUploadedRecs().size();
+        return uploadTable.getUploadedRecTotalCount();
     }
     
     /* (non-Javadoc)
@@ -197,9 +197,11 @@ public class UploadResults implements QueryForIdResultsIFace
      */
     protected void buildRecIds()
     {
-        recIds = new Vector<Integer>(uploadTable.getUploadedRecs().size());
-        for (UploadedRecordInfo rec : uploadTable.getUploadedRecs())
-        {
+        recIds = new Vector<Integer>(uploadTable.getUploadedRecTotalCount());
+        for (UploadedRecordInfo rec : uploadTable.getUploadedRecs().getFirst()) {
+            recIds.add(rec.getKey());
+        }
+        for (UploadedRecordInfo rec : uploadTable.getUploadedRecs().getSecond()) {
             recIds.add(rec.getKey());
         }
     }

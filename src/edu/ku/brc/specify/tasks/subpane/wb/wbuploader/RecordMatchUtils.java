@@ -6,6 +6,7 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.*;
 import edu.ku.brc.util.Pair;
+import org.aopalliance.intercept.Invocation;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -434,8 +435,8 @@ public class RecordMatchUtils {
                 int seq = 0;
                 for (DataModelObjBase rec : recs) {
                     for (DBInfoBase obj : flds) {
-                        Object override = overrides.get(obj);
-                        Object val = override != null ? override : getValueForFld(obj, rec, tbl);
+                        boolean doOverride = overrides.containsKey(obj);
+                        Object val = doOverride  ? overrides.get(obj) : getValueForFld(obj, rec, tbl);
                         conditions.add(getSQLCondition(obj, val, tbl, seq));
                     }
                     seq++;
@@ -527,7 +528,24 @@ public class RecordMatchUtils {
         }
     }
 
-    public static boolean testRecMatchingForTable(DBTableInfo tbl) {
+
+    protected static HashMap<DBInfoBase, Object> getOverridesFromRecVals(final DBTableInfo tbl, final DataModelObjBase rec)
+            throws InvocationTargetException, IllegalAccessException {
+        HashMap<DBInfoBase, Object> result = new HashMap<>();
+        for (DBFieldInfo fld : tbl.getFields()) {
+            if (isFldToGet(GET_USER, fld.getColumn())) {
+                result.put(fld, getValueForFld(fld, rec, tbl));
+            }
+        }
+        for (DBRelationshipInfo rel : tbl.getRelationships()) {
+            if (isRelToGet(GET_USER, rel)) {
+                result.put(rel, getValueForFld(rel, rec, tbl));
+            }
+        }
+        return result;
+    }
+
+    public static boolean testRecMatchingForTable(DBTableInfo tbl, boolean reportDuplicates, boolean createOverrides) {
         List<Integer> recIds = BasicSQLUtils.queryForInts("select " + tbl.getPrimaryKeyName() + " from " + tbl.getName());
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         boolean result = true;
@@ -535,13 +553,14 @@ public class RecordMatchUtils {
             for (Integer recId : recIds) {
                 DataModelObjBase rec = (DataModelObjBase)session.get(tbl.getClassObj(), recId);
                 if (rec != null) {
-                    String matchSql = RecordMatchUtils.getMatchingSql(rec, new HashMap<>());
+                    String matchSql = RecordMatchUtils.getMatchingSql(rec, createOverrides ? getOverridesFromRecVals(tbl, rec) : new HashMap<>());
                     List<Integer> matches = BasicSQLUtils.queryForInts(matchSql);
                     if (!(matches.size() == 1 && matches.get(0).equals(recId))) {
-                        result = false;
                         if (matches.indexOf(recId) == -1) {
+                            result = false;
                             System.out.println("no match for " + recId + ": " + matches.toString());
-                        } else {
+                        } else if (reportDuplicates) {
+                            result = false;
                             System.out.println("duplicates for " + recId + ": " + matches.toString());
                         }
                     }

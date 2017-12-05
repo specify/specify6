@@ -31,11 +31,9 @@ import edu.ku.brc.util.Pair;
  *
  */
 @SuppressWarnings("serial")
-public class UploadedRecordInfo extends Pair<Integer, Integer> implements Comparable<UploadedRecordInfo>
-{
+public class UploadedRecordInfo extends Pair<Integer, Integer> implements Comparable<UploadedRecordInfo> {
     protected final int seq;
     protected final Object autoAssignedVal; //value of auto-assigned field for the record. (Assuming there will never be more than one)
-    protected final Boolean isUpdate;
     protected final DataModelObjBase originalData;
     protected final String tblName;
     
@@ -44,18 +42,15 @@ public class UploadedRecordInfo extends Pair<Integer, Integer> implements Compar
      * @param wbRow
      * @param seq
      */
-    public UploadedRecordInfo(final Integer key, final Integer wbRow, final int seq, final Object autoAssignedVal)
-    {
+    public UploadedRecordInfo(final Integer key, final Integer wbRow, final int seq, final Object autoAssignedVal)  {
         this(key, wbRow, seq, autoAssignedVal, false, null, null);
     }
     
     public UploadedRecordInfo(final Integer key, final Integer wbRow, final int seq, final Object autoAssignedVal, final boolean isUpdate, 
-    		final DataModelObjBase originalData, final String tblName)
-    {
+    		final DataModelObjBase originalData, final String tblName) {
         super(key, wbRow);
         this.seq = seq;
         this.autoAssignedVal = autoAssignedVal;
-        this.isUpdate = isUpdate;
         this.originalData = originalData;
         this.tblName = tblName;
     }
@@ -94,27 +89,19 @@ public class UploadedRecordInfo extends Pair<Integer, Integer> implements Compar
     }
 
     
-    /**
-	 * @return the isUpdate
-	 */
-	public Boolean getIsUpdate() {
-		return isUpdate;
-	}
 
 	/* (non-Javadoc)
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
     //@Override
-    public int compareTo(UploadedRecordInfo o)
-    {
-        //return getKey().compareTo(o.getKey());
-    	int result = getIsUpdate().compareTo(o.getIsUpdate());
-    	if (result == 0 && getWbRow() != null && o.getWbRow() != null)
-    	{
-    		result = getWbRow().compareTo(o.getWbRow());
-    	}
-        if (result == 0 && getKey() != null && o.getKey() != null)
-        {
+    public int compareTo(UploadedRecordInfo o) {
+        if (this.equals(o)) {
+            return 0;
+        }
+        int result = 0;
+        if (getWbRow() != null) {
+            result =  getWbRow().compareTo(o.getWbRow());
+        } if (result == 0 && getKey() != null) {
             result = getKey().compareTo(o.getKey());
         }
         return result;
@@ -124,18 +111,16 @@ public class UploadedRecordInfo extends Pair<Integer, Integer> implements Compar
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
-    public boolean equals(Object obj)
-    {
-        UploadedRecordInfo otherObj = (UploadedRecordInfo )obj;
-    	if (getKey() != null && otherObj.getKey() != null)
-    	{
-    		return getKey().intValue() == otherObj.getKey().intValue();
-    	}
-    	if (getKey() == null && otherObj.getKey() == null)
-    	{
-    		return getWbRow().equals(otherObj.getWbRow());
-    	}
-    	return false;
+    public boolean equals(Object obj) {
+        UploadedRecordInfo o = (UploadedRecordInfo )obj;
+        boolean result = true;
+        if (getWbRow() != null) {
+            result = getWbRow().equals(o.getWbRow());
+        }
+        if (result && getKey() != null) {
+            result = getKey().equals(o.getKey());
+        }
+        return result;
     }
 
 	/**

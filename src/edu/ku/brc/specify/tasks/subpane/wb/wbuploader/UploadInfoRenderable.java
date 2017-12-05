@@ -25,6 +25,7 @@ import java.util.SortedSet;
 import java.util.Vector;
 
 import edu.ku.brc.af.core.expresssearch.TableNameRendererIFace;
+import edu.ku.brc.util.Pair;
 
 public class UploadInfoRenderable implements TableNameRendererIFace, Comparable<UploadInfoRenderable>
 {
@@ -37,16 +38,13 @@ public class UploadInfoRenderable implements TableNameRendererIFace, Comparable<
     UploadedRecordInfo dummy = new UploadedRecordInfo(null, null, -1, null, true, null, null); 
     protected Vector<UploadTable> myTables;
     
-    protected void refresh()
-    {
+    protected void refresh() {
         updatedCnt = 0;
         createdCnt = 0;
-    	for (UploadTable ut : myTables)
-        {
-            SortedSet<UploadedRecordInfo> ups = ut.getUploadedRecs();
-            int updates = ups.headSet(dummy).size();
-        	createdCnt += updates;
-        	updatedCnt += ups.size() - updates;
+    	for (UploadTable ut : myTables) {
+            Pair<Integer, Integer> stats = ut.getUploadedRecStats();
+        	createdCnt += stats.getSecond();
+        	updatedCnt += stats.getFirst();
         }
 
     }

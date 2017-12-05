@@ -905,7 +905,7 @@ protected List<java.lang.reflect.Field> getFldsForJSON() {
     	    return false;
         }
 
-        if (uploadedRecs.size() > 0) {
+        if (uploadedRecs.getFirst().size() > 0 || uploadedRecs.getSecond().size() > 0) {
     		return true;
     	}
     	

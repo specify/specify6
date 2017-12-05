@@ -3339,7 +3339,7 @@ public class Uploader implements ActionListener, KeyListener
         {
             //NOTE the uploadedRecs structure in UploadTable is cleared at the beginning up each upload,
         	//after an undo, uploadedRecs will still contain the records that were 'undone'.
-            result += ut.getUploadedRecs().size();
+            result += ut.getUploadedRecTotalCount();
         }
         return result;
     }
@@ -4322,7 +4322,9 @@ public class Uploader implements ActionListener, KeyListener
                  * 
                  */
                 protected void setExportedRecordIds() throws Exception {
-                	DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+                	DataProviderSessionIFace session = theUploadBatchEditSession != null
+                            ? theUploadBatchEditSession
+                            : DataProviderFactory.getInstance().createSession();
                 	Class<?> cls = DBTableIdMgr.getInstance().getInfoById(updateTblId).getClassObj();
                 	try {
                 		DataModelObjBase obj = (DataModelObjBase )session.get(cls, getRowRecordId(rowUploading));
@@ -4331,7 +4333,9 @@ public class Uploader implements ActionListener, KeyListener
                 		}
                 		exportedTable.setExportedRecordId(obj);
                 	} finally {
-                		session.close();
+                	    if (theUploadBatchEditSession == null) {
+                            session.close();
+                        }
                 	}
                 	
                 }
@@ -4385,7 +4389,6 @@ public class Uploader implements ActionListener, KeyListener
                             theUploadBatchEditSession.beginTransaction();
                         }
                         int writesSinceFlush = 0;
-                        String recSql = RecordMatchUtils.getDistinctRecSql(DBTableIdMgr.getInstance().getByShortClassName("CollectingEvent"), false, true, 3);
                         for (rowUploading = uploadStartRow; rowUploading < uploadData.getRows();) {
                         	boolean rowAborted = false;
                         	if (cancelled) {
@@ -4466,6 +4469,7 @@ public class Uploader implements ActionListener, KeyListener
                     }
                     catch (Exception ex) {
                         setOpKiller(ex);
+                        ex.printStackTrace();
                         crashed = true;
                     }
                     success = !crashed && (!cancelled || (cancelled && paused));
@@ -4917,8 +4921,8 @@ public class Uploader implements ActionListener, KeyListener
 		for (UploadTable t : uploadTables) {
 			if (t.isCheckMatchInfo() && !t.isSkipMatching()) {
 				Integer[] mCount = t.getMatchCountForCurrentRow();
-				SortedSet<UploadedRecordInfo> urs = t.getUploadedRecs() == null || t.getUploadedRecs().size() == 0 ? 
-						new TreeSet<UploadedRecordInfo>() : t.getUploadedRecs().tailSet(new UploadedRecordInfo(null, rowUploading, 0, null));
+				SortedSet<UploadedRecordInfo> urs = t.getUploadedRecs().getSecond() == null || t.getUploadedRecs().getSecond().size() == 0 ?
+						new TreeSet<>() : t.getUploadedRecs().getSecond().tailSet(new UploadedRecordInfo(null, rowUploading, 0, null));
 				if (urs.size() == 0) {
 					urs.add(new UploadedRecordInfo(null, rowUploading, 0, null));
 				}
