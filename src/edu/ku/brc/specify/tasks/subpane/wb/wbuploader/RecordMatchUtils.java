@@ -6,7 +6,6 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.*;
 import edu.ku.brc.util.Pair;
-import org.aopalliance.intercept.Invocation;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -18,20 +17,20 @@ import java.util.Collection;
 public class RecordMatchUtils {
     protected static final Logger log = Logger.getLogger(UploadTable.class);
 
-    protected static String[] systemFldNames = {"TimestampCreated", "TimestampModified", "Version", "Lat1Text", "Lat2Text",
+    private static String[] systemFldNames = {"TimestampCreated", "TimestampModified", "Version", "Lat1Text", "Lat2Text",
             "Long1Text", "Long2Text", "ModifiedByAgentID", "CreatedByAgentID", "GUID"
     };
 
-    public static final int GET_ALL = 0;
-    public static final int GET_USER = 1;
-    public static final int GET_SYS = 2;
+    private static final int GET_ALL = 0;
+    private static final int GET_USER = 1;
+    private static final int GET_SYS = 2;
 
     /**
      *
      * @param column
      * @return
      */
-    protected static boolean isUserFld(final String column) {
+    private static boolean isUserFld(final String column) {
         for (String systemFldName : systemFldNames) {
             if (systemFldName.equalsIgnoreCase(column)) {
                 return false;
@@ -45,12 +44,8 @@ public class RecordMatchUtils {
      * @param rel
      * @return
      */
-    protected static boolean isSystemRel(DBRelationshipInfo rel) {
-        if (rel.getClassName().equals("edu.ku.brc.specify.datamodel.Agent")) {
-            return "CreatedByAgentID".equalsIgnoreCase(rel.getColName()) || "ModifiedByAgentID".equalsIgnoreCase(rel.getColName());
-        } else {
-            return false;
-        }
+    private static boolean isSystemRel(DBRelationshipInfo rel) {
+        return rel.getClassName().equals("edu.ku.brc.specify.datamodel.Agent") && ("CreatedByAgentID".equalsIgnoreCase(rel.getColName()) || "ModifiedByAgentID".equalsIgnoreCase(rel.getColName()));
     }
 
     /**
@@ -58,15 +53,13 @@ public class RecordMatchUtils {
      * @param fld
      * @return
      */
-    protected static boolean isFldToGet(int getType, String fld) {
+    private static boolean isFldToGet(int getType, String fld) {
         if (getType == GET_ALL) {
             return true;
         } else if (getType == GET_USER) {
             return isUserFld(fld);
-        } else if (getType == GET_SYS) {
-            return !isUserFld(fld);
         } else {
-            return false;
+            return getType == GET_SYS && !isUserFld(fld);
         }
     }
 
@@ -75,7 +68,7 @@ public class RecordMatchUtils {
      * @param rel
      * @return
      */
-    protected static boolean isRelToGet(int getType, DBRelationshipInfo rel) {
+    private static boolean isRelToGet(int getType, DBRelationshipInfo rel) {
         if (getType == GET_ALL) {
             return true;
         } else if (getType == GET_USER) {
@@ -123,7 +116,7 @@ public class RecordMatchUtils {
      * @param tbls
      * @return
      */
-    protected static List<Pair<Pair<DBTableInfo, DBInfoBase>, Integer>> getTblsFlds(List<Pair<DBTableInfo, DBRelationshipInfo>> tbls) {
+    private static List<Pair<Pair<DBTableInfo, DBInfoBase>, Integer>> getTblsFlds(List<Pair<DBTableInfo, DBRelationshipInfo>> tbls) {
         List<Pair<Pair<DBTableInfo, DBInfoBase>, Integer>> result = new ArrayList<>();
         for (Pair<DBTableInfo, DBRelationshipInfo> tbl : tbls) {
             result.addAll(getFldsForTbl(tbl, false));
@@ -131,7 +124,12 @@ public class RecordMatchUtils {
         return result;
     }
 
-    protected static List<Pair<DBRelationshipInfo, List<DBInfoBase>>>
+    /**
+     *
+     * @param tbls
+     * @return
+     */
+    private static List<Pair<DBRelationshipInfo, List<DBInfoBase>>>
     getTblsFldsForMatching(List<Pair<DBTableInfo, DBRelationshipInfo>> tbls) {
         List<Pair<DBRelationshipInfo, List<DBInfoBase>>> result = new ArrayList<>();
         for (Pair<DBTableInfo, DBRelationshipInfo> tbl : tbls) {
@@ -150,7 +148,7 @@ public class RecordMatchUtils {
      * @param info
      * @return
      */
-    protected static List<Pair<Pair<DBTableInfo, DBInfoBase>, Integer>> getFldsForTbl(Pair<DBTableInfo, DBRelationshipInfo> info, boolean forMatching) {
+    private static List<Pair<Pair<DBTableInfo, DBInfoBase>, Integer>> getFldsForTbl(Pair<DBTableInfo, DBRelationshipInfo> info, boolean forMatching) {
         return getFldsForTbl(info, GET_USER, forMatching);
     }
 
@@ -159,7 +157,7 @@ public class RecordMatchUtils {
      * @param tbl
      * @return
      */
-    protected static int getRepsForTbl(DBTableInfo tbl) {
+    private static int getRepsForTbl(DBTableInfo tbl) {
         if ("collector".equalsIgnoreCase(tbl.getName())) {
             return 4;
         } else {
@@ -172,7 +170,7 @@ public class RecordMatchUtils {
      * @param getType
      * @return
      */
-    protected static List<Pair<Pair<DBTableInfo, DBInfoBase>, Integer>> getFldsForTbl(Pair<DBTableInfo, DBRelationshipInfo> info, int getType, boolean forMatching) {
+    private static List<Pair<Pair<DBTableInfo, DBInfoBase>, Integer>> getFldsForTbl(Pair<DBTableInfo, DBRelationshipInfo> info, int getType, boolean forMatching) {
         List<Pair<Pair<DBTableInfo, DBInfoBase>, Integer>> result = new ArrayList<>();
         DBTableInfo tbl = info.getFirst();
         DBRelationshipInfo parRel = info.getSecond();
@@ -207,7 +205,7 @@ public class RecordMatchUtils {
      * @return
      * @throws Exception
      */
-    protected static String getDbObjName(Pair<DBTableInfo, DBInfoBase> dbObj, boolean includeTblAbbrev, Integer seq) throws Exception {
+    private static String getDbObjName(Pair<DBTableInfo, DBInfoBase> dbObj, boolean includeTblAbbrev, Integer seq) throws Exception {
         String result;
         if (dbObj.getSecond() instanceof DBFieldInfo) {
             result = (includeTblAbbrev ? dbObj.getFirst().getAbbrev() + (seq == null ? "" : seq) + "." : "") + ((DBFieldInfo)dbObj.getSecond()).getColumn();
@@ -228,7 +226,7 @@ public class RecordMatchUtils {
      * @return
      * @throws Exception
      */
-    protected static String getSqlFldsClause(List<Pair<Pair<DBTableInfo, DBInfoBase>, Integer>> dbObjs) throws Exception {
+    private static String getSqlFldsClause(List<Pair<Pair<DBTableInfo, DBInfoBase>, Integer>> dbObjs) throws Exception {
         String result = "";
         boolean comma = false;
         for (Pair<Pair<DBTableInfo, DBInfoBase>, Integer> dbObj : dbObjs) {
@@ -332,7 +330,14 @@ public class RecordMatchUtils {
         return result;
     }
 
-    protected static String getJoinToOwnedChildrenForMatching(final DBTableInfo tbl, final List<Pair<DBRelationshipInfo, Integer>> tbls) throws Exception {
+    /**
+     *
+     * @param tbl
+     * @param tbls
+     * @return
+     * @throws Exception
+     */
+    private static String getJoinToOwnedChildrenForMatching(final DBTableInfo tbl, final List<Pair<DBRelationshipInfo, Integer>> tbls) throws Exception {
         String result = " from " + tbl.getName() + " " + tbl.getAbbrev() + "0";
         for (Pair<DBRelationshipInfo, Integer> owned : tbls) {
             if (owned.getSecond() > 0) {
@@ -359,7 +364,7 @@ public class RecordMatchUtils {
      * @return
      * @throws Exception
      */
-    protected static String getMatchingSql(final DataModelObjBase rec,
+    public static String getMatchingSql(final DataModelObjBase rec,
                                            final Map<DBInfoBase, Object> overrides) throws Exception {
         DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByClassName(rec.getClass().getName());
         List<Pair<DBTableInfo, DBRelationshipInfo>> tbls = getOwnedOneOrManyRelatedTables(tblInfo);
@@ -376,7 +381,17 @@ public class RecordMatchUtils {
                 + " where " + condStr;
     }
 
-    protected static Pair<List<Pair<DBRelationshipInfo, Integer>>, List<String>> getSqlConditions(
+    /**
+     *
+     * @param baseTbl
+     * @param rec
+     * @param flds
+     * @param overrides
+     * @return
+     * @throws InvocationTargetException
+     * @throws IllegalAccessException
+     */
+    private static Pair<List<Pair<DBRelationshipInfo, Integer>>, List<String>> getSqlConditions(
             final DBTableInfo baseTbl,
             final DataModelObjBase rec,
             final List<Pair<DBRelationshipInfo, List<DBInfoBase>>> flds,
@@ -393,7 +408,15 @@ public class RecordMatchUtils {
         return new Pair<>(joinInfo, conditions);
     }
 
-    protected static List<DataModelObjBase> getRecsForCondition(final DataModelObjBase rec, final DBRelationshipInfo rel)
+    /**
+     *
+     * @param rec
+     * @param rel
+     * @return
+     * @throws InvocationTargetException
+     * @throws IllegalAccessException
+     */
+    private static List<DataModelObjBase> getRecsForCondition(final DataModelObjBase rec, final DBRelationshipInfo rel)
             throws InvocationTargetException, IllegalAccessException {
         List<DataModelObjBase> result = new ArrayList<>();
         if (rel == null) {
@@ -418,7 +441,17 @@ public class RecordMatchUtils {
         return result;
     }
 
-    protected static Pair<Integer, List<String>> getSqlConditionsForTbl(final DBTableInfo baseTbl, final List<DataModelObjBase> recs,
+    /**
+     *
+     * @param baseTbl
+     * @param recs
+     * @param tblFlds
+     * @param overrides
+     * @return
+     * @throws InvocationTargetException
+     * @throws IllegalAccessException
+     */
+    private static Pair<Integer, List<String>> getSqlConditionsForTbl(final DBTableInfo baseTbl, final List<DataModelObjBase> recs,
                                                                         final Pair<DBRelationshipInfo, List<DBInfoBase>> tblFlds,
                                                                         final Map<DBInfoBase, Object> overrides)
             throws InvocationTargetException, IllegalAccessException {
@@ -450,18 +483,45 @@ public class RecordMatchUtils {
         return new Pair<>(relatedCount, conditions);
     }
 
-    protected static String getSQLCondition(final DBInfoBase fld, final Object val, final DBTableInfo tbl, final Integer seq)
+    /**
+     *
+     * @param fld
+     * @param val
+     * @param tbl
+     * @param seq
+     * @return
+     * @throws InvocationTargetException
+     * @throws IllegalAccessException
+     */
+    private static String getSQLCondition(final DBInfoBase fld, final Object val, final DBTableInfo tbl, final Integer seq)
             throws InvocationTargetException, IllegalAccessException {
         return getSQLForVal(fld, val, tbl, seq);
     }
 
-    protected static String getSQLForVal(final DBInfoBase fld, final Object val, final DBTableInfo tbl, final Integer seq) {
+    /**
+     *
+     * @param fld
+     * @param val
+     * @param tbl
+     * @param seq
+     * @return
+     */
+    private static String getSQLForVal(final DBInfoBase fld, final Object val, final DBTableInfo tbl, final Integer seq) {
         String name = fld instanceof DBFieldInfo ? ((DBFieldInfo)fld).getColumn() : ((DBRelationshipInfo)fld).getColName();
         Object valStr = val instanceof DataModelObjBase ? ((DataModelObjBase)val).getId() : BasicSQLUtils.getStrValue(val);
         return tbl.getAbbrev() + seq + "." + name + (val == null ? " is null" : " = " + valStr);
     }
 
-    protected static Object getValueForFld(final DBInfoBase fld, final DataModelObjBase rec, final DBTableInfo tbl)
+    /**
+     *
+     * @param fld
+     * @param rec
+     * @param tbl
+     * @return
+     * @throws InvocationTargetException
+     * @throws IllegalAccessException
+     */
+    private static Object getValueForFld(final DBInfoBase fld, final DataModelObjBase rec, final DBTableInfo tbl)
             throws InvocationTargetException, IllegalAccessException {
         Method getter = getFldGetter(fld, tbl);
         if (getter != null) {
@@ -515,7 +575,7 @@ public class RecordMatchUtils {
      * @param fld
      * @return the setter for fld, if it exists.
      */
-    protected static Method getFldGetter(final DBInfoBase fld, final DBTableInfo tbl) {
+    private static Method getFldGetter(final DBInfoBase fld, final DBTableInfo tbl) {
         Class<?> tblClass = tbl.getClassObj();
         String methName = "get" + UploadTable.capitalize(fld.getName());
         try {
@@ -529,7 +589,15 @@ public class RecordMatchUtils {
     }
 
 
-    protected static HashMap<DBInfoBase, Object> getOverridesFromRecVals(final DBTableInfo tbl, final DataModelObjBase rec)
+    /**
+     *
+     * @param tbl
+     * @param rec
+     * @return
+     * @throws InvocationTargetException
+     * @throws IllegalAccessException
+     */
+    private static HashMap<DBInfoBase, Object> getOverridesFromRecVals(final DBTableInfo tbl, final DataModelObjBase rec)
             throws InvocationTargetException, IllegalAccessException {
         HashMap<DBInfoBase, Object> result = new HashMap<>();
         for (DBFieldInfo fld : tbl.getFields()) {
@@ -545,6 +613,13 @@ public class RecordMatchUtils {
         return result;
     }
 
+    /**
+     *
+     * @param tbl
+     * @param reportDuplicates
+     * @param createOverrides
+     * @return
+     */
     public static boolean testRecMatchingForTable(DBTableInfo tbl, boolean reportDuplicates, boolean createOverrides) {
         List<Integer> recIds = BasicSQLUtils.queryForInts("select " + tbl.getPrimaryKeyName() + " from " + tbl.getName());
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
