@@ -3858,6 +3858,16 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     }
 
     /**
+     *
+     * @param f
+     * @return
+     */
+    private boolean isNumericDatePart(SpQueryField f) {
+        String[] chunks = f.getStringId().split("\\.");
+        String lastChunk = chunks[chunks.length-1];
+        return lastChunk.replace(f.getFieldName(), "").startsWith("Numeric");
+    }
+    /**
      * @param f
      * @param tblMgr
      * @param uploadDefs
@@ -3868,6 +3878,9 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                                                                     final Map<String, List<Element>> defMap) {
     	if (f.getIsRelFld()) {
     	    return getQueryRelFldWBMapping(f, tblMgr, defMap);
+        }
+        if (isNumericDatePart(f)) {
+    	    return null;
         }
 
         String[] tblIdList = f.getTableList().split(",");
@@ -3885,7 +3898,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 if (tblName.equalsIgnoreCase(actualtable)) {
                     DBTableInfo ti = tblMgr.getInfoByTableName(table.toLowerCase());
                     if (ti != null) {
-                        return new Pair<DBTableInfo, DBFieldInfo>(ti, ti.getFieldByName(field));
+                        return new Pair<>(ti, ti.getFieldByName(field));
                     }
                 }
 
@@ -3896,7 +3909,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         if (ti != null) {
             DBFieldInfo fi = ti.getFieldByColumnName(f.getFieldName());
             if (fi != null) {
-                return new Pair<DBTableInfo, DBFieldInfo>(ti, fi);
+                return new Pair<>(ti, fi);
             }
         }
         return null;
@@ -3934,8 +3947,8 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
      * @return
      */
     protected Pair<List<Pair<SpQueryField, Pair<DBTableInfo, DBFieldInfo>>>, List<SpQueryField>> getQueryWBMappings(final SpQuery query, final DBTableIdMgr tblMgr) throws Exception {
-    	List<Pair<SpQueryField,Pair<DBTableInfo, DBFieldInfo>>> fldMappings = new ArrayList<Pair<SpQueryField, Pair<DBTableInfo, DBFieldInfo>>>();
-    	List<SpQueryField> unMappedFlds = new ArrayList<SpQueryField>();
+    	List<Pair<SpQueryField,Pair<DBTableInfo, DBFieldInfo>>> fldMappings = new ArrayList<>();
+    	List<SpQueryField> unMappedFlds = new ArrayList<>();
         Element uploadDefs = null;
         //XXX not sure how customized schemas will go with updates???
         if (WorkbenchTask.isCustomizedSchema()) {
@@ -3947,14 +3960,10 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     	for (SpQueryField f : query.getFields()) {
     		if (f.getIsDisplay()) {
                 Pair<DBTableInfo, DBFieldInfo> fi = getQueryFldWBMapping(f, tblMgr, defMap);
-                //if (fi == null) {
-                //    unMappedFlds.add(f);
-               // } else {
-                    fldMappings.add(new Pair<SpQueryField, Pair<DBTableInfo, DBFieldInfo>>(f, fi));
-                //}
+                fldMappings.add(new Pair<>(f, fi));
             }
     	}
-    	return new Pair<List<Pair<SpQueryField, Pair<DBTableInfo, DBFieldInfo>>>, List<SpQueryField>>(fldMappings, unMappedFlds);
+    	return new Pair<>(fldMappings, unMappedFlds);
     }
     
     /**
