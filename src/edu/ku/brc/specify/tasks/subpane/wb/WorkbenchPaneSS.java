@@ -578,6 +578,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                 }
             });
             selectionSensitiveButtons.add(clearCellsBtn);
+            clearCellsBtn.setVisible(!isForBatchEdit);
         }
         
         Action addAction = addRecordKeyMappings(spreadSheet, KeyEvent.VK_N, "AddRow", new AbstractAction()
