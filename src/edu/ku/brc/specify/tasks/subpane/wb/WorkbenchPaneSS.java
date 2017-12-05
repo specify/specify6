@@ -994,6 +994,8 @@ public class WorkbenchPaneSS extends BaseSubPane
         JLabel sep1 = new JLabel(IconManager.getIcon("Separator"));
         JLabel sep2 = new JLabel(IconManager.getIcon("Separator"));
         ssFormSwitcher = createSwitcher();
+        ssFormSwitcher.setVisible(!isForBatchEdit);
+        sep2.setVisible(ssFormSwitcher.isVisible());
         
         // This works
         setLayout(new BorderLayout());
@@ -4607,7 +4609,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             mainPanel.validate();
             mainPanel.doLayout();
         }
-        ssFormSwitcher.setEnabled(true);
+        ssFormSwitcher.setEnabled(true && !isUpdateDataSet());
         spreadSheet.setEnabled(true);
         setToolBarBtnsEnabled(true);
         if (restoreUploadToolPanel) {
