@@ -949,7 +949,7 @@ protected List<java.lang.reflect.Field> getFldsForJSON() {
         			if (theSession == null) {
         				getTreeDef().updateAllNodes((DataModelObjBase)getTreeRoot(), true, false);
         			} else {
-        				getTreeDef().updateAllNodes((DataModelObjBase)getTreeRoot(), false, true, true, false, theSession);
+        				getTreeDef().updateAllNodes((DataModelObjBase)getTreeRoot(), shouldShowProgressForNodeUpdate(), true, true, false, theSession);
         			}
         		} catch (Exception ex) {
         			if (ex instanceof UploaderException) 
@@ -962,6 +962,15 @@ protected List<java.lang.reflect.Field> getFldsForJSON() {
         }
     }
 
+    /**
+     *
+     * @return
+     */
+    private boolean shouldShowProgressForNodeUpdate() {
+        //this may need to be changed if seven uses sp6 for update uploads
+        //return updateMatches;
+        return false;
+    }
     
     /* (non-Javadoc)
 	 * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#finishUndoUpload()
