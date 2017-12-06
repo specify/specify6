@@ -1050,22 +1050,18 @@ public class UploadTable implements Comparable<UploadTable>
      * @param recNum
      * @return true if record is not empty and required data is present.
      */
-    protected boolean dataToWrite(int recNum)
-    {
+    protected boolean dataToWrite(int recNum) {
         int index = uploadFields.size() > 1 ? recNum : 0;
         boolean result = false;
-        for (UploadField f : uploadFields.get(index))
-        {
-            if (!ignoreFieldData(f))
-            {
+        for (UploadField f : uploadFields.get(index)) {
+            if (!ignoreFieldData(f)) {
             	String val = f.getValue();
             	if (val != null) {
             		val = val.trim();
             	}
             	if (StringUtils.isNotEmpty(val) || f == autoAssignedField 
             			//|| (autoAssignedField == null && f.isAutoAssignable())
-            			)
-            	{
+            			) {
             		result = true;
             		break;
             	}
@@ -1647,6 +1643,52 @@ public class UploadTable implements Comparable<UploadTable>
         }
     }
 
+
+    /**
+     *
+     * @param recNum
+     * @return
+     * @throws InvocationTargetException
+     * @throws IllegalArgumentException
+     * @throws IllegalAccessException
+     * @throws UploaderException
+     */
+    protected Map<DBInfoBase, Object> getParentOverridesForExportedRecMatching(int recNum) throws InvocationTargetException,
+            IllegalArgumentException, IllegalAccessException, UploaderException {
+        HashMap<DBInfoBase, Object> result = new HashMap<>();
+        if (parentTables != null && parentTables.size() > 0) {
+            for (ParentTableEntry pt : parentTables.get(Math.min(parentTables.size() - 1, recNum))) {
+                if (!updateMatches || uploader.getUploadedTablesForCurrentRow().indexOf(pt.getImportTable()) != -1) {
+                    Object arg[] = new Object[1];
+                    DataModelObjBase parentRec = pt.getImportTable().getParentRecord(recNum, this);
+                    if (parentRec == null || parentRec.getId() == null) {
+                        arg[0] = null;
+                    } else {
+                        arg[0] = parentRec;
+                    }
+                    if (valueChange(getExportedRecord(), pt.getGetter(), arg)) {
+                        result.put(getRelationshipInfoForMatchingOverride(pt), arg[0]);
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     *
+     * @param pt
+     * @return relationship with same getter as pt, which is good enough for matching override
+     */
+    protected DBRelationshipInfo getRelationshipInfoForMatchingOverride(ParentTableEntry pt) {
+        for (DBRelationshipInfo ri : getTable().getTableInfo().getRelationships()) {
+            if (RecordMatchUtils.getFldGetter(ri, getTable().getTableInfo()).equals(pt.getGetter())) {
+                return ri;
+            }
+        }
+        return null;
+    }
+
     /**
      * @param rec - the record being prepared to write to the database.
      * @param recNum - the 1-many 'sequence' of the record.
@@ -1847,9 +1889,12 @@ public class UploadTable implements Comparable<UploadTable>
     		LatLonConverter.FORMAT frm = getOriginalLatLngUnit();
     		frm = frm == LatLonConverter.FORMAT.None ? LatLonConverter.FORMAT.DDDDDD : frm;
 			LatLonConverter.LATLON ll = isLatFld(ufld) ? LatLonConverter.LATLON.Latitude : LatLonConverter.LATLON.Longitude;
-			String result = LatLonConverter.format((BigDecimal)value, ll, frm, LatLonConverter.DEGREES_FORMAT.None,  
+            BigDecimal dval = (BigDecimal)value;
+			String result = LatLonConverter.format(dval, ll, frm, LatLonConverter.DEGREES_FORMAT.None,
 					LatLonConverter.DECIMAL_SIZES[frm.ordinal()]);
-
+            if (dval.abs() != dval && !result.startsWith("-")) {
+                result = "-" + result;
+            }
     		
     		return result;
     	}
@@ -3242,22 +3287,34 @@ public class UploadTable implements Comparable<UploadTable>
     	return gotIt;	
     }
 
+    /**
+     *
+     * @param matchSql
+     * @param session
+     * @return
+     */
+    protected List<?> queryForInts(final String matchSql, final DataProviderSessionIFace session) {
+        QueryIFace q = session.createQuery(matchSql, true);
+        return q.list();
+    }
+
     protected Pair<Boolean, CriteriaIFace> getUpdateMatchCriteriaFromExportedRecord(final DataProviderSessionIFace session,
                                                                                     final int recNum, Vector<MatchRestriction> restrictedVals,
                                                                                     HashMap<UploadTable, DataModelObjBase> overrideParentParams)
             throws UploaderException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
-        HashMap<DBInfoBase, Object> overrides = new HashMap<>();
+        Map<DBInfoBase, Object> overrides = new HashMap<>();
         for (UploadField uf : uploadFields.get(recNum)) {
             if (isFieldToMatchOn(uf)) {
                 overrides.put(uf.getField().getFieldInfo(), getArgForSetter(uf)[0]);
             }
         }
-        //And what about overriding relationships???
+        overrides.putAll(getParentOverridesForExportedRecMatching(recNum));
 
         try {
             String matchSql = RecordMatchUtils.getMatchingSql(getExportedRecord(), overrides);
-            List<Integer> matches = BasicSQLUtils.queryForInts(matchSql);
-            if (!((matches.size() == 1 && matches.get(0).equals(exportedRecordId)) || matches.size() == 0)) {
+            List<?> matches = matchSql != null ? queryForInts(matchSql, session) : null;
+            if (matches != null
+                    && !((matches.size() == 1 && matches.get(0).equals(exportedRecordId)) || matches.size() == 0)) {
                 CriteriaIFace critter = session.createCriteria(this.tblClass);
                 critter.add(Restrictions.in("id", matches));
                 return new Pair<>(false, critter);
@@ -5559,7 +5616,41 @@ public class UploadTable implements Comparable<UploadTable>
         }
     	return false;
     }
-    
+
+    /**
+     *
+     * @param tblAndAncestorsUnchanged
+     * @param seq
+     * @return
+     */
+    protected boolean stillNeedToWrite(boolean tblAndAncestorsUnchanged, int seq) throws UploaderException {
+        if (!updateMatches) {
+            return true;
+        }
+        if (tblAndAncestorsUnchanged) {
+            return false;
+        }
+        //assuming findMatch and setCurrentRecordFromMatch have been called...
+        if (getCurrentRecord(seq) != null) {
+            return true;
+        } else {
+            return needToCreateRecordIfParentChanged(seq);
+        }
+    }
+
+    /**
+     *
+     * @return
+     * @throws UploaderException
+     */
+    protected boolean needToCreateRecordIfParentChanged(int recNum) throws UploaderException {
+        //no attempt at generality
+        if (tblClass.equals(CollectingEvent.class) || tblClass.equals(Locality.class)) {
+            return true;
+        } else {
+            throw new UploaderException("Unsupported situation for " + this.toString(), UploaderException.ABORT_ROW);
+        }
+    }
 
     /**
      * Searches for matching record in database. If match is found it is set to be the current
@@ -5595,7 +5686,7 @@ public class UploadTable implements Comparable<UploadTable>
                     		throw new UploaderException(String.format(UIRegistry.getResourceString("WB_UPLOAD_NO_ADD_PERMISSION"), getWriteTable().getTableInfo().getTitle()),
                     				UploaderException.ABORT_ROW);
                     	}
-                    	if (!tblAndAncestorsUnchanged) {
+                    	if (stillNeedToWrite(tblAndAncestorsUnchanged, recNum)) {
                             Pair<Boolean, DataModelObjBase> recObj = getCurrentRecordForSave(recNum);
                     	    DataModelObjBase rec = recObj.getSecond();
                             boolean isNewRecord = rec.getId() == null;

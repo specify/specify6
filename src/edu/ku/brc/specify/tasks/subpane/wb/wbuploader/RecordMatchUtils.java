@@ -18,7 +18,8 @@ public class RecordMatchUtils {
     protected static final Logger log = Logger.getLogger(UploadTable.class);
 
     private static String[] systemFldNames = {"TimestampCreated", "TimestampModified", "Version", "Lat1Text", "Lat2Text",
-            "Long1Text", "Long2Text", "ModifiedByAgentID", "CreatedByAgentID", "GUID"
+            "Long1Text", "Long2Text", "ModifiedByAgentID", "CreatedByAgentID", "GUID", "Fullname", "NodeNumber",
+            "HighestChildNodeNumber"
     };
 
     private static final int GET_ALL = 0;
@@ -366,6 +367,9 @@ public class RecordMatchUtils {
      */
     public static String getMatchingSql(final DataModelObjBase rec,
                                            final Map<DBInfoBase, Object> overrides) throws Exception {
+        if (rec == null) {
+            return null;
+        }
         DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByClassName(rec.getClass().getName());
         List<Pair<DBTableInfo, DBRelationshipInfo>> tbls = getOwnedOneOrManyRelatedTables(tblInfo);
         tbls.add(0, new Pair<>(tblInfo, null));
@@ -575,7 +579,7 @@ public class RecordMatchUtils {
      * @param fld
      * @return the setter for fld, if it exists.
      */
-    private static Method getFldGetter(final DBInfoBase fld, final DBTableInfo tbl) {
+    protected static Method getFldGetter(final DBInfoBase fld, final DBTableInfo tbl) {
         Class<?> tblClass = tbl.getClassObj();
         String methName = "get" + UploadTable.capitalize(fld.getName());
         try {

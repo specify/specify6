@@ -847,33 +847,38 @@ protected List<java.lang.reflect.Field> getFldsForJSON() {
      * @returns true if fld is empty and that is not OK.
      */
     @Override
-    protected boolean invalidNull(final UploadField fld, final UploadData uploadData, int row, int seq) throws UploaderException
-    {
-        if (fld.isRequired() && getTreeDefItem().getIsEnforced() != null && getTreeDefItem().getIsEnforced())
-        {
-            if (fld.getValue() == null || fld.getValue().trim().equals(""))
-            {
+    protected boolean invalidNull(final UploadField fld, final UploadData uploadData, int row, int seq) throws UploaderException {
+        if (fld.isRequired() && getTreeDefItem().getIsEnforced() != null && getTreeDefItem().getIsEnforced()) {
+            if (fld.getValue() == null || fld.getValue().trim().equals("")) {
                 //if no children in the treeable hierarchy are non-null then ignore the nullness at this level.
-                UploadTableTree currentChild = child;
-                while (currentChild != null)
-                {
-                    UploadField uf = currentChild.findUploadField(fld.getField().getName(), seq);
-                    if (uf != null)
-                    {
-                        String val = uploadData.get(row, uf.getIndex());
-                        if (val != null && !val.trim().equals(""))
-                        {
-                            return true;
-                        }
-                    }
-                    currentChild = currentChild.child;
-                }
+                return aChildHasData(seq, row, uploadData);
             }
         }
         return false;
     }
 
-    
+    /**
+     *
+     * @param seq
+     * @param row
+     * @param uploadData
+     * @return
+     */
+    private boolean aChildHasData(int seq, int row, final UploadData uploadData) {
+        UploadTableTree currentChild = child;
+        while (currentChild != null) {
+            UploadField uf = currentChild.findUploadField("name", seq);
+            if (uf != null) {
+                String val = uploadData.get(row, uf.getIndex());
+                if (val != null && !val.trim().equals("")) {
+                    return true;
+                }
+            }
+            currentChild = currentChild.child;
+        }
+        return false;
+    }
+
     @Override
 	protected boolean ignoreFieldData(UploadField f) {
 		boolean result = super.ignoreFieldData(f);
@@ -888,9 +893,25 @@ protected List<java.lang.reflect.Field> getFldsForJSON() {
      * @return true if there is some data in the current row dataset that needs to be written to this table in the database.
      */
     @Override
-    protected boolean needToWrite(int recNum)
-    {
+    protected boolean needToWrite(int recNum) {
         return dataToWrite(recNum);
+    }
+
+    /**
+     *
+     * @param recNum
+     * @return
+     * @throws UploaderException
+     */
+    @Override
+    protected boolean needToCreateRecordIfParentChanged(int recNum) throws UploaderException {
+        if (getParent() != null && getParent().getCurrentRecord(recNum) != null
+                && getTreeDefItem() != null && getTreeDefItem().getIsEnforced()
+                && getChild() != null) {
+            return aChildHasData(recNum, wbCurrentRow, uploader.getUploadData());
+        } else {
+            return false;
+        }
     }
 
     /**
