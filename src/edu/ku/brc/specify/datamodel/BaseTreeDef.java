@@ -517,6 +517,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
         if (nStatusBar != null)
         {
             nStatusBar.setProgressRange(treeRebuilder.getProgressName(), 0, 100);
+            nStatusBar.setText(progDlgMsg);
             
         } else if (isOnUIThread)
         {
