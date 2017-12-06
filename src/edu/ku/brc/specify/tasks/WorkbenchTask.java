@@ -1867,9 +1867,8 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
      * @param wb
      * @return
      */
-    protected boolean loadRsIntoWb(final RecordSetIFace rs, final Workbench wb, final Vector<Vector<Object>> queryResults)
-    {
-    	boolean result = false;
+    protected boolean loadRsIntoWb(final RecordSetIFace rs, final Workbench wb, final Vector<Vector<Object>> queryResults) {
+    	boolean result = true;
     	DBTableInfo tbl = DBTableIdMgr.getInstance().getInfoById(rs.getDbTableId());
         //XXX What is the dbTableId field in workbench for? ExportedFromTableName may not even be necessary. Based on use of dbTableId in recordset
     	//it looks like it was designed to for exported records...
@@ -1894,38 +1893,34 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         			}
         			r++;
         		}
-        	} catch (Exception ex)
-        	{
-        		if (ex instanceof WorkbenchValidator.WorkbenchValidatorException || ex instanceof UploaderException)
-        		{
+        	} catch (Exception ex) {
+         	    result = false;
+         	    boolean showedStructureErrors = false;
+        		if (ex instanceof WorkbenchValidator.WorkbenchValidatorException || ex instanceof UploaderException) {
         			WorkbenchValidator.WorkbenchValidatorException wvEx = null;
-        			if (ex instanceof WorkbenchValidator.WorkbenchValidatorException)
-        			{
+        			if (ex instanceof WorkbenchValidator.WorkbenchValidatorException) {
         				wvEx = (WorkbenchValidator.WorkbenchValidatorException )ex;
-        			} else if (ex.getCause() instanceof WorkbenchValidator.WorkbenchValidatorException)
-        			{
+        			} else if (ex.getCause() instanceof WorkbenchValidator.WorkbenchValidatorException) {
         				wvEx = (WorkbenchValidator.WorkbenchValidatorException )ex.getCause();
         			}
-        			if (wvEx != null && wvEx.getStructureErrors().size() > 0)
-        			{
+        			if (wvEx != null && wvEx.getStructureErrors().size() > 0) {
         				Uploader.showStructureErrors(wvEx.getStructureErrors());
+        				showedStructureErrors = true;
         			}
         		}
         		else {
         			throw ex;
         		}
-        		UIRegistry.showLocalizedError("WorkbenchPaneSS.UnableToAutoValidate");
+        		if (queryResults == null || !showedStructureErrors) {
+        		    UIRegistry.showLocalizedError("WorkbenchPaneSS.UnableToAutoValidate");
+                }
         	}
-    		result = true;
-    	} catch (Exception ex)
-    	{
+    	} catch (Exception ex) {
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
             ex.printStackTrace();
             log.error(ex);
-            
-    	} finally
-    	{
+    	} finally {
     		session.close();
     	}
     	return result;
@@ -3771,12 +3766,9 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     	try {
     		WorkbenchTemplate template = getTemplateFromQuery(query);
     		if (template != null) {
-        		for (WorkbenchTemplateMappingItem mi : template.getWorkbenchTemplateMappingItems()) {
-        			System.out.println(mi.getTableName() + ", " + mi.getFieldName() + ", " + mi.getViewOrder());
-        		}
-    			Workbench workbench = createNewWorkbenchDataObj(template.getName(), template, false);
+   			Workbench workbench = createNewWorkbenchDataObj(template.getName(), template, false);
     			if (workbench != null) {
-    				fillandSaveWorkbench(new Pair<RecordSetIFace, Vector<Vector<Object>>>(rs, results), workbench,  true, srcTask);
+    				fillandSaveWorkbench(new Pair<>(rs, results), workbench,  true, srcTask);
     			}
     		}
 		} catch (Exception e) {
