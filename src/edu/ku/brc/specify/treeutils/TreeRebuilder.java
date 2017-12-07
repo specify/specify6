@@ -134,7 +134,7 @@ public class TreeRebuilder<T extends Treeable<T, D, I>,
             }
             buildChildrenQuery();
             buildUpdateNodeQuery();
-            T root = getTreeRoot();
+            T root = getTreeRoot(traversalSession);
             initProgress();
             initCacheInfo();
             fullNameBuilder = new FullNameBuilder<T,D,I>(treeDef);

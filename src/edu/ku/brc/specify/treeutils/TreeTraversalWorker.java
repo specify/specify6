@@ -200,6 +200,12 @@ public abstract class TreeTraversalWorker<T extends Treeable<T, D, I>, D extends
     }
 
     /**
+     *
+     * @return
+     */
+    protected String getNodeDefItemFldName() { return treeDef.getNodeClass().getSimpleName() + "TreeDefItemId"; }
+
+    /**
      * @return node parent field name.
      */
     protected String getNodeParentFldName()
@@ -210,32 +216,25 @@ public abstract class TreeTraversalWorker<T extends Treeable<T, D, I>, D extends
     /**
      * @return root node of tree. (not used)
      */
-    protected T getTreeRoot()
-    {
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        boolean attached = false;
-        try
-        {
-            I rootDefItem = treeDef.getDefItemByRank(0);
-            try
-            {
-                session.attach(rootDefItem);
-                attached = true;
+    protected T getTreeRoot() {
+        return getTreeRoot(null);
+    }
+
+    /**
+     *
+     * @param sessionArg
+     * @return
+     */
+    protected T getTreeRoot(final DataProviderSessionIFace sessionArg) {
+        DataProviderSessionIFace session = sessionArg == null
+                ? DataProviderFactory.getInstance().createSession()
+                : sessionArg;
+        try {
+            return session.getData(treeDef.getNodeClass(), "definitionItem", treeDef.getDefItemByRank(0), DataProviderSessionIFace.CompareType.Equals);
+        } finally {
+            if (sessionArg == null) {
+                session.close();
             }
-            catch (HibernateException ex)
-            {
-                //continue
-            }
-            T result = rootDefItem.getTreeEntries().iterator().next();
-            if (attached)
-            {
-                session.evict(rootDefItem);
-            }
-            return result;
-        }
-        finally
-        {
-            session.close();
         }
     }
 
