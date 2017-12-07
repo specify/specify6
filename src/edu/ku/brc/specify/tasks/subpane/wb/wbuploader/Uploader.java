@@ -6204,9 +6204,8 @@ public class Uploader implements ActionListener, KeyListener
     							di.setWorkbenchRow(row);
     							di.setRowNumber(row.getRowNumber());
     							di.setRequired(mi.getIsRequired());
-    							//XXX need to deal with formatting and stuff using fld.DBFieldInfo ...
-    							di.setCellData(ut.getTextForFieldValue(fld, value, 0));
-    							row.getWorkbenchDataItems().add(di);
+                                row.getWorkbenchDataItems().add(di);
+    							row.setData(ut.getTextForFieldValue(fld, value, 0), di.getColumnNumber(), true);
     						}
     					}
     				}

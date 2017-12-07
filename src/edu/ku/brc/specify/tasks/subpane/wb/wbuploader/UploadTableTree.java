@@ -382,7 +382,7 @@ protected List<java.lang.reflect.Field> getFldsForJSON() {
      * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#finalizeWrite(edu.ku.brc.specify.datamodel.DataModelObjBase, int)
      */
     @Override
-    protected void finalizeWrite(DataModelObjBase rec, int recNum) throws UploaderException
+    protected boolean finalizeWrite(DataModelObjBase rec, int recNum) throws UploaderException
     {
         super.finalizeWrite(rec, recNum);
         //assign treedef and treedefitem to rec
@@ -390,15 +390,18 @@ protected List<java.lang.reflect.Field> getFldsForJSON() {
         DataModelObjBase parentRec = getParentRec(tRec, recNum);
         tRec.setDefinition(getTreeDef());
         tRec.setDefinitionItem(getTreeDefItem());
-        if (parentRec == null)
-        {
+        if (parentRec == null) {
             tRec.setParent(getDefaultParent2(getTreeDefItem()));
+            return true;
         }
-        else
-        {
+        else {
             //this probably will already have been done in UploadTable.setParents, unless immediate parent id is null.
-            tRec.setParent((Treeable<?,?,?>)parentRec);
+            if (tRec.getParent() != parentRec) {
+                tRec.setParent((Treeable<?, ?, ?>) parentRec);
+                return true;
+            }
         }
+        return false;
     }
 
     /*

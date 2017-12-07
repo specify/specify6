@@ -1842,21 +1842,37 @@ public class UploadTable implements Comparable<UploadTable>
     		//LatLonConverter.DECIMAL_SIZES[], but the forms don't seem to
     		*/
     		
+
+    		String textVal = getLatLongTextFldVal(ufld.getField().getFieldInfo().getColumn());
     		LatLonConverter.FORMAT frm = getOriginalLatLngUnit();
-    		frm = frm == LatLonConverter.FORMAT.None ? LatLonConverter.FORMAT.DDDDDD : frm;
-			LatLonConverter.LATLON ll = isLatFld(ufld) ? LatLonConverter.LATLON.Latitude : LatLonConverter.LATLON.Longitude;
-            BigDecimal dval = (BigDecimal)value;
-			String result = LatLonConverter.format(dval, ll, frm, LatLonConverter.DEGREES_FORMAT.None,
-					LatLonConverter.DECIMAL_SIZES[frm.ordinal()]);
-            if (dval.abs() != dval && !result.startsWith("-")) {
-                result = "-" + result;
+            String result;
+    		if (StringUtils.isNotEmpty(textVal) && isTextValConsistentWithLLFormat(textVal, frm)) {
+    		    result = textVal;
+            } else {
+                frm = frm == LatLonConverter.FORMAT.None ? LatLonConverter.FORMAT.DDDDDD : frm;
+                LatLonConverter.LATLON ll = isLatFld(ufld) ? LatLonConverter.LATLON.Latitude : LatLonConverter.LATLON.Longitude;
+                BigDecimal dval = (BigDecimal) value;
+			    result =LatLonConverter.format(dval, ll, frm, LatLonConverter.DEGREES_FORMAT.None,
+                        LatLonConverter.DECIMAL_SIZES[frm.ordinal()]);
+                if (dval.abs() != dval && !result.startsWith("-")) {
+                    result = "-" + result;
+                }
             }
-    		
     		return result;
     	}
     	return null;
     }
-    
+
+    /**
+     *
+     * @param textVal
+     * @param frm
+     * @return
+     */
+    private boolean isTextValConsistentWithLLFormat(final String textVal, final LatLonConverter.FORMAT frm) {
+        //wtf? wtfc? htfdik?
+        return StringUtils.isNotEmpty(textVal);
+    }
     /**
      * @param fldName
      * @return
@@ -1888,7 +1904,7 @@ public class UploadTable implements Comparable<UploadTable>
     		return LatLonConverter.convertIntToFORMAT(val);
     	}
     }
-    
+
     @SuppressWarnings("unchecked")
     protected String getSystemTypeCodeText(Object value) 
     {
@@ -4390,13 +4406,14 @@ public class UploadTable implements Comparable<UploadTable>
      * @param recNum
      * 
      * Performs extra tasks to get rec ready to be saved to the database.
+     * returns true if finalization changed any values
      */
-    protected void finalizeWrite(DataModelObjBase rec, int recNum) throws UploaderException
-    {
+    protected boolean finalizeWrite(DataModelObjBase rec, int recNum) throws UploaderException {
         finalizeDatePrecisionFields(rec);
-        if (finalizer != null)
-        {
-            finalizer.finalizeForWrite(rec, recNum, uploader);
+        if (finalizer != null) {
+            return finalizer.finalizeForWrite(rec, recNum, uploader);
+        } else {
+            return false;
         }
     }
 
@@ -5721,8 +5738,8 @@ public class UploadTable implements Comparable<UploadTable>
                             if (updateMatches && isUpdate && !isNewRecord) {
                                 doNotWrite |= dealWithUpdatedRecord(rec);
                             }
+                            isUpdate |= finalizeWrite(rec, recNum);
                             if (!(doNotWrite || (updateMatches && !isUpdate && !isNewRecord))) {
-                                finalizeWrite(rec, recNum);
                                 if (!gotRequiredParents && hasChildren) {
                                     throw new UploaderException(UIRegistry.getResourceString("UPLOADER_MISSING_REQUIRED_DATA"), UploaderException.ABORT_ROW);
                                 }
