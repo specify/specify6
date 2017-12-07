@@ -1644,50 +1644,6 @@ public class UploadTable implements Comparable<UploadTable>
     }
 
 
-    /**
-     *
-     * @param recNum
-     * @return
-     * @throws InvocationTargetException
-     * @throws IllegalArgumentException
-     * @throws IllegalAccessException
-     * @throws UploaderException
-     */
-    protected Map<DBInfoBase, Object> getParentOverridesForExportedRecMatching(int recNum) throws InvocationTargetException,
-            IllegalArgumentException, IllegalAccessException, UploaderException {
-        HashMap<DBInfoBase, Object> result = new HashMap<>();
-        if (parentTables != null && parentTables.size() > 0) {
-            for (ParentTableEntry pt : parentTables.get(Math.min(parentTables.size() - 1, recNum))) {
-                if (!updateMatches || uploader.getUploadedTablesForCurrentRow().indexOf(pt.getImportTable()) != -1) {
-                    Object arg[] = new Object[1];
-                    DataModelObjBase parentRec = pt.getImportTable().getParentRecord(recNum, this);
-                    if (parentRec == null || parentRec.getId() == null) {
-                        arg[0] = null;
-                    } else {
-                        arg[0] = parentRec;
-                    }
-                    if (valueChange(getExportedRecord(), pt.getGetter(), arg)) {
-                        result.put(getRelationshipInfoForMatchingOverride(pt), arg[0]);
-                    }
-                }
-            }
-        }
-        return result;
-    }
-
-    /**
-     *
-     * @param pt
-     * @return relationship with same getter as pt, which is good enough for matching override
-     */
-    protected DBRelationshipInfo getRelationshipInfoForMatchingOverride(ParentTableEntry pt) {
-        for (DBRelationshipInfo ri : getTable().getTableInfo().getRelationships()) {
-            if (RecordMatchUtils.getFldGetter(ri, getTable().getTableInfo()).equals(pt.getGetter())) {
-                return ri;
-            }
-        }
-        return null;
-    }
 
     /**
      * @param rec - the record being prepared to write to the database.
@@ -3037,31 +2993,36 @@ public class UploadTable implements Comparable<UploadTable>
     protected String addRestriction(final CriteriaIFace critter,
                                     final String propName,
                                     final Object arg,
-                                    boolean ignoreNulls)
-    {
-        if (arg != null && (!(arg instanceof String) || StringUtils.isNotBlank((String )arg)))
-        {
+                                    boolean ignoreNulls) {
+        if (arg != null && (!(arg instanceof String) || StringUtils.isNotBlank((String )arg))) {
             critter.add(Restrictions.eq(propName, arg));
-            if (arg instanceof DataModelObjBase) 
-            { 
-            	String value = DataObjFieldFormatMgr.getInstance().format(arg, arg.getClass());
-                if (StringUtils.isNotBlank(value))
-                {
+        } else if (!ignoreNulls || matchSetting.isMatchEmptyValues()) {
+            critter.add(Restrictions.isNull(propName));
+        }
+        return getRestrictionArgText(arg, ignoreNulls);
+    }
+
+    /**
+     *
+     * @param arg
+     * @param ignoreNulls
+     * @return
+     */
+    protected String getRestrictionArgText(final Object arg, boolean ignoreNulls) {
+        if (arg != null && (!(arg instanceof String) || StringUtils.isNotBlank((String )arg))) {
+            if (arg instanceof DataModelObjBase) {
+                String value = DataObjFieldFormatMgr.getInstance().format(arg, arg.getClass());
+                if (StringUtils.isNotBlank(value)) {
                     return value;
                 }
-                return ((DataModelObjBase) arg).getId()
-                    .toString(); 
+                return ((DataModelObjBase) arg).getId().toString();
             }
             return arg.toString();
-        }
-        
-        if (!ignoreNulls || matchSetting.isMatchEmptyValues())
-        {
-            critter.add(Restrictions.isNull(propName));
+        } else if (!ignoreNulls || matchSetting.isMatchEmptyValues()) {
             return getNullRestrictionText();
+        } else {
+            return "";
         }
-        
-        return "";
     }
 
     /**
@@ -3258,20 +3219,14 @@ public class UploadTable implements Comparable<UploadTable>
      * @param recNum
      * @return true if a match condition was added
      */
-    protected boolean checkParentsForMatchCriteria(Vector<Vector<ParentTableEntry>> parents, CriteriaIFace critter, int recNum, UploadTable child)
-    {
+    protected boolean checkParentsForMatchCriteria(Vector<Vector<ParentTableEntry>> parents, CriteriaIFace critter, int recNum, UploadTable child) {
 		boolean gotIt = false;
-		for (Vector<ParentTableEntry> ptes : parents)
-		{
-			for (ParentTableEntry pte : ptes)
-			{
-				if (pte.getImportTable() == this || (child == null && pte.getImportTable().isMatchRecordId()))
-				{
-					if (child == null)
-					{
+		for (Vector<ParentTableEntry> ptes : parents) {
+			for (ParentTableEntry pte : ptes) {
+				if (pte.getImportTable() == this || (child == null && pte.getImportTable().isMatchRecordId())) {
+					if (child == null) {
 						addRestriction(critter, pte.getPropertyName(), pte.getImportTable().getCurrentRecord(recNum), true);
-					} else
-					{
+					} else {
 						//Can use pte.getPropertyName because the propNames happen to be equal for all currently applicable cases 
 						addRestriction(critter, pte.getPropertyName(), getCurrentRecord(recNum), true);
 					}
@@ -3279,12 +3234,55 @@ public class UploadTable implements Comparable<UploadTable>
 					break;
 				}
 			}
-			if (gotIt)
-			{
+			if (gotIt) {
 				break;
 			}
 		}
     	return gotIt;	
+    }
+    /**
+     *
+     * @param recNum
+     * @return
+     * @throws InvocationTargetException
+     * @throws IllegalArgumentException
+     * @throws IllegalAccessException
+     * @throws UploaderException
+     */
+    protected Map<DBInfoBase, Object> getParentOverridesForExportedRecMatching(int recNum) throws InvocationTargetException,
+            IllegalArgumentException, IllegalAccessException, UploaderException {
+        HashMap<DBInfoBase, Object> result = new HashMap<>();
+        if (parentTables != null && parentTables.size() > 0) {
+            for (ParentTableEntry pt : parentTables.get(Math.min(parentTables.size() - 1, recNum))) {
+                if (!updateMatches || uploader.getUploadedTablesForCurrentRow().indexOf(pt.getImportTable()) != -1) {
+                    Object arg[] = new Object[1];
+                    DataModelObjBase parentRec = pt.getImportTable().getParentRecord(recNum, this);
+                    if (parentRec == null || parentRec.getId() == null) {
+                        arg[0] = null;
+                    } else {
+                        arg[0] = parentRec;
+                    }
+                    if (valueChange(getExportedRecord(), pt.getGetter(), arg)) {
+                        result.put(getRelationshipInfoForMatchingOverride(pt), arg[0]);
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     *
+     * @param pt
+     * @return relationship with same getter as pt, which is good enough for matching override
+     */
+    protected DBRelationshipInfo getRelationshipInfoForMatchingOverride(ParentTableEntry pt) {
+        for (DBRelationshipInfo ri : getTable().getTableInfo().getRelationships()) {
+            if (RecordMatchUtils.getFldGetter(ri, getTable().getTableInfo()).equals(pt.getGetter())) {
+                return ri;
+            }
+        }
+        return null;
     }
 
     /**
@@ -3305,7 +3303,9 @@ public class UploadTable implements Comparable<UploadTable>
         Map<DBInfoBase, Object> overrides = new HashMap<>();
         for (UploadField uf : uploadFields.get(recNum)) {
             if (isFieldToMatchOn(uf)) {
-                overrides.put(uf.getField().getFieldInfo(), getArgForSetter(uf)[0]);
+                Object arg = getArgForSetter(uf)[0];
+                overrides.put(uf.getField().getFieldInfo(), arg);
+                restrictedVals.add(new MatchRestriction(uf.getWbFldName(), getRestrictionArgText(arg, false), uf.getIndex()));
             }
         }
         overrides.putAll(getParentOverridesForExportedRecMatching(recNum));
