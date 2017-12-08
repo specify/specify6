@@ -61,8 +61,6 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
-import javax.sound.midi.MidiSystem;
-import javax.sound.midi.Synthesizer;
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
@@ -79,7 +77,6 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.*;
 import java.util.List;
-import java.util.Timer;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -3387,15 +3384,8 @@ public class Uploader implements ActionListener, KeyListener
                                     SwingUtilities.invokeLater(new Runnable() {
                                         @Override
                                         public void run() {
-                                            //redisplay batch-edited recs.
-                                            /*
-                                            But, if using the recordset, only edited records will display
-                                            */
-                                            //qb.doSearch(getBatchEditRS());
-                                            /*
-                                            and, butter, if using the query, what if user edited conditions while batch editing?
-                                             */
-                                            qb.doSearch();
+                                            //redisplay recs from dataset in qb results
+                                            qb.doSearch(getBatchEditRS());
                                         }
                                     });
                                 }
@@ -3410,6 +3400,27 @@ public class Uploader implements ActionListener, KeyListener
         {
             currentUpload = null;
         }
+    }
+
+    /**
+     *
+     * @return a list of the records in the batch-edited wb.
+     */
+    protected RecordSet getBatchEditRS() {
+        SortedSet<Integer> ids =  new TreeSet<>();
+        for (WorkbenchRow row : getWb().getWorkbenchRowsAsList()) {
+            ids.add(row.getRecordId());
+        }
+        RecordSet result = new RecordSet();
+        result.initialize();
+        result.set("zzz",
+                getRootTable().getTable().getTableInfo().getTableId(),
+                RecordSet.WB_UPLOAD);
+        result.setSpecifyUser(AppContextMgr.getInstance().getClassObject(SpecifyUser.class));
+        for (Integer id : ids) {
+            result.addItem(id);
+        }
+        return result;
     }
 
     public UploadMainPanel getMainPanel()
