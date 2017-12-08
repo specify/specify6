@@ -4479,7 +4479,7 @@ public class Uploader implements ActionListener, KeyListener
                                 progDlg.finishingTouches();
                             }
                             for (int t = uploadTables.size() - 1; t >= 0; t--) {
-                                uploadTables.get(t).finishUpload(cancelled && !paused, theUploadBatchEditSession);
+                                uploadTables.get(t).finishUpload(cancelled, theUploadBatchEditSession);
                             }
                         }
                         finishTransaction(progDlg, cancelled, crashed);
