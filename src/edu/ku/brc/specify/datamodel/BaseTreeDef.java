@@ -695,7 +695,11 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
 
                 setRenumberingNodes(false);
                 setNodeNumbersAreUpToDate(treeRebuilder.hasCompletedOK());
-                
+                if (nStatusBar != null) {
+                    displayStatusBarText("");
+                    nStatusBar.setProgressDone(treeRebuilder.getProgressName());
+                }
+
             } catch (Exception ex)
             {
                 ex.printStackTrace();
