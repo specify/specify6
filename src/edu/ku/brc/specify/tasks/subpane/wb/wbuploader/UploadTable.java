@@ -175,7 +175,7 @@ public class UploadTable implements Comparable<UploadTable>
     /**
      * ids of records uploaded during the most recent upload.
      */
-    protected Pair<List<UploadedRecordInfo>, SortedSet<UploadedRecordInfo>>                              uploadedRecs;
+    protected Triplet<List<UploadedRecordInfo>, SortedSet<UploadedRecordInfo>, SortedSet<Integer>>  uploadedRecs;
     
     /**
      * The workbench index of the row currently being processed.
@@ -316,7 +316,24 @@ public class UploadTable implements Comparable<UploadTable>
     protected List<Pair<Integer, String>>           	deletedRecs		             = new Vector<>();
 
     protected Map<Integer, Pair<DataModelObjBase, Timestamp>> recordStash            = new HashMap<>();
-    
+
+    public class Triplet<F, S, T> extends Pair<F, S> {
+        public T third = null;
+
+        public Triplet() {
+            super();
+        }
+        public Triplet(F first, S second, T third) {
+            super(first, second);
+            this.third = third;
+        }
+        public T getThird() {
+            return third;
+        }
+        public void setThird(T third) {
+            this.third = third;
+        }
+    }
     /**
      * @author timbo
      *
@@ -405,9 +422,10 @@ public class UploadTable implements Comparable<UploadTable>
         this.table = table;
         this.relationship = relationship;
         uploadFields = new Vector<>();
-        uploadedRecs = new Pair<>();
+        uploadedRecs = new Triplet<>();
         uploadedRecs.setFirst(new ArrayList<>());
         uploadedRecs.setSecond(new TreeSet<>());
+        uploadedRecs.setThird(new TreeSet<>());
 
         currentRecords = new Vector<>();
         specialChildren = new Vector<>();
@@ -577,6 +595,7 @@ public class UploadTable implements Comparable<UploadTable>
     	isUploadRoot = uploader.getRootTable() == this;
         uploadedRecs.getFirst().clear();
         uploadedRecs.getSecond().clear();
+        uploadedRecs.getThird().clear();
         matchSetting.clear();
         deletedRecs.clear();
         disUsedRecs.clear();
@@ -1172,7 +1191,7 @@ public class UploadTable implements Comparable<UploadTable>
     /**
      * @return the uploadedKeys
      */
-    public Pair<List<UploadedRecordInfo>, SortedSet<UploadedRecordInfo>> getUploadedRecs()
+    public Triplet<List<UploadedRecordInfo>, SortedSet<UploadedRecordInfo>, SortedSet<Integer>> getUploadedRecs()
     {
         return uploadedRecs;
     }
@@ -3328,15 +3347,32 @@ public class UploadTable implements Comparable<UploadTable>
 
         try {
             String matchSql = RecordMatchUtils.getMatchingSql(getExportedRecord(), overrides);
-            List<?> matches = matchSql != null ? queryForInts(matchSql, session) : null;
-            if (matches != null
-                    && !((matches.size() == 1 && matches.get(0).equals(exportedRecordId)) || matches.size() == 0)) {
-                CriteriaIFace critter = session.createCriteria(this.tblClass);
-                critter.add(Restrictions.in("id", matches));
-                return new Pair<>(false, critter);
-            } else {
+            List matches = matchSql != null ? queryForInts(matchSql, session) : null;
+            if (matches == null || matches.size() == 0
+                    || (matches.size() == 1 && matches.get(0).equals(exportedRecordId))) {
+                //force (re)use of exported record
                 return new Pair<>(false, null);
+            } else {
+                List previousCreates = new ArrayList<>();
+                for (Object m : matches) {
+                    if (uploadedRecs.getThird().contains(m)) {
+                        previousCreates.add(m);
+                    }
+                }
+                CriteriaIFace critter = session.createCriteria(this.tblClass);
+                //use matches created by current upload w/o asking. hopefully their won't be more than 1
+                critter.add(Restrictions.in("id", previousCreates.size() == 0 ? matches : previousCreates));
+                return new Pair<>(false, critter);
             }
+
+//            if (matches != null
+//                    && !((matches.size() == 1 && matches.get(0).equals(exportedRecordId)) || matches.size() == 0)) {
+//                CriteriaIFace critter = session.createCriteria(this.tblClass);
+//                critter.add(Restrictions.in("id", matches));
+//                return new Pair<>(false, critter);
+//            } else {
+//                return new Pair<>(false, null);
+//            }
         } catch (Exception e) {
             throw new UploaderException(e, UploaderException.ABORT_IMPORT);
         }
@@ -5807,6 +5843,9 @@ public class UploadTable implements Comparable<UploadTable>
         if (!updateMatches || isNewRecord) {
         	uploadedRecs.getSecond().add(new UploadedRecordInfo(rec.getId(), wbCurrentRow,
         		recNum, autoAssignedVal));
+        	if (updateMatches) {
+                uploadedRecs.getThird().add(rec.getId());
+            }
         } else if (isUpdate && updateMatches) {
         	//System.out.println("UploadTable.writeRowOrNot: updated " + rec.getId() + " in " + rec.getClass().getSimpleName());
         	uploadedRecs.getFirst().add(new UploadedRecordInfo(rec.getId(), wbCurrentRow, recNum, autoAssignedVal, true,
