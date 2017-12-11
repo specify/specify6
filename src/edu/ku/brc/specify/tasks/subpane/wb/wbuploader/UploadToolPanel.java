@@ -273,6 +273,7 @@ public class UploadToolPanel extends JPanel implements TimingTarget
         
         JPanel autoAssignCatNumPanel = new JPanel(new BorderLayout());
         autoAssignCatNumChk = UIHelper.createI18NCheckBox("");
+        autoAssignCatNumChk.setSelected(false);
         autoAssignCatNumLbl = UIHelper.createLabel("");
         //autoAssignCatNumLbl.setBorder(new BorderUIResource.LineBorderUIResource(edu.ku.brc.specify.tasks.subpane.wb.CellRenderingAttributes.newDataBorder));
         //autoAssignCatNumLbl.setBackground(edu.ku.brc.specify.tasks.subpane.wb.CellRenderingAttributes.newDataBackground);
@@ -281,44 +282,46 @@ public class UploadToolPanel extends JPanel implements TimingTarget
         autoAssignCatNumPanel.add(autoAssignCatNumLbl, BorderLayout.CENTER);
         autoAssignCatNumPanel.setVisible(false);
         
-    	this.autoAssables = wbSS.getAutoAssignableFlds();
-    	
-    	if (autoAssables != null && autoAssables.size() > 0) {
-    		UploadField catno = null;
-    		for (UploadField uf : autoAssables) {
-    			if (uf.getField().getFieldInfo() != null) {
-    				DBFieldInfo ufi = uf.getField().getFieldInfo();
-    				if (ufi.getName().equalsIgnoreCase("catalognumber") &&
-    						ufi.getTableInfo().getName().equalsIgnoreCase("collectionobject")) {
-    					catno = uf;
-    					//break;
-    				}
-    			}
-    		}
-    		if (catno != null) {
-    			autoAssignCatNumPanel.setVisible(true);
-    			configuredFields = new ArrayList<UploadField>();
-    			configuredFields.add(catno);
-    			autoAssignCatNumLbl.setText(String.format(UIRegistry.getResourceString("WB_UPLOAD_AutoAssCatChk"), 
-    					catno.getField().getFieldInfo().getTitle()));
-    	        boolean doAutoFill = AppPreferences.getLocalPrefs().getBoolean(wbAutoFillPrefName + "." + wbSS.getWorkbench().getId(), catno.isAutoAssignForUpload());
-    	        catno.setAutoAssignForUpload(doAutoFill);
-    			autoAssignCatNumChk.setSelected(catno.isAutoAssignForUpload());
-    			final UploadField catno_uf = catno;
-    			autoAssignCatNumChk.addActionListener(new ActionListener() {
-    				@Override
-    				public void actionPerformed(ActionEvent e) {
-    					//System.out.println(UploadToolPanel.this.autoAssables);
-    					catno_uf.setAutoAssignForUpload(autoAssignCatNumChk.isSelected());
-    					AppPreferences.getLocalPrefs().putBoolean(wbAutoFillPrefName + "." 
-    							+ wbSS.getWorkbench().getId(), autoAssignCatNumChk.isSelected());
-    					if (wbSS.isDoIncrementalValidation()) {
-    						wbSS.validateAll(null);
-    					}
-    				}    	        	
-    	        });
-    		}
-    	}
+    	if (!isForUpdate) {
+            this.autoAssables = wbSS.getAutoAssignableFlds();
+
+            if (autoAssables != null && autoAssables.size() > 0) {
+                UploadField catno = null;
+                for (UploadField uf : autoAssables) {
+                    if (uf.getField().getFieldInfo() != null) {
+                        DBFieldInfo ufi = uf.getField().getFieldInfo();
+                        if (ufi.getName().equalsIgnoreCase("catalognumber") &&
+                                ufi.getTableInfo().getName().equalsIgnoreCase("collectionobject")) {
+                            catno = uf;
+                            //break;
+                        }
+                    }
+                }
+                if (catno != null) {
+                    autoAssignCatNumPanel.setVisible(true);
+                    configuredFields = new ArrayList<UploadField>();
+                    configuredFields.add(catno);
+                    autoAssignCatNumLbl.setText(String.format(UIRegistry.getResourceString("WB_UPLOAD_AutoAssCatChk"),
+                            catno.getField().getFieldInfo().getTitle()));
+                    boolean doAutoFill = AppPreferences.getLocalPrefs().getBoolean(wbAutoFillPrefName + "." + wbSS.getWorkbench().getId(), catno.isAutoAssignForUpload());
+                    catno.setAutoAssignForUpload(doAutoFill);
+                    autoAssignCatNumChk.setSelected(catno.isAutoAssignForUpload());
+                    final UploadField catno_uf = catno;
+                    autoAssignCatNumChk.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            //System.out.println(UploadToolPanel.this.autoAssables);
+                            catno_uf.setAutoAssignForUpload(autoAssignCatNumChk.isSelected());
+                            AppPreferences.getLocalPrefs().putBoolean(wbAutoFillPrefName + "."
+                                    + wbSS.getWorkbench().getId(), autoAssignCatNumChk.isSelected());
+                            if (wbSS.isDoIncrementalValidation()) {
+                                wbSS.validateAll(null);
+                            }
+                        }
+                    });
+                }
+            }
+        }
         autoAssignCatNumPanel.setVisible(!isForUpdate);
     	
         sep1.setVisible(autoMatchPanel.isVisible());
