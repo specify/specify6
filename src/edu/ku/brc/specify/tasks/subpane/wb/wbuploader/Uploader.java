@@ -3416,7 +3416,6 @@ public class Uploader implements ActionListener, KeyListener
         result.set("zzz",
                 getRootTable().getTable().getTableInfo().getTableId(),
                 RecordSet.WB_UPLOAD);
-        result.setSpecifyUser(AppContextMgr.getInstance().getClassObject(SpecifyUser.class));
         for (Integer id : ids) {
             result.addItem(id);
         }

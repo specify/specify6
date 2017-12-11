@@ -60,6 +60,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.SoftBevelBorder;
 
 import edu.ku.brc.af.core.*;
+import edu.ku.brc.af.core.db.DBRelationshipInfo;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -3859,6 +3860,27 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         String lastChunk = chunks[chunks.length-1];
         return lastChunk.replace(f.getFieldName(), "").startsWith("Numeric");
     }
+
+    /**
+     *
+     * @param fld
+     * @return
+     */
+    protected Pair<String,String> getTableAndRelFromWBDef(Element fld) {
+        String treeName = XMLHelper.getAttr((Element) fld, "treename", null);
+        String table = XMLHelper.getAttr(fld, "table", null);
+        String actualtable = XMLHelper.getAttr(fld, "actualtable", treeName != null ? treeName : table);
+        String relationship = XMLHelper.getAttr(fld, "relationshipname", null);
+        String relName = "";
+        if (relationship != null) {
+            DBTableInfo tbl = DBTableIdMgr.getInstance().getInfoByTableName(actualtable.toLowerCase());
+            DBRelationshipInfo rel = tbl.getRelationshipByName(relationship);
+            actualtable = rel.getDataClass().getSimpleName();
+            relName = rel.getName();
+        }
+        return new Pair<>(actualtable, relName);
+    }
+
     /**
      * @param f
      * @param tblMgr
@@ -3877,20 +3899,24 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
 
         String[] tblIdList = f.getTableList().split(",");
     	String tblIdCode = tblIdList[tblIdList.length-1];
-    	String tblId = tblIdCode.split("-")[0];
+    	String[] idParts = tblIdCode.split("-");
+    	String tblId = idParts[0];
+    	String relName = idParts.length == 1 ? "" : idParts[1];
     	String tblName = DBTableIdMgr.getInstance().getInfoById(tblId).getName().toLowerCase();
 
 		List<Element> defMatches = defMap.get(f.getFieldName().toLowerCase());
 		if (defMatches != null) {
             for (Element fld : defMatches) {
-                String treeName = XMLHelper.getAttr((Element) fld, "treename", null);
-                String table = XMLHelper.getAttr((Element) fld, "table", null);
-                String actualtable = XMLHelper.getAttr((Element) fld, "actualtable", treeName != null ? treeName : table);
+                String wbSchemaTable = XMLHelper.getAttr((Element) fld, "table", null);
+                Pair<String, String> tblAndRel = getTableAndRelFromWBDef(fld);
+                String wbDefTbl = tblAndRel.getFirst();
+                String wbDefRel = tblAndRel.getSecond();
                 String field = XMLHelper.getAttr((Element) fld, "name", null);
-                if (tblName.equalsIgnoreCase(actualtable)) {
-                    DBTableInfo ti = tblMgr.getInfoByTableName(table.toLowerCase());
-                    if (ti != null) {
-                        return new Pair<>(ti, ti.getFieldByName(field));
+                if (tblName.equalsIgnoreCase(wbDefTbl) && relName.equalsIgnoreCase(wbDefRel)) {
+                    DBTableInfo ti = tblMgr.getInfoByTableName(wbSchemaTable.toLowerCase());
+                    DBFieldInfo fi = ti == null ? null : ti.getFieldByName(field);
+                    if (fi != null) {
+                        return new Pair<>(ti, fi);
                     }
                 }
 
@@ -3914,6 +3940,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         for (Object fld : flds) {
             String field = XMLHelper.getAttr((Element )fld, "name", null);
             String actualfield = XMLHelper.getAttr((Element)fld, "actualname", field);
+            actualfield = XMLHelper.getAttr((Element)fld, "relatedfieldname", actualfield);
             String seqStr = XMLHelper.getAttr((Element)fld, "onetomanysequence", null);
             Integer sequence =  seqStr == null ? null : Integer.valueOf(seqStr);
             if (sequence != null) {
