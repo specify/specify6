@@ -1144,14 +1144,10 @@ public class UploadTable implements Comparable<UploadTable>
      * @param parent
      * @return
      */
-    public ParentTableEntry getParentTableEntry(final UploadTable parent)
-    {
-    	for (Vector<ParentTableEntry> ptes : parentTables)
-    	{
-    		for (ParentTableEntry pte : ptes)
-    		{
-    			if (pte.getImportTable() == parent)
-    			{
+    public ParentTableEntry getParentTableEntry(final UploadTable parent) {
+    	for (Vector<ParentTableEntry> ptes : parentTables) {
+    		for (ParentTableEntry pte : ptes) {
+    			if (pte.getImportTable() == parent) {
     				return pte;
     			}
     		}
@@ -1561,11 +1557,13 @@ public class UploadTable implements Comparable<UploadTable>
     	}
     	for (Vector<ParentTableEntry> ptes : parentTables) {
     		for (ParentTableEntry pte : ptes) {
-    			if (rec == null) {
-    				pte.getImportTable().setExportedRecordId(null);
-    			} else {
-    				pte.getImportTable().setExportedRecordId(getExportedRecIdForParent(pte, rec, shouldSetExportedRec));
-    			}
+    		    if (pte.getImportTable().getSpecialChildren().indexOf(this) == -1) {
+                    if (rec == null) {
+                        pte.getImportTable().setExportedRecordId(null);
+                    } else {
+                        pte.getImportTable().setExportedRecordId(getExportedRecIdForParent(pte, rec, shouldSetExportedRec));
+                    }
+                }
     		}
     	}
     	if (matchRecordId) {
@@ -1575,10 +1573,31 @@ public class UploadTable implements Comparable<UploadTable>
     					String fkey = sut.getTable().getTableInfo().getName() + "ID";
     					String key = getTable().getTableInfo().getIdFieldName(); 
     					String tbl = getTable().getTableInfo().getName().toLowerCase();
-    					sut.exportedRecordId = BasicSQLUtils.querySingleObj("select " + fkey + " from " + tbl + " where " + key + "=" + rec.getId());
+    					String sql = "select " + fkey + " from " + tbl + " where " + key + "=" + rec.getId();
+    					List<?> id = queryForInts(sql, getSession().getFirst());
+    					sut.exportedRecordId = id != null && id.size() > 0 ? (Integer)id.get(0) : null;
     				} else {
-    					//XXX this prevents needing to check for circularity in ParentTable loop above but what about children of children??
-    					sut.exportedRecordId = rec.getId();
+    				    if (rec == null) {
+    				        sut.setExportedRecordId(null);
+                        } else {
+                            ParentTableEntry pte = sut.getParentTableEntry(this);
+                            //This assumes all special kids use the parent primary key as a foreign key
+                            String hql = "from " + sut.getTblClass().getSimpleName() + " where "
+                                    + this.getTable().getTableInfo().getName() + "Id = " + rec.getId();
+                            Pair<DataProviderSessionIFace, Boolean> sessInfo = getSession();
+                            DataProviderSessionIFace sess = getSession().getFirst();
+                            try {
+                                QueryIFace matchesQ = sess.createQuery(hql, false);
+                                List<?> matches = matchesQ.list();
+                                if (matches != null && matches.size() > 0) {
+                                    sut.setExportedRecordId((DataModelObjBase) matches.get(0));
+                                } else {
+                                    sut.exportedRecordId = null;
+                                }
+                            } finally {
+                                getRidOfSession(sessInfo);
+                            }
+                        }
     				}
     			}
     		}
@@ -2771,92 +2790,69 @@ public class UploadTable implements Comparable<UploadTable>
         {
             result = true;
         }
-        else if (tblClass.equals(Locality.class))
-        {
-        	for (UploadTable child : specialChildren)
-            {
-        		if (child.getTblClass().equals(LocalityDetail.class))
-                {
+        else if (tblClass.equals(Locality.class)) {
+        	for (UploadTable child : specialChildren) {
+        		if (child.getTblClass().equals(LocalityDetail.class)) {
                     Pair<DataProviderSessionIFace, Boolean> sessObj = getSession();
             		DataProviderSessionIFace matchSession = sessObj.getFirst();
-                    try
-                    {
+                    try {
                         QueryIFace matchesQ = matchSession
                                 .createQuery("from LocalityDetail where localityId = "
                                         + match.getId(), false);
                         List<?> matches = matchesQ.list();
-                        try
-						{
+                        try {
 							child.loadFromDataSet(wbCurrentRow);
 							LocalityDetail ld2 = (LocalityDetail) child.getCurrentRecord(0);
-							if (ld2 == null && matches.size() == 0)
-							{
+							if (ld2 == null && matches.size() == 0) {
 								continue;
 							}
-							if (ld2 == null && matches.size() != 0)
-							{
+							if (ld2 == null && matches.size() != 0) {
 								return false;
 							}
-							if (ld2 != null && matches.size() == 0)
-							{
+							if (ld2 != null && matches.size() == 0) {
 								return false;
 							}
 							LocalityDetail ld1 = (LocalityDetail) matches.get(0);
 							result = ld1.matches(ld2);
-							if (!result)
-							{
+							if (!result) {
 								return false;
 							}
-						} finally
-						{
+						} finally {
 							child.loadFromDataSet(child.wbCurrentRow);
 						}
-                    }
-                    finally
-                    {
+                    } finally {
             			getRidOfSession(sessObj);
                     }
                 }
-                if (child.getTblClass().equals(GeoCoordDetail.class))
-                {
+                if (child.getTblClass().equals(GeoCoordDetail.class)) {
                     Pair<DataProviderSessionIFace, Boolean> sessObj = getSession();
             		DataProviderSessionIFace matchSession = sessObj.getFirst();
-                    try
-                    {
+                    try {
                         QueryIFace matchesQ = matchSession
                                 .createQuery("from GeoCoordDetail where localityId = "
                                         + match.getId(), false);
                         List<?> matches = matchesQ.list();
-                        try
-						{
+                        try {
 							child.loadFromDataSet(wbCurrentRow);
 							GeoCoordDetail ld2 = (GeoCoordDetail) child.getCurrentRecord(0);
-							if (ld2 == null && matches.size() == 0)
-							{
+							if (ld2 == null && matches.size() == 0) {
 								continue;
 							}
-							if (ld2 == null && matches.size() != 0)
-							{
-								return false;
-							}
-							if (ld2 != null && matches.size() == 0)
-							{
+							if (ld2 == null && matches.size() != 0) {
+								return false; }
+							if (ld2 != null && matches.size() == 0)  {
 								return false;
 							}
 							GeoCoordDetail ld1 = (GeoCoordDetail) matches
 									.get(0);
 							result = ld1.matches(ld2);
-							if (!result)
-							{
+							if (!result) {
 								return false;
 							}
-						} finally
-						{
+						} finally {
 							child.loadFromDataSet(child.wbCurrentRow);
 						}
-                    }
-                    finally
-                    {
+                    } finally {
             			getRidOfSession(sessObj);
                     }
                 }
