@@ -1,6 +1,7 @@
 package edu.ku.brc.specify.tasks;
 
 import com.google.common.io.PatternFilenameFilter;
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.NavBoxMgr;
 import edu.ku.brc.af.core.SubPaneMgr;
@@ -8,9 +9,11 @@ import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.ui.db.ERTICaptionInfo;
 import edu.ku.brc.af.ui.db.QueryForIdResultsIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
+import edu.ku.brc.specify.SpecifyUserTypes;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.specify.datamodel.SpReport;
+import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.tasks.subpane.qb.*;
 import edu.ku.brc.specify.tools.schemalocale.SchemaLocalizerDlg;
 import edu.ku.brc.specify.ui.db.ResultSetTableModel;
@@ -40,13 +43,20 @@ public class BatchEditTask extends QueryTask {
 
     protected List<String> batchEditables;
 
+    protected final boolean isPermitted;
+
     public BatchEditTask() {
         this(BATCHEDIT, getResourceString(BATCHEDIT));
     }
 
     public BatchEditTask(final String name, final String title) {
         super(name, title);
-        CommandDispatcher.register(QueryTask.QUERY, this);
+        this.isPermitted = !AppContextMgr.isSecurityOn() || SpecifyUser.isCurrentUserType(SpecifyUserTypes.UserType.Manager);
+        if (isPermitted) {
+            CommandDispatcher.register(QueryTask.QUERY, this);
+        } else {
+            isVisible = false;
+        }
     }
 
     @Override
@@ -77,7 +87,9 @@ public class BatchEditTask extends QueryTask {
 
     @Override
     protected void registerServices() {
-        ContextMgr.registerService(new QueryBatchEditServiceInfo());
+        if (isPermitted) {
+            ContextMgr.registerService(new QueryBatchEditServiceInfo());
+        }
     }
 
     protected final class UpWBFilenameFilter implements FilenameFilter {
