@@ -4353,10 +4353,11 @@ public class UploadTable implements Comparable<UploadTable>
             if (tblClass.equals(Agent.class) || Treeable.class.isAssignableFrom(tblClass)) {
                 //System.out.println("Assuming shared for class: " + tblClass);
                 recIsShared = true;
+            } else {
+                SpecifyDeleteHelper delhel = uploader.getDeleteHelper();
+                recIsShared = rec == null ? false : delhel.isRecordShared(tblClass, rec.getId(), false, tblSession);
+                delhel.done(false);
             }
-            SpecifyDeleteHelper delhel = uploader.getDeleteHelper();
-            recIsShared = rec == null ? false : delhel.isRecordShared(tblClass, rec.getId(), false, tblSession);
-            delhel.done(false);
         }
         return recIsShared;
     }
