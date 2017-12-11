@@ -1163,6 +1163,8 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
             log.error(getClass().getName() + ": initializeClone is not implemented for deep = true.");
             return false;
         }
+        this.specifyUser = null;
+        this.collectors.clear();
         return true;
     }
 
