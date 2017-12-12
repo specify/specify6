@@ -4253,6 +4253,9 @@ public class UploadTable implements Comparable<UploadTable>
             InvocationTargetException, IllegalAccessException, ParseException,
             NoSuchMethodException, InstantiationException, SQLException {
         if (skipMatching && !matchRecordId && (overrideParentParams == null || overrideParentParams.size() == 0)) {
+            if (updateMatches) {
+                setCurrentRecordFromExportedRecord(recNum);
+            }
             return false;
         }
 
@@ -5695,7 +5698,7 @@ public class UploadTable implements Comparable<UploadTable>
      */
     protected boolean needToCreateRecordIfParentChanged(int recNum) throws UploaderException {
         //no attempt at generality
-        if (tblClass.equals(CollectingEvent.class) || tblClass.equals(Locality.class)) {
+        if (tblClass.equals(CollectingEvent.class) || tblClass.equals(Locality.class) || tblClass.equals(PaleoContext.class)) {
             return true;
         } else {
             throw new UploaderException("Unsupported situation for " + this.toString(), UploaderException.ABORT_ROW);
@@ -5955,72 +5958,53 @@ public class UploadTable implements Comparable<UploadTable>
      * @return true if there is some data in the current row dataset that needs to be written to
      *         this table in the database.
      */
-    protected boolean needToWrite(int recNum) throws UploaderException
-    {
-    	if (dataToWrite(recNum))
-        {
+    protected boolean needToWrite(int recNum) throws UploaderException {
+    	if (dataToWrite(recNum)) {
         	return true;
         }
-        
-    	if (tblClass.equals(CollectingEvent.class) 
-    			&& AppContextMgr.getInstance().getClassObject(Collection.class).getIsEmbeddedCollectingEvent())
-    	{
+    	if (tblClass.equals(CollectingEvent.class)
+    			&& AppContextMgr.getInstance().getClassObject(Collection.class).getIsEmbeddedCollectingEvent()) {
     		return true;
     	}
-    	
-        for (UploadTable child : specialChildren)
-        {
-        	if (needToMatchChild(child.tblClass) && !child.isOneToOneChild())
-        	{
+        if (tblClass.equals(PaleoContext.class)
+                && AppContextMgr.getInstance().getClassObject(Discipline.class).getIsPaleoContextEmbedded()) {
+            return true;
+        }
+        for (UploadTable child : specialChildren) {
+        	if (needToMatchChild(child.tblClass) && !child.isOneToOneChild()) {
         		child.loadFromDataSet(wbCurrentRow);
-        		for (int c = 0; c < child.getUploadFields().size(); c++)
-        		{
-        			if (child.getCurrentRecord(c) != null)
-        			{
+        		for (int c = 0; c < child.getUploadFields().size(); c++) {
+        			if (child.getCurrentRecord(c) != null) {
         				return true;
         			}
         		}
         	}
         }
-        
-        if (parentTables.size() == 0)
-        {
+        if (parentTables.size() == 0) {
         	return false;
         }
-    	for (Vector<ParentTableEntry> pts : parentTables)
-    	{
-    		for (ParentTableEntry pt : pts)
-    		{
+    	for (Vector<ParentTableEntry> pts : parentTables) {
+    		for (ParentTableEntry pt : pts) {
     			UploadTable parentTbl = pt.getImportTable();
     			boolean checkParent =  parentTbl instanceof UploadTableTree || parentTbl.isOneToOneChild();
-    			if (!checkParent && pt.getParentRel() != null)
-    			{
-    				if (pt.getParentRel().getRelType().startsWith("OneTo"))
-    				{
+    			if (!checkParent && pt.getParentRel() != null) {
+    				if (pt.getParentRel().getRelType().startsWith("OneTo")) {
     					checkParent = !parentTbl.specialChildren.contains(this);    				
-    				}
-    				else
-    				{
+    				} else {
     					checkParent = true;
     				}
     			}
-    			if (checkParent)
-    			{
-    				try 
-    				{
-    					if (pt.getImportTable().getParentRecord(recNum, this) != null)
-    					{
+    			if (checkParent) {
+    				try {
+    					if (pt.getImportTable().getParentRecord(recNum, this) != null) {
     						return true;
     					}
-    				}
-    				catch (Exception ex)
-    				{
+    				} catch (Exception ex) {
     					throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
     				}
     			}
     		}
     	}
-    	        
     	return false;
     }
 
