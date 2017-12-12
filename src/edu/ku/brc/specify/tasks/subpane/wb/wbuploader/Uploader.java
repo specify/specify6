@@ -996,7 +996,8 @@ public class Uploader implements ActionListener, KeyListener
                 uploadTables.add(det);
             }
         }
-        if (!clss.contains(CollectingEvent.class) && clss.contains(Locality.class)
+        if (!clss.contains(CollectingEvent.class)
+                && (clss.contains(Locality.class) || clss.contains(CollectingTrip.class) || clss.contains(CollectingEventAttribute.class))
                 && clss.contains(CollectionObject.class)) {
             UploadTable ce = new UploadTable(this, db.getSchema().getTable("CollectingEvent"), null);
             ce.init();
