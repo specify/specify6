@@ -61,6 +61,7 @@ import javax.swing.border.SoftBevelBorder;
 
 import edu.ku.brc.af.core.*;
 import edu.ku.brc.af.core.db.DBRelationshipInfo;
+import edu.ku.brc.specify.datamodel.*;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -96,26 +97,6 @@ import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.UIFileFilter;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
-import edu.ku.brc.specify.datamodel.Accession;
-import edu.ku.brc.specify.datamodel.Agent;
-import edu.ku.brc.specify.datamodel.CollectingEvent;
-import edu.ku.brc.specify.datamodel.CollectionObject;
-import edu.ku.brc.specify.datamodel.DataModelObjBase;
-import edu.ku.brc.specify.datamodel.Geography;
-import edu.ku.brc.specify.datamodel.Locality;
-import edu.ku.brc.specify.datamodel.Preparation;
-import edu.ku.brc.specify.datamodel.RecordSet;
-import edu.ku.brc.specify.datamodel.ReferenceWork;
-import edu.ku.brc.specify.datamodel.SpLocaleContainer;
-import edu.ku.brc.specify.datamodel.SpQuery;
-import edu.ku.brc.specify.datamodel.SpQueryField;
-import edu.ku.brc.specify.datamodel.SpecifyUser;
-import edu.ku.brc.specify.datamodel.Taxon;
-import edu.ku.brc.specify.datamodel.Workbench;
-import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
-import edu.ku.brc.specify.datamodel.WorkbenchRow;
-import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
-import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.rstools.ExportFileConfigurationFactory;
 import edu.ku.brc.specify.rstools.ExportToFile;
 import edu.ku.brc.specify.tasks.subpane.qb.QBResultsSubPane;
@@ -3902,7 +3883,9 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     	String[] idParts = tblIdCode.split("-");
     	String tblId = idParts[0];
     	String relName = idParts.length == 1 ? "" : idParts[1];
-    	String tblName = DBTableIdMgr.getInstance().getInfoById(tblId).getName().toLowerCase();
+    	DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(tblId);
+    	String tblName = tblInfo.getName().toLowerCase();
+    	boolean isTree = Treeable.class.isAssignableFrom(tblInfo.getClassObj());
 
 		List<Element> defMatches = defMap.get(f.getFieldName().toLowerCase());
 		if (defMatches != null) {
@@ -3912,7 +3895,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 String wbDefTbl = tblAndRel.getFirst();
                 String wbDefRel = tblAndRel.getSecond();
                 String field = XMLHelper.getAttr((Element) fld, "name", null);
-                if (tblName.equalsIgnoreCase(wbDefTbl) && relName.equalsIgnoreCase(wbDefRel)) {
+                if (tblName.equalsIgnoreCase(wbDefTbl) && (isTree || relName.equalsIgnoreCase(wbDefRel))) {
                     DBTableInfo ti = tblMgr.getInfoByTableName(wbSchemaTable.toLowerCase());
                     DBFieldInfo fi = ti == null ? null : ti.getFieldByName(field);
                     if (fi != null) {
