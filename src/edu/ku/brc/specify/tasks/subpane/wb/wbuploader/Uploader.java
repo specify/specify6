@@ -959,60 +959,34 @@ public class Uploader implements ActionListener, KeyListener
     }
 
     /**
-     * Adds extra upload tables. Currently only adds Determination if necessary when Genus/Species
-     * are selected. Also should add CollectingEvent if Locality and CollectionObject are present.
+     * Adds extra upload tables. Adds Determination if necessary when Genus/Species
+     * are selected. And adds CollectingEvent if Locality and CollectionObject are present.
      * And others???
      */
-    protected void addEmptyUploadTables() throws UploaderException
-    {
-        
-        boolean genSpPresent = false, detPresent = false, locPresent = false, coPresent = false, cePresent = false;
-        for (UploadTable ut : uploadTables)
-        {
-            if (ut.getTblClass().equals(Determination.class))
-            {
-                detPresent = true;
-            }
-            if (ut.getTblClass().equals(Locality.class))
-            {
-                locPresent = true;
-            }
-            if (ut.getTblClass().equals(CollectionObject.class))
-            {
-                coPresent = true;
-            }
-            if (ut.getTblClass().equals(CollectingEvent.class))
-            {
-                cePresent = true;
-            }
+    protected void addEmptyUploadTables() throws UploaderException {
+        Set<Class<?>> clss = new HashSet<>();
+        for (UploadTable ut : uploadTables) {
+            clss.add(ut.getTblClass());
         }
-        if (!detPresent)
-        {
+        if (!clss.contains(Determination.class)) {
             int maxSeq = 0;
-            for (WorkbenchTemplateMappingItem mapI : workbenchTemplateMappingItems)
-            {
-                if (isDetTaxLevelMapping(mapI))
-                {
+            boolean genSpPresent = false;
+            for (WorkbenchTemplateMappingItem mapI : workbenchTemplateMappingItems) {
+                if (isDetTaxLevelMapping(mapI)) {
                     genSpPresent = true;
-                    try
-                    {
+                    try {
                         String fldName = mapI.getFieldName();
-                        if (Integer.valueOf(fldName.substring(fldName.length() - 1)) > maxSeq)
-                        {
+                        if (Integer.valueOf(fldName.substring(fldName.length() - 1)) > maxSeq) {
                             maxSeq = Integer.valueOf(fldName.substring(fldName.length() - 1));
                         }
-                    }
-                    catch (NumberFormatException e)
-                    {
+                    } catch (NumberFormatException e) {
                         genSpPresent = false;
                     }
                 }
             }
-            if (genSpPresent)
-            {
+            if (genSpPresent) {
                 UploadTable det = new UploadTable(this, db.getSchema().getTable("Determination"), null);
-                for (int seq = 0; seq < maxSeq; seq++)
-                {
+                for (int seq = 0; seq < maxSeq; seq++) {
                     UploadField fld = new UploadField(db.getSchema().getField("determination",
                             "collectionobjectid"), -1, null, null);
                     fld.setSequence(seq);
@@ -1022,13 +996,29 @@ public class Uploader implements ActionListener, KeyListener
                 uploadTables.add(det);
             }
         }
-        if (!cePresent && locPresent && coPresent)
-        {
+        if (!clss.contains(CollectingEvent.class) && clss.contains(Locality.class)
+                && clss.contains(CollectionObject.class)) {
             UploadTable ce = new UploadTable(this, db.getSchema().getTable("CollectingEvent"), null);
             ce.init();
             ce.addField(new UploadField(db.getSchema().getField("collectingevent",
                     "stationfieldnumber"), -1, null, null));
             uploadTables.add(ce);
+        }
+        if (!clss.contains(PaleoContext.class) && clss.contains(CollectionObject.class)) {
+            boolean paleoTreePresent = false;
+            for (WorkbenchTemplateMappingItem mapI : workbenchTemplateMappingItems) {
+                if (mapI.getTableName().equalsIgnoreCase("lithostrat")
+                        || mapI.getTableName().equalsIgnoreCase("geologictimeperiod")) {
+                    paleoTreePresent = true;
+                    break;
+                }
+            }
+            if (paleoTreePresent) {
+                UploadTable pc = new UploadTable(this, db.getSchema().getTable("PaleoContext"), null);
+                pc.init();
+                pc.addField(new UploadField(db.getSchema().getField("paleocontext", "paleocontextname"), -1, null, null));
+                uploadTables.add(pc);
+            }
         }
     }
 
