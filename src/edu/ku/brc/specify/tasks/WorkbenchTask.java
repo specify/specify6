@@ -3863,6 +3863,19 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     }
 
     /**
+     *
+     * @param tblName
+     * @param relName
+     * @return
+     */
+    protected boolean relationshipSupportedForQBtoWBTransform(final String tblName, final String relName) {
+        if ("geologictimeperiod".equals(tblName)) {
+            return "chronosstrat".equalsIgnoreCase(relName);
+        } else {
+            return true;
+        }
+    }
+    /**
      * @param f
      * @param tblMgr
      * @param uploadDefs
@@ -3883,38 +3896,39 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     	String[] idParts = tblIdCode.split("-");
     	String tblId = idParts[0];
     	String relName = idParts.length == 1 ? "" : idParts[1];
-    	DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(tblId);
-    	String tblName = tblInfo.getName().toLowerCase();
-    	boolean isTree = Treeable.class.isAssignableFrom(tblInfo.getClassObj());
+        DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(tblId);
+        String tblName = tblInfo.getName().toLowerCase();
+    	if (relationshipSupportedForQBtoWBTransform(tblName, relName)) {
+            boolean isTree = Treeable.class.isAssignableFrom(tblInfo.getClassObj());
 
-		List<Element> defMatches = defMap.get(f.getFieldName().toLowerCase());
-		if (defMatches != null) {
-            for (Element fld : defMatches) {
-                String wbSchemaTable = XMLHelper.getAttr((Element) fld, "table", null);
-                Pair<String, String> tblAndRel = getTableAndRelFromWBDef(fld);
-                String wbDefTbl = tblAndRel.getFirst();
-                String wbDefRel = tblAndRel.getSecond();
-                String field = XMLHelper.getAttr((Element) fld, "name", null);
-                if (tblName.equalsIgnoreCase(wbDefTbl) && (isTree || relName.equalsIgnoreCase(wbDefRel))) {
-                    DBTableInfo ti = tblMgr.getInfoByTableName(wbSchemaTable.toLowerCase());
-                    DBFieldInfo fi = ti == null ? null : ti.getFieldByName(field);
-                    if (fi != null) {
-                        return new Pair<>(ti, fi);
+            List<Element> defMatches = defMap.get(f.getFieldName().toLowerCase());
+            if (defMatches != null) {
+                for (Element fld : defMatches) {
+                    String wbSchemaTable = XMLHelper.getAttr((Element) fld, "table", null);
+                    Pair<String, String> tblAndRel = getTableAndRelFromWBDef(fld);
+                    String wbDefTbl = tblAndRel.getFirst();
+                    String wbDefRel = tblAndRel.getSecond();
+                    String field = XMLHelper.getAttr((Element) fld, "name", null);
+                    if (tblName.equalsIgnoreCase(wbDefTbl) && (isTree || relName.equalsIgnoreCase(wbDefRel))) {
+                        DBTableInfo ti = tblMgr.getInfoByTableName(wbSchemaTable.toLowerCase());
+                        DBFieldInfo fi = ti == null ? null : ti.getFieldByName(field);
+                        if (fi != null) {
+                            return new Pair<>(ti, fi);
+                        }
                     }
-                }
 
+                }
             }
-        }
-        //there is no additional info in upload_defs
-        DBTableInfo ti = tblMgr.getInfoByTableName(tblName);
-        if (ti != null) {
-            DBFieldInfo fi = ti.getFieldByColumnName(f.getFieldName());
-            if (fi != null) {
-                return new Pair<>(ti, fi);
+            //there is no additional info in upload_defs
+            DBTableInfo ti = tblMgr.getInfoByTableName(tblName);
+            if (ti != null) {
+                DBFieldInfo fi = ti.getFieldByColumnName(f.getFieldName());
+                if (fi != null) {
+                    return new Pair<>(ti, fi);
+                }
             }
         }
         return null;
-
     }
 
     protected Map<String, List<Element>> buildUploadDefMap(final Element defs) {
