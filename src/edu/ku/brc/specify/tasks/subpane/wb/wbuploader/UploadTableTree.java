@@ -1112,7 +1112,7 @@ protected List<java.lang.reflect.Field> getFldsForJSON() {
      */
     @Override
     protected boolean fallDown() {
-        if (!updateMatches || getChild() != null) {
+        if (!updateMatches) {
             return false;
         } else {
             return fallFarther();
@@ -1128,7 +1128,15 @@ protected List<java.lang.reflect.Field> getFldsForJSON() {
            return false;
         } else {
             Integer currentRank = ((Treeable)exportedRecord).getRankId();
-            DataModelObjBase rec = actualExportedRecord;
+            DataModelObjBase rec;
+            if (getChild() != null) {
+                rec = getChild().exportedRecord;
+                if (!(((Treeable)rec).getParent().getRankId() > currentRank)) {
+                    return false;
+                }
+            } else {
+                rec = actualExportedRecord;
+            }
             while (((Treeable)rec).getParent().getRankId() > currentRank) {
                 rec = (DataModelObjBase)((Treeable)rec).getParent();
             }
@@ -1156,8 +1164,6 @@ protected List<java.lang.reflect.Field> getFldsForJSON() {
         if (rec != null && ((Treeable )rec).getRankId().equals(getRank())) {
             exportedRecordId = rec.getId();
             exportedRecord = rec;
-            //originalExportedRecordId = exportedRecordId;
-            //originalExportedRecord = exportedRecord;
             parentRec = (DataModelObjBase )((Treeable )rec).getParent();
         } else if (rec != null && ((Treeable )rec).getRankId() > getRank()) {
             setExportedRecordId((DataModelObjBase) ((Treeable) rec).getParent());
