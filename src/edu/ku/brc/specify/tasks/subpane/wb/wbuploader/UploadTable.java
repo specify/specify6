@@ -51,7 +51,6 @@ import javax.persistence.CascadeType;
 import javax.swing.SwingUtilities;
 
 import edu.ku.brc.af.core.db.*;
-import edu.ku.brc.sgr.datamodel.DataModel;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.ObjectDeletedException;
@@ -1547,7 +1546,6 @@ public class UploadTable implements Comparable<UploadTable>
      */
     public void setExportedRecordId(DataModelObjBase rec) throws Exception {
     	boolean shouldSetExportedRec = shouldSetExportedRec(rec);
-
         if (!shouldSetExportedRec) {
     		exportedRecordId = null;
     		exportedRecord = null;
@@ -5730,71 +5728,71 @@ public class UploadTable implements Comparable<UploadTable>
         for (int recNum = uploadFields.size() - 1; recNum >= 0; recNum--) {
             Vector<UploadField> seq = uploadFields.get(recNum);
         	try {
-                if (updateMatches) {
-                	updateExportedRecInfo(recNum);
-                }
-            	if (needToWrite(recNum) || !tblAndAncestorsUnchanged) {
-                    if (doSkipMatch || !findMatch(recNum, false, null, null) || updateMatches) {
-                        if (isSecurityOn && !getWriteTable().getTableInfo().getPermissions().canAdd()) {
-                    		throw new UploaderException(String.format(UIRegistry.getResourceString("WB_UPLOAD_NO_ADD_PERMISSION"), getWriteTable().getTableInfo().getTitle()),
-                    				UploaderException.ABORT_ROW);
-                    	}
-                    	if (stillNeedToWrite(tblAndAncestorsUnchanged, recNum)) {
-                            Pair<Boolean, DataModelObjBase> recObj = getCurrentRecordForSave(recNum);
-                    	    DataModelObjBase rec = recObj.getSecond();
-                            boolean isNewRecord = rec.getId() == null;
-                            boolean freshlyCreatedRec = recObj.getFirst();
-                            //XXX is it not possible to skip all the field setting here
-                            //if no changes have been made? getChangedFields() could be used
-                            // ... and if no fields have been changed then skip the rest (or nearly the rest)
-                            //of this method, else use the changed fields to make the rest more efficient???.
-                            //
-                            //XXX But HEY!!! getChangedFields does not check parents. It was originally designed
-                            //to be run for all tables during getChangedFields(row)..
-                            if (freshlyCreatedRec || !updateMatches) {
-                                rec.initialize();
+                do {
+                    if (updateMatches) {
+                        updateExportedRecInfo(recNum);
+                    }
+                    if (needToWrite(recNum) || !tblAndAncestorsUnchanged) {
+                        if (doSkipMatch || !findMatch(recNum, false, null, null) || updateMatches) {
+                            if (isSecurityOn && !getWriteTable().getTableInfo().getPermissions().canAdd()) {
+                                throw new UploaderException(String.format(UIRegistry.getResourceString("WB_UPLOAD_NO_ADD_PERMISSION"), getWriteTable().getTableInfo().getTitle()),
+                                        UploaderException.ABORT_ROW);
                             }
-                            boolean valuesChanged = setFields(rec, seq);
-                            boolean isUpdate = updateMatches && !isNewRecord && valuesChanged;
-                            boolean gotRequiredParents = true;
-                            try {
-                                valuesChanged |= setParents(rec, recNum, !doNotWrite);
-                                isUpdate |= valuesChanged;
-                            } catch (UploaderException ex) {
-                                if ("MissingRequiredParent".equals(ex.getMessage())) {
-                                    gotRequiredParents = false;
-                                } else {
-                                    throw ex;
+                            if (stillNeedToWrite(tblAndAncestorsUnchanged, recNum)) {
+                                Pair<Boolean, DataModelObjBase> recObj = getCurrentRecordForSave(recNum);
+                                DataModelObjBase rec = recObj.getSecond();
+                                boolean isNewRecord = rec.getId() == null;
+                                boolean freshlyCreatedRec = recObj.getFirst();
+                                //XXX is it not possible to skip all the field setting here
+                                //if no changes have been made? getChangedFields() could be used
+                                // ... and if no fields have been changed then skip the rest (or nearly the rest)
+                                //of this method, else use the changed fields to make the rest more efficient???.
+                                //
+                                //XXX But HEY!!! getChangedFields does not check parents. It was originally designed
+                                //to be run for all tables during getChangedFields(row)..
+                                if (freshlyCreatedRec || !updateMatches) {
+                                    rec.initialize();
                                 }
-                            }
-                            if (!updateMatches || freshlyCreatedRec) {
-                                setRequiredFldDefaults(rec, recNum);
-                                setRelatedDefaults(rec, recNum);
-                            }
-                            if (updateMatches && isUpdate && !isNewRecord) {
-                                doNotWrite |= dealWithUpdatedRecord(rec);
-                            }
-                            isUpdate |= finalizeWrite(rec, recNum);
-                            if (!(doNotWrite || (updateMatches && !isUpdate && !isNewRecord))) {
-                                if (!gotRequiredParents && hasChildren) {
-                                    throw new UploaderException(UIRegistry.getResourceString("UPLOADER_MISSING_REQUIRED_DATA"), UploaderException.ABORT_ROW);
+                                boolean valuesChanged = setFields(rec, seq);
+                                boolean isUpdate = updateMatches && !isNewRecord && valuesChanged;
+                                boolean gotRequiredParents = true;
+                                try {
+                                    valuesChanged |= setParents(rec, recNum, !doNotWrite);
+                                    isUpdate |= valuesChanged;
+                                } catch (UploaderException ex) {
+                                    if ("MissingRequiredParent".equals(ex.getMessage())) {
+                                        gotRequiredParents = false;
+                                    } else {
+                                        throw ex;
+                                    }
                                 }
-                                doWrite(rec);
-                                doUploadBookkeeping(rec, recNum, isUpdate, isNewRecord);
+                                if (!updateMatches || freshlyCreatedRec) {
+                                    setRequiredFldDefaults(rec, recNum);
+                                    setRelatedDefaults(rec, recNum);
+                                }
+                                if (updateMatches && isUpdate && !isNewRecord) {
+                                    doNotWrite |= dealWithUpdatedRecord(rec);
+                                }
+                                isUpdate |= finalizeWrite(rec, recNum);
+                                if (!(doNotWrite || (updateMatches && !isUpdate && !isNewRecord))) {
+                                    if (!gotRequiredParents && hasChildren) {
+                                        throw new UploaderException(UIRegistry.getResourceString("UPLOADER_MISSING_REQUIRED_DATA"), UploaderException.ABORT_ROW);
+                                    }
+                                    doWrite(rec);
+                                    doUploadBookkeeping(rec, recNum, isUpdate, isNewRecord);
+                                }
+                                finishDepth(rec, recNum);
                             }
-                            setCurrentRecord(rec, recNum);
-                            finishMatching(rec);
                         }
+                    } else {
+                        if (exportedOneToManyId != null) {
+                            banishChild();
+                        }
+                        setCurrentRecord(null, recNum);
                     }
-                }
-                else {
-                    if (exportedOneToManyId != null) {
-                    	banishChild();
-                    }
-                	setCurrentRecord(null, recNum);
-                }
-            }
-            catch (InstantiationException ieEx) {
+                } while(fallDown());
+                finishRow();
+            } catch (InstantiationException ieEx) {
                 throw new UploaderException(ieEx, UploaderException.ABORT_IMPORT);
             }
             catch (IllegalAccessException iaEx) {
@@ -5818,6 +5816,28 @@ public class UploadTable implements Comparable<UploadTable>
         }
     }
 
+    /**
+     *
+     */
+    protected void finishRow() {
+        //nada
+    }
+    /**
+     *
+     * @return false if rock bottom else true
+     */
+    protected boolean fallDown() {
+        return false;
+    }
+    /**
+     *
+     * @param rec
+     * @param recNum
+     */
+    protected void finishDepth(final DataModelObjBase rec, int recNum) throws UploaderException {
+        setCurrentRecord(rec, recNum);
+        finishMatching(rec);
+    }
     /**
      * @param rec
      */
@@ -5926,10 +5946,8 @@ public class UploadTable implements Comparable<UploadTable>
      * 
      * Called after a write to update Match selection history.
      */
-    protected void finishMatching(final DataModelObjBase rec)
-    {
-        if (restrictedValsForAddNewMatch != null)
-        {
+    protected void finishMatching(final DataModelObjBase rec) {
+        if (restrictedValsForAddNewMatch != null) {
             matchSetting.addSelection(matchSetting.new MatchSelection(restrictedValsForAddNewMatch,
                     uploader.getRow(), rec.getId(), matchSetting.getMode()));
             restrictedValsForAddNewMatch = null;

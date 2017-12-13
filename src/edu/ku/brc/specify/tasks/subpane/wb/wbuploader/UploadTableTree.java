@@ -34,7 +34,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Vector;
 
-import edu.ku.brc.dbsupport.DataProviderFactory;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.NonUniqueResultException;
 
@@ -51,7 +50,6 @@ import edu.ku.brc.specify.tasks.subpane.wb.schema.Field;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Table;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader.ParentTableEntry;
 import edu.ku.brc.util.Pair;
-import org.hibernate.criterion.Restrictions;
 
 /**
  * @author timbo
@@ -77,7 +75,15 @@ public class UploadTableTree extends UploadTable
     protected boolean incrementalNodeNumberUpdates = false;
     protected boolean allowUnacceptedMatches = true;
     protected List<UploadField> nameFields = null;
-    
+    protected Integer actualExportedRecordId = null;
+    protected DataModelObjBase actualExportedRecord = null;
+    protected boolean actualExportedRecordIdHasBeenSet = false;
+    protected int depth = 0; //used for updates when dealing with uploadtable-less tree nodes
+    protected List<DataModelObjBase> depthRecords = new ArrayList<>();
+
+    //protected Integer originalExportedRecordId = null;
+    //protected DataModelObjBase originalExportedRecord = null;
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //json stuff for sp7 uploader experimentation...
     
@@ -320,9 +326,8 @@ protected List<java.lang.reflect.Field> getFldsForJSON() {
      * Example: if this object, represented Genus and the Family was not provided for the current row, the Order would be used
      * as the parent. (Validation would have already detected if Family was required and missing).
      */
-    protected DataModelObjBase getParentRec(Treeable<?,?,?> currentRec, int recNum) throws UploaderException
-    {
-        return getParentRec(currentRec, recNum, false);
+    protected DataModelObjBase getParentRec(Treeable<?,?,?> currentRec, int recNum) throws UploaderException {
+        return depth > 0 ? depthRecords.get(depth - 1) : getParentRec(currentRec, recNum, false);
     }
     
     /**
@@ -377,7 +382,8 @@ protected List<java.lang.reflect.Field> getFldsForJSON() {
         }
         return finalResult;
     }
-    
+
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#finalizeWrite(edu.ku.brc.specify.datamodel.DataModelObjBase, int)
      */
@@ -388,8 +394,10 @@ protected List<java.lang.reflect.Field> getFldsForJSON() {
         //assign treedef and treedefitem to rec
         Treeable tRec = (Treeable)rec;
         DataModelObjBase parentRec = getParentRec(tRec, recNum);
-        tRec.setDefinition(getTreeDef());
-        tRec.setDefinitionItem(getTreeDefItem());
+        if (depth == 0) {
+            tRec.setDefinition(getTreeDef());
+            tRec.setDefinitionItem(getTreeDefItem());
+        }
         if (parentRec == null) {
             tRec.setParent(getDefaultParent2(getTreeDefItem()));
             return true;
@@ -411,16 +419,13 @@ protected List<java.lang.reflect.Field> getFldsForJSON() {
      * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#getParentRecord(int, edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable)
      */
     @Override
-    protected DataModelObjBase getParentRecord(final int recNum, UploadTable forChild) throws UploaderException
-    {
+    protected DataModelObjBase getParentRecord(final int recNum, UploadTable forChild) throws UploaderException {
         DataModelObjBase result = super.getParentRecord(recNum, forChild);
-        if (result != null) 
-        { 
+        if (result != null) {
         	return result;
         }
         result = getParentRec(null, recNum, !(forChild instanceof UploadTableTree));
-        if (result == null && (forChild instanceof UploadTableTree)) 
-        { 
+        if (result == null && (forChild instanceof UploadTableTree)) {
             return (DataModelObjBase) getDefaultParent2(getTreeDefItem()); 
         }
         return result;
@@ -429,10 +434,8 @@ protected List<java.lang.reflect.Field> getFldsForJSON() {
     /**
      * @return the root of the tree for this.tblClass.
      */
-    protected Treeable<?,?,?> getTreeRoot()  throws UploaderException
-    {
-        if (treeRoot == null)
-        {
+    protected Treeable<?,?,?> getTreeRoot()  throws UploaderException {
+        if (treeRoot == null) {
             loadTreeRoot();
         }
         return treeRoot;
@@ -447,23 +450,18 @@ protected List<java.lang.reflect.Field> getFldsForJSON() {
      * 
      * @throws UploaderException
      */
-    protected Treeable<?,?,?> getDefaultParent2(TreeDefItemIface<?,?,?> defItem) throws UploaderException
-    {
+    protected Treeable<?,?,?> getDefaultParent2(TreeDefItemIface<?,?,?> defItem) throws UploaderException {
         TreeDefItemIface<?,?,?> parentDefItem = defItem.getParent();
-        while (parentDefItem != null && parentDefItem.getRankId() > 0)
-        {
-            if (parentDefItem.getIsEnforced() != null && parentDefItem.getIsEnforced())
-            {
+        while (parentDefItem != null && parentDefItem.getRankId() > 0) {
+            if (parentDefItem.getIsEnforced() != null && parentDefItem.getIsEnforced()) {
                 break;
             }
             parentDefItem = parentDefItem.getParent();
         }
-        if (parentDefItem == null)
-        {
+        if (parentDefItem == null) {
             throw new UploaderException("unable to find default parent for " + defItem.getName(), UploaderException.ABORT_ROW);
         }
-        if (parentDefItem.getRankId() == 0)
-        {
+        if (parentDefItem.getRankId() == 0) {
             return getTreeRoot();
         }
         return getDefaultParent(parentDefItem);
@@ -479,12 +477,9 @@ protected List<java.lang.reflect.Field> getFldsForJSON() {
      *
      * @throws UploaderException
      */
-    protected Treeable<?,?,?> getDefaultParent(TreeDefItemIface<?,?,?> parentDefItem) throws UploaderException
-    {
-        for (Treeable<?,?,?> p : defaultParents)
-        {
-            if (p.getDefinitionItem().getTreeDefItemId().equals(parentDefItem.getTreeDefItemId()))
-            {
+    protected Treeable<?,?,?> getDefaultParent(TreeDefItemIface<?,?,?> parentDefItem) throws UploaderException {
+        for (Treeable<?,?,?> p : defaultParents) {
+            if (p.getDefinitionItem().getTreeDefItemId().equals(parentDefItem.getTreeDefItemId())) {
                 return p;
             }
         }
@@ -493,23 +488,16 @@ protected List<java.lang.reflect.Field> getFldsForJSON() {
     	DataProviderSessionIFace session = sessObj.getFirst();
         QueryIFace q = session.createQuery("from " + tblClass.getName() + " where rankId=" + parentDefItem.getRankId().toString()
                 + " and name='" + getDefaultParentName().replace("'", "''") + "'", false);
-        try
-        {
+        try {
             Treeable<?,?,?> result = (Treeable<?,?,?>)q.uniqueResult();
-            if (result != null)
-            {
+            if (result != null) {
                 return result;
             }
-        }
-        catch (NonUniqueResultException hex)
-        {
+        } catch (NonUniqueResultException hex) {
             throw new RuntimeException(hex);
-        }
-        finally
-        {
+        } finally {
             getRidOfSession(sessObj);
         }
-        
         return createDefaultParent(parentDefItem);
     }
     
@@ -527,10 +515,8 @@ protected List<java.lang.reflect.Field> getFldsForJSON() {
      *   
      * @throws UploaderException
      */
-    protected Treeable<?,?,?> createDefaultParent(TreeDefItemIface<?,?,?> defItem) throws UploaderException
-    {
-        try
-        {
+    protected Treeable<?,?,?> createDefaultParent(TreeDefItemIface<?,?,?> defItem) throws UploaderException {
+        try {
             Constructor<?> constructor = tblClass.getDeclaredConstructor();
             Treeable result = (Treeable)constructor.newInstance((Object[])null);
             result.initialize();
@@ -542,32 +528,15 @@ protected List<java.lang.reflect.Field> getFldsForJSON() {
             doWrite((DataModelObjBase)result/*, 0*/);
             defaultParents.add(result);
             return result;            
-        } 
-        catch (NoSuchMethodException ex)
-        {
+        } catch (NoSuchMethodException ex) {
             throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
-        } 
-        catch (InvocationTargetException ex)
-        {
+        } catch (InvocationTargetException ex) {
             throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
-        } 
-        catch (InstantiationException ex)
-        {
+        } catch (InstantiationException ex) {
+            throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
+        } catch (IllegalAccessException ex) {
             throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
         }
-        catch (IllegalAccessException ex)
-        {
-            throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
-        }
-    }
-
-    @Override
-    protected boolean shouldSetExportedRec(DataModelObjBase rec) {
-        boolean result = super.shouldSetExportedRec(rec);
-        if (result) {
-            return this.getRank().equals(((Treeable)rec).getRankId());
-        }
-        return result;
     }
 
     @Override
@@ -1047,6 +1016,25 @@ protected List<java.lang.reflect.Field> getFldsForJSON() {
         return rank;
     }
 
+    /**
+     *
+     * @param rec
+     * @param flds
+     * @return
+     * @throws NoSuchMethodException
+     * @throws InvocationTargetException
+     * @throws IllegalAccessException
+     * @throws UploaderException
+     */
+    @Override
+    protected boolean setFields(DataModelObjBase rec, Vector<UploadField> flds) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, UploaderException {
+        if (depth > 0) {
+            return false;
+        } else {
+            return super.setFields(rec, flds);
+        }
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#setParents(edu.ku.brc.specify.datamodel.DataModelObjBase, int)
      */
@@ -1083,63 +1071,128 @@ protected List<java.lang.reflect.Field> getFldsForJSON() {
 	 * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#loadMyRecord(edu.ku.brc.specify.datamodel.DataModelObjBase, int)
 	 */
 	@Override
-	protected void loadMyRecord(DataModelObjBase rec, int seq)
-	{
+	protected void loadMyRecord(DataModelObjBase rec, int seq) {
 		DataModelObjBase parentRec = rec;
-		if (rec != null && ((Treeable<?,?,?> )rec).getRankId().equals(getRank()))
-		{
+		if (rec != null && ((Treeable )rec).getRankId().equals(getRank())) {
 			super.loadMyRecord(rec, seq);
-			parentRec = (DataModelObjBase )((Treeable<?,?,?> )rec).getParent();
-		}
-		else if (rec != null && ((Treeable<?,?,?> )rec).getRankId() > getRank())
-		{
-			loadMyRecord((DataModelObjBase )((Treeable<?,?,?> )rec).getParent(), seq);
+			parentRec = (DataModelObjBase )((Treeable )rec).getParent();
+		} else if (rec != null && ((Treeable )rec).getRankId() > getRank()) {
+			loadMyRecord((DataModelObjBase )((Treeable )rec).getParent(), seq);
 			return;
-		} else
-		{
+		} else {
 			super.loadMyRecord(null, seq);
 		}
-		if (parent != null)
-		{
+		if (parent != null) {
 			parent.loadMyRecord(parentRec, seq);		
 		}
 	}
 
-	/* (non-Javadoc)
+	@Override
+    protected void finishDepth(final DataModelObjBase rec, int seq) throws UploaderException {
+        super.finishDepth(rec, seq);
+        if (seq > 0) {
+            throw new UploaderException("FinishDepth does not support seq > 0", UploaderException.ABORT_IMPORT);
+        }
+        depthRecords.add(rec);
+    }
+
+    /**
+     *
+     */
+    @Override
+    protected void finishRow() {
+        super.finishRow();
+        actualExportedRecordIdHasBeenSet = false;
+        depth = 0;
+        depthRecords.clear();
+    }
+    /**
+     *
+     * @return false if rock bottom else true
+     */
+    @Override
+    protected boolean fallDown() {
+        if (!updateMatches || getChild() != null) {
+            return false;
+        } else {
+            return fallFarther();
+        }
+    }
+
+    /**
+     *
+     * @return
+     */
+    private boolean fallFarther() {
+        if (exportedRecordId == actualExportedRecordId) {
+           return false;
+        } else {
+            Integer currentRank = ((Treeable)exportedRecord).getRankId();
+            DataModelObjBase rec = actualExportedRecord;
+            while (((Treeable)rec).getParent().getRankId() > currentRank) {
+                rec = (DataModelObjBase)((Treeable)rec).getParent();
+            }
+            exportedRecord = rec;
+            exportedRecordId = rec.getId();
+            depth++;
+            return true;
+        }
+    }
+
+    @Override
+    protected boolean shouldSetExportedRec(DataModelObjBase rec) {
+	    return false;
+    }
+
+    @Override
+    public void setExportedRecordId(DataModelObjBase rec) throws Exception {
+	    if (getChild() == null && !actualExportedRecordIdHasBeenSet) {
+	        actualExportedRecord = rec;
+	        actualExportedRecordId = rec != null ? rec.getId() : null;
+	        actualExportedRecordIdHasBeenSet = true;
+        }
+        super.setExportedRecordId(rec);
+        DataModelObjBase parentRec = rec;
+        if (rec != null && ((Treeable )rec).getRankId().equals(getRank())) {
+            exportedRecordId = rec.getId();
+            exportedRecord = rec;
+            //originalExportedRecordId = exportedRecordId;
+            //originalExportedRecord = exportedRecord;
+            parentRec = (DataModelObjBase )((Treeable )rec).getParent();
+        } else if (rec != null && ((Treeable )rec).getRankId() > getRank()) {
+            setExportedRecordId((DataModelObjBase) ((Treeable) rec).getParent());
+            return;
+        }
+        if (parent != null) {
+            parent.setExportedRecordId(parentRec);
+        }
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#isBlankVal(edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadField, int, int, edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadData)
      */
     @Override
-    protected boolean isBlankVal(UploadField fld, int seq, int row, UploadData uploadData)
-    {
+    protected boolean isBlankVal(UploadField fld, int seq, int row, UploadData uploadData) {
         boolean result = super.isBlankVal(fld, seq, row, uploadData);
         if (!result || uploadFields.size() == 1
-                || (parent != null && !parent.blankSeqs.get(seq >= parent.getUploadFields().size() ? 0: seq)))
-        {
+                || (parent != null && !parent.blankSeqs.get(seq >= parent.getUploadFields().size() ? 0: seq))) {
             return false;
         }
-        
         UploadTableTree kid = child;
-        while (kid != null)
-        {
+        while (kid != null) {
             UploadField kidField = null;
-            for (UploadField field : kid.uploadFields.get(seq))
-            {
-                if (field.getField().getName().equals(fld.getField().getName()))
-                {
+            for (UploadField field : kid.uploadFields.get(seq)) {
+                if (field.getField().getName().equals(fld.getField().getName())) {
                     kidField = field; 
                     break;
                 }
             }
-            if (kidField != null)
-            {
+            if (kidField != null) {
                 kidField.setValue(uploadData.get(row, kidField.getIndex()));
-                if (!super.isBlankVal(kidField, seq, row, uploadData))
-                {
+                if (!super.isBlankVal(kidField, seq, row, uploadData)) {
                     return false;
                 }
-            }
-            else
-            {
+            } else {
                 //this should never happen
                 log.error("Possibly invalid tree structure for " + tblClass.getSimpleName() + " (" + fld + ")");
             }
