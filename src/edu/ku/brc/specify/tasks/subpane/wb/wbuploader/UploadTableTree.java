@@ -332,8 +332,10 @@ protected List<java.lang.reflect.Field> getFldsForJSON() {
      */
     protected DataModelObjBase getParentRec(Treeable<?,?,?> currentRec, int recNum, boolean checkSubTree) throws UploaderException
     {
-        if (parent == null || (checkSubTree && parent.isLowerSubTree != this.isLowerSubTree))
-        {
+        if (updateMatches && parent == null) {
+            return (DataModelObjBase)currentRec.getParent();
+        }
+        if (parent == null || (checkSubTree && parent.isLowerSubTree != this.isLowerSubTree)) {
             return null;
         }
         DataModelObjBase result = parent.getCurrentRecord(recNum);
