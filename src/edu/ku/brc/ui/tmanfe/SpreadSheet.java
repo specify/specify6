@@ -918,39 +918,31 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
         int[] cols = getSelectedColumns();
         pastedRows[0] = -1;
         pastedRows[1] = -1;
-        if (rows != null && cols != null && rows.length > 0 && cols.length > 0)
-        {
+        if (rows != null && cols != null && rows.length > 0 && cols.length > 0) {
             int startRow = rows[0];
             pastedRows[0] = startRow;
             int startCol = cols[0];
-            try
-            {
+            try {
                 Clipboard sysClipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-                if (sysClipboard.isDataFlavorAvailable(DataFlavor.stringFlavor))
-                {
+                if (sysClipboard.isDataFlavorAvailable(DataFlavor.stringFlavor)) {
                 	String trstring = (String )sysClipboard.getData(DataFlavor.stringFlavor);
                 	StringTokenizer st1 = new StringTokenizer(trstring, "\n\r");
-                	for (int i = 0; st1.hasMoreTokens(); i++)
-                	{
+                	for (int i = 0; st1.hasMoreTokens(); i++) {
                 		String   rowstring = st1.nextToken();
                 		//System.out.println("Row [" + rowstring+"]");
                 		String[] tokens    = StringUtils.splitPreserveAllTokens(rowstring, '\t');
-                		for (int j = 0; j < tokens.length; j++)
-                		{
-                			if (startRow + i < getRowCount() && startCol + j < getColumnCount())
-                			{
+                		for (int j = 0; j < tokens.length; j++) {
+                			if (startRow + i < getRowCount() && startCol + j < getColumnCount()) {
                 				int colInx = startCol + j;
                 				int modelColLen = model.getColDataLen(colInx);
-                				if (tokens[j].length() <= modelColLen || modelColLen == -1)
-                				{
+                				WorkbenchPaneSS.WbCellRenderer renderer = (WorkbenchPaneSS.WbCellRenderer)columnModel.getColumn(colInx).getCellRenderer();
+                				if (renderer.isEditable() && (tokens[j].length() <= modelColLen || modelColLen == -1)) {
                 					String token = tokens[j];
-                					if ("\b".equals(token)) //is placeholder for empty cell
-                					{
+                					if ("\b".equals(token)) { //is placeholder for empty cell
                 						token = "";
                 					}
                 					setValueAt(token, startRow + i, colInx);
-                				} else
-                				{
+                				} else {
                 					String msg = String.format(getResourceString("UI_NEWDATA_TOO_LONG"), new Object[] { model.getColumnName(startCol + j), model.getColDataLen(colInx) } );
                 					UIRegistry.getStatusBar().setErrorMessage(msg);
                 					Toolkit.getDefaultToolkit().beep();
@@ -961,12 +953,9 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
                 		pastedRows[1] = pastedRows[1] + 1;
                 	}
                 }
-            } catch (IllegalStateException ex)
-            {
+            } catch (IllegalStateException ex) {
             	UIRegistry.displayStatusBarErrMsg(getResourceString("Spreadsheet.ClipboardUnavailable"));
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                 edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpreadSheet.class, ex);
                 ex.printStackTrace();
