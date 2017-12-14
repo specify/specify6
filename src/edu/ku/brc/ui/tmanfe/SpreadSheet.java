@@ -857,10 +857,8 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
      * 
      * Cut or copy selected cells into the Clipboard
      */
-    public void cutOrCopy(final boolean isCut)
-    {
-        if (!canCutOrCopy())
-        {
+    public void cutOrCopy(final boolean isCut) {
+        if (!canCutOrCopy()) {
         	return;
         }
     	StringBuffer sbf = new StringBuffer();
@@ -871,23 +869,21 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
         int[] rowsselected = getSelectedRows();
         int[] colsselected = getSelectedColumns();
         
-        for (int i = 0; i < numrows; i++)
-        {
-            for (int j = 0; j < numcols; j++)
-            {
+        for (int i = 0; i < numrows; i++) {
+            for (int j = 0; j < numcols; j++) {
                 Object val = getValueAt(rowsselected[i], colsselected[j]);
-                if (val == null || "".equals(val)) //Add place holder for empty cell
-                {
+                if (val == null || "".equals(val)) { //Add place holder for empty cell
                 	val = "\b";
                 }
             	sbf.append(val);
-                if (j < numcols - 1)
-                {
+                if (j < numcols - 1) {
                     sbf.append("\t");
                 }
-                if (isCut)
-                {
-                    setValueAt("", rowsselected[i], colsselected[j]);
+                if (isCut) {
+                    WorkbenchPaneSS.WbCellRenderer renderer = (WorkbenchPaneSS.WbCellRenderer)columnModel.getColumn(colsselected[j]).getCellRenderer();
+                    if (renderer.isEditable()) {
+                        setValueAt("", rowsselected[i], colsselected[j]);
+                    }
                 }
             }
             if (numrows > 1)
