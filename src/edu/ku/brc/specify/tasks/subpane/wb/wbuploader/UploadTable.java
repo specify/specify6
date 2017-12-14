@@ -5789,6 +5789,8 @@ public class UploadTable implements Comparable<UploadTable>
                                     doUploadBookkeeping(rec, recNum, isUpdate, isNewRecord);
                                 }
                                 finishDepth(rec, recNum);
+                            } else if (updateMatches) {
+                                setCurrentRecord(exportedRecord, recNum);
                             }
                         }
                     } else {
