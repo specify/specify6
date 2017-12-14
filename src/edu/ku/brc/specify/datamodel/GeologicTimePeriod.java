@@ -162,6 +162,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
             acceptedChildren = new HashSet<>();
             bioStratsPaleoContext = new HashSet<>();
             chronosStratsPaleoContext = new HashSet<>();
+            setGUID();
             return true;
         }
     }

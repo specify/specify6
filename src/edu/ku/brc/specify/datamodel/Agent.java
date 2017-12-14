@@ -1165,6 +1165,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
         }
         this.specifyUser = null;
         this.collectors.clear();
+        setGUID();
         return true;
     }
 
