@@ -1175,6 +1175,9 @@ protected List<java.lang.reflect.Field> getFldsForJSON() {
         HashMap<DBInfoBase, Object> result = new HashMap<>();
         if (depth == 0) {
             result.putAll(super.getParentOverridesForExportedRecMatching(recNum));
+            if (updateMatches && getParent() == null && exportedRecord != null) {
+                result.put(getTable().getTableInfo().getRelationshipByName("parent"), ((Treeable)exportedRecord).getParent());
+            }
         } else {
             DataModelObjBase parentRec = depthRecords.get(depth - 1);
             result.put(getTable().getTableInfo().getRelationshipByName("parent"), parentRec);
