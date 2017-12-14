@@ -23,17 +23,9 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.Vector;
+import java.util.*;
 
+import edu.ku.brc.af.core.db.DBInfoBase;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.NonUniqueResultException;
 
@@ -1145,6 +1137,47 @@ protected List<java.lang.reflect.Field> getFldsForJSON() {
             depth++;
             return true;
         }
+    }
+
+    /**
+     *
+     * @param recNum
+     * @param restrictedVals
+     * @return
+     * @throws UploaderException
+     * @throws IllegalAccessException
+     * @throws NoSuchMethodException
+     * @throws InvocationTargetException
+     */
+    @Override
+    protected Map<DBInfoBase, Object> getOverridesForExportedRecMatching(int recNum, final List<MatchRestriction> restrictedVals)
+            throws UploaderException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+        if (depth == 0) {
+            return super.getOverridesForExportedRecMatching(recNum, restrictedVals);
+        } else {
+            return getParentOverridesForExportedRecMatching(recNum);
+        }
+    }
+
+    /**
+     *
+     * @param recNum
+     * @return
+     * @throws InvocationTargetException
+     * @throws IllegalArgumentException
+     * @throws IllegalAccessException
+     * @throws UploaderException
+     */
+    protected Map<DBInfoBase, Object> getParentOverridesForExportedRecMatching(int recNum) throws InvocationTargetException,
+            IllegalArgumentException, IllegalAccessException, UploaderException {
+        HashMap<DBInfoBase, Object> result = new HashMap<>();
+        if (depth == 0) {
+            result.putAll(super.getParentOverridesForExportedRecMatching(recNum));
+        } else {
+            DataModelObjBase parentRec = depthRecords.get(depth - 1);
+            result.put(getTable().getTableInfo().getRelationshipByName("parent"), parentRec);
+        }
+        return result;
     }
 
     @Override

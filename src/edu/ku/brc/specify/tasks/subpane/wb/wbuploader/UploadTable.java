@@ -3325,9 +3325,7 @@ public class UploadTable implements Comparable<UploadTable>
         return q.list();
     }
 
-    protected Pair<Boolean, CriteriaIFace> getUpdateMatchCriteriaFromExportedRecord(final DataProviderSessionIFace session,
-                                                                                    final int recNum, Vector<MatchRestriction> restrictedVals,
-                                                                                    HashMap<UploadTable, DataModelObjBase> overrideParentParams)
+    protected Map<DBInfoBase, Object> getOverridesForExportedRecMatching(int recNum, final List<MatchRestriction> restrictedVals)
             throws UploaderException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         Map<DBInfoBase, Object> overrides = new HashMap<>();
         for (UploadField uf : uploadFields.get(recNum)) {
@@ -3338,6 +3336,15 @@ public class UploadTable implements Comparable<UploadTable>
             }
         }
         overrides.putAll(getParentOverridesForExportedRecMatching(recNum));
+        return overrides;
+    }
+
+    protected Pair<Boolean, CriteriaIFace> getUpdateMatchCriteriaFromExportedRecord(final DataProviderSessionIFace session,
+                                                                                    int recNum, final List<MatchRestriction> restrictedVals,
+                                                                                    final HashMap<UploadTable, DataModelObjBase> overrideParentParams)
+            throws UploaderException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+
+        Map<DBInfoBase, Object> overrides = getOverridesForExportedRecMatching(recNum, restrictedVals);
 
         try {
             String matchSql = RecordMatchUtils.getMatchingSql(getExportedRecord(), overrides);
