@@ -1133,23 +1133,27 @@ protected List<java.lang.reflect.Field> getFldsForJSON() {
         if (exportedRecordId == actualExportedRecordId) {
            return false;
         } else {
-            Integer currentRank = ((Treeable)exportedRecord).getRankId();
+            Integer currentRank = exportedRecordId == null ? getRank() :((Treeable)exportedRecord).getRankId();
             DataModelObjBase rec;
             if (getChild() != null) {
                 rec = getChild().exportedRecord;
-                if (!(((Treeable)rec).getParent().getRankId() > currentRank)) {
+                if (rec != null && !(((Treeable)rec).getParent().getRankId() > currentRank)) {
                     return false;
                 }
             } else {
                 rec = actualExportedRecord;
             }
-            while (((Treeable)rec).getParent().getRankId() > currentRank) {
-                rec = (DataModelObjBase)((Treeable)rec).getParent();
+            if (rec == null) {
+                return false;
+            } else {
+                while (((Treeable) rec).getParent().getRankId() > currentRank) {
+                    rec = (DataModelObjBase) ((Treeable) rec).getParent();
+                }
+                exportedRecord = rec;
+                exportedRecordId = rec.getId();
+                depth++;
+                return true;
             }
-            exportedRecord = rec;
-            exportedRecordId = rec.getId();
-            depth++;
-            return true;
         }
     }
 
