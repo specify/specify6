@@ -43,6 +43,8 @@ import edu.ku.brc.specify.tasks.subpane.wb.schema.Table;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader.ParentTableEntry;
 import edu.ku.brc.util.Pair;
 
+import javax.xml.crypto.Data;
+
 /**
  * @author timbo
  *
@@ -330,10 +332,20 @@ protected List<java.lang.reflect.Field> getFldsForJSON() {
      * Example: if this object, represented Genus and the Family was not provided for the current row, the Order would be used
      * as the parent. (Validation would have already detected if Family was required and missing).
      */
-    protected DataModelObjBase getParentRec(Treeable<?,?,?> currentRec, int recNum, boolean checkSubTree) throws UploaderException
-    {
+    protected DataModelObjBase getParentRec(Treeable<?,?,?> currentRec, int recNum, boolean checkSubTree) throws UploaderException {
         if (updateMatches && parent == null) {
-            return (DataModelObjBase)currentRec.getParent();
+            if (currentRec != null) {
+                return (DataModelObjBase)currentRec.getParent();
+            } else {
+                //get the parent of the node at this level in the actualExportedRecord's parentage
+                Treeable leaf = (Treeable)findActualExportedRecord();
+                while (leaf != null && leaf.getRankId() > this.getRank()) {
+                    leaf = leaf.getParent();
+                }
+                if (leaf != null) {
+                    return (DataModelObjBase)leaf.getParent();
+                }
+            }
         }
         if (parent == null || (checkSubTree && parent.isLowerSubTree != this.isLowerSubTree)) {
             return null;
@@ -1189,6 +1201,19 @@ protected List<java.lang.reflect.Field> getFldsForJSON() {
     protected boolean shouldSetExportedRec(DataModelObjBase rec) {
 	    return false;
     }
+
+    /**
+     *
+     * @return
+     */
+    protected DataModelObjBase findActualExportedRecord() {
+        UploadTableTree bottom = this;
+        while (bottom.getChild() != null) {
+            bottom = bottom.getChild();
+        }
+        return bottom.actualExportedRecord;
+    }
+
 
     @Override
     public void setExportedRecordId(DataModelObjBase rec) throws Exception {

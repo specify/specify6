@@ -3348,8 +3348,8 @@ public class UploadTable implements Comparable<UploadTable>
 
         try {
             String matchSql = RecordMatchUtils.getMatchingSql(getExportedRecord(), overrides);
-            List matches = matchSql != null ? queryForInts(matchSql, session) : null;
-            if (matches == null || matches.size() == 0
+            List matches = matchSql != null ? queryForInts(matchSql, session) : new ArrayList();
+            if (matches.size() == 0
                     || (matches.size() == 1 && matches.get(0).equals(exportedRecordId))) {
                 //force (re)use of exported record
                 return new Pair<>(false, null);
@@ -3361,19 +3361,10 @@ public class UploadTable implements Comparable<UploadTable>
                     }
                 }
                 CriteriaIFace critter = session.createCriteria(this.tblClass);
-                //use matches created by current upload w/o asking. hopefully their won't be more than 1
+                //use matches created by current upload w/o asking. hopefully there won't be more than 1
                 critter.add(Restrictions.in("id", previousCreates.size() == 0 ? matches : previousCreates));
                 return new Pair<>(false, critter);
             }
-
-//            if (matches != null
-//                    && !((matches.size() == 1 && matches.get(0).equals(exportedRecordId)) || matches.size() == 0)) {
-//                CriteriaIFace critter = session.createCriteria(this.tblClass);
-//                critter.add(Restrictions.in("id", matches));
-//                return new Pair<>(false, critter);
-//            } else {
-//                return new Pair<>(false, null);
-//            }
         } catch (Exception e) {
             throw new UploaderException(e, UploaderException.ABORT_IMPORT);
         }
@@ -3448,7 +3439,11 @@ public class UploadTable implements Comparable<UploadTable>
 			}
 			return new Pair<Boolean, CriteriaIFace>(false, critter);
 		}
-		return getUpdateMatchCriteriaFromExportedRecord(session, recNum, restrictedVals, overrideParentParams);
+		if (exportedRecordId != null) {
+            return getUpdateMatchCriteriaFromExportedRecord(session, recNum, restrictedVals, overrideParentParams);
+        } else {
+		    return getInsertMatchCriteria(session, recNum, restrictedVals, overrideParentParams);
+        }
 	}
 
 	/**
@@ -5673,10 +5668,15 @@ public class UploadTable implements Comparable<UploadTable>
             return false;
         }
         //assuming findMatch and setCurrentRecordFromMatch have been called...
-        if (getCurrentRecord(seq) != null || !isBlankRow(wbCurrentRow, uploader.getUploadData(), seq)) {
+        boolean isBlankRow = isBlankRow(wbCurrentRow, uploader.getUploadData(), seq);
+        if (!isBlankRow) {
             return true;
-        } else {
+        } else if (getCurrentRecord(seq) == null) {
             return needToCreateRecordIfParentChanged(seq);
+        } else if (getCurrentRecord(seq) != null && isBlankRow) {
+            return false;
+        } else {
+            return true; //wtf??
         }
     }
 
@@ -5774,7 +5774,11 @@ public class UploadTable implements Comparable<UploadTable>
                                 }
                                 finishDepth(rec, recNum);
                             } else if (updateMatches) {
-                                setCurrentRecord(exportedRecord, recNum);
+                                if (isBlankRow(wbCurrentRow, uploader.getUploadData(), recNum)) {
+                                    setCurrentRecord(null, recNum);
+                                } else {
+                                    setCurrentRecord(exportedRecord, recNum);
+                                }
                             }
                         }
                     } else {
