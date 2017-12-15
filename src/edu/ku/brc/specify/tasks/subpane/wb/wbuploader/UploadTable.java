@@ -4691,19 +4691,14 @@ public class UploadTable implements Comparable<UploadTable>
      * @param seq
      * @return true if all the fields corresponding directly to columns in the dataset are blank,
      */
-    protected boolean isBlankRow(int row, UploadData uploadData, int seq) 
-    {
-    	for (UploadField fld : uploadFields.get(getAdjustedSeqForBlankRowCheck(seq))) 
-		{
-			if (fld.getIndex() != -1 || fld.getField().isForeignKey()) 
-			{
+    protected boolean isBlankRow(int row, UploadData uploadData, int seq) {
+    	for (UploadField fld : uploadFields.get(getAdjustedSeqForBlankRowCheck(seq))) {
+			if (fld.getIndex() != -1 || fld.getField().isForeignKey()) {
 				int idx = fld.getIndex();
-				if (idx == -1)
-				{
+				if (idx == -1) {
 					idx = uploadData.indexOfWbFldName(fld.getWbFldName());
 				}
-				if (!StringUtils.isEmpty(uploadData.get(row, idx))) 
-				{
+				if (!StringUtils.isEmpty(uploadData.get(row, idx))) {
 					return false;
 				}
 			}
@@ -5542,24 +5537,15 @@ public class UploadTable implements Comparable<UploadTable>
      * Checks relationships and datatype to see if table data for row and sequence is really blank and/or
      * if it is not OK for it to be blank.
      */
-    protected boolean isBlankSequence(final boolean blank, final UploadData uploadData, final int row, final int seq, final UploadTable childCaller)
-    {
-		if (!blank)
-		{
+    protected boolean isBlankSequence(final boolean blank, final UploadData uploadData, final int row, final int seq, final UploadTable childCaller) {
+		if (!blank) {
 			return false;
 		}
-		
-		if (parentTables.size() > 0)
-		{
-			for (Vector<ParentTableEntry> ptes : parentTables)
-			{
-				for (ParentTableEntry pte : ptes)
-				{
-					if (pte.getImportTable().isSequenced)
-//					if (parentClasses.contains(pte.getImportTable().getTblClass()))
-					{
-						if (!pte.getImportTable().isBlankSequence(pte.getImportTable().blankSeqs.get(seq), uploadData, row, seq, this))
-						{
+		if (parentTables.size() > 0) {
+			for (Vector<ParentTableEntry> ptes : parentTables) {
+				for (ParentTableEntry pte : ptes) {
+					if (pte.getImportTable().isSequenced) {
+						if (!pte.getImportTable().isBlankSequence(pte.getImportTable().blankSeqs.get(seq), uploadData, row, seq, this)) {
 							return false;
 						}
 					}
@@ -5567,8 +5553,6 @@ public class UploadTable implements Comparable<UploadTable>
 			}
 			return true;
 		}
-		
-		//return childCaller == null || !hasChildren;
 		return true;
     }
     
@@ -5689,7 +5673,7 @@ public class UploadTable implements Comparable<UploadTable>
             return false;
         }
         //assuming findMatch and setCurrentRecordFromMatch have been called...
-        if (getCurrentRecord(seq) != null) {
+        if (getCurrentRecord(seq) != null || !isBlankRow(wbCurrentRow, uploader.getUploadData(), seq)) {
             return true;
         } else {
             return needToCreateRecordIfParentChanged(seq);
