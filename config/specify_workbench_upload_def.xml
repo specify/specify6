@@ -600,6 +600,24 @@
 
    	
   	<!-- preparation -->
+    <field table="Preparation" name="preparedDate" />
+    <field table="Preparation" name="preparedFirstNameBy" relationshipname="preparedByAgent" relatedfieldname="firstName"/>
+    <field table="Preparation" name="preparedLastNameBy" relationshipname="preparedByAgent" relatedfieldname="lastName"/>
+    <field table="Preparation" name="preparedMiddleBy" relationshipname="preparedByAgent" relatedfieldname="middleInitial"/>
+    <field table="Preparation" name="preparedTitleBy" relationshipname="preparedByAgent" relatedfieldname="title"/>
+    <field table="Preparation" name="prepType"  relationshipname="prepType" relatedfieldname="name"/>
+    <field table="Preparation" name="prepYesNo" actualname="yesNo1" />
+    <field table="Preparation" name="prep1Text" actualname="text1" />
+    <field table="Preparation" name="prep1Text" actualname="text2" />
+    <field table="Preparation" name="prep1Integer" actualname="integer1"/>
+    <field table="Preparation" name="prep1Integer" actualname="integer2"/>
+    <field table="Preparation" name="prep1Number" actualname="number1" />
+    <field table="Preparation" name="prep1Number" actualname="number2" />
+    <field table="Preparation" name="prepDescription" actualname="description"/>
+    <field table="Preparation" name="count" actualname="countAmt" />
+    <field table="Preparation" name="storageLocation" actualname="storageLocation"/>
+    <field table="Preparation" name="prepRemarks" actualname="Remarks"/>
+
     <field table="Preparation" name="preparedDate1" actualname="preparedDate" onetomanysequence="0" relationshipname="collectionObject"/>
     <field table="Preparation" name="preparedFirstNameBy1" onetomanysequence="0" relationshipname="preparedByAgent" relatedfieldname="firstName"/>
     <field table="Preparation" name="preparedLastNameBy1" onetomanysequence="0" relationshipname="preparedByAgent" relatedfieldname="lastName"/>

@@ -1,33 +1,33 @@
 <database>
 
   <table classname="edu.ku.brc.specify.datamodel.Preparation" table="preparation" tableid="63" lazy="true" >
-    <field column="Prepared Date" name="preparedDate1" type="calendar_date"/>
-    <field column="Prepared First Name By" name="preparedFirstNameBy1" type="java.lang.String" length="50"/>
-    <field column="Prepared Last Name By" name="preparedLastNameBy1" type="java.lang.String" length="120"/>
-    <field column="Prepared Middle Initials By" name="preparedMiddleBy1" type="java.lang.String" length="50"/>
-    <field column="Prepared Title By" name="preparedTitleBy1" type="java.lang.String" length="50"/>
-    <field column="Prep Type" name="prepType1" type="text" length="64"/>
-    <field column="Count1" name="count1" type="java.lang.Integer" length="10"/>
-    <field column="Storage Location" name="storageLocation1" type="java.lang.String" length="50"/>
-    <field column="Prep YesNo1" name="prepYesNo1" type="boolean" />
-    <field column="Prep Text1" name="prep1Text1" type="java.lang.String" length="500"/>
-    <field column="Prep Text2" name="prep1Text2" type="java.lang.String" length="500"/>
-    <field column="Prep Integer1" name="prep1Integer1" type="java.lang.Integer" length="10"/>
-    <field column="Prep Integer2" name="prep1Integer2" type="java.lang.Integer" length="10"/>
-    <field column="Number1" name="prep1Number1" type="java.lang.Double"/>
-    <field column="Number2" name="prep1Number2" type="java.lang.Double"/>
-    <field column="Prep Description" name="prepDescription1" type="java.lang.String" length="255"/>
-    <field column="Prep Remarks" name="prepRemarks1" type="text" length="4096"/>
+    <field column="Prepared Date" name="preparedDate" type="calendar_date"/>
+    <field column="Prepared First Name By" name="preparedFirstNameBy" type="java.lang.String"/>
+    <field column="Prepared Last Name By" name="preparedLastNameBy" type="java.lang.String"/>
+    <field column="Prepared Middle Initials By" name="preparedMiddleBy" type="java.lang.String" />
+    <field column="Prepared Title By" name="preparedTitleBy" type="java.lang.String" />
+    <field column="Prep Type" name="prepType" type="text"/>
+    <field column="Count1" name="count" type="java.lang.Integer"/>
+    <field column="Storage Location" name="storageLocation" type="java.lang.String"/>
+    <field column="Prep YesNo1" name="prepYesNo" type="boolean" />
+    <field column="Prep Text1" name="prep1Text" type="java.lang.String"/>
+    <field column="Prep Text2" name="prep1Text" type="java.lang.String" />
+    <field column="Prep Integer1" name="prep1Integer" type="java.lang.Integer"/>
+    <field column="Prep Integer2" name="prep1Integer" type="java.lang.Integer"/>
+    <field column="Number1" name="prep1Number" type="java.lang.Double"/>
+    <field column="Number2" name="prep1Number" type="java.lang.Double"/>
+    <field column="Prep Description" name="prepDescription" type="java.lang.String" />
+    <field column="Prep Remarks" name="prepRemarks" type="text"/>
     
-    <field column="Building1" name="building1" type="java.lang.String" length="64"/>
-    <field column="Collection1" name="collection1" type="java.lang.String" length="64"/>
-    <field column="Room1" name="room1" type="java.lang.String" length="64"/>
-    <field column="Aisle1" name="aisle1" type="java.lang.String" length="64"/>
-    <field column="Cabinet1" name="cabinet1" type="java.lang.String" length="64"/>
-    <field column="Shelf1" name="shelf1" type="java.lang.String" length="64"/>
-    <field column="Box1" name="box1" type="java.lang.String" length="64"/>
-    <field column="Rack1" name="rack1" type="java.lang.String" length="64"/>
-    <field column="Vial1" name="vial1" type="java.lang.String" length="64"/>
+    <field column="Building1" name="building1" type="java.lang.String"/>
+    <field column="Collection1" name="collection1" type="java.lang.String" />
+    <field column="Room1" name="room1" type="java.lang.String" />
+    <field column="Aisle1" name="aisle1" type="java.lang.String" />
+    <field column="Cabinet1" name="cabinet1" type="java.lang.String" />
+    <field column="Shelf1" name="shelf1" type="java.lang.String" />
+    <field column="Box1" name="box1" type="java.lang.String" />
+    <field column="Rack1" name="rack1" type="java.lang.String"/>
+    <field column="Vial1" name="vial1" type="java.lang.String"/>
   </table>
 
   <table classname="edu.ku.brc.specify.datamodel.PreparationAttribute" table="preparationattribute" tableid="91" lazy="true" query="false">

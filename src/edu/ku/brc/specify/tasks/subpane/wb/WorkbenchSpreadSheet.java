@@ -18,6 +18,7 @@ import java.util.Vector;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
+import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import org.apache.commons.lang.StringUtils;
 import org.jdesktop.swingx.table.TableColumnExt;
 
@@ -211,33 +212,26 @@ public class WorkbenchSpreadSheet extends SpreadSheet
      * @param colIdx
      * @return a comparator suitable for the data type of the field the column at colIdx maps to.
      */
-    protected Comparator<String> getComparatorForCol(final int colIdx)
-    {
+    protected Comparator<String> getComparatorForCol(final int colIdx) {
     	GridTableHeader mapping = ((GridTableModel )model).getColMapping(colIdx);
-    	Class<?> dataClass = mapping.getDataType(); //WorkbenchTask.getDataType(mapping);
-    	if (dataClass.equals(Calendar.class))
-    	{
+    	Class<?> dataClass = WorkbenchTask.getDataType((WorkbenchTemplateMappingItem) mapping, workbenchPaneSS.isUpdateDataSet());
+    	if (dataClass.equals(Calendar.class)) {
     		return new DateColumnComparator();
     	}
-    	if (dataClass.equals(Boolean.class))
-    	{
+    	if (dataClass.equals(Boolean.class)) {
     		return new BooleanColumnComparator();
     	}
-    	if (isGeoRefMapping(mapping))
-    	{
+    	if (isGeoRefMapping(mapping)) {
     		return new GeoRefColumnComparator();
     	}
-    	if (Number.class.isAssignableFrom(dataClass))
-    	{
+    	if (Number.class.isAssignableFrom(dataClass)) {
     		return new NumericColumnComparator();
     	}
-    	if (mapping.getFieldName().equalsIgnoreCase("catalognumber")  && mapping.getTableName().equalsIgnoreCase("collectionobject"))
-    	{
+    	if (mapping.getFieldName().equalsIgnoreCase("catalognumber")  && mapping.getTableName().equalsIgnoreCase("collectionobject")) {
     		DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(1);
     		DBFieldInfo fi = ti.getFieldByName("catalogNumber");
     		UIFieldFormatterIFace format = fi.getFormatter();
-    		if (format != null && format.isNumeric())
-    		{
+    		if (format != null && format.isNumeric()) {
     			return new NumericColumnComparator();
     		}
     	}

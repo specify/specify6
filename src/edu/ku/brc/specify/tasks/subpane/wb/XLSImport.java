@@ -206,7 +206,7 @@ public class XLSImport extends DataImport implements DataImportIFace
                                     value = scrDateFormat.getSimpleDateFormat().format(cell.getDateCellValue());
                                 } else
                                 {
-                                    Class<?> classObj = WorkbenchTask.getDataType(wbtmi);
+                                    Class<?> classObj = WorkbenchTask.getDataType(wbtmi, false);
                                     if (classObj.equals(Integer.class))
                                     {
                                         double numeric = cell.getNumericCellValue();

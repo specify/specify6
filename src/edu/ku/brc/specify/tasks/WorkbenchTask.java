@@ -46,6 +46,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.Vector;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
@@ -184,7 +185,17 @@ public class WorkbenchTask extends BaseTask
             getResourceString("WB_YES"), getResourceString("WB_NO"),
             getResourceString("WB_YES_ABBR"), getResourceString("WB_NO_ABBR"), "1", "0" };
 
-    
+
+    protected static AtomicReference<String> batchEditDatabaseSchemaName = new AtomicReference<>(null);
+    protected static SoftReference<DBTableIdMgr> batchEditDatabaseSchema = null;
+    protected static boolean isCustomizedBatchEditSchema;
+    protected static void setBatchEditDatabaseSchemaName(final String name) {
+        if (!name.equals(batchEditDatabaseSchemaName.get())) {
+            batchEditDatabaseSchemaName.set(name);
+            batchEditDatabaseSchema = null;
+        }
+    }
+
     protected static SoftReference<DBTableIdMgr> 	databasechema = null;
     protected static boolean					  	isCustomizedSchema = false; //true if schema and upload_defs are loaded from a user-customized file
 
@@ -198,6 +209,7 @@ public class WorkbenchTask extends BaseTask
         
     // Temporary until we get a Workbench Icon
     protected boolean                     doingStarterPane = false;
+
 
     public final DatasetNavBoxMgr datasetNavBoxMgr;
     
@@ -234,7 +246,7 @@ public class WorkbenchTask extends BaseTask
         
         datasetNavBoxMgr = new DatasetNavBoxMgr(this);
                 
-        getDatabaseSchema();
+        getDatabaseSchema(false);
 	}
 
     /* (non-Javadoc)
@@ -391,9 +403,18 @@ public class WorkbenchTask extends BaseTask
             
         if (customSchemaFile.exists() && customDefFile.exists()) {
            	schema.initialize(customSchemaFile);
-           	isCustomizedSchema = true;
+           	if (schemaName.equalsIgnoreCase("specify_workbench_datamodel")) {
+                isCustomizedSchema = true;
+            } else {
+           	    isCustomizedBatchEditSchema = true;
+            }
         } else {
            	schema.initialize(new File(XMLHelper.getConfigDirPath(schemaName + ".xml")));
+            if (schemaName.equalsIgnoreCase("specify_workbench_datamodel")) {
+                isCustomizedSchema = false;
+            } else {
+                isCustomizedBatchEditSchema = false;
+            }
         }
             
         SchemaLocalizerXMLHelper schemaLocalizer = new SchemaLocalizerXMLHelper(SpLocaleContainer.WORKBENCH_SCHEMA, schema);
@@ -412,61 +433,25 @@ public class WorkbenchTask extends BaseTask
      * Reads in the disciplines file (is loaded when the class is loaded).
      * @return Reads in the disciplines file (is loaded when the class is loaded).
      */
-    public static DBTableIdMgr getDatabaseSchema()
-    {
-        DBTableIdMgr schema = null;
-        
-        if (databasechema != null)
-        {
-            schema = databasechema.get();
+    public static DBTableIdMgr getDatabaseSchema(boolean forBatchEdit) {
+        DBTableIdMgr dbSchema = null;
+        SoftReference<DBTableIdMgr> schema = forBatchEdit ? batchEditDatabaseSchema : databasechema;
+        if (schema != null) {
+            dbSchema = schema.get();
         }
-        
-        if (schema == null)
-        {
-//            schema = new DBTableIdMgr(false);
-//            
-//            //check for custom config files in appdatadir
-//            File customSchemaFile = new File(UIRegistry.getAppDataDir() + File.separator + "specify_workbench_datamodel.xml");
-//            File customDefFile = new File(UIRegistry.getAppDataDir() + File.separator + "specify_workbench_upload_def.xml");
-//            if (customSchemaFile.exists() && !customDefFile.exists()) 
-//            {
-//            	log.error("a customized specify_workbench_datamodel.xml was found but not loaded because a customized specify_workbench_upload_def.xml was not found");
-//            } else if (!customSchemaFile.exists() && customDefFile.exists()) 
-//            {
-//            	log.error("a customized specify_workbench_upload_def.xml was found but not loaded because a customized specify_workbench_datamodel.xml was not found");
-//            }
-//            
-//            if (customSchemaFile.exists() && customDefFile.exists())
-//            {
-//            	schema.initialize(customSchemaFile);
-//            	isCustomizedSchema = true;
-//            }
-//            else
-//            {
-//            	schema.initialize(new File(XMLHelper.getConfigDirPath("specify_workbench_datamodel.xml")));
-//            }
-//            databasechema = new SoftReference<DBTableIdMgr>(schema);
-//            
-//            SchemaLocalizerXMLHelper schemaLocalizer = new SchemaLocalizerXMLHelper(SpLocaleContainer.WORKBENCH_SCHEMA, schema);
-//            schemaLocalizer.load(true);
-//            schemaLocalizer.setTitlesIntoSchema();
-//            
-//            DBTableIdMgr mgr = databasechema.get();
-//            DBTableInfo taxonOnly = mgr.getInfoById(4000);
-//            if (taxonOnly != null)
-//            {
-//                taxonOnly.setTitle(getResourceString("WB_TAXONIMPORT_ONLY"));
-//                //taxonOnly.setTableId(4);
-//            }
-        	schema = buildDatabaseSchema("specify_workbench_datamodel");
-        	databasechema = new SoftReference<DBTableIdMgr>(schema);
+        if (schema == null) {
+        	dbSchema = buildDatabaseSchema(forBatchEdit ? batchEditDatabaseSchemaName.get() : "specify_workbench_datamodel");
+        	if (forBatchEdit) {
+        	    batchEditDatabaseSchema = new SoftReference<>(dbSchema);
+            } else {
+                databasechema = new SoftReference<>(dbSchema);
+            }
         }
-        
-        return schema;
+        return dbSchema;
     }
 
-    protected boolean canViewReports()
-    {
+
+    protected boolean canViewReports() {
         Taskable reportsTask = ContextMgr.getTaskByClass(ReportsTask.class);
         return reportsTask != null && reportsTask.getPermissions().canView();
     }
@@ -1339,7 +1324,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             try
             {
                 session.attach(workbenchTemplate);
-                workbenchTemplate.checkMappings(getDatabaseSchema());
+                //workbenchTemplate.checkMappings(getDatabaseSchema());
                 Vector<WorkbenchTemplate> newDataRow = new Vector<WorkbenchTemplate>(1);
                 newDataRow.add(workbenchTemplate);
                 command.setData(newDataRow);
@@ -2539,7 +2524,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 UIRegistry.getStatusBar().setIndeterminate(workbench.getName(), false);
                 //force load the workbench here instead of calling workbench.forceLoad() because
                 //is so time-consuming and needs progress bar.
-                workbench.getWorkbenchTemplate().checkMappings(getDatabaseSchema());
+                //workbench.getWorkbenchTemplate().checkMappings(getDatabaseSchema());
                 UIRegistry.getStatusBar().incrementValue(workbench.getName());
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run()
@@ -2855,7 +2840,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                     
                 } else if (list.size() == 1)
                 {
-                    list.get(0).getWorkbenchTemplate().checkMappings(getDatabaseSchema());
+                    //list.get(0).getWorkbenchTemplate().checkMappings(getDatabaseSchema());
                     return list.get(0);
                 }
                 
@@ -3168,7 +3153,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     {
         loadTemplateFromData(wbTemplate);
         TemplateEditor dlg = null;
-        wbTemplate.checkMappings(getDatabaseSchema());
+        //wbTemplate.checkMappings(getDatabaseSchema());
         try 
         {
         	dlg = showColumnMapperDlg(null, wbTemplate, "WB_MAPPING_EDITOR", null);
@@ -4011,8 +3996,8 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
      */
     public WorkbenchTemplate getTemplateFromQuery(final Pair<SpQuery, Map<SpQueryField, String>> q) throws Exception {
     	SpQuery query = q.getFirst();
-    	String updateSchemaName = getUpdateSchemaForTable(query.getContextTableId());
-    	DBTableIdMgr tblMgr = WorkbenchTask.buildDatabaseSchema(updateSchemaName);
+    	setBatchEditDatabaseSchemaName(getUpdateSchemaForTable(query.getContextTableId()));
+    	DBTableIdMgr tblMgr = getDatabaseSchema(true);
     	Pair<List<Pair<SpQueryField, Pair<DBTableInfo, DBFieldInfo>>>, List<SpQueryField>> mappingInfo = getQueryWBMappings(query, tblMgr);
     	//Notify user re unmappables.
     	if (mappingInfo.getSecond() != null && mappingInfo.getSecond().size() > 0) {
@@ -4027,20 +4012,11 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     	wt.initialize();
     	short viewOrder = 0;
     	List<Pair<SpQueryField, Pair<DBTableInfo, DBFieldInfo>>> mappings = mappingInfo.getFirst();
-    	mappings.sort(new Comparator<Pair<SpQueryField, Pair<DBTableInfo, DBFieldInfo>>>() {
-
-			/* (non-Javadoc)
-			 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-			 */
-			@Override
-			public int compare(Pair<SpQueryField, Pair<DBTableInfo, DBFieldInfo>> o1,
-					Pair<SpQueryField, Pair<DBTableInfo, DBFieldInfo>> o2) {
-				SpQueryField f1 = o1.getFirst();
-				SpQueryField f2 = o2.getFirst();
-				return f1.getPosition().compareTo(f2.getPosition());
-			}
-    		
-    	});
+        mappings.sort((o1, o2) -> {
+            SpQueryField f1 = o1.getFirst();
+            SpQueryField f2 = o2.getFirst();
+            return f1.getPosition().compareTo(f2.getPosition());
+        });
     	for (Pair<SpQueryField, Pair<DBTableInfo, DBFieldInfo>> m : mappings) {
     		WorkbenchTemplateMappingItem mi = createMappingItemForQueryField(m.getFirst(), m.getSecond(), q.getSecond(), viewOrder++,
                     isBatchEditableFld(query, m.getFirst(), m.getSecond()));
@@ -4050,7 +4026,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     	String nowStr = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Timestamp(System.currentTimeMillis()));
     	String tag = "<<#spatch#>>:Q:" + query.getContextTableId() + "-" + nowStr;
     	wt.setSrcFilePath(tag);
-    	wt.setName("Query Results Edit -- " + nowStr);
+    	wt.setName(query.getName() + " -- " + nowStr);
     	return wt;
     }
 
@@ -4474,28 +4450,18 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
      * @param recordSet the RecordSet containing thew ID
      * @return the workbench or null
      */
-    protected WorkbenchTemplate loadWorkbenchTemplate(final RecordSetIFace recordSet)
-    {
-        if (recordSet != null)
-        {
+    protected WorkbenchTemplate loadWorkbenchTemplate(final RecordSetIFace recordSet) {
+        if (recordSet != null) {
             DataProviderSessionIFace session   = DataProviderFactory.getInstance().createSession();
-            try
-            {
+            try {
                 WorkbenchTemplate workbenchTemplate = session.get(WorkbenchTemplate.class, recordSet.getOnlyItem().getRecordId());
-                if (workbenchTemplate != null)
-                {
-                    workbenchTemplate.checkMappings(getDatabaseSchema());
-                }
                 return workbenchTemplate;
                 
-            } catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                 edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
                 log.error(ex);
-            }
-            finally
-            {
+            } finally {
                 session.close();            
             }
         }
@@ -4708,14 +4674,14 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
      *
      * @return a {@link Class} object representing the DB target field of this mapping.
      */
-    public static Class<?> getDataType(final WorkbenchTemplateMappingItem wbtmi)
+    public static Class<?> getDataType(final WorkbenchTemplateMappingItem wbtmi, boolean forBatchEdit)
     {
         // if this mapping item doesn't correspond to a DB field, return the java.lang.String class
         if (wbtmi.getSrcTableId() == null || wbtmi.getSrcTableId() == -1) {
             return String.class;
         }
         
-        DBTableIdMgr schema    = getDatabaseSchema();
+        DBTableIdMgr schema    = getDatabaseSchema(forBatchEdit);
         DBTableInfo  tableInfo = schema.getInfoById(wbtmi.getSrcTableId());
         if (tableInfo == null) {
             throw new RuntimeException ("Cannot find TableInfo in DBTableIdMgr for ID=" + wbtmi.getSrcTableId());

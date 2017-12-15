@@ -148,7 +148,7 @@ abstract class WorkbenchEditorCreator
              //force load the workbench here instead of calling workbench.forceLoad() because
              //is so time-consuming and needs progress bar.
              //workbench.getWorkbenchTemplate().forceLoad();
-             workbench.getWorkbenchTemplate().checkMappings(WorkbenchTask.getDatabaseSchema());
+             //workbench.getWorkbenchTemplate().checkMappings(WorkbenchTask.getDatabaseSchema());
              //UIRegistry.getStatusBar().incrementValue(workbench.getName());
              int count = 0;
              // Adjust paint increment for number of rows in DataSet

@@ -1112,32 +1112,24 @@ public class Uploader implements ActionListener, KeyListener
     /**
      * @throws UploaderException builds the uploadGraph.
      */
-    protected void buildUploadGraph() throws UploaderException
-    {
-        uploadGraph = new DirectedGraph<Table, Relationship>();
-        try
-        {
-            for (UploadTable t : uploadTables)
-            {
+    protected void buildUploadGraph() throws UploaderException {
+        uploadGraph = new DirectedGraph<>();
+        try {
+            for (UploadTable t : uploadTables) {
                 String label = t.getTable().getName();
-                if (uploadGraph.getVertexByLabel(label) == null)
-                {
+                if (uploadGraph.getVertexByLabel(label) == null) {
                     uploadGraph.addVertex(new Vertex<Table>(label, t.getTable()));
                 }
             }
-            for (Edge<Table, Relationship> edge : db.getGraph().getEdges())
-            {
+            for (Edge<Table, Relationship> edge : db.getGraph().getEdges()) {
                 Vector<UploadTable> its1 = getUploadTable(edge.getPointA().getData());
                 Vector<UploadTable> its2 = getUploadTable(edge.getPointB().getData());
-                if (its1.size() > 0 && its2.size() > 0)
-                {
+                if (its1.size() > 0 && its2.size() > 0) {
                     uploadGraph.addEdge(edge.getPointA().getLabel(), edge.getPointB().getLabel(),
                             edge.getData());
                 }
             }
-        }
-        catch (DirectedGraphException e)
-        {
+        } catch (DirectedGraphException e) {
             logDebug(e);
             throw new UploaderException(e, UploaderException.ABORT_IMPORT);
         }
@@ -1633,7 +1625,7 @@ public class Uploader implements ActionListener, KeyListener
         Vector<UploadTableInvalidValue> result = new Vector<UploadTableInvalidValue>();
         int startRow = rowToValidate != -1 ? rowToValidate : 0;
         int endRow = rowToValidate != -1 ? rowToValidate + 1 : uploadData.getRows();
-        Integer[] colWidths = wbSS != null ? null : WorkbenchPaneSS.getMaxColWidths(theWb);
+        Integer[] colWidths = wbSS != null ? null : WorkbenchPaneSS.getMaxColWidths(theWb, isUpdateUpload());
         for (Vector<UploadField> ufs : uploadTable.getUploadFields()) {
             for (UploadField uf : ufs) {
                 if (uf.getIndex() != -1) {
@@ -2126,9 +2118,8 @@ public class Uploader implements ActionListener, KeyListener
      * @param tbl
      * @return true if tbl is represented in the Workbench schema.
      */
-    protected boolean isInWBSchema(final Table tbl)
-    {
-        return WorkbenchTask.getDatabaseSchema().getInfoById(tbl.getTableInfo().getTableId()) != null;
+    protected boolean isInWBSchema(final Table tbl) {
+        return WorkbenchTask.getDatabaseSchema(isUpdateUpload()).getInfoById(tbl.getTableInfo().getTableId()) != null;
     }
     
     /**
@@ -2193,41 +2184,30 @@ public class Uploader implements ActionListener, KeyListener
         //This could become very very very inefficient if the number of tables in the Workbench Schema gets larger.
         Vector<Vector<Table>> result = new Vector<Vector<Table>>();
         DirectedGraph<Table, Relationship> dbGraph = this.db.getSchema().getGraph();
-        for (Vertex<Table> newTbl : dbGraph.getVertices())
-        {
-            if (!isTreeable(newTbl.getData()) && isInWBSchema(newTbl.getData()))
-            {
-                if (!isInUploadGraph(newTbl))
-                {
+        for (Vertex<Table> newTbl : dbGraph.getVertices()) {
+            if (!isTreeable(newTbl.getData()) && isInWBSchema(newTbl.getData())) {
+                if (!isInUploadGraph(newTbl)) {
                     uploadGraph.addVertex(newTbl);
-                    for (Vertex<Table> adj : dbGraph.getAdjacentVertices(newTbl))
-                    {
+                    for (Vertex<Table> adj : dbGraph.getAdjacentVertices(newTbl)) {
                         //Vertex<Table> endPt = uploadGraph.getVertexByData(adj.getData());
                         Vertex<Table> endPt = getMatchingVertexInUpload(adj.getData());
-                        if (endPt != null)
-                        {
+                        if (endPt != null) {
                             uploadGraph.addEdge(newTbl.getLabel(), endPt.getLabel());
                         }
                     }
-                    for (Vertex<Table> adj : dbGraph.into(newTbl.getData()))
-                    {
+                    for (Vertex<Table> adj : dbGraph.into(newTbl.getData())) {
                         Vertex<Table> endPt = getMatchingVertexInUpload(adj.getData());
-                        if (endPt != null)
-                        {
+                        if (endPt != null) {
                             uploadGraph.addEdge(endPt.getLabel(), newTbl.getLabel());
                         }
                     }
-                    if (uploadGraph.isConnected())
-                    {
+                    if (uploadGraph.isConnected()) {
                         Vector<Table> newTblResult = new Vector<Table>();
                         newTblResult.add(newTbl.getData());
                         result.add(newTblResult);
-                    }
-                    else if (depth - 1 > 0)
-                    {
+                    } else if (depth - 1 > 0) {
                         Vector<Vector<Table>> results = connectUploadGraph(depth - 1);
-                        for (Vector<Table> tbls : results)
-                        {
+                        for (Vector<Table> tbls : results) {
                             tbls.add(newTbl.getData());
                             result.add(tbls);
                         }

@@ -63,23 +63,20 @@ public class WorkbenchValidator
 	/**
 	 * @return an uploader for wbPane.
 	 */
-	protected Uploader createUploader() throws WorkbenchValidatorException, UploaderException
-	{
+	protected Uploader createUploader() throws WorkbenchValidatorException, UploaderException {
 		WorkbenchUploadMapper importMapper = new WorkbenchUploadMapper(workbench
                 .getWorkbenchTemplate());
 		Vector<UploadMappingDef> maps = importMapper.getImporterMapping();
-        try
-        {
+        try {
         	DB db = new DB();
         	Uploader result = new Uploader(db, new UploadData(maps, workbench.getWorkbenchRowsAsList()), wbPane, workbench, workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems(), true);
         	Vector<UploadMessage> structureErrors = result.verifyUploadability();
-        	if (structureErrors.size() > 0) 
-        	{ 
+        	if (structureErrors.size() > 0) {
         		throw new WorkbenchValidatorException(structureErrors);
         	}
         	return result;
-        } catch (Exception ex)
-        {
+        } catch (Exception ex) {
+        	ex.printStackTrace();
         	throw new UploaderException(ex);
         }
 	}

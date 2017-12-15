@@ -130,7 +130,7 @@ public class XLSExport implements DataExport
      */
     protected int getColType(final WorkbenchTemplateMappingItem mapItem)
     {
-        Class<?> dataType = WorkbenchTask.getDataType(mapItem);
+        Class<?> dataType = WorkbenchTask.getDataType(mapItem, false);
         // These are the classes currently returned by getDataType():
         // java.lang.Long
         // java.lang.String

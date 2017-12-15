@@ -220,7 +220,7 @@ public class TemplateEditor extends CustomDialog
                 
         //databaseSchema = WorkbenchTask.getDatabaseSchema();
         //databaseSchema = WorkbenchTask.buildDatabaseSchema("locality_update_wb_datamodel");
-        databaseSchema = schemaName == null ? WorkbenchTask.getDatabaseSchema() : WorkbenchTask.buildDatabaseSchema(schemaName);
+        databaseSchema = schemaName == null ? WorkbenchTask.getDatabaseSchema(false) : WorkbenchTask.buildDatabaseSchema(schemaName);
         
         int disciplineeId = AppContextMgr.getInstance().getClassObject(Discipline.class).getDisciplineId();
         SchemaI18NService.getInstance().loadWithLocale(SpLocaleContainer.WORKBENCH_SCHEMA, 

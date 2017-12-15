@@ -362,9 +362,9 @@ public class WorkbenchPaneSS extends BaseSubPane
         imageColExt = spreadSheet.getColumnExt(imageColIndex);
         imageColExt.setVisible(false);
 
-	    int sgrColIndex = model.getSgrHeading().getViewOrder();
-	    sgrColExt = spreadSheet.getColumnExt(sgrColIndex);
-	    sgrColExt.setComparator( ((WorkbenchSpreadSheet)spreadSheet).new NumericColumnComparator() );
+//	    int sgrColIndex = model.getSgrHeading().getViewOrder();
+//	    sgrColExt = spreadSheet.getColumnExt(sgrColIndex);
+//	    sgrColExt.setComparator( ((WorkbenchSpreadSheet)spreadSheet).new NumericColumnComparator() );
 
         int cmpIdx = 0;
 	    for (Comparator<String> cmp : ((WorkbenchSpreadSheet )spreadSheet).getComparators())
@@ -1221,7 +1221,7 @@ public class WorkbenchPaneSS extends BaseSubPane
      */
     public void showHideSgrCol(boolean show)
     {
-	    sgrColExt.setVisible(show);
+	   // sgrColExt.setVisible(show);
     }
     
     /**
@@ -1229,8 +1229,8 @@ public class WorkbenchPaneSS extends BaseSubPane
      */
     public void sgrSort()
     {
-        int sgrColIndex = model.getSgrHeading().getViewOrder();
-        spreadSheet.setSortOrder(sgrColIndex, SortOrder.DESCENDING);
+//        int sgrColIndex = model.getSgrHeading().getViewOrder();
+//        spreadSheet.setSortOrder(sgrColIndex, SortOrder.DESCENDING);
     }
     
     /**
@@ -2676,7 +2676,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             }
         }
         
-        DBTableIdMgr databaseSchema = WorkbenchTask.getDatabaseSchema();
+        DBTableIdMgr databaseSchema = WorkbenchTask.getDatabaseSchema(false);
         // build up a list of temporary MapLocationIFace records to feed to the LocalityMapper
         List<MapLocationIFace> mapLocations = new Vector<MapLocationIFace>(selection.length);
         List<WorkbenchRow> rows = workbench.getWorkbenchRowsAsList();
@@ -3425,22 +3425,17 @@ public class WorkbenchPaneSS extends BaseSubPane
             return;
         }
     }
-    
+
+    /**
+     *
+     * @param changed
+     * @param e
+     */
     public void setChanged(final boolean changed, final TableModelEvent e) {
         if (!blockChanges) {
             hasChanged = changed;
             saveBtn.setEnabled(hasChanged);
             updateUploadBtnState();
-//        	if (getIncremental() && workbenchValidator != null && e != null) {
-//        		Vector<Integer> badCats = null;
-//        		int editRow = e != null ? e.getFirstRow() : -1 ;
-//        		int editCol = e != null ? e.getColumn() : -1;
-//        		if (catNumChecker != null && editCol == catNumCol) {
-//        			badCats = catNumChecker.setValue(editRow, ((JTextField )e.getSource()).getText(), true);
-//        		}
-//        		updateRowValidationStatus(spreadSheet.convertRowIndexToModel(editRow), spreadSheet.convertColumnIndexToModel(editCol), badCats);
-//        		updateBtnUI();
-//        	}
             updateRevertBtnState(e);
         }
     	
@@ -3467,13 +3462,13 @@ public class WorkbenchPaneSS extends BaseSubPane
      * @param wbtmi
      * @return
      */
-    public static int getMaxColWidth(WorkbenchTemplateMappingItem wbtmi) {
+    public static int getMaxColWidth(WorkbenchTemplateMappingItem wbtmi, boolean isForUpdate) {
     	DBFieldInfo fi = null;
     	int result = WorkbenchDataItem.getMaxWBCellLength();
     	if (wbtmi.getFieldInfo() != null) {
     		fi = wbtmi.getFieldInfo();
     	} else {
-            DBTableIdMgr databaseSchema = WorkbenchTask.getDatabaseSchema();
+            DBTableIdMgr databaseSchema = WorkbenchTask.getDatabaseSchema(isForUpdate);
             DBTableInfo ti = databaseSchema.getInfoById(wbtmi.getSrcTableId());
             if (ti != null) {
             	fi = ti.getFieldByName(wbtmi.getFieldName());
@@ -3496,13 +3491,13 @@ public class WorkbenchPaneSS extends BaseSubPane
      * @param workbench
      * @return
      */
-    public static Integer[] getMaxColWidths(Workbench workbench) {
+    public static Integer[] getMaxColWidths(Workbench workbench, boolean isForUpdate) {
         List<WorkbenchTemplateMappingItem> wbtmis = new ArrayList<WorkbenchTemplateMappingItem>();
         wbtmis.addAll(workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems());
         Collections.sort(wbtmis);        
         Integer[] result = new Integer[wbtmis.size()];
         for (int i = 0; i < wbtmis.size(); i++) {
-        	result[i] = new Integer(WorkbenchPaneSS.getMaxColWidth(wbtmis.get(i)));
+        	result[i] = new Integer(WorkbenchPaneSS.getMaxColWidth(wbtmis.get(i), isForUpdate));
         }
         return result;
     }
@@ -3531,7 +3526,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         wbtmis.addAll(workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems());
         Collections.sort(wbtmis);
         
-        DBTableIdMgr databaseSchema = WorkbenchTask.getDatabaseSchema();
+        DBTableIdMgr databaseSchema = WorkbenchTask.getDatabaseSchema(isUpdateDataSet());
         
         columnMaxWidths = new Integer[tableArg.getColumnCount()];
         boolean isUpdateable = isUpdateDataSet();
@@ -6076,7 +6071,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     protected void compareSchemas()
     {
         List<Pair<DBFieldInfo, DBFieldInfo>> badFlds = new LinkedList<Pair<DBFieldInfo, DBFieldInfo>>();
-        DBTableIdMgr wbSchema = WorkbenchTask.getDatabaseSchema();
+        DBTableIdMgr wbSchema = WorkbenchTask.getDatabaseSchema(false);
         for (DBTableInfo wbTbl : wbSchema.getTables())
         {
             DBTableInfo tbl = DBTableIdMgr.getInstance().getInfoByTableName(wbTbl.getName());

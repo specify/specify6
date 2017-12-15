@@ -93,11 +93,11 @@ public class GridTableModel extends SpreadSheetModel
         headers.clear();
         headers.addAll(workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems());
         Collections.sort(headers);
-        
-        sgrHeading = new SgrHeading((short) headers.size());
 
-        headers.add(sgrHeading);
-        
+//        sgrHeading = new SgrHeading((short) headers.size());
+//
+//        headers.add(sgrHeading);
+
         if (imageMappingItem != null)
         {
             headers.add(imageMappingItem);
