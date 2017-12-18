@@ -2181,11 +2181,9 @@ public class WorkbenchPaneSS extends BaseSubPane
         
              
         JComponent[] comps = { addRowsBtn, deleteRowsBtn, clearCellsBtn};
-        for (JComponent c : comps)
-        {
-            if (c != null)
-            {
-                c.setVisible(currentPanelType == PanelType.Spreadsheet);
+        for (JComponent c : comps) {
+            if (c != null) {
+                c.setVisible(currentPanelType == PanelType.Spreadsheet && !isUpdateDataSet());
             }
         }
     }
