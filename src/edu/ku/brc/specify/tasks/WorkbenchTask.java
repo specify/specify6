@@ -2020,50 +2020,33 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 public Object construct() {
                     if (contents == null) {
                         workbench.addRow();
-                        
                     } else if (contents instanceof ImportDataFileInfo) {
-                    	if (((ImportDataFileInfo )contents).loadData(workbench) == DataImportIFace.Status.Error) {
-                            return null;
-                        }
-                         
-                     } else if (contents instanceof RecordSetIFace) {
-                    	 if (!loadRsIntoWb((RecordSetIFace )contents, workbench, null)) {
-                    		 return null;
-                    	 }
-                     } else if (contents instanceof Pair) {
+                    	if (((ImportDataFileInfo )contents).loadData(workbench) == DataImportIFace.Status.Error) return null;
+                    } else if (contents instanceof RecordSetIFace) {
+                        if (!loadRsIntoWb((RecordSetIFace )contents, workbench, null)) return null;
+                    } else if (contents instanceof Pair) {
                         Pair<RecordSetIFace, Vector<Vector<Object>>> data = (Pair<RecordSetIFace, Vector<Vector<Object>>>)contents;
-                        if (!loadRsIntoWb(data.getFirst(), workbench, data.getSecond())) {
-                            return null;
-                        }
-
+                        if (!loadRsIntoWb(data.getFirst(), workbench, data.getSecond())) return null;
                     }
                      
                      DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-                     
-                     try
-                     {
+                     try {
                          session.beginTransaction();
                          session.save(workbench);
                          session.commit();
                          session.flush();
-                         
                          datasetNavBoxMgr.addWorkbench(workbench);
-                         
                          updateNavBoxUI(null);
-                         
-                     } catch (Exception ex)
-                     {
+                         return true;
+                     } catch (Exception ex) {
                          edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                          edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
                          ex.printStackTrace();
                          UIRegistry.clearGlassPaneMsg();
-                         
-                     } finally
-                     {
+                         return null;
+                     } finally {
                          session.close();
                      }
-                     
-                    return null;
                 }
 
                 //Runs on the event-dispatching thread.
