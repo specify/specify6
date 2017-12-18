@@ -1883,7 +1883,7 @@ public class UploadTable implements Comparable<UploadTable>
     		LatLonConverter.FORMAT frm = getOriginalLatLngUnit();
             String result;
     		if (StringUtils.isNotEmpty(textVal) && isTextValConsistentWithLLFormat(textVal, frm)) {
-    		    result = textVal;
+    		    result = textVal.trim().replaceAll("  ", " ").replaceAll("  ", " ");
             } else {
                 frm = frm == LatLonConverter.FORMAT.None ? LatLonConverter.FORMAT.DDDDDD : frm;
                 LatLonConverter.LATLON ll = isLatFld(ufld) ? LatLonConverter.LATLON.Latitude : LatLonConverter.LATLON.Longitude;
