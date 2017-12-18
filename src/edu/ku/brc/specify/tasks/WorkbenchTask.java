@@ -2068,8 +2068,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
 
                 //Runs on the event-dispatching thread.
                 @Override
-                public void finished()
-                {
+                public void finished() {
                     UIRegistry.clearGlassPaneMsg();
                     //if batch-editing qb results close qb results pane
                     if (contents instanceof Pair) {
@@ -2080,15 +2079,13 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                             }
                         }
                     }
-
-                    createEditorForWorkbench(workbench, null, false, true, isBatchEdit, srcTask);
-
+                    if (get() != null) {
+                        createEditorForWorkbench(workbench, null, false, true, isBatchEdit, srcTask);
+                    }
                 }
             };
             worker.start();
-            
-        } else
-        {
+        } else {
             UIRegistry.getStatusBar().setText("");
         }
     }
