@@ -322,7 +322,10 @@ public class UploadToolPanel extends JPanel implements TimingTarget
                 }
             }
         }
-        autoAssignCatNumPanel.setVisible(!isForUpdate);
+        if (isForUpdate) {
+            autoAssignCatNumPanel.setVisible(false);
+            autoAssignCatNumChk.setSelected(false);
+        }
     	
         sep1.setVisible(autoMatchPanel.isVisible());
         JLabel sep2 = new JLabel(IconManager.getIcon("Separator"));
