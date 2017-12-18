@@ -1505,6 +1505,8 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
                             return;
                         }
                         WorkbenchTask wbTask = (WorkbenchTask) ContextMgr.getTaskByClass(WorkbenchTask.class);
+                        UsageTracker.incrUsageCount("BE.BatchEditQueryResults."
+                                + queryBldrPane.getQueryForBatchEdit().getFirst().getContextName());
                         wbTask.batchEditQueryResults(queryBldrPane.getQueryForBatchEdit(), (RecordSetIFace) cmdAction.getData(), queryBldrPane.getResultsCache(), this);
                         return;
                     }
