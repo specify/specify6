@@ -1143,7 +1143,7 @@ protected List<java.lang.reflect.Field> getFldsForJSON() {
             } else {
                 rec = actualExportedRecord;
             }
-            if (rec == null) {
+            if (rec == null || ((Treeable) rec).getParent().getRankId() <= currentRank) {
                 return false;
             } else {
                 while (((Treeable) rec).getParent().getRankId() > currentRank) {
