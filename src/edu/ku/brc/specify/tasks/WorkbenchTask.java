@@ -4040,6 +4040,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
            DBTableInfo tbl = fldInfo.getFirst();
            DBFieldInfo fld = fldInfo.getSecond();
            return fld != null &&
+                   !fld.getName().equalsIgnoreCase("guid") &&
                    !(tbl.getTableId() == CollectionObject.getClassTableId() && fld.getName().equalsIgnoreCase("catalognumber"));
        }
     }
