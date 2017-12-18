@@ -4,6 +4,8 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.UsageTracker;
+import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIRegistry;
@@ -25,6 +27,7 @@ public class BatchEditProgressDialog extends JDialog {
     protected JButton      cancelBtn;
     protected JButton      commitBtn;
     protected String       title;
+    protected String       updateTbl;
     protected AtomicBoolean cancelPressed = new AtomicBoolean(false);
     protected AtomicBoolean commitPressed = new AtomicBoolean(false);
     protected AtomicInteger ticks = new AtomicInteger(-1);
@@ -35,8 +38,10 @@ public class BatchEditProgressDialog extends JDialog {
      * @param title
      * @param descText
      */
-    public BatchEditProgressDialog(final String title, final String descText, final ActionListener listener) {
+    public BatchEditProgressDialog(final String title, final String descText, final ActionListener listener, final String updateTbl) {
         super();
+
+        this.updateTbl = updateTbl;
 
         String rowDef = "p,10px" + ",p,10px" + ",p";
         PanelBuilder builder = new PanelBuilder(new FormLayout("p,2px,f:p:g", rowDef));
@@ -99,6 +104,7 @@ public class BatchEditProgressDialog extends JDialog {
         cancelBtn.setEnabled(false);
         commitBtn.setEnabled(false);
         desc.setText(UIRegistry.getResourceString("WB_BATCH_EDIT_ROLLING_BACK"));
+        UsageTracker.incrUsageCount("BE.Cancel." + updateTbl);
     }
 
     /**
@@ -111,6 +117,7 @@ public class BatchEditProgressDialog extends JDialog {
         cancelBtn.setEnabled(false);
         commitBtn.setEnabled(false);
         desc.setText(UIRegistry.getResourceString("WB_BATCH_EDIT_COMMITTING"));
+        UsageTracker.incrUsageCount("BE.Commit." + updateTbl);
     }
 
     /**

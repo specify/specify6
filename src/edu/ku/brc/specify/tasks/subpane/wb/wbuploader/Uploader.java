@@ -4330,7 +4330,8 @@ public class Uploader implements ActionListener, KeyListener
                         return null;
                     } else {
                         BatchEditProgressDialog result = new BatchEditProgressDialog(getResourceString("WB_BATCH_EDIT_FORM_TITLE"),
-                                getResourceString("WB_BATCH_EDIT_IN_PROCESS"), Uploader.this);
+                                getResourceString("WB_BATCH_EDIT_IN_PROCESS"), Uploader.this,
+                                DBTableIdMgr.getInstance().getInfoById(updateTblId).getName());
                         result.setResizable(false);
                         result.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
                         result.setModal(true);
@@ -4353,6 +4354,7 @@ public class Uploader implements ActionListener, KeyListener
                     boolean crashed = false;
                     theUploadBatchEditSession = isUpdate ? DataProviderFactory.getInstance().createSession() : null;
                     updateTblId = getUpdateTableId();
+                    UsageTracker.incrUsageCount("BE.Apply." + DBTableIdMgr.getInstance().getInfoById(updateTblId).getName());
                     setSession(theUploadBatchEditSession);
                     final BatchEditProgressDialog progDlg = createAndShowProgDlg(isUpdate);
                     initProgressBar(0, uploadData.getRows(), true,
