@@ -36,48 +36,22 @@
     <field column="Integer 2" name="integer2" type="java.lang.Integer" length="10"/>
     <field column="Verbatim Locality" name="verbatimLocality" type="text" length="2048"/>
     <field column="Remarks (Collecting Event)" name="collectingEventRemarks" type="text" length="4096"/>
-    <field column="Collector First Name 1" name="collectorFirstName1" type="java.lang.String" length="50"/>
-    <field column="Collector Last Name 1"  name="collectorLastName1" type="java.lang.String" length="120"/>
-    <field column="Collector Middle Initials 1" name="collectorMiddle1" type="java.lang.String" length="50"/>
-    <field column="Collector Title 1"  name="collectorTitle1" type="java.lang.String" length="50"/>
-    <field column="Collector First Name 2" name="collectorFirstName2" type="java.lang.String" length="50"/>
-    <field column="Collector Last Name 2"  name="collectorLastName2" type="java.lang.String" length="120"/>
-    <field column="Collector Middle Initials 2" name="collectorMiddle2" type="java.lang.String" length="50"/>
-    <field column="Collector Title 2"  name="collectorTitle2" type="java.lang.String" length="50"/>
-    <field column="Collector First Name 3" name="collectorFirstName3" type="java.lang.String" length="50"/>
-    <field column="Collector Last Name 3"  name="collectorLastName3" type="java.lang.String" length="120"/>
-    <field column="Collector Middle Initials 3" name="collectorMiddle3" type="java.lang.String" length="50"/>
-    <field column="Collector Title 3"  name="collectorTitle3" type="java.lang.String" length="50"/>
-    <field column="Collector First Name 4" name="collectorFirstName4" type="java.lang.String" length="50"/>
-    <field column="Collector Last Name 4"  name="collectorLastName4" type="java.lang.String" length="120"/>
-    <field column="Collector Middle Initials 4" name="collectorMiddle4" type="java.lang.String" length="50"/>
-    <field column="Collector Title 4"  name="collectorTitle4" type="java.lang.String" length="50"/>
-    <field column="Collector First Name 5" name="collectorFirstName5" type="java.lang.String" length="50"/>
-    <field column="Collector Last Name 5"  name="collectorLastName5" type="java.lang.String" length="120"/>
-    <field column="Collector Middle Initials 5" name="collectorMiddle5" type="java.lang.String" length="50"/>
-    <field column="Collector Title 5"  name="collectorTitle5" type="java.lang.String" length="50"/>
-    <field column="Collector First Name 6" name="collectorFirstName6" type="java.lang.String" length="50"/>
-    <field column="Collector Last Name 6"  name="collectorLastName6" type="java.lang.String" length="120"/>
-    <field column="Collector Middle Initials 6" name="collectorMiddle6" type="java.lang.String" length="50"/>
-    <field column="Collector Title 6"  name="collectorTitle6" type="java.lang.String" length="50"/>
-    <field column="Collector First Name 7" name="collectorFirstName7" type="java.lang.String" length="50"/>
-    <field column="Collector Last Name 7"  name="collectorLastName7" type="java.lang.String" length="120"/>
-    <field column="Collector Middle Initials 7" name="collectorMiddle7" type="java.lang.String" length="50"/>
-    <field column="Collector Title 7"  name="collectorTitle7" type="java.lang.String" length="50"/>
-    <field column="Collector First Name 8" name="collectorFirstName8" type="java.lang.String" length="50"/>
-    <field column="Collector Last Name 8"  name="collectorLastName8" type="java.lang.String" length="120"/>
-    <field column="Collector Middle Initials 8" name="collectorMiddle8" type="java.lang.String" length="50"/>
-    <field column="Collector Title 8"  name="collectorTitle8" type="java.lang.String" length="50"/>
   </table>
   
   <table classname="edu.ku.brc.specify.datamodel.CollectionObject" table="collectionobject" tableid="1" lazy="true">
     <display objtitle="Collection Object" view="CollectionObject" dataobjformatter="CollectionObject"/>
     <field column="Cataloged Date" name="catalogedDate" type="calendar_date"/>
-    <field column="Cataloged Date Verbatim" name="catalogedDateVerbatim" type="java.lang.String" length="32"/>
-    <field column="Catalog Number" name="catalogNumber" type="java.lang.String" length="32"/>
-    <field column="Alternate Catalog Number" name="altCatalogNumber" type="java.lang.String" length="32"/>
-    <field column="Condition" name="objectCondition" type="java.lang.String" length="64"/> 
-    <field column="Field Number" name="fieldNumber" type="java.lang.String" length="50"/>
+    <field column="Cataloged Date Verbatim" name="catalogedDateVerbatim" type="java.lang.String"/>
+    <field column="Catalog Number" name="catalogNumber" type="java.lang.String" />
+    <field column="Alternate Catalog Number" name="altCatalogNumber" type="java.lang.String" />
+    <field column="Project Number" name="projectNumber" type="java.lang.String" />
+    <field column="Availability" name="availability" type="java.lang.String" />
+    <field column="Inventory Date" name="inventoryDate" type="calendar_date"/>
+    <field column="Notifications" name="notifications" type="java.lang.String" />
+    <field column="Restrictions" name="restrictions" type="java.lang.String" />
+
+    <field column="Condition" name="objectCondition" type="java.lang.String" />
+    <field column="Field Number" name="fieldNumber" type="java.lang.String" />
     <field column="Name" name="name" type="java.lang.String" length="64"/>
     <field column="Description" name="description" type="java.lang.String" length="255"/>
     <field column="Count" name="countAmt" type="java.lang.Integer" length="10"/>
@@ -102,6 +76,10 @@
     <field column="Cataloger Last Name" name="catalogerLastName" type="java.lang.String" length="120"/>
     <field column="Cataloger Middle Initials" name="catalogerMiddle" type="java.lang.String" length="50"/>
     <field column="Cataloger Title" name="catalogerTitle" type="java.lang.String" length="50"/>
+    <field column="Inventoried by First Name" name="inventorizedByFirstName" type="java.lang.String" length="50"/>
+    <field column="Inventoried by Last Name" name="inventorizedByLastName" type="java.lang.String" length="120"/>
+    <field column="Inventoried by Middle Initials" name="inventorizedByMiddle" type="java.lang.String" length="50"/>
+    <field column="Inventoried by Title" name="inventorizedByTitle" type="java.lang.String" length="50"/>
   </table>
 
   <table classname="edu.ku.brc.specify.datamodel.CollectionObjectAttribute" table="collectionobjectattribute" tableid="93" lazy="true" query="false">
@@ -171,6 +149,18 @@
     <field column="Text 16 (Col. Obj. Attribute)" name="colObjAttributeText16" type="java.lang.String" length="500"/>
     <field column="Text 17 (Col. Obj. Attribute)" name="colObjAttributeText17" type="java.lang.String" length="500"/>
     <field column="Text 18 (Col. Obj. Attribute)" name="colObjAttributeText18" type="java.lang.String" length="500"/>
+    <field column="Text 19 (Col. Obj. Attribute)" name="colObjAttributeText19" type="java.lang.String" />
+    <field column="Text 20 (Col. Obj. Attribute)" name="colObjAttributeText20" type="java.lang.String" />
+    <field column="Text 21 (Col. Obj. Attribute)" name="colObjAttributeText21" type="java.lang.String" />
+    <field column="Text 22 (Col. Obj. Attribute)" name="colObjAttributeText22" type="java.lang.String" />
+    <field column="Text 23 (Col. Obj. Attribute)" name="colObjAttributeText23" type="java.lang.String" />
+    <field column="Text 24 (Col. Obj. Attribute)" name="colObjAttributeText24" type="java.lang.String" />
+    <field column="Text 25 (Col. Obj. Attribute)" name="colObjAttributeText25" type="java.lang.String" />
+    <field column="Text 26 (Col. Obj. Attribute)" name="colObjAttributeText26" type="java.lang.String" />
+    <field column="Text 27 (Col. Obj. Attribute)" name="colObjAttributeText27" type="java.lang.String" />
+    <field column="Text 28 (Col. Obj. Attribute)" name="colObjAttributeText28" type="java.lang.String" />
+    <field column="Text 29 (Col. Obj. Attribute)" name="colObjAttributeText29" type="java.lang.String" />
+    <field column="Text 30 (Col. Obj. Attribute)" name="colObjAttributeText30" type="java.lang.String" />
     <field column="YesNo 1 (Col. Obj. Attribute)" name="colObjAttributeYesNo1" type="boolean"/>
     <field column="YesNo 2 (Col. Obj. Attribute)" name="colObjAttributeYesNo2" type="boolean"/>
     <field column="YesNo 3 (Col. Obj. Attribute)" name="colObjAttributeYesNo3" type="boolean"/>
@@ -178,7 +168,30 @@
     <field column="YesNo 5 (Col. Obj. Attribute)" name="colObjAttributeYesNo5" type="boolean"/>
     <field column="YesNo 6 (Col. Obj. Attribute)" name="colObjAttributeYesNo6" type="boolean"/>
     <field column="YesNo 7 (Col. Obj. Attribute)" name="colObjAttributeYesNo7" type="boolean"/>
-  </table>  
+    <field column="YesNo 8 (Col. Obj. Attribute)" name="colObjAttributeYesNo8" type="boolean"/>
+    <field column="YesNo 9 (Col. Obj. Attribute)" name="colObjAttributeYesNo9" type="boolean"/>
+    <field column="YesNo 10 (Col. Obj. Attribute)" name="colObjAttributeYesNo10" type="boolean"/>
+    <field column="YesNo 11 (Col. Obj. Attribute)" name="colObjAttributeYesNo11" type="boolean"/>
+    <field column="YesNo 12 (Col. Obj. Attribute)" name="colObjAttributeYesNo12" type="boolean"/>
+    <field column="YesNo 13 (Col. Obj. Attribute)" name="colObjAttributeYesNo13" type="boolean"/>
+    <field column="YesNo 14 (Col. Obj. Attribute)" name="colObjAttributeYesNo14" type="boolean"/>
+    <field column="YesNo 15 (Col. Obj. Attribute)" name="colObjAttributeYesNo15" type="boolean"/>
+    <field column="YesNo 16 (Col. Obj. Attribute)" name="colObjAttributeYesNo16" type="boolean"/>
+    <field column="YesNo 17 (Col. Obj. Attribute)" name="colObjAttributeYesNo17" type="boolean"/>
+    <field column="YesNo 18 (Col. Obj. Attribute)" name="colObjAttributeYesNo18" type="boolean"/>
+    <field column="YesNo 19 (Col. Obj. Attribute)" name="colObjAttributeYesNo19" type="boolean"/>
+    <field column="YesNo 20 (Col. Obj. Attribute)" name="colObjAttributeYesNo20" type="boolean"/>
+    <field column="Integer 1 (Col. Obj. Attribute)" name="colObjAttributeInteger1" type="java.lang.Integer"/>
+    <field column="Integer 2 (Col. Obj. Attribute)" name="colObjAttributeInteger2" type="java.lang.Integer"/>
+    <field column="Integer 3 (Col. Obj. Attribute)" name="colObjAttributeInteger3" type="java.lang.Integer"/>
+    <field column="Integer 4 (Col. Obj. Attribute)" name="colObjAttributeInteger4" type="java.lang.Integer"/>
+    <field column="Integer 5 (Col. Obj. Attribute)" name="colObjAttributeInteger5" type="java.lang.Integer"/>
+    <field column="Integer 6 (Col. Obj. Attribute)" name="colObjAttributeInteger6" type="java.lang.Integer"/>
+    <field column="Integer 7 (Col. Obj. Attribute)" name="colObjAttributeInteger7" type="java.lang.Integer"/>
+    <field column="Integer 8 (Col. Obj. Attribute)" name="colObjAttributeInteger8" type="java.lang.Integer"/>
+    <field column="Integer 9 (Col. Obj. Attribute)" name="colObjAttributeInteger9" type="java.lang.Integer"/>
+    <field column="Integer 10 (Col. Obj. Attribute)" name="colObjAttributeInteger10" type="java.lang.Integer"/>
+  </table>
 
   <table classname="edu.ku.brc.specify.datamodel.GeologicTimePeriod" table="geologictimeperiod" tableid="46" lazy="true">
     <display objtitle="Geologic Time Period"/>

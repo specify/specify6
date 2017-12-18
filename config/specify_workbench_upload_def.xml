@@ -141,6 +141,10 @@
     <field table="CollectionObject" name="catalogerLastName" relationshipname="cataloger" relatedfieldname="lastName"/>
     <field table="CollectionObject" name="catalogerMiddle" relationshipname="cataloger" relatedfieldname="middleInitial"/>
     <field table="CollectionObject" name="catalogerTitle" relationshipname="cataloger" relatedfieldname="title"/>
+    <field table="CollectionObject" name="inventorizedByFirstName" relationshipname="inventorizedBy" relatedfieldname="firstName"/>
+    <field table="CollectionObject" name="inventorizedByLastName" relationshipname="inventorizedBy" relatedfieldname="lastName"/>
+    <field table="CollectionObject" name="inventorizedByMiddle" relationshipname="inventorizedBy" relatedfieldname="middleInitial"/>
+    <field table="CollectionObject" name="inventorizedByTitle" relationshipname="inventorizedBy" relatedfieldname="title"/>
     <field table="CollectionObject" name="collectionObjectCitation1" onetomanysequence="0" actualtable="CollectionObjectCitation" relationshipname="referenceWork" relatedfieldname="title"/>
     <field table="CollectionObject" name="isCoFigured1" onetomanysequence="0" actualtable="collectionobjectcitation" actualname="isFigured" relationshipname="collectionObject"/>
     <field table="CollectionObject" name="citationCORemarks1" onetomanysequence="0" actualtable="collectionobjectcitation" actualname="remarks" relationshipname="collectionObject"/>
@@ -210,6 +214,18 @@
     <field table="CollectionObjectAttribute" name="colObjAttributeText16" actualname="Text16"/>
     <field table="CollectionObjectAttribute" name="colObjAttributeText17" actualname="Text17"/>
     <field table="CollectionObjectAttribute" name="colObjAttributeText18" actualname="Text18"/>
+    <field table="CollectionObjectAttribute" name="colObjAttributeText19" actualname="Text19"/>
+    <field table="CollectionObjectAttribute" name="colObjAttributeText20" actualname="Text20"/>
+    <field table="CollectionObjectAttribute" name="colObjAttributeText21" actualname="Text21"/>
+    <field table="CollectionObjectAttribute" name="colObjAttributeText22" actualname="Text22"/>
+    <field table="CollectionObjectAttribute" name="colObjAttributeText23" actualname="Text23"/>
+    <field table="CollectionObjectAttribute" name="colObjAttributeText24" actualname="Text24"/>
+    <field table="CollectionObjectAttribute" name="colObjAttributeText25" actualname="Text25"/>
+    <field table="CollectionObjectAttribute" name="colObjAttributeText26" actualname="Text26"/>
+    <field table="CollectionObjectAttribute" name="colObjAttributeText27" actualname="Text27"/>
+    <field table="CollectionObjectAttribute" name="colObjAttributeText28" actualname="Text28"/>
+    <field table="CollectionObjectAttribute" name="colObjAttributeText29" actualname="Text29"/>
+    <field table="CollectionObjectAttribute" name="colObjAttributeText30" actualname="Text30"/>
     <field table="CollectionObjectAttribute" name="colObjAttributeYesNo1" actualname="YesNo1"/>
     <field table="CollectionObjectAttribute" name="colObjAttributeYesNo2" actualname="YesNo2"/>
     <field table="CollectionObjectAttribute" name="colObjAttributeYesNo3" actualname="YesNo3"/>
@@ -217,6 +233,30 @@
     <field table="CollectionObjectAttribute" name="colObjAttributeYesNo5" actualname="YesNo5"/>
     <field table="CollectionObjectAttribute" name="colObjAttributeYesNo6" actualname="YesNo6"/>
     <field table="CollectionObjectAttribute" name="colObjAttributeYesNo7" actualname="YesNo7"/>
+    <field table="CollectionObjectAttribute" name="colObjAttributeYesNo8" actualname="YesNo8"/>
+    <field table="CollectionObjectAttribute" name="colObjAttributeYesNo9" actualname="YesNo9"/>
+    <field table="CollectionObjectAttribute" name="colObjAttributeYesNo10" actualname="YesNo10"/>
+    <field table="CollectionObjectAttribute" name="colObjAttributeYesNo11" actualname="YesNo11"/>
+    <field table="CollectionObjectAttribute" name="colObjAttributeYesNo12" actualname="YesNo12"/>
+    <field table="CollectionObjectAttribute" name="colObjAttributeYesNo13" actualname="YesNo13"/>
+    <field table="CollectionObjectAttribute" name="colObjAttributeYesNo14" actualname="YesNo14"/>
+    <field table="CollectionObjectAttribute" name="colObjAttributeYesNo15" actualname="YesNo15"/>
+    <field table="CollectionObjectAttribute" name="colObjAttributeYesNo16" actualname="YesNo16"/>
+    <field table="CollectionObjectAttribute" name="colObjAttributeYesNo17" actualname="YesNo17"/>
+    <field table="CollectionObjectAttribute" name="colObjAttributeYesNo18" actualname="YesNo18"/>
+    <field table="CollectionObjectAttribute" name="colObjAttributeYesNo19" actualname="YesNo19"/>
+    <field table="CollectionObjectAttribute" name="colObjAttributeYesNo20" actualname="YesNo20"/>
+    <field table="CollectionObjectAttribute" name="colObjAttributeYesNo20" actualname="YesNo20"/>
+    <field table="CollectionObjectAttribute" name="colObjAttributeInteger1" actualname="Integer1"/>
+    <field table="CollectionObjectAttribute" name="colObjAttributeInteger2" actualname="Integer2"/>
+    <field table="CollectionObjectAttribute" name="colObjAttributeInteger3" actualname="Integer3"/>
+    <field table="CollectionObjectAttribute" name="colObjAttributeInteger4" actualname="Integer4"/>
+    <field table="CollectionObjectAttribute" name="colObjAttributeInteger5" actualname="Integer5"/>
+    <field table="CollectionObjectAttribute" name="colObjAttributeInteger6" actualname="Integer6"/>
+    <field table="CollectionObjectAttribute" name="colObjAttributeInteger7" actualname="Integer7"/>
+    <field table="CollectionObjectAttribute" name="colObjAttributeInteger8" actualname="Integer8"/>
+    <field table="CollectionObjectAttribute" name="colObjAttributeInteger9" actualname="Integer9"/>
+    <field table="CollectionObjectAttribute" name="colObjAttributeInteger10" actualname="Integer10"/>
 
  	<!-- DNASequence -->
 	  <field table="dnasequence" name="ambiguousResidues1" actualname="ambiguousResidues" onetomanysequence="0" relationshipname="collectionObject"/>
