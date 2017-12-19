@@ -5668,7 +5668,7 @@ public class UploadTable implements Comparable<UploadTable>
             return false;
         }
         //assuming findMatch and setCurrentRecordFromMatch have been called...
-        boolean isBlankRow = isBlankRow(wbCurrentRow, uploader.getUploadData(), seq);
+        boolean isBlankRow =  tblAndAncestorsUnchanged && isBlankRow(wbCurrentRow, uploader.getUploadData(), seq);
         if (!isBlankRow) {
             return true;
         } else if (getCurrentRecord(seq) == null) {
