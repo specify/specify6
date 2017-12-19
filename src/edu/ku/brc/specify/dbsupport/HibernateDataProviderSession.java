@@ -23,6 +23,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Vector;
@@ -44,6 +45,7 @@ import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.dbsupport.StaleObjectException;
+import org.hibernate.impl.SessionImpl;
 
 /**
  * This is a wrapper around Hibernate Session so we don't have to pollute our class with Hibernate and we could switch it
@@ -641,15 +643,51 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#rollback()
      */
-    public void rollback()
-    {
-        if (transaction != null)
-        {
+    public void rollback() {
+        if (transaction != null) {
+            //Hibernate calls commit listeners after rollback too!
+            //To prevent rolled-back operations from being logged, need to remove the specify commit event listeners
+
+            //save the original listeners
+            org.hibernate.event.PostDeleteEventListener[] ds = ((SessionImpl)session).getListeners().getPostCommitDeleteEventListeners();
+            org.hibernate.event.PostInsertEventListener[] is = ((SessionImpl)session).getListeners().getPostCommitInsertEventListeners();
+            org.hibernate.event.PostUpdateEventListener[] us = ((SessionImpl)session).getListeners().getPostCommitUpdateEventListeners();
+
+            //remove specify listeners
+            List<org.hibernate.event.PostDeleteEventListener> newds = new ArrayList<>();
+            List<org.hibernate.event.PostInsertEventListener> newis = new ArrayList<>();
+            List<org.hibernate.event.PostUpdateEventListener> newus = new ArrayList<>();
+            for (org.hibernate.event.PostDeleteEventListener l : ds) {
+                if (!(l instanceof edu.ku.brc.specify.dbsupport.PostDeleteEventListener)) {
+                    newds.add(l);
+                }
+            }
+            for (org.hibernate.event.PostInsertEventListener l : is) {
+                if (!(l instanceof edu.ku.brc.specify.dbsupport.PostInsertEventListener)) {
+                    newis.add(l);
+                }
+            }
+            for (org.hibernate.event.PostUpdateEventListener l : us) {
+                if (!(l instanceof edu.ku.brc.specify.dbsupport.PostUpdateEventListener)) {
+                    newus.add(l);
+                }
+            }
+            org.hibernate.event.PostDeleteEventListener[] ds2 = new org.hibernate.event.PostDeleteEventListener[newds.size()];
+            org.hibernate.event.PostInsertEventListener[] is2 = new org.hibernate.event.PostInsertEventListener[newis.size()];
+            org.hibernate.event.PostUpdateEventListener[] us2 = new org.hibernate.event.PostUpdateEventListener[newus.size()];
+            ((SessionImpl)session).getListeners().setPostCommitDeleteEventListeners(newds.toArray(ds2));
+            ((SessionImpl)session).getListeners().setPostCommitInsertEventListeners(newis.toArray(is2));
+            ((SessionImpl)session).getListeners().setPostCommitUpdateEventListeners(newus.toArray(us2));
+
             transaction.rollback();
+
+            //restore original listeners
+            //probably the session will be closed after the rollback and this is unnecessary but...
+            ((SessionImpl)session).getListeners().setPostCommitDeleteEventListeners(ds);
+            ((SessionImpl)session).getListeners().setPostCommitInsertEventListeners(is);
+            ((SessionImpl)session).getListeners().setPostCommitUpdateEventListeners(us);
             transaction = null;
-            
-        } else
-        {
+        } else {
             throw new RuntimeException("Transaction was null and shouldn't been.");
         }
     }
