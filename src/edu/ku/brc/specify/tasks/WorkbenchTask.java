@@ -2338,7 +2338,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         
 
         WorkbenchEditorCreator wbec = new WorkbenchEditorCreator(workbench,
-                session, showImageView, this, !isPermitted(), srcTask)
+                session, showImageView, this, !isPermitted(), srcTask, isUpdate)
         {
             @Override
             public void progressUpdated(java.util.List<Integer> chunks) 
@@ -4293,7 +4293,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                         // show the WorkbenchPaneSS
                         try
                         {
-                        	pane = new WorkbenchPaneSS(importWB.getName(), WorkbenchTask.this, importWB, false,  !isPermitted());
+                        	pane = new WorkbenchPaneSS(importWB.getName(), WorkbenchTask.this, importWB, false,  !isPermitted(), false);
                         	addSubPaneToMgr(pane);
                         
                         	// the importImages() call will save the wb if it was just created

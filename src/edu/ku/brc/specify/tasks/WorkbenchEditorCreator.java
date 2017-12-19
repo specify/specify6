@@ -46,11 +46,12 @@ abstract class WorkbenchEditorCreator
     final BaseTask                                      thisTask;
     final Taskable                                      srcTask;
     private final boolean                               isReadOnly;
-    private final SwingWorker<WorkbenchPaneSS, Integer> worker;    
+    private final SwingWorker<WorkbenchPaneSS, Integer> worker;
+    private final boolean isUpdate;
 
 	public WorkbenchEditorCreator(Workbench workbench,
 			DataProviderSessionIFace session, boolean showImageView,
-			BaseTask thisTask, boolean isReadOnly, Taskable srcTask)
+			BaseTask thisTask, boolean isReadOnly, Taskable srcTask, boolean isUpdate)
 	{
 		this.workbench = workbench;
 
@@ -60,6 +61,7 @@ abstract class WorkbenchEditorCreator
 		this.thisTask = thisTask;
 		this.isReadOnly = isReadOnly;
 		this.srcTask = srcTask;
+		this.isUpdate = isUpdate;
 		
 		worker = new SwingWorker<WorkbenchPaneSS, Integer>()
 		{
@@ -210,7 +212,7 @@ abstract class WorkbenchEditorCreator
              }
              
              workbenchPane = new WorkbenchPaneSS(workbench.getName(), thisTask, workbench, 
-                     showImageView, isReadOnly);
+                     showImageView, isReadOnly, isUpdate);
              workbenchPane.setSrcTask(srcTask);
              if (convertedAnImage)
              {

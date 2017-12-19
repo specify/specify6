@@ -238,9 +238,10 @@ public class WorkbenchPaneSS extends BaseSubPane
                            final Taskable  task,
                            final Workbench workbenchArg,
                            final boolean   showImageView,
-                           final boolean isReadOnly) throws Exception
+                           final boolean isReadOnly,
+                           final boolean isUpdate) throws Exception
     {
-        super(name, task);
+        super(isUpdate ? getResourceString("BATCHEDIT") : name, task);
 
         
         removeAll();
@@ -410,7 +411,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         if (getIncremental() && workbenchValidator == null) {
         	buildValidator();
         }
-        boolean isForBatchEdit = this.isUpdateDataSet();
+        boolean isForBatchEdit = this.isUpdateDataSet(); //I guess this redundant given the new isUpdate arg, but just to be sure...
         if (isForBatchEdit) {
             doIncrementalValidation = true;
             doIncrementalEditChecking = true;
@@ -1120,6 +1121,15 @@ public class WorkbenchPaneSS extends BaseSubPane
         ((WorkbenchTask) ContextMgr.getTaskByClass(WorkbenchTask.class)).opening(this);
         if (ContextMgr.getTaskByClass(SGRTask.class) != null) {
         	((SGRTask) ContextMgr.getTaskByClass(SGRTask.class)).opening(this);
+        }
+    }
+
+    @Override
+    public Icon getIcon() {
+        if (getSrcTask() != null) {
+            return getSrcTask().getIcon(Taskable.StdIcon16);
+        } else {
+            return super.getIcon();
         }
     }
 
