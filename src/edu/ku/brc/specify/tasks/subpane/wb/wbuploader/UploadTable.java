@@ -5724,7 +5724,7 @@ public class UploadTable implements Comparable<UploadTable>
                         updateExportedRecInfo(recNum);
                     }
                     if (needToWrite(recNum) || !tblAndAncestorsUnchanged) {
-                        if (doSkipMatch || !findMatch(recNum, false, null, null) || updateMatches) {
+                        if (doSkipMatch || (!tblAndAncestorsUnchanged && !findMatch(recNum, false, null, null) || updateMatches)) {
                             if (isSecurityOn && !getWriteTable().getTableInfo().getPermissions().canAdd()) {
                                 throw new UploaderException(String.format(UIRegistry.getResourceString("WB_UPLOAD_NO_ADD_PERMISSION"), getWriteTable().getTableInfo().getTitle()),
                                         UploaderException.ABORT_ROW);
