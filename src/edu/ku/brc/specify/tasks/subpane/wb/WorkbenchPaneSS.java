@@ -920,8 +920,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         Vector<WorkbenchTemplateMappingItem> headers = new Vector<WorkbenchTemplateMappingItem>();
         headers.addAll(workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems());
         Collections.sort(headers);
-        for (WorkbenchTemplateMappingItem mi : headers)
-        {
+        for (WorkbenchTemplateMappingItem mi : headers) {
         	//using the workbench data model table. Not the actual specify table the column is mapped to.
         	//This MIGHT be less confusing
         	//System.out.println("setting header renderer for " + mi.getTableName() + "." + mi.getFieldName()); 
@@ -932,65 +931,59 @@ public class WorkbenchPaneSS extends BaseSubPane
         initColumnSizes(spreadSheet, saveBtn);
 
         // Create the Form Pane  -- needs to be done after initColumnSizes - which also sets cell editors for collumns
-        if (task instanceof SGRTask)
-        {
+        if (task instanceof SGRTask) {
             formPane = new SGRFormPane(this, workbench, isReadOnly);
-        }
-        else
-        {
+        } else /*if (!isForBatchEdit)*/ {
             formPane = new FormPane(this, workbench, isReadOnly);
         }
-        
-        // This panel contains just the ResultSetContoller, it's needed so the RSC gets centered
-        PanelBuilder rsPanel = new PanelBuilder(new FormLayout("c:p:g", "c:p:g"));
-        FormValidator dummy = new FormValidator(null);
-        dummy.setEnabled(true);
-        resultsetController  = new ResultSetController(dummy, !isReadOnly, !isReadOnly, false, getResourceString("Record"), model.getRowCount(), true);
-        resultsetController.addListener(formPane);
-        if (!isReadOnly)
-        {
-            resultsetController.getDelRecBtn().addActionListener(delAction);
-        }
-//        else
-//        {
-//            resultsetController.getDelRecBtn().setVisible(false);
-//        }
-        rsPanel.add(resultsetController.getPanel(), cc.xy(1,1));
-        
-        // This panel is a single row containing the ResultSetContoller and the other controls for the Form Panel
-        String colspec = "f:p:g, p, f:p:g, p";
-        for (int i = 0; i < workBenchPluginFormBtns.size(); i++)
-        {
-            colspec = colspec + ", f:p, p";
-        }
-        
-        PanelBuilder resultSetPanel = new PanelBuilder(new FormLayout(colspec, "c:p:g"));
-        // Now put the two panel into the single row panel
-        resultSetPanel.add(rsPanel.getPanel(), cc.xy(2,1));
-        if (!isReadOnly)
-        {
-            resultSetPanel.add(formPane.getControlPropsBtn(), cc.xy(4,1));
-        }
-        int ccx = 6;
-        for (JComponent c : workBenchPluginFormBtns)
-        {
-            resultSetPanel.add(c, cc.xy(ccx, 1));
-            ccx += 2;
-        }
 
+        PanelBuilder resultSetPanel = null;
+        if (formPane != null) {
+            // This panel contains just the ResultSetContoller, it's needed so the RSC gets centered
+            PanelBuilder rsPanel = new PanelBuilder(new FormLayout("c:p:g", "c:p:g"));
+            FormValidator dummy = new FormValidator(null);
+            dummy.setEnabled(true);
+            resultsetController = new ResultSetController(dummy, !isReadOnly, !isReadOnly, false, getResourceString("Record"), model.getRowCount(), true);
+            resultsetController.addListener(formPane);
+            if (!isReadOnly) {
+                resultsetController.getDelRecBtn().addActionListener(delAction);
+            }
+            rsPanel.add(resultsetController.getPanel(), cc.xy(1, 1));
+
+            // This panel is a single row containing the ResultSetContoller and the other controls for the Form Panel
+            String colspec = "f:p:g, p, f:p:g, p";
+            for (int i = 0; i < workBenchPluginFormBtns.size(); i++) {
+                colspec = colspec + ", f:p, p";
+            }
+
+            resultSetPanel = new PanelBuilder(new FormLayout(colspec, "c:p:g"));
+            // Now put the two panel into the single row panel
+            resultSetPanel.add(rsPanel.getPanel(), cc.xy(2, 1));
+            if (!isReadOnly) {
+                resultSetPanel.add(formPane.getControlPropsBtn(), cc.xy(4, 1));
+            }
+            int ccx = 6;
+            for (JComponent c : workBenchPluginFormBtns) {
+                resultSetPanel.add(c, cc.xy(ccx, 1));
+                ccx += 2;
+            }
+        }
         
         // Create the main panel that uses card layout for the form and spreasheet
         mainPanel = new JPanel(cardLayout = new CardLayout());
         
         // Add the Form and Spreadsheet to the CardLayout
         mainPanel.add(spreadSheet.getScrollPane(), PanelType.Spreadsheet.toString());
-        mainPanel.add(formPane.getPane(),    PanelType.Form.toString());
-        
+
         // The controllerPane is a CardLayout that switches between the Spreadsheet control bar and the Form Control Bar
         controllerPane = new JPanel(cpCardLayout = new CardLayout());
         controllerPane.add(spreadSheetControlBar.getPanel(), PanelType.Spreadsheet.toString());
-        controllerPane.add(resultSetPanel.getPanel(),        PanelType.Form.toString());
-   
+
+        if (!isForBatchEdit) {
+            mainPanel.add(formPane.getPane(), PanelType.Form.toString());
+            controllerPane.add(resultSetPanel.getPanel(),        PanelType.Form.toString());
+        }
+
         JLabel sep1 = new JLabel(IconManager.getIcon("Separator"));
         JLabel sep2 = new JLabel(IconManager.getIcon("Separator"));
         ssFormSwitcher = createSwitcher();
@@ -1070,26 +1063,9 @@ public class WorkbenchPaneSS extends BaseSubPane
         builder.add(controllerPane,      cc.xy(1,2));
         builder.add(ctrlBtns.getPanel(), cc.xy(3,2));
 
-        if (!isReadOnly)
-        {
+        if (!isReadOnly) {
         	uploadToolPanel = new UploadToolPanel(this, UploadToolPanel.EXPANDED);
         	uploadToolPanel.createUI();
-//            showHideUploadToolBtn = createIconBtn("ValidateWB", IconManager.IconSize.NonStd, "WB_HIDE_UPLOADTOOLPANEL", false, new ActionListener()
-//            {
-//                public void actionPerformed(ActionEvent ae)
-//                {
-//                    if (uploadToolPanel.isExpanded())
-//                    {
-//                    	hideUploadToolPanel();
-//                    	showHideUploadToolBtn.setToolTipText(getResourceString("WB_SHOW_UPLOADTOOLPANEL"));
-//                    } else
-//                    {
-//                    	showUploadToolPanel();
-//                    	showHideUploadToolBtn.setToolTipText(getResourceString("WB_HIDE_UPLOADTOOLPANEL"));
-//                   }
-//                }
-//            });
-//            showHideUploadToolBtn.setEnabled(true);
         }
 
         builder.add(uploadToolPanel,     cc.xywh(1, 3, 3, 1));
@@ -1098,52 +1074,28 @@ public class WorkbenchPaneSS extends BaseSubPane
 
         add(builder.getPanel(), BorderLayout.SOUTH);
         
-        resultsetController.addListener(new ResultSetControllerListener() {
-            public boolean indexAboutToChange(int oldIndex, int newIndex)
-            {
-                return true;
-            }
-            public void indexChanged(int newIndex)
-            {
-                if (imageFrame != null)
-                {
-                    if (newIndex > -1)
-                    {
-                        int index = spreadSheet.convertRowIndexToModel(newIndex);
-                        imageFrame.setRow(workbench.getRow(index));
-                    }
-                    else 
-                    { 
-                        imageFrame.setRow(null); 
+        if (!isForBatchEdit) {
+            resultsetController.addListener(new ResultSetControllerListener() {
+                public boolean indexAboutToChange(int oldIndex, int newIndex) {
+                    return true;
+                }
+
+                public void indexChanged(int newIndex) {
+                    if (imageFrame != null) {
+                        if (newIndex > -1) {
+                            int index = spreadSheet.convertRowIndexToModel(newIndex);
+                            imageFrame.setRow(workbench.getRow(index));
+                        } else {
+                            imageFrame.setRow(null);
+                        }
                     }
                 }
-            }
-            public void newRecordAdded()
-            {
-                // do nothing
-            }
-        });
-        //compareSchemas();
-        
-        
-//        int c = 0;
-//        Vector<WorkbenchTemplateMappingItem> headers = new Vector<WorkbenchTemplateMappingItem>();
-//        headers.addAll(workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems());
-//        Collections.sort(headers);
-//        for (WorkbenchTemplateMappingItem mi : headers)
-//        {
-//        	//using the workbench data model table. Not the actual specify table the column is mapped to.
-//        	//This MIGHT be less confusing
-//        	//System.out.println("setting header renderer for " + mi.getTableName() + "." + mi.getFieldName()); 
-//        	spreadSheet.getColumnModel().getColumn(c++).setHeaderRenderer(new WbTableHeaderRenderer(mi.getTableName()));
-//        }
-//        
-//        // NOTE: This needs to be done after the creation of the saveBtn. And after the creation of the header renderes.
-//        initColumnSizes(spreadSheet, saveBtn);
-        
-        // See if we need to make the Image Frame visible
-        // Commenting this out for now because it is so annoying.
-        
+
+                public void newRecordAdded() {
+                    // do nothing
+                }
+            });
+        }
         if (showImageView || hasOneOrMoreImages)
         {
             SwingUtilities.invokeLater(new Runnable()
@@ -1459,10 +1411,8 @@ public class WorkbenchPaneSS extends BaseSubPane
                     spreadSheet.setRowSelectionInterval(index, index);
                 }
             }
-        } else
-        {
-            if (formPane != null)
-            {
+        } else {
+            if (formPane != null) {
                 formPane.copyDataFromForm();
             }
         }
@@ -2042,26 +1992,16 @@ public class WorkbenchPaneSS extends BaseSubPane
         switcher.setCurrentIndex(1);
         switcher.setToolTipText(getResourceString("SwitchViewsTT"));
         switcher.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ae)
-            {
+            public void actionPerformed(ActionEvent ae) {
                 PanelType panel = switcher.getCurrentIndex() == 1 ? PanelType.Spreadsheet : PanelType.Form;
             	showPanel(panel);
-            	
-            	//Until auto-validation is hooked up to form view:
-//            	if (panel == PanelType.Spreadsheet && doIncrementalValidation)
-//            	{
-//            		validateAll(null);
-//            	}
-            	
-            	if (panel == PanelType.Form && getIncremental())
-            	{
+            	if (panel == PanelType.Form && getIncremental() && formPane != null) {
             		formPane.updateValidationUI();
             	}
             }
         });
         switcher.validate();
         switcher.doLayout();
-        
         return switcher;
     }
     
@@ -2128,20 +2068,18 @@ public class WorkbenchPaneSS extends BaseSubPane
         cardLayout.show(mainPanel, currentPanelType.toString());
         cpCardLayout.show(controllerPane, currentPanelType.toString());
         
-        switch (currentPanelType)
-        {
+        switch (currentPanelType) {
             case Spreadsheet:
-                formPane.aboutToShowHide(false);
-                
+                if (formPane != null) {
+                    formPane.aboutToShowHide(false);
+                }
                 // Showing Spreadsheet and hiding form
-                if (model.getRowCount() > 0)
-                {
+                if (model.getRowCount() > 0) {
                     spreadSheet.setRowSelectionInterval(currentRow, currentRow);
                     spreadSheet.setColumnSelectionInterval(0, spreadSheet.getColumnCount()-1);
                     spreadSheet.scrollToRow(Math.min(currentRow+4, model.getRowCount()));
                     
-                    SwingUtilities.invokeLater(new Runnable()
-                    {
+                    SwingUtilities.invokeLater(new Runnable() {
                         public void run()
                         {            
                             spreadSheet.requestFocus();
@@ -2150,8 +2088,6 @@ public class WorkbenchPaneSS extends BaseSubPane
                 }
                 // Enable the "Find" action in the Edit menu when a spreadsheet is shown
                 UIRegistry.enableFind(findPanel, true);
-    
-//                NavBoxMgr.getInstance().adjustSplitter();
                 ssFormSwitcher.setCurrentIndex(1);
                 break;
             case Form:
@@ -3772,7 +3708,9 @@ public class WorkbenchPaneSS extends BaseSubPane
             session.flush();
 
             model.setWorkbench(workbench);
-            formPane.setWorkbench(workbench);
+            if (formPane != null) {
+                formPane.setWorkbench(workbench);
+            }
             if (imageFrame != null)
             {
                 imageFrame.setWorkbench(workbench);
@@ -4078,14 +4016,14 @@ public class WorkbenchPaneSS extends BaseSubPane
             headers.clear();
         }
         
-        if (resultsetController != null)
-        {
-            resultsetController.removeListener(formPane);
+        if (resultsetController != null) {
+            if (formPane != null) {
+                resultsetController.removeListener(formPane);
+            }
             resultsetController = null;
         }
         
-        if (formPane != null)
-        {
+        if (formPane != null) {
             formPane.cleanup();
         }
 
@@ -4137,8 +4075,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     public void showingPane(boolean show)
     {
     	//System.out.println("WBPane.showingPane(" + show + ") " + isVisible());
-        if (formPane != null)
-        {
+        if (formPane != null) {
             formPane.showingPane(show);
         }
         

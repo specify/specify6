@@ -1419,11 +1419,13 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         boolean transOpen = false;
         SpQuery query = session.get(SpQuery.class, rs.getOnlyItem().getRecordId());
-        try
-        {
-            query.forceLoad(true);            
-            if (okToDeleteQuery(query, session))
-            {
+        //suddenly the trash can itself 'requests deletes' which can cause double deletions and null pointer exceptions
+        if (query ==  null) {
+            return true;
+        }
+        try {
+            query.forceLoad(true);
+            if (okToDeleteQuery(query, session)) {
                 session.beginTransaction();
                 transOpen = true;
                 deleteThisQuery(query, session);
@@ -1431,23 +1433,19 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
                 transOpen = false;
                 return true;
             }
-            
-        } catch (Exception ex)
-        {
+
+        } catch (Exception ex) {
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryTask.class, ex);
-            if (transOpen)
-            {
+            if (transOpen) {
                 session.rollback();
             }
             ex.printStackTrace();
             log.error(ex);
-        }
-        finally
-        {
+        } finally {
             session.close();
         }
-        return false;
+    return false;
     }
 
 
