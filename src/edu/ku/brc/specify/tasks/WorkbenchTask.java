@@ -2333,7 +2333,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         if (workbench == null) return;
 
         final SimpleGlassPane glassPane = doInbackground ? 
-        		UIRegistry.writeSimpleGlassPaneMsg(String.format(getResourceString("WB_LOADING_DATASET"), isUpdate ? "" : new Object[] {workbench.getName()}), GLASSPANE_FONT_SIZE) :
+        		UIRegistry.writeSimpleGlassPaneMsg(String.format(getResourceString("WB_LOADING_DATASET"), isUpdate ? "" : workbench.getName()), GLASSPANE_FONT_SIZE) :
         		null;
         
 
