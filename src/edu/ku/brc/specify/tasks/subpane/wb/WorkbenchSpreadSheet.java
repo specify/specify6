@@ -303,11 +303,11 @@ public class WorkbenchSpreadSheet extends SpreadSheet
              	} 
             }             	
             List<WorkbenchDataItem> items = workbenchPaneSS.getDataItems(rows, modelCol);
-            int stat = WorkbenchDataItem.VAL_NONE;
+            int stat = WorkbenchDataItem.VAL_OK;
          	if (items.size() > 0 && items.get(0) != null) {
          		stat = items.get(0).getEditorValidationStatus();
          	}
-         	if (stat == WorkbenchDataItem.VAL_EDIT || stat == WorkbenchDataItem.VAL_ERROR_EDIT) {
+         	if ((stat & WorkbenchDataItem.VAL_EDIT) != 0 || (stat & WorkbenchDataItem.VAL_ERROR) != 0) {
          		//not forcing all selected cells to be edited.
          		//but first cell IS required to be edited.
          		JMenuItem mi = new JMenuItem(UIRegistry.getResourceString("WorkbenchSpreadSheet.RestoreOriginalValues"));

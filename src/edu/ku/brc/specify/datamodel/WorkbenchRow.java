@@ -840,13 +840,9 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
             {
                 updateGeoRefTextFldsIfNecessary(wbdi.getWorkbenchTemplateMappingItem());
             }
-            if (wbdi.getValidationStatus() == WorkbenchDataItem.VAL_ERROR)
+            if ((wbdi.getValidationStatus() & WorkbenchDataItem.VAL_ERROR) != 0)
             {
-                wbdi.setValidationStatus(WorkbenchDataItem.VAL_ERROR_EDIT);
-            }
-            else if (wbdi.getValidationStatus() == WorkbenchDataItem.VAL_OK)
-            {
-                wbdi.setValidationStatus(WorkbenchDataItem.VAL_NONE);
+                wbdi.setValidationStatus((short)(wbdi.getValidationStatus() | WorkbenchDataItem.VAL_EDIT));
             }
         }
         return wbdi;

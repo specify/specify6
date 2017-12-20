@@ -279,7 +279,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         
         Highlighter simpleStriping = HighlighterFactory.createSimpleStriping();
         GridCellHighlighter hl = new GridCellHighlighter(new GridCellPredicate(GridCellPredicate.AnyPredicate, null));
-        Short[] errs = {WorkbenchDataItem.VAL_ERROR, WorkbenchDataItem.VAL_ERROR_EDIT};
+        Short[] errs = {WorkbenchDataItem.VAL_ERROR};
         ColorHighlighter errColorHighlighter = new ColorHighlighter(new GridCellPredicate(GridCellPredicate.ValidationPredicate, errs), 
         		CellRenderingAttributes.errorBackground, null);
         Short[] newdata = {WorkbenchDataItem.VAL_NEW_DATA};
@@ -288,7 +288,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         Short[] multimatch = {WorkbenchDataItem.VAL_MULTIPLE_MATCH};
         ColorHighlighter multiMatchHighlighter = new ColorHighlighter(new GridCellPredicate(GridCellPredicate.MatchingPredicate, multimatch), 
         		CellRenderingAttributes.multipleMatchBackground, null);
-        Short[] edited = {WorkbenchDataItem.VAL_EDIT, WorkbenchDataItem.VAL_ERROR_EDIT};
+        Short[] edited = {WorkbenchDataItem.VAL_EDIT};
         ColorHighlighter editedHighlighter = new ColorHighlighter(new GridCellPredicate(GridCellPredicate.EditedPredicate, edited), 
         		CellRenderingAttributes.editedBackground, null);
 
@@ -1276,10 +1276,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 	 * @param isNext
 	 */
 	public void goToEditedCell(final boolean isNext) {
-    	Set<Short> stats = new HashSet<Short>();
-    	stats.add(WorkbenchDataItem.VAL_EDIT);
-    	stats.add(WorkbenchDataItem.VAL_ERROR_EDIT);
-    	Pair<Integer, Integer> editedCell = getNextCellWithStat(isNext, stats);
+    	Pair<Integer, Integer> editedCell = getNextCellWithStat(isNext, WorkbenchDataItem.VAL_EDIT);
     	if (editedCell != null) {
             if (spreadSheet.getCellEditor() != null) {
                 spreadSheet.getCellEditor().stopCellEditing();
@@ -1331,7 +1328,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 	 */
 	public void restoreOriginalValues(Collection<WorkbenchDataItem> items) {
 		for (WorkbenchDataItem item : items) {
-			if (item != null && (item.getEditorValidationStatus() == WorkbenchDataItem.VAL_EDIT || item.getEditorValidationStatus() == WorkbenchDataItem.VAL_ERROR_EDIT)) {
+			if (item != null && (item.getEditorValidationStatus() & WorkbenchDataItem.VAL_EDIT) != 0) {
 				restoreOriginalValue(item);
 			}
 		}
@@ -1345,17 +1342,22 @@ public class WorkbenchPaneSS extends BaseSubPane
 		String exp = UIRegistry.getResourceString("WB_EDITED_CELL_TT");
 		String before = StringUtils.substringBefore(exp, "%s");
 		String after = StringUtils.substringAfter(exp, "%s");
-		String originalValue = item.getStatusText();
-		originalValue = StringUtils.replaceOnce(originalValue, before, "");
-		originalValue = StringUtils.replaceOnce(originalValue, after, "");
-		if (originalValue.startsWith("'") && originalValue.endsWith("'")) {
-			originalValue = originalValue.substring(1, originalValue.length() - 1);
-		}
-		if (originalValue == null || "empty".equalsIgnoreCase(originalValue)) {
-			originalValue = "";
-		}
-		item.setCellData(originalValue);
-		item.setEditorValidationStatus(WorkbenchDataItem.VAL_NONE);
+		String[] originalValues = item.getStatusText().split("\n; ");
+        for (String originalVal : originalValues) {
+            String originalValue = originalVal;
+            if (originalValue.contains(before)) {
+                originalValue = StringUtils.replaceOnce(originalValue, before, "");
+                originalValue = StringUtils.replaceOnce(originalValue, after, "");
+                if (originalValue.startsWith("'") && originalValue.endsWith("'")) {
+                    originalValue = originalValue.substring(1, originalValue.length() - 1);
+                }
+                if (originalValue == null || "empty".equalsIgnoreCase(originalValue)) {
+                    originalValue = "";
+                }
+                item.setCellData(originalValue);
+            }
+        }
+		item.setEditorValidationStatus(WorkbenchDataItem.VAL_OK);
 		decrementEditedCellCount();
 	}
 	
@@ -1434,69 +1436,46 @@ public class WorkbenchPaneSS extends BaseSubPane
      * @param isNext
      * @return
      */
-    protected Pair<Integer, Integer> getNextCellWithStat(boolean isNext, Set<Short> stats)
-    {
-    	if (!isNext)
-    	{
-    		//System.out.println("goToInvalidCell prev");
-    	} else
-    	{
-    		//System.out.println("goToInvalidCell next");
-    	}
-    	
+    protected Pair<Integer, Integer> getNextCellWithStat(boolean isNext, short stats) {
     	int startRow = spreadSheet.getSelectedRow() >= 0 ? spreadSheet.getSelectedRow() : 0;
     	int startCol = spreadSheet.getSelectedColumn() >= 0 ? spreadSheet.getSelectedColumn() : 0;
     	int increment = isNext ? 1 : -1;
     	int currentRow = startRow;
     	int currentCol = startCol + increment;
-    	if (currentCol < 0 || currentCol == spreadSheet.getColumnCount())
-    	{
-    		if (currentCol < 0)
-    		{
+    	if (currentCol < 0 || currentCol == spreadSheet.getColumnCount()) {
+    		if (currentCol < 0) {
     			currentCol = spreadSheet.getColumnCount() - 1; //XXX what about attachment column?
-    		} else
-    		{
+    		} else {
     			currentCol = 0;
     		}
     		currentRow += increment;
-    		if (currentRow < 0)
-    		{
+    		if (currentRow < 0) {
     			currentRow = spreadSheet.getRowCount() - 1 ;
-    		} else if (currentRow == spreadSheet.getRowCount())
-    		{
+    		} else if (currentRow == spreadSheet.getRowCount()) {
     			currentRow = 0;
     		}  
     	}
     	boolean lastRow = false;
-    	do
-    	{
+    	do {
     		Hashtable<Short, WorkbenchDataItem> rowItems = workbench.getRow(spreadSheet.convertRowIndexToModel(currentRow)).getItems();
-    		do 
-    		{
+    		do {
     	    	WorkbenchDataItem di = rowItems.get(new Short((short )spreadSheet.convertColumnIndexToModel(currentCol)));
-        	    if (di != null && stats.contains(new Short((short )di.getEditorValidationStatus())))
-    	    	{
-    	    		return new Pair<Integer, Integer>(currentRow, currentCol);
+        	    if (di != null && (stats & di.getEditorValidationStatus()) != 0) {
+    	    		return new Pair<>(currentRow, currentCol);
     	    	}		
     			currentCol += increment;
     			
     		} while (currentCol >= 0 && currentCol < spreadSheet.getColumnCount() && (!lastRow || currentCol != startCol));
-	    	if (currentCol < 0)
-	    	{
+	    	if (currentCol < 0) {
 	    		currentCol = spreadSheet.getColumnCount() - 1; //XXX what about attachment column?
-	    	} else if (currentCol == spreadSheet.getColumnCount())
-	    	{
+	    	} else if (currentCol == spreadSheet.getColumnCount()) {
 	    		currentCol = 0;
 	    	}
-    		
-    		if (!lastRow)
-    		{
+    		if (!lastRow) {
     			currentRow += increment;
-    			if (currentRow < 0)
-    			{
+    			if (currentRow < 0) {
     				currentRow = spreadSheet.getRowCount() - 1 ;
-    			} else if (currentRow == spreadSheet.getRowCount())
-    			{
+    			} else if (currentRow == spreadSheet.getRowCount()) {
     				currentRow = 0;
     			}
     		}
@@ -1508,16 +1487,10 @@ public class WorkbenchPaneSS extends BaseSubPane
     /**
      * @param isNext
      */
-    public void goToInvalidCell(boolean isNext)
-    {
-    	Set<Short> stats = new HashSet<Short>();
-    	stats.add(WorkbenchDataItem.VAL_ERROR);
-    	stats.add(WorkbenchDataItem.VAL_ERROR_EDIT);
-    	Pair<Integer, Integer> invalidCell = getNextCellWithStat(isNext, stats);
-    	if (invalidCell != null)
-    	{
-            if (spreadSheet.getCellEditor() != null)
-            {
+    public void goToInvalidCell(boolean isNext) {
+    	Pair<Integer, Integer> invalidCell = getNextCellWithStat(isNext, WorkbenchDataItem.VAL_ERROR);
+    	if (invalidCell != null) {
+            if (spreadSheet.getCellEditor() != null) {
                 spreadSheet.getCellEditor().stopCellEditing();
             }
             int row = invalidCell.getFirst();
@@ -1525,7 +1498,6 @@ public class WorkbenchPaneSS extends BaseSubPane
             spreadSheet.getSelectionModel().setSelectionInterval(row, row);
             spreadSheet.getColumnModel().getSelectionModel().setSelectionInterval(col, col);
             spreadSheet.scrollCellToVisible(row, col);
-            //spreadSheet.editCellAt(invalidCell.getFirst(), invalidCell.getSecond());
     	}
     }
     
@@ -1533,12 +1505,11 @@ public class WorkbenchPaneSS extends BaseSubPane
     /**
      * @param isNext
      */
-    public void goToUnmatchedCell(boolean isNext)
-    {
+    public void goToUnmatchedCell(boolean isNext) {
     	Set<Short> stats = new HashSet<Short>();
     	stats.add(WorkbenchDataItem.VAL_MULTIPLE_MATCH);
     	stats.add(WorkbenchDataItem.VAL_NEW_DATA);
-    	Pair<Integer, Integer> invalidCell = getNextCellWithStat(isNext, stats);
+    	Pair<Integer, Integer> invalidCell = getNextCellWithStat(isNext,(short)(WorkbenchDataItem.VAL_MULTIPLE_MATCH | WorkbenchDataItem.VAL_NEW_DATA));
     	if (invalidCell != null)
     	{
             if (spreadSheet.getCellEditor() != null)
@@ -1755,13 +1726,12 @@ public class WorkbenchPaneSS extends BaseSubPane
     		WorkbenchRow wbRow = wbRows.get(r);
     		for (WorkbenchDataItem wbdi : wbRow.getWorkbenchDataItems()) {
     			short status = (short )wbdi.getEditorValidationStatus();
-    			if (status == WorkbenchDataItem.VAL_ERROR
-    					|| status == WorkbenchDataItem.VAL_ERROR_EDIT) {
+    			if ((status & WorkbenchDataItem.VAL_ERROR) != 0) {
     				invalids++;
-    			} else if (status == WorkbenchDataItem.VAL_MULTIPLE_MATCH
-    					|| status == WorkbenchDataItem.VAL_NEW_DATA) {
+    			} else if ((status & WorkbenchDataItem.VAL_MULTIPLE_MATCH) != 0
+    					|| (status & WorkbenchDataItem.VAL_NEW_DATA) != 0) {
     				news++;
-    			} else if (status == WorkbenchDataItem.VAL_EDIT || status == WorkbenchDataItem.VAL_ERROR_EDIT) {
+    			} else if ((status & WorkbenchDataItem.VAL_EDIT) != 0) {
     				edits++;
     			}
     		}
@@ -4733,48 +4703,74 @@ public class WorkbenchPaneSS extends BaseSubPane
      * @param wbRow 
      * @return list of updated data items
      */
-    protected Hashtable<Short, Short> updateCellStatuses(List<CellStatusInfo> stats, final WorkbenchRow wbRow) {
-    	Hashtable<Short, Short> exceptionalItems = new Hashtable<Short, Short>();
+    protected void updateCellStatuses(final List<CellStatusInfo> stats, final WorkbenchRow wbRow) {
+    	Hashtable<Short, Short> exceptionalItems = new Hashtable<>();
 		if (stats != null && stats.size() > 0) {
-			for (CellStatusInfo issue : stats) {
-				for (Integer col : issue.getColumns()) {
-					if (col >= 0) {
-						WorkbenchDataItem wbItem = wbRow.getItems().get(col.shortValue());
-						if (wbItem == null) {
-							//need to force creation of empty wbItem for blank cell
-							wbItem = wbRow.setData("", col.shortValue(), false, true);
-						}
-						if (wbItem != null) {
-							exceptionalItems.put(col.shortValue(), issue.getStatus());
-							//WorkbenchDataItems can be updated by GridCellEditor or by background validation initiated at load time or after find/replace ops			
-							synchronized(wbItem) {
-								wbItem.setStatusText(issue.getStatusText());
-								if (wbItem.getEditorValidationStatus() != issue.getStatus()) {
-									wbItem.setEditorValidationStatus(issue.getStatus());
-									if (issue.getStatus() == WorkbenchDataItem.VAL_ERROR
-											|| issue.getStatus() == WorkbenchDataItem.VAL_ERROR_EDIT) {
-										invalidCellCount.getAndIncrement();
-									} else if (issue.getStatus() == WorkbenchDataItem.VAL_MULTIPLE_MATCH
-											|| issue.getStatus() == WorkbenchDataItem.VAL_NEW_DATA) {
-										unmatchedCellCount.getAndIncrement();
-									} else if (issue.getStatus() == WorkbenchDataItem.VAL_EDIT) {
-										editedCellCount.getAndIncrement();
-									}
-								
-									//System.out.println("error " + invalidCellCount.get());
-								}
-							}
-						}
-						else {
-							log.error("couldn't find workbench item for col " + col);
-						}
-					} else {
-						log.error(issue.getStatusText() + " at " + col + "???");
-					}
-				}
-			}
+			Map<WorkbenchDataItem, List<CellStatusInfo>> statMap = new HashMap<>();
+            for (CellStatusInfo issue : stats) {
+                for (Integer col : issue.getColumns()) {
+                    if (col >= 0) {
+                        WorkbenchDataItem wbItem = wbRow.getItems().get(col.shortValue());
+                        if (wbItem == null) {
+                            //need to force creation of empty wbItem for blank cell
+                            wbItem = wbRow.setData("", col.shortValue(), false, true);
+                        }
+                        if (wbItem != null) {
+                            List<CellStatusInfo> statList = statMap.get(wbItem);
+                            if (statList == null) {
+                                statList = new ArrayList<>();
+                                statMap.put(wbItem, statList);
+                            }
+                            statList.add(issue);
+                        }
+                    }
+                }
+            }
+            for (WorkbenchDataItem wbItem : wbRow.getWorkbenchDataItems()) {
+                    int statusCode = WorkbenchDataItem.VAL_OK;
+                    String statusText = "";
+                    if (statMap.get(wbItem) != null) {
+                        for (CellStatusInfo info : statMap.get(wbItem)) {
+                            statusCode = statusCode | info.getStatus();
+                            if (!"".equals(statusText)) {
+                                statusText += "\n; ";
+                            }
+                            statusText += info.getStatusText();
+                        }
+                    }
+                    int originalStatusCode = wbItem.getEditorValidationStatus();
+                    boolean itemChanged = false;
+                    synchronized (wbItem) {
+                        if (wbItem.getEditorValidationStatus() != statusCode) {
+                            itemChanged = true;
+                            wbItem.setEditorValidationStatus(statusCode);
+                            wbItem.setStatusText("".equals(statusText) ? null : statusText);
+                        }
+                    }
+                    if (itemChanged) {
+                        if ((statusCode & WorkbenchDataItem.VAL_ERROR) != 0 && (originalStatusCode & WorkbenchDataItem.VAL_ERROR) == 0) {
+                            invalidCellCount.getAndIncrement();
+                        } else if ((statusCode & WorkbenchDataItem.VAL_ERROR) == 0 &&(originalStatusCode & WorkbenchDataItem.VAL_ERROR) != 0) {
+                            invalidCellCount.getAndDecrement();
+                        }
+                        if (((statusCode & WorkbenchDataItem.VAL_MULTIPLE_MATCH) != 0
+                                || (statusCode & WorkbenchDataItem.VAL_NEW_DATA) != 0)
+                                && (originalStatusCode & WorkbenchDataItem.VAL_MULTIPLE_MATCH) == 0
+                                && (originalStatusCode & WorkbenchDataItem.VAL_NEW_DATA) == 0) {
+                            unmatchedCellCount.getAndIncrement();
+                        } else if ((statusCode & WorkbenchDataItem.VAL_MULTIPLE_MATCH) == 0 && (statusCode & WorkbenchDataItem.VAL_NEW_DATA) == 0
+                            && ((originalStatusCode & WorkbenchDataItem.VAL_MULTIPLE_MATCH) != 0
+                                || (originalStatusCode & WorkbenchDataItem.VAL_NEW_DATA) != 0)) {
+                            unmatchedCellCount.getAndDecrement();
+                        }
+                        if ((statusCode & WorkbenchDataItem.VAL_EDIT) != 0 && (originalStatusCode & WorkbenchDataItem.VAL_EDIT) == 0) {
+                            editedCellCount.getAndIncrement();
+                        } else if ((statusCode & WorkbenchDataItem.VAL_EDIT) == 0 && (originalStatusCode & WorkbenchDataItem.VAL_EDIT) != 0) {
+                            decrementEditedCellCount();
+                        }
+                    }
+            }
 		}
-		return exceptionalItems;
     }
     
     /**
@@ -4785,29 +4781,53 @@ public class WorkbenchPaneSS extends BaseSubPane
     {
     	return new CellStatusInfo(badRow);
     }
-    
+
+    protected int getTotalIssueCount(final Pair<List<UploadTableInvalidValue>, List<Pair<UploadField, Object>>> issues,
+                                     final List<UploadTableMatchInfo> matchInfo, final List<Integer> badCats) {
+        return issues.getFirst().size() + (matchInfo == null ? 0 : matchInfo.size())
+                + (badCats == null ? 0 : badCats.size())
+                + issues.getSecond().size();
+    }
+
+    protected List<CellStatusInfo> getCellStatusInfosForIssues(final Pair<List<UploadTableInvalidValue>, List<Pair<UploadField, Object>>> issues,
+                                     final List<UploadTableMatchInfo> matchInfo, final List<Integer> badCats) {
+        List<CellStatusInfo> csis = new ArrayList<>(getTotalIssueCount(issues, matchInfo, badCats));
+        for (UploadTableInvalidValue utiv : issues.getFirst()) {
+            csis.add(new CellStatusInfo(utiv));
+        }
+        for (Pair<UploadField, Object> edit : issues.getSecond()) {
+            Object origObj = edit.getSecond();
+            String origVal =  origObj != null ? "'" + origObj.toString() + "'" : "Empty"; //more needed for dates and other tricky types
+            String tip = String.format(getResourceString("WB_EDITED_CELL_TT"), origVal);
+            List<Integer> cols = new ArrayList<Integer>();
+            cols.add(edit.getFirst().getIndex());
+            csis.add(new CellStatusInfo(WorkbenchDataItem.VAL_EDIT, tip, cols));
+        }
+        if (doIncrementalMatching && matchInfo != null) {
+            for (UploadTableMatchInfo utmi : matchInfo) {
+                if (utmi.getNumberOfMatches() != 1) { //for now we don't care if a single match exists
+                    csis.add(new CellStatusInfo(utmi));
+                }
+            }
+        }
+        if (badCats != null) {
+            for (Integer badCat : badCats) {
+                csis.add(createDupCatNumEntryCellStatus(badCat));
+            }
+        }
+        return csis;
+    }
     /**
      * @param editRow
      * @param editCol (use -1 to validate entire row)
      */
-    protected void updateRowValidationStatus(int editRow, int editCol, Vector<Integer> badCats)
+    protected void updateRowValidationStatus(int editRow, int editCol, final List<Integer> badCats)
     {
 		WorkbenchRow wbRow = workbench.getRow(editRow);
-		Pair<List<UploadTableInvalidValue>, List<Pair<UploadField, Object>>> issues = getIncremental() ? workbenchValidator.endCellEdit(editRow, editCol, doIncrementalValidation, doIncrementalEditChecking) 
-				: new Pair<List<UploadTableInvalidValue>, List<Pair<UploadField, Object>>>();
-		List<UploadTableMatchInfo> matchInfo = null;
-		
-		Hashtable<Short, Short> originalStats = new Hashtable<Short, Short>();
-		Hashtable<Short, WorkbenchDataItem> originals = wbRow.getItems();
-		for (Map.Entry<Short, WorkbenchDataItem> original : originals.entrySet()) {
-			originalStats.put(original.getKey(), (short )original.getValue().getEditorValidationStatus());
-		}
-		
-//		if (workbenchValidator.getUploader().isUpdateUpload())
-//		{
-//			
-//		}
-		
+		Pair<List<UploadTableInvalidValue>, List<Pair<UploadField, Object>>> issues = getIncremental()
+                ? workbenchValidator.endCellEdit(editRow, editCol, doIncrementalValidation, doIncrementalEditChecking)
+				: new Pair<>();
+       List<UploadTableMatchInfo> matchInfo = null;
 		if (doIncrementalMatching) {
 			try {
 				//XXX Really should avoid matching invalid columns. But that is tricky with trees.
@@ -4819,63 +4839,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 				ex.printStackTrace();
 			}
 		}
-		
-		
-		List<CellStatusInfo> csis = new ArrayList<CellStatusInfo>(issues.getFirst().size() + (matchInfo == null ? 0 : matchInfo.size()) 
-																+ (badCats == null ? 0 : badCats.size())
-																+ issues.getSecond().size());
-		for (UploadTableInvalidValue utiv : issues.getFirst()) {
-				csis.add(new CellStatusInfo(utiv));
-		}
-		for (Pair<UploadField, Object> edit : issues.getSecond()) {
-			Object origObj = edit.getSecond();
-			String origVal =  origObj != null ? "'" + origObj.toString() + "'" : "Empty"; //more needed for dates and other tricky types
-			String tip = String.format(getResourceString("WB_EDITED_CELL_TT"), origVal);
-			List<Integer> cols = new ArrayList<Integer>();
-			cols.add(edit.getFirst().getIndex());
-			csis.add(new CellStatusInfo(WorkbenchDataItem.VAL_EDIT, tip, cols));
-		}
-		
-		if (doIncrementalMatching && matchInfo != null) {
-			for (UploadTableMatchInfo utmi : matchInfo)
-			{
-				if (utmi.getNumberOfMatches() != 1) //for now we don't care if a single match exists
-				{
-					csis.add(new CellStatusInfo(utmi));
-				}
-			}
-		} 
-		if (badCats != null) {
-			for (Integer badCat : badCats) {
-				csis.add(createDupCatNumEntryCellStatus(badCat));
-			}
-		}
-			
-		
-		Hashtable<Short, Short> exceptionalItems = updateCellStatuses(csis, wbRow);
-		for (WorkbenchDataItem wbItem : wbRow.getWorkbenchDataItems()) {
-			Short origstat = originalStats.get(new Short((short )wbItem.getColumnNumber()));
-			if (origstat != null) {
-				if (origstat != wbItem.getEditorValidationStatus() || exceptionalItems.get(wbItem.getColumnNumber()) == null) {
-					if (origstat == WorkbenchDataItem.VAL_MULTIPLE_MATCH || origstat == WorkbenchDataItem.VAL_NEW_DATA) {
-						unmatchedCellCount.getAndDecrement();
-					} else if (origstat == WorkbenchDataItem.VAL_ERROR || origstat == WorkbenchDataItem.VAL_ERROR_EDIT) {
-						invalidCellCount.getAndDecrement();
-					} else if (origstat == WorkbenchDataItem.VAL_EDIT || origstat == WorkbenchDataItem.VAL_ERROR_EDIT) {
-						decrementEditedCellCount();
-					}
-						
-					if (exceptionalItems.get(wbItem.getColumnNumber()) == null) {
-						//XXX synchronization is not really necessary anymore, right??
-						synchronized(wbItem) {
-							wbItem.setStatusText(null);
-							wbItem.setEditorValidationStatus(WorkbenchDataItem.VAL_OK);
-						}
-					}
-				}
-			}
-			
-		}
+        updateCellStatuses(getCellStatusInfosForIssues(issues, matchInfo, badCats), wbRow);
     }
     
     /**
@@ -6238,42 +6202,31 @@ public class WorkbenchPaneSS extends BaseSubPane
 		 * @see org.jdesktop.swingx.decorator.HighlightPredicate#isHighlighted(java.awt.Component, org.jdesktop.swingx.decorator.ComponentAdapter)
 		 */
 		@Override
-		public boolean isHighlighted(Component arg0, ComponentAdapter arg1) 
-		{
+		public boolean isHighlighted(Component arg0, ComponentAdapter arg1) {
 			if ((activation == AnyPredicate && !getIncremental())
 					|| (activation == ValidationPredicate && !doIncrementalValidation)
 					|| (activation == MatchingPredicate && !doIncrementalMatching)
-					|| (activation == EditedPredicate && !doIncrementalEditChecking))
-			{
-				return false;
-			
-			} 
-			
-			WorkbenchRow wbRow = workbench.getRow(spreadSheet.convertRowIndexToModel(arg1.row));
-			WorkbenchDataItem wbCell = wbRow.getItems().get((short )spreadSheet.convertColumnIndexToModel(arg1.column));
-			if (wbCell == null)
-			{
+					|| (activation == EditedPredicate && !doIncrementalEditChecking)) {
 				return false;
 			}
-			
+			WorkbenchRow wbRow = workbench.getRow(spreadSheet.convertRowIndexToModel(arg1.row));
+			WorkbenchDataItem wbCell = wbRow.getItems().get((short )spreadSheet.convertColumnIndexToModel(arg1.column));
+			if (wbCell == null) {
+				return false;
+			}
 			int status = wbCell.getEditorValidationStatus();
-			if (activation == AnyPredicate)
-			{
+			if (activation == AnyPredicate) {
 				((JLabel )arg0).setToolTipText(null);
 				//Seems like a good idea to try to be as efficient as possible
 				//but this will need to be recoded as new cell states are added
-				return status == WorkbenchDataItem.VAL_ERROR
-					|| status == WorkbenchDataItem.VAL_ERROR_EDIT
-					|| status == WorkbenchDataItem.VAL_MULTIPLE_MATCH
-					|| status == WorkbenchDataItem.VAL_NEW_DATA
-					|| status == WorkbenchDataItem.VAL_NOT_MATCHED
-					|| status == WorkbenchDataItem.VAL_EDIT;
-			}
-			else {
-				for (Short condition : conditions)
-				{
-					if (condition == status)
-					{
+				return (status & WorkbenchDataItem.VAL_ERROR) != 0
+					|| (status & WorkbenchDataItem.VAL_MULTIPLE_MATCH) != 0
+					|| (status & WorkbenchDataItem.VAL_NEW_DATA) != 0
+					|| (status & WorkbenchDataItem.VAL_NOT_MATCHED) != 0
+					|| (status & WorkbenchDataItem.VAL_EDIT) != 0;
+			} else {
+				for (Short condition : conditions) {
+					if ((condition & status) != 0) {
 						//System.out.println("pos: " + arg1.row + ", " + arg1.column + ": " + wbCell.getStatusText());
 						((JLabel )arg0).setToolTipText(wbCell.getStatusText());
 						return true;

@@ -88,8 +88,8 @@ public class WorkbenchValidator
 	 * Perform validation after a cell is edited.
 	 */
 	public Pair<List<UploadTableInvalidValue>, List<Pair<UploadField, Object>>>  endCellEdit(int row, int col, boolean validate, boolean checkEdits) {
-		List<UploadTableInvalidValue> invalids = new ArrayList<UploadTableInvalidValue>();
-		List<Pair<UploadField, Object>> edits = new ArrayList<Pair<UploadField, Object>>();
+		List<UploadTableInvalidValue> invalids = new ArrayList<>();
+		List<Pair<UploadField, Object>> edits = new ArrayList<>();
 		if (validate) invalids.addAll(uploader.validateData(row, col));
 		if (checkEdits) {
 			try {
@@ -103,7 +103,7 @@ public class WorkbenchValidator
 	            dlg.setVisible(true);
 			}
 		}
-		return new Pair<List<UploadTableInvalidValue>, List<Pair<UploadField, Object>>>(invalids, edits);
+		return new Pair<>(invalids, edits);
 	}
 	
 	

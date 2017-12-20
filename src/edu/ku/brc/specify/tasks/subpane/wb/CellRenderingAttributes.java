@@ -53,34 +53,40 @@ public class CellRenderingAttributes
 		}
 	}
 
+	protected Color blend(final Color color1, final Color color2) {
+		return new Color((color1.getRed() + color2.getRed())/2,
+						(color1.getGreen() + color2.getGreen())/2,
+						(color1.getBlue() + color2.getBlue())/2,
+						(color1.getAlpha() + color2.getAlpha())/2);
+	}
+
 	protected Atts getAtts(int wbCellStatus, String statusText,
 			boolean doIncrementalValidation, boolean doIncrementalMatching, boolean doShowEditedCells) 
 	{
 		LineBorder bdr = null;
 		Color bg = null;
 		if (doIncrementalValidation
-				&& (wbCellStatus == WorkbenchDataItem.VAL_ERROR || wbCellStatus == WorkbenchDataItem.VAL_ERROR_EDIT))
+				&& (wbCellStatus & WorkbenchDataItem.VAL_ERROR) != 0)
 		{
 			bdr = new LineBorder(errorBorder);
 			bg = errorBackground;
-		} else if (doIncrementalMatching
-				&& wbCellStatus == WorkbenchDataItem.VAL_NEW_DATA)
-		{
+		}
+		if (doIncrementalMatching
+				&& (wbCellStatus & WorkbenchDataItem.VAL_NEW_DATA) != 0) {
 			bdr = new LineBorder(newDataBorder);
 			bg = newDataBackground;
 		} else if (doIncrementalMatching
-				&& wbCellStatus == WorkbenchDataItem.VAL_MULTIPLE_MATCH)
-		{
+				&& (wbCellStatus & WorkbenchDataItem.VAL_MULTIPLE_MATCH) != 0) {
 			bdr = new LineBorder(multipleMatchBorder);
 			bg = multipleMatchBackground;
 		} else if (highlightSkipped && doIncrementalMatching
-				&& wbCellStatus == WorkbenchDataItem.VAL_NOT_MATCHED)
-		{
+				&& (wbCellStatus & WorkbenchDataItem.VAL_NOT_MATCHED) != 0) {
 			bdr = new LineBorder(notMatchedBorder);
 			bg = notMatchedBackground;
-		} else if (doShowEditedCells && (wbCellStatus == WorkbenchDataItem.VAL_EDIT || wbCellStatus == WorkbenchDataItem.VAL_ERROR_EDIT)) {
+		}
+		if (doShowEditedCells && (wbCellStatus & WorkbenchDataItem.VAL_EDIT) != 0) {
 			bdr = new LineBorder(editedBorder);
-			bg = editedBackground;
+			bg = bg == null ? editedBackground : blend(bg, editedBackground);
 		}
 		return new Atts(statusText, bdr, bg);
 	}
@@ -99,14 +105,11 @@ public class CellRenderingAttributes
 	 * @param wbCell
 	 */
 	public void addAttributes(JLabel lbl, final WorkbenchDataItem wbCell,
-			boolean doIncrementalValidation, boolean doIncrementalMatching, boolean doShowEditedCells) 
-	{
-		if (doIncrementalValidation || doIncrementalMatching)
-		{
+			boolean doIncrementalValidation, boolean doIncrementalMatching, boolean doShowEditedCells) {
+		if (doIncrementalValidation || doIncrementalMatching) {
 			int cellStatus = WorkbenchDataItem.VAL_OK;
 			String cellStatusText = null;
-			if (wbCell != null)
-			{
+			if (wbCell != null) {
 				// XXX WorkbenchDataItems can be updated by GridCellEditor
 				// or by background validation initiated at load time or
 				// after find/replace ops
@@ -118,9 +121,7 @@ public class CellRenderingAttributes
 				// }
 			}
 			// currently nothing extra is done for OK cells
-			if (cellStatus != WorkbenchDataItem.VAL_NONE
-					&& cellStatus != WorkbenchDataItem.VAL_OK)
-			{
+			if (cellStatus != WorkbenchDataItem.VAL_OK) {
 				Atts atts = getAtts(cellStatus, cellStatusText,
 						doIncrementalValidation, doIncrementalMatching, doShowEditedCells);
 				// System.out.println("pos " + wbCell.getRowNumber() + ", "+

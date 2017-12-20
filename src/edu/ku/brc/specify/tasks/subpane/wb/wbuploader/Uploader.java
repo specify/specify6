@@ -1705,7 +1705,7 @@ public class Uploader implements ActionListener, KeyListener
     	WorkbenchRow r = theWb.getRow(row);
     	for (WorkbenchDataItem di : r.getWorkbenchDataItems()) {
     		int stat = di.getEditorValidationStatus();
-    		if (stat == WorkbenchDataItem.VAL_EDIT || stat == WorkbenchDataItem.VAL_ERROR_EDIT) {
+    		if ((stat & WorkbenchDataItem.VAL_EDIT) != 0) {
     			return true;
     		}
     	}
@@ -1721,7 +1721,7 @@ public class Uploader implements ActionListener, KeyListener
     	List<WorkbenchDataItem> result = new ArrayList<WorkbenchDataItem>();
     	for (WorkbenchDataItem di : r.getWorkbenchDataItems()) {
     		int stat = di.getEditorValidationStatus();
-    		if (stat == WorkbenchDataItem.VAL_EDIT || stat == WorkbenchDataItem.VAL_ERROR_EDIT) {
+    		if ((stat & WorkbenchDataItem.VAL_EDIT) != 0) {
     			result.add(di);
     		}
     	}
