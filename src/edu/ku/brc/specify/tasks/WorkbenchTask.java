@@ -3713,7 +3713,11 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     	try {
     		WorkbenchTemplate template = getTemplateFromQuery(query);
     		if (template != null) {
-   			Workbench workbench = createNewWorkbenchDataObj(template.getName(), template, false);
+    		    String name = template.getName();
+    		    if (name.length() > 64) {
+    		        name = name.substring(name.length() - 64);
+                }
+   			    Workbench workbench = createNewWorkbenchDataObj(name, template, false);
     			if (workbench != null) {
     				fillandSaveWorkbench(new Pair<>(rs, results), workbench,  true, srcTask);
     			}
