@@ -688,7 +688,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
             ((SessionImpl)session).getListeners().setPostCommitUpdateEventListeners(us);
             transaction = null;
         } else {
-            throw new RuntimeException("Transaction was null and shouldn't been.");
+            throw new RuntimeException("Transaction was null and shouldn't have been.");
         }
     }
 
