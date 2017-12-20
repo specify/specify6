@@ -3869,7 +3869,6 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         String tblName = tblInfo.getName().toLowerCase();
     	if (relationshipSupportedForQBtoWBTransform(tblName, relName)) {
             boolean isTree = Treeable.class.isAssignableFrom(tblInfo.getClassObj());
-
             List<Element> defMatches = defMap.get(f.getFieldName().toLowerCase());
             if (defMatches != null) {
                 for (Element fld : defMatches) {
