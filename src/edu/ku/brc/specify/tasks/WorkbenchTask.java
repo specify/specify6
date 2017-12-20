@@ -4662,7 +4662,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     public static Class<?> getDataType(final WorkbenchTemplateMappingItem wbtmi, boolean forBatchEdit)
     {
         // if this mapping item doesn't correspond to a DB field, return the java.lang.String class
-        if (wbtmi.getSrcTableId() == null || wbtmi.getSrcTableId() == -1) {
+        if (wbtmi ==  null || wbtmi.getSrcTableId() == null || wbtmi.getSrcTableId() == -1) {
             return String.class;
         }
         
@@ -4706,7 +4706,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         }
 
         //throw new RuntimeException("Could not find [" + wbtmi.getFieldName()+"]");
-        return null;
+        return String.class;
     }
     
     /* (non-Javadoc)
