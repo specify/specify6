@@ -178,7 +178,7 @@ public class DataEntryTask extends BaseTask
         
         // Do this here instead of in initialize because the static method will need to access the icon mapping first
         viewsNavBox = new NavBox(getResourceString("CreateAndUpdate"));
-        batchNavBox = new NavBox(getResourceString("DataEntryTask.BatchEdit"));
+        //batchNavBox = new NavBox(getResourceString("DataEntryTask.BatchEdit"));
     }
 
     /* (non-Javadoc)
@@ -192,7 +192,7 @@ public class DataEntryTask extends BaseTask
             super.initialize(); // sets isInitialized to false
             
             navBoxes.add(viewsNavBox);
-            navBoxes.add(batchNavBox);
+            //navBoxes.add(batchNavBox);
             
             // Container Tree
             //NavBox navBox = new NavBox(getResourceString("Actions"));
@@ -1176,7 +1176,7 @@ public class DataEntryTask extends BaseTask
                                  final boolean doRegister)
     {
         buildFormNavBoxes(stdList, doRegister);
-        buildBatchNavBoxes(batchList, doRegister);
+        //buildBatchNavBoxes(batchList, doRegister);
         
         if (miscList != null && !miscList.isEmpty())
         {

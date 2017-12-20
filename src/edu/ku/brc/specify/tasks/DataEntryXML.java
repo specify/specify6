@@ -55,7 +55,7 @@ public class DataEntryXML
         super();
         std.addAll(stds);
         misc.addAll(miscs);
-        batch.addAll(batches);
+        //batch.addAll(batches);
     }
     
     /**
