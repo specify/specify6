@@ -4354,7 +4354,7 @@ public class UploadTable implements Comparable<UploadTable>
                 recIsShared = true;
             } else {
                 SpecifyDeleteHelper delhel = uploader.getDeleteHelper();
-                recIsShared = rec == null ? false : delhel.isRecordShared(tblClass, rec.getId(), false, tblSession);
+                recIsShared = rec == null ? false : delhel.isRecordShared(tblClass, rec.getId(), !CollectingEvent.class.equals(tblClass), tblSession);
                 delhel.done(false);
             }
         }
