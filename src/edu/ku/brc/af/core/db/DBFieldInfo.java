@@ -273,36 +273,25 @@ public class DBFieldInfo extends DBInfoBase implements DBTableChildIFace
         return datePrecisionName;
     }
 
-    public Class<?> getDataClass()
-    {
-        if (dataClass == null)
-        {
-            if (StringUtils.isNotEmpty(type))
-            {
-                if (type.equals("calendar_date")) //$NON-NLS-1$
-                {
+    public Class<?> getDataClass() {
+        if (dataClass == null) {
+            if (StringUtils.isNotEmpty(type)) {
+                if (type.equals("calendar_date")) { //$NON-NLS-1$
                     dataClass = Calendar.class;
                     
-                } else if (type.equals("text")) //$NON-NLS-1$
-                {
+                } else if (type.equals("text")) { //$NON-NLS-1$
                     dataClass = String.class;
                     
-                } else if (type.equals("boolean")) //$NON-NLS-1$
-                {
+                } else if (type.equals("boolean")) { //$NON-NLS-1$
                     dataClass = Boolean.class;
                     
-                } else if (type.equals("byte")) //$NON-NLS-1$
-                {
+                } else if (type.equals("byte")) { //$NON-NLS-1$
                     dataClass = Byte.class;
-                    
-                } else
-                {
-                    try
-                    {
+                } else {
+                    try {
                         dataClass = Class.forName(type);
                         
-                    } catch (Exception e)
-                    {
+                    } catch (Exception e) {
                         edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                         edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DBFieldInfo.class, e);
                         log.error(e);
