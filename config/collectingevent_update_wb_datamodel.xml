@@ -2,23 +2,27 @@
 <database>
 
   <table classname="edu.ku.brc.specify.datamodel.CollectingEvent" table="collectingevent" tableid="10" lazy="true" >
-    <field column="Station Field Number" name="stationFieldNumber" type="java.lang.String" length="50"/>
-    <field column="Method" name="method" type="java.lang.String" length="50"/>
-    <field column="Verbatim Date" name="verbatimDate" type="java.lang.String" length="50"/>
+    <field column="Station Field Number" name="stationFieldNumber" type="java.lang.String" />
+    <field column="Station Field Number Modifier 1" name="stationFieldNumberModifier1" type="java.lang.String" />
+    <field column="Station Field Number Modifier 2" name="stationFieldNumberModifier2" type="java.lang.String" />
+    <field column="Station Field Number Modifier 3" name="stationFieldNumberModifier3" type="java.lang.String" />
+    <field column="Method" name="method" type="java.lang.String" />
+    <field column="Verbatim Date" name="verbatimDate" type="java.lang.String" />
     <field column="Start Date" name="startDate" type="calendar_date"/>
-    <field column="Start Date Precision" name="startDatePrecision" type="java.lang.Short"/>
-    <field column="Start Date Verbatim" name="startDateVerbatim" type="java.lang.String" length="50"/>
+    <field column="Start Date Verbatim" name="startDateVerbatim" type="java.lang.String" />
     <field column="End Date" name="endDate" type="calendar_date"/>
-    <field column="End Date Precision" name="endDatePrecision" type="java.lang.Short"/>
-    <field column="End Date Verbatim" name="endDateVerbatim" type="java.lang.String" length="50"/>
+    <field column="End Date Verbatim" name="endDateVerbatim" type="java.lang.String" />
     <field column="Start Time" name="startTime" type="java.lang.Short"/>
     <field column="End Time" name="endTime" type="java.lang.Short"/>
     <field column="Text 1" name="text1" type="text" />
     <field column="Text 2" name="text2" type="text" />
-    <field column="Integer 1" name="integer1" type="java.lang.Integer" length="10"/>
-    <field column="Integer 2" name="integer2" type="java.lang.Integer" length="10"/>
-    <field column="Verbatim Locality" name="verbatimLocality" type="text" length="2048"/>
-    <field column="Remarks (Collecting Event)" name="collectingEventRemarks" type="text" length="4096"/>
+    <field column="Text 3" name="text3" type="text" />
+    <field column="Text 4" name="text4" type="text" />
+    <field column="Text 5" name="text5" type="text" />
+    <field column="Collecting Event Integer 1" name="integer1" type="java.lang.Integer" />
+    <field column="Collecting Event Integer 2" name="integer2" type="java.lang.Integer" />
+    <field column="Verbatim Locality" name="verbatimLocality" type="text" />
+    <field column="Remarks (Collecting Event)" name="collectingEventRemarks" type="text"/>
   </table>
 
   <table classname="edu.ku.brc.specify.datamodel.CollectingEventAttribute" table="collectingeventattribute" tableid="92" lazy="true" query="false">
@@ -36,6 +40,16 @@
     <field column="Number 11 (CollectingEvent Attribute)" name="collectingEventAttributeNumber11" type="java.lang.Float" length="24"/>
     <field column="Number 12 (CollectingEvent Attribute)" name="collectingEventAttributeNumber12" type="java.lang.Float" length="24"/>
     <field column="Number 13 (CollectingEvent Attribute)" name="collectingEventAttributeNumber13" type="java.lang.Float" length="24"/>
+    <field column="Integer 1 (CollectingEvent Attribute)" name="collectingEventAttributeInteger1" type="java.lang.Integer"/>
+    <field column="Integer 2 (CollectingEvent Attribute)" name="collectingEventAttributeInteger2" type="java.lang.Integer"/>
+    <field column="Integer 3 (CollectingEvent Attribute)" name="collectingEventAttributeInteger3" type="java.lang.Integer"/>
+    <field column="Integer 4 (CollectingEvent Attribute)" name="collectingEventAttributeInteger4" type="java.lang.Integer"/>
+    <field column="Integer 5 (CollectingEvent Attribute)" name="collectingEventAttributeInteger5" type="java.lang.Integer"/>
+    <field column="Integer 6 (CollectingEvent Attribute)" name="collectingEventAttributeInteger6" type="java.lang.Integer"/>
+    <field column="Integer 7 (CollectingEvent Attribute)" name="collectingEventAttributeInteger7" type="java.lang.Integer"/>
+    <field column="Integer 8 (CollectingEvent Attribute)" name="collectingEventAttributeInteger8" type="java.lang.Integer"/>
+    <field column="Integer 9 (CollectingEvent Attribute)" name="collectingEventAttributeInteger9" type="java.lang.Integer"/>
+    <field column="Integer 10 (CollectingEvent Attribute)" name="collectingEventAttributeInteger10" type="java.lang.Integer"/>
 
     <field column="Text 1 (CollectingEvent Attribute)" name="collectingEventAttributeText1" type="java.lang.String" length="300"/>
     <field column="Text 2 (CollectingEvent Attribute)" name="collectingEventAttributeText2" type="java.lang.String" length="300"/>
@@ -63,18 +77,25 @@
   </table>
 
   <table classname="edu.ku.brc.specify.datamodel.CollectingTrip" table="collectingtrip" tableid="87" lazy="true" >
-    <field column="Name" name="collectingTripName" type="java.lang.String" length="64"/>
-    <field column="Sponsor" name="sponsor" type="java.lang.String" length="64"/>
+    <field column="Name" name="collectingTripName" type="java.lang.String" />
+    <field column="Cruise" name="cruise" type="java.lang.String"/>
+    <field column="Vessel" name="vessel" type="java.lang.String"/>
+    <field column="Sponsor" name="sponsor" type="java.lang.String"/>
     <field column="Start Date" name="startDate" type="calendar_date"/>
-    <field column="Start Date Verbatim" name="startDateVerbatim" type="java.lang.String" length="50"/>
+    <field column="Start Date Verbatim" name="startDateVerbatim" type="java.lang.String" />
     <field column="End Date" name="endDate" type="calendar_date"/>
-    <field column="End Date Verbatim" name="endDateVerbatim" type="java.lang.String" length="50"/>
+    <field column="End Date Verbatim" name="endDateVerbatim" type="java.lang.String" />
     <field column="Start Time" name="startTime" type="java.lang.Short"/>
     <field column="End Time" name="endTime" type="java.lang.Short"/>
-    <field column="Remarks (Collecting Trip)" name="collectingTripRemarks" type="java.lang.String" length="4096"/>
-    <field column="Text1 (Collecting Trip)" name="collectingTripText1" type="java.lang.String" length="4096"/>
-    <field column="Text2 (Collecting Trip)" name="collectingTripText2" type="java.lang.String" length="4096"/>
-    <field column="Number 1 (Collecting Trip)" name="collectingTripNumber1" type="java.lang.Float" length="24"/>
+    <field column="Remarks (Collecting Trip)" name="collectingTripRemarks" type="java.lang.String" />
+    <field column="Text1 (Collecting Trip)" name="collectingTripText1" type="java.lang.String" />
+    <field column="Text2 (Collecting Trip)" name="collectingTripText2" type="java.lang.String" />
+    <field column="Text3 (Collecting Trip)" name="collectingTripText3" type="java.lang.String" />
+    <field column="Text4 (Collecting Trip)" name="collectingTripText4" type="java.lang.String" />
+    <field column="Number 1 (Collecting Trip)" name="collectingTripNumber1" type="java.lang.Float" />
+    <field column="Number 2 (Collecting Trip)" name="collectingTripNumber2" type="java.lang.Float" />
+    <field column="YesNo 1 (Collecting Trip)" name="collectingTripYesNo1" type="boolean" />
+    <field column="YesNo 2 (Collecting Trip)" name="collectingTripYesNo2" type="boolean" />
   </table>
 
   <table classname="edu.ku.brc.specify.datamodel.GeoCoordDetail" table="geocoorddetail" tableid="123" searchable="true" abbrv="gcd">
@@ -119,7 +140,7 @@
 
   <table classname="edu.ku.brc.specify.datamodel.Locality" table="locality" tableid="2" lazy="true" >
     <display objtitle="Locality" view="Locality" dataobjformatter="Locality" searchdlg="LocalitySearch" newobjdlg="LocalityDisplay"/>
-   	<field column="Locality Name" name="localityName" type="java.lang.String" length="255"/>
+    <field column="Locality Name" name="localityName" type="java.lang.String" length="255"/>
     <field column="Named Place" name="namedPlace" type="java.lang.String" length="255"/>
     <field column="Short Name" name="shortName" type="java.lang.String"  length="32" />
     <field column="Relation To Named Place" name="relationToNamedPlace" type="java.lang.String" length="120"/>
@@ -134,7 +155,7 @@
     <field column="Longitude 1" name="longitude1" type="java.math.BigDecimal"/>
     <field column="Latitude 2" name="latitude2" type="java.math.BigDecimal"/>
     <field column="Longitude 2" name="longitude2" type="java.math.BigDecimal"/>
-   	<field column="Lat Long Type" name="latLongType" type="java.lang.String" length="50"/>
+    <field column="Lat Long Type" name="latLongType" type="java.lang.String" length="50"/>
     <field column="Lat Long Method" name="latLongMethod" type="java.lang.String" length="50"/>
     <field column="Lat Long Accuracy" name="latLongAccuracy" type="java.lang.Double"/>
     <field column="Datum" name="datum" type="java.lang.String" length="50"/>
@@ -144,12 +165,21 @@
     <field column="Remarks (Locality)" name="localityRemarks" type="text" length="4096"/>
 
     <field column="Base Meridian" name="baseMeridian" type="java.lang.String" length="50"/>
-   	<field column="Drainage" name="drainage" type="java.lang.String" length="64"/>
+    <field column="Drainage" name="drainage" type="java.lang.String" length="64"/>
+    <field column="End Depth" name="endDepth" type="java.lang.Double"/>
+    <field column="End Depth Unit" name="endDepthUnit" type="java.lang.String"/>
+    <field column="End Depth Verbatim" name="endDepthVerbatim" type="java.lang.String"/>
+    <field column="Start Depth" name="startDepth" type="java.lang.Double"/>
+    <field column="Start Depth Unit" name="startDepthUnit" type="java.lang.String"/>
+    <field column="Start Depth Verbatim" name="startDepthVerbatim" type="java.lang.String"/>
+    <field column="HUC Code" name="hucCode" type="java.lang.String"/>
+    <field column="MgrsZone" name="mgrsZone" type="java.lang.String"/>
+
     <field column="Island" name="island" type="java.lang.String" length="64"/>
     <field column="Island Group" name="islandGroup" type="java.lang.String" length="64"/>
-   	<field column="National Park Name" name="nationalParkName" type="java.lang.String" length="64"/>
-   	<field column="Paleo Latitude" name="paleoLat" type="java.lang.String"/>
-   	<field column="Paleo Longitude" name="paleoLng" type="java.lang.String"/>
+    <field column="National Park Name" name="nationalParkName" type="java.lang.String" length="64"/>
+    <field column="Paleo Latitude" name="paleoLat" type="java.lang.String"/>
+    <field column="Paleo Longitude" name="paleoLng" type="java.lang.String"/>
     <field column="Range" name="rangeDesc" type="java.lang.String" length="50"/>
     <field column="Range Direction" name="rangeDirection" type="java.lang.String" length="50"/>
     <field column="Section" name="section" type="java.lang.String" length="50"/>
@@ -166,8 +196,13 @@
     <field column="UtmScale" name="utmScale" type="java.math.BigDecimal" />
     <field column="UtmZone" name="utmZone" type="java.lang.Short" />
     <field column="Water Body" name="waterBody" type="java.lang.String" length="64"/>
-    <field column="Number 1 (Locality)" name="localityNumber1" type="java.lang.Double"/>
-    <field column="Number 2 (Locality)" name="localityNumber2" type="java.lang.Double"/>
+    <field column="Number 1 (Locality Detail)" name="localityNumber1" type="java.lang.Double"/>
+    <field column="Number 2 (Locality Detail)" name="localityNumber2" type="java.lang.Double"/>
+    <field column="Number 1 (Locality Detail)" name="localityDetailNumber1" type="java.lang.Double"/>
+    <field column="Number 2 (Locality Detail)" name="localityDetailNumber2" type="java.lang.Double"/>
+    <field column="Number 3 (Locality Detail)" name="localityDetailNumber3" type="java.lang.Float"/>
+    <field column="Number 4 (Locality Detail)" name="localityDetailNumber4" type="java.lang.Float"/>
+    <field column="Number 5 (Locality Detail)" name="localityDetailNumber5" type="java.lang.Float"/>
     <field column="Text 1 (Locality)" name="localityText1" type="text" length="500"/>
     <field column="Text 2 (Locality)" name="localityText2" type="text" length="500"/>
     <field column="Text 3 (Locality)" name="localityText3" type="text" length="500"/>
@@ -175,8 +210,19 @@
     <field column="Text 5 (Locality)" name="localityText5" type="text" length="500"/>
     <field column="Text 1 (Locality Detail)" name="localityDetailText1" type="text" length="300"/>
     <field column="Text 2 (Locality Detail)" name="localityDetailText2" type="text" length="300"/>
+    <field column="Text 3 (Locality Detail)" name="localityDetailText3" type="text" length="300"/>
+    <field column="Text 4 (Locality Detail)" name="localityDetailText4" type="text" length="300"/>
+    <field column="Text 5 (Locality Detail)" name="localityDetailText5" type="text" length="300"/>
     <field column="YesNo 1 (Locality)" name="localityYesNo1" type="boolean"/>
     <field column="YesNo 2 (Locality)" name="localityYesNo2" type="boolean"/>
+    <field column="YesNo 3 (Locality)" name="localityYesNo3" type="boolean"/>
+    <field column="YesNo 4 (Locality)" name="localityYesNo4" type="boolean"/>
+    <field column="YesNo 5 (Locality)" name="localityYesNo5" type="boolean"/>
+    <field column="YesNo 1 (Locality Detail)" name="localityDetailYesNo1" type="boolean"/>
+    <field column="YesNo 2 (Locality Detail)" name="localityDetailYesNo2" type="boolean"/>
+    <field column="YesNo 3 (Locality Detail)" name="localityDetailYesNo3" type="boolean"/>
+    <field column="YesNo 4 (Locality Detail)" name="localityDetailYesNo4" type="boolean"/>
+    <field column="YesNo 5 (Locality Detail)" name="localityDetailYesNo5" type="boolean"/>
   </table>
 
   <table classname="edu.ku.brc.specify.datamodel.PaleoContext" table="paleocontext" tableid="32" searchable="true" abbrv="pc">
