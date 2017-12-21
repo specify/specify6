@@ -19,38 +19,6 @@
     <field column="Integer 2" name="integer2" type="java.lang.Integer" length="10"/>
     <field column="Verbatim Locality" name="verbatimLocality" type="text" length="2048"/>
     <field column="Remarks (Collecting Event)" name="collectingEventRemarks" type="text" length="4096"/>
-    <field column="Collector First Name 1" name="collectorFirstName1" type="java.lang.String" length="50"/>
-    <field column="Collector Last Name 1"  name="collectorLastName1" type="java.lang.String" length="120"/>
-    <field column="Collector Middle Initials 1" name="collectorMiddle1" type="java.lang.String" length="50"/>
-    <field column="Collector Title 1"  name="collectorTitle1" type="java.lang.String" length="50"/>
-    <field column="Collector First Name 2" name="collectorFirstName2" type="java.lang.String" length="50"/>
-    <field column="Collector Last Name 2"  name="collectorLastName2" type="java.lang.String" length="120"/>
-    <field column="Collector Middle Initials 2" name="collectorMiddle2" type="java.lang.String" length="50"/>
-    <field column="Collector Title 2"  name="collectorTitle2" type="java.lang.String" length="50"/>
-    <field column="Collector First Name 3" name="collectorFirstName3" type="java.lang.String" length="50"/>
-    <field column="Collector Last Name 3"  name="collectorLastName3" type="java.lang.String" length="120"/>
-    <field column="Collector Middle Initials 3" name="collectorMiddle3" type="java.lang.String" length="50"/>
-    <field column="Collector Title 3"  name="collectorTitle3" type="java.lang.String" length="50"/>
-    <field column="Collector First Name 4" name="collectorFirstName4" type="java.lang.String" length="50"/>
-    <field column="Collector Last Name 4"  name="collectorLastName4" type="java.lang.String" length="120"/>
-    <field column="Collector Middle Initials 4" name="collectorMiddle4" type="java.lang.String" length="50"/>
-    <field column="Collector Title 4"  name="collectorTitle4" type="java.lang.String" length="50"/>
-    <field column="Collector First Name 5" name="collectorFirstName5" type="java.lang.String" length="50"/>
-    <field column="Collector Last Name 5"  name="collectorLastName5" type="java.lang.String" length="120"/>
-    <field column="Collector Middle Initials 5" name="collectorMiddle5" type="java.lang.String" length="50"/>
-    <field column="Collector Title 5"  name="collectorTitle5" type="java.lang.String" length="50"/>
-    <field column="Collector First Name 6" name="collectorFirstName6" type="java.lang.String" length="50"/>
-    <field column="Collector Last Name 6"  name="collectorLastName6" type="java.lang.String" length="120"/>
-    <field column="Collector Middle Initials 6" name="collectorMiddle6" type="java.lang.String" length="50"/>
-    <field column="Collector Title 6"  name="collectorTitle6" type="java.lang.String" length="50"/>
-    <field column="Collector First Name 7" name="collectorFirstName7" type="java.lang.String" length="50"/>
-    <field column="Collector Last Name 7"  name="collectorLastName7" type="java.lang.String" length="120"/>
-    <field column="Collector Middle Initials 7" name="collectorMiddle7" type="java.lang.String" length="50"/>
-    <field column="Collector Title 7"  name="collectorTitle7" type="java.lang.String" length="50"/>
-    <field column="Collector First Name 8" name="collectorFirstName8" type="java.lang.String" length="50"/>
-    <field column="Collector Last Name 8"  name="collectorLastName8" type="java.lang.String" length="120"/>
-    <field column="Collector Middle Initials 8" name="collectorMiddle8" type="java.lang.String" length="50"/>
-    <field column="Collector Title 8"  name="collectorTitle8" type="java.lang.String" length="50"/>
   </table>
 
   <table classname="edu.ku.brc.specify.datamodel.CollectingEventAttribute" table="collectingeventattribute" tableid="92" lazy="true" query="false">
