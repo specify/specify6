@@ -53,6 +53,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 
+import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -1502,8 +1503,18 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
         	return;
         }
 
-        if (cmdAction.isAction(QUERY_RESULTS_BATCH_EDIT)) {
+        if (!cmdAction.isConsumed() && cmdAction.isAction(QUERY_RESULTS_BATCH_EDIT)) {
             if (queryBldrPane != null) {
+                for (SubPaneIFace pane : SubPaneMgr.getInstance().getSubPanes()) {
+                    if (pane instanceof WorkbenchPaneSS) {
+                        if (((WorkbenchPaneSS)pane).isUpdateDataSet()) {
+                            UIRegistry.showLocalizedMsg(getResourceString("QB_BATCH_EDITOR_ALREADY_OPEN"));
+                            cmdAction.setConsumed(true);
+                            return;
+                        }
+                    }
+                }
+
                 JTable dataTbl = (JTable) cmdAction.getProperties().get("jtable");
                 if (dataTbl != null) {
                     ResultSetTableModel rsm = (ResultSetTableModel) dataTbl.getModel();
@@ -1516,6 +1527,7 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
                         WorkbenchTask wbTask = (WorkbenchTask) ContextMgr.getTaskByClass(WorkbenchTask.class);
                         UsageTracker.incrUsageCount("BE.BatchEditQueryResults."
                                 + queryBldrPane.getQueryForBatchEdit().getFirst().getContextName());
+                        cmdAction.setConsumed(true);
                         wbTask.batchEditQueryResults(queryBldrPane.getQueryForBatchEdit(), (RecordSetIFace) cmdAction.getData(),
                                 getSelectedResults(queryBldrPane.getResultsCache(), dataTbl.getSelectedRows()), this);
                         return;

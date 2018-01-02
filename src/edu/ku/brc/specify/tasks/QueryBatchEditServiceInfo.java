@@ -54,9 +54,8 @@ public class QueryBatchEditServiceInfo extends ServiceInfo {
 		WorkbenchTask wbTask = (WorkbenchTask)ContextMgr.getTaskByClass(WorkbenchTask.class);
 		if (!(wbTask != null && wbTask.getUpdateSchemaForTable(tableIdArg) != null)) {
 			return false;
-		};
+		}
 
-		//BatchEditTask beTask = (BatchEditTask) ContextMgr.getTaskByClass(BatchEditTask.class);
 		return true;
 	}
 
