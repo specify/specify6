@@ -507,7 +507,7 @@ public class FormPane extends JPanel implements FormPaneWrapper
      */
     protected JComponent createUIComp(final WorkbenchTemplateMappingItem wbtmi)
     {
-        return createUIComp(WorkbenchTask.getDataType(wbtmi, false),
+        return createUIComp(WorkbenchTask.getDataType(wbtmi, this.workbenchPane.isUpdateDataSet()),
                             wbtmi.getCaption(), 
                             wbtmi.getFieldName(), 
                             wbtmi.getFieldType(),
