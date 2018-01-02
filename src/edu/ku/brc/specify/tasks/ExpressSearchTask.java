@@ -1494,7 +1494,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                 ESResultsSubPane qResults = getQResultsPane(results);
                 if (qResults == null && esrto != null && !esrto.hasResults()) {
                     results.complete();
-                    UIRegistry.showLocalizedError("QB_NO_RESULTS_UNK");
+                    displayNoResults("QB_NO_RESULTS");
                     return;
                 }
 
