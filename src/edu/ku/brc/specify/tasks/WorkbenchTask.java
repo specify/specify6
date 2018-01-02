@@ -1858,7 +1858,9 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         				}
         				itemIdsAdded.add(id);
         			}
-        			r++;
+        			while(r < queryResults.size() && queryResults.get(r).get(0).equals(id)) {
+                        r++;
+                    }
         		}
         	} catch (Exception ex) {
          	    result = false;
