@@ -1545,29 +1545,22 @@ public class Uploader implements ActionListener, KeyListener
      * 
      * Orders uploadTables according to dependencies in uploadGraph.
      */
-    protected void orderUploadTables() throws UploaderException
-    {
-        try
-        {
+    protected void orderUploadTables() throws UploaderException {
+        try {
             Vector<Vertex<Table>> topoSort = uploadGraph.getTopoSort();
             Vector<UploadTable> newTables = new Vector<UploadTable>();
-            for (Vertex<Table> v : topoSort)
-            {
+            for (Vertex<Table> v : topoSort) {
                 Vector<UploadTable> its = getUploadTable(v.getData());
-                for (UploadTable it : its)
-                {
+                for (UploadTable it : its) {
                     newTables.add(it);
                     uploadTables.remove(it);
                 }
-                if (uploadTables.size() == 0)
-                {
+                if (uploadTables.size() == 0) {
                     break;
                 }
             }
             uploadTables = newTables;
-        }
-        catch (DirectedGraphException ex)
-        {
+        } catch (DirectedGraphException ex) {
             throw new UploaderException(ex);
         }
     }
