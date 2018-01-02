@@ -193,6 +193,7 @@ public class WorkbenchTask extends BaseTask
         if (!name.equals(batchEditDatabaseSchemaName.get())) {
             batchEditDatabaseSchemaName.set(name);
             batchEditDatabaseSchema = null;
+            System.gc();
         }
     }
 
@@ -1828,7 +1829,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         UIRegistry.getStatusBar().setText("");
         return true;
     }
-    
+
     /**
      * @param rs
      * @param wb
@@ -1858,9 +1859,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         				}
         				itemIdsAdded.add(id);
         			}
-        			while(r < queryResults.size() && queryResults.get(r).get(0).equals(id)) {
-                        r++;
-                    }
+        			r++;
         		}
         	} catch (Exception ex) {
          	    result = false;

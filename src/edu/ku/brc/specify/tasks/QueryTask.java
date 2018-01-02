@@ -1459,7 +1459,18 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
     {
         deleteDnDBtn(navBox, boxItem != null ? boxItem : getBoxByTitle(navBox, rs.getName()));
     }
-    
+
+    protected Vector<Vector<Object>> getSelectedResults(final Vector<Vector<Object>> results, final int[] selectedRows) {
+        if (selectedRows.length == 0) {
+            return results;
+        } else {
+            Vector<Vector<Object>> result = new Vector<>();
+            for (int r : selectedRows) {
+                result.add(results.get(r));
+            }
+            return result;
+        }
+    }
        /**
      * Processes all Commands of type QUERY.
      * @param cmdAction the command to be processed
@@ -1505,7 +1516,8 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
                         WorkbenchTask wbTask = (WorkbenchTask) ContextMgr.getTaskByClass(WorkbenchTask.class);
                         UsageTracker.incrUsageCount("BE.BatchEditQueryResults."
                                 + queryBldrPane.getQueryForBatchEdit().getFirst().getContextName());
-                        wbTask.batchEditQueryResults(queryBldrPane.getQueryForBatchEdit(), (RecordSetIFace) cmdAction.getData(), queryBldrPane.getResultsCache(), this);
+                        wbTask.batchEditQueryResults(queryBldrPane.getQueryForBatchEdit(), (RecordSetIFace) cmdAction.getData(),
+                                getSelectedResults(queryBldrPane.getResultsCache(), dataTbl.getSelectedRows()), this);
                         return;
                     }
                 }
