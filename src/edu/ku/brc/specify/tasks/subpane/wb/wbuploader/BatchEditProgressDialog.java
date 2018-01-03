@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static edu.ku.brc.ui.UIHelper.*;
 
 public class BatchEditProgressDialog extends JDialog {
-    protected static int DEFAULT_COUNTDOWN = 15;
+    protected static int DEFAULT_COUNTDOWN = 53;
 
     protected JProgressBar progress;
     protected JLabel       desc;
