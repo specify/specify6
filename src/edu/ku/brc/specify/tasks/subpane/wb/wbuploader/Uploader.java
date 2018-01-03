@@ -4346,9 +4346,13 @@ public class Uploader implements ActionListener, KeyListener
                     boolean isUpdate = isUpdateUpload();
                     boolean crashed = false;
                     theUploadBatchEditSession = isUpdate ? DataProviderFactory.getInstance().createSession() : null;
-                    updateTblId = getUpdateTableId();
-                    UsageTracker.incrUsageCount("BE.Apply." + DBTableIdMgr.getInstance().getInfoById(updateTblId).getName());
-                    setSession(theUploadBatchEditSession);
+                    if (isUpdate) {
+                        setSession(theUploadBatchEditSession);
+                        updateTblId = getUpdateTableId();
+                        if (updateTblId != null) {
+                            UsageTracker.incrUsageCount("BE.Apply." + DBTableIdMgr.getInstance().getInfoById(updateTblId).getName());
+                        }
+                    }
                     final BatchEditProgressDialog progDlg = createAndShowProgDlg(isUpdate);
                     initProgressBar(0, uploadData.getRows(), true,
                             getResourceString(updateTblId == null ? "WB_UPLOAD_UPLOADING" : "WB_UPLOAD_UPDATING") + " " + getResourceString("WB_ROW"),
@@ -4454,8 +4458,10 @@ public class Uploader implements ActionListener, KeyListener
                             if (progDlg != null) {
                                 progDlg.finishingTouches();
                             }
-                            for (int t = uploadTables.size() - 1; t >= 0; t--) {
-                                uploadTables.get(t).finishUpload(cancelled, theUploadBatchEditSession);
+                            if (isUpdate) {
+                                for (int t = uploadTables.size() - 1; t >= 0; t--) {
+                                    uploadTables.get(t).finishUpload(cancelled, theUploadBatchEditSession);
+                                }
                             }
                         }
                         finishTransaction(progDlg, cancelled, crashed);
@@ -4521,6 +4527,16 @@ public class Uploader implements ActionListener, KeyListener
                 public void done() {
                     super.done();
                     statusBar.setText("");
+                    if (updateTableId.get() == -1) {
+                        try {
+                            for (int t = uploadTables.size() - 1; t >= 0; t--) {
+                                uploadTables.get(t).finishUpload(cancelled, null);
+                            }
+                        } catch (UploaderException uex) {
+                            success = false;
+                            setOpKiller(uex);
+                        }
+                    }
                     if (success) {
                         if (!paused) {
                         	setCurrentOp(Uploader.SUCCESS);
