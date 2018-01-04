@@ -3662,10 +3662,11 @@ public class WorkbenchPaneSS extends BaseSubPane
             return;
         }
         //backup current database contents for workbench
-        logDebug("backupObject(): " + System.nanoTime());
-        backupObject();
-        logDebug("---------" + System.nanoTime());
-        
+        if (!isUpdateDataSet()) {
+            logDebug("backupObject(): " + System.nanoTime());
+            backupObject();
+            logDebug("---------" + System.nanoTime());
+        }
         logDebug("checkCurrentEditState: " + System.nanoTime());
         checkCurrentEditState();
         logDebug("---------" + System.nanoTime());
