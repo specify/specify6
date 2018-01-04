@@ -516,7 +516,7 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
                     rs.initialize();
                     rs.set(query.getName(), SpQuery.getClassTableId(), RecordSet.GLOBAL);
                     rs.addItem(query.getSpQueryId());
-                    addToNavBox(rs);
+                    addToNavBox(rs, query.getContextTableId());
                 }
             }
             // Persist out to database
@@ -1006,12 +1006,14 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
      * Adds a Query to the Left Pane NavBox (Refactor this with Workbench)
      * @return the nav box
      */
-    protected NavBoxItemIFace addToNavBox(final RecordSet recordSet)
+    protected NavBoxItemIFace addToNavBox(final RecordSet recordSet, int contextTblId)
     {
         //boolean canDelete = AppContextMgr.isSecurityOn() ? getPermissions().canDelete() : true;
         boolean canDelete = ((QueryTask )ContextMgr.getTaskByClass(QueryTask.class)).isPermitted();
         final RolloverCommand roc = (RolloverCommand) makeDnDNavBtn(navBox, recordSet.getName(),
-                "Query", null,
+                //"Query",
+                DBTableIdMgr.getInstance().getInfoById(contextTblId).getName(),
+                null,
                 canDelete ? new CommandAction(getQueryType(), DELETE_CMD_ACT, recordSet) : null, 
                 true, true);
         roc.setToolTip(getResourceString("QY_CLICK2EDIT"));
@@ -1040,8 +1042,8 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
         
         roc.addDragDataFlavor(new DataFlavorTableExt(getClass(), getQueryType(), recordSet.getTableId()));
         Integer qId = recordSet.getRecordSetItems().iterator().next().getRecordId();
-        Integer tableId = BasicSQLUtils.querySingleObj("select contexttableid from spquery where spqueryid = " + qId);
-        roc.addDropDataFlavor(new DataFlavorTableExt(RecordSetTask.class, RecordSetTask.RECORD_SET, tableId));//RecordSetTask.RECORDSET_FLAVOR);
+        //Integer tableId = BasicSQLUtils.querySingleObj("select contexttableid from spquery where spqueryid = " + qId);
+        roc.addDropDataFlavor(new DataFlavorTableExt(RecordSetTask.class, RecordSetTask.RECORD_SET, contextTblId));//RecordSetTask.RECORDSET_FLAVOR);
         if (canDelete) {
             roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
         }        
@@ -1075,7 +1077,7 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
 		// XXX Users will probably want to share queries??
 		return "From SpQuery as sq Inner Join sq.specifyUser as user where sq.isFavorite = true AND user.specifyUserId = "
 				+ AppContextMgr.getInstance().getClassObject(SpecifyUser.class)
-						.getSpecifyUserId() + " ORDER BY ordinal";
+						.getSpecifyUserId() + " ORDER BY contextTableId, sq.name";
 	}
     
     /**
@@ -1112,7 +1114,7 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
                     	rs.initialize();
                     	rs.set(query.getName(), SpQuery.getClassTableId(), RecordSet.GLOBAL);
                     	rs.addItem(query.getSpQueryId());
-                    	addToNavBox(rs);
+                    	addToNavBox(rs, query.getContextTableId());
                     }
                 }
             }
@@ -1346,7 +1348,7 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
         rs.set(query.getName(), SpQuery.getClassTableId(), RecordSet.GLOBAL);
         rs.addItem(query.getSpQueryId());
         
-        RolloverCommand roc = (RolloverCommand)addToNavBox(rs);
+        RolloverCommand roc = (RolloverCommand)addToNavBox(rs, query.getContextTableId());
         //roc.setEnabled(enabled);
         roc.setEnabled(true);
         roc.setIsAccented(!enabled);
@@ -2137,7 +2139,7 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
                 rs.initialize();
                 rs.set(query.getFirst().getName(), SpQuery.getClassTableId(), RecordSet.GLOBAL);
                 rs.addItem(query.getFirst().getSpQueryId());
-                addToNavBox(rs);
+                addToNavBox(rs, query.getFirst().getContextTableId());
             }
             
             navBox.validate();
