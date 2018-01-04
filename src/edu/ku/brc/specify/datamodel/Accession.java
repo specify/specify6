@@ -19,29 +19,17 @@
 */
 package edu.ku.brc.specify.datamodel;
 
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import org.apache.log4j.Logger;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.Index;
+
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
-
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
-import org.hibernate.annotations.Index;
 
 
 
@@ -59,6 +47,7 @@ import org.hibernate.annotations.Index;
     })
 @SuppressWarnings("serial")
 public class Accession extends DataModelObjBase implements java.io.Serializable, AttachmentOwnerIFace<AccessionAttachment>, OneToManyProviderIFace {
+    protected static final Logger log = Logger.getLogger(Accession.class);
 
     // Fields
     protected Integer                     accessionId;
@@ -149,12 +138,84 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
     // End Initializer
 
     /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#clone()
+     */
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        Accession obj = (Accession)super.clone();
+
+        obj.accessionId = null;
+
+        obj.collectionObjects       = new HashSet<CollectionObject>();
+        obj.accessionAuthorizations = new HashSet<AccessionAuthorization>();
+        obj.accessionAgents         = new HashSet<AccessionAgent>();
+        obj.accessionAttachments    = new HashSet<AccessionAttachment>();
+        obj.appraisals              = new HashSet<Appraisal>();
+        obj.treatmentEvents         = new HashSet<TreatmentEvent>();
+        obj.deaccessions            = new HashSet<Deaccession>();
+
+        for (AccessionAuthorization a : this.accessionAuthorizations) {
+            AccessionAuthorization c = (AccessionAuthorization)a.clone();
+            obj.accessionAuthorizations.add(c);
+            c.setAccession(obj);
+        }
+        for (AccessionAgent a : this.accessionAgents) {
+            AccessionAgent c = (AccessionAgent)a.clone();
+            obj.accessionAgents.add(c);
+            c.setAccession(obj);
+        }
+        for (AccessionAttachment a : this.accessionAttachments) {
+            AccessionAttachment c = (AccessionAttachment)a.clone();
+            obj.accessionAttachments.add(c);
+            c.setAccession(obj);
+        }
+        for (Appraisal a : this.appraisals) {
+            Appraisal c = (Appraisal)a.clone();
+            obj.appraisals.add(c);
+            c.setAccession(obj);
+        }
+        for (TreatmentEvent a : this.treatmentEvents) {
+            TreatmentEvent c = (TreatmentEvent)a.clone();
+            obj.treatmentEvents.add(c);
+            c.setAccession(obj);
+        }
+        for (Deaccession a : this.deaccessions) {
+            Deaccession c = (Deaccession)a.clone();
+            obj.deaccessions.add(c);
+            c.setAccession(obj);
+        }
+
+        return obj;
+    }
+
+    /**
+     *
+     * @param originalObj
+     * @param deep  if true then copy and clone children
+     * @param session
+     * @return
+     */
+    @Override
+    public boolean initializeClone(DataModelObjBase originalObj, boolean deep, DataProviderSessionIFace session) {
+        if (deep) {
+            log.error(getClass().getName() + ": initializeClone is not implemented for deep = true.");
+            return false;
+        }
+        return true;
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#forceLoad()
      */
     @Override
     public void forceLoad()
     {
         accessionAttachments.size();
+        accessionAuthorizations.size();
+        accessionAgents.size();
+        appraisals.size();
+        deaccessions.size();
+        treatmentEvents.size();
     }
 
     /**
