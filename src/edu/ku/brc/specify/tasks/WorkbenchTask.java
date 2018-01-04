@@ -3836,8 +3836,13 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         if (relationship != null) {
             DBTableInfo tbl = DBTableIdMgr.getInstance().getInfoByTableName(actualtable.toLowerCase());
             DBRelationshipInfo rel = tbl.getRelationshipByName(relationship);
-            actualtable = rel.getDataClass().getSimpleName();
-            relName = rel.getName();
+            if (actualtable.equals(table)) {
+                actualtable = rel.getDataClass().getSimpleName();
+                relName = rel.getName();
+            } else {
+                relName = rel.getOtherSide();
+            }
+
         }
         return new Pair<>(actualtable, relName);
     }
