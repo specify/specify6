@@ -1697,7 +1697,7 @@ public class UploadTable implements Comparable<UploadTable>
         boolean isNewRecord = rec.getId() == null;    	
         for (List<ParentTableEntry> ptes : parentTables) {
             for (ParentTableEntry pt : ptes) {
-                if (!updateMatches || uploader.getUploadedTablesForCurrentRow().indexOf(pt.getImportTable()) != -1) {
+                if (!updateMatches || isNewRecord || uploader.getUploadedTablesForCurrentRow().indexOf(pt.getImportTable()) != -1) {
                     Object arg[] = new Object[1];
                     DataModelObjBase parentRec = pt.getImportTable().getParentRecord(recNum, this);
                     if (parentRec == null || parentRec.getId() == null) {
