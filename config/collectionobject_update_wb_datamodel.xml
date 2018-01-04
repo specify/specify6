@@ -303,21 +303,21 @@
     <field column="Georeference Remarks" name="geoRefRemarks" type="java.lang.String" length="255"/>
   </table>
 
-  <table classname="edu.ku.brc.specify.datamodel.GeologicTimePeriod" table="geologictimeperiod" tableid="46" lazy="true">
+  <!--table classname="edu.ku.brc.specify.datamodel.GeologicTimePeriod" table="geologictimeperiod" tableid="46" lazy="true">
     <display objtitle="Geologic Time Period"/>
     <field column="Erathem/Era" name="erathem/era" type="java.lang.String" length="64"/>
     <field column="System/Period" name="system/period" type="java.lang.String" length="64"/>
     <field column="Series/Epoch" name="series/epoch" type="java.lang.String" length="64"/>
     <field column="Stage/Age" name="stage/age" type="java.lang.String" length="64"/>
-  </table>
+  </table-->
   
-  <table classname="edu.ku.brc.specify.datamodel.LithoStrat" table="lithostrat" tableid="100" lazy="true">
+  <!--table classname="edu.ku.brc.specify.datamodel.LithoStrat" table="lithostrat" tableid="100" lazy="true">
     <field column="SuperGroup" name="superGroup" type="java.lang.String" length="64"/>
     <field column="LithoGroup" name="lithoGroup" type="java.lang.String" length="64"/>
     <field column="Formation" name="formation" type="java.lang.String" length="64"/>
     <field column="Member" name="member" type="java.lang.String" length="64"/>
     <field column="Bed" name="bed" type="java.lang.String" length="64"/>
-  </table>
+  </table-->
 
   <table classname="edu.ku.brc.specify.datamodel.Locality" table="locality" tableid="2" lazy="true" >
     <display objtitle="Locality" view="Locality" dataobjformatter="Locality" searchdlg="LocalitySearch" newobjdlg="LocalityDisplay"/>
@@ -413,7 +413,7 @@
     <field column="County" name="county" type="java.lang.String" length="64"/>
   </table>
 
-  <table classname="edu.ku.brc.specify.datamodel.PaleoContext" table="paleocontext" tableid="32" searchable="true" abbrv="pc">
+  <!--table classname="edu.ku.brc.specify.datamodel.PaleoContext" table="paleocontext" tableid="32" searchable="true" abbrv="pc">
     <field column="Paleo Context Name" name="paleoContextName" type="java.lang.String" />
     <field column="Remarks" name="remarks" type="java.lang.String" />
     <field column="Text 1" name="text1" type="java.lang.String" />
@@ -431,6 +431,6 @@
     <field column="YesNo 3" name="yesNo3" type="boolean"/>
     <field column="YesNo 4" name="yesNo4" type="boolean"/>
     <field column="YesNo 5" name="yesNo5" type="boolean"/>
-  </table>
+  </table-->
 
 </database>
