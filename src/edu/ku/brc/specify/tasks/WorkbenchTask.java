@@ -3711,7 +3711,14 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
      */
     public void batchEditQueryResults(final Pair<SpQuery, Map<SpQueryField, String>> query, final RecordSetIFace rs,
                                       final Vector<Vector<Object>> results, final Taskable srcTask) {
-    	try {
+    	if (rs.getNumItems() > MAX_ROWS) {
+    	    if (!UIRegistry.displayConfirm(getResourceString("WARNING"),
+                    String.format(getResourceString("WB_BATCHEDIT_MAXROWS_EXCEEDED_MSG"), MAX_ROWS),
+                    "Ok", "Cancel", JOptionPane.WARNING_MESSAGE)) {
+                return;
+            }
+        }
+        try {
     		WorkbenchTemplate template = getTemplateFromQuery(query);
     		if (template != null) {
     		    String name = template.getName();
@@ -3723,8 +3730,11 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     				fillandSaveWorkbench(new Pair<>(rs, results), workbench,  true, srcTask);
     			}
     		}
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (Exception ex) {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
+            ex.printStackTrace();
+            log.error(ex);
 		}
     }
     
