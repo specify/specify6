@@ -440,7 +440,7 @@ public class WorkbenchTask extends BaseTask
         if (schema != null) {
             dbSchema = schema.get();
         }
-        if (schema == null) {
+        if (schema == null || dbSchema == null) {
         	dbSchema = buildDatabaseSchema(forBatchEdit ? batchEditDatabaseSchemaName.get() : "specify_workbench_datamodel");
         	if (forBatchEdit) {
         	    batchEditDatabaseSchema = new SoftReference<>(dbSchema);
