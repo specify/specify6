@@ -1860,6 +1860,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         				itemIdsAdded.add(id);
         			}
         			r++;
+        			if (r >= MAX_ROWS) break;
         		}
         	} catch (Exception ex) {
          	    result = false;
