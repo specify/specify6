@@ -1,11 +1,9 @@
 package edu.ku.brc.specify.tasks;
 
 import com.google.common.io.PatternFilenameFilter;
-import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.af.core.ContextMgr;
-import edu.ku.brc.af.core.NavBoxMgr;
-import edu.ku.brc.af.core.SubPaneMgr;
+import edu.ku.brc.af.core.*;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.tasks.subpane.HtmlDescPane;
 import edu.ku.brc.af.ui.db.ERTICaptionInfo;
 import edu.ku.brc.af.ui.db.QueryForIdResultsIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
@@ -14,6 +12,7 @@ import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.specify.datamodel.SpReport;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.specify.rstools.RecordSetToolsIFace;
 import edu.ku.brc.specify.tasks.subpane.qb.*;
 import edu.ku.brc.specify.tools.schemalocale.SchemaLocalizerDlg;
 import edu.ku.brc.specify.ui.db.ResultSetTableModel;
@@ -99,6 +98,27 @@ public class BatchEditTask extends QueryTask {
         public boolean accept(File dir, String fileName) {
             return fileName.endsWith("_update_wb_datamodel.xml");
         }
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.core.BaseTask#getStarterPane()
+     */
+    @Override
+    public SubPaneIFace getStarterPane() {
+        StringBuilder htmlDesc = new StringBuilder("<h3>Welcome to Batch Editing</h3>"); //I18N
+        htmlDesc.append("<ol>");
+        htmlDesc.append("<li> To use the Batch Editor you must first choose the records you wish to edit. "
+                + "Choose from the following options in the Side Bar:");
+        htmlDesc.append("<ul>");
+        htmlDesc.append("<li>Create a new Query</li>");
+        htmlDesc.append("<li>Open a saved Query</li>");
+        htmlDesc.append("<li>Drop a Record Set unto a saved Query</li>");
+        htmlDesc.append("</ul>");
+        htmlDesc.append("<li>Click the <i>Search button</i> to view the data selected by the Query.</li>");
+        htmlDesc.append("<li>Click the <i>Batch Edit</i> button at the top-right of the Query Results panel to begin editing.</li>");
+        htmlDesc.append("</ol>");
+        starterPane = new HtmlDescPane(name, this, htmlDesc.toString());
+        return starterPane;
     }
 
 }
