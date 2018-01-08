@@ -132,7 +132,10 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
     public static final  String GLOBAL_SEARCH       = "GLOBAL_SEARCH";
     
 
-    public static final int    RESULTS_THRESHOLD  = 20000;
+    public static final int    RESULTS_THRESHOLD_LARGE  = 50000;
+    public static final int    RESULTS_THRESHOLD_STD = 20000;
+    public static final int    RESULTS_THRESHOLD = 3500000000L <= Runtime.getRuntime().maxMemory()
+            ? RESULTS_THRESHOLD_LARGE : RESULTS_THRESHOLD_STD;
     public static final String EXPRESSSEARCH      = "Express_Search";
     public static final String CHECK_INDEXER_PATH = "CheckIndexerPath";
     
@@ -174,13 +177,9 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
     public ExpressSearchTask()
     {
         super(EXPRESSSEARCH, getResourceString(EXPRESSSEARCH));
-        
         iconName = "Search";
-        
         closeOnLastPane = true;
-
         CommandDispatcher.register(EXPRESSSEARCH, this);
-        
         instance = this;
     }
 
