@@ -1,6 +1,7 @@
 package edu.ku.brc.specify.tasks;
 
 import com.google.common.io.PatternFilenameFilter;
+import edu.ku.brc.af.auth.PermissionEditorIFace;
 import edu.ku.brc.af.core.*;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.tasks.subpane.HtmlDescPane;
@@ -68,6 +69,15 @@ public class BatchEditTask extends QueryTask {
         }
         freqQueries = new ArrayList<>(batchEditables);
         extraQueries = new ArrayList<>();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#getPermEditorPanel()
+     */
+    @Override
+    public PermissionEditorIFace getPermEditorPanel() {
+        //return null to remove task from security ui
+        return null;
     }
 
     @Override

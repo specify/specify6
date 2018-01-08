@@ -19,55 +19,10 @@
 */
 package edu.ku.brc.specify.tasks;
 
-import static edu.ku.brc.specify.ui.DBObjDialogFactory.isLockOK;
-import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
-import static edu.ku.brc.ui.UIRegistry.getResourceString;
-
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Frame;
-import java.awt.Graphics;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
-import java.util.Vector;
-
-import javax.swing.ImageIcon;
-import javax.swing.JCheckBox;
-import javax.swing.JMenuItem;
-import javax.swing.SwingUtilities;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-
 import com.thoughtworks.xstream.XStream;
-
-import edu.ku.brc.af.auth.BasicPermisionPanel;
 import edu.ku.brc.af.auth.PermissionEditorIFace;
 import edu.ku.brc.af.auth.PermissionSettings;
-import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.af.core.AppResourceIFace;
-import edu.ku.brc.af.core.ContextMgr;
-import edu.ku.brc.af.core.MenuItemDesc;
-import edu.ku.brc.af.core.NavBox;
-import edu.ku.brc.af.core.NavBoxAction;
-import edu.ku.brc.af.core.NavBoxButton;
-import edu.ku.brc.af.core.NavBoxIFace;
-import edu.ku.brc.af.core.NavBoxItemIFace;
-import edu.ku.brc.af.core.NavBoxMgr;
-import edu.ku.brc.af.core.ServiceInfo;
-import edu.ku.brc.af.core.SubPaneIFace;
-import edu.ku.brc.af.core.SubPaneMgr;
-import edu.ku.brc.af.core.TaskMgr;
-import edu.ku.brc.af.core.Taskable;
-import edu.ku.brc.af.core.ToolBarItemDesc;
-import edu.ku.brc.af.core.UsageTracker;
+import edu.ku.brc.af.core.*;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPreferences;
@@ -81,18 +36,11 @@ import edu.ku.brc.af.ui.forms.persist.ViewIFace;
 import edu.ku.brc.af.ui.forms.persist.ViewLoader;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
-import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
+import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
-import edu.ku.brc.specify.datamodel.Agent;
+import edu.ku.brc.specify.datamodel.*;
 import edu.ku.brc.specify.datamodel.Collection;
-import edu.ku.brc.specify.datamodel.CollectionObject;
-import edu.ku.brc.specify.datamodel.Determination;
-import edu.ku.brc.specify.datamodel.Discipline;
-import edu.ku.brc.specify.datamodel.RecordSet;
-import edu.ku.brc.specify.datamodel.SpAppResource;
-import edu.ku.brc.specify.datamodel.SpReport;
-import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.busrules.BaseTreeBusRules;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr.SCOPE;
@@ -100,21 +48,25 @@ import edu.ku.brc.specify.prefs.FormattingPrefsPanel;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
 import edu.ku.brc.specify.ui.BatchReidentifyPanel;
 import edu.ku.brc.specify.ui.DBObjDialogFactory.FormLockStatus;
-import edu.ku.brc.ui.ChooseFromListDlg;
-import edu.ku.brc.ui.CommandAction;
-import edu.ku.brc.ui.CommandDispatcher;
-import edu.ku.brc.ui.CustomDialog;
-import edu.ku.brc.ui.DataFlavorTableExt;
-import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.ToggleButtonChooserDlg;
-import edu.ku.brc.ui.ToggleButtonChooserPanel;
-import edu.ku.brc.ui.ToolBarDropDownBtn;
-import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.*;
 import edu.ku.brc.ui.dnd.DataActionEvent;
 import edu.ku.brc.ui.dnd.GhostActionable;
 import edu.ku.brc.ui.dnd.Trash;
 import edu.ku.brc.util.Pair;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.*;
+import java.util.List;
+
+import static edu.ku.brc.specify.ui.DBObjDialogFactory.isLockOK;
+import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 /**
  * This task controls the data entry forms. 
@@ -1328,33 +1280,70 @@ public class DataEntryTask extends BaseTask
      * @see edu.ku.brc.specify.plugins.Taskable#getMenuItems()
      */
     @Override
-    public List<MenuItemDesc> getMenuItems()
-    {
+    public List<MenuItemDesc> getMenuItems() {
         String menuDesc = "Specify.DATA_MENU";
         
         menuItems = new Vector<MenuItemDesc>();
         
-        if (permissions == null || permissions.canModify())
-        {
+        if (permissions == null || permissions.canModify()) {
             String    menuTitle = "DET_BTCH_REIDENT_MENU"; //$NON-NLS-1$
             String    mneu      = "DET_BTCH_REIDENT_MNEU"; //$NON-NLS-1$
             String    desc      = "DET_BTCH_REIDENT_DESC"; //$NON-NLS-1$
             JMenuItem mi        = UIHelper.createLocalizedMenuItem(menuTitle, mneu, desc, true, null);
-            mi.addActionListener(new ActionListener()
-            {
-                public void actionPerformed(ActionEvent ae)
-                {
-                    doBatchReidentify();
-                }
-            });
+            mi.addActionListener(ae -> doBatchReidentify());
             MenuItemDesc rsMI = new MenuItemDesc(mi, menuDesc);
             rsMI.setPosition(MenuItemDesc.Position.After);
             menuItems.add(rsMI);
+
+//            menuTitle = "REMOVE_UNUSED_RECS_MENU";
+//            mneu = "REMOVE_UNUSED_RECS_MNEU";
+//            desc = "REMOVE_UNUSED_RECS_DESC";
+//            mi = UIHelper.createLocalizedMenuItem(menuTitle, mneu, desc, true, null);
+//            mi.addActionListener(ae -> doRemoveUnusedRecords());
+//            rsMI = new MenuItemDesc(mi, menuDesc);
+//            rsMI.setPosition(MenuItemDesc.Position.After);
+//            menuItems.add(rsMI);
         }
         
         return menuItems;
     }
-    
+
+//    protected void doRemoveUnusedRecords() {
+//        doRemoveUnusedLocalities();
+//    }
+//
+//    protected void doRemoveUnusedLocalities() {
+//        try {
+//            RecordSet unused = getUnusedRecRs("locality");
+//
+//        } catch (Exception ex) {
+//            ex.printStackTrace();
+//        }
+//    }
+//
+//    protected String getUnusedRecSql(final String tableName) throws Exception {
+//        if ("locality".equals(tableName)) return "select l.localityid from locality l left join collectingevent ce on ce.localityid = l.localityid where ce.localityid is null";
+//        throw new Exception("getUnusedSql(): unhandled tablename: " + tableName);
+//    }
+//
+//    protected List<Object> getUnusedRecList(final String tableName) throws Exception {
+//        return BasicSQLUtils.querySingleCol(getUnusedRecSql(tableName));
+//    }
+//
+//    protected RecordSet getUnusedRecRs(final String tableName) throws Exception{
+//        List<Object> unused = getUnusedRecList(tableName);
+//        RecordSet rs = new RecordSet();
+//        rs.initialize();
+//        rs.setDbTableId(DBTableIdMgr.getInstance().getInfoByTableName(tableName).getTableId());
+//        for (Object obj : unused) {
+//            RecordSetItem rsi = new RecordSetItem();
+//            rsi.initialize();
+//            rsi.setRecordSet(rs);
+//            rsi.setRecordId((Integer)obj);
+//            rs.getRecordSetItems().add(rsi);
+//        }
+//        return rs;
+//    }
     /**
      * 
      */
@@ -1973,9 +1962,10 @@ public class DataEntryTask extends BaseTask
      * @see edu.ku.brc.af.tasks.BaseTask#getPermEditorPanel()
      */
     @Override
-    public PermissionEditorIFace getPermEditorPanel()
-    {
-        return new BasicPermisionPanel(null, "ENABLE");
+    public PermissionEditorIFace getPermEditorPanel() {
+        //return new BasicPermisionPanel(null, "ENABLE");
+        //return null to remove task from security ui
+        return null;
     }
 
     /**
