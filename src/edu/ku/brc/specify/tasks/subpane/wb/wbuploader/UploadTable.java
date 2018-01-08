@@ -5737,46 +5737,49 @@ public class UploadTable implements Comparable<UploadTable>
                             }
                             if (stillNeedToWrite(tblAndAncestorsUnchanged, recNum)) {
                                 Pair<Boolean, DataModelObjBase> recObj = getCurrentRecordForSave(recNum);
-                                DataModelObjBase rec = recObj.getSecond();
-                                boolean isNewRecord = rec.getId() == null;
-                                boolean freshlyCreatedRec = recObj.getFirst();
-                                //XXX is it not possible to skip all the field setting here
-                                //if no changes have been made? getChangedFields() could be used
-                                // ... and if no fields have been changed then skip the rest (or nearly the rest)
-                                //of this method, else use the changed fields to make the rest more efficient???.
-                                //
-                                //XXX But HEY!!! getChangedFields does not check parents. It was originally designed
-                                //to be run for all tables during getChangedFields(row)..
-                                if (freshlyCreatedRec || !updateMatches) {
-                                    rec.initialize();
-                                }
-                                boolean valuesChanged = setFields(rec, seq);
-                                boolean isUpdate = updateMatches && !isNewRecord && valuesChanged;
-                                boolean gotRequiredParents = true;
-                                try {
-                                    valuesChanged |= setParents(rec, recNum, !doNotWrite);
-                                    isUpdate |= valuesChanged;
-                                } catch (UploaderException ex) {
-                                    if ("MissingRequiredParent".equals(ex.getMessage())) {
-                                        gotRequiredParents = false;
-                                    } else {
-                                        throw ex;
+                                    DataModelObjBase rec = recObj.getSecond();
+                                    boolean isNewRecord = rec.getId() == null;
+                                if (!updateMatches || isNewRecord || checkForUpdate(recObj.getSecond())) {
+                                    boolean freshlyCreatedRec = recObj.getFirst();
+                                    //XXX is it not possible to skip all the field setting here
+                                    //if no changes have been made? getChangedFields() could be used
+                                    // ... and if no fields have been changed then skip the rest (or nearly the rest)
+                                    //of this method, else use the changed fields to make the rest more efficient???.
+                                    //
+                                    //XXX But HEY!!! getChangedFields does not check parents. It was originally designed
+                                    //to be run for all tables during getChangedFields(row)..
+                                    if (freshlyCreatedRec || !updateMatches) {
+                                        rec.initialize();
                                     }
-                                }
-                                if (!updateMatches || freshlyCreatedRec) {
-                                    setRequiredFldDefaults(rec, recNum);
-                                    setRelatedDefaults(rec, recNum);
-                                }
-                                if (updateMatches && isUpdate && !isNewRecord) {
-                                    doNotWrite |= dealWithUpdatedRecord(rec);
-                                }
-                                isUpdate |= finalizeWrite(rec, recNum);
-                                if (!(doNotWrite || (updateMatches && !isUpdate && !isNewRecord))) {
-                                    if (!gotRequiredParents && hasChildren) {
-                                        throw new UploaderException(UIRegistry.getResourceString("UPLOADER_MISSING_REQUIRED_DATA"), UploaderException.ABORT_ROW);
+                                    boolean valuesChanged = setFields(rec, seq);
+                                    boolean isUpdate = updateMatches && !isNewRecord && valuesChanged;
+                                    boolean gotRequiredParents = true;
+                                    try {
+                                        valuesChanged |= setParents(rec, recNum, !doNotWrite);
+                                        isUpdate |= valuesChanged;
+                                    } catch (UploaderException ex) {
+                                        if ("MissingRequiredParent".equals(ex.getMessage())) {
+                                            gotRequiredParents = false;
+                                        } else {
+                                            throw ex;
+                                        }
                                     }
-                                    doWrite(rec);
-                                    doUploadBookkeeping(rec, recNum, isUpdate, isNewRecord);
+                                    if (!updateMatches || freshlyCreatedRec) {
+                                        setRequiredFldDefaults(rec, recNum);
+                                        setRelatedDefaults(rec, recNum);
+                                    }
+                                    if (updateMatches && isUpdate && !isNewRecord) {
+                                        rec.setTimestampModified(new Timestamp(System.currentTimeMillis()));
+                                        rec.setModifiedByAgent(Agent.getUserAgent());
+                                    }
+                                    isUpdate |= finalizeWrite(rec, recNum);
+                                    if (!(doNotWrite || (updateMatches && !isUpdate && !isNewRecord))) {
+                                        if (!gotRequiredParents && hasChildren) {
+                                            throw new UploaderException(UIRegistry.getResourceString("UPLOADER_MISSING_REQUIRED_DATA"), UploaderException.ABORT_ROW);
+                                        }
+                                        doWrite(rec);
+                                        doUploadBookkeeping(rec, recNum, isUpdate, isNewRecord);
+                                    }
                                 }
                                 finishDepth(rec, recNum);
                             } else if (updateMatches) {
@@ -5841,21 +5844,21 @@ public class UploadTable implements Comparable<UploadTable>
         setCurrentRecord(rec, recNum);
         finishMatching(rec);
     }
-    /**
-     * @param rec
-     */
-    protected boolean dealWithUpdatedRecord(final DataModelObjBase rec) {
-    	Timestamp recStamp = rec.getTimestampModified() == null ? rec.getTimestampCreated() : rec.getTimestampModified();
-    	boolean result = recStamp.before(uploader.getWb().getTimestampCreated());
-    	if (result) {
-    		rec.setTimestampModified(new Timestamp(System.currentTimeMillis()));
-    		rec.setModifiedByAgent(Agent.getUserAgent());
-    	} else {
-            uploader.addMsg(new EditedRecNotUpdatedMsg(rec, uploader.getRow(), this));
-    	}
-    	return !result;
+
+    protected boolean hasRecordBeenUpdated(final DataModelObjBase rec) {
+        Timestamp recStamp = rec.getTimestampModified() == null ? rec.getTimestampCreated() : rec.getTimestampModified();
+        return recStamp.after(uploader.getWb().getTimestampCreated());
     }
-    
+
+    protected boolean checkForUpdate(final DataModelObjBase rec) {
+        boolean result = hasRecordBeenUpdated(rec);
+        if (result) {
+            uploader.addMsg(new EditedRecNotUpdatedMsg(rec, uploader.getRow(), this));
+        }
+        return !result;
+    }
+
+
     /**
      * @param rec
      * @param recNum
