@@ -282,10 +282,10 @@ public class WorkbenchPaneSS extends BaseSubPane
         if (isUpdate) {
             titleBar = new GradiantLabel("Batch Edit", SwingConstants.LEFT);
             titleBar.setFont(spreadSheet.getFont().deriveFont(spreadSheet.getFont().getSize() + 3.0F));
-            titleBar.setTextColor(new Color(0xFFFFFF));
+            titleBar.setTextColor(new Color(0xEEFFFF));
             titleBar.setBGBaseColor(new Color(0xcf0a2c));
             titleBar.setGradiants(new Color(0xfd5875), new Color(0xcf0a2c));
-            titleBar.setIcon(IconManager.getIcon(/*Math.random() >= 0.5 ? */"BatchEdit"/* : "SkullBones"*/, IconManager.IconSize.Std16));
+            titleBar.setIcon(IconManager.getIcon(/*Math.random() >= 0.5 ? */"BatchEdit"/* : "SkullBones"*/, IconManager.IconSize.Std24));
         }
 
         Highlighter simpleStriping = HighlighterFactory.createSimpleStriping();
