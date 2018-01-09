@@ -84,9 +84,9 @@ import org.jdesktop.swingx.table.TableColumnExt;
 import sun.swing.table.DefaultTableCellHeaderRenderer;
 
 import javax.swing.*;
-import javax.swing.SortOrder;
 import javax.swing.border.Border;
 import javax.swing.event.*;
+import javax.swing.plaf.basic.BasicBorders;
 import javax.swing.table.*;
 import javax.swing.text.Caret;
 import javax.swing.text.JTextComponent;
@@ -223,6 +223,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     protected AtomicInteger         shutdownLock               = new AtomicInteger(0);
     private TableColumnExt          sgrColExt;
     private Taskable                srcTask;
+    private /*JPanel*/GradiantLabel                  titleBar = null;
     
 
     /**
@@ -271,12 +272,20 @@ public class WorkbenchPaneSS extends BaseSubPane
                 hasOneOrMoreImages = true;
             }
         } 
-        
+
         model       = new GridTableModel(this);
         spreadSheet = new WorkbenchSpreadSheet(model, this);
         spreadSheet.setReadOnly(isReadOnly);
         model.setSpreadSheet(spreadSheet);
-        
+
+        if (isUpdate) {
+            titleBar = new GradiantLabel("Batch Edit", SwingConstants.LEFT);
+            titleBar.setTextColor(new Color(0xffff8e));
+            titleBar.setBGBaseColor(new Color(0xcf0a2c));
+            titleBar.setGradiants(new Color(0xfd5875), new Color(0xcf0a2c));
+            titleBar.setIcon(IconManager.getIcon(/*Math.random() >= 0.5 ? */"BatchEdit"/* : "SkullBones"*/));
+        }
+
         Highlighter simpleStriping = HighlighterFactory.createSimpleStriping();
         GridCellHighlighter hl = new GridCellHighlighter(new GridCellPredicate(GridCellPredicate.AnyPredicate, null));
         Short[] errs = {WorkbenchDataItem.VAL_ERROR};
@@ -974,7 +983,18 @@ public class WorkbenchPaneSS extends BaseSubPane
         mainPanel = new JPanel(cardLayout = new CardLayout());
         
         // Add the Form and Spreadsheet to the CardLayout
-        mainPanel.add(spreadSheet.getScrollPane(), PanelType.Spreadsheet.toString());
+        JComponent spreadSheetPanel = null;
+        if (isUpdate) {
+            spreadSheetPanel = new JPanel(new BorderLayout());
+            spreadSheetPanel.add(titleBar, BorderLayout.NORTH);
+            spreadSheetPanel.add(spreadSheet.getScrollPane(), BorderLayout.CENTER);
+        } else {
+            spreadSheetPanel = spreadSheet.getScrollPane();
+        }
+        Border b = new BasicBorders.MarginBorder();
+        //spreadSheetPanel.setBorder(new TitledBorder(new BasicBorders.MarginBorder(), "Batch Edit", TitledBorder.LEFT, TitledBorder.TOP, spreadSheet.getFont(), new Color(0x00ff00)));
+        //spreadSheetPanel.setBackground(titleBar.getBackground());
+        mainPanel.add(spreadSheetPanel, PanelType.Spreadsheet.toString());
 
         // The controllerPane is a CardLayout that switches between the Spreadsheet control bar and the Form Control Bar
         controllerPane = new JPanel(cpCardLayout = new CardLayout());
