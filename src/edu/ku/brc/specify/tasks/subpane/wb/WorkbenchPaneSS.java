@@ -280,6 +280,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 
         if (isUpdate) {
             titleBar = new GradiantLabel("Batch Edit", SwingConstants.LEFT);
+            titleBar.setFont(spreadSheet.getFont().deriveFont(spreadSheet.getFont().getSize() + 7.0F));
             titleBar.setTextColor(new Color(0xffff8e));
             titleBar.setBGBaseColor(new Color(0xcf0a2c));
             titleBar.setGradiants(new Color(0xfd5875), new Color(0xcf0a2c));
