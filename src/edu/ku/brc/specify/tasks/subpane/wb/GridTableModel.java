@@ -401,10 +401,12 @@ public class GridTableModel extends SpreadSheetModel
         	{
         		setValueAt(value, rowInx, colInx);
         	}
-        	if (!workbenchPaneSS.validateRows(rowInxs) && isBatchMode())
-        	{
-        		fireDataChanged();
-        	}
+            workbenchPaneSS.validateRows(rowInxs);
+            fireDataChanged();
+//        	if (!workbenchPaneSS.validateRows(rowInxs) && isBatchMode())
+//        	{
+//        		fireDataChanged();
+//        	}
         } finally
         {
         	if (isBatchMode())
@@ -431,10 +433,12 @@ public class GridTableModel extends SpreadSheetModel
         		setValueAt(value, rowInx, colInx);
         		value = incrementer.formatToUI(incrementer.getNextNumber(incrementer.formatFromUI(value).toString(), true).toString());
         	}
-        	if (!workbenchPaneSS.validateRows(rowInxs) && isBatchMode())
-        	{
-        		fireDataChanged();
-        	}
+            workbenchPaneSS.validateRows(rowInxs);
+            fireDataChanged();
+//        	if (!workbenchPaneSS.validateRows(rowInxs) && isBatchMode())
+//        	{
+//        		fireDataChanged();
+//        	}
         } finally
         {
         	if (isBatchMode())

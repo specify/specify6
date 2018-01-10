@@ -392,12 +392,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         showHideSgrCol(false);
        
         
-        model.addTableModelListener(new TableModelListener() {
-            public void tableChanged(TableModelEvent e)
-            {
-                setChanged(true, e);
-            }
-        });
+        model.addTableModelListener(e -> setChanged(true, e));
         
         spreadSheet.addFocusListener(new FocusAdapter() {
             @Override
