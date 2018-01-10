@@ -19,64 +19,10 @@
 */
 package edu.ku.brc.specify.tasks;
 
-import static edu.ku.brc.helpers.XMLHelper.getAttr;
-import static edu.ku.brc.ui.UIRegistry.getResourceString;
-
-import java.awt.FileDialog;
-import java.awt.Frame;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
-import java.lang.ref.SoftReference;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.Vector;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
-
-import javax.swing.ImageIcon;
-import javax.swing.JComponent;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPopupMenu;
-import javax.swing.JTable;
-import javax.swing.SwingUtilities;
-
-import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.dom4j.Element;
-
 import com.thoughtworks.xstream.XStream;
-
 import edu.ku.brc.af.auth.BasicPermisionPanel;
 import edu.ku.brc.af.auth.PermissionEditorIFace;
-import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.af.core.AppResourceIFace;
-import edu.ku.brc.af.core.ContextMgr;
-import edu.ku.brc.af.core.DroppableNavBox;
-import edu.ku.brc.af.core.NavBox;
-import edu.ku.brc.af.core.NavBoxIFace;
-import edu.ku.brc.af.core.NavBoxItemIFace;
-import edu.ku.brc.af.core.NavBoxMgr;
-import edu.ku.brc.af.core.SubPaneIFace;
-import edu.ku.brc.af.core.SubPaneMgr;
-import edu.ku.brc.af.core.SubPaneMgrListener;
-import edu.ku.brc.af.core.ToolBarItemDesc;
-import edu.ku.brc.af.core.UsageTracker;
+import edu.ku.brc.af.core.*;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBRelationshipInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
@@ -96,49 +42,39 @@ import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Collection;
-import edu.ku.brc.specify.datamodel.DataModelObjBase;
-import edu.ku.brc.specify.datamodel.RecordSet;
-import edu.ku.brc.specify.datamodel.SpExportSchemaMapping;
-import edu.ku.brc.specify.datamodel.SpQuery;
-import edu.ku.brc.specify.datamodel.SpQueryField;
-import edu.ku.brc.specify.datamodel.SpReport;
-import edu.ku.brc.specify.datamodel.SpecifyUser;
-import edu.ku.brc.specify.datamodel.Taxon;
-import edu.ku.brc.specify.datamodel.TaxonTreeDef;
-import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
-import edu.ku.brc.specify.datamodel.TreeDefIface;
-import edu.ku.brc.specify.datamodel.TreeDefItemIface;
-import edu.ku.brc.specify.datamodel.Treeable;
+import edu.ku.brc.specify.datamodel.*;
 import edu.ku.brc.specify.dbsupport.RecordTypeCodeBuilder;
 import edu.ku.brc.specify.tasks.subpane.SQLQueryPane;
-import edu.ku.brc.specify.tasks.subpane.qb.ERTICaptionInfoQB;
-import edu.ku.brc.specify.tasks.subpane.qb.QBLiveDataSource;
-import edu.ku.brc.specify.tasks.subpane.qb.QBQueryForIdResultsHQL;
-import edu.ku.brc.specify.tasks.subpane.qb.QBReportInfoPanel;
-import edu.ku.brc.specify.tasks.subpane.qb.QBResultsSubPane;
-import edu.ku.brc.specify.tasks.subpane.qb.QueryBldrPane;
-import edu.ku.brc.specify.tasks.subpane.qb.QueryFieldPanel;
-import edu.ku.brc.specify.tasks.subpane.qb.SearchResultReportServiceInfo;
-import edu.ku.brc.specify.tasks.subpane.qb.TableTree;
-import edu.ku.brc.specify.tasks.subpane.qb.TreeLevelQRI;
+import edu.ku.brc.specify.tasks.subpane.qb.*;
+import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS;
 import edu.ku.brc.specify.tools.schemalocale.SchemaLocalizerDlg;
 import edu.ku.brc.specify.ui.db.ResultSetTableModel;
 import edu.ku.brc.specify.ui.treetables.TreeDefinitionEditor;
-import edu.ku.brc.ui.ChooseFromListDlg;
-import edu.ku.brc.ui.CommandAction;
-import edu.ku.brc.ui.CommandDispatcher;
-import edu.ku.brc.ui.CustomDialog;
-import edu.ku.brc.ui.DataFlavorTableExt;
-import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.RolloverCommand;
-import edu.ku.brc.ui.ToggleButtonChooserDlg;
-import edu.ku.brc.ui.ToggleButtonChooserPanel;
-import edu.ku.brc.ui.ToolBarDropDownBtn;
-import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.*;
 import edu.ku.brc.ui.dnd.DataActionEvent;
 import edu.ku.brc.ui.dnd.Trash;
 import edu.ku.brc.util.Pair;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.dom4j.Element;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.lang.ref.SoftReference;
+import java.sql.Timestamp;
+import java.util.*;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
+
+import static edu.ku.brc.helpers.XMLHelper.getAttr;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 /**
  * This task will enable the user to create queries, save them and execute them.
@@ -158,6 +94,7 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
     public static final String REFRESH_QUERIES      = "RefreshQueries";
     public static final String QUERY_RESULTS_REPORT = "QueryResultsReport";
     public static final String QUERY_RESULTS_BATCH_EDIT = "QueryResultsBatchEdit";
+    public static final String VIEW_RS_QUERY_RESULTS="ViewRSQueryResults";
     protected static final String XML_PATH_PREF     = "Query.XML.Dir";
     
     public static final DataFlavor QUERY_FLAVOR = new DataFlavor(QueryTask.class, QUERY);
@@ -1536,6 +1473,52 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
                     }
                 }
             }
+        }
+
+        if (!(this instanceof BatchEditTask) && !cmdAction.isConsumed() && cmdAction.isAction(VIEW_RS_QUERY_RESULTS)) {
+            RecordSetIFace recordSet = null;
+            if (cmdAction.getData() instanceof RecordSetIFace) {
+                recordSet = (RecordSetIFace)cmdAction.getData();
+
+            } else if (cmdAction.getData() instanceof RolloverCommand) {
+                RolloverCommand roc = (RolloverCommand)cmdAction.getData();
+                if (roc.getData() instanceof RecordSetIFace) {
+                    recordSet = (RecordSetIFace)roc.getData();
+                }
+            }
+            if (recordSet.getNumItems() > 0) {
+                List<NavBoxItemIFace> nbis = new ArrayList<>();
+                for (NavBoxItemIFace nbi: navBox.getItems()) {
+                    if (nbi instanceof RolloverCommand) {
+                        RolloverCommand roc = (RolloverCommand) nbi;
+                        boolean keeper = false;
+                        for (DataFlavor df : roc.getDropDataFlavors()) {
+                            if (df instanceof DataFlavorTableExt) {
+                                keeper = ((DataFlavorTableExt)df).getTableIds().indexOf(recordSet.getDbTableId()) != -1;
+                                if (keeper) {
+                                    break;
+                                }
+                            }
+                        }
+                        if (keeper) {
+                            nbis.add(nbi);
+                        }
+                    }
+                }
+                if (nbis.size() > 0) {
+                    ChooseFromListDlg<NavBoxItemIFace> dlg = new ChooseFromListDlg<>((Frame)UIRegistry.getTopWindow(),
+                            getResourceString("RS_PICK_QUERY"), nbis);
+                    UIHelper.centerAndShow(dlg);
+                    if (!dlg.isCancelled()) {
+                        RolloverCommand roc = (RolloverCommand)dlg.getSelectedObject();
+                        int queryId = ((RecordSet) roc.getData()).getOnlyItem().getRecordId();
+                        new EditQueryWorker(queryId, roc, recordSet).start();
+                    }
+                }
+            } else {
+                UIRegistry.showLocalizedError("RS_HAS_NO_ITEMS", recordSet.getName());
+            }
+            cmdAction.setConsumed(true);
         }
 
 

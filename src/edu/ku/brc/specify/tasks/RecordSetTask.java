@@ -306,29 +306,18 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
                            final boolean isOKDelete, 
                            final boolean isOKModify)
     {
-        if (roc.getLabelText() != null)
-        {
+        if (roc.getLabelText() != null) {
             final JPopupMenu popupMenu = new JPopupMenu();
             
-            if (isOKModify)
-            {
+            if (isOKModify) {
                 JMenuItem renameMenuItem = new JMenuItem(UIRegistry.getResourceString("Rename"));
-                renameMenuItem.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent actionEvent) {
-                        roc.startEditting(RecordSetTask.this);
-                    }
-                  });
+                renameMenuItem.addActionListener(actionEvent -> roc.startEditting(RecordSetTask.this));
                 popupMenu.add(renameMenuItem);
             }
             
-            if (isOKDelete)
-            {
+            if (isOKDelete) {
                 JMenuItem delMenuItem = new JMenuItem(UIRegistry.getResourceString("Delete"));
-                delMenuItem.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent actionEvent) {
-                        CommandDispatcher.dispatch(new CommandAction(RECORD_SET, DELETE_CMD_ACT, roc));
-                    }
-                  });
+                delMenuItem.addActionListener(actionEvent -> CommandDispatcher.dispatch(new CommandAction(RECORD_SET, DELETE_CMD_ACT, roc)));
                 popupMenu.add(delMenuItem);
             }
             
@@ -341,14 +330,19 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
                 }
               });
             popupMenu.add(viewMenuItem);
-            
-            MouseListener mouseListener = new MouseAdapter() 
-            {
+
+            JMenuItem viewMenuItem2 = new JMenuItem(UIRegistry.getResourceString("RS_VIEW_VIA_QB_QUERY"));
+            viewMenuItem2.addActionListener(actionEvent -> {
+                CommandAction cmdAction = new CommandAction("Query", QueryTask.VIEW_RS_QUERY_RESULTS, roc);
+                CommandDispatcher.dispatch(cmdAction);
+            });
+            popupMenu.add(viewMenuItem2);
+
+            MouseListener mouseListener = new MouseAdapter() {
                   private boolean showIfPopupTrigger(MouseEvent mouseEvent) {
                       if (roc.isEnabled() && 
                           mouseEvent.isPopupTrigger() && 
-                          popupMenu.getComponentCount() > 0) 
-                      {
+                          popupMenu.getComponentCount() > 0) {
                           popupMenu.show(mouseEvent.getComponent(),
                                   mouseEvent.getX(),
                                   mouseEvent.getY());
@@ -357,18 +351,14 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
                       return false;
                   }
                   @Override
-                  public void mousePressed(MouseEvent mouseEvent) 
-                  {
-                      if (roc.isEnabled())
-                      {
+                  public void mousePressed(MouseEvent mouseEvent) {
+                      if (roc.isEnabled()) {
                           showIfPopupTrigger(mouseEvent);
                       }
                   }
                   @Override
-                  public void mouseReleased(MouseEvent mouseEvent) 
-                  {
-                      if (roc.isEnabled())
-                      {
+                  public void mouseReleased(MouseEvent mouseEvent) {
+                      if (roc.isEnabled()) {
                           showIfPopupTrigger(mouseEvent);
                       }
                   }
