@@ -115,7 +115,11 @@ public class BatchEditTask extends QueryTask {
      */
     @Override
     public SubPaneIFace getStarterPane() {
-        StringBuilder htmlDesc = new StringBuilder("<h3>Welcome to Batch Editing</h3>"); //I18N
+        //StringBuilder htmlDesc = new StringBuilder("<body style=\"background-color:#fd5875\">");
+        StringBuilder htmlDesc = new StringBuilder();
+        htmlDesc.append("<body>");
+        htmlDesc.append("<h3>Welcome to Batch Editing</h3>"); //I18N
+        htmlDesc.append("<h4>Before going any further please make a backup of your database.  Then follow these instructions to edit your data:</h4>");
         htmlDesc.append("<ol>");
         htmlDesc.append("<li> To use the Batch Editor you must first choose the records you wish to edit. "
                 + "Choose from the following options in the Side Bar:");
@@ -127,7 +131,9 @@ public class BatchEditTask extends QueryTask {
         htmlDesc.append("<li>Click the <i>Search button</i> to view the data selected by the Query.</li>");
         htmlDesc.append("<li>Click the <i>Batch Edit</i> button at the top-right of the Query Results panel to begin editing.</li>");
         htmlDesc.append("</ol>");
+        htmlDesc.append("</body>");
         starterPane = new HtmlDescPane(name, this, htmlDesc.toString());
+        //((HtmlDescPane)starterPane).setBackground(new Color(0xfd5875));
         return starterPane;
     }
 
