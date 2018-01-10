@@ -28,6 +28,7 @@ public class BatchEditProgressDialog extends JDialog {
     protected JButton      commitBtn;
     protected String       title;
     protected String       updateTbl;
+    protected AtomicBoolean uploadDone = new AtomicBoolean(false);
     protected AtomicBoolean cancelPressed = new AtomicBoolean(false);
     protected AtomicBoolean commitPressed = new AtomicBoolean(false);
     protected AtomicInteger ticks = new AtomicInteger(-1);
@@ -120,6 +121,7 @@ public class BatchEditProgressDialog extends JDialog {
         UsageTracker.incrUsageCount("BE.Commit." + updateTbl);
     }
 
+    public boolean isUploadDone() { return uploadDone.get();}
     /**
      *
      * @return
@@ -140,6 +142,7 @@ public class BatchEditProgressDialog extends JDialog {
      *
      */
     public synchronized void batchEditDone() {
+        uploadDone.set(true);
         commitBtn.setVisible(true);
         if (countDown.get() == -1) {
             countDown.set(AppPreferences.getLocalPrefs().getInt("BatchEditCountDownBeforeRollback", DEFAULT_COUNTDOWN));
@@ -147,8 +150,10 @@ public class BatchEditProgressDialog extends JDialog {
         ticks.set(countDown.get());
 
         desc.setText(String.format(UIRegistry.getResourceString("WB_BATCH_EDIT_DONE_COMMIT_ROLLBACK_MSG")));
-        progress.setIndeterminate(false);
-        progress.setValue(1);
+        if (progress.isIndeterminate()) {
+            progress.setIndeterminate(false);
+        }
+        progress.setValue(0);
         progress.setMaximum(countDown.get());
         progress.setStringPainted(true);
         progress.setString(String.format(UIRegistry.getResourceString("WB_BATCH_EDIT_ROLLBACK_COUNTDOWN"), countDown.get()));
@@ -158,6 +163,8 @@ public class BatchEditProgressDialog extends JDialog {
      *
      */
     public synchronized void finishingTouches() {
+        uploadDone.set(true);
+        progress.setValue(0);
         desc.setText(String.format(UIRegistry.getResourceString("WB_BATCH_EDIT_DONE_FINISHING")));
         progress.setIndeterminate(true);
         progress.setStringPainted(false);

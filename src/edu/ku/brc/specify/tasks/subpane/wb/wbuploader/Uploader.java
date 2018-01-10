@@ -3086,13 +3086,35 @@ public class Uploader implements ActionListener, KeyListener
      * Sets progress bar progress.
      */
     protected void setCurrentOpProgress(final int val, final JProgressBar pb) {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-
-                if (mainPanel == null && !useAppStatBar) {
-                    log.error("UI does not exist.");
-                    return;
+        SwingUtilities.invokeLater(() -> {
+            if (mainPanel == null && !useAppStatBar) {
+                log.error("UI does not exist.");
+                return;
+            }
+            if (!indeterminateProgress) {
+                if (useAppStatBar && !indeterminateProgress) {
+                    if (val == -1) {
+                        UIRegistry.getStatusBar().incrementValue("UPLOADER");
+                    } else {
+                        UIRegistry.getStatusBar().setValue("UPLOADER", val);
+                    }
+                } else {
+                    int newVal = val == -1 ? Math.min(pb.getValue() + 1, pb.getMaximum()) : val;
+                    pb.setValue(newVal);
+                    if (pb.isStringPainted()) {
+                        pb.setString(String.format(getResourceString("WB_UPLOAD_PROGRESSBAR_TEXT"),
+                                new Object[]{pb.getName(), Integer.toString(newVal),
+                                        Integer.toString(pb.getMaximum())}));
+                    }
                 }
+            }
+        });
+    }
+
+    protected void setCurrentOpProgress(final int val, final BatchEditProgressDialog dlg) {
+        SwingUtilities.invokeLater(() -> {
+            if (!dlg.isUploadDone()) {
+                JProgressBar pb = dlg.getProgress();
                 if (!indeterminateProgress) {
                     if (useAppStatBar && !indeterminateProgress) {
                         if (val == -1) {
@@ -3101,35 +3123,32 @@ public class Uploader implements ActionListener, KeyListener
                             UIRegistry.getStatusBar().setValue("UPLOADER", val);
                         }
                     } else {
-                        int newVal = val == -1 ? Math.min(pb.getValue()+1, pb.getMaximum()) : val;
+                        int newVal = val == -1 ? Math.min(pb.getValue() + 1, pb.getMaximum()) : val;
                         pb.setValue(newVal);
                         if (pb.isStringPainted()) {
                             pb.setString(String.format(getResourceString("WB_UPLOAD_PROGRESSBAR_TEXT"),
-                                new Object[] { pb.getName(), Integer.toString(newVal),
-                                        Integer.toString(pb.getMaximum()) }));
+                                    new Object[]{pb.getName(), Integer.toString(newVal),
+                                            Integer.toString(pb.getMaximum())}));
                         }
                     }
                 }
             }
         });
-    }
 
+    }
     protected void showUploadProgress(final int val, final JProgressBar pb) {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                if (mainPanel == null) {
-                    log.error("UI does not exist.");
-                    return;
+        SwingUtilities.invokeLater(() -> {
+            if (mainPanel == null) {
+                log.error("UI does not exist.");
+                return;
+            }
+            setCurrentOpProgress(val, pb);
+            synchronized (Uploader.this) {
+                for (UploadMessage newMsg : newMessages) {
+                    mainPanel.addMsg(newMsg);
+                    messages.add(newMsg);
                 }
-                setCurrentOpProgress(val, pb);
-                synchronized (Uploader.this) {
-                	for (UploadMessage newMsg : newMessages)
-                	{
-                		mainPanel.addMsg(newMsg);
-                		messages.add(newMsg);
-                	}
-                	newMessages.clear();
-                }
+                newMessages.clear();
             }
         });
     }
@@ -4443,7 +4462,7 @@ public class Uploader implements ActionListener, KeyListener
                             }
                             showUploadProgress(rowUploading, mainPanel.getCurrOpProgress());
                         	if (progDlg != null) {
-                                showUploadProgress(rowUploading, progDlg.getProgress());
+                                setCurrentOpProgress(rowUploading, progDlg);
                             }
                         }
                     }
