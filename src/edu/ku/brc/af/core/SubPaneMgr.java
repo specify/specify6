@@ -462,8 +462,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
             
                SwingUtilities.invokeLater(() -> {
                    if (index > -1 && index < SubPaneMgr.this.getComponentCount()) {
-                       //setSelectedIndex(index);
-                       showPane(newPane);
+                       setSelectedIndex(index);
                    }
                });
             

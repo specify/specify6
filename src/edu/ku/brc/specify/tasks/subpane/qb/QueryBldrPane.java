@@ -41,19 +41,7 @@ import java.awt.event.MouseEvent;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.Vector;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
@@ -2660,7 +2648,65 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         }
     }
     
-    
+
+    public static void runQ4RS(final Integer queryId, final RecordSetIFace recordSet) {
+        TableTree tblTree = null;
+        Hashtable<String, TableTree> ttHash = null;
+        QueryParameterPanel qpp = null;
+        DataProviderSessionIFace sess = DataProviderFactory.getInstance().createSession();
+        SpQuery q = null;
+        try {
+            q = sess.get(SpQuery.class, queryId);
+            q.forceLoad(false);
+        } finally {
+            sess.close();
+        }
+        UsageTracker.incrUsageCount("QB.ViewRS." + q.getContextName());
+        QueryTask qt = (QueryTask )ContextMgr.getTaskByClass(QueryTask.class);
+        if (qt != null) {
+            Pair<TableTree, Hashtable<String, TableTree>> trees = qt.getTableTrees();
+            tblTree = trees.getFirst();
+            ttHash = trees.getSecond();
+        } else {
+            log.error("Could not find the Query task when when viewing " + recordSet.getName());
+            //blow up
+            throw new RuntimeException("Could not find the Query task when viewing " + recordSet.getName());
+        }
+        qpp = new QueryParameterPanel();
+        qpp.setQuery(q, tblTree, ttHash);
+        TableQRI rootQRI = null;
+        int cId = q.getContextTableId();
+        for (TableTree tt : ttHash.values()) {
+            if (cId == tt.getTableInfo().getTableId()) {
+                rootQRI = tt.getTableQRI();
+                break;
+            }
+        }
+        Vector<QueryFieldPanel> qfps = new Vector<QueryFieldPanel>(qpp.getFields());
+        for (int f = 0; f < qpp.getFields(); f++) {
+            qfps.add(qpp.getField(f));
+        }
+        HQLSpecs sql = null;
+
+       try {
+            //XXX Is it safe to assume that query is not an export query?
+            sql = QueryBldrPane.buildHQL(rootQRI, q.isSelectDistinct(), qfps, tblTree, recordSet,
+                    q.getSearchSynonymy() == null ? false : q.getSearchSynonymy(),
+                    false, null);
+            Properties props = new Properties();
+            props.put("is_qb_rs_view", Boolean.valueOf(true));
+            props.put("tab_text", recordSet.getName());
+            props.put("is_batch_edit", Boolean.valueOf(false));
+            processSQLStatic(qfps, sql, rootQRI.getTableInfo(), q.isSelectDistinct(), null, props);
+        } catch (Exception ex) {
+            String msg = StringUtils.isBlank(ex.getLocalizedMessage()) ? getResourceString("QB_RUN_ERROR") : ex.getLocalizedMessage();
+            UIRegistry.getStatusBar().setErrorMessage(msg, ex);
+            UIRegistry.writeTimedSimpleGlassPaneMsg(msg, Color.RED);
+            return;
+        }
+    }
+
+
     /**
      * @param report
      * 
@@ -3085,30 +3131,31 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         }
         return result;
     }
-    
+
+
+    protected void processSQL(final Vector<QueryFieldPanel> queryFieldItemsArg, final HQLSpecs hqlSpecs,
+                              final DBTableInfo rootTable, final boolean distinct) {
+        processSQLStatic(queryFieldItemsArg, hqlSpecs, rootTable, distinct, this, null);
+    }
+
     /**
      * @param queryFieldItemsArg
      * @param rootTable
      * @param distinct
      */
     @SuppressWarnings("unchecked")
-    protected void processSQL(final Vector<QueryFieldPanel>    queryFieldItemsArg, 
-                              final HQLSpecs                   hqlSpecs,
-                              final DBTableInfo                rootTable, 
-                              final boolean                    distinct)
-    {
+    public static void processSQLStatic(final Vector<QueryFieldPanel> queryFieldItemsArg, final HQLSpecs hqlSpecs,
+                                   final DBTableInfo rootTable, final boolean distinct, final QueryBldrPane qbPane, final Properties props) {
         List<? extends ERTICaptionInfo> captions = getColumnInfo(queryFieldItemsArg, false, rootTable, false);
-        
+
         String iconName = distinct ? "BlankIcon" : rootTable.getClassObj().getSimpleName();
         int tblId = distinct ? -1 : rootTable.getTableId();
-        final QBQueryForIdResultsHQL qri = new QBQueryForIdResultsHQL(TITLEBAR_COLOR,
-                getResourceString("QB_SEARCH_RESULTS"),
-                iconName,
-                tblId,
-                this);
-        
+        final QBQueryForIdResultsHQL qri = new QBQueryForIdResultsHQL(TITLEBAR_COLOR, getResourceString("QB_SEARCH_RESULTS"),
+                iconName, tblId, qbPane);
         String hql = hqlSpecs.getHql();
-        qri.setCount(countOnly);
+        if (qbPane != null) {
+            qri.setCount(qbPane.countOnly);
+        }
         qri.setSQL(hql);
         qri.setParams(hqlSpecs.getArgs());
         qri.setSort(hqlSpecs.getSortElements());
@@ -3117,86 +3164,77 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         qri.setExpanded(true);
         qri.setHasIds(!distinct);
         boolean filterDups = hqlSpecs.isHasSynJoins();
-        if (!filterDups && distinct)
-        {
-        	for (ERTICaptionInfo caption : captions)
-        	{
-        		if (caption instanceof ERTICaptionInfoTreeLevel)
-        		{
-        			filterDups = true;
-        			break;
-        		}
-        		else if (caption instanceof ERTICaptionInfoRel)
-        		{
-        			RelationshipType relType = ((ERTICaptionInfoRel)caption).getRelationship().getType();
-        			if (relType.equals(RelationshipType.OneToMany) || relType.equals(RelationshipType.ManyToMany))
-        			{
-        				filterDups = true;
-        				break;
-        			}
-        		}
-        	}
+        if (!filterDups && distinct) {
+            for (ERTICaptionInfo caption : captions) {
+                if (caption instanceof ERTICaptionInfoTreeLevel) {
+                    filterDups = true;
+                    break;
+                } else if (caption instanceof ERTICaptionInfoRel) {
+                    RelationshipType relType = ((ERTICaptionInfoRel)caption).getRelationship().getType();
+                    if (relType.equals(RelationshipType.OneToMany) || relType.equals(RelationshipType.ManyToMany)) {
+                        filterDups = true;
+                        break;
+                    }
+                }
+            }
         }
         qri.setFilterDups(filterDups);
-        if (schemaMapping != null)
-        {
-        	qri.setMaxTableRows(ExportSchemaPreviewSize);
-        } else
-        {
-        	qri.setMaxTableRows(ExpressSearchTask.RESULTS_THRESHOLD);
+        if (qbPane != null && qbPane.schemaMapping != null) {
+            qri.setMaxTableRows(ExportSchemaPreviewSize);
+        } else {
+            qri.setMaxTableRows(ExpressSearchTask.RESULTS_THRESHOLD);
         }
-        runningResults.set(qri);
-        doneTime.set(-1);
-        
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run()
-            {
-                if (runningResults.get() != null && !runningResults.get().getCancelled())
-                {
+        if (qbPane != null) {
+            qbPane.runningResults.set(qri);
+            qbPane.doneTime.set(-1);
+            SwingUtilities.invokeLater(() -> {
+                if (qbPane.runningResults.get() != null && !qbPane.runningResults.get().getCancelled()) {
                     UIRegistry.getStatusBar().setText(UIRegistry.getResourceString("QB_SEARCHING"));
-                    searchBtn.setText(UIRegistry.getResourceString("QB_CANCEL")); 
-                    UIRegistry.getStatusBar().setIndeterminate(query.getName(), true);
+                    qbPane.searchBtn.setText(UIRegistry.getResourceString("QB_CANCEL"));
+                    UIRegistry.getStatusBar().setIndeterminate(qbPane.query.getName(), true);
                 }
-              //else the query got cancelled or crashed before this thread was executed
-            }
-        });
-        
+                //else the query got cancelled or crashed before this thread was executed
+            });
+        }
+
         new SwingWorker()
         {
             @Override
             public Object construct()
             {
-            	if (schemaMapping != null && !countOnly /*this means the duplicate msg won't appear when counts are done */)
-            	{
-            		if (!checkUniqueRecIds(hqlSpecs.getHql(), hqlSpecs.getArgs()).getFirst())
-            		{
-            			SwingUtilities.invokeLater(new Runnable() {
-
-							@Override
-							public void run()
-							{
-		            			UIRegistry.displayErrorDlg(UIRegistry.getResourceString("ExportPanel.DUPLICATE_KEYS_EXPORT"));
-							}
-            			});
-            			runningResults.set(null);
-            			resultsComplete();
-            			return null;
-            		}
-            	}
-                if (esrp == null)
-                {
+                if (qbPane != null) {
+                    if (qbPane.schemaMapping != null && !qbPane.countOnly /*this means the duplicate msg won't appear when counts are done */) {
+                        if (!checkUniqueRecIds(hqlSpecs.getHql(), hqlSpecs.getArgs()).getFirst()) {
+                            SwingUtilities.invokeLater(() -> UIRegistry.displayErrorDlg(UIRegistry.getResourceString("ExportPanel.DUPLICATE_KEYS_EXPORT")));
+                            qbPane.runningResults.set(null);
+                            qbPane.resultsComplete();
+                            return null;
+                        }
+                    }
+                }
+                if (qbPane != null) {
+                    if (qbPane.esrp == null) {
+                        CommandAction cmdAction = new CommandAction("Express_Search", "HQL", qri);
+                        cmdAction.setProperty("reuse_panel", true);
+                        cmdAction.setProperty("is_batch_edit", qbPane.task.getClass().equals(BatchEditTask.class));
+                        CommandDispatcher.dispatch(cmdAction);
+                    } else {
+                        qbPane.esrp.addSearchResults(qri);
+                    }
+                } else {
                     CommandAction cmdAction = new CommandAction("Express_Search", "HQL", qri);
                     cmdAction.setProperty("reuse_panel", true);
-                    cmdAction.setProperty("is_batch_edit", task.getClass().equals(BatchEditTask.class));
+                    if (props != null) {
+                        cmdAction.addProperties(props);
+                    }
                     CommandDispatcher.dispatch(cmdAction);
-                } else
-                {
-                    esrp.addSearchResults(qri);
                 }
                 return null;
             }
         }.start();
-        startTime.set(System.nanoTime());
+        if (qbPane != null) {
+            qbPane.startTime.set(System.nanoTime());
+        }
     }
 
     /**

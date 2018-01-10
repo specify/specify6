@@ -208,7 +208,7 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL
                 query.get().cancel();
             }
             queryTask.set(null);
-            if (!queryBuilder.queryTaskDone())
+            if (queryBuilder != null && !queryBuilder.queryTaskDone())
             {
                 query.get().cancel();
             }
@@ -390,7 +390,7 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL
             Collections.sort(cacheData, new ResultRowComparator(sortElements));
         }
     	
-    	if (queryBuilder.isSmushed()) {
+    	if (queryBuilder != null && queryBuilder.isSmushed()) {
     		Smusher s = new Smusher(cacheData, queryBuilder.getSmushedCol(), queryBuilder.getRecordIdCol());
     		this.cache = s.smush();
     	} else {
@@ -430,7 +430,7 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL
      */
     public String getQueryName()
     {
-        return queryBuilder.getQuery().getName();
+        return queryBuilder != null ? queryBuilder.getQuery().getName() : "";
     }
 
 	/**

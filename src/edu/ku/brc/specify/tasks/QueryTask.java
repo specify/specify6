@@ -1512,7 +1512,7 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
                     if (!dlg.isCancelled()) {
                         RolloverCommand roc = (RolloverCommand)dlg.getSelectedObject();
                         int queryId = ((RecordSet) roc.getData()).getOnlyItem().getRecordId();
-                        new EditQueryWorker(queryId, roc, recordSet).start();
+                        queryBldrPane.runQ4RS(queryId, recordSet);
                     }
                 }
             } else {

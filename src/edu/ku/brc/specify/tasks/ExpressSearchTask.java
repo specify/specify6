@@ -166,6 +166,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
     
     protected ESResultsSubPane              queryResultsPane      = null;
     protected ESResultsSubPane              batchEditResultsPane  = null;
+    protected ESResultsSubPane              rsQbResultsPane       = null;
     protected SIQueryForIdResults           searchWarningsResults = null;
     protected JStatusBar                    statusBar             = null;
     protected boolean                       doingDebug            = false;
@@ -766,19 +767,25 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
      * 
      * @param hqlStr the HQL query string
      */
-    protected void doHQLQuery(final QueryForIdResultsIFace  results, final Boolean reusePanel, final Boolean isBatchEdit) {
+    protected void doHQLQuery(final QueryForIdResultsIFace  results, final Boolean reusePanel, final Boolean isBatchEdit,
+                              final Boolean isRSView,
+                              final String tabText) {
         if (reusePanel == null || !reusePanel) {
             ESResultsSubPane expressSearchPane = new ESResultsSubPane(getResourceString("ES_QUERY_RESULTS"), this, true);
             addSubPaneToMgr(expressSearchPane);
             expressSearchPane.addSearchResults(results);
             
         } else {
-            ESResultsSubPane pane = isBatchEdit ? batchEditResultsPane : queryResultsPane;
+            Boolean isRs = isRSView == null ? false : true;
+            ESResultsSubPane pane = isRs ? queryResultsPane : isBatchEdit ? batchEditResultsPane : queryResultsPane;
             if (pane == null) {
-                pane = new QBResultsSubPane(getResourceString("ES_QUERY_RESULTS"), this, true);
-                pane.setIcon(IconManager.getIcon(isBatchEdit? "BatchEdit" : "Query", IconManager.IconSize.Std16));
+                String txt = isRs ? tabText : getResourceString("ES_QUERY_RESULTS");
+                pane = new QBResultsSubPane(txt, this, true);
+                pane.setIcon(IconManager.getIcon(isRs ? "RecordSet" : isBatchEdit ? "BatchEdit" : "Query", IconManager.IconSize.Std16));
                 if (isBatchEdit) {
                     batchEditResultsPane = pane;
+                } else if (isRs) {
+                    rsQbResultsPane = pane;
                 } else {
                     queryResultsPane = pane;
                 }
@@ -960,7 +967,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
             if (cmdAction.isAction("HQL"))
             {
                 doHQLQuery((QueryForIdResultsIFace)cmdAction.getData(), (Boolean)cmdAction.getProperty("reuse_panel"),
-                        (Boolean)cmdAction.getProperty("is_batch_edit"));
+                        (Boolean)cmdAction.getProperty("is_batch_edit"), (Boolean)cmdAction.getProperty("is_qb_rs_view"), (String)cmdAction.getProperty("tab_text"));
                 
             } else if (cmdAction.isAction("ExpressSearch"))
             {
@@ -1476,6 +1483,8 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
             return queryResultsPane;
         } else if (batchEditResultsPane != null && results != null && batchEditResultsPane.contains(results)) {
             return batchEditResultsPane;
+        } else if (rsQbResultsPane != null && results != null && rsQbResultsPane.contains(results)) {
+            return rsQbResultsPane;
         } else {
             return null;
         }
