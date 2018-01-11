@@ -6667,7 +6667,7 @@ public class UploadTable implements Comparable<UploadTable>
 	    		editor = rec.getModifiedByAgent();
 	    	}
 	    	String editorName = DataObjFieldFormatMgr.getInstance().format(editor, Agent.class);
-			return String.format(getResourceString("WB_UPLOAD_EDITED_REC_NOT_UPDATED"), uploadTable.toString(), new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(recStamp), editorName);
+			return String.format(getResourceString("WB_UPLOAD_EDITED_REC_NOT_UPDATED"), row + 1, uploadTable.toString(), new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(recStamp), editorName);
 		}
     	
     	
