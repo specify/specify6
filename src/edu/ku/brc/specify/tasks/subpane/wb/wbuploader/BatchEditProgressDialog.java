@@ -14,18 +14,29 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static edu.ku.brc.ui.UIHelper.*;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 public class BatchEditProgressDialog extends JDialog {
-    protected static int DEFAULT_COUNTDOWN = 53;
+    protected static int DEFAULT_COUNTDOWN = 180;
+    protected static int MORE_TIME = 90;
 
     protected JProgressBar progress;
     protected JLabel       desc;
     protected JButton      cancelBtn;
     protected JButton      commitBtn;
+    protected JButton OkBtn;
+    protected JButton moreTimeBtn;
+    protected JButton copyToClipBrdBtn;
+    protected JLabel msgLbl;
+    protected JPanel msgPane;
+    protected JList msgList;
+    protected JScrollPane msgListSB;
+
     protected String       title;
     protected String       updateTbl;
     protected AtomicBoolean uploadDone = new AtomicBoolean(false);
@@ -44,7 +55,7 @@ public class BatchEditProgressDialog extends JDialog {
 
         this.updateTbl = updateTbl;
 
-        String rowDef = "p,10px" + ",p,10px" + ",p";
+        String rowDef = "p,10px,p,10px,p,f:p:g,p";
         PanelBuilder builder = new PanelBuilder(new FormLayout("p,2px,f:p:g", rowDef));
         CellConstraints cc = new CellConstraints();
 
@@ -70,6 +81,27 @@ public class BatchEditProgressDialog extends JDialog {
         buttPanel.add(commitBtn);
         builder.add(buttPanel, cc.xy(3, y));
 
+        msgPane = new JPanel(new FormLayout("fill:m:grow", "fill:pref:grow, fill:m:grow"));
+
+        msgLbl  = createLabel(getResourceString("WB_UPLOAD_MSG_LIST"));
+
+        msgList = new JList(new DefaultListModel()) {
+            @Override
+            public String getToolTipText(MouseEvent event) {
+                //Get the mouse location
+                java.awt.Point point = event.getPoint();
+                //Get the item in the list box at the mouse location
+                int index = this.locationToIndex(point);
+                //Get the value of the item in the list
+                return this.getModel().getElementAt(index).toString();
+            }
+        };
+
+        msgListSB = new JScrollPane(msgList);
+        //msgPane.add(msgListSB, cc.xywh(1, 1, 1, 2));
+        msgPane.add(msgLbl, cc.xy(1,1));
+        msgPane.add(msgListSB, cc.xy(1, 2));
+        builder.add(msgPane, cc.xy(3, 6));
 
         y += 2;
 
