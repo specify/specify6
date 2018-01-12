@@ -4467,7 +4467,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 			showPanel(PanelType.Spreadsheet);
 			mainPanel.validate();
 			mainPanel.doLayout();
-            uploadPane.setDividerLocation(.99);
+            uploadPane.setDividerLocation(.96);
 			ssFormSwitcher.setEnabled(false);
 			// next line causes some weird behavior: when an entire row is
 			// selected
