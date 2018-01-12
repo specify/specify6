@@ -3,18 +3,20 @@ package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.util.Pair;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import java.util.Vector;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -50,6 +52,7 @@ public class BatchEditProgressDialog extends JDialog {
     protected AtomicBoolean committed = new AtomicBoolean(false);
     protected AtomicBoolean failedToCommit = new AtomicBoolean(false);
     protected AtomicBoolean cancelled = new AtomicBoolean(false);
+    protected AtomicBoolean skips = new AtomicBoolean(false);
     /**
      *
      * @param title
@@ -152,11 +155,23 @@ public class BatchEditProgressDialog extends JDialog {
         addStatusMsg(getResourceString("WB_BATCH_EDIT_IN_PROCESS"));
     }
 
+    protected String getAffectedRecsSummaryMsg() {
+        java.util.List<Pair<Integer,Object>> sqls = uploader.getUpdateUploadAffectedRecsSql();
+        String result = sqls.get(0).getSecond() + " " + DBTableIdMgr.getInstance().getTitleForId(sqls.get(0).getFirst()) + " records were updated.";
+        if (sqls.size() > 1) {
+            result += " " + BasicSQLUtils.getCount((String)sqls.get(1).getSecond()) + " " + DBTableIdMgr.getInstance().getTitleForId(sqls.get(1).getFirst()) + " records were affected.";
+        }
+        return result;
+    }
+
     protected void addStatusMsg(final String msg) {
         addMsg(new BaseUploadMessage(msg));
     }
 
     public synchronized void addMsg(UploadMessage msg) {
+        if (msg instanceof Uploader.SkippedRow || msg instanceof UploadTable.EditedRecNotUpdatedMsg) {
+            skips.set(true);
+        }
         ((DefaultListModel)msgList.getModel()).addElement(msg);
         msgList.ensureIndexIsVisible(msgList.getModel().getSize()-1);
     }
@@ -238,7 +253,7 @@ public class BatchEditProgressDialog extends JDialog {
     }
 
     protected boolean warningsPresent() {
-        return false;
+        return skips.get();
     }
 
     /**
@@ -254,6 +269,7 @@ public class BatchEditProgressDialog extends JDialog {
         ticks.set(countDown.get());
 
         addStatusMsg(getResourceString(warningsPresent() ? "WB_BATCH_EDIT_PARTIAL_APPLIED_MSG" : "WB_BATCH_EDIT_ALL_APPLIED_MSG"));
+        addStatusMsg(getAffectedRecsSummaryMsg());
         addStatusMsg(String.format(getResourceString("WB_BATCH_EDIT_DONE_COMMIT_ROLLBACK_MSG"), getResourceString("SAVE")));
         if (progress.isIndeterminate()) {
             progress.setIndeterminate(false);
@@ -287,6 +303,13 @@ public class BatchEditProgressDialog extends JDialog {
         progress.setValue(countDown.get() - ticks.get());
         totalTime.incrementAndGet();
     }
+
+    public void addMsgs(Vector<UploadMessage> newMsgs) {
+        for (UploadMessage newMsg : newMsgs) {
+            addMsg(newMsg);
+        }
+    }
+
 
     /**
      *

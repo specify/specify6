@@ -300,6 +300,51 @@ public class Uploader implements ActionListener, KeyListener
     	
     	
     }
+
+    public List<Pair<Integer,Object>>  getUpdateUploadAffectedRecsSql() {
+        List<Pair<Integer, Object>> result = new ArrayList<>();
+        UploadTable root = getRootTable();
+        List<UploadedRecordInfo> uploaded = root.getAllUploadedRecords();
+        int rootTableId = root.getTable().getTableInfo().getTableId();
+        result.add(new Pair<>(rootTableId, uploaded.size()));
+        if (rootTableId != CollectionObject.getClassTableId() && rootTableId != Preparation.getClassTableId()
+                && rootTableId != Agent.getClassTableId()) {
+            StringBuilder idStr = new StringBuilder("wbr.recordId in(");
+            boolean comma = false;
+            int r = 0;
+            while (r < uploaded.size()) {
+                if (comma) {
+                    idStr.append(",");
+                } else {
+                    comma = true;
+                }
+                idStr.append(uploaded.get(r++).getKey());
+                if (r % 1000 == 0) {
+                    idStr.append(") or wbr.recordid in(");
+                    comma = false;
+                }
+            }
+            if (r % 1000 != 0) {
+                idStr.append(")");
+            }
+            if (rootTableId == CollectingEvent.getClassTableId()) {
+                String sql = "select count(*) from collectingevent ce inner join collectionobject co on "
+                    + "co.collectingeventid = ce.collectingeventid inner join workbenchrow wbr on wbr.recordid = ce.collectingeventid"
+                    + " where wbr.workbenchid = " + theWb.getWorkbenchId() + " and ("
+                    + idStr + ")";
+                result.add(new Pair<>(CollectionObject.getClassTableId(), sql));
+            } else if (rootTableId == Locality.getClassTableId()) {
+                String sql = "select count(*) from locality l inner join collectingevent ce on "
+                        + "ce.localityid = l.localityid inner join collectionobject co on "
+                        + "co.collectingeventid = ce.collectingeventid inner join workbenchrow wbr on wbr.recordid = ce.collectingeventid"
+                        + " where wbr.workbenchid = " + theWb.getWorkbenchId() + " and ("
+                        + idStr + ")";
+                result.add(new Pair<>(CollectionObject.getClassTableId(), sql));
+            }
+        }
+        return result;
+    }
+
     /**
      * @author timbo
      *
@@ -307,8 +352,7 @@ public class Uploader implements ActionListener, KeyListener
      *
      * Stores information about rows that were not uploaded during an upload.
      */
-    @SuppressWarnings("unused")
-    private class SkippedRow extends BaseUploadMessage
+    protected class SkippedRow extends BaseUploadMessage
     {
         protected UploaderException cause;
         protected int               row;
@@ -3133,7 +3177,7 @@ public class Uploader implements ActionListener, KeyListener
                 }
             }
         });
-
+        dlg.addMsgs(newMessages);
     }
     protected void showUploadProgress(final int val, final JProgressBar pb) {
         SwingUtilities.invokeLater(() -> {
@@ -3147,7 +3191,6 @@ public class Uploader implements ActionListener, KeyListener
                     mainPanel.addMsg(newMsg);
                     messages.add(newMsg);
                 }
-                newMessages.clear();
             }
         });
     }
@@ -4381,6 +4424,7 @@ public class Uploader implements ActionListener, KeyListener
                         }
                         int writesSinceFlush = 0;
                         for (rowUploading = uploadStartRow; rowUploading < uploadData.getRows();) {
+                            newMessages.clear();
                         	boolean rowAborted = false;
                         	if (cancelled) {
                         		paused = true;
