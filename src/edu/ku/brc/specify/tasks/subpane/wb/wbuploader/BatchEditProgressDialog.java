@@ -61,11 +61,11 @@ public class BatchEditProgressDialog extends JDialog {
         this.updateTbl = updateTbl;
         this.uploader = uploader;
 
-        String rowDef = "p,10px,p,10px,p,f:p:g,p";
+        String rowDef = "f:p:g,10px, p,10px,p,10px,p";
         PanelBuilder builder = new PanelBuilder(new FormLayout("p,2px,f:p:g", rowDef));
         CellConstraints cc = new CellConstraints();
 
-        int y = 1;
+        int y = 3;
         desc = createLabel(descText);
         desc.setHorizontalAlignment(SwingConstants.CENTER);
         builder.add(desc, cc.xywh(1, y, 3, 1));
@@ -113,10 +113,11 @@ public class BatchEditProgressDialog extends JDialog {
         //msgPane.add(msgListSB, cc.xywh(1, 1, 1, 2));
         msgPane.add(msgLbl, cc.xy(1,1));
         msgPane.add(msgListSB, cc.xy(1, 2));
-        builder.add(msgPane, cc.xy(3, 6));
+        builder.add(msgPane, cc.xy(3, 1));
 
-        y += 2;
 
+        desc.setVisible(false);
+        msgLbl.setVisible(false);
 
         builder.getPanel().setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         setContentPane(builder.getPanel());
@@ -147,8 +148,18 @@ public class BatchEditProgressDialog extends JDialog {
         });
         cancelBtn.setActionCommand(UploadMainPanel.CANCEL_OPERATION);
         cancelBtn.addActionListener(listener);
+
+        addStatusMsg(getResourceString("WB_BATCH_EDIT_IN_PROCESS"));
     }
 
+    protected void addStatusMsg(final String msg) {
+        addMsg(new BaseUploadMessage(msg));
+    }
+
+    public synchronized void addMsg(UploadMessage msg) {
+        ((DefaultListModel)msgList.getModel()).addElement(msg);
+        msgList.ensureIndexIsVisible(msgList.getModel().getSize()-1);
+    }
     /**
      *
      */
@@ -159,11 +170,13 @@ public class BatchEditProgressDialog extends JDialog {
         cancelBtn.setEnabled(false);
         commitBtn.setEnabled(false);
         desc.setText(UIRegistry.getResourceString("WB_BATCH_EDIT_ROLLING_BACK"));
+        addStatusMsg(UIRegistry.getResourceString("WB_BATCH_EDIT_ROLLING_BACK"));
         UsageTracker.incrUsageCount("BE.Cancel." + updateTbl);
     }
 
     protected synchronized void endStageStatus(final String msgKey) {
         desc.setText(getResourceString(msgKey));
+        addStatusMsg(UIRegistry.getResourceString(msgKey));
         progress.setVisible(false);
         moreTimeBtn.setVisible(false);
         cancelBtn.setVisible(false);
@@ -203,6 +216,7 @@ public class BatchEditProgressDialog extends JDialog {
         cancelBtn.setEnabled(false);
         commitBtn.setEnabled(false);
         desc.setText(UIRegistry.getResourceString("WB_BATCH_EDIT_COMMITTING"));
+        addStatusMsg(UIRegistry.getResourceString("WB_BATCH_EDIT_COMMITTING"));
         UsageTracker.incrUsageCount("BE.Commit." + updateTbl);
     }
 
@@ -223,6 +237,10 @@ public class BatchEditProgressDialog extends JDialog {
         return commitPressed.get();
     }
 
+    protected boolean warningsPresent() {
+        return false;
+    }
+
     /**
      *
      */
@@ -235,16 +253,20 @@ public class BatchEditProgressDialog extends JDialog {
         }
         ticks.set(countDown.get());
 
-        desc.setText(String.format(UIRegistry.getResourceString("WB_BATCH_EDIT_DONE_COMMIT_ROLLBACK_MSG")));
+        addStatusMsg(getResourceString(warningsPresent() ? "WB_BATCH_EDIT_PARTIAL_APPLIED_MSG" : "WB_BATCH_EDIT_ALL_APPLIED_MSG"));
+        addStatusMsg(String.format(getResourceString("WB_BATCH_EDIT_DONE_COMMIT_ROLLBACK_MSG"), getResourceString("SAVE")));
         if (progress.isIndeterminate()) {
             progress.setIndeterminate(false);
         }
         progress.setValue(0);
         progress.setMaximum(countDown.get());
         progress.setStringPainted(true);
-        progress.setString(String.format(UIRegistry.getResourceString("WB_BATCH_EDIT_ROLLBACK_COUNTDOWN"), countDown.get()));
+        progress.setString(String.format(UIRegistry.getResourceString("WB_BATCH_EDIT_ROLLBACK_COUNTDOWN"), getCountDownText(countDown.get())));
     }
 
+    protected String getCountDownText(final Integer cntDwn) {
+        return cntDwn + " " + getResourceString("SECONDS");
+    }
     /**
      *
      */
@@ -252,6 +274,7 @@ public class BatchEditProgressDialog extends JDialog {
         uploadDone.set(true);
         progress.setValue(0);
         desc.setText(String.format(UIRegistry.getResourceString("WB_BATCH_EDIT_DONE_FINISHING")));
+        addStatusMsg(String.format(UIRegistry.getResourceString("WB_BATCH_EDIT_DONE_FINISHING")));
         progress.setIndeterminate(true);
         progress.setStringPainted(false);
     }
@@ -260,7 +283,7 @@ public class BatchEditProgressDialog extends JDialog {
      *
      */
     public synchronized void tick() {
-        progress.setString(String.format(UIRegistry.getResourceString("WB_BATCH_EDIT_ROLLBACK_COUNTDOWN"), ticks.decrementAndGet()));
+        progress.setString(String.format(UIRegistry.getResourceString("WB_BATCH_EDIT_ROLLBACK_COUNTDOWN"), getCountDownText(ticks.decrementAndGet())));
         progress.setValue(countDown.get() - ticks.get());
         totalTime.incrementAndGet();
     }

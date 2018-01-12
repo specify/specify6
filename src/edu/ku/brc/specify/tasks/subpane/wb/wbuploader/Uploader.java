@@ -3126,9 +3126,8 @@ public class Uploader implements ActionListener, KeyListener
                         int newVal = val == -1 ? Math.min(pb.getValue() + 1, pb.getMaximum()) : val;
                         pb.setValue(newVal);
                         if (pb.isStringPainted()) {
-                            pb.setString(String.format(getResourceString("WB_UPLOAD_PROGRESSBAR_TEXT"),
-                                    new Object[]{pb.getName(), Integer.toString(newVal),
-                                            Integer.toString(pb.getMaximum())}));
+                            pb.setString(String.format(getResourceString("WB_BE_UPLOAD_PROGRESSBAR_TEXT"),
+                                    newVal, pb.getMaximum()));
                         }
                     }
                 }
@@ -3940,27 +3939,20 @@ public class Uploader implements ActionListener, KeyListener
     /**
      * Builds form for upload UI.
      */
-    protected void buildMainUI()
-    {
+    protected void buildMainUI() {
         mainPanel = new UploadMainPanel(isUpdateUpload());
 
         SortedSet<UploadInfoRenderable> uts = new TreeSet<UploadInfoRenderable>();
-        for (UploadTable ut : uploadTables)
-        {
+        for (UploadTable ut : uploadTables) {
             UploadInfoRenderable render = new UploadInfoRenderable(ut);
-            if (uts.contains(render))
-            {
-                for (UploadInfoRenderable r : uts)
-                {
-                    if (r.equals(render))
-                    {
+            if (uts.contains(render)) {
+                for (UploadInfoRenderable r : uts) {
+                    if (r.equals(render)) {
                         r.addTable(ut);
                         break;
                     }
                 }
-            }
-            else
-            {
+            } else {
                 uts.add(new UploadInfoRenderable(ut));
             }
         }

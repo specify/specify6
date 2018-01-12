@@ -4454,10 +4454,10 @@ public class WorkbenchPaneSS extends BaseSubPane
             datasetUploader.copyFldConfigs(configs);
             
             uploadPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, spreadSheetPane, datasetUploader.getMainPanel());
+            int uploadPaneDivider = 10;//spreadSheetPane.getHeight() * (isUpdateDataSet() ? 19/20 : 2/3);
 			mainPanel.remove(spreadSheetPane);
-			uploadPane.setOneTouchExpandable(true);
-			uploadPane.setDividerLocation(spreadSheetPane.getHeight() * 2 / 3);
-			spreadSheetPane.setVisible(true);
+            spreadSheetPane.setVisible(true);
+			//uploadPane.setOneTouchExpandable(true);
 
 			// Provide minimum sizes for the two components in the split pane
 			Dimension minimumSize = new Dimension(200, 200);
@@ -4467,6 +4467,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 			showPanel(PanelType.Spreadsheet);
 			mainPanel.validate();
 			mainPanel.doLayout();
+            uploadPane.setDividerLocation(.99);
 			ssFormSwitcher.setEnabled(false);
 			// next line causes some weird behavior: when an entire row is
 			// selected
