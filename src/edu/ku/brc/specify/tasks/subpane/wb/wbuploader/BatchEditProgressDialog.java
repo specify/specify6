@@ -8,6 +8,7 @@ import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 
@@ -16,6 +17,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import java.io.Console;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -69,9 +71,15 @@ public class BatchEditProgressDialog extends JDialog {
         CellConstraints cc = new CellConstraints();
 
         int y = 3;
+        JPanel descPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         desc = createLabel(descText);
         desc.setHorizontalAlignment(SwingConstants.CENTER);
-        builder.add(desc, cc.xywh(1, y, 3, 1));
+        descPanel.add(desc);
+        //moreTimeBtn = createButton(UIRegistry.getResourceString("WB_BATCH_EDIT_MORE_TIME_BTN"));
+        moreTimeBtn = createIconBtn("PlusSign", IconManager.IconSize.Std16, "WB_BATCH_EDIT_MORE_TIME_BTN", null);
+        moreTimeBtn.setVisible(false);
+        descPanel.add(moreTimeBtn);
+        builder.add(descPanel, cc.xywh(1, y, 3, 1));
         y += 2;
 
         progress = createProgressBar(); //new JProgressBar();
@@ -85,12 +93,15 @@ public class BatchEditProgressDialog extends JDialog {
         JPanel buttPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         OkBtn = createButton(getResourceString(("OK")));
         OkBtn.setVisible(false);
-        moreTimeBtn = createButton(UIRegistry.getResourceString("WB_BATCH_EDIT_MORE_TIME_BTN"));
-        moreTimeBtn.setVisible(false);
+        copyToClipBrdBtn = createIconBtn("ClipboardCopy",  IconManager.IconSize.Std16, "WB_BATCH_EDIT_COPY_TO_CLIPBOARD",
+                null);
+        //copyToClipBrdBtn = createButton("copy to clipboard");
+        copyToClipBrdBtn.setVisible(false);
         cancelBtn = createButton(UIRegistry.getResourceString("CANCEL"));
         commitBtn = createButton(UIRegistry.getResourceString("SAVE"));
         commitBtn.setVisible(false);
-        buttPanel.add(moreTimeBtn);
+        //buttPanel.add(copyToClipBrdBtn);
+        //buttPanel.add(moreTimeBtn);
         buttPanel.add(cancelBtn);
         buttPanel.add(commitBtn);
         buttPanel.add(OkBtn);
@@ -114,13 +125,16 @@ public class BatchEditProgressDialog extends JDialog {
 
         msgListSB = new JScrollPane(msgList);
         //msgPane.add(msgListSB, cc.xywh(1, 1, 1, 2));
-        msgPane.add(msgLbl, cc.xy(1,1));
+        JPanel msgLblPane = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        msgLblPane.add(msgLbl);
+        msgLblPane.add(copyToClipBrdBtn);
+        msgPane.add(msgLblPane, cc.xy(1,1));
         msgPane.add(msgListSB, cc.xy(1, 2));
         builder.add(msgPane, cc.xy(3, 1));
 
 
         desc.setVisible(false);
-        msgLbl.setVisible(false);
+        //msgLbl.setVisible(false);
 
         builder.getPanel().setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         setContentPane(builder.getPanel());
@@ -140,6 +154,9 @@ public class BatchEditProgressDialog extends JDialog {
         commitBtn.addActionListener((ActionEvent e) -> BatchEditProgressDialog.this.commitPressed());
         cancelBtn.addActionListener((ActionEvent e) -> BatchEditProgressDialog.this.cancelPressed());
         moreTimeBtn.addActionListener((ActionEvent e) -> BatchEditProgressDialog.this.moreTimePressed());
+        moreTimeBtn.setEnabled(true);
+        copyToClipBrdBtn.addActionListener((ActionEvent e) -> BatchEditProgressDialog.this.copyToClipBoardPressed());
+        copyToClipBrdBtn.setEnabled(true);
         final Uploader upl = this.uploader;
         OkBtn.addActionListener((ActionEvent e) -> {
             BatchEditProgressDialog.this.setVisible(false);
@@ -175,6 +192,14 @@ public class BatchEditProgressDialog extends JDialog {
         ((DefaultListModel)msgList.getModel()).addElement(msg);
         msgList.ensureIndexIsVisible(msgList.getModel().getSize()-1);
     }
+
+    protected void copyToClipBoardPressed() {
+        StringBuffer sbf = new StringBuffer();
+        for (int m = 0; m < msgList.getModel().getSize(); m++){
+            sbf.append(msgList.getModel().getElementAt(m).toString() + "\n");
+        }
+        UIHelper.setTextToClipboard(sbf.toString());
+    }
     /**
      *
      */
@@ -192,6 +217,7 @@ public class BatchEditProgressDialog extends JDialog {
     protected synchronized void endStageStatus(final String msgKey) {
         desc.setText(getResourceString(msgKey));
         addStatusMsg(UIRegistry.getResourceString(msgKey));
+        copyToClipBrdBtn.setVisible(true);
         progress.setVisible(false);
         moreTimeBtn.setVisible(false);
         cancelBtn.setVisible(false);
@@ -261,6 +287,7 @@ public class BatchEditProgressDialog extends JDialog {
      */
     public synchronized void batchEditDone() {
         uploadDone.set(true);
+        copyToClipBrdBtn.setVisible(true);
         moreTimeBtn.setVisible(true);
         commitBtn.setVisible(true);
         if (countDown.get() == -1) {
@@ -274,10 +301,21 @@ public class BatchEditProgressDialog extends JDialog {
         if (progress.isIndeterminate()) {
             progress.setIndeterminate(false);
         }
+
+        /* if showing progress during countdown
         progress.setValue(0);
         progress.setMaximum(countDown.get());
         progress.setStringPainted(true);
-        progress.setString(String.format(UIRegistry.getResourceString("WB_BATCH_EDIT_ROLLBACK_COUNTDOWN"), getCountDownText(countDown.get())));
+        progress.setString(getCountDownMsg());
+        */
+        /*else*/
+        progress.setVisible(false);
+        desc.setVisible(true);
+        desc.setText(getCountDownMsg(countDown.get()));
+    }
+
+    protected String getCountDownMsg(final Integer cntDwn) {
+        return String.format(UIRegistry.getResourceString("WB_BATCH_EDIT_ROLLBACK_COUNTDOWN"), getCountDownText(cntDwn));
     }
 
     protected String getCountDownText(final Integer cntDwn) {
@@ -299,8 +337,13 @@ public class BatchEditProgressDialog extends JDialog {
      *
      */
     public synchronized void tick() {
-        progress.setString(String.format(UIRegistry.getResourceString("WB_BATCH_EDIT_ROLLBACK_COUNTDOWN"), getCountDownText(ticks.decrementAndGet())));
+         /* if showing progress during countdown
+        progress.setString(getCountDownMsg(ticks.getAndDecrement()));
         progress.setValue(countDown.get() - ticks.get());
+        */
+        /*else*/
+        desc.setText(getCountDownMsg(ticks.getAndDecrement()));
+
         totalTime.incrementAndGet();
     }
 
