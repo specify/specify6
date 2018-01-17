@@ -6554,7 +6554,7 @@ public class UploadTable implements Comparable<UploadTable>
     protected String getRecordSetName(boolean showRecordSetInUI)
     {
         int maxNameLength = DBTableIdMgr.getInstance().getInfoByTableName("recordset").getFieldByColumnName("name").getLength();
-        String rsName = getFullRecordSetName(showRecordSetInUI);
+        String rsName = getFullRecordSetName(showRecordSetInUI, maxNameLength);
         if (rsName.length() > maxNameLength)
         {
             //add as many pieces of the upload time as will fit...
@@ -6572,17 +6572,38 @@ public class UploadTable implements Comparable<UploadTable>
         return rsName;
     }
 
+
     /**
      * @return
      */
-    protected String getFullRecordSetName(boolean showRecordSetInUI)
+    protected String getFullRecordSetName(boolean showRecordSetInUI, int maxNameLength)
     {
         String tblName = showRecordSetInUI ? "" :
         	DBTableIdMgr.getInstance().getByShortClassName(tblClass.getSimpleName()).getTitle() + "_";
-        String uploadName = uploader.getIdentifier();
+        String uploadName = isUpdateMatches() && showRecordSetInUI ?
+                suffixIfNecessary(uploader.getWb().getName(), showRecordSetInUI, maxNameLength)
+                : uploader.getIdentifier();
         return tblName + uploadName;
     }
-    
+
+    protected String crapOutOfBEWBName(final String beWbName) {
+        String result = StringUtils.reverse(beWbName);
+        result = result.substring(result.indexOf("-- ") + 3).trim();
+        return StringUtils.reverse(result);
+    }
+
+    protected String suffixIfNecessary(final String name, boolean showRecordSetInUI, int maxNameLength) {
+        String newName = crapOutOfBEWBName(name);
+        List<Object> names = BasicSQLUtils.querySingleCol("select name from recordset where `type` = "
+                + (showRecordSetInUI ? RecordSet.GLOBAL : RecordSet.WB_UPLOAD)
+                + " and name like '" + newName + "%' order by name");
+        Integer append = 2;
+        String result = newName;
+        while (names.indexOf(result) != -1 && result.length() < maxNameLength) {
+            result = newName + "_" + append++;
+        }
+        return result;
+    }
     /**
      * @return
      */

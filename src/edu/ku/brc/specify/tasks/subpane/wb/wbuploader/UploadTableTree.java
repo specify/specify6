@@ -650,11 +650,11 @@ protected List<java.lang.reflect.Field> getFldsForJSON() {
      * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#getFullRecordSetName()
      */
     @Override
-    protected String getFullRecordSetName(boolean showRecordSetInUI)
+    protected String getFullRecordSetName(boolean showRecordSetInUI, int maxNameLength)
     {
         if (showRecordSetInUI)
         {
-        	return super.getFullRecordSetName(showRecordSetInUI);
+        	return super.getFullRecordSetName(showRecordSetInUI, maxNameLength);
         }
         
     	try
