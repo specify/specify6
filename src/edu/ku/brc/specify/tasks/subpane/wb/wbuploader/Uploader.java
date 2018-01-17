@@ -301,7 +301,7 @@ public class Uploader implements ActionListener, KeyListener
     	
     }
 
-    public Set<Integer> getUploadedRows() {
+    protected Set<Integer> getUploadedRows() {
         Set<Integer> result = new HashSet<>();
         Integer allOfEm = getWb().getWorkbenchRows().size();
         for (UploadTable t : uploadTables) {

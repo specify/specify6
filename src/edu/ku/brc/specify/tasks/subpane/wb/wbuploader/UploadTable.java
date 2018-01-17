@@ -51,6 +51,7 @@ import javax.persistence.CascadeType;
 import javax.swing.SwingUtilities;
 
 import edu.ku.brc.af.core.db.*;
+import edu.ku.brc.specify.datamodel.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.ObjectDeletedException;
@@ -70,47 +71,6 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace.CriteriaIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
-import edu.ku.brc.specify.datamodel.Accession;
-import edu.ku.brc.specify.datamodel.AccessionAgent;
-import edu.ku.brc.specify.datamodel.AccessionAuthorization;
-import edu.ku.brc.specify.datamodel.Address;
-import edu.ku.brc.specify.datamodel.Agent;
-import edu.ku.brc.specify.datamodel.AttachmentOwnerIFace;
-import edu.ku.brc.specify.datamodel.Author;
-import edu.ku.brc.specify.datamodel.CollectingEvent;
-import edu.ku.brc.specify.datamodel.CollectingEventAttribute;
-import edu.ku.brc.specify.datamodel.Collection;
-import edu.ku.brc.specify.datamodel.CollectionObject;
-import edu.ku.brc.specify.datamodel.CollectionObjectAttribute;
-import edu.ku.brc.specify.datamodel.CollectionObjectCitation;
-import edu.ku.brc.specify.datamodel.CollectionRelationship;
-import edu.ku.brc.specify.datamodel.Collector;
-import edu.ku.brc.specify.datamodel.ConservDescription;
-import edu.ku.brc.specify.datamodel.ConservEvent;
-import edu.ku.brc.specify.datamodel.DNASequence;
-import edu.ku.brc.specify.datamodel.DNASequencingRun;
-import edu.ku.brc.specify.datamodel.DataModelObjBase;
-import edu.ku.brc.specify.datamodel.Determination;
-import edu.ku.brc.specify.datamodel.Discipline;
-import edu.ku.brc.specify.datamodel.Division;
-import edu.ku.brc.specify.datamodel.FieldNotebook;
-import edu.ku.brc.specify.datamodel.FieldNotebookPage;
-import edu.ku.brc.specify.datamodel.GeoCoordDetail;
-import edu.ku.brc.specify.datamodel.Locality;
-import edu.ku.brc.specify.datamodel.LocalityCitation;
-import edu.ku.brc.specify.datamodel.LocalityDetail;
-import edu.ku.brc.specify.datamodel.OtherIdentifier;
-import edu.ku.brc.specify.datamodel.PaleoContext;
-import edu.ku.brc.specify.datamodel.PrepType;
-import edu.ku.brc.specify.datamodel.Preparation;
-import edu.ku.brc.specify.datamodel.PreparationAttribute;
-import edu.ku.brc.specify.datamodel.RecordSet;
-import edu.ku.brc.specify.datamodel.ReferenceWork;
-import edu.ku.brc.specify.datamodel.SpecifyUser;
-import edu.ku.brc.specify.datamodel.Treeable;
-import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
-import edu.ku.brc.specify.datamodel.WorkbenchRowImage;
-import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.datamodel.busrules.AttachmentOwnerBaseBusRules;
 import edu.ku.brc.specify.dbsupport.RecordTypeCodeBuilder;
 import edu.ku.brc.specify.dbsupport.SpecifyDeleteHelper;
@@ -6623,8 +6583,15 @@ public class UploadTable implements Comparable<UploadTable>
                    DBTableIdMgr.getInstance().getByShortClassName(tblClass.getSimpleName()).getTableId(), 
                    showRecordSetInUI ? RecordSet.GLOBAL : RecordSet.WB_UPLOAD);
         result.setSpecifyUser(AppContextMgr.getInstance().getClassObject(SpecifyUser.class));
-        for (UploadedRecordInfo rec : getAllUploadedRecords()) {
-            result.addItem(rec.getKey().intValue());
+        if (isUpdateMatches() && uploader.getRootTable() == this) {
+            List<WorkbenchRow> rows = uploader.getWb().getWorkbenchRowsAsList();
+            for (Integer r : uploader.getUploadedRows()) {
+                result.addItem(rows.get(r).getRecordId());
+            }
+        } else {
+            for (UploadedRecordInfo rec : getAllUploadedRecords()) {
+                result.addItem(rec.getKey().intValue());
+            }
         }
         return result;
     }
