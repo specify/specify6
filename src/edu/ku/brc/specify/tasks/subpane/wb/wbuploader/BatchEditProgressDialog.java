@@ -61,7 +61,7 @@ public class BatchEditProgressDialog extends JDialog {
      * @param descText
      */
     public BatchEditProgressDialog(final String title, final String descText, final ActionListener listener, final String updateTbl, final Uploader uploader) {
-        super();
+        super((Frame)UIRegistry.getTopWindow());
 
         this.updateTbl = updateTbl;
         this.uploader = uploader;
@@ -209,13 +209,17 @@ public class BatchEditProgressDialog extends JDialog {
         progress.setIndeterminate(true);
         cancelBtn.setEnabled(false);
         commitBtn.setEnabled(false);
-        desc.setText(UIRegistry.getResourceString("WB_BATCH_EDIT_ROLLING_BACK"));
+        //desc.setText(UIRegistry.getResourceString("WB_BATCH_EDIT_ROLLING_BACK"));
+        desc.setText("");
+        moreTimeBtn.setVisible(false);
         addStatusMsg(UIRegistry.getResourceString("WB_BATCH_EDIT_ROLLING_BACK"));
         UsageTracker.incrUsageCount("BE.Cancel." + updateTbl);
     }
 
     protected synchronized void endStageStatus(final String msgKey) {
-        desc.setText(getResourceString(msgKey));
+        //desc.setText(getResourceString(msgKey));
+        desc.setText("");
+        moreTimeBtn.setVisible(false);
         addStatusMsg(UIRegistry.getResourceString(msgKey));
         copyToClipBrdBtn.setVisible(true);
         progress.setVisible(false);
@@ -256,7 +260,9 @@ public class BatchEditProgressDialog extends JDialog {
         progress.setIndeterminate(true);
         cancelBtn.setEnabled(false);
         commitBtn.setEnabled(false);
-        desc.setText(UIRegistry.getResourceString("WB_BATCH_EDIT_COMMITTING"));
+        //desc.setText(UIRegistry.getResourceString("WB_BATCH_EDIT_COMMITTING"));
+        desc.setText("");
+        moreTimeBtn.setVisible(false);
         addStatusMsg(UIRegistry.getResourceString("WB_BATCH_EDIT_COMMITTING"));
         UsageTracker.incrUsageCount("BE.Commit." + updateTbl);
     }
@@ -376,4 +382,16 @@ public class BatchEditProgressDialog extends JDialog {
     public JProgressBar getProgress() {
         return progress;
     }
+
+    @Override
+    public void setVisible(final boolean visible) {
+        if (visible) {
+            UIRegistry.pushWindow(this);
+            UIHelper.centerWindow(this);
+        } else {
+            UIRegistry.popWindow(this);
+        }
+        super.setVisible(visible);
+    }
+
 }
