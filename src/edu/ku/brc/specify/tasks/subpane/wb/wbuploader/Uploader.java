@@ -336,7 +336,7 @@ public class Uploader implements ActionListener, KeyListener
             } else if (rootTableId == Locality.getClassTableId()) {
                 String sql = "select count(*) from locality l inner join collectingevent ce on "
                         + "ce.localityid = l.localityid inner join collectionobject co on "
-                        + "co.collectingeventid = ce.collectingeventid inner join workbenchrow wbr on wbr.recordid = ce.collectingeventid"
+                        + "co.collectingeventid = ce.collectingeventid inner join workbenchrow wbr on wbr.recordid = l.localityid"
                         + " where wbr.workbenchid = " + theWb.getWorkbenchId() + " and ("
                         + idStr + ")";
                 result.add(new Pair<>(CollectionObject.getClassTableId(), sql));
