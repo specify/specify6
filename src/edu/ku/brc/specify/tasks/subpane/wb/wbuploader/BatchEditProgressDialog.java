@@ -174,9 +174,9 @@ public class BatchEditProgressDialog extends JDialog {
 
     protected String getAffectedRecsSummaryMsg() {
         java.util.List<Pair<Integer,Object>> sqls = uploader.getUpdateUploadAffectedRecsSql();
-        String result = sqls.get(0).getSecond() + " " + DBTableIdMgr.getInstance().getTitleForId(sqls.get(0).getFirst()) + " records were updated.";
+        String result = sqls.get(0).getSecond() + " " + DBTableIdMgr.getInstance().getTitleForId(sqls.get(0).getFirst()) + "s were updated.";
         if (sqls.size() > 1) {
-            result += " " + BasicSQLUtils.getCount((String)sqls.get(1).getSecond()) + " " + DBTableIdMgr.getInstance().getTitleForId(sqls.get(1).getFirst()) + " records were affected.";
+            result += " " + BasicSQLUtils.getCount((String)sqls.get(1).getSecond()) + " " + DBTableIdMgr.getInstance().getTitleForId(sqls.get(1).getFirst()) + "s were affected.";
         }
         return result;
     }

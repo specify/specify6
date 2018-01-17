@@ -301,26 +301,43 @@ public class Uploader implements ActionListener, KeyListener
     	
     }
 
+    public Set<Integer> getUploadedRows() {
+        Set<Integer> result = new HashSet<>();
+        Integer allOfEm = getWb().getWorkbenchRows().size();
+        for (UploadTable t : uploadTables) {
+            for (UploadedRecordInfo u : t.getAllUploadedRecords()) {
+                result.add(u.getWbRow());
+            }
+            if (result.size() == allOfEm) {
+                break;
+            }
+        }
+        return result;
+    }
+
     public List<Pair<Integer,Object>>  getUpdateUploadAffectedRecsSql() {
         List<Pair<Integer, Object>> result = new ArrayList<>();
         UploadTable root = getRootTable();
-        List<UploadedRecordInfo> uploaded = root.getAllUploadedRecords();
+        //List<UploadedRecordInfo> uploaded = root.getAllUploadedRecords();
+        Set<Integer> uploaded = getUploadedRows();
         int rootTableId = root.getTable().getTableInfo().getTableId();
+        //result.add(new Pair<>(rootTableId, uploaded.size()));
         result.add(new Pair<>(rootTableId, uploaded.size()));
         if (rootTableId != CollectionObject.getClassTableId() && rootTableId != Preparation.getClassTableId()
                 && rootTableId != Agent.getClassTableId()) {
-            StringBuilder idStr = new StringBuilder("wbr.recordId in(");
+            StringBuilder idStr = new StringBuilder("wbr.rownumber in(");
             boolean comma = false;
             int r = 0;
-            while (r < uploaded.size()) {
+            for (Integer rowNumber : uploaded) {
                 if (comma) {
                     idStr.append(",");
                 } else {
                     comma = true;
                 }
-                idStr.append(uploaded.get(r++).getKey());
+                idStr.append(rowNumber);
+                r++;
                 if (r % 1000 == 0) {
-                    idStr.append(") or wbr.recordid in(");
+                    idStr.append(") or wbr.rownumber in(");
                     comma = false;
                 }
             }
