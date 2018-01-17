@@ -5847,7 +5847,19 @@ public class UploadTable implements Comparable<UploadTable>
 
     protected boolean hasRecordBeenUpdated(final DataModelObjBase rec) {
         Timestamp recStamp = rec.getTimestampModified() == null ? rec.getTimestampCreated() : rec.getTimestampModified();
-        return recStamp.after(uploader.getWb().getTimestampCreated());
+        boolean result = recStamp.after(uploader.getWb().getTimestampCreated());
+        if (result) {
+            result = !uploadedRecs.getThird().contains(rec.getId());
+            if (result) {
+                for (UploadedRecordInfo ri : uploadedRecs.getFirst()) {
+                    if (ri.getKey() == rec.getId()) {
+                        result = false;
+                        break;
+                    }
+                }
+            }
+        }
+        return result;
     }
 
     protected boolean checkForUpdate(final DataModelObjBase rec) {
