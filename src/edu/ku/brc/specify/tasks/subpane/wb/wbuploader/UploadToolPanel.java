@@ -495,7 +495,7 @@ public class UploadToolPanel extends JPanel implements TimingTarget
     /**
      * 
      */
-    public void contract()
+    public void contract(int duration)
     {
         if (mode == CONTRACTED || shrinking || expanding)
         {
@@ -504,7 +504,7 @@ public class UploadToolPanel extends JPanel implements TimingTarget
         
         shrinking = true;
         // start animation to shrink the panel
-        Animator expander = new Animator(300,this);
+        Animator expander = new Animator(duration,this);
         expander.start();
     }
 

@@ -1227,9 +1227,12 @@ public class WorkbenchPaneSS extends BaseSubPane
     
     protected void hideUploadToolPanel()
     {
-    	uploadToolPanel.contract();
+    	uploadToolPanel.contract(300);
     }
-    
+
+    protected void hideUploadToolPanelSansAnimation() {
+        uploadToolPanel.contract(1);
+    }
     /**
 	 * @return the doIncrementalValidation
 	 */
@@ -4460,14 +4463,13 @@ public class WorkbenchPaneSS extends BaseSubPane
 			//uploadPane.setOneTouchExpandable(true);
 
 			// Provide minimum sizes for the two components in the split pane
-			Dimension minimumSize = new Dimension(200, 200);
+			Dimension minimumSize = isUpdateDataSet() ? new Dimension(0, 0) : new Dimension(200, 200);
 			datasetUploader.getMainPanel().setMinimumSize(minimumSize);
 			spreadSheetPane.setMinimumSize(minimumSize);
 			mainPanel.add(uploadPane, PanelType.Spreadsheet.toString());
 			showPanel(PanelType.Spreadsheet);
 			mainPanel.validate();
 			mainPanel.doLayout();
-            uploadPane.setDividerLocation(.96);
 			ssFormSwitcher.setEnabled(false);
 			// next line causes some weird behavior: when an entire row is
 			// selected
@@ -4475,9 +4477,14 @@ public class WorkbenchPaneSS extends BaseSubPane
 			// ?????
 			spreadSheet.setEnabled(false);
 			setToolBarBtnsEnabled(false);
-            if (uploadToolPanel.isExpanded())
+			boolean hidToolPanel = uploadToolPanel.isExpanded();
+            if (hidToolPanel)
             {
-            	hideUploadToolPanel();
+            	if (isUpdateDataSet()) {
+            	    hideUploadToolPanelSansAnimation();
+                } else {
+                    hideUploadToolPanel();
+                }
             	showHideUploadToolBtn.setToolTipText(getResourceString("WB_SHOW_UPLOADTOOLPANEL"));
             	restoreUploadToolPanel = true;
             }			
@@ -4485,6 +4492,14 @@ public class WorkbenchPaneSS extends BaseSubPane
 			{
 				imageFrame.setVisible(false);
 			}
+            if (isUpdateDataSet()) {
+                if (hidToolPanel) {
+                    Thread.sleep(100); //wait for hide to finish
+                }
+                uploadPane.setDividerLocation(1.0);
+            } else {
+                uploadPane.setDividerLocation(.67);
+            }
 			datasetUploader.startUI();
 			if (doIncrementalValidation && invalidCellCount.get() == 0)
 			{
