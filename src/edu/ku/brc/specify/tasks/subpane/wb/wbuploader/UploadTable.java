@@ -5633,14 +5633,13 @@ public class UploadTable implements Comparable<UploadTable>
         if (!isBlankRow) {
             return true;
         }
-        if (!hasChildren) {
-            return false;
-        }
-
         if (getCurrentRecord(seq) == null) {
             return needToCreateRecordIfParentChanged(seq);
         }
         if (getCurrentRecord(seq) != null) {
+            return !tblAndAncestorsUnchanged;
+        }
+        if (!hasChildren) {
             return false;
         }
         return true; //wtf??
@@ -5660,6 +5659,25 @@ public class UploadTable implements Comparable<UploadTable>
         }
     }
 
+    protected boolean probablyNeedToWrite(int recNum, boolean tblAndAncestorsUnchanged) throws UploaderException {
+        if (updateMatches) {
+            return needToWrite(recNum) || !tblAndAncestorsUnchanged;
+        } else {
+            return needToWrite(recNum);
+        }
+    }
+
+    protected boolean findMatch(boolean doSkipMatch, boolean tblAndAncestorsUnchanged, int recNum)
+            throws UploaderException,
+            InvocationTargetException, IllegalAccessException, ParseException,
+            NoSuchMethodException, InstantiationException, SQLException   {
+        if (updateMatches) {
+            //huh??
+            return doSkipMatch || (!tblAndAncestorsUnchanged && !findMatch(recNum, false, null, null) || updateMatches);
+        } else {
+            return doSkipMatch || !findMatch(recNum, false, null, null);
+        }
+    }
     /**
      * Searches for matching record in database. If match is found it is set to be the current
      * record. If no match then a record is initialized and populated and written to the database.
@@ -5689,8 +5707,8 @@ public class UploadTable implements Comparable<UploadTable>
                     if (updateMatches) {
                         updateExportedRecInfo(recNum);
                     }
-                    if (needToWrite(recNum) || !tblAndAncestorsUnchanged) {
-                        if (doSkipMatch || (!tblAndAncestorsUnchanged && !findMatch(recNum, false, null, null) || updateMatches)) {
+                    if (probablyNeedToWrite(recNum, tblAndAncestorsUnchanged)) {
+                        if (findMatch(doSkipMatch, tblAndAncestorsUnchanged, recNum)) {
                             if (isSecurityOn && !getWriteTable().getTableInfo().getPermissions().canAdd()) {
                                 throw new UploaderException(String.format(UIRegistry.getResourceString("WB_UPLOAD_NO_ADD_PERMISSION"), getWriteTable().getTableInfo().getTitle()),
                                         UploaderException.ABORT_ROW);
@@ -5733,7 +5751,7 @@ public class UploadTable implements Comparable<UploadTable>
                                         rec.setModifiedByAgent(Agent.getUserAgent());
                                     }
                                     isUpdate |= finalizeWrite(rec, recNum);
-                                    if (!(doNotWrite || (updateMatches && !isUpdate && !isNewRecord))) {
+                                    if (!(doNotWrite || (updateMatches && !isUpdate && !isNewRecord && matchCountForCurrentRow[recNum] != 1))) {
                                         if (!gotRequiredParents && hasChildren) {
                                             throw new UploaderException(UIRegistry.getResourceString("UPLOADER_MISSING_REQUIRED_DATA"), UploaderException.ABORT_ROW);
                                         }

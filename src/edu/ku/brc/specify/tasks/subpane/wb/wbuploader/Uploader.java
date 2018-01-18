@@ -5470,7 +5470,7 @@ public class Uploader implements ActionListener, KeyListener
         boolean uploadedIt = false;
         if (updateTblId == null || tblsWithChanges.size() > 0) {
         	loadRow(t, row);
-        	boolean tblAndAncestorsUnchanged = false;
+        	boolean tblAndAncestorsUnchanged = updateTblId == null;
             if (tblsWithChanges.size() > 0) {
                 if (tblsWithChanges.indexOf(t) == -1) {
                     tblAndAncestorsUnchanged = true;
