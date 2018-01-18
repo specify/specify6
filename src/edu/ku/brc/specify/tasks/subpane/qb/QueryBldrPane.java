@@ -5317,8 +5317,11 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         	}
         	SubPaneMgr.getInstance().removePane(qbResultPane);
         }
-    	((QueryTask)(ContextMgr.getTaskByClass(QueryTask.class))).qBldrPaneShutDown();
-        
+        ((QueryTask)(ContextMgr.getTaskByClass(QueryTask.class))).qBldrPaneShutDown();
+        BatchEditTask bet = (BatchEditTask)(ContextMgr.getTaskByClass(BatchEditTask.class));
+        if (bet != null) {
+            bet.qBldrPaneShutDown();
+        }
         query = null;
         if (queryNavBtn != null)
         {
