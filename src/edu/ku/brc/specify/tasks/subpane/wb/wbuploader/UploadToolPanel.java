@@ -465,11 +465,12 @@ public class UploadToolPanel extends JPanel implements TimingTarget
         prefSize.height = (int)(super.getPreferredSize().height * sizeFrac);
         
         Component c = getParent().getParent();
-        c.invalidate();
-        c.doLayout();
-        c.validate();
-        c.repaint();
-        
+        if (c != null) {
+            c.invalidate();
+            c.doLayout();
+            c.validate();
+            c.repaint();
+        }
         this.invalidate();
         this.repaint();
         this.validate();
