@@ -4393,7 +4393,7 @@ public class Uploader implements ActionListener, KeyListener
                     if (!isUpdate) {
                         return null;
                     } else {
-                        BatchEditProgressDialog result = new BatchEditProgressDialog(getResourceString("WB_BATCH_EDIT_FORM_TITLE"),
+                        final BatchEditProgressDialog result = new BatchEditProgressDialog(getResourceString("WB_BATCH_EDIT_FORM_TITLE"),
                                 getResourceString("WB_BATCH_EDIT_IN_PROCESS"), Uploader.this,
                                 DBTableIdMgr.getInstance().getInfoById(updateTblId).getName(), Uploader.this);
                         //result.setResizable(false);
@@ -4403,7 +4403,7 @@ public class Uploader implements ActionListener, KeyListener
                         SwingUtilities.invokeLater(new Runnable() {
                             @Override
                             public void run() {
-                                UIHelper.centerAndShow(result);
+                                result.setVisible(true);
                             }
                         });
                         return result;
