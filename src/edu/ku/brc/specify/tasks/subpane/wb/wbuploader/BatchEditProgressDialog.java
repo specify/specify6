@@ -31,6 +31,7 @@ public class BatchEditProgressDialog extends JDialog {
     protected static int MAX_TIME = 600;
 
     protected JProgressBar progress;
+    protected JPanel descPanel;
     protected JLabel       desc;
     protected JButton      cancelBtn;
     protected JButton      commitBtn;
@@ -71,7 +72,7 @@ public class BatchEditProgressDialog extends JDialog {
         CellConstraints cc = new CellConstraints();
 
         int y = 3;
-        JPanel descPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        descPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         desc = createLabel(descText);
         desc.setHorizontalAlignment(SwingConstants.CENTER);
         descPanel.add(desc);
@@ -197,7 +198,7 @@ public class BatchEditProgressDialog extends JDialog {
         addMsg(new BaseUploadMessage(msg));
     }
 
-    public synchronized void addMsg(UploadMessage msg) {
+    public void addMsg(UploadMessage msg) {
         if (msg instanceof Uploader.SkippedRow || msg instanceof UploadTable.EditedRecNotUpdatedMsg) {
             skips.set(true);
         }
@@ -221,15 +222,12 @@ public class BatchEditProgressDialog extends JDialog {
         progress.setIndeterminate(true);
         cancelBtn.setEnabled(false);
         commitBtn.setEnabled(false);
-        //desc.setText(UIRegistry.getResourceString("WB_BATCH_EDIT_ROLLING_BACK"));
-        desc.setText("");
-        moreTimeBtn.setVisible(false);
+        descPanel.setVisible(false);
         addStatusMsg(UIRegistry.getResourceString("WB_BATCH_EDIT_ROLLING_BACK"));
         UsageTracker.incrUsageCount("BE.Cancel." + updateTbl);
     }
 
-    protected synchronized void endStageStatus(final String msgKey) {
-        //desc.setText(getResourceString(msgKey));
+    protected void endStageStatus(final String msgKey) {
         desc.setText("");
         moreTimeBtn.setVisible(false);
         addStatusMsg(UIRegistry.getResourceString(msgKey));
@@ -242,17 +240,17 @@ public class BatchEditProgressDialog extends JDialog {
         OkBtn.setVisible(true);
 
     }
-    protected synchronized void commitSuccess() {
+    protected void commitSuccess() {
         committed.set(true);
         endStageStatus("WB_BATCH_EDIT_COMMITTED");
     }
 
-    protected synchronized  void commitFail() {
+    protected void commitFail() {
         failedToCommit.set(true);
         endStageStatus("WB_BATCH_EDIT_COMMIT_FAILURE");
     }
 
-    protected synchronized void cancelCompleted(boolean wasTimeout) {
+    protected void cancelCompleted(boolean wasTimeout) {
         cancelled.set(true);
         endStageStatus(wasTimeout ? "WB_BATCH_EDIT_TIMED_OUT" : "WB_BATCH_EDIT_CANCELLED");
     }
@@ -268,13 +266,11 @@ public class BatchEditProgressDialog extends JDialog {
      */
     protected void commitPressed() {
         commitPressed.set(true);
-        progress.setStringPainted(false);
-        progress.setIndeterminate(true);
+        //progress.setStringPainted(false);
+        //progress.setIndeterminate(true);
         cancelBtn.setEnabled(false);
         commitBtn.setEnabled(false);
-        //desc.setText(UIRegistry.getResourceString("WB_BATCH_EDIT_COMMITTING"));
-        desc.setText("");
-        moreTimeBtn.setVisible(false);
+        descPanel.setVisible(false);
         addStatusMsg(UIRegistry.getResourceString("WB_BATCH_EDIT_COMMITTING"));
         UsageTracker.incrUsageCount("BE.Commit." + updateTbl);
     }
@@ -303,7 +299,7 @@ public class BatchEditProgressDialog extends JDialog {
     /**
      *
      */
-    public synchronized void batchEditDone() {
+    public void batchEditDone() {
         uploadDone.set(true);
         copyToClipBrdBtn.setVisible(true);
         moreTimeBtn.setVisible(true);
@@ -342,7 +338,7 @@ public class BatchEditProgressDialog extends JDialog {
     /**
      *
      */
-    public synchronized void finishingTouches() {
+    public void finishingTouches() {
         uploadDone.set(true);
         progress.setValue(0);
         desc.setText(String.format(UIRegistry.getResourceString("WB_BATCH_EDIT_DONE_FINISHING")));
@@ -354,14 +350,17 @@ public class BatchEditProgressDialog extends JDialog {
     /**
      *
      */
-    public synchronized void tick() {
+    public void tick() {
          /* if showing progress during countdown
         progress.setString(getCountDownMsg(ticks.getAndDecrement()));
         progress.setValue(countDown.get() - ticks.get());
         */
         /*else*/
-        desc.setText(getCountDownMsg(ticks.getAndDecrement()));
-
+        if (SwingUtilities.isEventDispatchThread()) {
+            desc.setText(getCountDownMsg(ticks.getAndDecrement()));
+        } else {
+            SwingUtilities.invokeLater(() -> desc.setText(getCountDownMsg(ticks.getAndDecrement())));
+        }
         totalTime.incrementAndGet();
     }
 

@@ -3193,8 +3193,8 @@ public class Uploader implements ActionListener, KeyListener
                     }
                 }
             }
+            dlg.addMsgs(newMessages);
         });
-        dlg.addMsgs(newMessages);
     }
     protected void showUploadProgress(final int val, final JProgressBar pb) {
         SwingUtilities.invokeLater(() -> {
@@ -4528,7 +4528,7 @@ public class Uploader implements ActionListener, KeyListener
                     try {
                         if (!crashed) {
                             if (progDlg != null) {
-                                progDlg.finishingTouches();
+                                SwingUtilities.invokeLater(() -> progDlg.finishingTouches());
                             }
                             if (isUpdate) {
                                 for (int t = uploadTables.size() - 1; t >= 0; t--) {
@@ -4547,7 +4547,13 @@ public class Uploader implements ActionListener, KeyListener
                 protected void finishTransaction(final BatchEditProgressDialog progDlg, boolean cancelled, boolean crashed) {
                     if (progDlg != null) {
                         if (!cancelled && !crashed) {
-                            progDlg.batchEditDone();
+                            try {
+                                SwingUtilities.invokeAndWait(() -> progDlg.batchEditDone());
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, ex);
+                            }
                             long tickTime = System.currentTimeMillis();
                             long waitTime = 0L;
                             while (progDlg.getTicks() > 0 && !progDlg.isCancelPressed() && !progDlg.isCommitPressed()) {
@@ -4572,8 +4578,7 @@ public class Uploader implements ActionListener, KeyListener
                                 theUploadBatchEditSession.close();
                                 theUploadBatchEditSession = null;
                                 wasCommitted = true;
-                                progDlg.commitSuccess();
-                                //SwingUtilities.invokeLater(() -> rollBackOrCommitBatchEdit(UploadMainPanel.COMMIT_AND_CLOSE_BATCH_UPDATE, true, true));
+                                SwingUtilities.invokeLater(() -> progDlg.commitSuccess());
                             } catch (Exception ex) {
                                 //Oh no.
                                 success = false;
@@ -4581,23 +4586,21 @@ public class Uploader implements ActionListener, KeyListener
                                 theUploadBatchEditSession.close();
                                 theUploadBatchEditSession = null;
                                 wasRolledBack = true;
-                                progDlg.commitFail();
-                                //SwingUtilities.invokeLater(() -> rollBackOrCommitBatchEdit(UploadMainPanel.CANCEL_AND_CLOSE_BATCH_UPDATE, true, true));
+                                SwingUtilities.invokeLater(() -> progDlg.commitFail());
                             }
                         } else {
                             boolean wasTimeout = false;
                             if (!progDlg.isCancelPressed()) {
-                                progDlg.cancelPressed();
+                                SwingUtilities.invokeLater(() -> progDlg.cancelPressed());
                                 wasTimeout = true;
                             }
                             theUploadBatchEditSession.rollback();
                             theUploadBatchEditSession.close();
                             theUploadBatchEditSession = null;
                             wasRolledBack = true;
-                            progDlg.cancelCompleted(wasTimeout);
-                            //SwingUtilities.invokeLater(() -> rollBackOrCommitBatchEdit(UploadMainPanel.CANCEL_AND_CLOSE_BATCH_UPDATE, true, !crashed));
+                            final boolean timedOut = wasTimeout;
+                            SwingUtilities.invokeLater(() -> progDlg.cancelCompleted(timedOut));
                         }
-                        //SwingUtilities.invokeLater(() -> progDlg.setVisible(false));
                     }
                 }
 
