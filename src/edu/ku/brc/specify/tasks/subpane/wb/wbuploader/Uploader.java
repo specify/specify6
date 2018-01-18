@@ -4436,6 +4436,9 @@ public class Uploader implements ActionListener, KeyListener
                     }
                     try {
                     	setupExportedTable();
+                    	if (UIHelper.isMacOS() && progDlg != null) {
+                    	    progDlg.restoreOriginalSize();
+                        }
                         if (theUploadBatchEditSession != null) {
                             theUploadBatchEditSession.beginTransaction();
                         }

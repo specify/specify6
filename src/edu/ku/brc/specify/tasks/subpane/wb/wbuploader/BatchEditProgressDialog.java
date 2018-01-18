@@ -29,6 +29,7 @@ public class BatchEditProgressDialog extends JDialog {
     protected static int DEFAULT_COUNTDOWN = 180;
     protected static int MORE_TIME = 90;
     protected static int MAX_TIME = 600;
+    protected static int DEFAULT_STARTWIDTH = 750;
 
     protected JProgressBar progress;
     protected JPanel descPanel;
@@ -56,6 +57,10 @@ public class BatchEditProgressDialog extends JDialog {
     protected AtomicBoolean failedToCommit = new AtomicBoolean(false);
     protected AtomicBoolean cancelled = new AtomicBoolean(false);
     protected AtomicBoolean skips = new AtomicBoolean(false);
+
+    protected int originalWidth;
+    protected int originalHeight;
+
     /**
      *
      * @param title
@@ -143,7 +148,9 @@ public class BatchEditProgressDialog extends JDialog {
         pack();
         Dimension size = getPreferredSize();
         int heightNudge = /*cancelBtn != null ? 40 : */200;
-        setSize(new Dimension(750, size.height + heightNudge));
+        originalWidth = DEFAULT_STARTWIDTH;
+        originalHeight = size.height + heightNudge;
+        setSize(new Dimension(originalWidth, originalHeight));
 
         setTitle(title);
 
@@ -183,6 +190,10 @@ public class BatchEditProgressDialog extends JDialog {
         } else {
             return singular;
         }
+    }
+
+    public void restoreOriginalSize() {
+        SwingUtilities.invokeLater(() -> setSize(originalWidth, originalHeight));
     }
 
     protected String getAffectedRecsSummaryMsg() {
