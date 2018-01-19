@@ -117,20 +117,28 @@ public class BatchEditTask extends QueryTask {
     public SubPaneIFace getStarterPane() {
         //StringBuilder htmlDesc = new StringBuilder("<body style=\"background-color:#fd5875\">");
         StringBuilder htmlDesc = new StringBuilder();
-        htmlDesc.append("<body>");
+        //htmlDesc.append("<style>ol{margin: 0;}</style>");
+        htmlDesc.append("<body font face=\"verdana\">");
         htmlDesc.append("<h3>Welcome to Batch Editing</h3>"); //I18N
-        htmlDesc.append("<h4>Before going any further please make a backup of your database.  Then follow these instructions to edit your data:</h4>");
-        htmlDesc.append("<ol>");
-        htmlDesc.append("<li> To use the Batch Editor you must first choose the records you wish to edit. "
-                + "Choose from the following options in the Side Bar:");
+        htmlDesc.append("<b>Warning:</b> Batch Editing is a powerful method for improving data quality--it can change potentially " +
+                "thousands of data records with just a few mouse clicks. Once edits are made and confirmed, chang" +
+                "es will be permanent and they cannot be rolled back. We strongly recommend that you have a fresh " +
+                "backup of your database, in case you need to restore your data.");
+        htmlDesc.append("<p>Follow these instructions to edit your data:</p>");
+        //htmlDesc.append("<ol>");
+        htmlDesc.append("<p>1. To use the Batch Editor you must first choose the records you wish to edit. "
+                + "Choose from the following options in the Side Bar:</p>");
         htmlDesc.append("<ul>");
         htmlDesc.append("<li>Create a new Query</li>");
         htmlDesc.append("<li>Open a saved Query</li>");
-        htmlDesc.append("<li>Drop a Record Set unto a saved Query</li>");
+        htmlDesc.append("<li>Drop a Record Set onto a saved Query</li>");
         htmlDesc.append("</ul>");
-        htmlDesc.append("<li>Click the <i>Search button</i> to view the data selected by the Query.</li>");
-        htmlDesc.append("<li>Click the <i>Batch Edit</i> button at the top-right of the Query Results panel to begin editing.</li>");
-        htmlDesc.append("</ol>");
+        htmlDesc.append("<p>2. In the Query Builder, specify parameters and then click the <i>Search button</i> to execute the query.</p>");
+        htmlDesc.append("<p>3. In Query Results, then click on the small Batch Editing (Pencils) icon in the upper right Query Re" +
+                "sults title bar to begin your editing session. If you want to Batch Edit a subset of the Query Results, " +
+                "first highlight those records, then click in the small Batch Editing icon at the top of the Query Results " +
+                "screen.</p>");
+        //htmlDesc.append("</ol>");
         htmlDesc.append("</body>");
         starterPane = new HtmlDescPane(name, this, htmlDesc.toString());
         //((HtmlDescPane)starterPane).setBackground(new Color(0xfd5875));
