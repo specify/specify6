@@ -1138,6 +1138,18 @@ public class WorkbenchPaneSS extends BaseSubPane
         if (ContextMgr.getTaskByClass(SGRTask.class) != null) {
         	((SGRTask) ContextMgr.getTaskByClass(SGRTask.class)).opening(this);
         }
+        if (workbenchValidator == null && (isDoIncrementalValidation() || isDoIncrementalMatching())) {
+            if (uploadToolPanel != null) {
+                uploadToolPanel.turnOffSelections();
+            }
+            if (isDoIncrementalValidation()) {
+                turnOffIncrementalValidation();
+            }
+            if (isDoIncrementalMatching()) {
+                turnOffIncrementalMatching();
+            }
+            model.fireDataChanged();
+        }
     }
 
     @Override
@@ -4300,21 +4312,17 @@ public class WorkbenchPaneSS extends BaseSubPane
     		{
     			UIRegistry.showLocalizedError("WorkbenchPaneSS.UnableToAutoValidate");
     		}
-    		if (isDoIncrementalValidation() || isDoIncrementalMatching()) //but how could this be true???
-    		//oh yeah. If they were on when the workbench was last closed, but the template has been changed since...
-    		{
-        		uploadToolPanel.turnOffSelections();
-        		if (isDoIncrementalValidation()) 
-        		{
-        			turnOffIncrementalValidation();
-        		}
-        		if (isDoIncrementalMatching()) 
-        		{
-        			turnOffIncrementalMatching();
-        		}
-    			model.fireDataChanged();    			
-    		}
 			workbenchValidator = null;
+            if (uploadToolPanel != null && (isDoIncrementalValidation() || isDoIncrementalMatching())) {
+                uploadToolPanel.turnOffSelections();
+                if (isDoIncrementalValidation()) {
+                    turnOffIncrementalValidation();
+                }
+                if (isDoIncrementalMatching()) {
+                    turnOffIncrementalMatching();
+                }
+                model.fireDataChanged();
+            }
     	}
     }
     
