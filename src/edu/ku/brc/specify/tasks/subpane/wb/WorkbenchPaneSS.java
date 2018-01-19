@@ -4744,8 +4744,8 @@ public class WorkbenchPaneSS extends BaseSubPane
      */
     protected void updateCellStatuses(final List<CellStatusInfo> stats, final WorkbenchRow wbRow) {
     	Hashtable<Short, Short> exceptionalItems = new Hashtable<>();
+        Map<WorkbenchDataItem, List<CellStatusInfo>> statMap = new HashMap<>();
 		if (stats != null && stats.size() > 0) {
-			Map<WorkbenchDataItem, List<CellStatusInfo>> statMap = new HashMap<>();
             for (CellStatusInfo issue : stats) {
                 for (Integer col : issue.getColumns()) {
                     if (col >= 0) {
@@ -4765,51 +4765,51 @@ public class WorkbenchPaneSS extends BaseSubPane
                     }
                 }
             }
-            for (WorkbenchDataItem wbItem : wbRow.getWorkbenchDataItems()) {
-                    int statusCode = WorkbenchDataItem.VAL_OK;
-                    String statusText = "";
-                    if (statMap.get(wbItem) != null) {
-                        for (CellStatusInfo info : statMap.get(wbItem)) {
-                            statusCode = statusCode | info.getStatus();
-                            if (!"".equals(statusText)) {
-                                statusText += "\n; ";
-                            }
-                            statusText += info.getStatusText();
+        }
+        for (WorkbenchDataItem wbItem : wbRow.getWorkbenchDataItems()) {
+                int statusCode = WorkbenchDataItem.VAL_OK;
+                String statusText = "";
+                if (statMap.get(wbItem) != null) {
+                    for (CellStatusInfo info : statMap.get(wbItem)) {
+                        statusCode = statusCode | info.getStatus();
+                        if (!"".equals(statusText)) {
+                            statusText += "\n; ";
                         }
+                        statusText += info.getStatusText();
                     }
-                    int originalStatusCode = wbItem.getEditorValidationStatus();
-                    boolean itemChanged = false;
-                    synchronized (wbItem) {
-                        if (wbItem.getEditorValidationStatus() != statusCode) {
-                            itemChanged = true;
-                            wbItem.setEditorValidationStatus(statusCode);
-                            wbItem.setStatusText("".equals(statusText) ? null : statusText);
-                        }
+                }
+                int originalStatusCode = wbItem.getEditorValidationStatus();
+                boolean itemChanged = false;
+                synchronized (wbItem) {
+                    if (wbItem.getEditorValidationStatus() != statusCode) {
+                        itemChanged = true;
+                        wbItem.setEditorValidationStatus(statusCode);
+                        wbItem.setStatusText("".equals(statusText) ? null : statusText);
                     }
-                    if (itemChanged) {
-                        if ((statusCode & WorkbenchDataItem.VAL_ERROR) != 0 && (originalStatusCode & WorkbenchDataItem.VAL_ERROR) == 0) {
-                            invalidCellCount.getAndIncrement();
-                        } else if ((statusCode & WorkbenchDataItem.VAL_ERROR) == 0 &&(originalStatusCode & WorkbenchDataItem.VAL_ERROR) != 0) {
-                            invalidCellCount.getAndDecrement();
-                        }
-                        if (((statusCode & WorkbenchDataItem.VAL_MULTIPLE_MATCH) != 0
-                                || (statusCode & WorkbenchDataItem.VAL_NEW_DATA) != 0)
-                                && (originalStatusCode & WorkbenchDataItem.VAL_MULTIPLE_MATCH) == 0
-                                && (originalStatusCode & WorkbenchDataItem.VAL_NEW_DATA) == 0) {
-                            unmatchedCellCount.getAndIncrement();
-                        } else if ((statusCode & WorkbenchDataItem.VAL_MULTIPLE_MATCH) == 0 && (statusCode & WorkbenchDataItem.VAL_NEW_DATA) == 0
-                            && ((originalStatusCode & WorkbenchDataItem.VAL_MULTIPLE_MATCH) != 0
-                                || (originalStatusCode & WorkbenchDataItem.VAL_NEW_DATA) != 0)) {
-                            unmatchedCellCount.getAndDecrement();
-                        }
-                        if ((statusCode & WorkbenchDataItem.VAL_EDIT) != 0 && (originalStatusCode & WorkbenchDataItem.VAL_EDIT) == 0) {
-                            editedCellCount.getAndIncrement();
-                        } else if ((statusCode & WorkbenchDataItem.VAL_EDIT) == 0 && (originalStatusCode & WorkbenchDataItem.VAL_EDIT) != 0) {
-                            decrementEditedCellCount();
-                        }
+                }
+                if (itemChanged) {
+                    if ((statusCode & WorkbenchDataItem.VAL_ERROR) != 0 && (originalStatusCode & WorkbenchDataItem.VAL_ERROR) == 0) {
+                        invalidCellCount.getAndIncrement();
+                    } else if ((statusCode & WorkbenchDataItem.VAL_ERROR) == 0 &&(originalStatusCode & WorkbenchDataItem.VAL_ERROR) != 0) {
+                        invalidCellCount.getAndDecrement();
                     }
-            }
-		}
+                    if (((statusCode & WorkbenchDataItem.VAL_MULTIPLE_MATCH) != 0
+                            || (statusCode & WorkbenchDataItem.VAL_NEW_DATA) != 0)
+                            && (originalStatusCode & WorkbenchDataItem.VAL_MULTIPLE_MATCH) == 0
+                            && (originalStatusCode & WorkbenchDataItem.VAL_NEW_DATA) == 0) {
+                        unmatchedCellCount.getAndIncrement();
+                    } else if ((statusCode & WorkbenchDataItem.VAL_MULTIPLE_MATCH) == 0 && (statusCode & WorkbenchDataItem.VAL_NEW_DATA) == 0
+                        && ((originalStatusCode & WorkbenchDataItem.VAL_MULTIPLE_MATCH) != 0
+                            || (originalStatusCode & WorkbenchDataItem.VAL_NEW_DATA) != 0)) {
+                        unmatchedCellCount.getAndDecrement();
+                    }
+                    if ((statusCode & WorkbenchDataItem.VAL_EDIT) != 0 && (originalStatusCode & WorkbenchDataItem.VAL_EDIT) == 0) {
+                        editedCellCount.getAndIncrement();
+                    } else if ((statusCode & WorkbenchDataItem.VAL_EDIT) == 0 && (originalStatusCode & WorkbenchDataItem.VAL_EDIT) != 0) {
+                        decrementEditedCellCount();
+                    }
+                }
+        }
     }
     
     /**
