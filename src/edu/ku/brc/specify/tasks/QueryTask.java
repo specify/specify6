@@ -1514,6 +1514,9 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
                         int queryId = ((RecordSet) roc.getData()).getOnlyItem().getRecordId();
                         queryBldrPane.runQ4RS(queryId, recordSet);
                     }
+                } else {
+                    UIRegistry.showLocalizedError("NO_QUERIES_AVAILABLE_FOR_RS_VIEW",
+                            DBTableIdMgr.getInstance().getTitleForId(recordSet.getDbTableId()));
                 }
             } else {
                 UIRegistry.showLocalizedError("RS_HAS_NO_ITEMS", recordSet.getName());
