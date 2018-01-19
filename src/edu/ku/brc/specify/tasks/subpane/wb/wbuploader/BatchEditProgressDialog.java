@@ -115,7 +115,7 @@ public class BatchEditProgressDialog extends JDialog {
 
         msgPane = new JPanel(new FormLayout("fill:m:grow", "p, fill:m:grow"));
 
-        msgLbl  = createLabel(getResourceString("WB_UPLOAD_MSG_LIST"));
+        msgLbl  = createLabel(getResourceString("WB_BATCH_EDIT_MSG_LIST"));
 
         msgList = new JList(new DefaultListModel()) {
             @Override
@@ -313,7 +313,7 @@ public class BatchEditProgressDialog extends JDialog {
     public void batchEditDone() {
         uploadDone.set(true);
         copyToClipBrdBtn.setVisible(true);
-        moreTimeBtn.setVisible(true);
+        //moreTimeBtn.setVisible(true);
         commitBtn.setVisible(true);
         if (countDown.get() == -1) {
             countDown.set(AppPreferences.getLocalPrefs().getInt("BatchEditCountDownBeforeRollback", DEFAULT_COUNTDOWN));
@@ -322,7 +322,7 @@ public class BatchEditProgressDialog extends JDialog {
 
         addStatusMsg(getResourceString(warningsPresent() ? "WB_BATCH_EDIT_PARTIAL_APPLIED_MSG" : "WB_BATCH_EDIT_ALL_APPLIED_MSG"));
         addStatusMsg(getAffectedRecsSummaryMsg());
-        addStatusMsg(String.format(getResourceString("WB_BATCH_EDIT_DONE_COMMIT_ROLLBACK_MSG"), getResourceString("SAVE")));
+        addStatusMsg(getResourceString("WB_BATCH_EDIT_DONE_COMMIT_ROLLBACK_MSG"));
         if (progress.isIndeterminate()) {
             progress.setIndeterminate(false);
         }
