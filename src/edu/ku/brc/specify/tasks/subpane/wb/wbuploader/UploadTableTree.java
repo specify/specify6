@@ -1096,7 +1096,7 @@ protected List<java.lang.reflect.Field> getFldsForJSON() {
 	@Override
     protected void finishDepth(final DataModelObjBase rec, int seq) throws UploaderException {
         super.finishDepth(rec, seq);
-        if (seq > 0) {
+        if (isUpdateMatches() && seq > 0) {
             throw new UploaderException("FinishDepth does not support seq > 0", UploaderException.ABORT_IMPORT);
         }
         depthRecords.add(rec);
