@@ -440,6 +440,12 @@ public class WorkbenchPaneSS extends BaseSubPane
                 final boolean uploadAfterSave = isForBatchEdit;
             	public void actionPerformed(ActionEvent ae) {
                     UsageTracker.incrUsageCount("WB.SaveDataSet");
+                    if (isForBatchEdit) {
+                        if (invalidCellCount.get() > 0) {
+                            UIRegistry.showLocalizedMsg(getResourceString("WB_BATCH_EDIT_CORRECT_INVALID_CELLS"));
+                            return;
+                        }
+                    }
                     String msg = isForBatchEdit ? getResourceString("WB_BATCH_EDIT_PREP")
                             : String.format(getResourceString("WB_SAVING"), new Object[] { workbench.getName() });
                     UIRegistry.writeSimpleGlassPaneMsg(msg, WorkbenchTask.GLASSPANE_FONT_SIZE);
