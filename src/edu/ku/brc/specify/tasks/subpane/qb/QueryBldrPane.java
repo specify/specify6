@@ -3348,65 +3348,43 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      * @param saveAs
      * @return
      */
-    protected boolean saveQuery(final boolean saveAs)
-    {
+    protected boolean saveQuery(final boolean saveAs) {
      	boolean result = false;
-     	if (!canSave(true))
-     	{
+     	if (!canSave(true)) {
      		setSaveBtnEnabled(false);
      		return false;
      	}
      	
-    	//if (!isExportMapping)
-		//{
-			if (!query.isNamed() || saveAs)
-			{
-				if (!getQueryNameFromUser(saveAs))
-				{
-					return false;
-				}
-			}
-		//} else
-		//{
-		//	if (!query.isNamed() || saveAs)
-		//	{
-		//		if (!getExportMappingQueryName())
-		//		{
-		//			return false;
-		//		}
-		//	}		
-		//}
-    	
+        if (!query.isNamed() || saveAs) {
+            if (!getQueryNameFromUser(saveAs)) {
+                return false;
+            }
+        }
+
         UsageTracker.incrUsageCount("QB.SaveQuery." + query.getContextName());
         
         //This is necessary to indicate that a query has been changed when only field deletes have occurred.
         //If the query's timestampModified is not modified the schema export tool doesn't know the 
         //export schema needs to be rebuilt.
-        if (!saveAs && query.getId() != null)
-        {
+        if (!saveAs && query.getId() != null) {
         	int origCount = BasicSQLUtils.getCountAsInt("select count(*) from spqueryfield where spqueryid=" + query.getId());
-        	if (origCount > query.getFields().size())
-        	{
+        	if (origCount > query.getFields().size()) {
         		query.setTimestampModified(new Timestamp(System.currentTimeMillis()));
         	}
         }
         
         TableQRI tableQRI = (TableQRI) tableList.getSelectedValue();
-        if (tableQRI != null)
-        {
+        if (tableQRI != null) {
             short position = 0;
             
             Set<Integer> queryFldsWithoutPanels = new HashSet<Integer>();
-            for (SpQueryField qf : query.getFields())
-            {
+            for (SpQueryField qf : query.getFields()) {
             	//System.out.println(qf.getFieldName());
             	queryFldsWithoutPanels.add(qf.getId());
             }
             
-            for (QueryFieldPanel qfp : queryFieldItems)
-            {
-                if (qfp.getQueryField() != null)
-                {
+            for (QueryFieldPanel qfp : queryFieldItems) {
+                if (qfp.getQueryField() != null) {
                 	SpQueryField qf = qfp.getQueryField();
                 	queryFldsWithoutPanels.remove(qf.getId());
                 	qf.setPosition(position);
@@ -3416,91 +3394,71 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 }
             }
 
-            if (!checkCriteriaLengths(query))
-            {    	
+            if (!checkCriteriaLengths(query)) {
             	return false;
             }
 
             //Remove query fields for which panels could be created in order to prevent
             //repeat of missing fld message in getQueryFieldPanels() whenever this query is loaded.
-            for (Integer qfId : queryFldsWithoutPanels)
-            {
+            for (Integer qfId : queryFldsWithoutPanels) {
             	//this is real lame but should hardly ever need to be executed
-            	for (SpQueryField qf : query.getFields())
-            	{
-                    if (qfId != null && qf != null && qf.getId() != null && qfId.equals(qf.getId()))
-            		{
+            	for (SpQueryField qf : query.getFields()) {
+                    if (qfId != null && qf != null && qf.getId() != null && qfId.equals(qf.getId())) {
             			query.getFields().remove(qf);
             			break;
             		}
             	}
             }
 
-            if (query.getSpQueryId() == null || saveAs)
-            {
-                if (query.getSpQueryId() != null && saveAs)
-                {
+            if (query.getSpQueryId() == null || saveAs) {
+                if (query.getSpQueryId() != null && saveAs) {
                     query = cloneTheQuery();
-                    if (schemaMapping != null)
-                    {
+                    if (schemaMapping != null) {
                     	schemaMapping = cloneTheSchemaMapping(query);
                     }
                     //queryNavBtn.setEnabled(true);
                     queryNavBtn.setIsAccented(false);
                 }
                 
-                queryNavBtn = ((QueryTask) task).saveNewQuery(query, schemaMapping, false); 
+                queryNavBtn = ((QueryTask) task).saveNewQuery(query, schemaMapping, false);
+                QueryTask otherQueryTask =  (QueryTask)ContextMgr.getTaskByClass(task instanceof BatchEditTask ? QueryTask.class : BatchEditTask.class);
+                if (otherQueryTask != null) {
+                    WorkbenchTask wbTask = (WorkbenchTask)ContextMgr.getTaskByClass(WorkbenchTask.class);
+                    if (!(otherQueryTask instanceof BatchEditTask) || (wbTask != null && wbTask.getUpdateSchemaForTable(query.getContextTableId()) != null)) {
+                        otherQueryTask.addSavedQueryToSideBar(query, true);
+                    }
+                }
                 query.setNamed(true); //XXX this isn't getting persisted!!!!!!!!!
-//                if (query.getSpQueryId() != null && saveAs)
-//                {
-//                    try 
-//                    {
-//                    	this.setupUI();
-//                    } catch (QueryTask.QueryBuilderContextException e) {
-//                    	//It can't happen here. 
-//                    }
-//                }   
-                
+
                 SubPaneMgr.getInstance().renamePane(this, query.getName());
                 
                 return true;
             }
             
             
-            if (schemaMapping != null)
-            {
-            	//result =  DataModelObjBase.saveWithError(true, query, schemaMapping);
+            if (schemaMapping != null) {
             	result =  DataModelObjBase.saveWithError(true, schemaMapping, query);
-            }
-            else
-            {
+            } else {
             	result =  DataModelObjBase.saveWithError(true, query);
             }
-            if (result)
-            {
+            if (result) {
                 DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-            	try
-            	{
+            	try {
             		query = session.get(SpQuery.class, query.getId());
             		query.forceLoad(true);
             		schemaMapping = query.getMapping();
-            		if (schemaMapping != null)
-            		{
+            		if (schemaMapping != null) {
             			schemaMapping.forceLoad();
             		}
-            	}
-            	finally
-            	{
+            	} finally {
             		session.close();
             	}
             }
             return result;
         }
         //else
-        {
-            log.error("No Context selected!");
-            return false;
-        }
+        log.error("No Context selected!");
+        return false;
     }
 
     /**

@@ -1280,16 +1280,26 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
 
         persistQuery(query, schemaMapping);
 
+
+        RolloverCommand roc = addSavedQueryToSideBar(query, enabled);
+
+        String msg = String.format(getResourceString("WB_SAVED"), new Object[] { query.getName()} );
+        UIRegistry.getStatusBar().setText(msg);
+
+        return roc;
+    }
+
+    public RolloverCommand addSavedQueryToSideBar(final SpQuery query, final boolean enabled) {
         RecordSet rs = new RecordSet();
         rs.initialize();
         rs.set(query.getName(), SpQuery.getClassTableId(), RecordSet.GLOBAL);
         rs.addItem(query.getSpQueryId());
-        
+
         RolloverCommand roc = (RolloverCommand)addToNavBox(rs, query.getContextTableId());
         //roc.setEnabled(enabled);
         roc.setEnabled(true);
         roc.setIsAccented(!enabled);
-        
+
         NavBoxMgr.getInstance().addBox(navBox);
 
         // XXX this is pathetic and needs to be generized
@@ -1301,14 +1311,9 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
         NavBoxMgr.getInstance().doLayout();
         NavBoxMgr.getInstance().repaint();
         UIRegistry.forceTopFrameRepaint();
-        
-        
-        String msg = String.format(getResourceString("WB_SAVED"), new Object[] { query.getName()} );
-        UIRegistry.getStatusBar().setText(msg);
-
         return roc;
     }
-    
+
     /**
      * @param query
      * @param session
