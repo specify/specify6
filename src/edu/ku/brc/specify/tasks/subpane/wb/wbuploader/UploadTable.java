@@ -556,6 +556,9 @@ public class UploadTable implements Comparable<UploadTable>
         uploadedRecs.getSecond().clear();
         uploadedRecs.getThird().clear();
         matchSetting.clear();
+        if (updateMatches) {
+            matchSetting.setMode(UploadMatchSetting.PICK_FIRST_MODE);
+        }
         deletedRecs.clear();
         disUsedRecs.clear();
         recordStash.clear();
