@@ -383,7 +383,7 @@ public class ContextMgr implements CommandListener
      * @param tableId the table id of the list of services
      * @return Returns a list of services for a table id
      */
-    public static List<ServiceInfo> checkForServices(final int tableId)
+    public static List<ServiceInfo> checkForServices(final int tableId, final Object data)
     {
         List<ServiceInfo> serviceList = instance.servicesByTable.get(tableId);
         if (serviceList == null)
@@ -413,7 +413,7 @@ public class ContextMgr implements CommandListener
                     log.debug("Skipping Service: "+srvInfo.getName()+"  "+srvInfo.getTableId());
                     continue;
                 }
-                if (!srvInfo.isAvailable(tableId))
+                if (!srvInfo.isAvailable(tableId, data))
                 {
                 	continue;
                 }

@@ -45,7 +45,7 @@ public class ReportServiceInfo extends ServiceInfo
 	 * @see edu.ku.brc.af.core.ServiceInfo#isAvailable(int)
 	 */
 	@Override
-	public boolean isAvailable(int tableIdArg) 
+	public boolean isAvailable(int tableIdArg, final Object data)
 	{
 		ReportsBaseTask repTask = (ReportsBaseTask )ContextMgr.getTaskByClass(ReportsTask.class);
 		if (repTask == null) //probably impossible but...

@@ -22,6 +22,7 @@ package edu.ku.brc.specify.tasks;
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.ServiceInfo;
 import edu.ku.brc.af.core.Taskable;
+import edu.ku.brc.specify.tasks.subpane.qb.QBQueryForIdResultsHQL;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.UIRegistry;
 
@@ -46,8 +47,8 @@ public class QueryBatchEditServiceInfo extends ServiceInfo {
 	 * @see edu.ku.brc.af.core.ServiceInfo#isAvailable(int)
 	 */
 	@Override
-	public boolean isAvailable(int tableIdArg) {
-		if (tableIdArg == -1) {
+	public boolean isAvailable(int tableIdArg, final Object data) {
+		if (!(data instanceof QBQueryForIdResultsHQL) || tableIdArg == -1) {
 			return false;
 		}
 		//XXX security anyone?
@@ -55,7 +56,6 @@ public class QueryBatchEditServiceInfo extends ServiceInfo {
 		if (!(wbTask != null && wbTask.getUpdateSchemaForTable(tableIdArg) != null)) {
 			return false;
 		}
-
 		return true;
 	}
 
