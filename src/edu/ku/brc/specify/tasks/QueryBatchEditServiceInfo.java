@@ -48,9 +48,15 @@ public class QueryBatchEditServiceInfo extends ServiceInfo {
 	 */
 	@Override
 	public boolean isAvailable(int tableIdArg, final Object data) {
-		if (!(data instanceof QBQueryForIdResultsHQL) || tableIdArg == -1) {
+		if (!(data instanceof QBQueryForIdResultsHQL)) {
 			return false;
 		}
+		if (tableIdArg == -1) {
+		    return false;
+        }
+        if (((QBQueryForIdResultsHQL)data).getQueryBuilder() == null) {
+		    return false;
+        }
 		//XXX security anyone?
 		WorkbenchTask wbTask = (WorkbenchTask)ContextMgr.getTaskByClass(WorkbenchTask.class);
 		if (!(wbTask != null && wbTask.getUpdateSchemaForTable(tableIdArg) != null)) {

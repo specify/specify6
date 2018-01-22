@@ -404,19 +404,18 @@ public class ContextMgr implements CommandListener
             }
         }
         
-        for (ServiceInfo srvInfo : instance.genericService)
-        {
-            if (!serviceList.contains(srvInfo))
-            {
-                if (isSecurityOn && !srvInfo.isPermissionOK())
-                {
-                    log.debug("Skipping Service: "+srvInfo.getName()+"  "+srvInfo.getTableId());
-                    continue;
-                }
-                if (!srvInfo.isAvailable(tableId, data))
-                {
-                	continue;
-                }
+        for (ServiceInfo srvInfo : instance.genericService) {
+            boolean srvOK = true;
+            if (isSecurityOn && !srvInfo.isPermissionOK()) {
+                log.debug("Skipping Service: "+srvInfo.getName()+"  "+srvInfo.getTableId());
+                srvOK = false;
+            }
+            if (!srvInfo.isAvailable(tableId, data)) {
+                srvOK = false;
+            }
+            if (serviceList.contains(srvInfo) && !srvOK) {
+                serviceList.remove(srvInfo);
+            } else if (!serviceList.contains(srvInfo) && srvOK) {
                 serviceList.add(srvInfo);
             }
         }
