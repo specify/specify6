@@ -1296,7 +1296,7 @@ public class UploadTable implements Comparable<UploadTable>
      * @return
      */
     protected DataModelObjBase getExportedRecord(int row) {
-        return getExportedRecord(row, false);
+        return getExportedRecord(row, false, null);
     }
 
     /**
@@ -1305,12 +1305,12 @@ public class UploadTable implements Comparable<UploadTable>
      * @param force
      * @return
      */
-    protected DataModelObjBase getExportedRecord(int row, boolean force) {
+    protected DataModelObjBase getExportedRecord(int row, boolean force, final DataProviderSessionIFace sessArg) {
         if (exportedRecordId != null) {
             if (exportedRecord == null || !exportedRecord.getId().equals(exportedRecordId)) {
                 Pair<DataModelObjBase, Timestamp> stashed = force ? null : recordStash.get(row);
                 if (stashed == null || stashed.getFirst() == null /*what if it got deleted */ || !stashed.getFirst().getId().equals(exportedRecordId)) {
-                    Pair<DataProviderSessionIFace, Boolean> sessObj = getSession();
+                    Pair<DataProviderSessionIFace, Boolean> sessObj = sessArg == null ? getSession() : new Pair<>(sessArg, false);
                     DataProviderSessionIFace session = sessObj.getFirst();
                     try {
                         DataModelObjBase obj = (DataModelObjBase) session.get(tblClass, exportedRecordId);
@@ -1337,25 +1337,16 @@ public class UploadTable implements Comparable<UploadTable>
      * @throws Exception
      */
     public void loadExportedRecord(final int row, final Integer id, boolean force) throws Exception { 
-/*
-    	Pair<DataModelObjBase, Timestamp> stashed = force ? null : recordStash.get(row);
-    	DataModelObjBase rec = null;
-    	if (stashed == null || stashed.getFirst() == null */
-/*what if it got deleted *//*
- || !stashed.getFirst().getId().equals(id)) {
-    		exportedRecordId = id;
-    		exportedRecord = null;
-    		rec = getExportedRecord(row);
-    		recordStash.put(row, new Pair<DataModelObjBase, Timestamp>(rec, new Timestamp(System.currentTimeMillis())));
-    	} else {
-    		rec = stashed.getFirst();
-    	}
-*/
         exportedRecordId = id;
-        DataModelObjBase rec = getExportedRecord(row, force);
-    	if (rec != null) {
-    		loadRecord(rec, 0);
-    	}
+        Pair<DataProviderSessionIFace, Boolean> sessObj = getSession();
+        try {
+            DataModelObjBase rec = getExportedRecord(row, force, sessObj.getFirst());
+            if (rec != null) {
+                loadRecord(rec, 0);
+            }
+        } finally {
+            getRidOfSession(sessObj);
+        }
     }
 
 
@@ -3177,8 +3168,7 @@ public class UploadTable implements Comparable<UploadTable>
     protected ParentTableEntry getControllingIDMatchingParent() {
 		for (List<ParentTableEntry> ptes : parentTables)  {
 			for (ParentTableEntry pte : ptes)  {
-				if (pte.getImportTable().specialChildren.contains(this)  
-						&& (pte.getImportTable().isMatchRecordId() || pte.getImportTable().reusingExportedRec)) {
+				if (pte.getImportTable().specialChildren.contains(this)) {
 					return pte; 
 				}
 			}
@@ -3300,6 +3290,17 @@ public class UploadTable implements Comparable<UploadTable>
             }
         }
         overrides.putAll(getParentOverridesForExportedRecMatching(recNum));
+        overrides.putAll(getSpecialChildrenOverridesForExportedRecMatching(recNum, restrictedVals));
+        return overrides;
+    }
+
+    protected Map<DBInfoBase, Object> getSpecialChildrenOverridesForExportedRecMatching(int recNum, final List<MatchRestriction> restrictedVals)
+            throws UploaderException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+        Map<DBInfoBase, Object>  overrides = new HashMap<>();
+        for (UploadTable ut : specialChildren) {
+            ut.loadFromDataSet(wbCurrentRow);
+            overrides.putAll(ut.getOverridesForExportedRecMatching(recNum, restrictedVals));
+        }
         return overrides;
     }
 
@@ -3307,6 +3308,10 @@ public class UploadTable implements Comparable<UploadTable>
                                                                                     int recNum, final List<MatchRestriction> restrictedVals,
                                                                                     final HashMap<UploadTable, DataModelObjBase> overrideParentParams)
             throws UploaderException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+
+        if (isOneToOneChild()) {
+            return new Pair<>(false, null);
+        }
 
         Map<DBInfoBase, Object> overrides = getOverridesForExportedRecMatching(recNum, restrictedVals);
 
@@ -4338,6 +4343,30 @@ public class UploadTable implements Comparable<UploadTable>
         IllegalAccessException {
         DataModelObjBase expRec = getExportedRecord(); //Assumes updateExportedRecInfo has been called for recNum
         if (!isUploadRoot) {
+            DataModelObjBase newRec = null;
+            if (isOneToOneChild()) {
+                ParentTableEntry pte = getControllingIDMatchingParent();
+                if (pte != null) {
+                    UploadTable p = pte.importTable;
+                    if (this.tblClass.equals(LocalityDetail.class)) {
+                        if (p.getCurrentRecord(0) != null) {
+                            Set<LocalityDetail> ds = ((Locality)p.getCurrentRecord(0)).getLocalityDetails();
+                            if (ds.size() > 0) {
+                                newRec = ds.iterator().next();
+                            }
+                        }
+                    } else if (this.tblClass.equals(GeoCoordDetail.class)) {
+                        if (p.getCurrentRecord(0) != null) {
+                            Set<GeoCoordDetail> ds = ((Locality)p.getCurrentRecord(0)).getGeoCoordDetails();
+                            if (ds.size() > 0) {
+                                newRec = ds.iterator().next();
+                            }
+                        }
+                    }
+                    setCurrentRecord(newRec, 0);
+                    return;
+                }
+            }
             if (expRec == null) {
                 setCurrentRecord(null, recNum);
                 return;
@@ -4347,7 +4376,6 @@ public class UploadTable implements Comparable<UploadTable>
                 setCurrentRecord(expRec, recNum);
                 reusingExportedRec = true;
             } else {
-                DataModelObjBase newRec = null;
                 if (expRec == null) {
                     newRec = createRecord();
                 } else {
@@ -5608,6 +5636,11 @@ public class UploadTable implements Comparable<UploadTable>
     			}
     		}
     	}
+    	for (UploadTable sc: specialChildren) {
+    	    if (sc.rowHasChanges(row, tblsWithChanges)) {
+    	        return true;
+            }
+        }
     	for (List<ParentTableEntry> ptes : parentTables) {
     	    for (ParentTableEntry pte : ptes) {
     	        if (tblsWithChanges.indexOf(pte.getImportTable()) != -1) {
@@ -5628,11 +5661,19 @@ public class UploadTable implements Comparable<UploadTable>
         if (!updateMatches) {
             return true;
         }
-        if (tblAndAncestorsUnchanged) {
+        if (tblAndAncestorsUnchanged && specialChildren.size() == 0) {
             return false;
         }
         //assuming findMatch and setCurrentRecordFromMatch have been called...
         boolean isBlankRow = isBlankRow(wbCurrentRow, uploader.getUploadData(), seq);
+        if (isBlankRow) {
+            for (UploadTable sc: specialChildren) {
+                if (!sc.isBlankRow(wbCurrentRow, uploader.getUploadData(), seq)) {
+                    isBlankRow = false;
+                    break;
+                }
+            }
+        }
         if (!isBlankRow) {
             return true;
         }
@@ -5675,7 +5716,6 @@ public class UploadTable implements Comparable<UploadTable>
             InvocationTargetException, IllegalAccessException, ParseException,
             NoSuchMethodException, InstantiationException, SQLException   {
         if (updateMatches) {
-            //huh??
             return doSkipMatch || (!tblAndAncestorsUnchanged && !findMatch(recNum, false, null, null) || updateMatches);
         } else {
             return doSkipMatch || !findMatch(recNum, false, null, null);
@@ -5830,17 +5870,30 @@ public class UploadTable implements Comparable<UploadTable>
         Timestamp recStamp = rec.getTimestampModified() == null ? rec.getTimestampCreated() : rec.getTimestampModified();
         boolean result = recStamp.after(uploader.getWb().getTimestampCreated());
         if (result) {
-            result = !uploadedRecs.getThird().contains(rec.getId());
-            if (result) {
-                for (UploadedRecordInfo ri : uploadedRecs.getFirst()) {
-                    if (ri.getKey() == rec.getId()) {
-                        result = false;
-                        break;
-                    }
+            if(isOneToOneChild()) {
+                UploadTable p = getControllingIDMatchingParent().importTable;
+                DataModelObjBase prec = p.getCurrentRecord(0);
+                if (prec != null) {
+                    result = !p.hasRecordBeenUploaded(prec.getId());
                 }
+            } else {
+                result = !hasRecordBeenUploaded(rec.getId());
             }
         }
 
+        return result;
+    }
+
+    protected boolean hasRecordBeenUploaded(final Integer id) {
+        boolean result = uploadedRecs.getThird().contains(id);
+        if (result) {
+            for (UploadedRecordInfo ri : uploadedRecs.getFirst()) {
+                if (ri.getKey() == id) {
+                    result = true;
+                    break;
+                }
+            }
+        }
         return result;
     }
 
