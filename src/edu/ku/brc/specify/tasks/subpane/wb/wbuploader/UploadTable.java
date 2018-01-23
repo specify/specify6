@@ -5674,6 +5674,9 @@ public class UploadTable implements Comparable<UploadTable>
                 }
             }
         }
+        if (isRemovedRecord(seq)) {
+            return false;
+        }
         if (!isBlankRow) {
             return true;
         }
@@ -5713,12 +5716,32 @@ public class UploadTable implements Comparable<UploadTable>
         }
     }
 
+    protected int numberOfVisibleFields() {
+        int result = 0;
+        for (UploadField uf : uploadFields.get(0)) {
+            if (uf.getIndex() > -1) {
+                result++;
+            }
+        }
+        return result;
+    }
+
+    protected boolean isRemovedRecord(int seq) {
+        boolean result = false;
+        if (tblClass.equals(Locality.class) || Treeable.class.isAssignableFrom(tblClass)) {
+            return isBlankRow(wbCurrentRow, uploader.getUploadData(), seq)
+                    && (Treeable.class.isAssignableFrom(tblClass) || !parentTableIsNonBlank(wbCurrentRow, uploader.getUploadData(), false, seq))
+                    && numberOfVisibleFields() == 1;
+        }
+        return result;
+    }
+
     protected boolean findMatch(boolean doSkipMatch, boolean tblAndAncestorsUnchanged, int recNum)
             throws UploaderException,
             InvocationTargetException, IllegalAccessException, ParseException,
             NoSuchMethodException, InstantiationException, SQLException   {
         if (updateMatches) {
-            return doSkipMatch || (!tblAndAncestorsUnchanged && !findMatch(recNum, false, null, null) || updateMatches);
+            return doSkipMatch || isRemovedRecord(recNum) || (!tblAndAncestorsUnchanged && !findMatch(recNum, false, null, null) || updateMatches);
         } else {
             return doSkipMatch || !findMatch(recNum, false, null, null);
         }
@@ -5796,6 +5819,9 @@ public class UploadTable implements Comparable<UploadTable>
                                         rec.setModifiedByAgent(Agent.getUserAgent());
                                     }
                                     isUpdate |= finalizeWrite(rec, recNum);
+                                    //if (updateMatches && recUserFldsAreBlank(rec) && shouldDumpBlankRec()) {
+                                    //    setCurrentRecord(null, recNum);
+                                    //}else
                                     if (!(doNotWrite || (updateMatches && !isUpdate && !isNewRecord && matchCountForCurrentRow[recNum] != 1))) {
                                         if (!gotRequiredParents && hasChildren) {
                                             throw new UploaderException(UIRegistry.getResourceString("UPLOADER_MISSING_REQUIRED_DATA"), UploaderException.ABORT_ROW);
@@ -5806,7 +5832,8 @@ public class UploadTable implements Comparable<UploadTable>
                                 }
                                 finishDepth(rec, recNum);
                             } else if (updateMatches) {
-                                if (isBlankRow(wbCurrentRow, uploader.getUploadData(), recNum)) {
+                                //if (isBlankRow(wbCurrentRow, uploader.getUploadData(), recNum)) {
+                                if (isRemovedRecord(recNum)) {
                                     setCurrentRecord(null, recNum);
                                 } else {
                                     setCurrentRecord(exportedRecord, recNum);
@@ -5845,6 +5872,64 @@ public class UploadTable implements Comparable<UploadTable>
         }
     }
 
+    protected boolean shouldDumpBlankRec() {
+        return !(tblClass.equals(CollectingEvent.class) && AppContextMgr.getInstance().getClassObject(Collection.class).getIsEmbeddedCollectingEvent());
+    }
+
+    protected boolean recUserFldsAreBlank(final DataModelObjBase rec) throws UploaderException {
+        DBTableInfo tblInfo = getTable().getTableInfo();
+        List<Method> getters = new ArrayList<>();
+        try {
+            for (DBFieldInfo fldInfo : tblInfo.getFields()) {
+                if (isUserFld(fldInfo)) {
+                    getters.add(tblClass.getMethod("get" + capitalize(fldInfo.getName())));
+                }
+            }
+            for (DBRelationshipInfo relInfo : tblInfo.getRelationships()) {
+                if (relInfo.getType().equals(DBRelationshipInfo.RelationshipType.ManyToOne) && !isSystemRel(relInfo)) {
+                    getters.add(tblClass.getMethod("get" + capitalize(relInfo.getName())));
+                }
+            }
+            boolean result = true;
+            for (Method getter :  getters) {
+                if (getter.invoke(rec) != null) {
+                    result = false;
+                    break;
+                }
+            }
+            return result;
+        } catch (Exception e) {
+            log.error(e);
+            throw new UploaderException(e, UploaderException.ABORT_IMPORT);
+        }
+    }
+
+    protected boolean isUserFld(final DBFieldInfo fld) {
+        boolean result = RecordMatchUtils.isUserFld(fld.getColumn());
+        if (result) {
+            result = !(fld.getColumn().equalsIgnoreCase("originallatlongunit")
+                    || fld.getColumn().equalsIgnoreCase("srclatlongunit")
+                    || fld.getColumn().equalsIgnoreCase("latlongtype")
+                    || fld.getColumn().equalsIgnoreCase("isaccepted")
+                    || fld.getColumn().equalsIgnoreCase("acceptedid")
+                    || fld.getColumn().equalsIgnoreCase("rankid")
+            );
+        }
+        return result;
+    }
+
+    protected boolean isSystemRel(final DBRelationshipInfo rel)  {
+        return (rel.getClassName().equals("edu.ku.brc.specify.datamodel.Agent") && ("CreatedByAgentID".equalsIgnoreCase(rel.getColName()) || "ModifiedByAgentID".equalsIgnoreCase(rel.getColName())))
+                || "DisciplineID".equalsIgnoreCase(rel.getColName())
+                || "CollectionID".equalsIgnoreCase(rel.getColName())
+                || "CollectionMemberID".equalsIgnoreCase(rel.getColName())
+                || "DivisionID".equalsIgnoreCase(rel.getColName())
+                || "InstitutionID".equalsIgnoreCase(rel.getColName())
+                || "SpecifyUserID".equalsIgnoreCase(rel.getColName())
+                || "ParentID".equalsIgnoreCase(rel.getColName())
+                || rel.getColName().endsWith("TreeDefID")
+                || rel.getColName().endsWith("TreeDefItemID");
+    }
     /**
      *
      */

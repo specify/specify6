@@ -31,7 +31,7 @@ public class RecordMatchUtils {
      * @param column
      * @return
      */
-    private static boolean isUserFld(final String column) {
+    public static boolean isUserFld(final String column) {
         for (String systemFldName : systemFldNames) {
             if (systemFldName.equalsIgnoreCase(column)) {
                 return false;
