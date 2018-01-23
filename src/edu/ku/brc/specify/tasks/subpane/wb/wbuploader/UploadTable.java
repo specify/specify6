@@ -3298,7 +3298,7 @@ public class UploadTable implements Comparable<UploadTable>
             throws UploaderException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         Map<DBInfoBase, Object>  overrides = new HashMap<>();
         for (UploadTable ut : specialChildren) {
-            ut.loadFromDataSet(wbCurrentRow);
+            uploader.loadRow(ut, wbCurrentRow);
             overrides.putAll(ut.getOverridesForExportedRecMatching(recNum, restrictedVals));
         }
         return overrides;
@@ -5698,6 +5698,8 @@ public class UploadTable implements Comparable<UploadTable>
         //no attempt at generality
         if (tblClass.equals(CollectingEvent.class) || tblClass.equals(Locality.class) || tblClass.equals(PaleoContext.class)) {
             return true;
+        } else if (isOneToOneChild()) {
+            return false;
         } else {
             throw new UploaderException("Unsupported situation for " + this.toString(), UploaderException.ABORT_ROW);
         }
