@@ -1838,7 +1838,7 @@ public class UploadTable implements Comparable<UploadTable>
             String result;
     		if (StringUtils.isNotEmpty(textVal) && isTextValConsistentWithLLFormat(textVal, frm)) {
     		    result = textVal.trim().replaceAll("  ", " ").replaceAll("  ", " ");
-    		    result = result.replaceAll(":", ".");
+    		    result = result.replaceAll(":", " ");
             } else {
                 frm = frm == LatLonConverter.FORMAT.None ? LatLonConverter.FORMAT.DDDDDD : frm;
                 LatLonConverter.LATLON ll = isLatFld(ufld) ? LatLonConverter.LATLON.Latitude : LatLonConverter.LATLON.Longitude;
