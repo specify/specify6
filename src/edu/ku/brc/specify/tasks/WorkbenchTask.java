@@ -3715,7 +3715,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     	if (rs.getNumItems() > MAX_ROWS) {
     	    if (!UIRegistry.displayConfirm(getResourceString("WARNING"),
                     String.format(getResourceString("WB_BATCHEDIT_MAXROWS_EXCEEDED_MSG"), MAX_ROWS),
-                    "Ok", "Cancel", JOptionPane.WARNING_MESSAGE)) {
+                    "OK", "Cancel", JOptionPane.WARNING_MESSAGE)) {
                 return;
             }
         }
