@@ -180,16 +180,30 @@ public class BatchEditProgressDialog extends JDialog {
         addStatusMsg(getResourceString("WB_BATCH_EDIT_IN_PROCESS"));
     }
 
-    protected String pluralize(final String singular) {
+    protected String pluralize(final String singular, final Integer cnt) {
         //this is getting ridiculous
         //english only!!
-        if (singular.endsWith("y")) {
-            return singular.substring(0, singular.length() - 2) + "ies";
-        } else if (!singular.endsWith("s")) {
-            return singular + "s";
-        } else {
+        if (cnt == 1) {
             return singular;
+        } else {
+            if (singular.endsWith("y")) {
+                return singular.substring(0, singular.length() - 1) + "ies";
+            } else if (!singular.endsWith("s")) {
+                return singular + "s";
+            } else {
+                return singular;
+            }
         }
+    }
+
+    protected Integer getTheCount(final Object cnt) {
+        Integer result = 2;
+        try {
+            result = (Integer)cnt;
+        } catch (Exception e) {
+            //oh well
+        }
+        return result;
     }
 
     public void restoreOriginalSize() {
@@ -198,11 +212,14 @@ public class BatchEditProgressDialog extends JDialog {
 
     protected String getAffectedRecsSummaryMsg() {
         java.util.List<Pair<Integer,Object>> sqls = uploader.getUpdateUploadAffectedRecsSql();
-        String result = sqls.get(0).getSecond() + " " + pluralize(DBTableIdMgr.getInstance().getTitleForId(sqls.get(0).getFirst()));
+        Integer cnt = getTheCount(sqls.get(0).getSecond());
+        String result = cnt + " " + pluralize(DBTableIdMgr.getInstance().getTitleForId(sqls.get(0).getFirst()), cnt);
         if (sqls.size() > 1) {
-            result += " and " + BasicSQLUtils.getCount((String)sqls.get(1).getSecond()) + " " + pluralize(DBTableIdMgr.getInstance().getTitleForId(sqls.get(1).getFirst()));
+            cnt = BasicSQLUtils.getCount((String)sqls.get(1).getSecond());
+            result += " and " + cnt + " "
+                    + pluralize(DBTableIdMgr.getInstance().getTitleForId(sqls.get(1).getFirst()), cnt);
         }
-        return result + " were affected.";
+        return result + (sqls.size() > 1 || cnt > 1 ? " were " : " was ") + " affected.";
     }
 
     protected void addStatusMsg(final String msg) {
