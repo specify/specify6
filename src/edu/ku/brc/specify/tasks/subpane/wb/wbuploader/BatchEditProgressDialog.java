@@ -182,7 +182,7 @@ public class BatchEditProgressDialog extends JDialog {
 
     protected String pluralize(final String singular, final Integer cnt) {
         //this is getting ridiculous
-        //english only!!
+        //XXX english only!!
         if (cnt == 1) {
             return singular;
         } else {
@@ -211,6 +211,7 @@ public class BatchEditProgressDialog extends JDialog {
     }
 
     protected String getAffectedRecsSummaryMsg() {
+        //XXX English only!!
         java.util.List<Pair<Integer,Object>> sqls = uploader.getUpdateUploadAffectedRecsSql();
         Integer cnt = getTheCount(sqls.get(0).getSecond());
         String result = cnt + " " + pluralize(DBTableIdMgr.getInstance().getTitleForId(sqls.get(0).getFirst()), cnt);
