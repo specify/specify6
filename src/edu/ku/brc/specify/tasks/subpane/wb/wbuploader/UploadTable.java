@@ -6702,7 +6702,7 @@ public class UploadTable implements Comparable<UploadTable>
         String tblName = showRecordSetInUI ? "" :
         	DBTableIdMgr.getInstance().getByShortClassName(tblClass.getSimpleName()).getTitle() + "_";
         String uploadName = isUpdateMatches() && showRecordSetInUI ?
-                suffixIfNecessary(uploader.getWb().getName(), showRecordSetInUI, maxNameLength)
+                suffixBeWBName(uploader.getWb().getName(), showRecordSetInUI, maxNameLength)
                 : uploader.getIdentifier();
         return tblName + uploadName;
     }
@@ -6713,15 +6713,15 @@ public class UploadTable implements Comparable<UploadTable>
         return StringUtils.reverse(result);
     }
 
-    protected String suffixIfNecessary(final String name, boolean showRecordSetInUI, int maxNameLength) {
-        String newName = crapOutOfBEWBName(name);
+    protected String suffixBeWBName(final String name, boolean showRecordSetInUI, int maxNameLength) {
+        String newName = crapOutOfBEWBName(name) + " 1";
         List<Object> names = BasicSQLUtils.querySingleCol("select name from recordset where `type` = "
                 + (showRecordSetInUI ? RecordSet.GLOBAL : RecordSet.WB_UPLOAD)
                 + " and name like '" + newName + "%' order by name");
         Integer append = 2;
         String result = newName;
         while (names.indexOf(result) != -1 && result.length() < maxNameLength) {
-            result = newName + "_" + append++;
+            result = newName + " " + append++;
         }
         return result;
     }
