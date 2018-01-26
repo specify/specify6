@@ -3173,6 +3173,7 @@ public class Uploader implements ActionListener, KeyListener
     }
 
     protected void setCurrentOpProgress(final int val, final BatchEditProgressDialog dlg) {
+        final List<UploadMessage> newMsgCopy = new ArrayList<>(newMessages);
         SwingUtilities.invokeLater(() -> {
             if (!dlg.isUploadDone()) {
                 JProgressBar pb = dlg.getProgress();
@@ -3193,10 +3194,11 @@ public class Uploader implements ActionListener, KeyListener
                     }
                 }
             }
-            dlg.addMsgs(newMessages);
+            dlg.addMsgs(newMsgCopy);
         });
     }
     protected void showUploadProgress(final int val, final JProgressBar pb) {
+        final List<UploadMessage> newMsgCopy = new ArrayList<>(newMessages);
         SwingUtilities.invokeLater(() -> {
             if (mainPanel == null) {
                 log.error("UI does not exist.");
@@ -3204,7 +3206,7 @@ public class Uploader implements ActionListener, KeyListener
             }
             setCurrentOpProgress(val, pb);
             synchronized (Uploader.this) {
-                for (UploadMessage newMsg : newMessages) {
+                for (UploadMessage newMsg : newMsgCopy) {
                     mainPanel.addMsg(newMsg);
                     messages.add(newMsg);
                 }

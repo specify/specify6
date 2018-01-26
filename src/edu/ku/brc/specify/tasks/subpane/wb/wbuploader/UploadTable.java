@@ -5602,7 +5602,7 @@ public class UploadTable implements Comparable<UploadTable>
      * @throws UploaderException
      */
     protected void writeRow(int row, boolean tblAndAncestorsUnchanged) throws UploaderException {
-    	wbCurrentRow = row;
+        wbCurrentRow = row;
         for (int i = 0; i < matchCountForCurrentRow.length; i++) {
         	matchCountForCurrentRow[i] = 0;
         }

@@ -393,7 +393,7 @@ public class BatchEditProgressDialog extends JDialog {
         totalTime.incrementAndGet();
     }
 
-    public void addMsgs(Vector<UploadMessage> newMsgs) {
+    public void addMsgs(java.util.List<UploadMessage> newMsgs) {
         for (UploadMessage newMsg : newMsgs) {
             addMsg(newMsg);
         }
