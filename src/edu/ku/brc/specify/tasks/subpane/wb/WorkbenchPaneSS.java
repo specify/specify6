@@ -5851,7 +5851,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             iconLbl = UIHelper.createLabel(null, icon);
             header  = new DefaultTableCellHeaderRenderer();
             header.setHorizontalTextPosition(JLabel.LEFT);
-            
+            header.setEnabled(icon != null);
             CellConstraints cc = new CellConstraints();
             PanelBuilder    pb = new PanelBuilder(new FormLayout("p,1px,f:p:g", "f:p:g"));
             pb.add(iconLbl, cc.xy(1, 1));
