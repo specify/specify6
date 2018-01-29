@@ -874,8 +874,8 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         try
         {
-            //List<?> list = session.getDataList("From WorkbenchTemplate where SpecifyUserID = " + AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getSpecifyUserId());
-            List<?> list = session.getDataList("From WorkbenchTemplate");
+            //List<?> list = session.getDataList("From WorkbenchTemplate where SpecifyUserID = "+ AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getSpecifyUserId());
+            List<?> list = session.getDataList("From WorkbenchTemplate where srcFilePath NOT LIKE '<<#spatch#>>%'");
             for (Object obj : list)
             {
                 WorkbenchTemplate template = (WorkbenchTemplate)obj;
