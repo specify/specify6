@@ -3657,7 +3657,7 @@ public class Uploader implements ActionListener, KeyListener
     protected int showShutDownDlg(boolean isUpdate, final String action) {
         String msg;
         if (!isUpdate) {
-            msg = getResourceString("WB_UPLOAD_CONFIRM_SAVE");
+            msg = String.format(getResourceString("WB_UPLOAD_CONFIRM_SAVE"), theWb.getName());
         } else if (UploadMainPanel.CANCEL_AND_CLOSE_BATCH_UPDATE.equals(action)) {
             msg = getResourceString("WB_BATCH_EDIT_CONFIRM_CANCEL");
         } else if (UploadMainPanel.COMMIT_AND_CLOSE_BATCH_UPDATE.equals(action)) {
