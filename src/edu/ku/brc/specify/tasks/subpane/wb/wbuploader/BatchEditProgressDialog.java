@@ -220,7 +220,7 @@ public class BatchEditProgressDialog extends JDialog {
             result += " and " + cnt + " "
                     + pluralize(DBTableIdMgr.getInstance().getTitleForId(sqls.get(1).getFirst()), cnt);
         }
-        return result + (sqls.size() > 1 || cnt > 1 ? " were " : " was ") + "affected.";
+        return result + (sqls.size() > 1 || cnt > 1 ? " were " : " was ") + "affected by your changes.";
     }
 
     protected void addStatusMsg(final String msg) {
