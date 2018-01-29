@@ -5973,9 +5973,9 @@ public class UploadTable implements Comparable<UploadTable>
 
     protected boolean hasRecordBeenUploaded(final Integer id) {
         boolean result = uploadedRecs.getThird().contains(id);
-        if (result) {
+        if (!result) {
             for (UploadedRecordInfo ri : uploadedRecs.getFirst()) {
-                if (ri.getKey() == id) {
+                if (ri.getKey().equals(id)) {
                     result = true;
                     break;
                 }
