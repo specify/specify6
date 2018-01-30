@@ -6714,16 +6714,15 @@ public class UploadTable implements Comparable<UploadTable>
     }
 
     protected String suffixBeWBName(final String name, boolean showRecordSetInUI, int maxNameLength) {
-        String newName = crapOutOfBEWBName(name) + " 1";
+        String newName = crapOutOfBEWBName(name);
         List<Object> names = BasicSQLUtils.querySingleCol("select name from recordset where `type` = "
                 + (showRecordSetInUI ? RecordSet.GLOBAL : RecordSet.WB_UPLOAD)
                 + " and name like '" + newName + "%' order by name");
-        Integer append = 2;
-        String result = newName;
-        while (names.indexOf(result) != -1 && result.length() < maxNameLength) {
-            result = newName + " " + append++;
+        Integer append = 1;
+        while (names.indexOf(newName + " " + append) != -1 && (newName + " " + append).length() < maxNameLength) {
+            append++;
         }
-        return result;
+        return newName + " " + append;
     }
     /**
      * @return
