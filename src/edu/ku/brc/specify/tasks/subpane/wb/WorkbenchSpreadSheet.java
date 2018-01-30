@@ -19,6 +19,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
+import net.sf.jasperreports.engine.export.Grid;
 import org.apache.commons.lang.StringUtils;
 import org.jdesktop.swingx.table.TableColumnExt;
 
@@ -329,7 +330,9 @@ public class WorkbenchSpreadSheet extends SpreadSheet
          		mi.addActionListener(new ActionListener() {
          			public void actionPerformed(ActionEvent ae) {
          				workbenchPaneSS.restoreOriginalValues(items);
+						workbenchPaneSS.validateRows(rows);
          				popupMenu.setVisible(false);
+						((GridTableModel)model).fireDataChanged();
          			}
          		});             		
          	}

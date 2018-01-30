@@ -1186,6 +1186,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     	}
     	revertBtn.setEnabled(false);
     	saveBtn.setEnabled(false);
+        validateRows(0, spreadSheet.getRowCount()-1);
     }
     /**
      * @return
@@ -1396,8 +1397,6 @@ public class WorkbenchPaneSS extends BaseSubPane
                 item.setCellData(originalValue);
             }
         }
-		item.setEditorValidationStatus(WorkbenchDataItem.VAL_OK);
-		decrementEditedCellCount();
 	}
 	
 	
