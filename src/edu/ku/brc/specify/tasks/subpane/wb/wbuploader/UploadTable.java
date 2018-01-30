@@ -4915,7 +4915,7 @@ public class UploadTable implements Comparable<UploadTable>
     			boolean changed = false;
     			try {
     				if (isLatLongFld(fld)) {
-    					String origVal = getTextForFieldValue(fld, getter.invoke(rec), seq);
+    					String origVal = rec == null ? null : getTextForFieldValue(fld, getter.invoke(rec), seq);
     					if (origVal == null) {
     						origVal = "";
     					}
