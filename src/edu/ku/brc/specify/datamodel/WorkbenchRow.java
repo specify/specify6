@@ -826,7 +826,7 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
                 	wbdi.setRequired(true);
                 }
                 items.put(inx, wbdi);
-                workbenchDataItems.add(wbdi);
+                //workbenchDataItems.add(wbdi);
             }
         }
         

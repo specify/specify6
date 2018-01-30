@@ -474,7 +474,10 @@ public class RecordMatchUtils {
                     for (DBInfoBase obj : flds) {
                         boolean doOverride = overrides.containsKey(obj);
                         Object val = doOverride  ? overrides.get(obj) : getValueForFld(obj, rec, tbl);
-                        conditions.add(getSQLCondition(obj, val, tbl, seq));
+                        String cond = getSQLCondition(obj, val, tbl, seq);
+                        if (!"".equals(cond)) {
+                            conditions.add(cond);
+                        }
                     }
                     seq++;
                 }
@@ -513,9 +516,22 @@ public class RecordMatchUtils {
     private static String getSQLForVal(final DBInfoBase fld, final Object val, final DBTableInfo tbl, final Integer seq) {
         String name = fld instanceof DBFieldInfo ? ((DBFieldInfo)fld).getColumn() : ((DBRelationshipInfo)fld).getColName();
         Object valStr = val instanceof DataModelObjBase ? ((DataModelObjBase)val).getId() : BasicSQLUtils.getStrValue(val);
-        return tbl.getAbbrev() + seq + "." + name + (val == null ? " is null" : " = " + valStr);
+        if (val != null || includeNullCondition(fld, tbl)) {
+            return tbl.getAbbrev() + seq + "." + name + (val == null ? " is null" : " = " + valStr);
+        } else {
+            return "";
+        }
     }
 
+    private static boolean includeNullCondition(final DBInfoBase fld, DBTableInfo tbl) {
+        if (tbl.getTableId() == Locality.getClassTableId()) {
+            if (fld instanceof DBFieldInfo) {
+                String name = fld.getName().toLowerCase();
+                return !("latlongtype".equals(name) || "originallatlongunit".equals(name) || "srclatlongunit".equals(name));
+            }
+        }
+        return true;
+    }
     /**
      *
      * @param fld

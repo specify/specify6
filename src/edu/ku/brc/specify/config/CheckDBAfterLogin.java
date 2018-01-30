@@ -342,7 +342,19 @@ public class CheckDBAfterLogin
         }
         return doUpdate;
     }
-    
+
+    public void fixPrepGuids() {
+        Connection        conn  = DBConnection.getInstance().getConnection();
+        String sql = "select GUID, group_concat(preparationid order by preparationid) from preparation "
+            + "where GUID is not null group by 1 having count(preparationid) > 1 order by 1";
+        List<Object[]> dups = BasicSQLUtils.query(conn, sql);
+        boolean dupsPresent = dups.size() > 0;
+        if (!dupsPresent) {
+            BasicSQLUtils.update(conn, "update preparation set guid = uuid() where guid is null");
+        } else {
+
+        }
+    }
     /**
      * 
      */
