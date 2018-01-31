@@ -5674,7 +5674,7 @@ public class UploadTable implements Comparable<UploadTable>
                 }
             }
         }
-        if (isRemovedRecord(seq)) {
+        if (isRemovedRecord(seq, tblAndAncestorsUnchanged)) {
             return false;
         }
         if (!isBlankRow) {
@@ -5726,12 +5726,23 @@ public class UploadTable implements Comparable<UploadTable>
         return result;
     }
 
-    protected boolean isRemovedRecord(int seq) {
+    protected boolean isRemovedRecord(int seq, boolean tblAndAncestorsUnchanged) throws UploaderException {
         boolean result = false;
-        if (tblClass.equals(Locality.class) || Treeable.class.isAssignableFrom(tblClass)) {
+        if (Treeable.class.isAssignableFrom(tblClass)) {
             return isBlankRow(wbCurrentRow, uploader.getUploadData(), seq)
-                    && (Treeable.class.isAssignableFrom(tblClass) || !parentTableIsNonBlank(wbCurrentRow, uploader.getUploadData(), false, seq))
                     && numberOfVisibleFields() == 1;
+        } else {
+            result = !needToWrite(seq) && !tblAndAncestorsUnchanged;
+            if (result) {
+                boolean requiredIsPresent = false;
+                for (UploadField uf : uploadFields.get(0)) {
+                    if (uf.isRequired()) {
+                        requiredIsPresent = true;
+                        break;
+                    }
+                }
+                result &= requiredIsPresent;
+            }
         }
         return result;
     }
@@ -5741,7 +5752,7 @@ public class UploadTable implements Comparable<UploadTable>
             InvocationTargetException, IllegalAccessException, ParseException,
             NoSuchMethodException, InstantiationException, SQLException   {
         if (updateMatches) {
-            return doSkipMatch || isRemovedRecord(recNum) || (!tblAndAncestorsUnchanged && !findMatch(recNum, false, null, null) || updateMatches);
+            return doSkipMatch || isRemovedRecord(recNum, tblAndAncestorsUnchanged) || (!tblAndAncestorsUnchanged && !findMatch(recNum, false, null, null) || updateMatches);
         } else {
             return doSkipMatch || !findMatch(recNum, false, null, null);
         }
@@ -5833,7 +5844,7 @@ public class UploadTable implements Comparable<UploadTable>
                                 finishDepth(rec, recNum);
                             } else if (updateMatches) {
                                 //if (isBlankRow(wbCurrentRow, uploader.getUploadData(), recNum)) {
-                                if (isRemovedRecord(recNum)) {
+                                if (isRemovedRecord(recNum, tblAndAncestorsUnchanged)) {
                                     setCurrentRecord(null, recNum);
                                 } else {
                                     setCurrentRecord(exportedRecord, recNum);
