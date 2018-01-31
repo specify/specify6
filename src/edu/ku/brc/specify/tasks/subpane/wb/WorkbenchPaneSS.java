@@ -1163,7 +1163,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         if ((getSrcTask() instanceof BatchEditTask || getSrcTask() instanceof QueryTask)
                 && isUpdateDataSet()) {
             Taskable beTask = ContextMgr.getTaskByClass(BatchEditTask.class);
-            return beTask != null ? getSrcTask().getIcon(Taskable.StdIcon16) : super.getIcon();
+            return beTask != null ? beTask.getIcon(Taskable.StdIcon16) : super.getIcon();
         } else {
             return super.getIcon();
         }
