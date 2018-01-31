@@ -776,6 +776,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         		}
         	});
         }
+        distinctChk.setVisible(!(task instanceof BatchEditTask));
+
         countOnlyChk = createCheckBox(UIRegistry.getResourceString("QB_COUNT_ONLY"));
         countOnlyChk.setSelected(false);
         countOnlyChk.addActionListener(new ActionListener()
@@ -891,7 +893,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 				}
 			});
 		}
-		
+		smushedChk.setVisible(!(task instanceof BatchEditTask));
+
         PanelBuilder outer = new PanelBuilder(new FormLayout("p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 6dlu, p", "p"));
  
         CellConstraints cc = new CellConstraints();

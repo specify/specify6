@@ -57,6 +57,9 @@ public class QueryBatchEditServiceInfo extends ServiceInfo {
         if (((QBQueryForIdResultsHQL)data).getQueryBuilder() == null) {
 		    return false;
         }
+        if (((QBQueryForIdResultsHQL)data).getQueryBuilder().isSmushed()) {
+			return false;
+		}
 		//XXX security anyone?
 		WorkbenchTask wbTask = (WorkbenchTask)ContextMgr.getTaskByClass(WorkbenchTask.class);
 		if (!(wbTask != null && wbTask.getUpdateSchemaForTable(tableIdArg) != null)) {
