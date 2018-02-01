@@ -31,12 +31,12 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.Collections;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Locale;
-import java.util.Vector;
+import java.util.*;
 
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.datamodel.*;
+import edu.ku.brc.specify.datamodel.Collection;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
@@ -56,12 +56,6 @@ import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.config.SpecifyWebLinkMgr;
-import edu.ku.brc.specify.datamodel.Collection;
-import edu.ku.brc.specify.datamodel.Discipline;
-import edu.ku.brc.specify.datamodel.PickList;
-import edu.ku.brc.specify.datamodel.SpLocaleContainer;
-import edu.ku.brc.specify.datamodel.SpLocaleContainerItem;
-import edu.ku.brc.specify.datamodel.SpLocaleItemStr;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CustomDialog;
@@ -69,6 +63,8 @@ import edu.ku.brc.ui.ToggleButtonChooserDlg;
 import edu.ku.brc.ui.ToggleButtonChooserPanel;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.dnd.SimpleGlassPane;
+
+import javax.persistence.Basic;
 
 /**
  * @author rods
@@ -253,10 +249,18 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
             @Override
             public Object construct()
             {
-                save();
-                
-                //SchemaI18NService.getInstance().loadWithLocale(new Locale("de", "", ""));
                 int disciplineeId = AppContextMgr.getInstance().getClassObject(Discipline.class).getDisciplineId();
+                String accNumFormatSql = "select ci.format from splocalecontaineritem ci inner join splocalecontainer c "
+                        + " on c.splocalecontainerid = ci.splocalecontainerid where ci.name = 'accessionNumber' "
+                        + " and c.name = 'accession' and c.disciplineid = " + disciplineeId;
+                String accNumFormat = BasicSQLUtils.querySingleObj(accNumFormatSql);
+                save();
+                String newAccNumFormat = BasicSQLUtils.querySingleObj(accNumFormatSql);
+                if (!newAccNumFormat.equals(accNumFormat)) {
+                    updateAccAutoNumberingTbls(newAccNumFormat, accNumFormat);
+                }
+
+                //SchemaI18NService.getInstance().loadWithLocale(new Locale("de", "", ""));
                 SchemaI18NService.getInstance().loadWithLocale(schemaType, disciplineeId, tableMgr, Locale.getDefault());
                 
                 SpecifyAppContextMgr.getInstance().setForceReloadViews(true);
@@ -267,7 +271,63 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
                 
                 return null;
             }
-            
+
+            private void updateAccAutoNumberingTbls(final String newAccNumFormat, final String oldAccNumFormat) {
+                System.out.println("Updating AutoNumbering Tables");
+                UIFieldFormatterIFace newF = UIFieldFormatterMgr.getInstance().getFormatter(newAccNumFormat);
+                boolean isNumericOnly = newF == null ? false : newF.isNumeric();
+                boolean isIncrementer = newF == null ? false : newF.isIncrementer();
+                if (isIncrementer) {
+                    int divId = AppContextMgr.getInstance().getClassObject(Division.class).getDivisionId();
+                    Integer autoNumSchemeIdNewFmt = BasicSQLUtils.querySingleObj("select autonumberingschemeid from autonumberingscheme where tablenumber = 7 and formatname = '" + newAccNumFormat + "' limit 1");
+                    Integer autoNumSchemeIdOldFmt = BasicSQLUtils.querySingleObj("select autonumberingschemeid from autonumberingscheme where tablenumber = 7 and formatname = '" + oldAccNumFormat + "' limit 1");
+                    List<String> sqls = new ArrayList<>();
+                    if (autoNumSchemeIdNewFmt == null) {
+                        sqls.add("insert into autonumberingscheme(TimestampCreated,TimestampModified,Version,FormatName,IsNumericOnly,SchemeClassName,SchemeName,TableNumber)"
+                                + "values(now(), now(), 0, '" + newAccNumFormat + "', " + (isNumericOnly ? "true" : "false") + ", '', 'Accession Numbering Scheme', 7)");
+                    }
+                    boolean addDiv = autoNumSchemeIdNewFmt == null;
+                    if (!addDiv) {
+                        List<Object> newFmtDivs = BasicSQLUtils.querySingleCol("select divisionid from autonumsch_div where autonumberingschemeid =" + autoNumSchemeIdNewFmt);
+                        addDiv = true;
+                        for (Object div : newFmtDivs) {
+                            if (div.equals(divId)) {
+                                addDiv = false;
+                                break;
+                            }
+                        }
+                    }
+                    if (addDiv) {
+                        sqls.add("insert into autonumsch_div(DivisionID, AutoNumberingSchemeID)"
+                                + "values(" + divId + ",(select autonumberingschemeid from autonumberingscheme where tablenumber = 7 and formatname = '" + newAccNumFormat + "'))");
+                    }
+                    if (autoNumSchemeIdOldFmt != null) {
+                        List<Object> oldFmtDivs = BasicSQLUtils.querySingleCol("select divisionid from autonumsch_div where autonumberingschemeid =" + autoNumSchemeIdOldFmt);
+                        boolean removeDiv = false;
+                        boolean removeAns = true;
+                        for (Object div : oldFmtDivs) {
+                            if (div.equals(divId)) {
+                                removeDiv = true;
+                            } else {
+                                removeAns = false;
+                            }
+                        }
+                        if (removeDiv) {
+                            sqls.add("delete from autonumsch_div where divisionid = " + divId + " and autonumberingschemeid = " + autoNumSchemeIdOldFmt);
+                        }
+                        if (removeAns) {
+                            sqls.add("delete from autonumberingscheme where autonumberingschemeid = " + autoNumSchemeIdOldFmt);
+                        }
+                    }
+                    for (String sql : sqls) {
+                        int result = BasicSQLUtils.update(sql);
+                        if (result != 1) {
+                            log.error("error executing sql: " + sql);
+                        }
+                    }
+                }
+            }
+
             @Override
             public void finished()
             {
