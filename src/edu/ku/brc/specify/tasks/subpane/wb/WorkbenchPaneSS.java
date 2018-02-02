@@ -4168,13 +4168,10 @@ public class WorkbenchPaneSS extends BaseSubPane
     /**
      * @return  a list of open panes that prohibit uploading.
      */
-    protected List<SubPaneIFace> checkOpenTasksForUpload()
-    {
+    protected List<SubPaneIFace> checkOpenTasksForUpload() {
         List<SubPaneIFace> result = new LinkedList<SubPaneIFace>();
-        for (SubPaneIFace pane : SubPaneMgr.getInstance().getSubPanes())
-        {
-            if (prohibitsUpload(pane))
-            {
+        for (SubPaneIFace pane : SubPaneMgr.getInstance().getSubPanes()) {
+            if (prohibitsUpload(pane)) {
                 result.add(pane);
             }
         }
@@ -4188,7 +4185,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     {
         List<SubPaneIFace> result = new LinkedList<SubPaneIFace>();
         for (SubPaneIFace pane : SubPaneMgr.getInstance().getSubPanes())
-        {
+        {final DBInfoBase fld, final Object val, final DBTableInfo tbl,
             if (pane instanceof ESResultsSubPane)
             {
                 result.add(pane);
@@ -4203,17 +4200,17 @@ public class WorkbenchPaneSS extends BaseSubPane
      */
     protected boolean prohibitsUpload(final SubPaneIFace pane)
     {
-        if (pane.getTask().getClass().equals(DataEntryTask.class))
-        {
+        if (pane.getTask().getClass().equals(DataEntryTask.class)) {
             return true;
         }
-        if (pane.getTask().getClass().equals(InteractionsTask.class))
-        {
+        if (pane.getTask().getClass().equals(InteractionsTask.class)) {
             return true;
         }
-        if (pane instanceof ESResultsSubPane)
-        {
+        if (pane instanceof ESResultsSubPane) {
         	return true;
+        }
+        if (pane.getTask() instanceof BaseTreeTask) {
+            return true;
         }
         return false;
     }
