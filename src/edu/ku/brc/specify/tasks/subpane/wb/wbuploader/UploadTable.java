@@ -5553,9 +5553,11 @@ public class UploadTable implements Comparable<UploadTable>
 	public Vector<UploadTableInvalidValue> validateValues(
 			final UploadData uploadData) {
 		Vector<UploadTableInvalidValue> result = new Vector<UploadTableInvalidValue>();
-		for (int row = 0; row < uploadData.getRows(); row++)
-		{
-			validateRowValues(row, uploadData, result);
+		boolean isUpdate = uploader.isUpdateUpload();
+		for (int row = 0; row < uploadData.getRows(); row++) {
+			if (!isUpdate || uploader.rowHasEdits(row)) {
+                validateRowValues(row, uploadData, result);
+            }
 		}
 		return result;
 	}

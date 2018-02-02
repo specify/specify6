@@ -1680,23 +1680,25 @@ public class Uploader implements ActionListener, KeyListener
         int startRow = rowToValidate != -1 ? rowToValidate : 0;
         int endRow = rowToValidate != -1 ? rowToValidate + 1 : uploadData.getRows();
         Integer[] colWidths = wbSS != null ? null : WorkbenchPaneSS.getMaxColWidths(theWb, isUpdateUpload());
+        boolean isUpdate = isUpdateUpload();
         for (Vector<UploadField> ufs : uploadTable.getUploadFields()) {
             for (UploadField uf : ufs) {
                 if (uf.getIndex() != -1) {
                     for (int r = startRow; r < endRow; r++) {
-                        String value = wbSS != null ? wbSS.getSpreadSheet().getValueAt(r, uf.getIndex()).toString()
-                        		: uploadData.get(r, uf.getIndex()).toString();
-                        int maxlen = wbSS != null ? wbSS.getColumnMaxWidth(uf.getIndex()) : colWidths[uf.getIndex()];
-                        if (uf.getField().getFieldInfo() != null) {
-                        	maxlen = uf.getField().getFieldInfo().getLength();
-                        }
-                        if (maxlen != -1 && value.length() > maxlen)
-                        {
-                            result.add(new UploadTableInvalidValue(null, uploadTable, uf, r,
-                                    new UploaderException(
-                                            getInvalidLengthErrMsg(value, maxlen),
-                                            //getResourceString(WB_CELL_LENGTH_EXCEPTION),
-                                            UploaderException.INVALID_DATA)));
+                        if (!isUpdate || rowHasEdits(r)) {
+                            String value = wbSS != null ? wbSS.getSpreadSheet().getValueAt(r, uf.getIndex()).toString()
+                                    : uploadData.get(r, uf.getIndex()).toString();
+                            int maxlen = wbSS != null ? wbSS.getColumnMaxWidth(uf.getIndex()) : colWidths[uf.getIndex()];
+                            if (uf.getField().getFieldInfo() != null) {
+                                maxlen = uf.getField().getFieldInfo().getLength();
+                            }
+                            if (maxlen != -1 && value.length() > maxlen) {
+                                result.add(new UploadTableInvalidValue(null, uploadTable, uf, r,
+                                        new UploaderException(
+                                                getInvalidLengthErrMsg(value, maxlen),
+                                                //getResourceString(WB_CELL_LENGTH_EXCEPTION),
+                                                UploaderException.INVALID_DATA)));
+                            }
                         }
                     }
                 }
@@ -2004,30 +2006,24 @@ public class Uploader implements ActionListener, KeyListener
     /**
      * Validates contents of all cells in dataset.
      */
-    public boolean validateData(boolean doInBackground)
-    {
+    public boolean validateData(boolean doInBackground) {
         dataValidated = false;
         setOpKiller(null);
 
         final Vector<UploadTableInvalidValue> issues = new Vector<UploadTableInvalidValue>();
 
-        final UploaderTask validateTask = new UploaderTask(true, "WB_UPLOAD_CANCEL_MSG")
-        {
+        final UploaderTask validateTask = new UploaderTask(true, "WB_UPLOAD_CANCEL_MSG") {
             @Override
-            public Object doInBackground()
-            {
+            public Object doInBackground() {
                 start();
-            	try
-                {
+            	try {
                     int progress = 0;
                     initProgressBar(0, uploadTables.size(), true, 
                             getResourceString("WB_UPLOAD_VALIDATING") + " " + getResourceString("ERD_TABLE"), mainPanel.getCurrOpProgress());
-                    for (UploadTable tbl : uploadTables)
-                    {
+                    for (UploadTable tbl : uploadTables) {
                     	tbl.clearBlankness();
                     }
-                    for (UploadTable tbl : uploadTables)
-                    {
+                    for (UploadTable tbl : uploadTables) {
                         setCurrentOpProgress(++progress, mainPanel.getCurrOpProgress());
                         issues.addAll(validateLengths(tbl, -1, -1));
                         issues.addAll(tbl.validateValues(uploadData));
@@ -2035,9 +2031,7 @@ public class Uploader implements ActionListener, KeyListener
                     Collections.sort(issues);
                     dataValidated = issues.size() == 0;
                     return dataValidated;
-                }
-                catch (Exception ex)
-                {
+                } catch (Exception ex) {
                     setOpKiller(ex);
                     return false;
                 }
@@ -2061,18 +2055,6 @@ public class Uploader implements ActionListener, KeyListener
                     setCurrentOp(Uploader.USER_INPUT);
                 }
             }
-
-//			/* (non-Javadoc)
-//			 * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader.UploaderTask#cancelTask()
-//			 */
-//			@Override
-//			public synchronized void cancelTask()
-//			{
-//				super.cancelTask();
-//				interrupt();
-//			}
-
-            
         };
         
         SwingUtilities.invokeLater(new Runnable() {
