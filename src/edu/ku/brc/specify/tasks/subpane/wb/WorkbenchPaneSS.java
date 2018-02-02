@@ -4185,7 +4185,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     {
         List<SubPaneIFace> result = new LinkedList<SubPaneIFace>();
         for (SubPaneIFace pane : SubPaneMgr.getInstance().getSubPanes())
-        {final DBInfoBase fld, final Object val, final DBTableInfo tbl,
+        {
             if (pane instanceof ESResultsSubPane)
             {
                 result.add(pane);
