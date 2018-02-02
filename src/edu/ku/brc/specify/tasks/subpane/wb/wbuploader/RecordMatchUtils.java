@@ -516,11 +516,19 @@ public class RecordMatchUtils {
     private static String getSQLForVal(final DBInfoBase fld, final Object val, final DBTableInfo tbl, final Integer seq) {
         String name = fld instanceof DBFieldInfo ? ((DBFieldInfo)fld).getColumn() : ((DBRelationshipInfo)fld).getColName();
         Object valStr = val instanceof DataModelObjBase ? ((DataModelObjBase)val).getId() : BasicSQLUtils.getStrValue(val);
-        if (val != null || includeNullCondition(fld, tbl)) {
+        if (includeConditionForFld(fld, tbl) && (val != null || includeNullCondition(fld, tbl))) {
             return tbl.getAbbrev() + seq + "." + name + (val == null ? " is null" : " = " + valStr);
         } else {
             return "";
         }
+    }
+
+    private static boolean includeConditionForFld(final DBInfoBase fld, final DBTableInfo tbl) {
+        if (Treeable.class.isAssignableFrom(tbl.getClassObj())) {
+            return (!(fld instanceof DBFieldInfo) || fld.getName().equalsIgnoreCase("name")
+                                                || fld.getName().equalsIgnoreCase("Rankid"));
+        }
+        return true;
     }
 
     private static boolean includeNullCondition(final DBInfoBase fld, DBTableInfo tbl) {
