@@ -6208,7 +6208,16 @@ public class Uploader implements ActionListener, KeyListener
     		unlockTrees(trees);
     	}
     }
-    
+
+    public boolean containsTable(final DBTableInfo tblInfo) {
+        for (UploadTable ut : uploadTables) {
+            if (ut.getTable().getTableInfo() != null
+                    && tblInfo.getTableId() == ut.getTable().getTableInfo().getTableId()) {
+                return true;
+            }
+        }
+        return false;
+    }
     /**
      * @param umsbp
      * 

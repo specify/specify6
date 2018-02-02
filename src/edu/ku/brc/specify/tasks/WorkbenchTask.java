@@ -1847,6 +1847,10 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     	try {
          	try {
         		WorkbenchValidator wbv = new WorkbenchValidator(wb);
+        		if (!wbv.getUploader().containsTable(tbl)) {
+                    UIRegistry.showLocalizedError("WorkbenchPaneSS.NoBEFldsFromTbl", tbl.getTitle());
+                    return false;
+                }
         		Set<Integer> itemIdsAdded = new TreeSet<Integer>();
         		int r = 0;
         		for (RecordSetItemIFace item : rs.getOrderedItems()) {
