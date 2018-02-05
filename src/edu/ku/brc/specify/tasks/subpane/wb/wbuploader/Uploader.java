@@ -5795,10 +5795,10 @@ public class Uploader implements ActionListener, KeyListener
 							 */
 							@Override
 							public void run() {
-							    RecordSetTask rsTsk = (RecordSetTask)ContextMgr.getTaskByClass(RecordSetTask.class);
+							    /*RecordSetTask rsTsk = (RecordSetTask)ContextMgr.getTaskByClass(RecordSetTask.class);
 							    if (rsTsk != null) {
 							        rsTsk.addRecordSetToNavBox(mergedRs);
-                                } else {
+                                } else*/ {
                                     CommandAction cmd = new CommandAction(RecordSetTask.RECORD_SET, RecordSetTask.ADD_TO_NAV_BOX);
                                     cmd.setData(mergedRs);
                                     CommandDispatcher.dispatch(cmd);
