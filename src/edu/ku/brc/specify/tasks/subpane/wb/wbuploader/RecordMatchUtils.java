@@ -527,6 +527,8 @@ public class RecordMatchUtils {
         if (Treeable.class.isAssignableFrom(tbl.getClassObj())) {
             return (!(fld instanceof DBFieldInfo) || fld.getName().equalsIgnoreCase("name")
                                                 || fld.getName().equalsIgnoreCase("Rankid"));
+        } else if (tbl.getClassObj().equals(PrepType.class)) {
+            return (!(fld instanceof DBFieldInfo) || fld.getName().equalsIgnoreCase("name"));
         }
         return true;
     }
