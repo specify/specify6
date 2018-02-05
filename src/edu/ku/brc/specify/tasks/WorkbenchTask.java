@@ -3865,6 +3865,11 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             return true;
         }
     }
+
+    protected boolean isPrepType(final SpQueryField f) {
+        return "prepType".equalsIgnoreCase(f.getFieldName())
+                || f.getStringId().toLowerCase().endsWith("65.preptype.name");
+    }
     /**
      * @param f
      * @param tblMgr
@@ -3874,13 +3879,22 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     @SuppressWarnings("unchecked")
     protected Pair<DBTableInfo, DBFieldInfo> getQueryFldWBMapping(final SpQueryField f, final DBTableIdMgr tblMgr,
                                                                     final Map<String, List<Element>> defMap) {
-    	if (f.getIsRelFld()) {
+        if (isPrepType(f)) {
+            DBTableInfo ti = tblMgr.getInfoByTableName("preparation");
+            if (ti != null) {
+                DBFieldInfo fi = ti.getFieldByName("prepType");
+                if (ti != null && fi != null) {
+                    return new Pair<>(ti, fi);
+                }
+            }
+            return null;
+        }
+        if (f.getIsRelFld()) {
     	    return getQueryRelFldWBMapping(f, tblMgr, defMap);
         }
         if (isNumericDatePart(f)) {
     	    return null;
         }
-
         String[] tblIdList = f.getTableList().split(",");
     	String tblIdCode = tblIdList[tblIdList.length-1];
     	String[] idParts = tblIdCode.split("-");
