@@ -289,18 +289,18 @@ public class WorkbenchPaneSS extends BaseSubPane
         }
 
         Highlighter simpleStriping = HighlighterFactory.createSimpleStriping();
-        GridCellHighlighter hl = new GridCellHighlighter(new GridCellPredicate(GridCellPredicate.AnyPredicate, null));
+        GridCellHighlighter hl = new GridCellHighlighter(new GridCellPredicate(GridCellPredicate.AnyPredicate, null, null));
         Short[] errs = {WorkbenchDataItem.VAL_ERROR};
-        ColorHighlighter errColorHighlighter = new ColorHighlighter(new GridCellPredicate(GridCellPredicate.ValidationPredicate, errs), 
+        ColorHighlighter errColorHighlighter = new ColorHighlighter(new GridCellPredicate(GridCellPredicate.ValidationPredicate, errs, null),
         		CellRenderingAttributes.errorBackground, null);
         Short[] newdata = {WorkbenchDataItem.VAL_NEW_DATA};
-        ColorHighlighter noDataHighlighter = new ColorHighlighter(new GridCellPredicate(GridCellPredicate.MatchingPredicate, newdata), 
+        ColorHighlighter noDataHighlighter = new ColorHighlighter(new GridCellPredicate(GridCellPredicate.MatchingPredicate, newdata, null),
         		CellRenderingAttributes.newDataBackground, null);
         Short[] multimatch = {WorkbenchDataItem.VAL_MULTIPLE_MATCH};
-        ColorHighlighter multiMatchHighlighter = new ColorHighlighter(new GridCellPredicate(GridCellPredicate.MatchingPredicate, multimatch), 
+        ColorHighlighter multiMatchHighlighter = new ColorHighlighter(new GridCellPredicate(GridCellPredicate.MatchingPredicate, multimatch, null),
         		CellRenderingAttributes.multipleMatchBackground, null);
         Short[] edited = {WorkbenchDataItem.VAL_EDIT};
-        ColorHighlighter editedHighlighter = new ColorHighlighter(new GridCellPredicate(GridCellPredicate.EditedPredicate, edited), 
+        ColorHighlighter editedHighlighter = new ColorHighlighter(new GridCellPredicate(GridCellPredicate.EditedPredicate, edited, errs),
         		CellRenderingAttributes.editedBackground, null);
 
         spreadSheet.setHighlighters(simpleStriping, hl, noDataHighlighter, multiMatchHighlighter, editedHighlighter, errColorHighlighter);
@@ -6234,11 +6234,13 @@ public class WorkbenchPaneSS extends BaseSubPane
 		final static public int AnyPredicate = 3;
 		protected final int activation;
 		protected final Short[] conditions;
+		protected final Short[] antiConditions;
 		
-		public GridCellPredicate(int activation, Short[] conditions)
+		public GridCellPredicate(int activation, Short[] conditions, Short[] antiConditions)
 		{
 			this.activation = activation;
 			this.conditions = conditions;
+			this.antiConditions = antiConditions;
 		}
 
 		/* (non-Javadoc)
@@ -6259,6 +6261,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 			}
 			int status = wbCell.getEditorValidationStatus();
 			if (activation == AnyPredicate) {
+			    //need to do this to get cell borders
 				((JLabel )arg0).setToolTipText(null);
 				//Seems like a good idea to try to be as efficient as possible
 				//but this will need to be recoded as new cell states are added
@@ -6268,13 +6271,27 @@ public class WorkbenchPaneSS extends BaseSubPane
 					|| (status & WorkbenchDataItem.VAL_NOT_MATCHED) != 0
 					|| (status & WorkbenchDataItem.VAL_EDIT) != 0;
 			} else {
-				for (Short condition : conditions) {
-					if ((condition & status) != 0) {
-						//System.out.println("pos: " + arg1.row + ", " + arg1.column + ": " + wbCell.getStatusText());
-						((JLabel )arg0).setToolTipText(wbCell.getStatusText());
-						return true;
-					} 				
-				}
+				if (conditions != null) {
+				    boolean result = false;
+                    for (Short condition : conditions) {
+                        if ((condition & status) != 0) {
+                            ((JLabel )arg0).setToolTipText(wbCell.getStatusText());
+                            result = true;
+                            break;
+                        }
+                    }
+                    if (result && antiConditions != null) {
+                        for (Short condition : antiConditions) {
+                            if ((condition & status) != 0) {
+                                ((JLabel )arg0).setToolTipText(wbCell.getStatusText());
+                                result = false;
+                                break;
+                            }
+                        }
+
+                    }
+                    return result;
+                }
 			}
 			return false;
 		}

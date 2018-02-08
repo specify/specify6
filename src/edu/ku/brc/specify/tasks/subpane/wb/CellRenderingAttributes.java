@@ -53,25 +53,15 @@ public class CellRenderingAttributes
 		}
 	}
 
-	protected Color blend(final Color color1, final Color color2) {
-		return new Color((color1.getRed() + color2.getRed())/2,
-						(color1.getGreen() + color2.getGreen())/2,
-						(color1.getBlue() + color2.getBlue())/2,
-						(color1.getAlpha() + color2.getAlpha())/2);
-	}
-
 	protected Atts getAtts(int wbCellStatus, String statusText,
-			boolean doIncrementalValidation, boolean doIncrementalMatching, boolean doShowEditedCells) 
-	{
+			boolean doIncrementalValidation, boolean doIncrementalMatching, boolean doShowEditedCells) {
 		LineBorder bdr = null;
 		Color bg = null;
 		if (doIncrementalValidation
-				&& (wbCellStatus & WorkbenchDataItem.VAL_ERROR) != 0)
-		{
+				&& (wbCellStatus & WorkbenchDataItem.VAL_ERROR) != 0) {
 			bdr = new LineBorder(errorBorder);
 			bg = errorBackground;
-		}
-		if (doIncrementalMatching
+		} else if (doIncrementalMatching
 				&& (wbCellStatus & WorkbenchDataItem.VAL_NEW_DATA) != 0) {
 			bdr = new LineBorder(newDataBorder);
 			bg = newDataBackground;
@@ -83,10 +73,9 @@ public class CellRenderingAttributes
 				&& (wbCellStatus & WorkbenchDataItem.VAL_NOT_MATCHED) != 0) {
 			bdr = new LineBorder(notMatchedBorder);
 			bg = notMatchedBackground;
-		}
-		if (doShowEditedCells && (wbCellStatus & WorkbenchDataItem.VAL_EDIT) != 0) {
+		} else if (doShowEditedCells && (wbCellStatus & WorkbenchDataItem.VAL_EDIT) != 0) {
 			bdr = new LineBorder(editedBorder);
-			bg = bg == null ? editedBackground : blend(bg, editedBackground);
+			bg = bg == null ? editedBackground : bg;
 		}
 		return new Atts(statusText, bdr, bg);
 	}
