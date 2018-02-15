@@ -336,8 +336,11 @@ public class Uploader implements ActionListener, KeyListener
                 }
                 idStr.append(rowNumber);
                 r++;
-                if (r % 1000 == 0) {
-                    idStr.append(") or wbr.rownumber in(");
+                if (r % 1000 == 0)  {
+                    idStr.append(")");
+                    if (r < uploaded.size() - 1) {
+                        idStr.append(" or wbr.rownumber in(");
+                    }
                     comma = false;
                 }
             }
