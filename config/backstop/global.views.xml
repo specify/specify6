@@ -1218,20 +1218,21 @@
         </viewdef>
         
         <viewdef
-            type="form"
-            name="PrepType"
-            class="edu.ku.brc.specify.datamodel.PrepType"
-            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
-            <desc><![CDATA[The PrepType form]]></desc>
+                type="form"
+                name="PrepType"
+                class="edu.ku.brc.specify.datamodel.PrepType"
+                gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+                settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
 
-            <rowDef>t:p</rowDef>
-            <columnDef>p,3dlu,p</columnDef>
+            <desc><![CDATA[PrepType Data Entry Form]]></desc>
+            <columnDef>p,3dlu,p,6dlu,p</columnDef>
+            <rowDef>p,2dlu,p</rowDef>
 
             <rows>
                 <row>
-                    <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="name" uitype="text"/>
+                    <cell type="label" labelfor="1" label="Name"/>
+                    <cell type="field" id="1" name="name" uitype="text" isrequired="true"/>
+                    <cell type="field" id="2" name="isLoanable" label="Is Loanable" uitype="checkbox"/>
                 </row>
             </rows>
         </viewdef>
