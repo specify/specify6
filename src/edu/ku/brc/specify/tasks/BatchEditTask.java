@@ -120,9 +120,9 @@ public class BatchEditTask extends QueryTask {
         //htmlDesc.append("<style>ol{margin: 0;}</style>");
         htmlDesc.append("<body font face=\"verdana\">");
         htmlDesc.append("<h3>Welcome to Batch Editing</h3>"); //I18N
-        htmlDesc.append("<b>Warning:</b> Batch Editing is a powerful method for improving data quality--it can change potentially " +
+        htmlDesc.append("<b>Warning:</b> Batch Editing is a powerful method to improve data quality--it can potentially change" +
                 "thousands of data records with just a few mouse clicks. Once edits are made and confirmed, chang" +
-                "es will be permanent and they cannot be rolled back. We strongly recommend that you have a fresh " +
+                "es will be permanent and they cannot be rolled back. We strongly recommend that you create a current " +
                 "backup of your database, in case you need to restore your data.");
         htmlDesc.append("<p>Follow these instructions to edit your data:</p>");
         //htmlDesc.append("<ol>");
@@ -133,10 +133,10 @@ public class BatchEditTask extends QueryTask {
         htmlDesc.append("<li>Open a saved Query</li>");
         htmlDesc.append("<li>Drop a Record Set onto a saved Query</li>");
         htmlDesc.append("</ul>");
-        htmlDesc.append("<p>2. In the Query Builder, specify parameters and then click the <i>Search button</i> to execute the query.</p>");
+        htmlDesc.append("<p>2. In the Query Builder, add parameters and then click the <i>Search button</i> to execute the query.</p>");
         htmlDesc.append("<p>3. In Query Results, then click on the small Batch Editing (Pencils) icon in the upper right Query Re" +
                 "sults title bar to begin your editing session. If you want to Batch Edit a subset of the Query Results, " +
-                "first highlight those records, then click in the small Batch Editing icon at the top of the Query Results " +
+                "first highlight those records, then click on the small Batch Editing icon at the top of the Query Results " +
                 "screen.</p>");
         //htmlDesc.append("</ol>");
         htmlDesc.append("</body>");
