@@ -77,6 +77,8 @@ public class AskForNumbersDlg extends CustomDialog implements ChangeListener
     protected Vector<Integer>     dataObjsIds   = new Vector<Integer>();
     protected String              labelKey;
     protected String              fieldName;
+    protected boolean             requireNumbers;
+    protected boolean             noNumbers = false;
     protected JTextArea           textArea;
     
     protected NumberEditorPanel   errorPanel;
@@ -86,8 +88,15 @@ public class AskForNumbersDlg extends CustomDialog implements ChangeListener
     protected ArrayList<String>   numMissingList = new ArrayList<String>();
     
     protected PanelBuilder        pb;
-    
-    
+
+
+    public AskForNumbersDlg(final String  titleKey,
+                            final String  labelKey,
+                            Class<? extends FormDataObjIFace> dataClass,
+                            final String  fieldName) throws HeadlessException {
+        this(titleKey, labelKey, dataClass, fieldName, true);
+    }
+
     /**
      * @param dialog
      * @param title
@@ -99,12 +108,14 @@ public class AskForNumbersDlg extends CustomDialog implements ChangeListener
     public AskForNumbersDlg(final String  titleKey,
                             final String  labelKey,
                             Class<? extends FormDataObjIFace> dataClass,
-                            final String  fieldName) throws HeadlessException
+                            final String  fieldName,
+                            final boolean requireNumbers) throws HeadlessException
     {
-        super((Frame)UIRegistry.getTopWindow(), getResourceString(titleKey), true, OKCANCELHELP, null);
+        super((Frame)UIRegistry.getTopWindow(), getResourceString(titleKey), true, requireNumbers ? OKCANCELHELP : OKCANCELAPPLYHELP, null);
         this.labelKey  = labelKey;
         this.dataClass = dataClass;
         this.fieldName = fieldName;
+        this.requireNumbers = requireNumbers;
         
         this.helpContext = "AskForCatNumbers";
     }
@@ -141,6 +152,12 @@ public class AskForNumbersDlg extends CustomDialog implements ChangeListener
         });
         
         getOkBtn().setEnabled(false);
+        getApplyBtn().addActionListener((ae) -> {
+            noNumbers = true;
+            setVisible(false);
+        });
+        getApplyBtn().setText(getResourceString("AskForNumbersDlg.AddUncat"));
+        getApplyBtn().setToolTipText(getResourceString("AskForNumbersDlg.AddUncatTip"));
         
         pack();
     }
@@ -376,17 +393,16 @@ public class AskForNumbersDlg extends CustomDialog implements ChangeListener
     /**
      * @return
      */
-    public RecordSetIFace getRecordSet()
-    {
-        if (dataObjsIds.size() > 0)
-        {
+    public RecordSetIFace getRecordSet() {
+        if (dataObjsIds.size() > 0 || noNumbers) {
             RecordSet rs = new RecordSet();
             rs.initialize();
             rs.setSpecifyUser(AppContextMgr.getInstance().getClassObject(SpecifyUser.class));
             rs.setDbTableId(DBTableIdMgr.getInstance().getByClassName(dataClass.getName()).getTableId());
-            for (Integer id : dataObjsIds)
-            {
-                rs.addItem(id);
+            if (!noNumbers) {
+                for (Integer id : dataObjsIds) {
+                    rs.addItem(id);
+                }
             }
             return rs;
         }

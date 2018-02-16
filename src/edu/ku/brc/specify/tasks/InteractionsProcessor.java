@@ -54,6 +54,7 @@ import edu.ku.brc.specify.ui.SelectPrepsDlg;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import scala.collection.mutable.HashTable;
 
 /**
  * @author rod
@@ -213,7 +214,7 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
             // If the List is empty then
             if (rsList.size() == 0 && colObjRSList.size() == 0 && (isFor != forAcc || currPrepProvider != null))
             {
-                recordSet = task.askForDataObjRecordSet(CollectionObject.class, catNumField);
+                recordSet = task.askForDataObjRecordSet(CollectionObject.class, catNumField, isFor == forAcc);
                 
             } else 
             {
@@ -224,7 +225,7 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
                     
                 } else if (rv == ASK_TYPE.EnterDataObjs)
                 {
-                    recordSet = task.askForDataObjRecordSet(CollectionObject.class, catNumField);
+                    recordSet = task.askForDataObjRecordSet(CollectionObject.class, catNumField, isFor == forAcc);
                     
                 } else if (rv == ASK_TYPE.None) {
                 	recordSet = null;
@@ -249,88 +250,83 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
         	PrepLoaderSQL prepLoaderSQL = new PrepLoaderSQL(null, recordSet, infoRequest, isFor);
         	prepLoaderSQL.execute();
         } else {
-        	DBTableIdMgr.getInstance().getInClause(recordSet);
+            if (recordSet.getNumItems() == 0 && isFor != forAcc) {
+                if (isFor == forLoan) {
+                    task.addPrepsToLoan(currPrepProvider, infoRequest, new Hashtable<Integer, Integer>(), viewable);
+                } else if (isFor == forGift) {
+                    task.addPrepsToGift(currPrepProvider, infoRequest, new Hashtable<Integer, Integer>(), viewable);
+                }
+            } else {
+                DBTableIdMgr.getInstance().getInClause(recordSet);
 
-        	DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(recordSet.getDbTableId());
-        
-        	DataProviderFactory.getInstance().evict(tableInfo.getClassObj()); // XXX Not sure if this is really needed
-        
-        	DataProviderSessionIFace session = null;
-        	try
-        	{
-        		session = DataProviderFactory.getInstance().createSession();
-            
-        		// OK, it COULD be a RecordSet contain one or more InfoRequest, 
-        		// we will only accept an RS with one InfoRequest
-        		if (infoRequest == null && recordSet.getDbTableId() == InfoRequest.getClassTableId())
-        		{
-        			if (recordSet.getNumItems() == 1)
-        			{
-        				RecordSetItemIFace item = recordSet.getOnlyItem();
-        				if (item != null)
-        				{
-        					InfoRequest infoReq = session.get(InfoRequest.class, item.getRecordId().intValue());
-        					if (infoReq != null)
-        					{
-        						createOrAdd(null, infoReq, infoReq.getRecordSets().iterator().next());
-                            
-        					} else
-        					{
-        						// error about missing info request
-        						// Error Dialog
-        					}
-        				} else
-        				{
-        					// error about item being null for some unbelievable reason 
-        					// Error Dialog
-        				}
-        			} else 
-        			{
-        				// error about item having more than one or none
-        				// Error Dialog
-        			}
-        			return;
-        		}
-            
-        		// OK, here we have a recordset of CollectionObjects
-        		// First we process all the CollectionObjects in the RecordSet
-        		// and create a list of Preparations that can be loaned
-        		String sqlStr = DBTableIdMgr.getInstance().getQueryForTable(recordSet);
-        		if (StringUtils.isNotBlank(sqlStr))
-        		{
-                
-        			//CACA 
-        			final JStatusBar statusBar = UIRegistry.getStatusBar();
-        			statusBar.setIndeterminate(LOAN_LOADR, true);
-                
-        			if (recordSet.getNumItems() > 2)
-        			{
-        				UIRegistry.writeSimpleGlassPaneMsg(getResourceString("NEW_INTER_LOADING_PREP"), 24);
-        			}
-                
-        			PrepLoaderSQL prepLoaderSQL = new PrepLoaderSQL(currPrepProvider, recordSet, infoRequest, isFor);
-        			prepLoaderSQL.addPropertyChangeListener(
-                        new PropertyChangeListener() {
-                            public  void propertyChange(PropertyChangeEvent evt) {
-                                log.debug(evt.getNewValue());
-                                if ("progress".equals(evt.getPropertyName())) 
-                                {
-                                    statusBar.setValue(LOAN_LOADR, (Integer)evt.getNewValue());
+                DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(recordSet.getDbTableId());
+
+                DataProviderFactory.getInstance().evict(tableInfo.getClassObj()); // XXX Not sure if this is really needed
+
+                DataProviderSessionIFace session = null;
+                try {
+                    session = DataProviderFactory.getInstance().createSession();
+
+                    // OK, it COULD be a RecordSet contain one or more InfoRequest,
+                    // we will only accept an RS with one InfoRequest
+                    if (infoRequest == null && recordSet.getDbTableId() == InfoRequest.getClassTableId()) {
+                        if (recordSet.getNumItems() == 1) {
+                            RecordSetItemIFace item = recordSet.getOnlyItem();
+                            if (item != null) {
+                                InfoRequest infoReq = session.get(InfoRequest.class, item.getRecordId().intValue());
+                                if (infoReq != null) {
+                                    createOrAdd(null, infoReq, infoReq.getRecordSets().iterator().next());
+
+                                } else {
+                                    // error about missing info request
+                                    // Error Dialog
                                 }
+                            } else {
+                                // error about item being null for some unbelievable reason
+                                // Error Dialog
                             }
-                        });
-        			prepLoaderSQL.execute();
-                
-        		} else
-        		{
-        			log.error("Query String empty for RecordSet tableId["+recordSet.getDbTableId()+"]");
-        		}    
-        	} catch (Exception ex)
-        	{
-        		ex.printStackTrace();
-        		edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-        		edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(InteractionsProcessor.class, ex);
-        	}
+                        } else {
+                            // error about item having more than one or none
+                            // Error Dialog
+                        }
+                        return;
+                    }
+
+                    // OK, here we have a recordset of CollectionObjects
+                    // First we process all the CollectionObjects in the RecordSet
+                    // and create a list of Preparations that can be loaned
+                    String sqlStr = DBTableIdMgr.getInstance().getQueryForTable(recordSet);
+                    if (StringUtils.isNotBlank(sqlStr)) {
+
+                        //CACA
+                        final JStatusBar statusBar = UIRegistry.getStatusBar();
+                        statusBar.setIndeterminate(LOAN_LOADR, true);
+
+                        if (recordSet.getNumItems() > 2) {
+                            UIRegistry.writeSimpleGlassPaneMsg(getResourceString("NEW_INTER_LOADING_PREP"), 24);
+                        }
+
+                        PrepLoaderSQL prepLoaderSQL = new PrepLoaderSQL(currPrepProvider, recordSet, infoRequest, isFor);
+                        prepLoaderSQL.addPropertyChangeListener(
+                                new PropertyChangeListener() {
+                                    public void propertyChange(PropertyChangeEvent evt) {
+                                        log.debug(evt.getNewValue());
+                                        if ("progress".equals(evt.getPropertyName())) {
+                                            statusBar.setValue(LOAN_LOADR, (Integer) evt.getNewValue());
+                                        }
+                                    }
+                                });
+                        prepLoaderSQL.execute();
+
+                    } else {
+                        log.error("Query String empty for RecordSet tableId[" + recordSet.getDbTableId() + "]");
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(InteractionsProcessor.class, ex);
+                }
+            }
         }
     }
 

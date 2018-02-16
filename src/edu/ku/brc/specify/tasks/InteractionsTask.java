@@ -954,36 +954,37 @@ public class InteractionsTask extends BaseTask
         }
         
         Hashtable<Integer, LoanPreparation> prepToLoanPrepHash = null;
-        if (existingLoan != null)
-        {
+        if (existingLoan != null) {
             prepToLoanPrepHash = new Hashtable<Integer, LoanPreparation>();
-            for (LoanPreparation lp : existingLoan.getLoanPreparations())
-            {
-                prepToLoanPrepHash.put(lp.getPreparation().getId(), lp);
+            for (LoanPreparation lp : existingLoan.getLoanPreparations()) {
+                if (lp.getPreparation() !=  null) {
+                    prepToLoanPrepHash.put(lp.getPreparation().getId(), lp);
+                }
             }
         }
         
         DataProviderSessionIFace session = null;
-        try
-        {
+        try {
             session = DataProviderFactory.getInstance().createSession();
-            
-            for (Integer prepId : prepsHash.keySet())
-            {
-                Preparation prep  = session.get(Preparation.class, prepId);
-                Integer     count = prepsHash.get(prepId);
-                if (prepToLoanPrepHash != null)
-                {
+
+            if (prepsHash.isEmpty()) {
+                LoanPreparation lpo = new LoanPreparation();
+                lpo.initialize();
+                lpo.setLoan(loan);
+                loan.getLoanPreparations().add(lpo);
+            } else for (Integer prepId : prepsHash.keySet()) {
+                Preparation prep = session.get(Preparation.class, prepId);
+                Integer count = prepsHash.get(prepId);
+                if (prepToLoanPrepHash != null) {
                     LoanPreparation lp = prepToLoanPrepHash.get(prep.getId());
-                    if (lp != null)
-                    {
+                    if (lp != null) {
                         int lpCnt = lp.getQuantity();
                         lpCnt += count;
                         lp.setQuantity(lpCnt);
                         continue;
                     }
                 }
-                
+
                 LoanPreparation lpo = new LoanPreparation();
                 lpo.initialize();
                 lpo.setPreparation(prep);
@@ -991,7 +992,6 @@ public class InteractionsTask extends BaseTask
                 lpo.setLoan(loan);
                 loan.getLoanPreparations().add(lpo);
             }
-            
         } catch (Exception ex)
         {
             ex.printStackTrace();
