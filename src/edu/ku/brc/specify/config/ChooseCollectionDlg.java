@@ -48,7 +48,9 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.prefs.FormattingPrefsPanel;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIRegistry;
@@ -169,13 +171,13 @@ public class ChooseCollectionDlg extends CustomDialog
                 label.setText(collPair.first);
                 
                 String dispType = collIdToDispType.get(collPair.second);
-                
-                DisciplineType disciplineType = DisciplineType.getDiscipline(DisciplineType.STD_DISCIPLINES.valueOf(dispType));
-                label.setIcon(iconHash.get(disciplineType.getDisciplineType().toString()));
-                
-                ImageIcon imgIcon = IconManager.getIcon(dispType, IconManager.IconSize.Std24);
-                if (imgIcon == null)
-                {
+                String iconNamePref = FormattingPrefsPanel.getDisciplineImagePrefName(collPair.first);
+                String customDiscIcon = null;
+                if (iconNamePref != null) {
+                    customDiscIcon = AppPreferences.getRemote().get(iconNamePref, null);
+                }
+                ImageIcon imgIcon = IconManager.getIcon(customDiscIcon == null ? dispType : customDiscIcon, IconManager.IconSize.Std24);
+                if (imgIcon == null) {
                     imgIcon = IconManager.getIcon("Blank", IconManager.IconSize.Std24);
                 }
                 label.setIcon(imgIcon);
