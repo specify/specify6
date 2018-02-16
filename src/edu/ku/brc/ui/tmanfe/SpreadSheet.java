@@ -100,7 +100,7 @@ import edu.ku.brc.util.Pair;
  * 
  **************************************************************************************************/
 @SuppressWarnings("serial")
-public class SpreadSheet  extends SearchableJXTable implements ActionListener
+public class SpreadSheet  extends SearchableJXTable implements ActionListener, RHCellOwner
 {
     protected static final Logger log = Logger.getLogger(SpreadSheet.class);
     
@@ -1301,53 +1301,6 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
 
     }
 
-	
-	class RowHeaderLabel extends JComponent
-    {
-        protected String rowNumStr;
-        protected int    rowNum;
-        protected Font   font;
-   
-        protected int    labelWidth  = Integer.MAX_VALUE;     
-        protected int    labelheight = Integer.MAX_VALUE;     
-        
-        public RowHeaderLabel(int rowNum, final Font font)
-        {
-            this.rowNum    = rowNum;
-            this.rowNumStr = Integer.toString(rowNum);
-            this.font      = font;
-        }
-
-        public int getRowNum()
-        {
-            return rowNum;
-        }
-
-        /* (non-Javadoc)
-         * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
-         */
-        @Override
-        protected void paintComponent(Graphics g)
-        {
-            super.paintComponent(g);
-            
-            g.setFont(font);
-            
-            if (labelWidth == Integer.MAX_VALUE)
-            {
-                FontMetrics fm = getFontMetrics(font);
-                labelheight = fm.getAscent();
-                labelWidth  = fm.stringWidth(rowNumStr);
-            }
-            
-            Insets    ins  = getInsets();
-            Dimension size = this.getSize();
-            int y = size.height - ((size.height - labelheight) / 2) - ins.bottom;
-            
-            g.drawString(rowNumStr, (size.width - labelWidth) / 2, y);
-        }
-    }
-    
 
     /* (non-Javadoc)
      * @see javax.swing.JTable#getModel()
@@ -1408,181 +1361,29 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
             rhCellMouseAdapter = null;
         }
     }
-    
-    /**
-     * MouseAdapter for selecting rows by clicking and dragging on the Row Headers.
-     */
-    class RHCellMouseAdapter extends MouseAdapter
-    {
-        protected JTable table;
-        protected Hashtable<Integer, Boolean> selectionHash = new Hashtable<Integer, Boolean>();
-        protected Hashtable<Integer, Boolean> doubleSelected = new Hashtable<Integer, Boolean>();
-        protected int selAnchor = -1;
-        protected int selLead   = -1;
-        
-        // these fields are important when a user ctrl-clicks a row and then drags
-        protected boolean ctrlWasDown = false;
-        protected boolean dragIsDeselecting = false;
-        
-        public RHCellMouseAdapter(final JTable table)
-        {
-            this.table = table;
-        }
 
-        /* (non-Javadoc)
-         * @see java.awt.event.MouseAdapter#mousePressed(java.awt.event.MouseEvent)
-         */
-        @SuppressWarnings("synthetic-access")
-        @Override
-        public void mousePressed(MouseEvent e) 
-        {
-            log.debug("mousePressed entered");
-            log.debug("anchor: " + selAnchor);
-            log.debug("lead   :" + selLead);
-            
-            if (isEditing())
-            {
-                getCellEditor().stopCellEditing();
-            }
-            
-            RowHeaderLabel lbl = (RowHeaderLabel)e.getSource();
-            int            row = lbl.getRowNum()-1;
-            
-            // toggle the selection state of the clicked row
-            // and set the current row as the new anchor
-            boolean ctrlDown = false;
-            if (UIHelper.getOSType() == OSTYPE.MacOSX)
-            {
-            	ctrlDown = e.isMetaDown();
-            }
-            else
-            {
-            	ctrlDown = e.isControlDown();
-            }
-            if (ctrlDown)
-            {
-                ListSelectionModel selModel = table.getSelectionModel();
-                
-                // figure out the selection state of this row
-                boolean wasSelected = table.getSelectionModel().isSelectedIndex(row);
-                
-                // toggle the selection state of this row
-                if (wasSelected)
-                {
-                    // deselect it
-                    selModel.removeSelectionInterval(row, row);
-                    dragIsDeselecting = true;
-                }
-                else
-                {
-                    // select it and make it the new anchor
-                    selModel.addSelectionInterval(row, row);
-                    dragIsDeselecting = false;
-                }
-                selAnchor = row;
-                selLead   = row;
-                ctrlWasDown = true;
-            }
-            else if (e.isShiftDown())
-            {
-                ListSelectionModel selModel = table.getSelectionModel();
-
-                selModel.removeSelectionInterval(selAnchor, selLead);
-                selModel.addSelectionInterval(selAnchor, row);
-                selLead = row;
-            }
-            else // no modifier keys are down
-            {
-                // just select the current row
-                // and set it as the new anchor
-                table.setRowSelectionInterval(row, row);
-
-                table.setColumnSelectionInterval(0, table.getColumnCount()-1);
-                selAnchor = selLead = row;
-                
-                prevRowSelInx = getSelectedRow();
-                prevColSelInx = 0;
-            }
-            
-            rowSelectionStarted = true;
-            table.getSelectionModel().setValueIsAdjusting(true);
-            
-            log.debug("anchor: " + selAnchor);
-            log.debug("lead   :" + selLead);
-            log.debug("mousePressed exited");
-        }
-
-        /* (non-Javadoc)
-         * @see java.awt.event.MouseAdapter#mouseReleased(java.awt.event.MouseEvent)
-         */
-        @SuppressWarnings("synthetic-access")
-        @Override
-        public void mouseReleased(MouseEvent e) 
-        {
-            log.debug("mouseReleased entered");
-            log.debug("anchor: " + selAnchor);
-            log.debug("lead   :" + selLead);
-            
-            // the user has released the mouse button, so we're done selecting rows
-            //RowHeaderLabel lbl = (RowHeaderLabel)e.getSource();
-            //int            row = lbl.getRowNum()-1;
-
-            rowSelectionStarted = false;
-            table.getSelectionModel().setValueIsAdjusting(false);
-            ctrlWasDown = false;
-            dragIsDeselecting = false;
-            
-            log.debug("anchor: " + selAnchor);
-            log.debug("lead   :" + selLead);
-            log.debug("mouseReleased exited");
-        }
-
-        /* (non-Javadoc)
-         * @see java.awt.event.MouseAdapter#mouseEntered(java.awt.event.MouseEvent)
-         */
-        @SuppressWarnings("synthetic-access")
-        @Override
-        public void mouseEntered(MouseEvent e) 
-        {
-            // the user has clicked and is dragging, we are (de)selecting multiple rows...
-            if (rowSelectionStarted)
-            {
-                log.debug("mouseEntered entered");
-                log.debug("anchor: " + selAnchor);
-                log.debug("lead   :" + selLead);
-                
-                RowHeaderLabel lbl = (RowHeaderLabel)e.getSource();
-                int row    = lbl.getRowNum()-1;
-                selLead = row;
-                if (ctrlWasDown)
-                {
-                    if (dragIsDeselecting)
-                    {
-                        table.removeRowSelectionInterval(selAnchor, row);
-                    }
-                    else
-                    {
-                        table.addRowSelectionInterval(selAnchor, row);
-                    }
-                }
-                else
-                {
-                    table.setRowSelectionInterval(selAnchor, row);
-                }
-                table.setColumnSelectionInterval(0, table.getColumnCount()-1);
-                log.debug("anchor: " + selAnchor);
-                log.debug("lead   :" + selLead);
-                log.debug("mouseEntered exited");
-            }
-        }
-        
-        /**
-         * Cleans up references.
-         */
-        public void cleanUp()
-        {
-            this.table = null;
-        }
+    @Override
+    public void setPrevRowSelInx(int inx) {
+        prevRowSelInx = inx;
     }
-    
+
+    @Override
+    public void setPrevColSelInx(int inx) {
+        prevColSelInx = inx;
+    }
+
+    @Override
+    public void setRowSelectionStarted(boolean b) {
+        rowSelectionStarted = b;
+    }
+
+    @Override
+    public boolean isRowSelectionStarted() {
+        return rowSelectionStarted;
+    }
+
+    @Override
+    public JTable getTable() {
+        return this;
+    }
 }

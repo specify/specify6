@@ -38,12 +38,15 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
+import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.*;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.busrules.BaseTreeBusRules;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr.SCOPE;
+import edu.ku.brc.specify.dbsupport.cleanuptools.LocalityDuplicateRemover;
 import edu.ku.brc.specify.prefs.FormattingPrefsPanel;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
 import edu.ku.brc.specify.ui.BatchReidentifyPanel;
@@ -63,6 +66,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import static edu.ku.brc.specify.ui.DBObjDialogFactory.isLockOK;
 import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
@@ -1295,55 +1299,194 @@ public class DataEntryTask extends BaseTask
             rsMI.setPosition(MenuItemDesc.Position.After);
             menuItems.add(rsMI);
 
-//            menuTitle = "REMOVE_UNUSED_RECS_MENU";
-//            mneu = "REMOVE_UNUSED_RECS_MNEU";
-//            desc = "REMOVE_UNUSED_RECS_DESC";
-//            mi = UIHelper.createLocalizedMenuItem(menuTitle, mneu, desc, true, null);
-//            mi.addActionListener(ae -> doRemoveUnusedRecords());
-//            rsMI = new MenuItemDesc(mi, menuDesc);
-//            rsMI.setPosition(MenuItemDesc.Position.After);
-//            menuItems.add(rsMI);
+            //Remove Unused recs menu item
+            if (false) {
+                menuTitle = "REMOVE_UNUSED_RECS_MENU";
+                mneu = "REMOVE_UNUSED_RECS_MNEU";
+                desc = "REMOVE_UNUSED_RECS_DESC";
+                mi = UIHelper.createLocalizedMenuItem(menuTitle, mneu, desc, true, null);
+                mi.addActionListener(ae -> doRemoveUnusedRecords());
+                rsMI = new MenuItemDesc(mi, menuDesc);
+                rsMI.setPosition(MenuItemDesc.Position.After);
+                menuItems.add(rsMI);
+            }
+            //Remove Duplicates menu item
+            if (false && "manager".equalsIgnoreCase(AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getUserType())) {
+               List<JMenuItem> dupRemovers = getDupRemoveMenuItems();
+                if (dupRemovers.size() > 0 ) {
+                    menuTitle = "DataEntryTask.REMOVE_DUPLICATE_RECS_MENU";
+                    mneu = "DataEntryTask.REMOVE_DUPLICATE_RECS_MNEU";
+                    desc = "DataEntryTask.REMOVE_DUPLICATE_RECS_DESC";
+                    JMenu jm = UIHelper.createLocalizedMenu(menuTitle, mneu);
+                    for (JMenuItem dr : dupRemovers) {
+                        jm.add(dr);
+                    }
+                    rsMI = new MenuItemDesc(jm, menuDesc);
+                    rsMI.setPosition(MenuItemDesc.Position.After);
+
+                    menuItems.add(rsMI);
+                }
+            }
         }
         
         return menuItems;
     }
 
-//    protected void doRemoveUnusedRecords() {
-//        doRemoveUnusedLocalities();
-//    }
-//
-//    protected void doRemoveUnusedLocalities() {
-//        try {
-//            RecordSet unused = getUnusedRecRs("locality");
-//
-//        } catch (Exception ex) {
-//            ex.printStackTrace();
-//        }
-//    }
-//
-//    protected String getUnusedRecSql(final String tableName) throws Exception {
-//        if ("locality".equals(tableName)) return "select l.localityid from locality l left join collectingevent ce on ce.localityid = l.localityid where ce.localityid is null";
-//        throw new Exception("getUnusedSql(): unhandled tablename: " + tableName);
-//    }
-//
-//    protected List<Object> getUnusedRecList(final String tableName) throws Exception {
-//        return BasicSQLUtils.querySingleCol(getUnusedRecSql(tableName));
-//    }
-//
-//    protected RecordSet getUnusedRecRs(final String tableName) throws Exception{
-//        List<Object> unused = getUnusedRecList(tableName);
-//        RecordSet rs = new RecordSet();
-//        rs.initialize();
-//        rs.setDbTableId(DBTableIdMgr.getInstance().getInfoByTableName(tableName).getTableId());
-//        for (Object obj : unused) {
-//            RecordSetItem rsi = new RecordSetItem();
-//            rsi.initialize();
-//            rsi.setRecordSet(rs);
-//            rsi.setRecordId((Integer)obj);
-//            rs.getRecordSetItems().add(rsi);
-//        }
-//        return rs;
-//    }
+    protected List<DBTableInfo> getDupRemoveTbls() {
+        List<DBTableInfo> result = new ArrayList<>();
+        result.add(DBTableIdMgr.getInstance().getInfoById(Locality.getClassTableId()));
+        if (!AppContextMgr.getInstance().getClassObject(Collection.class).getIsEmbeddedCollectingEvent()) {
+            result.add(DBTableIdMgr.getInstance().getInfoById(CollectingEvent.getClassTableId()));
+        }
+        result.add(DBTableIdMgr.getInstance().getInfoById(CollectingTrip.getClassTableId()));
+        if (AppContextMgr.getInstance().getClassObject(Discipline.class).getType().toLowerCase().contains("paleo")) {
+            if (!AppContextMgr.getInstance().getClassObject(Discipline.class).getIsPaleoContextEmbedded()) {
+                result.add(DBTableIdMgr.getInstance().getInfoById(PaleoContext.getClassTableId()));
+            }
+        }
+        result.add(DBTableIdMgr.getInstance().getInfoById(Agent.getClassTableId()));
+        result.add(DBTableIdMgr.getInstance().getInfoById(ReferenceWork.getClassTableId()));
+        Collections.sort(result, new Comparator<DBTableInfo>() {
+            public int compare(DBTableInfo ti1, DBTableInfo ti2) {
+                return ti1.getTitle().compareTo(ti2.getTitle());
+            }
+        });
+        return result;
+    }
+
+    protected List<JMenuItem> getDupRemoveMenuItems() {
+        List<JMenuItem> result = new ArrayList<>();
+        for (DBTableInfo tbl : getDupRemoveTbls()) {
+            JMenuItem mi = UIHelper.createMenuItemWithAction((JMenu)null, String.format(getResourceString("DataEntryTask.RemoveDupsMenu"), tbl.getTitle()),
+                    null, null, true, null);
+            mi.addActionListener(ae -> doRemoveDuplicateRecs(tbl.getTableId()));
+            result.add(mi);
+        }
+        return result;
+    }
+
+    protected void doRemoveDuplicateRecs(int tblId) {
+        try {
+            DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(tblId);
+            String sql = LocalityDuplicateRemover.getDistinctRecSql(tblInfo, false, true,
+                    AppContextMgr.getInstance().getClassObject(Discipline.class).getId());
+            List<Object[]> dupSets = BasicSQLUtils.query(sql);
+            if (dupSets.size() == 0) {
+                UIRegistry.showLocalizedMsg("NO_DUP_RECS_FOR_TABLE");
+            } else {
+                long totalDups = 0;
+                for (Object[] row : dupSets) {
+                    totalDups += (Long)row[row.length - 1] - 1L;
+                }
+                final DuplicateSetDisplay dusd = new DuplicateSetDisplay(tblInfo, dupSets);
+                dusd.createUI();
+                CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), getResourceString("DataEntryTask.DupDlgTitle"),
+                        true, CustomDialog.OKCANCELAPPLY, dusd);
+                dlg.createUI();
+                dlg.setApplyLabel(getResourceString("DataEntryTask.RemoveBtn"));
+                dlg.getOkBtn().setVisible(false);
+                dlg.getApplyBtn().addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        SwingWorker<Pair<List<Integer>,List<Integer>>, Integer> w = new SwingWorker<Pair<List<Integer>, List<Integer>>, Integer>() {
+                            @Override
+                            protected Pair<List<Integer>,List<Integer>> doInBackground() throws Exception {
+                                List<Integer> failedRowIdxs = new ArrayList<>();
+                                List<Integer> deDupedRowIdxs = new ArrayList<>();
+                                int prev = -1;
+                                for (int r: dusd.getTable().getSelectedRows()) {
+                                    publish(prev, r);
+                                    Pair<Integer, Integer> result = null;
+                                    try {
+                                        result = LocalityDuplicateRemover.removeDuplicates(null, tblInfo.getName(), dupSets.get(r));
+                                    } catch (Exception ex) {
+                                        log.error(ex);
+                                    }
+                                    if (result == null || (result.getFirst() > 1 && result.getSecond() + 1 != result.getFirst())) {
+                                        failedRowIdxs.add(r);
+                                    } else {
+                                        deDupedRowIdxs.add(r);
+                                    }
+                                    prev = r;
+                                }
+                                publish(prev, -1);
+                                return new Pair<>(failedRowIdxs, deDupedRowIdxs);
+                            }
+
+                            @Override
+                            protected void done() {
+                                super.done();
+                                try {
+                                    dusd.deDupeDone(get());
+                                    dlg.getOkBtn().setVisible(true);
+                                } catch (InterruptedException e1) {
+                                    e1.printStackTrace();
+                                } catch (ExecutionException e1) {
+                                    e1.printStackTrace();
+                                }
+                            }
+
+                            @Override
+                            protected void process(List<Integer> chunks) {
+                                super.process(chunks);
+                                dusd.processProgress(chunks);
+                            }
+                        };
+                        w.execute();
+                    }
+                });
+                dlg.setVisible(true);
+                if (dlg.getBtnPressed() == CustomDialog.OK_BTN) {
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    protected void doRemoveUnusedRecords() {
+        doRemoveUnusedLocalities();
+    }
+
+    protected void doRemoveUnusedLocalities() {
+        try {
+            RecordSet unused = getUnusedRecRs("locality");
+            RecordSetIFace toDelete = chooseUnusedRecsToDelete(unused);
+            for (RecordSetItemIFace item : toDelete.getItems()) {
+
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    protected RecordSetIFace chooseUnusedRecsToDelete(final RecordSetIFace unused) {
+        return unused;
+    }
+
+    protected String getUnusedRecSql(final String tableName) throws Exception {
+        if ("locality".equals(tableName)) return "select l.localityid from locality l left join collectingevent ce on ce.localityid = l.localityid where ce.localityid is null";
+        throw new Exception("getUnusedSql(): unhandled tablename: " + tableName);
+    }
+
+    protected List<Object> getUnusedRecList(final String tableName) throws Exception {
+        return BasicSQLUtils.querySingleCol(getUnusedRecSql(tableName));
+    }
+
+    protected RecordSet getUnusedRecRs(final String tableName) throws Exception{
+        List<Object> unused = getUnusedRecList(tableName);
+        RecordSet rs = new RecordSet();
+        rs.initialize();
+        rs.setDbTableId(DBTableIdMgr.getInstance().getInfoByTableName(tableName).getTableId());
+        for (Object obj : unused) {
+            RecordSetItem rsi = new RecordSetItem();
+            rsi.initialize();
+            rsi.setRecordSet(rs);
+            rsi.setRecordId((Integer)obj);
+            rs.getRecordSetItems().add(rsi);
+        }
+        return rs;
+    }
     /**
      * 
      */
