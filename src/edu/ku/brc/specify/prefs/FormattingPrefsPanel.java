@@ -725,7 +725,7 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
             
             String fType =  formTypeHash.get(formTypesCBX.getComboBox().getSelectedItem()).toString();
             local.put("ui.formatting.formtype", fType);
-            UIRegistry.displayInfoMsgDlg(UIRegistry.getResourceString("MiscPrefsPanel.RestartRequired"));
+            //UIRegistry.displayInfoMsgDlg(UIRegistry.getResourceString("MiscPrefsPanel.RestartRequired"));
 
         }
     }

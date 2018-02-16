@@ -28,6 +28,7 @@ import edu.ku.brc.af.core.db.DBRelationshipInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.af.prefs.PreferencesDlg;
 import edu.ku.brc.af.ui.db.ERTICaptionInfo;
 import edu.ku.brc.af.ui.db.QueryForIdResultsIFace;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayDialog;
@@ -44,6 +45,7 @@ import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.*;
 import edu.ku.brc.specify.dbsupport.RecordTypeCodeBuilder;
+import edu.ku.brc.specify.prefs.FormattingPrefsPanel;
 import edu.ku.brc.specify.tasks.subpane.SQLQueryPane;
 import edu.ku.brc.specify.tasks.subpane.qb.*;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS;
@@ -140,6 +142,7 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
         CommandDispatcher.register(name, this);   
         CommandDispatcher.register(TreeDefinitionEditor.TREE_DEF_EDITOR, this);
         CommandDispatcher.register(SchemaLocalizerDlg.SCHEMA_LOCALIZER, this);
+        CommandDispatcher.register(PreferencesDlg.PREFERENCES, this);
     }
     
     
@@ -817,9 +820,10 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
     {
         final DBTableInfo tableInfo = DBTableIdMgr.getInstance()
                 .getByShortClassName(shortClassName);
-        actionNavBox.add(NavBox.createBtnWithTT(String.format(
+
+        NavBoxItemIFace nbb = NavBox.createBtnWithTT(String.format(
                 getResourceString("QB_CREATE_NEWQUERY"), tableInfo.getTitle()), tableInfo
-                .getName(),
+                        .getName(),
                 // name,
                 getResourceString("QB_CREATE_NEWQUERY_TT"), IconManager.STD_ICON_SIZE,
                 new ActionListener()
@@ -828,7 +832,9 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
                     {
                         new NewQueryWorker(tableInfo).start();
                     }
-                }));
+                });
+        nbb.setData(tableInfo);
+        actionNavBox.add(nbb);
     }
 
     /**
@@ -1667,6 +1673,38 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
                     }                    
                 }
             });
+        } else if (cmdAction.isType(PreferencesDlg.PREFERENCES)) {
+            prefsChanged((AppPreferences)cmdAction.getData());
+        }
+
+    }
+
+    protected void prefsChanged(final AppPreferences appPrefs) {
+        if (appPrefs == AppPreferences.getRemote()) {
+            String    iconNameStr = appPrefs.get(FormattingPrefsPanel.getDisciplineImageName(), "CollectionObject");
+            ImageIcon iconImage   = IconManager.getIcon(iconNameStr, IconManager.STD_ICON_SIZE);
+            List<List<NavBoxIFace>> boxes = new ArrayList<>(2);
+            boxes.add(navBoxes);
+            boxes.add(extendedNavBoxes);
+            for (List<NavBoxIFace> box : boxes){
+                if (iconImage != null) {
+                    for (NavBoxIFace nb : navBoxes) {
+                        for (NavBoxItemIFace nbi : nb.getItems()) {
+                            Object data = nbi.getData();
+                            int tblId = -1;
+                            if (data instanceof DBTableInfo) {
+                                tblId = ((DBTableInfo)data).getTableId();
+                            } else if (data instanceof RecordSet) {
+                                int queryId = ((RecordSet)data).getOnlyItem().getRecordId();
+                                tblId = BasicSQLUtils.querySingleObj("select contexttableid from spquery where spqueryid = " + queryId);
+                            }
+                            if (tblId == CollectionObject.getClassTableId()) {
+                                nbi.setIcon(iconImage);
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 

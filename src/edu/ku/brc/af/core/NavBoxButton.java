@@ -31,7 +31,6 @@ import edu.ku.brc.ui.RolloverCommand;
  */
 public class NavBoxButton extends RolloverCommand implements NavBoxItemIFace
 {
-
     /**
      * Constructor.
      */
