@@ -256,8 +256,10 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
                 String accNumFormat = BasicSQLUtils.querySingleObj(accNumFormatSql);
                 save();
                 String newAccNumFormat = BasicSQLUtils.querySingleObj(accNumFormatSql);
-                if (!newAccNumFormat.equals(accNumFormat)) {
+                if (newAccNumFormat != null && !newAccNumFormat.equals(accNumFormat)) {
                     updateAccAutoNumberingTbls(newAccNumFormat, accNumFormat);
+                } else if (newAccNumFormat == null && accNumFormat != null) {
+                    clearAccAutoNumberingTbls();
                 }
 
                 //SchemaI18NService.getInstance().loadWithLocale(new Locale("de", "", ""));
@@ -272,8 +274,17 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
                 return null;
             }
 
+            private void clearAccAutoNumberingTbls() {
+                int divId = AppContextMgr.getInstance().getClassObject(Division.class).getDivisionId();
+                String sql = "delete from autonumsch_div where divisionid = " + divId;
+                BasicSQLUtils.update(sql);
+                if (0 != BasicSQLUtils.getCount("select count(*) from autonumsch_div where divisionid = " + divId)) {
+                    log.error("error executing sql: " + sql);
+                }
+            }
+
             private void updateAccAutoNumberingTbls(final String newAccNumFormat, final String oldAccNumFormat) {
-                System.out.println("Updating AutoNumbering Tables");
+                //System.out.println("Updating AutoNumbering Tables");
                 UIFieldFormatterIFace newF = UIFieldFormatterMgr.getInstance().getFormatter(newAccNumFormat);
                 boolean isNumericOnly = newF == null ? false : newF.isNumeric();
                 boolean isIncrementer = newF == null ? false : newF.isIncrementer();
