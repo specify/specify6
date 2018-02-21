@@ -4212,6 +4212,9 @@ public class WorkbenchPaneSS extends BaseSubPane
         if (pane.getTask() instanceof BaseTreeTask) {
             return true;
         }
+        if (pane instanceof WorkbenchPaneSS && pane != this) {
+            return ((WorkbenchPaneSS)pane).uploadToolPanel != null && ((WorkbenchPaneSS)pane).uploadToolPanel.isVisible();
+        }
         return false;
     }
     
@@ -4219,35 +4222,28 @@ public class WorkbenchPaneSS extends BaseSubPane
      * @param badPanes
      * @return a list of the distinct tasks represented by badPanes 
      */
-    protected String getListOfBadTasks(final List<SubPaneIFace> badPanes)
-    {
+    protected String getListOfBadTasks(final List<SubPaneIFace> badPanes) {
         Set<Taskable> badTasks = new HashSet<Taskable>();
-        for (SubPaneIFace pane : badPanes)
-        {
+        for (SubPaneIFace pane : badPanes) {
             badTasks.add(pane.getTask());
         }
         String result = "";
         Iterator<Taskable> badI= badTasks.iterator();
-        while (badI.hasNext())
-        {
+        while (badI.hasNext()) {
             Taskable badTask = badI.next();
-            if (!StringUtils.isBlank(result))
-            {
-                if (badI.hasNext())
-                {
+            if (!StringUtils.isBlank(result)) {
+                if (badI.hasNext()) {
                     result += ", ";
                 }
-                else
-                {
+                else {
                     result += " or ";
                 }
             }
-            if (badTask instanceof ExpressSearchTask)
-            {
-            	result += UIRegistry.getResourceString("WorkbenchPaneSS.SearchResult");
-            }
-            else
-            {
+            if (badTask instanceof ExpressSearchTask) {
+                result += UIRegistry.getResourceString("WorkbenchPaneSS.SearchResult");
+            } else if (badTask instanceof WorkbenchTask) {
+                result += UIRegistry.getResourceString("WorkbenchPaneSS.UploaderPane");
+            } else {
             	result += badTask.getTitle();
             }
         }
