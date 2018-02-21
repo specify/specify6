@@ -2264,7 +2264,10 @@ public class Uploader implements ActionListener, KeyListener
     public boolean isUpdateUpload() {
     	UploadTable root = getRootTable();
     	//umm...shouldn't the root table just be the ExportedFromTable if it exists?? 
-    	return theWb.getExportedFromTableName() != null && root != null && root.isUpdateMatches();
+    	return theWb.getExportedFromTableName() != null
+                && (theWb.getWorkbenchTemplate().getSrcFilePath() == null
+                    || theWb.getWorkbenchTemplate().getSrcFilePath().toLowerCase().startsWith("<<#spatch#>>"))
+                && root != null && root.isUpdateMatches();
     }
     
     /**
