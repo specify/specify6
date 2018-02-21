@@ -455,7 +455,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                         @Override
                         public Object construct() {
                             try {
-                                List<SubPaneIFace> badPanes = checkOpenTasksForUpload();
+                                List<SubPaneIFace> badPanes = checkOpenTasksForUpload(uploadAfterSave);
                                 if (badPanes.size() > 0) {
                                 	UIRegistry.displayInfoMsgDlgLocalized(String.format(getResourceString("WB_UPLOAD_CLOSE_ALL_MSG"), getListOfBadTasks(badPanes)));
                                 	saveBtn.setEnabled(true);
@@ -4164,14 +4164,17 @@ public class WorkbenchPaneSS extends BaseSubPane
     {
         return currentPanelType == PanelType.Spreadsheet ? "WorkbenchGridEditing" : "WorkbenchFormEditing";
     }
-    
+
+    protected List<SubPaneIFace> checkOpenTasksForUpload() {
+        return checkOpenTasksForUpload(false);
+    }
     /**
      * @return  a list of open panes that prohibit uploading.
      */
-    protected List<SubPaneIFace> checkOpenTasksForUpload() {
+    protected List<SubPaneIFace> checkOpenTasksForUpload(boolean isBatchEdit) {
         List<SubPaneIFace> result = new LinkedList<SubPaneIFace>();
         for (SubPaneIFace pane : SubPaneMgr.getInstance().getSubPanes()) {
-            if (prohibitsUpload(pane)) {
+            if (prohibitsUpload(pane, isBatchEdit)) {
                 result.add(pane);
             }
         }
@@ -4198,7 +4201,7 @@ public class WorkbenchPaneSS extends BaseSubPane
      * @param pane
      * @return true if uploads are prohibited while pane is open.
      */
-    protected boolean prohibitsUpload(final SubPaneIFace pane)
+    protected boolean prohibitsUpload(final SubPaneIFace pane, boolean isBatchEdit)
     {
         if (pane.getTask().getClass().equals(DataEntryTask.class)) {
             return true;
@@ -4212,7 +4215,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         if (pane.getTask() instanceof BaseTreeTask) {
             return true;
         }
-        if (pane instanceof WorkbenchPaneSS && pane != this) {
+        if (isBatchEdit && pane instanceof WorkbenchPaneSS && pane != this) {
             return ((WorkbenchPaneSS)pane).uploadToolPanel != null && ((WorkbenchPaneSS)pane).uploadToolPanel.isVisible();
         }
         return false;
