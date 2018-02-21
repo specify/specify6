@@ -2844,7 +2844,8 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                                      "FixNullTreeableFields", "FixNullDatePrecisions", 
                                      "fixSymbiotaExportSchema"};
         final boolean[] isFixed   = new boolean[prefNames.length];
-        
+
+
         boolean anyNeededToBeFixed = false;
         for (int i=0;i<isFixed.length;i++)
         {
@@ -2974,8 +2975,10 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                     	}
                     }
                     inx++;
-                    
+
+
                     CheckDBAfterLogin fixer = new CheckDBAfterLogin();
+                    //fixer.fillPrepGuids();
                     fixer.checkMultipleLocalities();
                     fixer.sendDNACounts();
                     

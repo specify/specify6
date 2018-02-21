@@ -187,7 +187,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 {
     protected static final Logger  log = Logger.getLogger(SpecifySchemaUpdateService.class);
     
-    private final int OVERALL_TOTAL = 59; //the number of incOverall() calls (+1 or +2)
+    private final int OVERALL_TOTAL = 60; //the number of incOverall() calls (+1 or +2)
     
     private static final String TINYINT4 = "TINYINT(4)";
     private static final String INT11    = "INT(11)";
@@ -196,7 +196,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     private static final String APP                     = "App";
     private static final String APP_REQ_EXIT            = "AppReqExit";
     private static final String SCHEMA_VERSION_FILENAME = "schema_version.xml";
-    
+
     private static final String UPD_CNT_NO_MATCH  = "Update count didn't match for update to table: %s";
     private static final String COL_TYP_NO_DET    = "Column type couldn't be determined for update to table %s";
     private static final String ERR_ADDING_FIELDS = "For table %s error adding fields %s";
@@ -1059,21 +1059,6 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         }
     }
 
-    /**
-     * @param conn
-     * @param databaseName
-     * @param tableName
-     * @param constraintName
-     * @return
-     */
-    private Boolean doesConstraintExist(final Connection conn, final String databaseName, final String tableName, 
-    		final String constraintName) {
-        // XXX portability. This is MySQL -specific.
-        List<Object[]> rows = query(conn, "SELECT * FROM `information_schema`.`TABLE_CONSTRAINTS` where CONSTRAINT_SCHEMA = '" +
-                databaseName + "' and TABLE_NAME = '" + tableName + "' and CONSTRAINT_NAME = '" + constraintName + "'");                    
-        return rows.size() > 0;
-    }
-    
     /**
      * @param conn
      * @param databaseName
@@ -2331,7 +2316,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     //-- bug #9454. 
                     //-------------------------------------------------------------------
                     
-                    if (doesConstraintExist(conn, databaseName, "author", "OrderNumber")) {
+                    if (doesIndexExist("author", "OrderNumber")) {
                     	sql = "ALTER TABLE " + databaseName + ".author " +
                     		"DROP INDEX OrderNumber " + 
                     		", ADD UNIQUE INDEX AgentIDX (ReferenceWorkID ASC, AgentID ASC)";
@@ -2502,7 +2487,23 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         				return false;
         			}
                     frame.incOverall(); 
- 
+
+            		//-------------------------------------------------------------------------------
+                    //
+                    // Schema changes for 2.5
+                    //
+                    //-------------------------------------------------------------------------------
+                    /*
+                    frame.setDesc("Creating index for Preparation GUID");
+                    if (!doesIndexExist("preparation", "PrepGuidIDX")) {
+                        if (!fixDupPrepGuids(conn)) {
+                            errMsgList.add("update error: Fix Prep GUIDs");
+                            return false;
+                        }
+                    }
+                    */
+                    frame.incOverall();
+
                     frame.setProcess(0, 100);
 
                     return true;
@@ -2530,7 +2531,33 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         }
         return false;
     }
-    
+
+    private boolean fixDupPrepGuids(final Connection conn) {
+        String sql = "select GUID, group_concat(preparationid order by preparationid) from preparation "
+                + "where GUID is not null group by 1 having count(preparationid) > 1 order by 1";
+        List<Object[]> dups = BasicSQLUtils.query(conn, sql);
+        boolean dupsPresent = dups.size() > 0;
+        boolean result = true;
+        if (dupsPresent) {
+            update(conn, "alter table preparation add index tempprepguididx(GUID)");
+            BasicSQLUtils.update("update preparation pup inner join (select preparationid from preparation p " +
+                    "inner join (select guid from preparation where guid is not null group by 1 having " +
+                    "count(guid) > 1) dups on dups.guid = p.guid where p.preparationid != " +
+                    "(select preparationid from preparation d2 where d2.guid = p.guid order by " +
+                    "timestampcreated limit 1)) topup on topup.preparationid = pup.preparationid set pup.guid = null");
+            update(conn, "alter table preparation drop index tempprepguididx");
+            dups = BasicSQLUtils.query(conn, sql);
+            result = dups.size() == 0;
+        }
+        if (result) {
+            update(conn, "alter table preparation add unique index PrepGuidIDX(guid)");
+            BasicSQLUtils.update(conn, "update preparation set guid = uuid(), timestampmodified=now(), " +
+                    "modifiedagentid = createdbyagentid where guid is null");
+        }
+        System.out.println("CHECK!!!!!!!!!!!!!!!!" + result);
+        return result;
+    }
+
     /**
      * Matches preparations' CollectionMemberIDs with their collectionobjects' CollectionMemberIDs.  
      */
