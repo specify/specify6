@@ -55,6 +55,8 @@ public class GeoCoordDetail extends DataModelObjBase implements Cloneable
     protected String                geoRefDetRef;
     protected Calendar              geoRefDetDate;
     protected Agent                 geoRefDetBy;
+    protected Calendar              geoRefCompiledDate;
+    protected Agent                 geoRefCompiledBy;
     protected String                noGeoRefBecause;
     protected String                geoRefRemarks;
     protected String                geoRefVerificationStatus; 
@@ -226,6 +228,29 @@ public class GeoCoordDetail extends DataModelObjBase implements Cloneable
     public void setGeoRefDetDate(Calendar geoRefDetDate)
     {
         this.geoRefDetDate = geoRefDetDate;
+    }
+
+    @Column(name = "GeoRefCompiledDate", unique = false, nullable = true, insertable = true, updatable = true)
+    public Calendar getGeoRefCompiledDate()
+    {
+        return geoRefCompiledDate;
+    }
+
+    public void setGeoRefCompiledDate(Calendar geoRefCompiledDate)
+    {
+        this.geoRefCompiledDate = geoRefCompiledDate;
+    }
+
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "CompiledByID", unique = false, nullable = true, insertable = true, updatable = true)
+    public Agent getGeoRefCompiledBy()
+    {
+        return geoRefCompiledBy;
+    }
+
+    public void setGeoRefCompiledBy(Agent geoRefCompiledBy)
+    {
+        this.geoRefCompiledBy = geoRefCompiledBy;
     }
 
     /**

@@ -60,6 +60,11 @@ public class Collector extends DataModelObjBase implements java.io.Serializable,
      protected Integer         orderNumber;
      protected Boolean         isPrimary;
      protected String          remarks;
+     protected String text1;
+     protected String text2;
+     protected Boolean yesNo1;
+     protected Boolean yesNo2;
+
      protected CollectingEvent collectingEvent;
      protected Agent           agent;
      protected Division        division;
@@ -87,6 +92,10 @@ public class Collector extends DataModelObjBase implements java.io.Serializable,
         orderNumber     = null;
         isPrimary       = true;
         remarks         = null;
+        text1 = null;
+        text2 = null;
+        yesNo1 = null;
+        yesNo2 = null;
         collectingEvent = null;
         agent           = null;
         division        = AppContextMgr.getInstance() != null ? AppContextMgr.getInstance().getClassObject(Division.class) : null;
@@ -94,6 +103,47 @@ public class Collector extends DataModelObjBase implements java.io.Serializable,
     // End Initializer
 
     // Property accessors
+    @Lob
+    @Column(name = "Text1", length = 65535)
+    public String getText1()
+    {
+        return text1;
+    }
+
+    @Lob
+    @Column(name = "Text2", length = 65535)
+    public String getText2()
+    {
+        return text2;
+    }
+
+    @Column(name = "YesNo1", unique = false, nullable = true, insertable = true, updatable = true)
+    public Boolean getYesNo1()
+    {
+        return yesNo1;
+    }
+
+    @Column(name = "YesNo2", unique = false, nullable = true, insertable = true, updatable = true)
+    public Boolean getYesNo2()
+    {
+        return yesNo2;
+    }
+
+    public void setText1(String text1) {
+        this.text1 = text1;
+    }
+
+    public void setText2(String text2) {
+        this.text2 = text2;
+    }
+
+    public void setYesNo1(Boolean yesNo1) {
+        this.yesNo1 = yesNo1;
+    }
+
+    public void setYesNo2(Boolean yesNo2) {
+        this.yesNo2 = yesNo2;
+    }
 
     /**
      * 

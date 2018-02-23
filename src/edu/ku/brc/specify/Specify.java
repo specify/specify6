@@ -2978,7 +2978,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
 
 
                     CheckDBAfterLogin fixer = new CheckDBAfterLogin();
-                    //fixer.fillPrepGuids();
+                    fixer.fillPrepGuids();
                     fixer.checkMultipleLocalities();
                     fixer.sendDNACounts();
                     

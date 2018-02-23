@@ -2493,7 +2493,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     // Schema changes for 2.5
                     //
                     //-------------------------------------------------------------------------------
-                    /*
+
                     frame.setDesc("Creating index for Preparation GUID");
                     if (!doesIndexExist("preparation", "PrepGuidIDX")) {
                         if (!fixDupPrepGuids(conn)) {
@@ -2501,7 +2501,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                             return false;
                         }
                     }
-                    */
+
                     frame.incOverall();
 
                     frame.setProcess(0, 100);

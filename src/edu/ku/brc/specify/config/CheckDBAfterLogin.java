@@ -354,7 +354,7 @@ public class CheckDBAfterLogin
                 updated = BasicSQLUtils.update(conn, "update preparation set guid = uuid() where guid is null");
             }
             AppPreferences.getRemote().putBoolean("FILLED_PREP_GUIDS", nulls == updated);
-            System.out.println("CHECKED!!!!!!!!!!!!!!!!!!!" + (nulls == updated));
+            //System.out.println("CHECKED!!!!!!!!!!!!!!!!!!!" + (nulls == updated));
         }
     }
     /**
