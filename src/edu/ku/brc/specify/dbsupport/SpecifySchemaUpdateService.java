@@ -1196,19 +1196,20 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     //---------------------------------------------------------------------------
                     tblName = getTableNameAndTitleForFrame(Agent.getClassTableId());
                     len     = getFieldLength(conn, databaseName, tblName, "LastName");
-                    if (len == null)
-                    {
+                    if (len == null) {
                         errMsgList.add(String.format(UPD_CNT_NO_MATCH, tblName));
                         return false;
                     }
-                    if (len.intValue() != 128)
-                    {
+                    if (len.intValue() != 128) {
                         count = getCount(tblName);
                         rv = update(conn, "ALTER TABLE agent MODIFY LastName varchar(128)");
-                        if (rv != count)
-                        {
-                            errMsgList.add(String.format(UPD_CNT_NO_MATCH, tblName));
-                            return false;
+                        if (rv != count) {
+                            //when only agent, the counts might not match, even when length change succeeds
+                            len     = getFieldLength(conn, databaseName, tblName, "LastName");
+                            if (len == null || len.intValue() != 128) {
+                                errMsgList.add(String.format(UPD_CNT_NO_MATCH, tblName));
+                                return false;
+                            }
                         }
                     }
                     frame.incOverall();
