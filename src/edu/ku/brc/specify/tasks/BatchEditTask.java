@@ -43,7 +43,7 @@ public class BatchEditTask extends QueryTask {
 
     protected List<String> batchEditables;
 
-    protected final boolean isPermitted;
+    protected Boolean isPermitted = null;
 
     public BatchEditTask() {
         this(BATCHEDIT, getResourceString(BATCHEDIT));
@@ -51,12 +51,22 @@ public class BatchEditTask extends QueryTask {
 
     public BatchEditTask(final String name, final String title) {
         super(name, title);
-        this.isPermitted = !AppContextMgr.isSecurityOn() || SpecifyUser.isCurrentUserType(SpecifyUserTypes.UserType.Manager);
-        if (isPermitted) {
+        if (isPermitted()) {
             CommandDispatcher.register(QueryTask.QUERY, this);
         } else {
             isVisible = false;
         }
+    }
+
+    @Override
+    public boolean isPermitted() {
+        if (this.isPermitted == null) {
+            Taskable queryTask = TaskMgr.getTask(QueryTask.QUERY);
+            boolean qTaskPermitted = queryTask != null && ((QueryTask)queryTask).isPermitted();
+            this.isPermitted = qTaskPermitted
+                    && (!AppContextMgr.isSecurityOn() || SpecifyUser.isCurrentUserType(SpecifyUserTypes.UserType.Manager));
+        }
+        return this.isPermitted;
     }
 
     @Override
@@ -96,9 +106,14 @@ public class BatchEditTask extends QueryTask {
 
     @Override
     protected void registerServices() {
-        if (isPermitted) {
+        if (isPermitted()) {
             ContextMgr.registerService(new QueryBatchEditServiceInfo());
         }
+    }
+
+    @Override
+    public boolean isViewable() {
+        return isPermitted();
     }
 
     protected final class UpWBFilenameFilter implements FilenameFilter {

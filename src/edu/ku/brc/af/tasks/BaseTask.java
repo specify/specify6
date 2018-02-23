@@ -321,6 +321,17 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
         return nbi;
     }
 
+    @Override
+    public boolean isViewable() {
+        if (AppContextMgr.isSecurityOn()) {
+            PermissionIFace perm = getPermissions();
+            if (perm != null) {
+                return perm.canView();
+            }
+        }
+        return true;
+    }
+
     /**
      * @param navBox
      * @param labelText

@@ -676,19 +676,11 @@ public class TaskMgr implements CommandListener
                     Taskable task = (Taskable)newObj;
                     
                     boolean shouldAddToUI = pi.getIsAddToUI();
-                    if (AppContextMgr.isSecurityOn())
-                    {
-                        PermissionIFace perm = task.getPermissions();
-                        if (perm != null)
-                        {
-                            if (!perm.canView())
-                            {
-                                shouldAddToUI = false;
-                                task.setEnabled(false);
-                            }
-                        }
+                    if (!task.isViewable()) {
+                        shouldAddToUI = false;
+                        task.setEnabled(false);
                     }
-                    
+
                     boolean isTaskDefault = pi.getIsDefault();
                     if (isTaskDefault)
                     {
