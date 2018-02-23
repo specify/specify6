@@ -373,7 +373,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
     /**
      *      * of Person
      */
-    @Column(name = "LastName", length = 120)
+    @Column(name = "LastName", length = 128)
     public String getLastName() {
         return this.lastName;
     }
