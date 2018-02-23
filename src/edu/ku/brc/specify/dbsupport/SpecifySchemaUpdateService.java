@@ -2552,9 +2552,9 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         if (result) {
             update(conn, "alter table preparation add unique index PrepGuidIDX(guid)");
             BasicSQLUtils.update(conn, "update preparation set guid = uuid(), timestampmodified=now(), " +
-                    "modifiedagentid = createdbyagentid where guid is null");
+                    "modifiedbyagentid = createdbyagentid where guid is null");
         }
-        System.out.println("CHECK!!!!!!!!!!!!!!!!" + result);
+        //System.out.println("CHECK!!!!!!!!!!!!!!!!" + result);
         return result;
     }
 
