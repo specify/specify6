@@ -924,22 +924,20 @@ public class ExportToMySQLDB
 	}
 	
 	protected static String formatLatLng(String fldName, BigDecimal latLng, Integer originalLatLngUnit,
-			String srcTxt) throws SQLException
-	{
+			String srcTxt) throws SQLException {
 		String result = null;
-		if (originalLatLngUnit != null && latLng != null)
-		{
+		if (originalLatLngUnit != null && latLng != null) {
 			LatLonConverter.FORMAT fmt = LatLonConverter.FORMAT.values()[originalLatLngUnit];
 			LatLonConverter.LATLON llType = getLatLngType(fldName);
-			if (LatLonConverter.FORMAT.DDDDDD.equals(fmt) && StringUtils.isNotBlank(srcTxt))
-			{
+			if (LatLonConverter.FORMAT.DDDDDD.equals(fmt) && StringUtils.isNotBlank(srcTxt)) {
 				result = srcTxt;
-			} 
-			else if (StringUtils.isNotBlank(srcTxt))
-			{
-				result =  LatLonConverter.convert(srcTxt, fmt, LatLonConverter.FORMAT.DDDDDD, llType);				
-			} else
-			{
+			} else if (StringUtils.isNotBlank(srcTxt)) {
+				try {
+					result = LatLonConverter.convert(srcTxt, fmt, LatLonConverter.FORMAT.DDDDDD, llType);
+				} catch (Exception ex) {
+					return "";
+				}
+			} else {
 				result =  LatLonConverter.convertToSignedDDDDDD(latLng, 7, LatLonConverter.DEGREES_FORMAT.None);
 			}
 		}
@@ -1300,7 +1298,18 @@ public class ExportToMySQLDB
 			System.out.println("adjustLatLngAccuracy failed: " + loc[0]);
 		}
 	}
-	
+
+	private static String checkLatLngFormat(String formatted, Object val) {
+		String result = formatted;
+		if (result != null && val != null) {
+		    try {
+		        new Double(formatted);
+            } catch (NumberFormatException nfe) {
+		        result = String.format("%.7f", (BigDecimal)val);
+            }
+        }
+		return result;
+	}
 	/**
 	 * @param loc
 	 * @return
@@ -1312,15 +1321,15 @@ public class ExportToMySQLDB
 			Number unitFromDb = Number.class.cast(loc[1]);
 			int unit = unitFromDb == null ? 0 : unitFromDb.intValue();
 			if (loc.length == 6) {
-				result.add(formatLatLng("Latitude1", BigDecimal.class.cast(loc[2]), unit, String.class.cast(loc[4])));
-				result.add(formatLatLng("Longitude1", BigDecimal.class.cast(loc[3]),unit, String.class.cast(loc[5])));
+				result.add(checkLatLngFormat(formatLatLng("Latitude1", BigDecimal.class.cast(loc[2]), unit, String.class.cast(loc[4])), loc[2]));
+				result.add(checkLatLngFormat(formatLatLng("Longitude1", BigDecimal.class.cast(loc[3]),unit, String.class.cast(loc[5])), loc[3]));
 				result.add(null);
 				result.add(null);
 			} else {
-				result.add(formatLatLng("Latitude1", BigDecimal.class.cast(loc[2]), unit, String.class.cast(loc[6])));
-				result.add(formatLatLng("Longitude1", BigDecimal.class.cast(loc[3]), unit, String.class.cast(loc[7])));
-				result.add(formatLatLng("Latitude2", BigDecimal.class.cast(loc[4]), unit, String.class.cast(loc[8])));
-				result.add(formatLatLng("Longitude2", BigDecimal.class.cast(loc[5]), unit, String.class.cast(loc[9])));
+				result.add(checkLatLngFormat(formatLatLng("Latitude1", BigDecimal.class.cast(loc[2]), unit, String.class.cast(loc[6])), loc[2]));
+				result.add(checkLatLngFormat(formatLatLng("Longitude1", BigDecimal.class.cast(loc[3]), unit, String.class.cast(loc[7])), loc[3]));
+				result.add(checkLatLngFormat(formatLatLng("Latitude2", BigDecimal.class.cast(loc[4]), unit, String.class.cast(loc[8])), loc[4]));
+				result.add(checkLatLngFormat(formatLatLng("Longitude2", BigDecimal.class.cast(loc[5]), unit, String.class.cast(loc[9])), loc[5]));
 			}
 			return result;
 		} catch (Exception ex) {
