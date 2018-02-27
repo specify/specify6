@@ -298,36 +298,34 @@ public class UIFieldFormatterSampler implements SQLExecutionListener
 				DBTableInfo neighborTable = getTableInfo(relationship.getClassName()); 
 
                 // System.out.println(String.format("Dist: %4d | Link: %30s - %s", distanceToCurrent, currentVertex.getName(), neighborTable.getName()));
-
-				if (visited.contains(neighborTable) ||
-					neighborTable.getName().equals(currentVertex.getName()))
-				{
-					// already visited or it is a relationships to the same table
+				if (neighborTable != null) {
+					if (visited.contains(neighborTable) ||
+							neighborTable.getName().equals(currentVertex.getName())) {
+						// already visited or it is a relationships to the same table
 //                    System.out.println(String.format("Already visited: %30s | curr=**** | dist=%4d", neighborTable.getName(), distanceToCurrent));
-					continue;
-				}
-				
-				// compute distance to neighbor as distance to the current node plus 1
-				Integer distanceToNeighbor = distance.get(neighborTable);
-				if (distanceToNeighbor == null || 
-					distanceToCurrent + 1 < distanceToNeighbor)
-				{
-//				    System.out.println(String.format("neighborTable:   %30s | curr=%4d | dist=%4d", neighborTable.getName(), distanceToNeighbor , distanceToCurrent));
-					distance.put(neighborTable, new Integer(distanceToCurrent + 1));
-					previous.put(neighborTable, new Pair<DBTableInfo, DBRelationshipInfo>(currentVertex, relationship));
-				}
-				
-				// check if we reached the destination
-				if ("collectionobject".equals(neighborTable.getName()))
-				{
-					// destination reached: bail out
-					currentVertex = neighborTable;
-					destinationReached = true;
-					break;
-				}
+						continue;
+					}
 
-				// not the destination table: just add neighbor to list of nodes to visit
-				stack.push(neighborTable);
+					// compute distance to neighbor as distance to the current node plus 1
+					Integer distanceToNeighbor = distance.get(neighborTable);
+					if (distanceToNeighbor == null ||
+							distanceToCurrent + 1 < distanceToNeighbor) {
+//				    System.out.println(String.format("neighborTable:   %30s | curr=%4d | dist=%4d", neighborTable.getName(), distanceToNeighbor , distanceToCurrent));
+						distance.put(neighborTable, new Integer(distanceToCurrent + 1));
+						previous.put(neighborTable, new Pair<DBTableInfo, DBRelationshipInfo>(currentVertex, relationship));
+					}
+
+					// check if we reached the destination
+					if ("collectionobject".equals(neighborTable.getName())) {
+						// destination reached: bail out
+						currentVertex = neighborTable;
+						destinationReached = true;
+						break;
+					}
+
+					// not the destination table: just add neighbor to list of nodes to visit
+					stack.push(neighborTable);
+				}
 			}
 		}
 		
