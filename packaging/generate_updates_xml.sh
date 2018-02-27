@@ -91,53 +91,18 @@ do
 		#filename
 			filename="$2"
 			echo "$filename"
-			up1=`echo -e $filename | cut -d'.' -f1`
-			up2=`echo -e $filename | cut -d'.' -f2`
-
-			condition1=`echo $filename | grep EZDB_64`
-			condition2a=`echo $filename | grep 64`
-			condition2b=`echo $filename | grep EZDB`
-			condition3a=`echo $filename | grep 64`
-			condition3b=`echo $filename | grep EZDB`
-
-
-			if [ -n "$condition1" ] ; then
-				filename_update=`echo "$filename" | sed -e "s#EZDB_64#update_EZDB_64#"`
-			elif [ -n "$condition2a" ] && [ ! -n "$condition2b" ] ; then
-				filename_update=`echo "$filename" | sed -e "s#64#update_64#"`
-			elif [ ! -n "$condition3a" ] && [ -n "$condition3b" ] ; then
-				filename_update=`echo "$filename" | sed -e "s#EZDB#update_EZDB#"`
-			else
-				filename_update="${up1}_update.${up2}"
-			fi
-
-			echo $filename_update
 		#filesize
 			filesize=`du -b $operatingpath/$filename | cut -f1`
-			filesize_update=`du -b $operatingpath/$filename_update | cut -f1`
 
 	#entry output
 	echo -e "\t<entry" >> tmp.xml
 	echo -e "\t\ttargetMediaFileId=\"$mediaid\"" >> tmp.xml
 	echo -e "\t\tupdatableVersionMin=\"1.0.0\"" >> tmp.xml
-	echo -e "\t\tupdatableVersionMax=\"$fullversion\"" >> tmp.xml
+	echo -e "\t\tupdatableVersionMax=\"$updateversion\"" >> tmp.xml
 	echo -e "\t\tfileName=\"$filename\"" >> tmp.xml
 	echo -e "\t\tnewVersion=\"$version\"" >> tmp.xml
 	echo -e "\t\tnewMediaFileId=\"$mediaid\"" >> tmp.xml
 	echo -e "\t\tfileSize=\"$filesize\"" >> tmp.xml
-	echo -e "\t\tbundledJre=\"\"" >> tmp.xml
-	echo -e "\t\tarchive=\"false\"" >> tmp.xml
-	echo -e "\t>" >> tmp.xml
-	echo -e "\t</entry>" >> tmp.xml
-
-	echo -e "\t<entry" >> tmp.xml
-	echo -e "\t\ttargetMediaFileId=\"$mediaid\"" >> tmp.xml
-	echo -e "\t\tupdatableVersionMin=\"$updateversion\"" >> tmp.xml
-	echo -e "\t\tupdatableVersionMax=\"$updateversion\"" >> tmp.xml
-	echo -e "\t\tfileName=\"$filename_update\"" >> tmp.xml
-	echo -e "\t\tnewVersion=\"$version\"" >> tmp.xml
-	echo -e "\t\tnewMediaFileId=\"$mediaid\"" >> tmp.xml
-	echo -e "\t\tfileSize=\"$filesize_update\"" >> tmp.xml
 	echo -e "\t\tbundledJre=\"\"" >> tmp.xml
 	echo -e "\t\tarchive=\"false\"" >> tmp.xml
 	echo -e "\t>" >> tmp.xml

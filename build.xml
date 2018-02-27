@@ -291,16 +291,6 @@
         <arg value="--release=${specify.SPECIFY_VERSION}" />
         <arg value="--destination=@{packages.dir}" />
         <arg value="--build-ids=24" />
-        <arg value="${packaging.dir}/5-mac-update@{ext-frag}.install4j" />
-      </exec>
-      <move file="@{packages.dir}/updates.xml" tofile="@{packages.dir}/updates.xml.macupdate"/>
-
-      <exec executable="${install4j.dir}/bin/install4jc">
-        <arg value="--quiet"/>
-        <arg value="--faster"/>
-        <arg value="--release=${specify.SPECIFY_VERSION}" />
-        <arg value="--destination=@{packages.dir}" />
-        <arg value="--build-ids=24" />
         <arg value="${packaging.dir}/5-mac-full@{ext-frag}.install4j" />
       </exec>
       <move file="@{packages.dir}/updates.xml" tofile="@{packages.dir}/updates.xml.macfull"/>
@@ -315,26 +305,6 @@
     <sequential>
       <copy file="${system.dep.libs.dir}/non-mac-application-adapter.jar" todir="${installer.dir}" />
       <copy file="${build.root}/${jar.name}-nonmac.jar" tofile="${installer.dir}/${jar.name}.jar" />
-
-      <exec executable="${install4j.dir}/bin/install4jc">
-        <arg value="--quiet"/>
-        <arg value="--faster"/>
-        <arg value="--release=${specify.SPECIFY_VERSION}" />
-        <arg value="--destination=@{packages.dir}" />
-        <arg value="--build-ids=176,179" />
-        <arg value="${packaging.dir}/5-winlin-update@{ext-frag}.install4j" />
-      </exec>
-      <move file="@{packages.dir}/updates.xml" tofile="@{packages.dir}/updates.xml.winlinupdate"/>
-
-      <exec executable="${install4j.dir}/bin/install4jc">
-        <arg value="--quiet"/>
-        <arg value="--faster"/>
-        <arg value="--release=${specify.SPECIFY_VERSION}" />
-        <arg value="--destination=@{packages.dir}" />
-        <arg value="--build-ids=1965,1873" />
-        <arg value="${packaging.dir}/5-winlin-update@{ext-frag}-64.install4j" />
-      </exec>
-      <move file="@{packages.dir}/updates.xml" tofile="@{packages.dir}/updates.xml.winlinupdate64"/>
 
       <exec executable="${install4j.dir}/bin/install4jc">
         <arg value="--quiet"/>
