@@ -135,7 +135,7 @@ public class BatchEditTask extends QueryTask {
         //htmlDesc.append("<style>ol{margin: 0;}</style>");
         htmlDesc.append("<body font face=\"verdana\">");
         htmlDesc.append("<h3>Welcome to Batch Editing</h3>"); //I18N
-        htmlDesc.append("<b>Warning:</b> Batch Editing is a powerful method to improve data quality--it can potentially change" +
+        htmlDesc.append("<b>Warning:</b> Batch Editing is a powerful method to improve data quality--it can potentially change " +
                 "thousands of data records with just a few mouse clicks. Once edits are made and confirmed, chang" +
                 "es will be permanent and they cannot be rolled back. We strongly recommend that you create a current " +
                 "backup of your database, in case you need to restore your data.");
