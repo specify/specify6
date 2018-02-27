@@ -5839,7 +5839,8 @@ public class UploadTable implements Comparable<UploadTable>
                                         if (!gotRequiredParents && hasChildren) {
                                             throw new UploaderException(UIRegistry.getResourceString("UPLOADER_MISSING_REQUIRED_DATA"), UploaderException.ABORT_ROW);
                                         }
-                                        doWrite(rec);
+                                        rec = doWrite(rec);
+                                        setCurrentRecord(rec, recNum);
                                         doUploadBookkeeping(rec, recNum, isUpdate, isNewRecord);
                                     }
                                 }
@@ -6179,23 +6180,29 @@ public class UploadTable implements Comparable<UploadTable>
     	return false;
     }
 
+    protected DataModelObjBase prepareRecForWriting(final DataProviderSessionIFace theSession, final DataModelObjBase rec)
+            throws Exception {
+        DataModelObjBase result = rec;
+        if (updateMatches && (rec instanceof Accession)) {
+            result =  theSession.merge(rec);
+            result.forceLoad();
+        }
+        return result;
+    }
     /**
      *
      * @param rec
      * @throws UploaderException
      */
-    protected void doWrite(DataModelObjBase rec) throws UploaderException
+    protected DataModelObjBase doWrite(DataModelObjBase rec) throws UploaderException
     {
     	Pair<DataProviderSessionIFace,Boolean> sessObj = getSession();
     	DataProviderSessionIFace theSession = sessObj.getFirst();
         boolean tblTransactionOpen = false;
 		try
 		{
-			DataModelObjBase mergedRec = rec;
-			//DataModelObjBase mergedRec = updateMatches ? theSession.merge(rec) : rec; //hopefully we will only be in this method if there are actually changes to save.
-			//if (updateMatches) {
-			//	mergedRec.forceLoad();
-			//}
+			//DataModelObjBase mergedRec = rec;
+			DataModelObjBase mergedRec = prepareRecForWriting(theSession, rec);
 
         	BusinessRulesIFace busRule = DBTableIdMgr.getInstance().getBusinessRule(tblClass);
         	if (busRule instanceof AttachmentOwnerBaseBusRules)
@@ -6228,8 +6235,9 @@ public class UploadTable implements Comparable<UploadTable>
                 busRule.afterSaveCommit(mergedRec, theSession);
             }
             if (needToRefreshAfterWrite()) {
-                theSession.refresh(rec);
+                theSession.refresh(mergedRec);
             }
+            return mergedRec;
         }
         catch (Exception ex)
         {
