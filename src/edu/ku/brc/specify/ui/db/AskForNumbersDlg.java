@@ -152,13 +152,14 @@ public class AskForNumbersDlg extends CustomDialog implements ChangeListener
         });
         
         getOkBtn().setEnabled(false);
-        getApplyBtn().addActionListener((ae) -> {
-            noNumbers = true;
-            setVisible(false);
-        });
-        getApplyBtn().setText(getResourceString("AskForNumbersDlg.AddUncat"));
-        getApplyBtn().setToolTipText(getResourceString("AskForNumbersDlg.AddUncatTip"));
-        
+        if (getApplyBtn() != null) {
+            getApplyBtn().addActionListener((ae) -> {
+                noNumbers = true;
+                setVisible(false);
+            });
+            getApplyBtn().setText(getResourceString("AskForNumbersDlg.AddUncat"));
+            getApplyBtn().setToolTipText(getResourceString("AskForNumbersDlg.AddUncatTip"));
+        }
         pack();
     }
     
