@@ -7,7 +7,7 @@
     -->
     
     <icon name="MySQLFull"            file="mysql_logo_name.png" sizes="NonStd"/>
-    <icon name="AppIcon"          file="specify32.png" sizes="all"/>
+    <icon name="AppIcon"          file="specify32.jpg" sizes="all"/>
     <icon name="AppIconE"         file="specify32E.png" sizes="all"/>
     <icon name="AppIconM"         file="specify32M.png" sizes="all"/>
 
@@ -20,8 +20,8 @@
     
     
     <icon name="Specify16"        file="specify16.png" sizes="16"/>   <!-- Not Needed anymore -->
-    <icon name="SpecifySplash"    file="SpecifyBigSplash.png" sizes="NonStd"/>
-    <icon name="SpecifySplashCache" file="SpecifyBigSplash.png" sizes="NonStd"/>
+    <icon name="SpecifySplash"    file="SpecifySplash.png" sizes="NonStd"/>
+    <icon name="SpecifySplashCache" file="SpecifySplash.png" sizes="NonStd"/>
     
     <icon name="WizardIcon"       file="spwizard128.png" sizes="NonStd"/>
     <icon name="WizardIconE"      file="spwizard128E.png" sizes="NonStd"/>
