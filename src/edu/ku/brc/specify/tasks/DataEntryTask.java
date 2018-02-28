@@ -2266,7 +2266,7 @@ public class DataEntryTask extends BaseTask
     //-------------------------------------------------------------------------
     public class DroppableFormRecordSetAccepter extends FormPane
     {
-        protected ImageIcon bgImg = IconManager.getIcon("SpecifySplash");
+        protected ImageIcon bgImg = IconManager.getIcon("SpecifySmallSplash");
         
         /**
          * @param name
@@ -2314,7 +2314,7 @@ public class DataEntryTask extends BaseTask
          */
         public void resetSplashIcon()
         {
-            bgImg = IconManager.getIcon("SpecifySplash");
+            bgImg = IconManager.getIcon("SpecifySmallSplash");
             repaint();
         }
         
