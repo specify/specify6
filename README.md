@@ -6,7 +6,7 @@ The Specify Software Project is funded by the Advances in
 Biological Informatics Program, U.S. National Science Foundation
 (NSF/BIO: 1565098).
   
-Specify 6 Copyright © 2017 University of Kansas Center for
+Specify 6 Copyright © 2018 University of Kansas Center for
 Research. Specify comes with ABSOLUTELY NO WARRANTY.  This is
 free software licensed under GNU General Public License 2
 (GPL2).
@@ -54,7 +54,8 @@ use the floating license on *specify6-prod.nhm.ku.edu* by running
 --license=FLOAT:specify6-prod.nhm.ku.edu` after installing Install4J.
 
 The path to Install4J must be provided to the Ant
-build through the `-Dinstall4j.dir=/path/to/install4j` parameter. 
+build through the `-Dinstall4j.dir=/path/to/install4j` parameter unless
+Install4J is at the default location `$HOME/install4j5`.
 
 The following Ant build targets are available for packaging:
 
