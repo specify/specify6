@@ -142,7 +142,7 @@ public class BatchEditTask extends QueryTask {
                 "records will be permanently modified with new data values. Changes made with Batch Editing are not reversible. " +
                 "they cannot be rolled back.</p>");
         htmlDesc.append("<p>Specify users should have a basic understanding of the relationships among the Collection Object, Collecting Event, and Locality data tables before querying on one of those tables as the focus of an editing session.</p>");
-        htmlDesc.append("<p><b>Once changes are applied, Specify does not retain a copy of your original data. We strongly recommend making a fresh backup of your database, in case a catastrophic error is made and you need roll back to the original data by restoring the entire database.</b></p>");
+        htmlDesc.append("<p><b>Once changes are applied, Specify does not retain a copy of your original data. We strongly recommend making a fresh backup of your database, in case a catastrophic error is made and you need to roll back to the original data by restoring the entire database.</b></p>");
         htmlDesc.append("<p>Use these steps to select and Batch Edit data:</p>");
         //htmlDesc.append("<ol>");
         htmlDesc.append("<p>1. First select the records to be edited. Choose from the following options using the Side Bar:</p>");
