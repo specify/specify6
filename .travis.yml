@@ -25,7 +25,7 @@ before_script:
 - install4j5/bin/install4jc --license=FLOAT:localhost
 
 script:
-- ant package-internal -Dinstall4j.dir=./install4j5
+- ant package-all -Dinstall4j.dir=./install4j5
 
 deploy:
   provider: releases
@@ -33,7 +33,10 @@ deploy:
   api_key:
     secure: jnxl2c9Az/DPHS8ghxPfdEH/fsgexvhEW4NHBjJILNptWSfx72+23bsUhp7SRxKgJgq3MXaB6e7hpiDJxah18yI7Og6WNBblWzkQJMeJrHvLn6vsLIAGCaUhy1gy3seZwvzCwFm/GKuZyTOUwP3TYMfda464uvc9zZLpthTJQ1Q54b8i/25eivhyuBdGm9vE4lT9jE5Xk09xrRzlOcznZMXTIDwdAtxj6UcRtxzLcT2WuIWyL+y+PVEKWy8Po6eyJT1rX0ST5y6GA25ZN3HfZXCVgDVWpNCYdcDpYKy63+pwFE397ielXh7QY3XI/0gftpSonXvrDNEsj0G8BSUNvBVcAKTzMemOpbTgqdvdpSeDeKm0+c1+07jRGcP84n5typBcrvP6nUzZRDzdxqjWHthnDpl0fHZaFSQhCrG2qYytUW2q78V5WrPA403uBwENFLalIheGPXvPB5VLGMRiv4zFIUgqpFKT5zLZ0dIL0L1bAQ0kqJ1RAvSUa74nUwgymaPwMlcD+4aB0heaPnOGvakJzhxCkv4HoHdYG7FIP9wTrJCA5aKaMFrRhlx3ZbEX4UjT3NP/ppdI0nd+pZcRcOYCbvcItaQ7DtwR53Ksq8WfVbaUsm9cqDZuaMBv/OskCUESpA0yNlXVdvF0U+hMNnKO5I4mHpGruM4rImPVhAk=
   file_glob: true
-  file: packages/internal/Specify*
+  file:
+    - packages/internal/Specify*
+    - packages/external/Specify*
+    - packages/external/updates.xml
   skip_cleanup: true
   on:
     repo: specify/specify6
