@@ -134,25 +134,27 @@ public class BatchEditTask extends QueryTask {
         StringBuilder htmlDesc = new StringBuilder();
         //htmlDesc.append("<style>ol{margin: 0;}</style>");
         htmlDesc.append("<body font face=\"verdana\">");
-        htmlDesc.append("<h3>Welcome to Batch Editing</h3>"); //I18N
-        htmlDesc.append("<b>Warning:</b> Batch Editing is a powerful method to improve data quality--it can potentially change " +
-                "thousands of data records with just a few mouse clicks. Once edits are made and confirmed, chang" +
-                "es will be permanent and they cannot be rolled back. We strongly recommend that you create a current " +
-                "backup of your database, in case you need to restore your data.");
-        htmlDesc.append("<p>Follow these instructions to edit your data:</p>");
+        htmlDesc.append("<h2>Batch Editing with Specify</h2>"); //I18N
+        htmlDesc.append("<p></p>");
+        htmlDesc.append("<b>Caution:</b> Batch Editing is a powerful tool for improving data quality, but it can permanently change " +
+                "thousands of data records with a few mouse clicks.");
+        htmlDesc.append("<p> After editing is complete and desired changes are applied and confirmed, data " +
+                "records will be permanently modified with new data values. Changes made with Batch Editing are not reversible. " +
+                "they cannot be rolled back.</p>");
+        htmlDesc.append("<p>Specify users should have a basic understanding of the relationships among the Collection Object, Collecting Event, and Locality data tables before querying on one of those tables as the focus of an editing session.</p>");
+        htmlDesc.append("<p><b>Once changes are applied, Specify does not retain a copy of your original data. We strongly recommend making a fresh backup of your database, in case a catastrophic error is made and you need roll back to the original data by restoring the entire database.</b></p>");
+        htmlDesc.append("<p>Use these steps to select and Batch Edit data:</p>");
         //htmlDesc.append("<ol>");
-        htmlDesc.append("<p>1. To use the Batch Editor you must first choose the records you wish to edit. "
-                + "Choose from the following options in the Side Bar:</p>");
+        htmlDesc.append("<p>1. First select the records to be edited. Choose from the following options using the Side Bar:</p>");
         htmlDesc.append("<ul>");
         htmlDesc.append("<li>Create a new Query</li>");
-        htmlDesc.append("<li>Open a saved Query</li>");
+        htmlDesc.append("<li>Open a saved Query, or</li>");
         htmlDesc.append("<li>Drop a Record Set onto a saved Query</li>");
         htmlDesc.append("</ul>");
-        htmlDesc.append("<p>2. In the Query Builder, add parameters and then click the <i>Search button</i> to execute the query.</p>");
-        htmlDesc.append("<p>3. In Query Results, then click on the small Batch Editing (Pencils) icon in the upper right Query Re" +
-                "sults title bar to begin your editing session. If you want to Batch Edit a subset of the Query Results, " +
-                "first highlight those records, then click on the small Batch Editing icon at the top of the Query Results " +
-                "screen.</p>");
+        htmlDesc.append("<p>2. Next, in the Query Builder, add any needed fields or parameters and then click the <i>Search</i> button to execute the query.</p>");
+        htmlDesc.append("<p>3. Then, in Query Results, click on the additional Batch Editing pencils icon in the upper right of the Query Results title bar to begin an editing session. If you want to Batch Edit just a subset of the Query Results, first highlight those records in the Query Results window and then click on the Batch Editing pencils icon at the top right of that screen--only those records will be brought into the Batch Editing window.</p>");
+        htmlDesc.append("<p>4. To finish, once edits are made, click on the <i>Apply</i> button at the lower right of the workspace, check for any errors reported in the Batch Edit process log window, then click <i>Save</i> to complete the edit, or <i>Cancel</i> to return to editing.</p>");
+        htmlDesc.append("<p>Closing the Batch Editing Tab, or shutting down Specify anytime during the Batch Editing process before changes are committed and saved, will cancel the batch and no edits will be applied.  Also, Batch Edit sessions are cancelled 180 seconds after pressing the Apply button, if Save or Cancel is not clicked.</p>");
         //htmlDesc.append("</ol>");
         htmlDesc.append("</body>");
         starterPane = new HtmlDescPane(name, this, htmlDesc.toString());
