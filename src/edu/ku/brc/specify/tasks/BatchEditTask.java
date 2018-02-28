@@ -61,9 +61,12 @@ public class BatchEditTask extends QueryTask {
     @Override
     public boolean isPermitted() {
         if (this.isPermitted == null) {
+            //queryTask and workbenchTask will already be created because their defs precede BatchEdit's def in plugin_registry.xml
             Taskable queryTask = TaskMgr.getTask(QueryTask.QUERY);
-            boolean qTaskPermitted = queryTask != null && ((QueryTask)queryTask).isPermitted();
-            this.isPermitted = qTaskPermitted
+            Taskable workbenchTask = TaskMgr.getTask(WorkbenchTask.WORKBENCH);
+            boolean prereqTsksEnabled = queryTask != null && queryTask.isEnabled()
+                    && workbenchTask != null && workbenchTask.isEnabled() && workbenchTask.getPermissions().canModify();
+            this.isPermitted = prereqTsksEnabled
                     && (!AppContextMgr.isSecurityOn() || SpecifyUser.isCurrentUserType(SpecifyUserTypes.UserType.Manager));
         }
         return this.isPermitted;
