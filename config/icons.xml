@@ -7,11 +7,11 @@
     -->
     
     <icon name="MySQLFull"            file="mysql_logo_name.png" sizes="NonStd"/>
-    <icon name="AppIcon"          file="specify32.jpg" sizes="all"/>
+    <icon name="AppIcon"          file="specify32.png" sizes="all"/>
     <icon name="AppIconE"         file="specify32E.png" sizes="all"/>
     <icon name="AppIconM"         file="specify32M.png" sizes="all"/>
 
-    <icon name="SpecifyLargeIcon" file="specify128.png" sizes="NonStd"/>
+    <icon name="SpecifyLargeIcon" file="specify128.png" sizes="NonStd"/>//
     <icon name="SpecifyLargeIconE" file="specify128E.png" sizes="NonStd"/>
     <icon name="SpecifyLargeIconM" file="specify128M.png" sizes="NonStd"/>
     <icon name="SpecifyConv"       file="specify128Conv.png" sizes="NonStd"/>
