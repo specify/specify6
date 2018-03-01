@@ -3448,7 +3448,16 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     	    return null;
         }
         String[] tblIdList = f.getTableList().split(",");
-    	String tblIdCode = tblIdList[tblIdList.length-1];
+    	String parentTableId = tblIdList.length > 1 ? tblIdList[tblIdList.length-2] : null;
+    	String parentTableName = null;
+    	if (parentTableId != null) {
+    	    try {
+                parentTableName = DBTableIdMgr.getInstance().getInfoById(Integer.valueOf(parentTableId)).getName();
+    	    } catch(Exception x) {
+    	        //pretend nothing happened
+            }
+        }
+        String tblIdCode = tblIdList[tblIdList.length-1];
     	String[] idParts = tblIdCode.split("-");
     	String tblId = idParts[0];
     	String relName = idParts.length == 1 ? "" : idParts[1];
@@ -3464,7 +3473,9 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                     String wbDefTbl = tblAndRel.getFirst();
                     String wbDefRel = tblAndRel.getSecond();
                     String field = XMLHelper.getAttr((Element) fld, "name", null);
-                    if (tblName.equalsIgnoreCase(wbDefTbl) && (isTree || relName.equalsIgnoreCase(wbDefRel))) {
+                    if (tblName.equalsIgnoreCase(wbDefTbl) &&
+                            (isTree || relName.equalsIgnoreCase(wbDefRel)) ||
+                            (parentTableName != null && parentTableName.equalsIgnoreCase(wbDefRel))) {
                         DBTableInfo ti = tblMgr.getInfoByTableName(wbSchemaTable.toLowerCase());
                         DBFieldInfo fi = ti == null ? null : ti.getFieldByName(field);
                         if (fi != null) {
