@@ -1,0 +1,148 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;
+      charset=windows-1252">
+    <link href="../../main.css" type="text/css" media="screen"
+      rel="stylesheet">
+    <meta name="generator" content="Helen">
+    <style type="text/css">
+<!--
+.style1 {
+  font-style: italic;
+}
+-->
+</style>
+    <title>Batch Editor</title>
+  </head>
+  <body bgcolor="#ffffff">
+    <table background="../images/topbar.png" border="0" width="100%">
+      <tbody>
+        <tr>
+          <td>&nbsp; </td>
+        </tr>
+      </tbody>
+    </table>
+    <h2> <a name="batch_editor"></a><img alt="batch edit" src="../../images/batch_editing_32x32.png" />Batch Editor</h2>
+    <p>NEW in the 6.7 release of the Specify desktop application, we offer the ability to edit a 'batch' of data using an interface very similar to the WorkBench. Batch Editing is a powerful method to improve data quality -- it can potentially change thoughsands of data records with just a few mouse clicks. Once edits are made and confirmed, changes will be permanent and they cannot be rolled back. We recommend you take the following precautions:</p>
+    <ol>
+      <li>Make a backup of your data before using the Batch Editor</li>
+      <li>Ensure that you understand the relationships represented by the fields and tables you wish to change before using the Batch Editor.</li>
+      <li>When creating queries to choose the data that will be displayed in the Batch Editor include fields and tables related to the specific data you wish to edit.</li>
+      <li>Once a batch edit has been completed create queries that allow you to confirm that the changes made to the data did not have unintended consequences in related fields and tables.    </li>
+    </ol>
+    <p>A few other notes regarding the Batch Editor:</p>
+    <ul>
+      <li>There is a limit of 7000 records that can be edited at one time. If you wish to edit more data you will need to split your data into batches of 7000 and edit each batch individually. It may be useful to first split your data into saved Record Sets prior to starting the batch edit process.    </li>
+    </ul>
+    <ul>
+      <li>Batch editing is only available to users with the <em>Admin</em> or <em>Manager</em> status. If you wish to enable batch editing for a <em>Full Access</em> user please contact the Specify team.    </li>
+    </ul>
+    <ul>
+      <li>At this time Taxonomy information is only available to view in the Batch Editor tool.    </li>
+    </ul>
+    <ul>
+      <li>At this time Stratigraphy and Lithostratigraphy is only available to view in the Batch Editor tool.    </li>
+    </ul>
+    <ul>
+      <li>Fields that are read only in the schema, unique identifiers (such as GUID or Catalog Number), formatted or aggregated are only available to view in the Batch Editor tool.</li>
+    </ul>
+    <ul>
+      <li>When deleting values in geography and locality tree fields only fields without child data can be deleted, one CAN delete children in tree fields as long as there is nothing below them in rank.      </li>
+    </ul>
+    <ul>
+      <li>When you bring data into the batch editor, you are essentially 'checking it out' from the database so that you may make changes that will later be validated and applied. If other users are also accessing and editing the same data, there can actually be a different version of data in the database when Specify is validating than when the data was originally checked out. In this instance Specify will not commit the change and will  alert you to this action in a status dialog.</li>
+    </ul>
+    <p>The following documentation for the Batch Editor is meant only as a basic overview. To better explain the changes that will be made to related data when using the Batch Editing tool we have created a video which demonstrates these changes using real workflows.</p>
+  <p>&nbsp;</p>
+    <p><u>Choosing the Data to Edit</u></p>
+    <p>Open the Batch Editing tool by clicking the <img alt="batch edit" src="../../images/batch_editing_24x24.png" />&nbsp;(Batch Edit)
+      
+      button on the Taskbar.</p>
+    <p>&nbsp;</p>
+    <p><img alt="batch edit" src="../../images/documentation_1.png" /></p>
+    <p>&nbsp;</p>
+    <p>To use the Batch Editor you must first choose the records you wish to edit. The side bar offers helpful options to get started:</p>
+    <ul>
+      <li>Create a new query by clicking the appropriate table in the <em>Create Query</em> section of the side bar.</li>
+    </ul>
+    <blockquote>
+      <p>The <em>Create Query</em> section of the side bar lists the tables that are available to batch edit. Because Specify utilizes a robust schema which creates intricate relationships among the various tables and fields, it is all too easy to make changes in the batch editor that have unintentional consequences. For that reason, the tables and fields available to edit have been limited. </p>
+      <p>Start by clicking the table that contains the data you wish to edit. </p>
+    </blockquote>
+    <ul>
+      <li>Open a saved query by clicking the appropriate query in the <em>Saved Queries</em> section of the side bar.</li>
+    </ul>
+    <blockquote>
+      <p>If you have an existing query you know will include the data you wish to batch edit choose it from the side bar. </p>
+    </blockquote>
+    <ul>
+      <li>Choose  a record set in the <em>Record Set</em> section of the side bar.</li>
+    </ul>
+    <blockquote>
+      <p>If you have saved a Record Set that you wish to batch edit as well as either the original saved query used to create it, or a saved query that includes the fields you wish to batch edit, right-mouse click on the record set and choose <em>View with Saved Query</em> from the pop-up dialog.</p>
+    </blockquote>
+    <p><em><strong>Note:</strong></em> When using the Collection Object table as the base table for queries, Specify basically 'flattens' the data when bringing it into the batch editor. Therefore, changes made to fields in the batch editor will only affect that single Collection Object record. However, when using one of the other available tables, because they are a 'base' table and related to many records in other tables (especially Collection Object) the changes made will be reflected in all related records. This is better explained in the video. </p>
+    <p>&nbsp;</p>
+    <p><img alt="batch edit" src="../../images/documentation_2.png" /></p>
+    <p>&nbsp;</p>
+    <p>If you chose to create a query or open a saved query, you will notice that  the Query Builder interface is displayed. Continue to choose the tables and fields you wish to edit. ALSO, include related data that will allow you to determine the uniqueness of the records you are editing. For help using the Query Builder please <a href="Query_Builder.html">Click Here.</a></p>
+    <p>Once you have completed your query you may wish to save it by clicking the <em>Save</em> button at the bottom of the Workspace and naming your query. This is useful when editing large sets of data that require multiple Batch Editing instances.</p>
+    <p>Otherwise, click the <em>Search</em> button at the bottom of the Workspace to display your query results. The data you see in the query results screen is the exact data that will be displayed in the batch editor.</p>
+    <p>&nbsp;</p>
+    <p><u>Batch Editing</u></p>
+    <p>Once you are satisfied that you have successfully chosen the data you wish to edit:</p>
+  <ul>
+      <li>Click the <img alt="batch edit" src="../../images/batch_editing_24x24.png" />(Batch Edit) button  located at the top-right corner of the Workspace. </li>
+  </ul>
+    <p>Or</p>
+    <ul>
+      <li>Limit the data that you open in the batch editor by either clicking each record while holding down the <em>Shift</em> key, or clicking on a record and dragging your mouse to select multiple records. Then, click the <img src="../icons/batch_editing_24x24.png" width="24" height="24" alt=""/>&nbsp;(Batch Edit) button  located at the top-right corner of the Workspace.</li>
+    </ul>
+  <p>&nbsp;</p>
+    <p><img alt="batch edit" src="../../images/documentation_3.png" /></p>
+    <p>&nbsp;</p>
+    <p>Your data is now available to manipulate in the Batch Editor tool. The Batch Editor interface is similar to the WorkBench, with the same features for manipulating data, such as; copy, past, sort, fill up, fill down, etc. For more information about the tools available please<a href="../Workbench/GridEditing.html"> Click Here.</a></p>
+    <p><strong><em>Note:</em></strong> When deleting terms in the batch editor ensure that there are no spaces in the field.</p>
+    <p>&nbsp;</p>
+    <p><u>Data Validation</u></p>
+    <p>The Batch Editor also includes a Data Validation panel at the bottom-left of the Workspace. Fields containing invalid data are highlighted in red and fields containing edited data are highlighted in green. The panel also displays a total count of affected fields. </p>
+    <p><strong><em>Note:</em></strong> Changes made in the batch editor can not be applied when invalid data </p>
+    <p><strong><em>Note:</em></strong> Not all fields are available for editing in the batch editor. Non-editable fields display in a light gray color.</p>
+    <p>&nbsp;</p>
+    <p>If at any time during editing you wish to revert back to the original data, click the <em>Undo All </em>button located at the bottom-right of the Workspace screen.</p>
+    <p>Once you have finished editing your data and are ready to commit your changes, click the <em>Apply</em> button located at the bottom-right of the Workspace screen. </p>
+  <p>&nbsp;</p>
+    <p><img alt="batch edit" src="../../images/documentation_4.png" /></p>
+    <p>&nbsp;</p>
+    <p><u>Applying Your Edits</u></p>
+    <p>Specify will now validate your data, and offer some statistics about the changes you are about to make, but has not commited those changes to the database. At this time you can click the <em>Cancel</em> button and choose not to commit your changes without losing your edits. </p>
+    <p>A Batch Progress dialog will display which alerts you to both the progress and results of the changes:</p>
+    <ul>
+      <li>Applying your edits is a progress statement</li>
+      <li>Validating changes to the database is a progress statement</li>
+      <li>Number of edits successfully applied and validated</li>
+    </ul>
+    <blockquote>
+      <p>Typically this will display that All edits were successfully applied; however, if a concurrent user edited one of the records while you were batch editing Specify would recognize this and skip over your record. If you wish to verify this with a co-worker you can click the <em>Cancel</em> button at the bottom of the dialog to cancel the process. The batch editor will still be displayed with all your previous changes and you can apply the changes again when you are ready. </p>
+    </blockquote>
+    <ul>
+      <li>Number of collection objects affected by your changes</li>
+    </ul>
+    <blockquote>
+      <p>This message displays the total number of records that will be updated in each table that is affected by the batch edit. It is meant to help you to understand the related fields and tables that are affected by your changes. If these numbers do not reflect the changes you believe you  made we recommend that you cancel the update at this time. A good practice may be to select only a few records to load into the batch editor, make your edits, and then apply them in the batch editor. Once that is complete you can create queries on those changed records that allow you to better understand how the edits you made have affected related fields and tables, and whether you wish to proceed in making those changes to all your records. </p>
+    </blockquote>
+    <ul>
+      <li>Whether your changes were saved or canceled.</li>
+    </ul>
+    <p>A timer also appears on the dialog, allowing you 3 minutes to either commit or cancel your changes. When you bring data into the batch editor, you are essentially 'checking it out' from the database so that you may make changes that will later be validated and applied. If other users are also accessing and editing the same data, there can actually be a different version of data in the database when Specify is validating than when the data was originally checked out. In this instance Specify will not commit the change and will  alert you to this action in the status dialog. Once the validation process has completed, Specify will not check the version of the data again. For that reason, we limit the amount of time between the validation completion and the choice to either commit or cancel the updates. </p>
+    <p>Click <em>OK</em> to close the dialog.</p>
+    <p><u>Batch Edited Record Sets</u></p>
+    <p>Upon completion of a batch edit the records are saved in a new Record Set. If you saved the original query used to define the data you edited, then the record set will use the same name as the query. If you did not save the query the record set will incorporate the name of the table used to create the query as well as the number of batch edits performed using the query. For example, if you created a Collecting Event query but did not save it, the ensuing record set would be named: New Collecting Event Query 1.</p>
+    <ul>
+      <li>View the records in the Record Set in forms by clicking on the record set name in the sidebar.</li>
+      <li>View the records in the Record Set in a spreadsheet format by right-mouse clicking on the name in the sidebar and choosing<em> View with saved Query</em> in the pop-up dialog.</li>
+    </ul>
+
+  </body>
+</html>

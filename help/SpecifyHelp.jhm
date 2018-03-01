@@ -129,6 +129,7 @@
    <mapID target="slicer" url="SpecifyHelp/Uploading/splitter.html"/>
    <mapID target="export_data" url="SpecifyHelp/QueryBuilder/third_party.html"/>
    <mapID target="schema_tool" url="SpecifyHelp/QueryBuilder/data_exporter.html"/>
+   <mapID target="BatchEdit" url="SpecifyHelp/QueryBuilder/batch_editor.html"/>
    <mapID target="security_wiz" url="SpecifyHelp/Security/Security_Wizard.html"/>
    <mapID target="wb_schema_config" url="SpecifyHelp/SchemaConfig/workbench_schema_config.html"/>
    <mapID target="wb_recordset" url="SpecifyHelp/Workbench/CreateDSfromRS.html"/>
@@ -145,6 +146,7 @@
    <mapID target="Symbiota" url="SpecifyHelp/Data_Entry/symbiota.html"/>
    <mapID target="ISOASSIGN" url="SpecifyHelp/Cleanup/iso_assign_main.html"/>
    <mapID target="iPadDBExporter" url="SpecifyHelp/iPadExporter/ipad_exporter.html"/>
+   <mapID target="BatchEdit" url="SpecifyHelp/QueryBuilder/batch_editor.html"/>
    <mapID target="iPadConfig" url="SpecifyHelp/iPadExporter/ipad_exporter.html#configure_export"/>
 
 
@@ -226,6 +228,10 @@
    <mapID target="Q_Saved" url="SpecifyHelp/QueryBuilder/Query_Builder.html#q_saved"/>
    <mapID target="Q_Delete" url="SpecifyHelp/QueryBuilder/Query_Builder.html#q_delete"/>
    <mapID target="Q_Edit" url="SpecifyHelp/QueryBuilder/Query_Builder.html#edit_query"/>
+   <mapID target="Choose_Data" url="SpecifyHelp/QueryBuilder/batch_editor.html#choose_data"/>
+   <mapID target="Batch_Editing" url="SpecifyHelp/QueryBuilder/batch_editor.html#batch_editing"/>
+   <mapID target="Apply_Edits" url="SpecifyHelp/QueryBuilder/batch_editor.html#apply_edits"/>
+   <mapID target="Edited_Records" url="SpecifyHelp/QueryBuilder/batch_editor.html#edited_records"/>
    <mapID target="GE" url="SpecifyHelp/Plugins/Plugins.html#ge"/>
    <mapID target="BioGeo" url="SpecifyHelp/Plugins/Plugins.html#biogeo"/>
    <mapID target="InteractionsConfig" url="SpecifyHelp/Interactions/Interactions.html#interactions_config"/>

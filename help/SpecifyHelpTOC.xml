@@ -167,6 +167,12 @@
 			<tocitem text="Using Record Sets" target="RS_Use" />
 			<tocitem text="Record Set Context Menu" target="RS_Menu" />
 		</tocitem>
+		<tocitem text="Batch Editing" target="BatchEdit">
+			<tocitem text="Choosing Data to Edit" target="Choose_Data" />
+			<tocitem text="Batch Editing" target="Batch_Editing" />
+			<tocitem text="Applying Your Edits" target="Apply_Edits" />
+			<tocitem text="Batch Edited Record Sets" target="Edited_Records" />
+		</tocitem>
 		<tocitem text="Reports and Labels" target="Reports">
 			<tocitem text="Reports Side Bar Tools" target="Report_Sidebar" />
 			<tocitem text="SpecifyiReport" target="iReport">
