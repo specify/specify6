@@ -149,8 +149,10 @@ public class WorkbenchTemplate extends DataModelObjBase implements java.io.Seria
             	item.setTableName(remap.getFirst());
             	item.setFieldName(remap.getSecond());
             	DBTableInfo tblInfo = schema.getInfoByTableName(remap.getFirst());
-            	item.setFieldInfo(tblInfo.getFieldByName(remap.getSecond()));
-            	item.setSrcTableId(tblInfo.getTableId());
+            	if (tblInfo != null) {
+                    item.setFieldInfo(tblInfo.getFieldByName(remap.getSecond()));
+                    item.setSrcTableId(tblInfo.getTableId());
+                }
             }
         }
     }

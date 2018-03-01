@@ -1325,7 +1325,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             try
             {
                 session.attach(workbenchTemplate);
-                //workbenchTemplate.checkMappings(getDatabaseSchema());
+                workbenchTemplate.checkMappings(getDatabaseSchema(false));
                 Vector<WorkbenchTemplate> newDataRow = new Vector<WorkbenchTemplate>(1);
                 newDataRow.add(workbenchTemplate);
                 command.setData(newDataRow);
@@ -1899,106 +1899,6 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     	return result;
     }
  
-//    protected boolean loadRsIntoWb(final RecordSetIFace rs, final Workbench wb)
-//    {
-//    	boolean result = false;
-//    	DBTableInfo tbl = DBTableIdMgr.getInstance().getInfoById(rs.getDbTableId());
-//        //XXX What is the dbTableId field in workbench for? ExportedFromTableName may not even be necessary. Based on use of dbTableId in recordset
-//    	//it looks like it was designed to for exported records...
-//    	//wb.setDbTableId(rs.getTableId());
-//    	wb.setExportedFromTableName(tbl.getClassName());
-//    	final DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-//    	final Class<?> cls = rs.getDataClassFormItems();
-//    	try
-//    	{
-//    		WorkbenchValidator wbvalidator = null;
-//    		try
-//        	{
-//        		wbvalidator = new WorkbenchValidator(wb);
-//        	}
-//        	catch (Exception ex)
-//            {
-//            	if (ex instanceof WorkbenchValidator.WorkbenchValidatorException)
-//            	{
-//            		WorkbenchValidator.WorkbenchValidatorException wvEx = null;
-//            		if (ex instanceof WorkbenchValidator.WorkbenchValidatorException)
-//            		{
-//            			wvEx = (WorkbenchValidator.WorkbenchValidatorException )ex;
-//            		} else if (ex.getCause() instanceof WorkbenchValidator.WorkbenchValidatorException)
-//            		{
-//            			wvEx = (WorkbenchValidator.WorkbenchValidatorException )ex.getCause();
-//            		}
-//            		if (wvEx != null && wvEx.getStructureErrors().size() > 0)
-//            		{
-//            			Uploader.showStructureErrors(wvEx.getStructureErrors());
-//            		}
-//            	}
-//            	else 
-//            	{
-//            		throw ex;
-//            	}
-//            	UIRegistry.showLocalizedError("WorkbenchPaneSS.UnableToAutoValidate");
-//            	return false;
-//            }  		
-//        	final WorkbenchValidator wbv = wbvalidator;
-//        	UIRegistry.writeGlassPaneMsg(getResourceString("WB_LOADING_RS_TO_DB"), GLASSPANE_FONT_SIZE);
-//        	new javax.swing.SwingWorker<Object, Object> () {
-//        		
-//        		Exception killer = null;
-//        		
-//				/* (non-Javadoc)
-//				 * @see javax.swing.SwingWorker#doInBackground()
-//				 */
-//				@Override
-//				protected Object doInBackground() throws Exception {
-//	        		try
-//	        		{
-//					for (RecordSetItemIFace item : rs.getItems())
-//	        		{
-//	        			DataModelObjBase obj = (DataModelObjBase )session.get(cls, item.getRecordId());
-//	        			if (obj != null)
-//	        			{
-//	        				obj.forceLoad();
-//	        				wbv.getUploader().loadRecordToWb(obj, wb);
-//	        			}
-//	        		}
-//	        		} catch (Exception e)
-//	        		{
-//	        			killer = e;
-//	        			return null;
-//	        		}
-//	        		return null;
-//				}
-//
-//				/* (non-Javadoc)
-//				 * @see javax.swing.SwingWorker#done()
-//				 */
-//				@Override
-//				protected void done() {
-//					UIRegistry.clearGlassPaneMsg();
-//					if (killer != null)
-//					{
-//			            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-//			            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, killer);
-//			            killer.printStackTrace();
-//			            log.error(killer);
-//					}
-//				}
-//         		
-//         	}.execute();
-//    	} catch (Exception ex)
-//    	{
-//            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-//            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
-//            ex.printStackTrace();
-//            log.error(ex);
-//            
-//    	} finally
-//    	{
-//    		session.close();
-//    	}
-//    	return result;
-//    }
 
     protected void fillandSaveWorkbench(final Object contents, final Workbench workbench) {
         fillandSaveWorkbench(contents, workbench, false, null);
@@ -2101,207 +2001,6 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         return getResourceString("WB_DATASET");
     }
 
-    /**
-     * Creates the Pane for editing a Workbench.
-     * @param workbench the workbench to be edited
-     * @param session a session to use to load the workbench (can be null)
-     * @param showImageView shows image window when first showing the window
-     */
-//    protected void createEditorForWorkbench(final Workbench workbench, 
-//                                            final DataProviderSessionIFace session,
-//                                            final boolean showImageView)
-//    {
-//        if (workbench != null)
-//        {
-//            final SimpleGlassPane glassPane = UIRegistry.writeSimpleGlassPaneMsg(String.format(getResourceString("WB_LOADING_DATASET"), new Object[] {workbench.getName()}), GLASSPANE_FONT_SIZE);
-//            
-//            // Make sure we have a session but use an existing one if it is passed in
-//            DataProviderSessionIFace tmpSession = session;
-//            if (tmpSession == null)
-//            {
-//                tmpSession = DataProviderFactory.getInstance().createSession();
-//            }
-//            
-//            
-//            final WorkbenchTask            thisTask    = this;
-//            final DataProviderSessionIFace finiSession = tmpSession;
-//            final SwingWorker worker = new SwingWorker()
-//            {
-//                WorkbenchPaneSS wbSS = null;
-//            	@SuppressWarnings("synthetic-access")
-//                @Override
-//                public Object construct()
-//                {
-//                     try
-//                     {
-//                         if (session == null)
-//                         {
-//                             finiSession.attach(workbench);
-//                         }
-//                         wbSS = createEditorForWorkbench(workbench, glassPane, showImageView, thisTask);
-//                         if (wbSS.isDoIncremental())
-//                         {
-//                        	 SwingUtilities.invokeLater(new Runnable() {
-//
-//								@Override
-//								public void run() {
-//									UIRegistry.clearSimpleGlassPaneMsg();
-//									wbSS.validateAll(null);
-//								}
-//                        		 
-//                        	 });
-//                         }
-//                     } catch (Exception ex)
-//                     {
-//                         edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-//                         edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
-//                         log.error(ex);
-//                         ex.printStackTrace();
-//                     } 
-//                     finally
-//                     {
-//                         if (session == null && finiSession != null)
-//                         {
-//                             try
-//                             {
-//                                 finiSession.close();
-//                                 
-//                             } catch (Exception ex)
-//                             {
-//                                 edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-//                                 edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
-//                                 log.error(ex);
-//                             }
-//                         }
-//                         updateNavBoxUI(null);
-//                     }
-//
-//                    return null;
-//                }
-//
-//                //Runs on the event-dispatching thread.
-//                @Override
-//                public void finished()
-//                {
-//                    if (wbSS == null || !wbSS.isDoIncremental())
-//                    {
-//                    	UIRegistry.clearSimpleGlassPaneMsg();
-//                    }
-//                    //UIRegistry.getStatusBar().setProgressDone(workbench.getName());
-//                }
-//            };
-//            worker.start();
-//        }
-//    }   
-//    
-// 
-//    /**
-//     * @param workbench
-//     * @param glassPane
-//     * @param showImageView
-//     * @param thisTask
-//     * @return workbenchPaneSS containing workbench
-//     * 
-//     * workbench must be attached to a session.
-//     */
-//    protected WorkbenchPaneSS createEditorForWorkbench(final Workbench workbench, 
-//    		//final DataProviderSessionIFace session,
-//    		final SimpleGlassPane glassPane, final boolean showImageView, final WorkbenchTask  thisTask)
-//    {
-//        final int rowCount = workbench.getWorkbenchRows().size() + 1;
-//        
-//        //force load the workbench here instead of calling workbench.forceLoad() because
-//        //is so time-consuming and needs progress bar.
-//        //workbench.getWorkbenchTemplate().forceLoad();
-//        workbench.getWorkbenchTemplate().checkMappings(getDatabaseSchema());
-//        //UIRegistry.getStatusBar().incrementValue(workbench.getName());
-//        int count = 1;
-//        // Adjust paint increment for number of rows in DataSet
-//        int mod;
-//        if (rowCount < 50) mod = 1;
-//        else if (rowCount < 100) mod = 10;
-//        else if (rowCount < 500) mod = 20;
-//        else  if (rowCount < 1000) mod = 40;
-//        else mod = 50;
-//        for (WorkbenchRow row : workbench.getWorkbenchRows())
-//        {
-//            row.forceLoad();
-//            
-//            if (glassPane != null)
-//            {
-//            	if (count % mod == 0)
-//            	{
-//            		glassPane.setProgress((int)( (100.0 * count) / rowCount));
-//            	}
-//            }
-//            count++;
-//        }
-//        if (glassPane != null)
-//        {
-//        	glassPane.setProgress(100);
-//        }
-//        
-//        // do the conversion code right here!
-//        boolean convertedAnImage = false;
-//        Set<WorkbenchRow> rows = workbench.getWorkbenchRows();
-//        if (rows != null)
-//        {
-//            for (WorkbenchRow row: rows)
-//            {
-//                // move any single images over to the wb row image table
-//                Set<WorkbenchRowImage> rowImages = row.getWorkbenchRowImages();
-//                if (rowImages == null)
-//                {
-//                    rowImages = new HashSet<WorkbenchRowImage>();
-//                    row.setWorkbenchRowImages(rowImages);
-//                }
-//                if (row.getCardImageFullPath() != null && row.getCardImageData() != null && row.getCardImageData().length > 0)
-//                {
-//                    // create the WorkbenchRowImage record
-//                    WorkbenchRowImage rowImage = new WorkbenchRowImage();
-//                    rowImage.initialize();
-//                    rowImage.setCardImageData(row.getCardImageData());
-//                    rowImage.setCardImageFullPath(row.getCardImageFullPath());
-//                    rowImage.setImageOrder(0);
-//                    
-//                    // clear the fields holding the single-image data
-//                    row.setCardImageData(null);
-//                    row.setCardImageFullPath(null);
-//
-//                    // connect the image and the row
-//                    rowImage.setWorkbenchRow(row);
-//                    rowImages.add(rowImage);
-//                    
-//                    convertedAnImage = true;
-//                }
-//            }
-//        }
-//        
-//        WorkbenchPaneSS workbenchPane = new WorkbenchPaneSS(workbench.getName(), thisTask, workbench, showImageView, 
-//                !isPermitted());
-//        addSubPaneToMgr(workbenchPane);
-//        
-//        if (convertedAnImage)
-//        {
-//            Component topFrame = UIRegistry.getTopWindow();
-//            String message     = getResourceString("WB_DATASET_IMAGE_CONVERSION_NOTIFICATION");
-//            String msgTitle    = getResourceString("WB_DATASET_IMAGE_CONVERSION_NOTIFICATION_TITLE");
-//            JOptionPane.showMessageDialog(topFrame, message, msgTitle, JOptionPane.INFORMATION_MESSAGE);
-//            workbenchPane.setChanged(true);
-//        }
-//
-//        RolloverCommand roc = getNavBtnById(workbenchNavBox, workbench.getWorkbenchId(), "workbench");
-//        if (roc != null)
-//        {
-//            roc.setEnabled(false);
-//            
-//        } else
-//        {
-//            log.error("Couldn't find RolloverCommand for WorkbenchId ["+workbench.getWorkbenchId()+"]");
-//        }
-//        
-//        return workbenchPane;
-//    }
 
     protected void createEditorForWorkbench(final Workbench workbench,
                                             final DataProviderSessionIFace session,
@@ -2535,35 +2234,6 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
 
                 try
                 {
-//                	Connection conn = DBConnection.getInstance().createConnection();
-//                	try
-//        			{
-//        				conn.setAutoCommit(false);
-//        				Statement stmt = conn.createStatement();
-//        				try
-//        				{
-//        					stmt.execute("delete from workbenchdataitem where workbenchtemplatemappingitemid in (select workbenchtemplatemappingitemid from workbenchtemplatemappingitem where workbenchtemplateid = " 
-//        							+ workbench.getWorkbenchTemplate().getId() + ")");
-//        					stmt.execute("delete from workbenchtemplatemappingitem where workbenchtemplateid = " + workbench.getWorkbenchTemplate().getId()); //Assuming 1-1 between workbenchtemplate and workbench
-//        					stmt.execute("delete from workbenchrowexportedrelationship where workbenchrowid in (select workbenchrowid from workbenchrow where workbenchid = " + workbench.getId() + ")");
-//        					stmt.execute("delete from workbenchrowimage where workbenchrowid in(select workbenchrowid from workbenchrow where workbenchid = " + workbench.getId() + ")");
-//        					stmt.execute("delete from workbenchrow where workbenchid = " + workbench.getId());
-//        					stmt.execute("delete from workbench where workbenchid = " + workbench.getId());
-//        					stmt.execute("delete from workbenchtemplate where workbenchtemplateid = " + workbench.getWorkbenchTemplate().getId()); //Assuming 1-1 between workbenchtemplate and workbench
-//        					conn.commit();
-//        				} finally
-//        				{
-//        					stmt.close();
-//        					conn.close();
-//        				}
-//        			} catch (Exception ex)
-//        			{
-//        				conn.rollback();
-//        				UsageTracker.incrHandledUsageCount();
-//        				edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
-//        				//UIRegistry.getStatusBar().setErrorMessage(ex.getLocalizedMessage(), ex);
-//        			}
-
                     session.beginTransaction();
                     session.delete(workbench);
               
@@ -2826,7 +2496,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                     
                 } else if (list.size() == 1)
                 {
-                    //list.get(0).getWorkbenchTemplate().checkMappings(getDatabaseSchema());
+                    list.get(0).getWorkbenchTemplate().checkMappings(getDatabaseSchema(false));
                     return list.get(0);
                 }
                 
@@ -3139,137 +2809,19 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     {
         loadTemplateFromData(wbTemplate);
         TemplateEditor dlg = null;
-        //wbTemplate.checkMappings(getDatabaseSchema());
-        try 
-        {
+        wbTemplate.checkMappings(getDatabaseSchema(false));
+        try {
         	dlg = showColumnMapperDlg(null, wbTemplate, "WB_MAPPING_EDITOR", null);
-        } catch (Exception ex)
-        {	                    
+        } catch (Exception ex) {
         	edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
         	edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
         	log.error(ex);
         }
-        if (dlg != null && !dlg.isCancelled())
-        {
+        if (dlg != null && !dlg.isCancelled()) {
         	updateGeoRefInfoAfterTemplateEdit(wbTemplate,
         			dlg.getDeletedItems(), dlg.updateAndGetNewItems());
-//            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-//            try
-//            {
-//                Collection<WorkbenchTemplateMappingItem> deletedItems = dlg.getDeletedItems();
-//                Collection<WorkbenchTemplateMappingItem> newItems     = dlg.updateAndGetNewItems();
-//                
-//                for (WorkbenchTemplateMappingItem item : newItems)
-//                {
-//                    log.error(item.getFieldName());
-//                }
-//                //Collection<WorkbenchTemplateMappingItem> updatedItems = dlg.getUpdatedItems();
-//                
-//                session.beginTransaction();
-//                
-//                // Merge with current session
-//                WorkbenchTemplate workbenchTemplate = session.merge(wbTemplate);
-//                
-//                Set<WorkbenchTemplateMappingItem> items = workbenchTemplate.getWorkbenchTemplateMappingItems();
-//                for (WorkbenchTemplateMappingItem delItem : deletedItems)
-//                {
-//                    for (WorkbenchTemplateMappingItem wbtmi : items)
-//                    {
-//                    	if (delItem.getWorkbenchTemplateMappingItemId().longValue() == wbtmi.getWorkbenchTemplateMappingItemId().longValue())
-//                        {
-//                            //log.debug("del ["+wbtmi.getCaption()+"]["+wbtmi.getWorkbenchTemplateMappingItemId().longValue()+"]");
-//                            //wbtmi.setWorkbenchTemplate(null);
-//                    		
-//                    		items.remove(wbtmi);
-//                    		wbtmi.setWorkbenchTemplate(null);
-//                            if (wbtmi.getWorkbenchDataItems() != null)
-//                            {
-//                              
-//                            	for (WorkbenchDataItem wbdi : wbtmi.getWorkbenchDataItems())
-//                                {
-//                                    wbdi.getWorkbenchRow().getWorkbenchDataItems().remove(wbdi);
-//                                    wbdi.setWorkbenchRow(null);
-//                            		session.delete(wbdi);
-//                            		wbdi.setWorkbenchTemplateMappingItem(null);
-//                                }
-//                            	wbtmi.getWorkbenchDataItems().clear();
-//                            }
-//                            session.delete(wbtmi);
-//                            break;
-//                        }
-//                    }
-//                }
-//                
-//                for (WorkbenchTemplateMappingItem wbtmi : newItems)
-//                {
-//                    wbtmi.setWorkbenchTemplate(workbenchTemplate);
-//                    items.add(wbtmi);
-//                    //log.debug("new ["+wbtmi.getCaption()+"]["+wbtmi.getViewOrder().shortValue()+"]");
-//                    session.saveOrUpdate(wbtmi) ;
-//                }
-//                                
-//                //Check to see if geo/ref data needs to be updated
-//                //This is actually only necessary if lat/long mappings have been switched - lat mapping changed to a long mapping or vice-versa.
-//                //XXX Surely it is possible to tell if a lat/long switch has been made and not do this after every template change??
-//                WorkbenchTemplateMappingItem aGeoRefMapping = null;
-//                for (WorkbenchTemplateMappingItem wbtmi : workbenchTemplate.getWorkbenchTemplateMappingItems())
-//                {
-//                    if (aGeoRefMapping == null && wbtmi.getTableName().equals("locality"))
-//                    {
-//                        if (wbtmi.getFieldName().equalsIgnoreCase("latitude1") || wbtmi.getFieldName().equalsIgnoreCase("latitude2")
-//                                || wbtmi.getFieldName().equalsIgnoreCase("longitude1") || wbtmi.getFieldName().equalsIgnoreCase("longitude2"))
-//                        {
-//                        	aGeoRefMapping = wbtmi;
-//                        	break;
-//                        }
-//                    }
-//                }
-//                if (aGeoRefMapping != null)
-//                {
-//                	for (Workbench wb : workbenchTemplate.getWorkbenches())
-//                	{
-//                		wb.forceLoad();
-//                		for (WorkbenchRow wbRow : wb.getWorkbenchRows())
-//                		{
-//                			wbRow.updateGeoRefTextFldsIfNecessary(aGeoRefMapping);
-//                		}
-//                		//session.saveOrUpdate(wb);
-//                	}
-//                }
-//
-//                session.saveOrUpdate(workbenchTemplate);
-//                for (Workbench wb : workbenchTemplate.getWorkbenches())
-//                {
-//                	session.saveOrUpdate(wb);
-//                }
-//                
-//                session.commit();
-//                session.flush();
-//                
-//                UIRegistry.getStatusBar().setText(getResourceString("WB_SAVED_MAPPINGS"));
-//                
-//            } catch (Exception ex)
-//            {
-//                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-//                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
-//                log.error(ex);
-//                ex.printStackTrace();
-//                
-//            } finally
-//            {
-//                try
-//                {
-//                    session.close();
-//                } catch (Exception ex)
-//                {
-//                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-//                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
-//                    log.error(ex);
-//                }  
-//            }
         }
-        if (dlg != null)
-        {
+        if (dlg != null) {
         	dlg.dispose();
         }
     }
