@@ -541,7 +541,7 @@
     <field table="GeoCoordDetail" name="originalCoordSystem" actualtable="GeoCoordDetail" relationshipname="locality"/>
     <field table="GeoCoordDetail" name="namedPlaceExtent" actualtable="GeoCoordDetail" relationshipname="locality"/>
     <field table="GeoCoordDetail" name="geoRefDetDate" actualtable="GeoCoordDetail" relationshipname="locality"/>-->
-    <field table="GeoCoordDetail" name="estUncertainty" relationshipname="locality" actualname="maxUncertaintyEst"/>
+    <field table="GeoCoordDetail" name="estUncertainty" actualname="maxUncertaintyEst"/>
     <field table="GeoCoordDetail" name="geoRefByFirst" relationshipname="geoRefDetBy"  relatedfieldname="firstName"/>
     <field table="GeoCoordDetail" name="geoRefByLast" relationshipname="geoRefDetBy"  relatedfieldname="lastName"/>
     <field table="GeoCoordDetail" name="geoRefByMiddle" relationshipname="geoRefDetBy"  relatedfieldname="middleInitial"/>
