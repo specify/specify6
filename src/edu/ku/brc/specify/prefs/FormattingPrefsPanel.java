@@ -605,15 +605,18 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
     /**
      * @return the name of the icon to use for the current collection.
      */
-    public static String getDisciplineImageName()
-    {
+    public static String getDisciplineImageName() {
         Collection collection = AppContextMgr.getInstance().getClassObject(Collection.class);
-        if (collection != null)
-        {
-            return iconImageDiscipPrefName + "." + collection.getCollectionName(); //$NON-NLS-1$
+        if (collection != null) {
+            return getDisciplineImagePrefName(collection.getCollectionName());
         }
         return null;
     }
+
+    public static String getDisciplineImagePrefName(final String collectionName) {
+        return iconImageDiscipPrefName + "." + collectionName; //$NON-NLS-1$
+    }
+
 
     /* (non-Javadoc)
      * @see edu.ku.brc.af.prefs.GenericPrefsPanel#getHelpContext()
@@ -725,6 +728,8 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
             
             String fType =  formTypeHash.get(formTypesCBX.getComboBox().getSelectedItem()).toString();
             local.put("ui.formatting.formtype", fType);
+            //UIRegistry.displayInfoMsgDlg(UIRegistry.getResourceString("MiscPrefsPanel.RestartRequired"));
+
         }
     }
 

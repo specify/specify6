@@ -136,7 +136,7 @@ public class BackupTask extends BaseTask
         PanelBuilder    display = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g", "f:p:g,p,150px,f:p:g"));
         CellConstraints cc      = new CellConstraints();
 
-        display.add(new JLabel(IconManager.getIcon("SpecifySplash")), cc.xy(2, 2));
+        display.add(new JLabel(IconManager.getIcon("SpecifySmallSplash")), cc.xy(2, 2));
         
         if (UIHelper.getOSType() != UIHelper.OSTYPE.MacOSX)
         {

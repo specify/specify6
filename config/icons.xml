@@ -11,7 +11,7 @@
     <icon name="AppIconE"         file="specify32E.png" sizes="all"/>
     <icon name="AppIconM"         file="specify32M.png" sizes="all"/>
 
-    <icon name="SpecifyLargeIcon" file="specify128.png" sizes="NonStd"/>
+    <icon name="SpecifyLargeIcon" file="specify128.png" sizes="NonStd"/>//
     <icon name="SpecifyLargeIconE" file="specify128E.png" sizes="NonStd"/>
     <icon name="SpecifyLargeIconM" file="specify128M.png" sizes="NonStd"/>
     <icon name="SpecifyConv"       file="specify128Conv.png" sizes="NonStd"/>
@@ -20,8 +20,9 @@
     
     
     <icon name="Specify16"        file="specify16.png" sizes="16"/>   <!-- Not Needed anymore -->
-    <icon name="SpecifySplash"    file="SpecifyBigSplash.png" sizes="NonStd"/>
-    <icon name="SpecifySplashCache" file="SpecifyBigSplash.png" sizes="NonStd"/>
+    <icon name="SpecifySmallSplash"    file="SpecifySplash.png" sizes="NonStd"/>
+    <icon name="SpecifySplashCache" file="SpecifySplash.png" sizes="NonStd"/>
+    <icon name="SpecifySplash"      file="SpecifyBigSplash.png" sizes="NonStd"/>
     
     <icon name="WizardIcon"       file="spwizard128.png" sizes="NonStd"/>
     <icon name="WizardIconE"      file="spwizard128E.png" sizes="NonStd"/>
@@ -55,6 +56,7 @@
     <icon name="Bar_Chart"        file="BarGraph32x32.png" sizes="all"/>
     <icon name="Record_Set"       file="RecordSet32x32.png" sizes="all"/>
     <icon name="Query"            file="Query32x32.png" sizes="all"/>
+    <icon name="BatchEdit"        file="BatchEdit32x32.png" sizes="all"/>
     <icon name="MoreTables"       file="more_tables.png" sizes="all"/>
     <icon name="MoreForms"        file="more_forms.png" sizes="all"/>
     <icon name="Search"           file="Search32x32.png" sizes="all"/>

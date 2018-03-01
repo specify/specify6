@@ -248,6 +248,10 @@ public class MatchHandler
         });
         CellConstraints cc = new CellConstraints();
         pb.add(viewBtn, cc.xy(1, 1));
+        /*
+        view dlg unavailable. see comments in viewSelectedMatch
+         */
+        viewBtn.setVisible(!uploadTable.updateMatches);
         pb.add(settingsBtn, cc.xy(3, 1));
         
         btnPane.add(pb.getPanel(), BorderLayout.EAST);
@@ -270,20 +274,15 @@ public class MatchHandler
                 matchDlg.setVisible(false);
             }
         });
+        matchDlg.setAlwaysOnTop(true);
         updateMatchUIState();
-        try
-        {
-            while (true) //scary...
-            {
+        try {
+            while (true) { //scary...
                 UIHelper.centerAndShow(matchDlg);
-                if (matchDlg.isCancelled() && matchDlg.getBtnPressed() == CustomDialog.CANCEL_BTN) 
-                { 
+                if (matchDlg.isCancelled() && matchDlg.getBtnPressed() == CustomDialog.CANCEL_BTN) {
                     return null; 
-                }
-                else if (!matchDlg.isCancelled())
-                {
-                    if (matchDlg.getBtnPressed() == CustomDialog.APPLY_BTN) 
-                    { 
+                } else if (!matchDlg.isCancelled()) {
+                    if (matchDlg.getBtnPressed() == CustomDialog.APPLY_BTN) {
                         throw new UploaderMatchSkipException(
                             UploaderMatchSkipException.makeMsg(restrictedVals, uploadTable.getUploadFields().get(recNum).size(),
                             Uploader.getCurrentUpload().getRow()), matches, Uploader
@@ -292,9 +291,7 @@ public class MatchHandler
                     return ((MatchedRecord )matchesList.getSelectedValue()).getDataObj();
                 }
             }
-        }
-        finally
-        {
+        } finally {
             matchDlg.dispose();
             matchDlg = null;
         }
@@ -372,8 +369,16 @@ public class MatchHandler
         int         options       = MultiView.HIDE_SAVE_BTN;
         
         // create the form dialog
-        ViewBasedDisplayDialog dialog = new ViewBasedDisplayDialog(parentFrame, null, viewName, displayName, displayName, 
-                                                                   closeBtnText, className, idFieldName, false, options);
+        ViewBasedDisplayDialog dialog = new ViewBasedDisplayDialog(parentFrame, null, viewName, displayName, displayName,
+                closeBtnText, className, idFieldName, false, options);
+        //setSession  doesn't currently work because:
+                // a) session is not thread-safe (even for reads only?)
+                // b) form system closes session
+                // c) form system may even open other sessions when related objects are displayed
+//        if (uploadTable.updateMatches) {
+//            dialog.setSession(uploadTable.tblSession);
+//        }
+
         dialog.setModal(true);
         dialog.setData(selection.getDataObj());
 

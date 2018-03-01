@@ -38,7 +38,9 @@
 		<!--
 		<property name="hibernate.c3p0.maxIdleTime">60</property> 
 		-->
-		
+
+		<property name="hibernate.jdbc.batch_size">25</property>
+
 		<!-- Specify mapping files. -->
 		<mapping class="edu.ku.brc.specify.datamodel.Accession"/>
 		<mapping class="edu.ku.brc.specify.datamodel.AccessionAgent"/>

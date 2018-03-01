@@ -227,7 +227,7 @@ public class ServiceInfo implements Comparable<ServiceInfo>, Cloneable
      * @param tableId
      * @return true if the (probably generic) service is available for tableId.
      */
-    public boolean isAvailable(@SuppressWarnings("hiding") final int tableId)
+    public boolean isAvailable(@SuppressWarnings("hiding") final int tableId, final Object data)
     {
     	return true;
     }

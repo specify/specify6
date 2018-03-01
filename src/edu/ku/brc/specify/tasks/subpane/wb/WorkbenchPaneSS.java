@@ -20,117 +20,10 @@
 package edu.ku.brc.specify.tasks.subpane.wb;
 
 
-import static edu.ku.brc.ui.UIHelper.createButton;
-import static edu.ku.brc.ui.UIHelper.createDuplicateJGoodiesDef;
-import static edu.ku.brc.ui.UIHelper.createIconBtn;
-import static edu.ku.brc.ui.UIHelper.createLabel;
-import static edu.ku.brc.ui.UIRegistry.getResourceString;
-
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Frame;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
-import java.io.File;
-import java.net.ConnectException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.EventObject;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Queue;
-import java.util.Set;
-import java.util.Vector;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.ActionMap;
-import javax.swing.BorderFactory;
-import javax.swing.ComboBoxModel;
-import javax.swing.DefaultCellEditor;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.InputMap;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JSplitPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.KeyStroke;
-import javax.swing.ListSelectionModel;
-import javax.swing.SortOrder;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-import javax.swing.border.Border;
-import javax.swing.event.DocumentListener;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.JTableHeader;
-import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableModel;
-import javax.swing.text.Caret;
-import javax.swing.text.JTextComponent;
-import javax.swing.undo.UndoManager;
-
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.dom4j.Element;
-import org.jdesktop.swingx.decorator.AbstractHighlighter;
-import org.jdesktop.swingx.decorator.ColorHighlighter;
-import org.jdesktop.swingx.decorator.ComponentAdapter;
-import org.jdesktop.swingx.decorator.HighlightPredicate;
-import org.jdesktop.swingx.decorator.Highlighter;
-import org.jdesktop.swingx.decorator.HighlighterFactory;
-import org.jdesktop.swingx.table.TableColumnExt;
-
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-
-import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.af.core.ContextMgr;
-import edu.ku.brc.af.core.SubPaneIFace;
-import edu.ku.brc.af.core.SubPaneMgr;
-import edu.ku.brc.af.core.Taskable;
-import edu.ku.brc.af.core.UsageTracker;
+import edu.ku.brc.af.core.*;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
@@ -160,57 +53,20 @@ import edu.ku.brc.services.mapping.LocalityMapper.MapLocationIFace;
 import edu.ku.brc.services.mapping.LocalityMapper.MapperListener;
 import edu.ku.brc.services.mapping.SimpleMapLocation;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
-import edu.ku.brc.specify.datamodel.Discipline;
-import edu.ku.brc.specify.datamodel.Geography;
-import edu.ku.brc.specify.datamodel.Locality;
-import edu.ku.brc.specify.datamodel.Preparation;
-import edu.ku.brc.specify.datamodel.RecordSet;
-import edu.ku.brc.specify.datamodel.Workbench;
-import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
-import edu.ku.brc.specify.datamodel.WorkbenchRow;
-import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
+import edu.ku.brc.specify.datamodel.*;
 import edu.ku.brc.specify.dbsupport.RecordTypeCodeBuilder;
 import edu.ku.brc.specify.rstools.ExportFileConfigurationFactory;
 import edu.ku.brc.specify.rstools.ExportToFile;
 import edu.ku.brc.specify.rstools.GoogleEarthExporter;
 import edu.ku.brc.specify.rstools.WorkbenchRowPlacemarkWrapper;
-import edu.ku.brc.specify.tasks.DataEntryTask;
-import edu.ku.brc.specify.tasks.ExpressSearchTask;
-import edu.ku.brc.specify.tasks.InteractionsTask;
-import edu.ku.brc.specify.tasks.PluginsTask;
-import edu.ku.brc.specify.tasks.SGRTask;
-import edu.ku.brc.specify.tasks.WorkbenchTask;
+import edu.ku.brc.specify.tasks.*;
 import edu.ku.brc.specify.tasks.subpane.ESResultsSubPane;
-import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.DB;
-import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UniquenessChecker;
-import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadData;
-import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadField;
-import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMappingDef;
-import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMessage;
-import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable;
-import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTableInvalidValue;
-import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTableMatchInfo;
-import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadToolPanel;
-import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
-import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploaderException;
-import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.WorkbenchUploadMapper;
+import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.*;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.specify.ui.LengthInputVerifier;
 import edu.ku.brc.specify.ui.db.PickListDBAdapterFactory;
-import edu.ku.brc.ui.CommandAction;
-import edu.ku.brc.ui.CommandDispatcher;
-import edu.ku.brc.ui.CustomDialog;
-import edu.ku.brc.ui.DropDownButtonStateful;
-import edu.ku.brc.ui.DropDownMenuInfo;
-import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.JStatusBar;
-import edu.ku.brc.ui.ToggleButtonChooserDlg;
-import edu.ku.brc.ui.ToggleButtonChooserPanel;
+import edu.ku.brc.ui.*;
 import edu.ku.brc.ui.ToggleButtonChooserPanel.Type;
-import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.UnhandledExceptionDialog;
-import edu.ku.brc.ui.WorkBenchPluginIFace;
 import edu.ku.brc.ui.dnd.SimpleGlassPane;
 import edu.ku.brc.ui.tmanfe.SearchReplacePanel;
 import edu.ku.brc.ui.tmanfe.SpreadSheet;
@@ -218,7 +74,36 @@ import edu.ku.brc.util.GeoRefConverter;
 import edu.ku.brc.util.GeoRefConverter.GeoRefFormat;
 import edu.ku.brc.util.LatLonConverter;
 import edu.ku.brc.util.Pair;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.dom4j.Element;
+import org.jdesktop.swingx.decorator.*;
+import org.jdesktop.swingx.decorator.ComponentAdapter;
+import org.jdesktop.swingx.table.TableColumnExt;
 import sun.swing.table.DefaultTableCellHeaderRenderer;
+
+import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.event.*;
+import javax.swing.plaf.basic.BasicBorders;
+import javax.swing.table.*;
+import javax.swing.text.Caret;
+import javax.swing.text.JTextComponent;
+import javax.swing.undo.UndoManager;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.File;
+import java.net.ConnectException;
+import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static edu.ku.brc.ui.UIHelper.*;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 /**
  * Main class that handles the editing of Workbench data. It creates both a spreasheet and a form pane for editing the data.
@@ -238,6 +123,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     
     final public static String wbAutoValidatePrefName = "WB.AutoValidatePref";
     final public static String wbAutoMatchPrefName = "WB.AutoMatchPref";
+    final public static String wbAutoEditCheckPrefName = "WB.AutoEditCheckPref";
     
     public enum PanelType {Spreadsheet, Form}
     
@@ -270,6 +156,9 @@ public class WorkbenchPaneSS extends BaseSubPane
     protected UploadToolPanel	    uploadToolPanel        = null;
     protected JButton               importImagesBtn        = null;
 
+    //updateables only...
+    protected JButton				revertBtn              = null;
+    
     
     protected DropDownButtonStateful ssFormSwitcher        = null;  
     protected List<JButton>         selectionSensitiveButtons  = new Vector<JButton>();
@@ -313,10 +202,12 @@ public class WorkbenchPaneSS extends BaseSubPane
     protected WorkbenchValidator    workbenchValidator         = null;
     protected boolean 		        doIncrementalValidation    = false;
     protected boolean	            doIncrementalMatching      = false;
+    protected boolean				doIncrementalEditChecking  = false;
     protected UniquenessChecker		catNumChecker	           = null;
     protected int					catNumCol                  = -1;
     protected AtomicInteger			invalidCellCount		   = new AtomicInteger(0);
     protected AtomicInteger			unmatchedCellCount		   = new AtomicInteger(0);
+    protected AtomicInteger			editedCellCount            = new AtomicInteger(0);
     protected CellRenderingAttributes cellRenderAtts           = new CellRenderingAttributes();
     protected boolean				restoreUploadToolPanel	   = false;
     
@@ -331,7 +222,8 @@ public class WorkbenchPaneSS extends BaseSubPane
         
     protected AtomicInteger         shutdownLock               = new AtomicInteger(0);
     private TableColumnExt          sgrColExt;
-    
+    private Taskable                srcTask;
+    private JComponent spreadSheetPane = null;
     
 
     /**
@@ -339,16 +231,18 @@ public class WorkbenchPaneSS extends BaseSubPane
      * 
      * @param name the name of the pane
      * @param task the owning task
-     * @param workbench the workbench to be edited
+     * @param workbenchArg the workbench to be edited
      * @param showImageView shows image window when first showing the window
+     * @param isReadOnly
      */
     public WorkbenchPaneSS(final String    name,
                            final Taskable  task,
                            final Workbench workbenchArg,
                            final boolean   showImageView,
-                           final boolean isReadOnly) throws Exception
+                           final boolean isReadOnly,
+                           final boolean isUpdate) throws Exception
     {
-        super(name, task);
+        super(isUpdate ? getResourceString("BATCHEDIT") : name, task);
 
         
         removeAll();
@@ -378,25 +272,38 @@ public class WorkbenchPaneSS extends BaseSubPane
                 hasOneOrMoreImages = true;
             }
         } 
-        
+
         model       = new GridTableModel(this);
         spreadSheet = new WorkbenchSpreadSheet(model, this);
         spreadSheet.setReadOnly(isReadOnly);
         model.setSpreadSheet(spreadSheet);
-        
+
+        GradiantLabel titleBar = null;
+        if (isUpdate) {
+            titleBar = new GradiantLabel("Batch Edit", SwingConstants.LEFT);
+            titleBar.setFont(spreadSheet.getFont().deriveFont(spreadSheet.getFont().getSize() + 3.0F));
+            titleBar.setTextColor(new Color(0xFFFFFF));
+            titleBar.setBGBaseColor(new Color(0xcf0a2c));
+            titleBar.setGradiants(new Color(0xfd5875), new Color(0xcf0a2c));
+            titleBar.setIcon(IconManager.getIcon(/*Math.random() >= 0.5 ? */"BatchEdit"/* : "SkullBones"*/, IconManager.IconSize.Std24));
+        }
+
         Highlighter simpleStriping = HighlighterFactory.createSimpleStriping();
-        GridCellHighlighter hl = new GridCellHighlighter(new GridCellPredicate(GridCellPredicate.AnyPredicate, null));
-        Short[] errs = {WorkbenchDataItem.VAL_ERROR, WorkbenchDataItem.VAL_ERROR_EDIT};
-        ColorHighlighter errColorHighlighter = new ColorHighlighter(new GridCellPredicate(GridCellPredicate.ValidationPredicate, errs), 
+        GridCellHighlighter hl = new GridCellHighlighter(new GridCellPredicate(GridCellPredicate.AnyPredicate, null, null));
+        Short[] errs = {WorkbenchDataItem.VAL_ERROR};
+        ColorHighlighter errColorHighlighter = new ColorHighlighter(new GridCellPredicate(GridCellPredicate.ValidationPredicate, errs, null),
         		CellRenderingAttributes.errorBackground, null);
         Short[] newdata = {WorkbenchDataItem.VAL_NEW_DATA};
-        ColorHighlighter noDataHighlighter = new ColorHighlighter(new GridCellPredicate(GridCellPredicate.MatchingPredicate, newdata), 
+        ColorHighlighter noDataHighlighter = new ColorHighlighter(new GridCellPredicate(GridCellPredicate.MatchingPredicate, newdata, null),
         		CellRenderingAttributes.newDataBackground, null);
         Short[] multimatch = {WorkbenchDataItem.VAL_MULTIPLE_MATCH};
-        ColorHighlighter multiMatchHighlighter = new ColorHighlighter(new GridCellPredicate(GridCellPredicate.MatchingPredicate, multimatch), 
+        ColorHighlighter multiMatchHighlighter = new ColorHighlighter(new GridCellPredicate(GridCellPredicate.MatchingPredicate, multimatch, null),
         		CellRenderingAttributes.multipleMatchBackground, null);
+        Short[] edited = {WorkbenchDataItem.VAL_EDIT};
+        ColorHighlighter editedHighlighter = new ColorHighlighter(new GridCellPredicate(GridCellPredicate.EditedPredicate, edited, errs),
+        		CellRenderingAttributes.editedBackground, null);
 
-        spreadSheet.setHighlighters(simpleStriping, hl, errColorHighlighter, noDataHighlighter, multiMatchHighlighter);
+        spreadSheet.setHighlighters(simpleStriping, hl, noDataHighlighter, multiMatchHighlighter, editedHighlighter, errColorHighlighter);
         
         //add key mappings for cut, copy, paste
         //XXX Note: these are shortcuts directly to the SpreadSheet cut,copy,paste methods, NOT to the Specify edit menu.
@@ -467,9 +374,9 @@ public class WorkbenchPaneSS extends BaseSubPane
         imageColExt = spreadSheet.getColumnExt(imageColIndex);
         imageColExt.setVisible(false);
 
-	    int sgrColIndex = model.getSgrHeading().getViewOrder();
-	    sgrColExt = spreadSheet.getColumnExt(sgrColIndex);
-	    sgrColExt.setComparator( ((WorkbenchSpreadSheet)spreadSheet).new NumericColumnComparator() );
+//	    int sgrColIndex = model.getSgrHeading().getViewOrder();
+//	    sgrColExt = spreadSheet.getColumnExt(sgrColIndex);
+//	    sgrColExt.setComparator( ((WorkbenchSpreadSheet)spreadSheet).new NumericColumnComparator() );
 
         int cmpIdx = 0;
 	    for (Comparator<String> cmp : ((WorkbenchSpreadSheet )spreadSheet).getComparators())
@@ -485,12 +392,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         showHideSgrCol(false);
        
         
-        model.addTableModelListener(new TableModelListener() {
-            public void tableChanged(TableModelEvent e)
-            {
-                setChanged(true);
-            }
-        });
+        model.addTableModelListener(e -> setChanged(true, e));
         
         spreadSheet.addFocusListener(new FocusAdapter() {
             @Override
@@ -507,39 +409,65 @@ public class WorkbenchPaneSS extends BaseSubPane
             }
         });
 
+        //XXX Using the wb ID in the prefname to do pref setting per wb, may result in a bloated prefs file?? 
+        doIncrementalValidation = AppPreferences.getLocalPrefs().getBoolean(wbAutoValidatePrefName + "." + workbench.getId(), true);
+        doIncrementalMatching = AppPreferences.getLocalPrefs().getBoolean(wbAutoMatchPrefName + "." + workbench.getId(), false);
+        doIncrementalEditChecking = AppPreferences.getLocalPrefs().getBoolean(wbAutoEditCheckPrefName + "." + workbench.getId(), true);
+        
+        if (getIncremental() && workbenchValidator == null) {
+        	buildValidator();
+        }
+        boolean isForBatchEdit = this.isUpdateDataSet(); //I guess this redundant given the new isUpdate arg, but just to be sure...
+        if (isForBatchEdit) {
+            doIncrementalValidation = true;
+            doIncrementalEditChecking = true;
+            doIncrementalMatching = false;
+        } else {
+            doIncrementalEditChecking = false;
+        }
+
         if (isReadOnly)
         {
             saveBtn = null;
         }
         else
         {
-            saveBtn = createButton(getResourceString("SAVE"));
-            saveBtn.setToolTipText(String.format(getResourceString("WB_SAVE_DATASET_TT"),
+            saveBtn = createButton(isForBatchEdit ? getResourceString("WB_BATCH_EDIT_DONE_BTN") : getResourceString("SAVE"));
+            saveBtn.setToolTipText(String.format(isForBatchEdit ? getResourceString("WB_BATCH_EDIT_DONE_TT") : getResourceString("WB_SAVE_DATASET_TT"),
                     new Object[] { workbench.getName() }));
             saveBtn.setEnabled(false);
-            saveBtn.addActionListener(new ActionListener()
-            {
-                public void actionPerformed(ActionEvent ae)
-                {
+            saveBtn.addActionListener(new ActionListener() {
+                final boolean uploadAfterSave = isForBatchEdit;
+            	public void actionPerformed(ActionEvent ae) {
                     UsageTracker.incrUsageCount("WB.SaveDataSet");
-
-                    UIRegistry.writeSimpleGlassPaneMsg(String.format(getResourceString("WB_SAVING"),
-                            new Object[] { workbench.getName() }),
-                            WorkbenchTask.GLASSPANE_FONT_SIZE);
+                    if (isForBatchEdit) {
+                        if (invalidCellCount.get() > 0) {
+                            UIRegistry.showLocalizedMsg(getResourceString("WB_BATCH_EDIT_CORRECT_INVALID_CELLS"));
+                            return;
+                        }
+                    }
+                    String msg = isForBatchEdit ? getResourceString("WB_BATCH_EDIT_PREP")
+                            : String.format(getResourceString("WB_SAVING"), new Object[] { workbench.getName() });
+                    UIRegistry.writeSimpleGlassPaneMsg(msg, WorkbenchTask.GLASSPANE_FONT_SIZE);
                     UIRegistry.getStatusBar().setIndeterminate(workbench.getName(), true);
-                    final SwingWorker worker = new SwingWorker()
-                    {
+                    final SwingWorker worker = new SwingWorker() {
                         @SuppressWarnings("synthetic-access")
                         @Override
-                        public Object construct()
-                        {
-                            try
-                            {
+                        public Object construct() {
+                            try {
+                                List<SubPaneIFace> badPanes = checkOpenTasksForUpload(uploadAfterSave);
+                                if (badPanes.size() > 0) {
+                                	UIRegistry.displayInfoMsgDlgLocalized(String.format(getResourceString("WB_UPLOAD_CLOSE_ALL_MSG"), getListOfBadTasks(badPanes)));
+                                	saveBtn.setEnabled(true);
+                                	return null;
+                                }
                                 saveObject();
-
+                                if (uploadAfterSave) {
+                                    revertBtn.setEnabled(false);
+                                	doDatasetUpload();
+                                }
                             }
-                            catch (Exception ex)
-                            {
+                            catch (Exception ex) {
                                 UsageTracker.incrHandledUsageCount();
                                 edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchPaneSS.class, ex);
                                 log.error(ex);
@@ -550,11 +478,9 @@ public class WorkbenchPaneSS extends BaseSubPane
 
                         // Runs on the event-dispatching thread.
                         @Override
-                        public void finished()
-                        {
+                        public void finished() {
                             Object retVal = get();
-                            if (retVal != null && retVal instanceof Exception)
-                            {
+                            if (retVal != null && retVal instanceof Exception) {
                                 Exception ex = (Exception) retVal;
                                 UIRegistry.getStatusBar().setErrorMessage(
                                         getResourceString("WB_ERROR_SAVING"), ex);
@@ -570,6 +496,58 @@ public class WorkbenchPaneSS extends BaseSubPane
             });
         }
         
+        if (isReadOnly || !isForBatchEdit)
+        {
+            revertBtn = null;
+        }
+        else {
+            revertBtn = createButton(getResourceString("WB_REVERT"));
+            revertBtn.setToolTipText(String.format(getResourceString("WB_REVERT_TT"),
+                    new Object[] { workbench.getName() }));
+            revertBtn.setEnabled(false);
+            revertBtn.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent ae) {
+                    UsageTracker.incrUsageCount("WB.RevertEdits");
+
+                    UIRegistry.writeSimpleGlassPaneMsg(String.format(getResourceString("WB_REVERTING"),
+                            new Object[] { workbench.getName() }),
+                            WorkbenchTask.GLASSPANE_FONT_SIZE);
+                    UIRegistry.getStatusBar().setIndeterminate(workbench.getName(), true);
+                    final SwingWorker worker = new SwingWorker() {
+                        @SuppressWarnings("synthetic-access")
+                        @Override
+                        public Object construct() {
+                            try {
+                                revertRows();
+                            } catch (Exception ex) {
+                                UsageTracker.incrHandledUsageCount();
+                                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchPaneSS.class, ex);
+                                log.error(ex);
+                                return ex;
+                            }
+                            return null;
+                        }
+
+                        // Runs on the event-dispatching thread.
+                        @Override
+                        public void finished() {
+                            Object retVal = get();
+                            if (retVal != null && retVal instanceof Exception) {
+                                Exception ex = (Exception) retVal;
+                                UIRegistry.getStatusBar().setErrorMessage(
+                                        getResourceString("WB_ERROR_REVERTING"), ex);
+                            }
+
+                            UIRegistry.clearSimpleGlassPaneMsg();
+                            UIRegistry.getStatusBar().setProgressDone(workbench.getName());
+                        }
+                    };
+                    worker.start();
+
+                }
+            });
+        }
+
         
         Action delAction = addRecordKeyMappings(spreadSheet, KeyEvent.VK_F3, "DelRow", new AbstractAction()
         {
@@ -582,21 +560,14 @@ public class WorkbenchPaneSS extends BaseSubPane
             }
         }, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
         
-        if (isReadOnly)
-        {
+        if (isReadOnly || isForBatchEdit) {
             deleteRowsBtn = null;
-        }
-        else
-        {
+        } else {
             deleteRowsBtn = createIconBtn("DelRec", "WB_DELETE_ROW", delAction);
             selectionSensitiveButtons.add(deleteRowsBtn);
             spreadSheet.setDeleteAction(delAction);
         }
-        
-        //XXX Using the wb ID in the prefname to do pref setting per wb, may result in a bloated prefs file?? 
-        doIncrementalValidation = AppPreferences.getLocalPrefs().getBoolean(wbAutoValidatePrefName + "." + workbench.getId(), true);
-        doIncrementalMatching = AppPreferences.getLocalPrefs().getBoolean(wbAutoMatchPrefName + "." + workbench.getId(), false);
-       
+               
 
         if (isReadOnly)
         {
@@ -620,6 +591,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                 }
             });
             selectionSensitiveButtons.add(clearCellsBtn);
+            clearCellsBtn.setVisible(!isForBatchEdit);
         }
         
         Action addAction = addRecordKeyMappings(spreadSheet, KeyEvent.VK_N, "AddRow", new AbstractAction()
@@ -636,7 +608,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             }
         }, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
         
-        if (isReadOnly)
+        if (isReadOnly || isForBatchEdit)
         {
             addRowsBtn = null;
         }
@@ -647,7 +619,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             addAction.setEnabled(true); 
         }
 
-        if (isReadOnly)
+        if (isReadOnly || isForBatchEdit)
         {
             carryForwardBtn = null;
         }
@@ -666,24 +638,25 @@ public class WorkbenchPaneSS extends BaseSubPane
             carryForwardBtn.setEnabled(true);
         }
         
-        toggleImageFrameBtn = createIconBtn("CardImage", IconManager.IconSize.NonStd, "WB_SHOW_IMG_WIN", false, new ActionListener()
-        {
-            public void actionPerformed(ActionEvent ae)
-            {
-                toggleImageFrameVisible();
-            }
-        });
-        toggleImageFrameBtn.setEnabled(true);
-        
-        importImagesBtn = createIconBtn("CardImage", IconManager.IconSize.NonStd, "WB_SHOW_IMG_WIN", false, new ActionListener()
-        {
-            public void actionPerformed(ActionEvent ae)
-            {
-                toggleImportImageFrameVisible();
-            }
-        });
-        importImagesBtn.setEnabled(true);
-        
+        if (!isForBatchEdit) {
+	        toggleImageFrameBtn = createIconBtn("CardImage", IconManager.IconSize.NonStd, "WB_SHOW_IMG_WIN", false, new ActionListener()
+	        {
+	            public void actionPerformed(ActionEvent ae)
+	            {
+	                toggleImageFrameVisible();
+	            }
+	        });
+	        toggleImageFrameBtn.setEnabled(true);
+	        
+	        importImagesBtn = createIconBtn("CardImage", IconManager.IconSize.NonStd, "WB_SHOW_IMG_WIN", false, new ActionListener()
+	        {
+	            public void actionPerformed(ActionEvent ae)
+	            {
+	                toggleImportImageFrameVisible();
+	            }
+	        });
+	        importImagesBtn.setEnabled(true);
+        }
         /*showMapBtn = createIconBtn("ShowMap", IconManager.IconSize.NonStd, "WB_SHOW_MAP", false, new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
@@ -837,7 +810,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                 doDatasetUpload();
             }
         });
-        uploadDatasetBtn.setVisible(isUploadPermitted() && !UIRegistry.isMobile());
+        uploadDatasetBtn.setVisible(!isForBatchEdit && isUploadPermitted() && !UIRegistry.isMobile());
         uploadDatasetBtn.setEnabled(canUpload());
         if (!uploadDatasetBtn.isEnabled())
         {
@@ -859,14 +832,6 @@ public class WorkbenchPaneSS extends BaseSubPane
             }
         });
         
-        
-        for (int c = 0; c < spreadSheet.getTableHeader().getColumnModel().getColumnCount(); c++)
-		{
-			// TableColumn column =
-			// spreadSheet.getTableHeader().getColumnModel().getColumn(spreadSheet.getTableHeader().getColumnModel().getColumnCount()-1);
-			TableColumn column = spreadSheet.getTableHeader().getColumnModel().getColumn(c);
-			column.setCellRenderer(new WbCellRenderer());
-		}
 
         // setup the JFrame to show images attached to WorkbenchRows
         imageFrame = new ImageFrame(mapSize, this, this.workbench, task, isReadOnly);
@@ -968,8 +933,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         Vector<WorkbenchTemplateMappingItem> headers = new Vector<WorkbenchTemplateMappingItem>();
         headers.addAll(workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems());
         Collections.sort(headers);
-        for (WorkbenchTemplateMappingItem mi : headers)
-        {
+        for (WorkbenchTemplateMappingItem mi : headers) {
         	//using the workbench data model table. Not the actual specify table the column is mapped to.
         	//This MIGHT be less confusing
         	//System.out.println("setting header renderer for " + mi.getTableName() + "." + mi.getFieldName()); 
@@ -980,75 +944,81 @@ public class WorkbenchPaneSS extends BaseSubPane
         initColumnSizes(spreadSheet, saveBtn);
 
         // Create the Form Pane  -- needs to be done after initColumnSizes - which also sets cell editors for collumns
-        if (task instanceof SGRTask)
-        {
+        if (task instanceof SGRTask) {
             formPane = new SGRFormPane(this, workbench, isReadOnly);
-        }
-        else
-        {
+        } else /*if (!isForBatchEdit)*/ {
             formPane = new FormPane(this, workbench, isReadOnly);
         }
-        
-        // This panel contains just the ResultSetContoller, it's needed so the RSC gets centered
-        PanelBuilder rsPanel = new PanelBuilder(new FormLayout("c:p:g", "c:p:g"));
-        FormValidator dummy = new FormValidator(null);
-        dummy.setEnabled(true);
-        resultsetController  = new ResultSetController(dummy, !isReadOnly, !isReadOnly, false, getResourceString("Record"), model.getRowCount(), true);
-        resultsetController.addListener(formPane);
-        if (!isReadOnly)
-        {
-            resultsetController.getDelRecBtn().addActionListener(delAction);
-        }
-//        else
-//        {
-//            resultsetController.getDelRecBtn().setVisible(false);
-//        }
-        rsPanel.add(resultsetController.getPanel(), cc.xy(1,1));
-        
-        // This panel is a single row containing the ResultSetContoller and the other controls for the Form Panel
-        String colspec = "f:p:g, p, f:p:g, p";
-        for (int i = 0; i < workBenchPluginFormBtns.size(); i++)
-        {
-            colspec = colspec + ", f:p, p";
-        }
-        
-        PanelBuilder resultSetPanel = new PanelBuilder(new FormLayout(colspec, "c:p:g"));
-        // Now put the two panel into the single row panel
-        resultSetPanel.add(rsPanel.getPanel(), cc.xy(2,1));
-        if (!isReadOnly)
-        {
-            resultSetPanel.add(formPane.getControlPropsBtn(), cc.xy(4,1));
-        }
-        int ccx = 6;
-        for (JComponent c : workBenchPluginFormBtns)
-        {
-            resultSetPanel.add(c, cc.xy(ccx, 1));
-            ccx += 2;
-        }
 
+        PanelBuilder resultSetPanel = null;
+        if (formPane != null) {
+            // This panel contains just the ResultSetContoller, it's needed so the RSC gets centered
+            PanelBuilder rsPanel = new PanelBuilder(new FormLayout("c:p:g", "c:p:g"));
+            FormValidator dummy = new FormValidator(null);
+            dummy.setEnabled(true);
+            resultsetController = new ResultSetController(dummy, !isReadOnly, !isReadOnly, false, getResourceString("Record"), model.getRowCount(), true);
+            resultsetController.addListener(formPane);
+            if (!isReadOnly) {
+                resultsetController.getDelRecBtn().addActionListener(delAction);
+            }
+            rsPanel.add(resultsetController.getPanel(), cc.xy(1, 1));
+
+            // This panel is a single row containing the ResultSetContoller and the other controls for the Form Panel
+            String colspec = "f:p:g, p, f:p:g, p";
+            for (int i = 0; i < workBenchPluginFormBtns.size(); i++) {
+                colspec = colspec + ", f:p, p";
+            }
+
+            resultSetPanel = new PanelBuilder(new FormLayout(colspec, "c:p:g"));
+            // Now put the two panel into the single row panel
+            resultSetPanel.add(rsPanel.getPanel(), cc.xy(2, 1));
+            if (!isReadOnly) {
+                resultSetPanel.add(formPane.getControlPropsBtn(), cc.xy(4, 1));
+            }
+            int ccx = 6;
+            for (JComponent c : workBenchPluginFormBtns) {
+                resultSetPanel.add(c, cc.xy(ccx, 1));
+                ccx += 2;
+            }
+        }
         
         // Create the main panel that uses card layout for the form and spreasheet
         mainPanel = new JPanel(cardLayout = new CardLayout());
         
         // Add the Form and Spreadsheet to the CardLayout
-        mainPanel.add(spreadSheet.getScrollPane(), PanelType.Spreadsheet.toString());
-        mainPanel.add(formPane.getPane(),    PanelType.Form.toString());
-        
+        if (isUpdate) {
+            spreadSheetPane = new JPanel(new BorderLayout());
+            spreadSheetPane.add(titleBar, BorderLayout.NORTH);
+            spreadSheetPane.add(spreadSheet.getScrollPane(), BorderLayout.CENTER);
+        } else {
+            spreadSheetPane = spreadSheet.getScrollPane();
+        }
+        Border b = new BasicBorders.MarginBorder();
+        //spreadSheetPanel.setBorder(new TitledBorder(new BasicBorders.MarginBorder(), "Batch Edit", TitledBorder.LEFT, TitledBorder.TOP, spreadSheet.getFont(), new Color(0x00ff00)));
+        //spreadSheetPanel.setBackground(titleBar.getBackground());
+        mainPanel.add(spreadSheetPane, PanelType.Spreadsheet.toString());
+
         // The controllerPane is a CardLayout that switches between the Spreadsheet control bar and the Form Control Bar
         controllerPane = new JPanel(cpCardLayout = new CardLayout());
         controllerPane.add(spreadSheetControlBar.getPanel(), PanelType.Spreadsheet.toString());
-        controllerPane.add(resultSetPanel.getPanel(),        PanelType.Form.toString());
-   
+
+        if (!isForBatchEdit) {
+            mainPanel.add(formPane.getPane(), PanelType.Form.toString());
+            controllerPane.add(resultSetPanel.getPanel(),        PanelType.Form.toString());
+        }
+
         JLabel sep1 = new JLabel(IconManager.getIcon("Separator"));
         JLabel sep2 = new JLabel(IconManager.getIcon("Separator"));
         ssFormSwitcher = createSwitcher();
+        ssFormSwitcher.setVisible(!isForBatchEdit);
+        sep2.setVisible(ssFormSwitcher.isVisible());
         
         // This works
         setLayout(new BorderLayout());
         
         boolean doDnDImages = AppPreferences.getLocalPrefs().getBoolean("WB_DND_IMAGES", false);
-        JComponent[] ctrlCompArray1 = {importImagesBtn, toggleImageFrameBtn, carryForwardBtn, sep1, saveBtn, sep2, ssFormSwitcher};
-        JComponent[] ctrlCompArray2 = {toggleImageFrameBtn, carryForwardBtn, sep1, saveBtn, sep2, ssFormSwitcher}; 
+        JComponent[] ctrlCompArray1 = {importImagesBtn, toggleImageFrameBtn, carryForwardBtn, sep1, saveBtn, revertBtn, sep2, ssFormSwitcher};
+        JComponent[] ctrlCompArray2 = {toggleImageFrameBtn, carryForwardBtn, sep1, saveBtn, revertBtn, sep2, ssFormSwitcher}; 
         JComponent[] ctrlCompArray  = doDnDImages ? ctrlCompArray1 : ctrlCompArray2;
    
         Vector<Pair<JComponent, Integer>> ctrlComps = new Vector<Pair<JComponent, Integer>>();
@@ -1116,26 +1086,9 @@ public class WorkbenchPaneSS extends BaseSubPane
         builder.add(controllerPane,      cc.xy(1,2));
         builder.add(ctrlBtns.getPanel(), cc.xy(3,2));
 
-        if (!isReadOnly)
-        {
+        if (!isReadOnly) {
         	uploadToolPanel = new UploadToolPanel(this, UploadToolPanel.EXPANDED);
         	uploadToolPanel.createUI();
-//            showHideUploadToolBtn = createIconBtn("ValidateWB", IconManager.IconSize.NonStd, "WB_HIDE_UPLOADTOOLPANEL", false, new ActionListener()
-//            {
-//                public void actionPerformed(ActionEvent ae)
-//                {
-//                    if (uploadToolPanel.isExpanded())
-//                    {
-//                    	hideUploadToolPanel();
-//                    	showHideUploadToolBtn.setToolTipText(getResourceString("WB_SHOW_UPLOADTOOLPANEL"));
-//                    } else
-//                    {
-//                    	showUploadToolPanel();
-//                    	showHideUploadToolBtn.setToolTipText(getResourceString("WB_HIDE_UPLOADTOOLPANEL"));
-//                   }
-//                }
-//            });
-//            showHideUploadToolBtn.setEnabled(true);
         }
 
         builder.add(uploadToolPanel,     cc.xywh(1, 3, 3, 1));
@@ -1144,55 +1097,28 @@ public class WorkbenchPaneSS extends BaseSubPane
 
         add(builder.getPanel(), BorderLayout.SOUTH);
         
-        resultsetController.addListener(new ResultSetControllerListener() {
-            public boolean indexAboutToChange(int oldIndex, int newIndex)
-            {
-                return true;
-            }
-            public void indexChanged(int newIndex)
-            {
-                if (imageFrame != null)
-                {
-                    if (newIndex > -1)
-                    {
-                        int index = spreadSheet.convertRowIndexToModel(newIndex);
-                        imageFrame.setRow(workbench.getRow(index));
-                    }
-                    else 
-                    { 
-                        imageFrame.setRow(null); 
+        if (!isForBatchEdit) {
+            resultsetController.addListener(new ResultSetControllerListener() {
+                public boolean indexAboutToChange(int oldIndex, int newIndex) {
+                    return true;
+                }
+
+                public void indexChanged(int newIndex) {
+                    if (imageFrame != null) {
+                        if (newIndex > -1) {
+                            int index = spreadSheet.convertRowIndexToModel(newIndex);
+                            imageFrame.setRow(workbench.getRow(index));
+                        } else {
+                            imageFrame.setRow(null);
+                        }
                     }
                 }
-            }
-            public void newRecordAdded()
-            {
-                // do nothing
-            }
-        });
-        //compareSchemas();
-        if (getIncremental() && workbenchValidator == null)
-        {
-        	buildValidator();
+
+                public void newRecordAdded() {
+                    // do nothing
+                }
+            });
         }
-        
-//        int c = 0;
-//        Vector<WorkbenchTemplateMappingItem> headers = new Vector<WorkbenchTemplateMappingItem>();
-//        headers.addAll(workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems());
-//        Collections.sort(headers);
-//        for (WorkbenchTemplateMappingItem mi : headers)
-//        {
-//        	//using the workbench data model table. Not the actual specify table the column is mapped to.
-//        	//This MIGHT be less confusing
-//        	//System.out.println("setting header renderer for " + mi.getTableName() + "." + mi.getFieldName()); 
-//        	spreadSheet.getColumnModel().getColumn(c++).setHeaderRenderer(new WbTableHeaderRenderer(mi.getTableName()));
-//        }
-//        
-//        // NOTE: This needs to be done after the creation of the saveBtn. And after the creation of the header renderes.
-//        initColumnSizes(spreadSheet, saveBtn);
-        
-        // See if we need to make the Image Frame visible
-        // Commenting this out for now because it is so annoying.
-        
         if (showImageView || hasOneOrMoreImages)
         {
             SwingUtilities.invokeLater(new Runnable()
@@ -1218,8 +1144,50 @@ public class WorkbenchPaneSS extends BaseSubPane
         if (ContextMgr.getTaskByClass(SGRTask.class) != null) {
         	((SGRTask) ContextMgr.getTaskByClass(SGRTask.class)).opening(this);
         }
+        if (workbenchValidator == null && (isDoIncrementalValidation() || isDoIncrementalMatching())) {
+            if (uploadToolPanel != null) {
+                uploadToolPanel.turnOffSelections();
+            }
+            if (isDoIncrementalValidation()) {
+                turnOffIncrementalValidation();
+            }
+            if (isDoIncrementalMatching()) {
+                turnOffIncrementalMatching();
+            }
+            model.fireDataChanged();
+        }
     }
-    
+
+    @Override
+    public Icon getIcon() {
+        if ((getSrcTask() instanceof BatchEditTask || getSrcTask() instanceof QueryTask)
+                && isUpdateDataSet()) {
+            Taskable beTask = ContextMgr.getTaskByClass(BatchEditTask.class);
+            return beTask != null ? beTask.getIcon(Taskable.StdIcon16) : super.getIcon();
+        } else {
+            return super.getIcon();
+        }
+    }
+
+    public Taskable getSrcTask() {
+        return srcTask;
+    }
+
+    public void setSrcTask(Taskable srcTask) {
+        this.srcTask = srcTask;
+    }
+
+    /**
+     * re-load selected rows or all rows if none are selected
+     */
+    protected void revertRows() {
+    	for (WorkbenchRow row : workbench.getWorkbenchRowsAsList()) {
+    		restoreOriginalValues(row.getWorkbenchDataItems());
+    	}
+    	revertBtn.setEnabled(false);
+    	saveBtn.setEnabled(false);
+        validateRows(0, spreadSheet.getRowCount()-1);
+    }
     /**
      * @return
      */
@@ -1235,11 +1203,24 @@ public class WorkbenchPaneSS extends BaseSubPane
     }
     
     /**
+     * @return
+     */
+    public boolean isUpdateDataSet() {
+    	boolean result = false;
+    	if (workbenchValidator == null) {
+    		buildValidator(true);
+    	}
+    	if (workbenchValidator != null) {	
+    		result = workbenchValidator.getUploader().isUpdateUpload();
+    	}
+    	return result;
+    }
+    /**
      * @param show
      */
     public void showHideSgrCol(boolean show)
     {
-	    sgrColExt.setVisible(show);
+	   // sgrColExt.setVisible(show);
     }
     
     /**
@@ -1247,8 +1228,8 @@ public class WorkbenchPaneSS extends BaseSubPane
      */
     public void sgrSort()
     {
-        int sgrColIndex = model.getSgrHeading().getViewOrder();
-        spreadSheet.setSortOrder(sgrColIndex, SortOrder.DESCENDING);
+//        int sgrColIndex = model.getSgrHeading().getViewOrder();
+//        spreadSheet.setSortOrder(sgrColIndex, SortOrder.DESCENDING);
     }
     
     /**
@@ -1256,7 +1237,7 @@ public class WorkbenchPaneSS extends BaseSubPane
      */
     protected boolean getIncremental()
     {
-    	return doIncrementalValidation || doIncrementalMatching;
+    	return doIncrementalValidation || doIncrementalMatching || doIncrementalEditChecking;
     	
     }
     
@@ -1267,9 +1248,12 @@ public class WorkbenchPaneSS extends BaseSubPane
     
     protected void hideUploadToolPanel()
     {
-    	uploadToolPanel.contract();
+    	uploadToolPanel.contract(300);
     }
-    
+
+    protected void hideUploadToolPanelSansAnimation() {
+        uploadToolPanel.contract(1);
+    }
     /**
 	 * @return the doIncrementalValidation
 	 */
@@ -1304,6 +1288,131 @@ public class WorkbenchPaneSS extends BaseSubPane
 		return doIncrementalMatching;
 	}
 
+	/**
+	 * @return
+	 */
+	public boolean isDoIncrementalEditChecking() {
+		return doIncrementalEditChecking;
+	}
+	
+	/**
+	 * 
+	 */
+	public void turnOnIncrementalEditChecking() {
+		doIncrementalEditChecking = true;
+		if (workbenchValidator == null) {
+			buildValidator();
+		}
+		if (workbenchValidator != null) {
+			//XXX If incremental matching is already turned on it would save lots
+			//of time if validateAll could be called without matching all.
+			validateAll(null);
+			
+			AppPreferences.getLocalPrefs().putBoolean(wbAutoEditCheckPrefName + "." + workbench.getId(), doIncrementalEditChecking);
+		}
+	}
+
+	/**
+	 * @param isNext
+	 */
+	public void goToEditedCell(final boolean isNext) {
+    	Pair<Integer, Integer> editedCell = getNextCellWithStat(isNext, WorkbenchDataItem.VAL_EDIT);
+    	if (editedCell != null) {
+            if (spreadSheet.getCellEditor() != null) {
+                spreadSheet.getCellEditor().stopCellEditing();
+            }
+            int row = editedCell.getFirst();
+            int col = editedCell.getSecond();
+            spreadSheet.getSelectionModel().setSelectionInterval(row, row);
+            spreadSheet.getColumnModel().getSelectionModel().setSelectionInterval(col, col);
+            spreadSheet.scrollCellToVisible(row, col);
+            //spreadSheet.editCellAt(invalidCell.getFirst(), invalidCell.getSecond());
+    	}
+	}
+	
+	/**
+	 * 
+	 */
+	public void turnOffIncrementalEditChecking() {
+		boolean savedBlockChanges = blockChanges;
+		try
+		{
+			blockChanges = true;
+			shutdownValidators();
+			doIncrementalEditChecking = false;
+			updateBtnUI();
+			//workbenchValidator = null;
+			model.fireDataChanged();
+			AppPreferences.getLocalPrefs().putBoolean(wbAutoEditCheckPrefName+ "." + workbench.getId(), doIncrementalEditChecking);
+		} finally
+		{
+			blockChanges = savedBlockChanges;
+		}
+	}
+
+	/**
+	 * @param rows
+	 * @param col
+	 * @return
+	 */
+	public List<WorkbenchDataItem> getDataItems(final int[] rows, final Integer col) {
+		List<WorkbenchDataItem> result = new ArrayList<WorkbenchDataItem>();
+		for (int r : rows) {
+			result.add(workbench.getRow(r).getItems().get(col.shortValue()));
+		}
+		return result;
+	}
+	
+	/**
+	 * @param items
+	 */
+	public void restoreOriginalValues(Collection<WorkbenchDataItem> items) {
+		for (WorkbenchDataItem item : items) {
+			if (item != null && (item.getEditorValidationStatus() & WorkbenchDataItem.VAL_EDIT) != 0) {
+				restoreOriginalValue(item);
+			}
+		}
+		updateBtnUI();
+	}
+	
+	/**
+	 * @param item
+	 */
+	protected void restoreOriginalValue(final WorkbenchDataItem item) {
+		String exp = UIRegistry.getResourceString("WB_EDITED_CELL_TT");
+		String before = StringUtils.substringBefore(exp, "%s");
+		String after = StringUtils.substringAfter(exp, "%s");
+		String[] originalValues = item.getStatusText().split("\n; ");
+        for (String originalVal : originalValues) {
+            String originalValue = originalVal;
+            if (originalValue.contains(before)) {
+                originalValue = StringUtils.replaceOnce(originalValue, before, "");
+                originalValue = StringUtils.replaceOnce(originalValue, after, "");
+                if (originalValue.startsWith("'") && originalValue.endsWith("'")) {
+                    originalValue = originalValue.substring(1, originalValue.length() - 1);
+                }
+                if (originalValue == null || "empty".equalsIgnoreCase(originalValue)) {
+                    originalValue = "";
+                }
+                item.setCellData(originalValue);
+            }
+        }
+	}
+	
+	
+	/**
+	 * @return editedCellCount after decrementing
+	 */
+	protected Integer decrementEditedCellCount() {
+		Integer cnt = editedCellCount.decrementAndGet();
+		if (cnt == 0) {
+			//it probably better to do this enabling in the pre-existing button-enabling methods
+			revertBtn.setEnabled(false);
+			saveBtn.setEnabled(false);
+		}
+		return cnt;
+	}
+	
 	/**
 	 * turns on incremental matching
 	 */
@@ -1352,10 +1461,8 @@ public class WorkbenchPaneSS extends BaseSubPane
                     spreadSheet.setRowSelectionInterval(index, index);
                 }
             }
-        } else
-        {
-            if (formPane != null)
-            {
+        } else {
+            if (formPane != null) {
                 formPane.copyDataFromForm();
             }
         }
@@ -1367,69 +1474,46 @@ public class WorkbenchPaneSS extends BaseSubPane
      * @param isNext
      * @return
      */
-    protected Pair<Integer, Integer> getNextCellWithStat(boolean isNext, Set<Short> stats)
-    {
-    	if (!isNext)
-    	{
-    		//System.out.println("goToInvalidCell prev");
-    	} else
-    	{
-    		//System.out.println("goToInvalidCell next");
-    	}
-    	
+    protected Pair<Integer, Integer> getNextCellWithStat(boolean isNext, short stats) {
     	int startRow = spreadSheet.getSelectedRow() >= 0 ? spreadSheet.getSelectedRow() : 0;
     	int startCol = spreadSheet.getSelectedColumn() >= 0 ? spreadSheet.getSelectedColumn() : 0;
     	int increment = isNext ? 1 : -1;
     	int currentRow = startRow;
     	int currentCol = startCol + increment;
-    	if (currentCol < 0 || currentCol == spreadSheet.getColumnCount())
-    	{
-    		if (currentCol < 0)
-    		{
+    	if (currentCol < 0 || currentCol == spreadSheet.getColumnCount()) {
+    		if (currentCol < 0) {
     			currentCol = spreadSheet.getColumnCount() - 1; //XXX what about attachment column?
-    		} else
-    		{
+    		} else {
     			currentCol = 0;
     		}
     		currentRow += increment;
-    		if (currentRow < 0)
-    		{
+    		if (currentRow < 0) {
     			currentRow = spreadSheet.getRowCount() - 1 ;
-    		} else if (currentRow == spreadSheet.getRowCount())
-    		{
+    		} else if (currentRow == spreadSheet.getRowCount()) {
     			currentRow = 0;
     		}  
     	}
     	boolean lastRow = false;
-    	do
-    	{
+    	do {
     		Hashtable<Short, WorkbenchDataItem> rowItems = workbench.getRow(spreadSheet.convertRowIndexToModel(currentRow)).getItems();
-    		do 
-    		{
+    		do {
     	    	WorkbenchDataItem di = rowItems.get(new Short((short )spreadSheet.convertColumnIndexToModel(currentCol)));
-        	    if (di != null && stats.contains(new Short((short )di.getEditorValidationStatus())))
-    	    	{
-    	    		return new Pair<Integer, Integer>(currentRow, currentCol);
+        	    if (di != null && (stats & di.getEditorValidationStatus()) != 0) {
+    	    		return new Pair<>(currentRow, currentCol);
     	    	}		
     			currentCol += increment;
     			
     		} while (currentCol >= 0 && currentCol < spreadSheet.getColumnCount() && (!lastRow || currentCol != startCol));
-	    	if (currentCol < 0)
-	    	{
+	    	if (currentCol < 0) {
 	    		currentCol = spreadSheet.getColumnCount() - 1; //XXX what about attachment column?
-	    	} else if (currentCol == spreadSheet.getColumnCount())
-	    	{
+	    	} else if (currentCol == spreadSheet.getColumnCount()) {
 	    		currentCol = 0;
 	    	}
-    		
-    		if (!lastRow)
-    		{
+    		if (!lastRow) {
     			currentRow += increment;
-    			if (currentRow < 0)
-    			{
+    			if (currentRow < 0) {
     				currentRow = spreadSheet.getRowCount() - 1 ;
-    			} else if (currentRow == spreadSheet.getRowCount())
-    			{
+    			} else if (currentRow == spreadSheet.getRowCount()) {
     				currentRow = 0;
     			}
     		}
@@ -1441,16 +1525,10 @@ public class WorkbenchPaneSS extends BaseSubPane
     /**
      * @param isNext
      */
-    public void goToInvalidCell(boolean isNext)
-    {
-    	Set<Short> stats = new HashSet<Short>();
-    	stats.add(WorkbenchDataItem.VAL_ERROR);
-    	stats.add(WorkbenchDataItem.VAL_ERROR_EDIT);
-    	Pair<Integer, Integer> invalidCell = getNextCellWithStat(isNext, stats);
-    	if (invalidCell != null)
-    	{
-            if (spreadSheet.getCellEditor() != null)
-            {
+    public void goToInvalidCell(boolean isNext) {
+    	Pair<Integer, Integer> invalidCell = getNextCellWithStat(isNext, WorkbenchDataItem.VAL_ERROR);
+    	if (invalidCell != null) {
+            if (spreadSheet.getCellEditor() != null) {
                 spreadSheet.getCellEditor().stopCellEditing();
             }
             int row = invalidCell.getFirst();
@@ -1458,7 +1536,6 @@ public class WorkbenchPaneSS extends BaseSubPane
             spreadSheet.getSelectionModel().setSelectionInterval(row, row);
             spreadSheet.getColumnModel().getSelectionModel().setSelectionInterval(col, col);
             spreadSheet.scrollCellToVisible(row, col);
-            //spreadSheet.editCellAt(invalidCell.getFirst(), invalidCell.getSecond());
     	}
     }
     
@@ -1466,12 +1543,11 @@ public class WorkbenchPaneSS extends BaseSubPane
     /**
      * @param isNext
      */
-    public void goToUnmatchedCell(boolean isNext)
-    {
+    public void goToUnmatchedCell(boolean isNext) {
     	Set<Short> stats = new HashSet<Short>();
     	stats.add(WorkbenchDataItem.VAL_MULTIPLE_MATCH);
     	stats.add(WorkbenchDataItem.VAL_NEW_DATA);
-    	Pair<Integer, Integer> invalidCell = getNextCellWithStat(isNext, stats);
+    	Pair<Integer, Integer> invalidCell = getNextCellWithStat(isNext,(short)(WorkbenchDataItem.VAL_MULTIPLE_MATCH | WorkbenchDataItem.VAL_NEW_DATA));
     	if (invalidCell != null)
     	{
             if (spreadSheet.getCellEditor() != null)
@@ -1499,7 +1575,7 @@ public class WorkbenchPaneSS extends BaseSubPane
            }
         }
         enable = workbench.getWorkbenchRows().size() < WorkbenchTask.MAX_ROWS;
-        if (!isReadOnly)
+        if (!isReadOnly && addRowsBtn != null)
         {
             addRowsBtn.setEnabled(enable);
         }
@@ -1525,6 +1601,13 @@ public class WorkbenchPaneSS extends BaseSubPane
     public int getUnmatchedCellCount()
     {
     	return unmatchedCellCount.get();
+    }
+    
+    /**
+     * @return
+     */
+    public int getEditedCellCount() {
+    	return editedCellCount.get();
     }
     
     /**
@@ -1676,20 +1759,18 @@ public class WorkbenchPaneSS extends BaseSubPane
 		Vector<WorkbenchRow> wbRows = workbench.getWorkbenchRowsAsList();
 		int invalids = 0;
 		int news = 0;
-    	for (int r : rows)
-    	{
+		int edits = 0;
+    	for (int r : rows) {
     		WorkbenchRow wbRow = wbRows.get(r);
-    		for (WorkbenchDataItem wbdi : wbRow.getWorkbenchDataItems())
-    		{
+    		for (WorkbenchDataItem wbdi : wbRow.getWorkbenchDataItems()) {
     			short status = (short )wbdi.getEditorValidationStatus();
-    			if (status == WorkbenchDataItem.VAL_ERROR
-    					|| status == WorkbenchDataItem.VAL_ERROR_EDIT)
-    			{
+    			if ((status & WorkbenchDataItem.VAL_ERROR) != 0) {
     				invalids++;
-    			} else if (status == WorkbenchDataItem.VAL_MULTIPLE_MATCH
-    					|| status == WorkbenchDataItem.VAL_NEW_DATA)
-    			{
+    			} else if ((status & WorkbenchDataItem.VAL_MULTIPLE_MATCH) != 0
+    					|| (status & WorkbenchDataItem.VAL_NEW_DATA) != 0) {
     				news++;
+    			} else if ((status & WorkbenchDataItem.VAL_EDIT) != 0) {
+    				edits++;
     			}
     		}
     	}
@@ -1700,6 +1781,9 @@ public class WorkbenchPaneSS extends BaseSubPane
     	if (news > 0)
     	{
     		unmatchedCellCount.set(Math.max(0, unmatchedCellCount.get() - news));
+    	}
+    	if (edits > 0) {
+    		editedCellCount.set(Math.max(0,  editedCellCount.get() - edits));
     	}
     }
     /**
@@ -1926,26 +2010,16 @@ public class WorkbenchPaneSS extends BaseSubPane
         switcher.setCurrentIndex(1);
         switcher.setToolTipText(getResourceString("SwitchViewsTT"));
         switcher.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ae)
-            {
+            public void actionPerformed(ActionEvent ae) {
                 PanelType panel = switcher.getCurrentIndex() == 1 ? PanelType.Spreadsheet : PanelType.Form;
             	showPanel(panel);
-            	
-            	//Until auto-validation is hooked up to form view:
-//            	if (panel == PanelType.Spreadsheet && doIncrementalValidation)
-//            	{
-//            		validateAll(null);
-//            	}
-            	
-            	if (panel == PanelType.Form && getIncremental())
-            	{
+            	if (panel == PanelType.Form && getIncremental() && formPane != null) {
             		formPane.updateValidationUI();
             	}
             }
         });
         switcher.validate();
         switcher.doLayout();
-        
         return switcher;
     }
     
@@ -1999,7 +2073,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     
     /**
      * Shows the grid or the form.
-     * @param value the panel number
+     * @param panelType
      */
     public void showPanel(final PanelType panelType)
     {
@@ -2012,20 +2086,18 @@ public class WorkbenchPaneSS extends BaseSubPane
         cardLayout.show(mainPanel, currentPanelType.toString());
         cpCardLayout.show(controllerPane, currentPanelType.toString());
         
-        switch (currentPanelType)
-        {
+        switch (currentPanelType) {
             case Spreadsheet:
-                formPane.aboutToShowHide(false);
-                
+                if (formPane != null) {
+                    formPane.aboutToShowHide(false);
+                }
                 // Showing Spreadsheet and hiding form
-                if (model.getRowCount() > 0)
-                {
+                if (model.getRowCount() > 0) {
                     spreadSheet.setRowSelectionInterval(currentRow, currentRow);
                     spreadSheet.setColumnSelectionInterval(0, spreadSheet.getColumnCount()-1);
                     spreadSheet.scrollToRow(Math.min(currentRow+4, model.getRowCount()));
                     
-                    SwingUtilities.invokeLater(new Runnable()
-                    {
+                    SwingUtilities.invokeLater(new Runnable() {
                         public void run()
                         {            
                             spreadSheet.requestFocus();
@@ -2034,8 +2106,6 @@ public class WorkbenchPaneSS extends BaseSubPane
                 }
                 // Enable the "Find" action in the Edit menu when a spreadsheet is shown
                 UIRegistry.enableFind(findPanel, true);
-    
-//                NavBoxMgr.getInstance().adjustSplitter();
                 ssFormSwitcher.setCurrentIndex(1);
                 break;
             case Form:
@@ -2065,11 +2135,9 @@ public class WorkbenchPaneSS extends BaseSubPane
         
              
         JComponent[] comps = { addRowsBtn, deleteRowsBtn, clearCellsBtn};
-        for (JComponent c : comps)
-        {
-            if (c != null)
-            {
-                c.setVisible(currentPanelType == PanelType.Spreadsheet);
+        for (JComponent c : comps) {
+            if (c != null) {
+                c.setVisible(currentPanelType == PanelType.Spreadsheet && !isUpdateDataSet());
             }
         }
     }
@@ -2560,7 +2628,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             }
         }
         
-        DBTableIdMgr databaseSchema = WorkbenchTask.getDatabaseSchema();
+        DBTableIdMgr databaseSchema = WorkbenchTask.getDatabaseSchema(false);
         // build up a list of temporary MapLocationIFace records to feed to the LocalityMapper
         List<MapLocationIFace> mapLocations = new Vector<MapLocationIFace>(selection.length);
         List<WorkbenchRow> rows = workbench.getWorkbenchRowsAsList();
@@ -3277,37 +3345,27 @@ public class WorkbenchPaneSS extends BaseSubPane
      * @param trackId
      */
     protected void doGeoRef(final GeoCoordServiceProviderIFace geoRefService,
-                            final String trackId)
-    {
+                            final String trackId) {
         UsageTracker.incrUsageCount(trackId);
         log.info("Performing GeoREflookup of selected records: "+ trackId);
 
-        if (true)
-        {
+        if (true) {
             List<GeoCoordDataIFace> selectedWBRows = getSelectedRowsFromViewForGeoRef();
-            if (selectedWBRows != null)
-            {
-                geoRefService.processGeoRefData(selectedWBRows, new GeoCoordProviderListenerIFace()
-                {
-                    public void aboutToDisplayResults()
-                    {
-                        if (imageFrame != null)
-                        {
+            if (selectedWBRows != null) {
+                geoRefService.processGeoRefData(selectedWBRows, new GeoCoordProviderListenerIFace() {
+                    public void aboutToDisplayResults() {
+                        if (imageFrame != null) {
                             imageFrame.setAlwaysOnTop(false);
                         }
                     }
                     
-                    public void complete(final List<GeoCoordDataIFace> items, final int itemsUpdated)
-                    {
-                        if (itemsUpdated > 0)
-                        {
+                    public void complete(final List<GeoCoordDataIFace> items, final int itemsUpdated) {
+                        if (itemsUpdated > 0) {
                             setChanged(true);
                             int[] selection = spreadSheet.getSelectedRowModelIndexes();  
-                            if (selection.length > 0)
-                            {
+                            if (selection.length > 0) {
                             	validateRows(selection);
-                            } else 
-                            {
+                            } else  {
                             	validateAll(null);
                             }
                             model.fireDataChanged();
@@ -3319,7 +3377,21 @@ public class WorkbenchPaneSS extends BaseSubPane
             return;
         }
     }
-    
+
+    /**
+     *
+     * @param changed
+     * @param e
+     */
+    public void setChanged(final boolean changed, final TableModelEvent e) {
+        if (!blockChanges) {
+            hasChanged = changed;
+            saveBtn.setEnabled(hasChanged);
+            updateUploadBtnState();
+            updateRevertBtnState(e);
+        }
+    	
+    }
     /**
      * Set that there has been a change.
      * 
@@ -3327,12 +3399,7 @@ public class WorkbenchPaneSS extends BaseSubPane
      */
     public void setChanged(final boolean changed)
     {
-        if (!blockChanges)
-        {
-            hasChanged = changed;
-            saveBtn.setEnabled(hasChanged);
-            updateUploadBtnState();
-        }
+        setChanged(changed, null);
     }
     
     /**
@@ -3347,13 +3414,13 @@ public class WorkbenchPaneSS extends BaseSubPane
      * @param wbtmi
      * @return
      */
-    public static int getMaxColWidth(WorkbenchTemplateMappingItem wbtmi) {
+    public static int getMaxColWidth(WorkbenchTemplateMappingItem wbtmi, boolean isForUpdate) {
     	DBFieldInfo fi = null;
     	int result = WorkbenchDataItem.getMaxWBCellLength();
     	if (wbtmi.getFieldInfo() != null) {
     		fi = wbtmi.getFieldInfo();
     	} else {
-            DBTableIdMgr databaseSchema = WorkbenchTask.getDatabaseSchema();
+            DBTableIdMgr databaseSchema = WorkbenchTask.getDatabaseSchema(isForUpdate);
             DBTableInfo ti = databaseSchema.getInfoById(wbtmi.getSrcTableId());
             if (ti != null) {
             	fi = ti.getFieldByName(wbtmi.getFieldName());
@@ -3376,13 +3443,13 @@ public class WorkbenchPaneSS extends BaseSubPane
      * @param workbench
      * @return
      */
-    public static Integer[] getMaxColWidths(Workbench workbench) {
+    public static Integer[] getMaxColWidths(Workbench workbench, boolean isForUpdate) {
         List<WorkbenchTemplateMappingItem> wbtmis = new ArrayList<WorkbenchTemplateMappingItem>();
         wbtmis.addAll(workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems());
         Collections.sort(wbtmis);        
         Integer[] result = new Integer[wbtmis.size()];
         for (int i = 0; i < wbtmis.size(); i++) {
-        	result[i] = new Integer(WorkbenchPaneSS.getMaxColWidth(wbtmis.get(i)));
+        	result[i] = new Integer(WorkbenchPaneSS.getMaxColWidth(wbtmis.get(i), isForUpdate));
         }
         return result;
     }
@@ -3390,8 +3457,7 @@ public class WorkbenchPaneSS extends BaseSubPane
      * Adjust all the column width for the data in the column, this may be handles with JDK 1.6 (6.)
      * @param tableArg the table that should have it's columns adjusted
      */
-    private void initColumnSizes(final JTable tableArg, final JButton theSaveBtn) throws Exception
-    {
+    private void initColumnSizes(final JTable tableArg, final JButton theSaveBtn) throws Exception {
         TableModel  tblModel    = tableArg.getModel();
         TableColumn column      = null;
         Component   comp        = null;
@@ -3400,11 +3466,9 @@ public class WorkbenchPaneSS extends BaseSubPane
         
         
         Element uploadDefs = null;
-        if (WorkbenchTask.isCustomizedSchema()) 
-        {
+        if (WorkbenchTask.isCustomizedSchema()) {
         	uploadDefs = XMLHelper.readFileToDOM4J(new File(UIRegistry.getAppDataDir() + File.separator + "specify_workbench_upload_def.xml"));
-        } else
-        {
+        } else {
         	uploadDefs = XMLHelper.readDOMFromConfigDir("specify_workbench_upload_def.xml");
         }
         
@@ -3414,38 +3478,34 @@ public class WorkbenchPaneSS extends BaseSubPane
         wbtmis.addAll(workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems());
         Collections.sort(wbtmis);
         
-        DBTableIdMgr databaseSchema = WorkbenchTask.getDatabaseSchema();
+        DBTableIdMgr databaseSchema = WorkbenchTask.getDatabaseSchema(isUpdateDataSet());
         
         columnMaxWidths = new Integer[tableArg.getColumnCount()];
-        for (int i = 0; i < wbtmis.size() /*tableArg.getColumnCount()*/; i++) 
-        {
+        boolean isUpdateable = isUpdateDataSet();
+        for (int i = 0; i < wbtmis.size() /*tableArg.getColumnCount()*/; i++)  {
             TableCellRenderer headerRenderer = tableArg.getColumnModel().getColumn(i).getHeaderRenderer();
             WorkbenchTemplateMappingItem wbtmi = wbtmis.elementAt(i);
             
             // Now go retrieve the data length
             int fieldWidth = WorkbenchDataItem.getMaxWBCellLength();
             DBTableInfo ti = databaseSchema.getInfoById(wbtmi.getSrcTableId());
-            if (ti != null)
-            {
+            if (ti != null) {
                 DBFieldInfo fi = ti.getFieldByName(wbtmi.getFieldName());
-                if (fi != null)
-                {
+                if (fi != null) {
                     wbtmi.setFieldInfo(fi);
                     //System.out.println(fi.getName()+"  "+fi.getLength()+"  "+fi.getType());
-                    if (RecordTypeCodeBuilder.getTypeCode(fi) == null && fi.getLength() > 0)
-                    {
+                    if (RecordTypeCodeBuilder.getTypeCode(fi) == null && fi.getLength() > 0) {
                         fieldWidth = Math.min(fi.getLength(), WorkbenchDataItem.getMaxWBCellLength());
                     }
-                } else
-                {
+                } else {
                     log.error("Can't find field with name ["+wbtmi.getFieldName()+"]");
                 }
-            } else
-            {
+            } else {
                 log.error("Can't find table ["+wbtmi.getSrcTableId()+"]");
             }
             columnMaxWidths[i] = new Integer(fieldWidth);
             GridCellEditor cellEditor = getCellEditor(wbtmi, fieldWidth, theSaveBtn, uploadDefs);
+            cellEditor.setEditable(!isUpdateable || wbtmi.getIsEditable());
             column = tableArg.getColumnModel().getColumn(i);
 
             comp = headerRenderer.getTableCellRendererComponent(
@@ -3476,6 +3536,10 @@ public class WorkbenchPaneSS extends BaseSubPane
             column.setPreferredWidth(Math.min(Math.max(maxWidth, cellWidth), 400));
             
             column.setCellEditor(cellEditor);
+            WbCellRenderer renderer = new WbCellRenderer();
+            renderer.setEditable(!isUpdateable || wbtmi.getIsEditable());
+            column.setCellRenderer(renderer);
+
         }
         //tableArg.setCellEditor(cellEditor);
     }
@@ -3636,10 +3700,11 @@ public class WorkbenchPaneSS extends BaseSubPane
             return;
         }
         //backup current database contents for workbench
-        logDebug("backupObject(): " + System.nanoTime());
-        backupObject();
-        logDebug("---------" + System.nanoTime());
-        
+        if (!isUpdateDataSet()) {
+            logDebug("backupObject(): " + System.nanoTime());
+            backupObject();
+            logDebug("---------" + System.nanoTime());
+        }
         logDebug("checkCurrentEditState: " + System.nanoTime());
         checkCurrentEditState();
         logDebug("---------" + System.nanoTime());
@@ -3662,7 +3727,9 @@ public class WorkbenchPaneSS extends BaseSubPane
             session.flush();
 
             model.setWorkbench(workbench);
-            formPane.setWorkbench(workbench);
+            if (formPane != null) {
+                formPane.setWorkbench(workbench);
+            }
             if (imageFrame != null)
             {
                 imageFrame.setWorkbench(workbench);
@@ -3706,8 +3773,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             session.close();
             session = null;
         }
-        if (saveBtn != null)
-        {
+        if (saveBtn != null) {
             saveBtn.setEnabled(false);
         }
         if (datasetUploader != null)
@@ -3746,7 +3812,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             }
         }
         
-        if (datasetUploader != null && !datasetUploader.aboutToShutdown(this))
+        if (datasetUploader != null && !datasetUploader.aboutToShutdown(this, null, false))
         {
             return false;
         }
@@ -3757,7 +3823,9 @@ public class WorkbenchPaneSS extends BaseSubPane
             {
                 datasetUploader = null;
                 Uploader.unlockApp();
-                Uploader.unlockUpload();
+                if (!isUpdateDataSet()) {
+                    Uploader.unlockUpload();
+                }
             }
         }
 
@@ -3770,22 +3838,35 @@ public class WorkbenchPaneSS extends BaseSubPane
             {
                 imageFrame.setAlwaysOnTop(false);
             }
-            String msg = String.format(getResourceString("SaveChanges"), getTitle());
-            JFrame topFrame = (JFrame)UIRegistry.getTopWindow();
-
-            final String wbName = workbench.getName();
             
-            int rv = JOptionPane.showConfirmDialog(topFrame,
-                                                   msg,
-                                                   getResourceString("SaveChangesTitle"),
-                                                   JOptionPane.YES_NO_CANCEL_OPTION);
-            if (rv == JOptionPane.YES_OPTION)
-            {
+            int rv = JOptionPane.CANCEL_OPTION;
+            final String wbName = workbench.getName();
+                        
+            if (this.isUpdateDataSet()) {
+	            String msg = String.format(getResourceString("WB_DISCARD_BATCH_EDITS"), getTitle());
+	            JFrame topFrame = (JFrame)UIRegistry.getTopWindow();
+	
+	            rv = JOptionPane.showConfirmDialog(topFrame,
+	                                                   msg,
+	                                                   getResourceString("WB_DISCARD_BATCH_EDITS_TITLE"),
+	                                                   JOptionPane.OK_CANCEL_OPTION);
+	            if (rv == JOptionPane.OK_OPTION) {
+	            	rv = JOptionPane.NO_OPTION;
+	            }
+            } else {
+	            String msg = String.format(getResourceString("SaveChanges"), getTitle());
+	            JFrame topFrame = (JFrame)UIRegistry.getTopWindow();
+	
+	            rv = JOptionPane.showConfirmDialog(topFrame,
+	                                                   msg,
+	                                                   getResourceString("SaveChangesTitle"),
+	                                                   JOptionPane.YES_NO_CANCEL_OPTION);
+            }
+            
+            if (rv == JOptionPane.YES_OPTION) {
                 //GlassPane and Progress bar currently don't show up during shutdown
-                SwingUtilities.invokeLater(new Runnable()
-                {
-                    public void run()
-                    {
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
                         UIRegistry.writeSimpleGlassPaneMsg(String.format(
                                 getResourceString("WB_SAVING"),
                                 new Object[] { workbench.getName() }),
@@ -3954,14 +4035,14 @@ public class WorkbenchPaneSS extends BaseSubPane
             headers.clear();
         }
         
-        if (resultsetController != null)
-        {
-            resultsetController.removeListener(formPane);
+        if (resultsetController != null) {
+            if (formPane != null) {
+                resultsetController.removeListener(formPane);
+            }
             resultsetController = null;
         }
         
-        if (formPane != null)
-        {
+        if (formPane != null) {
             formPane.cleanup();
         }
 
@@ -3993,17 +4074,14 @@ public class WorkbenchPaneSS extends BaseSubPane
     protected void shutdownValidators()
     {
         //validationExecutor.shutdownNow();
-        if (validationWorkerQueue.peek() != null)
-        {
+        if (validationWorkerQueue.peek() != null) {
         	//System.out.println("Shutdown: Cancelling validation worker.");
         	ValidationWorker vw = null;
-        	synchronized(validationWorkerQueue)
-        	{
+        	synchronized(validationWorkerQueue) {
         		vw = validationWorkerQueue.peek();
         		validationWorkerQueue.clear();
         	}
-        	if (vw != null && !vw.isDone())
-        	{
+        	if (vw != null && !vw.isDone()) {
         		vw.cancel(true);
         	}
         }
@@ -4016,8 +4094,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     public void showingPane(boolean show)
     {
     	//System.out.println("WBPane.showingPane(" + show + ") " + isVisible());
-        if (formPane != null)
-        {
+        if (formPane != null) {
             formPane.showingPane(show);
         }
         
@@ -4087,17 +4164,17 @@ public class WorkbenchPaneSS extends BaseSubPane
     {
         return currentPanelType == PanelType.Spreadsheet ? "WorkbenchGridEditing" : "WorkbenchFormEditing";
     }
-    
+
+    protected List<SubPaneIFace> checkOpenTasksForUpload() {
+        return checkOpenTasksForUpload(false);
+    }
     /**
      * @return  a list of open panes that prohibit uploading.
      */
-    protected List<SubPaneIFace> checkOpenTasksForUpload()
-    {
+    protected List<SubPaneIFace> checkOpenTasksForUpload(boolean isBatchEdit) {
         List<SubPaneIFace> result = new LinkedList<SubPaneIFace>();
-        for (SubPaneIFace pane : SubPaneMgr.getInstance().getSubPanes())
-        {
-            if (prohibitsUpload(pane))
-            {
+        for (SubPaneIFace pane : SubPaneMgr.getInstance().getSubPanes()) {
+            if (prohibitsUpload(pane, isBatchEdit)) {
                 result.add(pane);
             }
         }
@@ -4124,19 +4201,22 @@ public class WorkbenchPaneSS extends BaseSubPane
      * @param pane
      * @return true if uploads are prohibited while pane is open.
      */
-    protected boolean prohibitsUpload(final SubPaneIFace pane)
+    protected boolean prohibitsUpload(final SubPaneIFace pane, boolean isBatchEdit)
     {
-        if (pane.getTask().getClass().equals(DataEntryTask.class))
-        {
+        if (pane.getTask().getClass().equals(DataEntryTask.class)) {
             return true;
         }
-        if (pane.getTask().getClass().equals(InteractionsTask.class))
-        {
+        if (pane.getTask().getClass().equals(InteractionsTask.class)) {
             return true;
         }
-        if (pane instanceof ESResultsSubPane)
-        {
+        if (pane instanceof ESResultsSubPane) {
         	return true;
+        }
+        if (pane.getTask() instanceof BaseTreeTask) {
+            return true;
+        }
+        if (isBatchEdit && pane instanceof WorkbenchPaneSS && pane != this) {
+            return ((WorkbenchPaneSS)pane).uploadToolPanel != null && ((WorkbenchPaneSS)pane).uploadToolPanel.isVisible();
         }
         return false;
     }
@@ -4145,35 +4225,28 @@ public class WorkbenchPaneSS extends BaseSubPane
      * @param badPanes
      * @return a list of the distinct tasks represented by badPanes 
      */
-    protected String getListOfBadTasks(final List<SubPaneIFace> badPanes)
-    {
+    protected String getListOfBadTasks(final List<SubPaneIFace> badPanes) {
         Set<Taskable> badTasks = new HashSet<Taskable>();
-        for (SubPaneIFace pane : badPanes)
-        {
+        for (SubPaneIFace pane : badPanes) {
             badTasks.add(pane.getTask());
         }
         String result = "";
         Iterator<Taskable> badI= badTasks.iterator();
-        while (badI.hasNext())
-        {
+        while (badI.hasNext()) {
             Taskable badTask = badI.next();
-            if (!StringUtils.isBlank(result))
-            {
-                if (badI.hasNext())
-                {
+            if (!StringUtils.isBlank(result)) {
+                if (badI.hasNext()) {
                     result += ", ";
                 }
-                else
-                {
+                else {
                     result += " or ";
                 }
             }
-            if (badTask instanceof ExpressSearchTask)
-            {
-            	result += UIRegistry.getResourceString("WorkbenchPaneSS.SearchResult");
-            }
-            else
-            {
+            if (badTask instanceof ExpressSearchTask) {
+                result += UIRegistry.getResourceString("WorkbenchPaneSS.SearchResult");
+            } else if (badTask instanceof WorkbenchTask) {
+                result += UIRegistry.getResourceString("WorkbenchPaneSS.UploaderPane");
+            } else {
             	result += badTask.getTitle();
             }
         }
@@ -4242,21 +4315,17 @@ public class WorkbenchPaneSS extends BaseSubPane
     		{
     			UIRegistry.showLocalizedError("WorkbenchPaneSS.UnableToAutoValidate");
     		}
-    		if (isDoIncrementalValidation() || isDoIncrementalMatching()) //but how could this be true???
-    		//oh yeah. If they were on when the workbench was last closed, but the template has been changed since...
-    		{
-        		uploadToolPanel.turnOffSelections();
-        		if (isDoIncrementalValidation()) 
-        		{
-        			turnOffIncrementalValidation();
-        		}
-        		if (isDoIncrementalMatching()) 
-        		{
-        			turnOffIncrementalMatching();
-        		}
-    			model.fireDataChanged();    			
-    		}
 			workbenchValidator = null;
+            if (uploadToolPanel != null && (isDoIncrementalValidation() || isDoIncrementalMatching())) {
+                uploadToolPanel.turnOffSelections();
+                if (isDoIncrementalValidation()) {
+                    turnOffIncrementalValidation();
+                }
+                if (isDoIncrementalMatching()) {
+                    turnOffIncrementalMatching();
+                }
+                model.fireDataChanged();
+            }
     	}
     }
     
@@ -4376,8 +4445,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         {
             Vector<UploadMappingDef> maps = importMapper.getImporterMapping();
             DB db = new DB();
-            if (Uploader.lockUpload(null, true) != Uploader.LOCKED)
-            {
+            if (!isUpdateDataSet() && Uploader.lockUpload(null, true) != Uploader.LOCKED) {
                 return;
             }
             Uploader.lockApp();
@@ -4399,18 +4467,16 @@ public class WorkbenchPaneSS extends BaseSubPane
             UploadField[] configs = uploadToolPanel.getConfiguredFields();
             datasetUploader.copyFldConfigs(configs);
             
-            uploadPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, spreadSheet
-					.getScrollPane(), datasetUploader.getMainPanel());
-			mainPanel.remove(spreadSheet.getScrollPane());
-			uploadPane.setOneTouchExpandable(true);
-			uploadPane.setDividerLocation(spreadSheet.getScrollPane()
-					.getHeight() * 2 / 3);
-			spreadSheet.getScrollPane().setVisible(true);
+            uploadPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, spreadSheetPane, datasetUploader.getMainPanel());
+            int uploadPaneDivider = 10;//spreadSheetPane.getHeight() * (isUpdateDataSet() ? 19/20 : 2/3);
+			mainPanel.remove(spreadSheetPane);
+            spreadSheetPane.setVisible(true);
+			//uploadPane.setOneTouchExpandable(true);
 
 			// Provide minimum sizes for the two components in the split pane
-			Dimension minimumSize = new Dimension(200, 200);
+			Dimension minimumSize = isUpdateDataSet() ? new Dimension(0, 0) : new Dimension(200, 200);
 			datasetUploader.getMainPanel().setMinimumSize(minimumSize);
-			spreadSheet.getScrollPane().setMinimumSize(minimumSize);
+			spreadSheetPane.setMinimumSize(minimumSize);
 			mainPanel.add(uploadPane, PanelType.Spreadsheet.toString());
 			showPanel(PanelType.Spreadsheet);
 			mainPanel.validate();
@@ -4422,9 +4488,14 @@ public class WorkbenchPaneSS extends BaseSubPane
 			// ?????
 			spreadSheet.setEnabled(false);
 			setToolBarBtnsEnabled(false);
-            if (uploadToolPanel.isExpanded())
+			boolean hidToolPanel = uploadToolPanel.isExpanded();
+            if (hidToolPanel)
             {
-            	hideUploadToolPanel();
+            	if (isUpdateDataSet()) {
+            	    hideUploadToolPanelSansAnimation();
+                } else {
+                    hideUploadToolPanel();
+                }
             	showHideUploadToolBtn.setToolTipText(getResourceString("WB_SHOW_UPLOADTOOLPANEL"));
             	restoreUploadToolPanel = true;
             }			
@@ -4432,11 +4503,19 @@ public class WorkbenchPaneSS extends BaseSubPane
 			{
 				imageFrame.setVisible(false);
 			}
+            if (isUpdateDataSet()) {
+                if (hidToolPanel) {
+                    Thread.sleep(100); //wait for hide to finish
+                }
+                uploadPane.setDividerLocation(1.0);
+            } else {
+                uploadPane.setDividerLocation(.67);
+            }
 			datasetUploader.startUI();
 			if (doIncrementalValidation && invalidCellCount.get() == 0)
 			{
 				datasetUploader.validateData(true);
-			}
+            }
 		}
         catch (Exception ex)
         {
@@ -4452,49 +4531,55 @@ public class WorkbenchPaneSS extends BaseSubPane
             setAllUploadDatasetBtnEnabled(canUpload());
         }
     }
-    
+
+    public void uploadDone() {
+        uploadDone(null);
+    }
     /**
      * Removes uploader ui and redisplays standard wb ui
      */
-    public void uploadDone()
-    {
+    public void uploadDone(final String action) {
         datasetUploader = null;
         Uploader.unlockApp();
-        if (!Uploader.unlockUpload())
-        {
+        if (!isUpdateDataSet() && !Uploader.unlockUpload()) {
             log.error("unable to unlock upload task semaphore.");
             //inform the user??
         }
-        if (uploadPane != null)
-        {
+        if (uploadPane != null) {
             List<SubPaneIFace> badPanes = checkOpenTasksForUploadClose();
-            if (badPanes.size() > 0)
-            {
-                for (SubPaneIFace badPane : badPanes)
-                {
-                    if (!SubPaneMgr.getInstance().removePane(badPane, true))
-                    {
+            if (badPanes.size() > 0) {
+                for (SubPaneIFace badPane : badPanes) {
+                    if (!SubPaneMgr.getInstance().removePane(badPane, true)) {
                         log.error("unable to close " + badPane.getClass().getName() + " after uploader close.");
                     }
                 }
             }
         	
         	mainPanel.remove(uploadPane);
-            mainPanel.add(spreadSheet.getScrollPane(), PanelType.Spreadsheet.toString());
+            mainPanel.add(spreadSheetPane, PanelType.Spreadsheet.toString());
             showPanel(PanelType.Spreadsheet);
             mainPanel.validate();
             mainPanel.doLayout();
         }
-        ssFormSwitcher.setEnabled(true);
+        ssFormSwitcher.setEnabled(true && !isUpdateDataSet());
         spreadSheet.setEnabled(true);
         setToolBarBtnsEnabled(true);
-        if (restoreUploadToolPanel)
-        {
+        if (restoreUploadToolPanel) {
         	showUploadToolPanel();
         	showHideUploadToolBtn.setToolTipText(getResourceString("WB_HIDE_UPLOADTOOLPANEL"));
         	restoreUploadToolPanel = false;
         }
         setAllUploadDatasetBtnEnabled(true);
+
+        if (UploadMainPanel.CANCEL_AND_CLOSE_BATCH_UPDATE.equals(action) || (isUpdateDataSet() && UploadMainPanel.CLOSE_UI.equals(action))) {
+            saveBtn.setEnabled(true); //this should be safe
+            revertBtn.setEnabled(true); //so should this
+            for (WorkbenchRow r : workbench.getWorkbenchRows()) {
+                r.setUploadStatus(WorkbenchRow.UPLD_NONE);
+            }
+            //And other stuff to restore state existing prior to opening the upload pane...
+            //???
+        }
     }
         
     /**
@@ -4570,6 +4655,9 @@ public class WorkbenchPaneSS extends BaseSubPane
     	}
     }
     
+    /**
+     * @param enabled
+     */
     protected void setAllUploadDatasetBtnEnabled(boolean enabled)
     {
         for (SubPaneIFace sp : SubPaneMgr.getInstance().getSubPanes())
@@ -4627,6 +4715,17 @@ public class WorkbenchPaneSS extends BaseSubPane
     }
 
     /**
+     * Updates revertBtn wrt hasChanged
+     */
+    protected void updateRevertBtnState(final TableModelEvent e) {
+    	if (revertBtn != null && revertBtn.isVisible() && hasChanged) {
+    		//it would better to use e to check if it really did differ from the value in the db, 
+    		//also tracking edited rows and cols would make checking for edits and showing original values easier
+    		revertBtn.setEnabled(true);
+    	}
+    }
+
+     /**
      * @return true if current user has upload privileges
      */
     protected boolean isUploadPermitted()
@@ -4646,156 +4745,143 @@ public class WorkbenchPaneSS extends BaseSubPane
      * @param wbRow 
      * @return list of updated data items
      */
-    protected Hashtable<Short, Short> updateCellStatuses(List<CellStatusInfo> stats, final WorkbenchRow wbRow)
-    {
-    	Hashtable<Short, Short> exceptionalItems = new Hashtable<Short, Short>();
-		if (stats != null && stats.size() > 0)
-		{
-			for (CellStatusInfo issue : stats)
-			{
-				for (Integer col : issue.getColumns())
-				{
-					if (col >= 0) {
-						WorkbenchDataItem wbItem = wbRow.getItems().get(col.shortValue());
-						if (wbItem == null)
-						{
-							//need to force creation of empty wbItem for blank cell
-							wbItem = wbRow.setData("", col.shortValue(), false, true);
-						}
-						if (wbItem != null)
-						{
-							exceptionalItems.put(col.shortValue(), issue.getStatus());
-							//WorkbenchDataItems can be updated by GridCellEditor or by background validation initiated at load time or after find/replace ops			
-							synchronized(wbItem)
-							{
-								wbItem.setStatusText(issue.getStatusText());
-								if (wbItem.getEditorValidationStatus() != issue.getStatus())
-								{
-									wbItem.setEditorValidationStatus(issue.getStatus());
-									if (issue.getStatus() == WorkbenchDataItem.VAL_ERROR
-											|| issue.getStatus() == WorkbenchDataItem.VAL_ERROR_EDIT)
-									{
-										invalidCellCount.getAndIncrement();
-									} else if (issue.getStatus() == WorkbenchDataItem.VAL_MULTIPLE_MATCH
-											|| issue.getStatus() == WorkbenchDataItem.VAL_NEW_DATA)
-									{
-										unmatchedCellCount.getAndIncrement();
-									}
-								
-									//System.out.println("error " + invalidCellCount.get());
-								}
-							}
-						}
-						else
-						{
-							log.error("couldn't find workbench item for col " + col);
-						}
-					} else {
-						log.error(issue.getStatusText() + " at " + col + "???");
-					}
-				}
-			}
-		}
-		return exceptionalItems;
+    protected void updateCellStatuses(final List<CellStatusInfo> stats, final WorkbenchRow wbRow) {
+    	Hashtable<Short, Short> exceptionalItems = new Hashtable<>();
+        Map<WorkbenchDataItem, List<CellStatusInfo>> statMap = new HashMap<>();
+		if (stats != null && stats.size() > 0) {
+            for (CellStatusInfo issue : stats) {
+                for (Integer col : issue.getColumns()) {
+                    if (col >= 0) {
+                        WorkbenchDataItem wbItem = wbRow.getItems().get(col.shortValue());
+                        if (wbItem == null) {
+                            //need to force creation of empty wbItem for blank cell
+                            wbItem = wbRow.setData("", col.shortValue(), false, true);
+                        }
+                        if (wbItem != null) {
+                            List<CellStatusInfo> statList = statMap.get(wbItem);
+                            if (statList == null) {
+                                statList = new ArrayList<>();
+                                statMap.put(wbItem, statList);
+                            }
+                            statList.add(issue);
+                        }
+                    }
+                }
+            }
+        }
+        for (WorkbenchDataItem wbItem : wbRow.getWorkbenchDataItems()) {
+                int statusCode = WorkbenchDataItem.VAL_OK;
+                String statusText = "";
+                if (statMap.get(wbItem) != null) {
+                    for (CellStatusInfo info : statMap.get(wbItem)) {
+                        statusCode = statusCode | info.getStatus();
+                        if (!"".equals(statusText)) {
+                            statusText += "\n; ";
+                        }
+                        statusText += info.getStatusText();
+                    }
+                }
+                int originalStatusCode = wbItem.getEditorValidationStatus();
+                boolean itemChanged = false;
+                synchronized (wbItem) {
+                    if (wbItem.getEditorValidationStatus() != statusCode) {
+                        itemChanged = true;
+                        wbItem.setEditorValidationStatus(statusCode);
+                        wbItem.setStatusText("".equals(statusText) ? null : statusText);
+                    }
+                }
+                if (itemChanged) {
+                    if ((statusCode & WorkbenchDataItem.VAL_ERROR) != 0 && (originalStatusCode & WorkbenchDataItem.VAL_ERROR) == 0) {
+                        invalidCellCount.getAndIncrement();
+                    } else if ((statusCode & WorkbenchDataItem.VAL_ERROR) == 0 &&(originalStatusCode & WorkbenchDataItem.VAL_ERROR) != 0) {
+                        invalidCellCount.getAndDecrement();
+                    }
+                    if (((statusCode & WorkbenchDataItem.VAL_MULTIPLE_MATCH) != 0
+                            || (statusCode & WorkbenchDataItem.VAL_NEW_DATA) != 0)
+                            && (originalStatusCode & WorkbenchDataItem.VAL_MULTIPLE_MATCH) == 0
+                            && (originalStatusCode & WorkbenchDataItem.VAL_NEW_DATA) == 0) {
+                        unmatchedCellCount.getAndIncrement();
+                    } else if ((statusCode & WorkbenchDataItem.VAL_MULTIPLE_MATCH) == 0 && (statusCode & WorkbenchDataItem.VAL_NEW_DATA) == 0
+                        && ((originalStatusCode & WorkbenchDataItem.VAL_MULTIPLE_MATCH) != 0
+                            || (originalStatusCode & WorkbenchDataItem.VAL_NEW_DATA) != 0)) {
+                        unmatchedCellCount.getAndDecrement();
+                    }
+                    if ((statusCode & WorkbenchDataItem.VAL_EDIT) != 0 && (originalStatusCode & WorkbenchDataItem.VAL_EDIT) == 0) {
+                        editedCellCount.getAndIncrement();
+                    } else if ((statusCode & WorkbenchDataItem.VAL_EDIT) == 0 && (originalStatusCode & WorkbenchDataItem.VAL_EDIT) != 0) {
+                        decrementEditedCellCount();
+                    }
+                }
+        }
     }
     
+    /**
+     * @param badRow
+     * @return
+     */
     protected CellStatusInfo createDupCatNumEntryCellStatus(Integer badRow)
     {
     	return new CellStatusInfo(badRow);
     }
-    
+
+    protected int getTotalIssueCount(final Pair<List<UploadTableInvalidValue>, List<Pair<UploadField, Object>>> issues,
+                                     final List<UploadTableMatchInfo> matchInfo, final List<Integer> badCats) {
+        return issues.getFirst().size() + (matchInfo == null ? 0 : matchInfo.size())
+                + (badCats == null ? 0 : badCats.size())
+                + issues.getSecond().size();
+    }
+
+    protected List<CellStatusInfo> getCellStatusInfosForIssues(final Pair<List<UploadTableInvalidValue>, List<Pair<UploadField, Object>>> issues,
+                                     final List<UploadTableMatchInfo> matchInfo, final List<Integer> badCats) {
+        List<CellStatusInfo> csis = new ArrayList<>(getTotalIssueCount(issues, matchInfo, badCats));
+        for (UploadTableInvalidValue utiv : issues.getFirst()) {
+            csis.add(new CellStatusInfo(utiv));
+        }
+        for (Pair<UploadField, Object> edit : issues.getSecond()) {
+            Object origObj = edit.getSecond();
+            String origVal =  origObj != null ? "'" + origObj.toString() + "'" : "Empty"; //more needed for dates and other tricky types
+            String tip = String.format(getResourceString("WB_EDITED_CELL_TT"), origVal);
+            List<Integer> cols = new ArrayList<Integer>();
+            cols.add(edit.getFirst().getIndex());
+            csis.add(new CellStatusInfo(WorkbenchDataItem.VAL_EDIT, tip, cols));
+        }
+        if (doIncrementalMatching && matchInfo != null) {
+            for (UploadTableMatchInfo utmi : matchInfo) {
+                if (utmi.getNumberOfMatches() != 1) { //for now we don't care if a single match exists
+                    csis.add(new CellStatusInfo(utmi));
+                }
+            }
+        }
+        if (badCats != null) {
+            for (Integer badCat : badCats) {
+                csis.add(createDupCatNumEntryCellStatus(badCat));
+            }
+        }
+        return csis;
+    }
     /**
      * @param editRow
      * @param editCol (use -1 to validate entire row)
      */
-    protected void updateRowValidationStatus(int editRow, int editCol, Vector<Integer> badCats)
+    protected void updateRowValidationStatus(int editRow, int editCol, final List<Integer> badCats)
     {
 		WorkbenchRow wbRow = workbench.getRow(editRow);
-		List<UploadTableInvalidValue> issues = getIncremental() ? workbenchValidator.endCellEdit(editRow, editCol) 
-				: new Vector<UploadTableInvalidValue>();
-		List<UploadTableMatchInfo> matchInfo = null;
-		
-		Hashtable<Short, Short> originalStats = new Hashtable<Short, Short>();
-		Hashtable<Short, WorkbenchDataItem> originals = wbRow.getItems();
-		for (Map.Entry<Short, WorkbenchDataItem> original : originals.entrySet())
-		{
-			originalStats.put(original.getKey(), (short )original.getValue().getEditorValidationStatus());
-		}
-		
-//		if (workbenchValidator.getUploader().isUpdateUpload())
-//		{
-//			
-//		}
-		
-		if (doIncrementalMatching)
-		{
-			try
-			{
+		Pair<List<UploadTableInvalidValue>, List<Pair<UploadField, Object>>> issues = getIncremental()
+                ? workbenchValidator.endCellEdit(editRow, editCol, doIncrementalValidation, doIncrementalEditChecking)
+				: new Pair<>();
+       List<UploadTableMatchInfo> matchInfo = null;
+		if (doIncrementalMatching) {
+			try {
 				//XXX Really should avoid matching invalid columns. But that is tricky with trees.
-				matchInfo = workbenchValidator.getUploader().matchData(editRow, editCol, issues);
-			} catch (Exception ex)
-			{
+				matchInfo = workbenchValidator.getUploader().matchData(editRow, editCol, issues.getFirst());
+			} catch (Exception ex) {
 				//XXX what to do?, some exception might be caused by invalid data - filter out cols in exceptionalItems??
 				//Maybe exceptions can be expected in general for a workbench-in-progress?
 				//Or maybe we should blow up and force the workbench to close or something similarly drastic???
 				ex.printStackTrace();
 			}
 		}
-		
-		
-		List<CellStatusInfo> csis = new Vector<CellStatusInfo>(issues.size() + (matchInfo == null ? 0 : matchInfo.size()) 
-																+ (badCats == null ? 0 : badCats.size()));
-		for (UploadTableInvalidValue utiv : issues)
-		{
-				csis.add(new CellStatusInfo(utiv));
-		}
-		if (doIncrementalMatching && matchInfo != null)
-		{
-			for (UploadTableMatchInfo utmi : matchInfo)
-			{
-				if (utmi.getNumberOfMatches() != 1) //for now we don't care if a single match exists
-				{
-					csis.add(new CellStatusInfo(utmi));
-				}
-			}
-		} 
-		if (badCats != null)
-		{
-			for (Integer badCat : badCats)
-			{
-				csis.add(createDupCatNumEntryCellStatus(badCat));
-			}
-		}
-			
-		
-		Hashtable<Short, Short> exceptionalItems = updateCellStatuses(csis, wbRow);
-		for (WorkbenchDataItem wbItem : wbRow.getWorkbenchDataItems())
-		{
-			Short origstat = originalStats.get(new Short((short )wbItem.getColumnNumber()));
-			if (origstat != null)
-			{
-				if (origstat != wbItem.getEditorValidationStatus() || exceptionalItems.get(wbItem.getColumnNumber()) == null)
-				{
-					if (origstat == WorkbenchDataItem.VAL_MULTIPLE_MATCH || origstat == WorkbenchDataItem.VAL_NEW_DATA)
-					{
-						unmatchedCellCount.getAndDecrement();
-					} else if (origstat == WorkbenchDataItem.VAL_ERROR || origstat == WorkbenchDataItem.VAL_ERROR_EDIT)
-					{
-						invalidCellCount.getAndDecrement();
-					}
-					if (exceptionalItems.get(wbItem.getColumnNumber()) == null)
-					{
-						//XXX synchronization is not really necessary anymore, right??
-						synchronized(wbItem)
-						{
-							wbItem.setStatusText(null);
-							wbItem.setEditorValidationStatus(WorkbenchDataItem.VAL_OK);
-						}
-					}
-				}
-			}
-			
-		}
+        updateCellStatuses(getCellStatusInfosForIssues(issues, matchInfo, badCats), wbRow);
     }
     
     /**
@@ -4991,30 +5077,6 @@ public class WorkbenchPaneSS extends BaseSubPane
 			this.allowCancel = allowCancel;
 		}
 
-		/**
-		 * @param row
-		 * @return row adjusted to account for deletes. Or -1 if the row has been deleted.
-		 */
-		/*private int adjustRow(int row)
-		{
-			int result = row;
-			//Not sure what happens if deletedRows is added to during the following loop.
-			//Doesn't seem important enough to worry about.
-			for (Integer deleted : deletedRows)
-			{
-				if (deleted == row)
-				{
-					result = -1;
-					break;
-					
-				} else if (row > deleted)
-				{
-					result--;
-				}
-			} 
-			return result;
-		}*/
-		
 		/*
 		 * (non-Javadoc)
 		 * 
@@ -5026,7 +5088,8 @@ public class WorkbenchPaneSS extends BaseSubPane
 			if (useGlassPane)
 			{
 	            this.glassPane = UIRegistry.writeSimpleGlassPaneMsg(
-	            		String.format(getResourceString("WorkbenchPaneSS.Validating"), new Object[] {workbench.getName()}), 
+	            		String.format(getResourceString("WorkbenchPaneSS.Validating"),
+                                new Object[] {isUpdateDataSet() ? "" : workbench.getName()}),
 	            		WorkbenchTask.GLASSPANE_FONT_SIZE, true);
 				if (allowCancel)
 				{
@@ -5231,8 +5294,10 @@ public class WorkbenchPaneSS extends BaseSubPane
 				//XXX need to verify cancel. Inside the doInBackground loop.
 				turnOffIncrementalValidation();
 				turnOffIncrementalMatching();
+				turnOffIncrementalEditChecking();
 				uploadToolPanel.uncheckAutoMatching();
 				uploadToolPanel.uncheckAutoValidation();
+				uploadToolPanel.uncheckAutoEditChecking();
 				uploadToolPanel.updateBtnUI();
 			}
 			
@@ -5309,7 +5374,9 @@ public class WorkbenchPaneSS extends BaseSubPane
      * @param rows
      * @param startRow
      * @param endRow
-     * @param isDoInBackground
+     * @param doSecretly
+     * @param glassPane
+     * @param allowCancel
      */
     protected void validateRows(final int[] rows, final int startRow, final int endRow, boolean doSecretly, final SimpleGlassPane glassPane, final boolean allowCancel)
     {
@@ -5327,8 +5394,8 @@ public class WorkbenchPaneSS extends BaseSubPane
     		SwingUtilities.invokeLater(new Runnable(){
     			@Override
     			public void run() {
-    				addRowsBtn.setEnabled(false);
-    				deleteRowsBtn.setEnabled(false);
+    				if (addRowsBtn != null) addRowsBtn.setEnabled(false);
+    				if (deleteRowsBtn != null) deleteRowsBtn.setEnabled(false);
     			}
     		});
     	} //else
@@ -5418,6 +5485,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         protected int				  editCol = -1;
         protected int                 editRow = -1;
         //protected UndoManager undoManager = new UndoManager();
+        protected boolean             isEditable = true;
 
         public GridCellEditor(final JTextField textField, final String caption, final int length, final JButton gcSaveBtn)
         {
@@ -5430,13 +5498,21 @@ public class WorkbenchPaneSS extends BaseSubPane
         	super(combo);
         	init(combo, caption, length, gcSaveBtn);
         }
-        
+
+        public boolean isEditable() {
+            return isEditable;
+        }
+
+        public void setEditable(boolean editable) {
+            isEditable = editable;
+        }
+
         protected void init(final JComponent comp, final String caption, final int length, final JButton gcSaveBtn)
         {
            	this.uiComponent = comp;
             this.length    = length;
             this.ceSaveBtn = saveBtn;
-     
+
             
             //verifier = new LengthInputVerifier(caption, length);
             //uiComponent.setInputVerifier(verifier);
@@ -5485,29 +5561,23 @@ public class WorkbenchPaneSS extends BaseSubPane
          * @see javax.swing.DefaultCellEditor#stopCellEditing()
          */
         @Override
-        public boolean stopCellEditing()
-        {
+        public boolean stopCellEditing() {
         	boolean result = super.stopCellEditing();
-            if (editRow == -1 || editCol == -1)
-            {
+            if (editRow == -1 || editCol == -1) {
             	editRow = -1;
             	editCol = -1;
             	return result; //a 'superfluous' re-call of this method.
             }
-        	if (result)
-            {
-            	if (verifier != null && !verifier.verify(uiComponent))
-            	{
+        	if (result) {
+            	if (verifier != null && !verifier.verify(uiComponent)) {
             		ceSaveBtn.setEnabled(false);
                 	editRow = -1;
                 	editCol = -1;
             		return false;
             	}
-            	if (getIncremental() && workbenchValidator != null)
-            	{
+            	if (getIncremental() && workbenchValidator != null) {
             		Vector<Integer> badCats = null;
-            		if (catNumChecker != null && editCol == catNumCol)
-            		{
+            		if (catNumChecker != null && editCol == catNumCol) {
             			badCats = catNumChecker.setValue(editRow, ((JTextField )uiComponent).getText(), true);
             		}
             		updateRowValidationStatus(spreadSheet.convertRowIndexToModel(editRow), spreadSheet.convertColumnIndexToModel(editCol), badCats);
@@ -5546,7 +5616,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         @Override
         public boolean isCellEditable(EventObject e)
         {
-            return true;
+            return isEditable;
         }
 
         //
@@ -5740,8 +5810,19 @@ public class WorkbenchPaneSS extends BaseSubPane
 				lbl.setText(filename);
 				lbl.setHorizontalAlignment(SwingConstants.CENTER);
 			}
+			lbl.setEnabled(isEditable);
 			return lbl;
 		}
+
+		private boolean isEditable = true;
+
+        public void setEditable(boolean editable) {
+            isEditable = editable;
+        }
+
+        public boolean isEditable() {
+            return isEditable;
+        }
     }
     
     /**
@@ -5767,7 +5848,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             iconLbl = UIHelper.createLabel(null, icon);
             header  = new DefaultTableCellHeaderRenderer();
             header.setHorizontalTextPosition(JLabel.LEFT);
-            
+            header.setEnabled(icon != null);
             CellConstraints cc = new CellConstraints();
             PanelBuilder    pb = new PanelBuilder(new FormLayout("p,1px,f:p:g", "f:p:g"));
             pb.add(iconLbl, cc.xy(1, 1));
@@ -5941,7 +6022,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     protected void compareSchemas()
     {
         List<Pair<DBFieldInfo, DBFieldInfo>> badFlds = new LinkedList<Pair<DBFieldInfo, DBFieldInfo>>();
-        DBTableIdMgr wbSchema = WorkbenchTask.getDatabaseSchema();
+        DBTableIdMgr wbSchema = WorkbenchTask.getDatabaseSchema(false);
         for (DBTableInfo wbTbl : wbSchema.getTables())
         {
             DBTableInfo tbl = DBTableIdMgr.getInstance().getInfoByTableName(wbTbl.getName());
@@ -6093,12 +6174,26 @@ public class WorkbenchPaneSS extends BaseSubPane
 			columns = matchInfo.getColIdxs();			
 		}
 		
+		/**
+		 * @param dupCatNumRow
+		 */
 		public CellStatusInfo(Integer dupCatNumRow)
 		{
 			status = WorkbenchDataItem.VAL_ERROR;
 			statusText = UIRegistry.getResourceString("WorkbenchPaneSS.DupCatNumEntry");
 			columns = new Vector<Integer>(1);
 			columns.add(catNumCol);
+		}
+		
+		/**
+		 * @param status
+		 * @param statusText
+		 * @param columns
+		 */
+		public CellStatusInfo(final short status, final String statusText, final List<Integer> columns) {
+			this.status = status;
+			this.statusText = statusText;
+			this.columns = columns;
 		}
 		/**
 		 * @return the status
@@ -6134,59 +6229,68 @@ public class WorkbenchPaneSS extends BaseSubPane
 	{
 		final static public int ValidationPredicate = 0;
 		final static public int MatchingPredicate = 1;
-		final static public int AnyPredicate = 2;
+		final static public int EditedPredicate = 2;
+		final static public int AnyPredicate = 3;
 		protected final int activation;
 		protected final Short[] conditions;
+		protected final Short[] antiConditions;
 		
-		public GridCellPredicate(int activation, Short[] conditions)
+		public GridCellPredicate(int activation, Short[] conditions, Short[] antiConditions)
 		{
 			this.activation = activation;
 			this.conditions = conditions;
+			this.antiConditions = antiConditions;
 		}
 
 		/* (non-Javadoc)
 		 * @see org.jdesktop.swingx.decorator.HighlightPredicate#isHighlighted(java.awt.Component, org.jdesktop.swingx.decorator.ComponentAdapter)
 		 */
 		@Override
-		public boolean isHighlighted(Component arg0, ComponentAdapter arg1) 
-		{
+		public boolean isHighlighted(Component arg0, ComponentAdapter arg1) {
 			if ((activation == AnyPredicate && !getIncremental())
 					|| (activation == ValidationPredicate && !doIncrementalValidation)
-					|| (activation == MatchingPredicate && !doIncrementalMatching))
-			{
-				return false;
-			
-			} 
-			
-			WorkbenchRow wbRow = workbench.getRow(spreadSheet.convertRowIndexToModel(arg1.row));
-			WorkbenchDataItem wbCell = wbRow.getItems().get((short )spreadSheet.convertColumnIndexToModel(arg1.column));
-			if (wbCell == null)
-			{
+					|| (activation == MatchingPredicate && !doIncrementalMatching)
+					|| (activation == EditedPredicate && !doIncrementalEditChecking)) {
 				return false;
 			}
-			
+			WorkbenchRow wbRow = workbench.getRow(spreadSheet.convertRowIndexToModel(arg1.row));
+			WorkbenchDataItem wbCell = wbRow.getItems().get((short )spreadSheet.convertColumnIndexToModel(arg1.column));
+			if (wbCell == null) {
+				return false;
+			}
 			int status = wbCell.getEditorValidationStatus();
-			if (activation == AnyPredicate)
-			{
+			if (activation == AnyPredicate) {
+			    //need to do this to get cell borders
 				((JLabel )arg0).setToolTipText(null);
 				//Seems like a good idea to try to be as efficient as possible
 				//but this will need to be recoded as new cell states are added
-				return status == WorkbenchDataItem.VAL_ERROR
-					|| status == WorkbenchDataItem.VAL_ERROR_EDIT
-					|| status == WorkbenchDataItem.VAL_MULTIPLE_MATCH
-					|| status == WorkbenchDataItem.VAL_NEW_DATA
-					|| status == WorkbenchDataItem.VAL_NOT_MATCHED;
-			}
-			else {
-				for (Short condition : conditions)
-				{
-					if (condition == status)
-					{
-						//System.out.println("pos: " + arg1.row + ", " + arg1.column + ": " + wbCell.getStatusText());
-						((JLabel )arg0).setToolTipText(wbCell.getStatusText());
-						return true;
-					} 				
-				}
+				return (status & WorkbenchDataItem.VAL_ERROR) != 0
+					|| (status & WorkbenchDataItem.VAL_MULTIPLE_MATCH) != 0
+					|| (status & WorkbenchDataItem.VAL_NEW_DATA) != 0
+					|| (status & WorkbenchDataItem.VAL_NOT_MATCHED) != 0
+					|| (status & WorkbenchDataItem.VAL_EDIT) != 0;
+			} else {
+				if (conditions != null) {
+				    boolean result = false;
+                    for (Short condition : conditions) {
+                        if ((condition & status) != 0) {
+                            ((JLabel )arg0).setToolTipText(wbCell.getStatusText());
+                            result = true;
+                            break;
+                        }
+                    }
+                    if (result && antiConditions != null) {
+                        for (Short condition : antiConditions) {
+                            if ((condition & status) != 0) {
+                                ((JLabel )arg0).setToolTipText(wbCell.getStatusText());
+                                result = false;
+                                break;
+                            }
+                        }
+
+                    }
+                    return result;
+                }
 			}
 			return false;
 		}
@@ -6210,7 +6314,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 		protected Component doHighlight(Component arg0, ComponentAdapter arg1) {
 			WorkbenchRow wbRow = workbench.getRow(spreadSheet.convertRowIndexToModel(arg1.row));
 			WorkbenchDataItem wbCell = wbRow.getItems().get((short )spreadSheet.convertColumnIndexToModel(arg1.column));
-			cellRenderAtts.addAttributes((JLabel )arg0, wbCell, doIncrementalValidation, doIncrementalMatching);
+			cellRenderAtts.addAttributes((JLabel )arg0, wbCell, doIncrementalValidation, doIncrementalMatching, doIncrementalEditChecking);
 			return arg0;
 		}
 	}

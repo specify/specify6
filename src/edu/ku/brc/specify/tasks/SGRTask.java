@@ -666,7 +666,7 @@ public class SGRTask extends BaseTask
         WorkbenchTask wbTask = (WorkbenchTask)ContextMgr.getTaskByClass(WorkbenchTask.class);   
         
         WorkbenchEditorCreator wbec = new WorkbenchEditorCreator(workbench,
-                session, showImageView, this, !wbTask.isPermitted())
+                session, showImageView, this, !wbTask.isPermitted(), null, false)
         {
             @Override
             public void progressUpdated(java.util.List<Integer> chunks) 

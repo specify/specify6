@@ -41,19 +41,7 @@ import java.awt.event.MouseEvent;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.Vector;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
@@ -88,6 +76,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.MouseInputAdapter;
 
+import edu.ku.brc.specify.tasks.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -140,14 +129,9 @@ import edu.ku.brc.specify.datamodel.SpQueryField;
 import edu.ku.brc.specify.datamodel.SpReport;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
-import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.dbsupport.RecordTypeCodeBuilder;
-import edu.ku.brc.specify.tasks.ExportMappingTask;
-import edu.ku.brc.specify.tasks.ExpressSearchTask;
-import edu.ku.brc.specify.tasks.QueryTask;
-import edu.ku.brc.specify.tasks.ReportsBaseTask;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
 import edu.ku.brc.specify.tasks.subpane.JasperCompilerRunnable;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchJRDataSource;
@@ -463,7 +447,11 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 //    		ex.printStackTrace();
 //    	}
 //    }
-    
+
+    public QBQueryForIdResultsHQL getCompletedResults() {
+        return completedResults.get();
+    }
+
     /**
      * @return
      */
@@ -746,7 +734,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 //            		System.out.println("Disjunctional conjoinment desire gesture detected");
 //            	}
 //            	doSearch(ors);
-            	doSearch(false);
+            	doSearch(false, null);
             }
         });
         distinctChk = createCheckBox(UIRegistry.getResourceString("QB_DISTINCT"));
@@ -788,6 +776,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         		}
         	});
         }
+        distinctChk.setVisible(!(task instanceof BatchEditTask));
+
         countOnlyChk = createCheckBox(UIRegistry.getResourceString("QB_COUNT_ONLY"));
         countOnlyChk.setSelected(false);
         countOnlyChk.addActionListener(new ActionListener()
@@ -903,7 +893,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 				}
 			});
 		}
-		
+		smushedChk.setVisible(!(task instanceof BatchEditTask));
+
         PanelBuilder outer = new PanelBuilder(new FormLayout("p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 6dlu, p", "p"));
  
         CellConstraints cc = new CellConstraints();
@@ -966,7 +957,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     }
     
     /**
-     * @param schemaItem
      * @return true if schemaItem was removed
      */
     protected boolean removeSchemaItemMapping(SpExportSchemaItemMapping itemMapping)
@@ -1054,25 +1044,22 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      */
     public void doSearch()
     {
-    	doSearch(false);
+    	doSearch(false, null);
     }
     
-    public void doSearch(boolean doOr)
-    {
-        if (canSearch())
-        {
-            if (distinctChk.isSelected())
-            {
+    public void doSearch(final RecordSetIFace rs) {
+    	doSearch(false, rs);
+    }
+    
+    public void doSearch(boolean doOr, final RecordSetIFace rs) {
+        if (canSearch()) {
+            if (distinctChk.isSelected()) {
                 UsageTracker.incrUsageCount("QB.DoSearchDistinct." + query.getContextName());
-            }
-            else
-            {
+            } else {
                 UsageTracker.incrUsageCount("QB.DoSearch." + query.getContextName());
             }
-            doSearch((TableQRI)tableList.getSelectedValue(), distinctChk.isSelected(), doOr);
-        }
-        else 
-        {
+            doSearch((TableQRI)tableList.getSelectedValue(), distinctChk.isSelected(), doOr, rs);
+        } else  {
             cancelSearch();
         }
     }
@@ -1357,7 +1344,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      */
     /**
      * @param saveBtnEnabled
-     * @param selected
      */
     protected void adjustPanelUI(boolean saveBtnEnabled, boolean isPostSave)
     {
@@ -1496,17 +1482,10 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 																					// also?????????
 					{
 						parent = parent.getParent();
-						if (isSchemaExport && lastExportTime != null)
-						{
-							addToList = true;
-						}
-						else
-						{
-						// parent will initially point to the related table
-						// and don't need to add related table unless it has
-						// children displayed/queried,
-							addToList = false;
-						}
+                        // parent will initially point to the related table
+// and don't need to add related table unless it has
+// children displayed/queried,
+                        addToList = isSchemaExport && lastExportTime != null;
 					} else
 					{
 						DataObjDataFieldFormatIFace formatter = relQRI.getDataObjFormatter(qfi.getFormatName());
@@ -1975,7 +1954,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             		td = d.getGeologicTimePeriodTreeDef();
             	}
             	if (td == null && "storage".equalsIgnoreCase(tbl)) {
-            		td = ((Institution)AppContextMgr.getInstance().getClassObject(Institution.class)).getStorageTreeDef();
+            		td = AppContextMgr.getInstance().getClassObject(Institution.class).getStorageTreeDef();
             	}
             	if (td != null) {
             		List<Object> ranks = BasicSQLUtils.querySingleCol("select rankid from " + tbl.toLowerCase() + "treedefitem where " + tbl.toLowerCase() + "treedefid = " + td.getTreeDefId() + " order by 1 desc"); 
@@ -2079,16 +2058,12 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     /**
      * Performs the Search by building the HQL String.
      */
-    protected void doSearch(final TableQRI rootTable, boolean distinct, boolean disjunct)
-    {
-        try
-        {
+    protected void doSearch(final TableQRI rootTable, boolean distinct, boolean disjunct, final RecordSetIFace rs) {
+        try {
             //XXX need to determine exportQuery params (probably)
-        	HQLSpecs hql = buildHQL(rootTable, distinct, queryFieldItems, tableTree, null, searchSynonymy, false, null, disjunct);  
+        	HQLSpecs hql = buildHQL(rootTable, distinct, queryFieldItems, tableTree, rs, searchSynonymy, false, null, disjunct);  
             processSQL(queryFieldItems, hql, rootTable.getTableInfo(), distinct);
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             String msg = StringUtils.isBlank(ex.getLocalizedMessage()) ? getResourceString("QB_RUN_ERROR") : ex.getLocalizedMessage();
             //ex.printStackTrace();
         	UIRegistry.getStatusBar().setErrorMessage(msg, ex);
@@ -2183,7 +2158,15 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     	//the 'allowNulls' setting must be checked and left join used when it is true.
         return " left join ";
     }
-    
+
+    public Vector<Vector<Object>> getResultsCache() {
+        QBQueryForIdResultsHQL r = completedResults.get();
+        if (r != null) {
+            return r.getCache();
+        } else {
+            return null;
+        }
+    }
     /**
      * @param taxAlias
      * @return an alias for the acceptedParent joined table for table with alias taxAlias.
@@ -2374,7 +2357,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     }
     
     /**
-     * @param fqri
      * @param forSchemaExport
      * @return the formatter for the column displaying fqri's data.
      * Generally the default or user-defined formatter is used, except in special cases for
@@ -2669,7 +2651,65 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         }
     }
     
-    
+
+    public static void runQ4RS(final Integer queryId, final RecordSetIFace recordSet) {
+        TableTree tblTree = null;
+        Hashtable<String, TableTree> ttHash = null;
+        QueryParameterPanel qpp = null;
+        DataProviderSessionIFace sess = DataProviderFactory.getInstance().createSession();
+        SpQuery q = null;
+        try {
+            q = sess.get(SpQuery.class, queryId);
+            q.forceLoad(false);
+        } finally {
+            sess.close();
+        }
+        UsageTracker.incrUsageCount("QB.ViewRS." + q.getContextName());
+        QueryTask qt = (QueryTask )ContextMgr.getTaskByClass(QueryTask.class);
+        if (qt != null) {
+            Pair<TableTree, Hashtable<String, TableTree>> trees = qt.getTableTrees();
+            tblTree = trees.getFirst();
+            ttHash = trees.getSecond();
+        } else {
+            log.error("Could not find the Query task when when viewing " + recordSet.getName());
+            //blow up
+            throw new RuntimeException("Could not find the Query task when viewing " + recordSet.getName());
+        }
+        qpp = new QueryParameterPanel();
+        qpp.setQuery(q, tblTree, ttHash);
+        TableQRI rootQRI = null;
+        int cId = q.getContextTableId();
+        for (TableTree tt : ttHash.values()) {
+            if (cId == tt.getTableInfo().getTableId()) {
+                rootQRI = tt.getTableQRI();
+                break;
+            }
+        }
+        Vector<QueryFieldPanel> qfps = new Vector<QueryFieldPanel>(qpp.getFields());
+        for (int f = 0; f < qpp.getFields(); f++) {
+            qfps.add(qpp.getField(f));
+        }
+        HQLSpecs sql = null;
+
+       try {
+            //XXX Is it safe to assume that query is not an export query?
+            sql = QueryBldrPane.buildHQL(rootQRI, q.isSelectDistinct(), qfps, tblTree, recordSet,
+                    q.getSearchSynonymy() == null ? false : q.getSearchSynonymy(),
+                    false, null);
+            Properties props = new Properties();
+            props.put("is_qb_rs_view", Boolean.valueOf(true));
+            props.put("tab_text", recordSet.getName());
+            props.put("is_batch_edit", Boolean.valueOf(false));
+            processSQLStatic(qfps, sql, rootQRI.getTableInfo(), q.isSelectDistinct(), null, props);
+        } catch (Exception ex) {
+            String msg = StringUtils.isBlank(ex.getLocalizedMessage()) ? getResourceString("QB_RUN_ERROR") : ex.getLocalizedMessage();
+            UIRegistry.getStatusBar().setErrorMessage(msg, ex);
+            UIRegistry.writeTimedSimpleGlassPaneMsg(msg, Color.RED);
+            return;
+        }
+    }
+
+
     /**
      * @param report
      * 
@@ -3094,32 +3134,31 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         }
         return result;
     }
-    
+
+
+    protected void processSQL(final Vector<QueryFieldPanel> queryFieldItemsArg, final HQLSpecs hqlSpecs,
+                              final DBTableInfo rootTable, final boolean distinct) {
+        processSQLStatic(queryFieldItemsArg, hqlSpecs, rootTable, distinct, this, null);
+    }
+
     /**
      * @param queryFieldItemsArg
-     * @param sql
-     * @param params
      * @param rootTable
      * @param distinct
      */
     @SuppressWarnings("unchecked")
-    protected void processSQL(final Vector<QueryFieldPanel>    queryFieldItemsArg, 
-                              final HQLSpecs                   hqlSpecs,
-                              final DBTableInfo                rootTable, 
-                              final boolean                    distinct)
-    {
+    public static void processSQLStatic(final Vector<QueryFieldPanel> queryFieldItemsArg, final HQLSpecs hqlSpecs,
+                                   final DBTableInfo rootTable, final boolean distinct, final QueryBldrPane qbPane, final Properties props) {
         List<? extends ERTICaptionInfo> captions = getColumnInfo(queryFieldItemsArg, false, rootTable, false);
-        
+
         String iconName = distinct ? "BlankIcon" : rootTable.getClassObj().getSimpleName();
         int tblId = distinct ? -1 : rootTable.getTableId();
-        final QBQueryForIdResultsHQL qri = new QBQueryForIdResultsHQL(TITLEBAR_COLOR,
-                getResourceString("QB_SEARCH_RESULTS"),
-                iconName,
-                tblId,
-                this);
-        
+        final QBQueryForIdResultsHQL qri = new QBQueryForIdResultsHQL(TITLEBAR_COLOR, getResourceString("QB_SEARCH_RESULTS"),
+                iconName, tblId, qbPane);
         String hql = hqlSpecs.getHql();
-        qri.setCount(countOnly);
+        if (qbPane != null) {
+            qri.setCount(qbPane.countOnly);
+        }
         qri.setSQL(hql);
         qri.setParams(hqlSpecs.getArgs());
         qri.setSort(hqlSpecs.getSortElements());
@@ -3128,85 +3167,77 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         qri.setExpanded(true);
         qri.setHasIds(!distinct);
         boolean filterDups = hqlSpecs.isHasSynJoins();
-        if (!filterDups && distinct)
-        {
-        	for (ERTICaptionInfo caption : captions)
-        	{
-        		if (caption instanceof ERTICaptionInfoTreeLevel)
-        		{
-        			filterDups = true;
-        			break;
-        		}
-        		else if (caption instanceof ERTICaptionInfoRel)
-        		{
-        			RelationshipType relType = ((ERTICaptionInfoRel)caption).getRelationship().getType();
-        			if (relType.equals(RelationshipType.OneToMany) || relType.equals(RelationshipType.ManyToMany))
-        			{
-        				filterDups = true;
-        				break;
-        			}
-        		}
-        	}
+        if (!filterDups && distinct) {
+            for (ERTICaptionInfo caption : captions) {
+                if (caption instanceof ERTICaptionInfoTreeLevel) {
+                    filterDups = true;
+                    break;
+                } else if (caption instanceof ERTICaptionInfoRel) {
+                    RelationshipType relType = ((ERTICaptionInfoRel)caption).getRelationship().getType();
+                    if (relType.equals(RelationshipType.OneToMany) || relType.equals(RelationshipType.ManyToMany)) {
+                        filterDups = true;
+                        break;
+                    }
+                }
+            }
         }
         qri.setFilterDups(filterDups);
-        if (schemaMapping != null)
-        {
-        	qri.setMaxTableRows(ExportSchemaPreviewSize);
-        } else
-        {
-        	qri.setMaxTableRows(ExpressSearchTask.RESULTS_THRESHOLD);
+        if (qbPane != null && qbPane.schemaMapping != null) {
+            qri.setMaxTableRows(ExportSchemaPreviewSize);
+        } else {
+            qri.setMaxTableRows(ExpressSearchTask.RESULTS_THRESHOLD);
         }
-        runningResults.set(qri);
-        doneTime.set(-1);
-        
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run()
-            {
-                if (runningResults.get() != null && !runningResults.get().getCancelled())
-                {
+        if (qbPane != null) {
+            qbPane.runningResults.set(qri);
+            qbPane.doneTime.set(-1);
+            SwingUtilities.invokeLater(() -> {
+                if (qbPane.runningResults.get() != null && !qbPane.runningResults.get().getCancelled()) {
                     UIRegistry.getStatusBar().setText(UIRegistry.getResourceString("QB_SEARCHING"));
-                    searchBtn.setText(UIRegistry.getResourceString("QB_CANCEL")); 
-                    UIRegistry.getStatusBar().setIndeterminate(query.getName(), true);
+                    qbPane.searchBtn.setText(UIRegistry.getResourceString("QB_CANCEL"));
+                    UIRegistry.getStatusBar().setIndeterminate(qbPane.query.getName(), true);
                 }
-              //else the query got cancelled or crashed before this thread was executed
-            }
-        });
-        
+                //else the query got cancelled or crashed before this thread was executed
+            });
+        }
+
         new SwingWorker()
         {
             @Override
             public Object construct()
             {
-            	if (schemaMapping != null && !countOnly /*this means the duplicate msg won't appear when counts are done */)
-            	{
-            		if (!checkUniqueRecIds(hqlSpecs.getHql(), hqlSpecs.getArgs()).getFirst())
-            		{
-            			SwingUtilities.invokeLater(new Runnable() {
-
-							@Override
-							public void run()
-							{
-		            			UIRegistry.displayErrorDlg(UIRegistry.getResourceString("ExportPanel.DUPLICATE_KEYS_EXPORT"));
-							}
-            			});
-            			runningResults.set(null);
-            			resultsComplete();
-            			return null;
-            		}
-            	}
-                if (esrp == null)
-                {
+                if (qbPane != null) {
+                    if (qbPane.schemaMapping != null && !qbPane.countOnly /*this means the duplicate msg won't appear when counts are done */) {
+                        if (!checkUniqueRecIds(hqlSpecs.getHql(), hqlSpecs.getArgs()).getFirst()) {
+                            SwingUtilities.invokeLater(() -> UIRegistry.displayErrorDlg(UIRegistry.getResourceString("ExportPanel.DUPLICATE_KEYS_EXPORT")));
+                            qbPane.runningResults.set(null);
+                            qbPane.resultsComplete();
+                            return null;
+                        }
+                    }
+                }
+                if (qbPane != null) {
+                    if (qbPane.esrp == null) {
+                        CommandAction cmdAction = new CommandAction("Express_Search", "HQL", qri);
+                        cmdAction.setProperty("reuse_panel", true);
+                        cmdAction.setProperty("is_batch_edit", qbPane.task.getClass().equals(BatchEditTask.class));
+                        CommandDispatcher.dispatch(cmdAction);
+                    } else {
+                        qbPane.esrp.addSearchResults(qri);
+                    }
+                } else {
                     CommandAction cmdAction = new CommandAction("Express_Search", "HQL", qri);
-                    cmdAction.setProperty("reuse_panel", true); 
+                    cmdAction.setProperty("reuse_panel", true);
+                    if (props != null) {
+                        cmdAction.addProperties(props);
+                    }
                     CommandDispatcher.dispatch(cmdAction);
-                } else
-                {
-                    esrp.addSearchResults(qri);
                 }
                 return null;
             }
         }.start();
-        startTime.set(System.nanoTime());
+        if (qbPane != null) {
+            qbPane.startTime.set(System.nanoTime());
+        }
     }
 
     /**
@@ -3320,65 +3351,43 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      * @param saveAs
      * @return
      */
-    protected boolean saveQuery(final boolean saveAs)
-    {
+    protected boolean saveQuery(final boolean saveAs) {
      	boolean result = false;
-     	if (!canSave(true))
-     	{
+     	if (!canSave(true)) {
      		setSaveBtnEnabled(false);
      		return false;
      	}
      	
-    	//if (!isExportMapping)
-		//{
-			if (!query.isNamed() || saveAs)
-			{
-				if (!getQueryNameFromUser(saveAs))
-				{
-					return false;
-				}
-			}
-		//} else
-		//{
-		//	if (!query.isNamed() || saveAs)
-		//	{
-		//		if (!getExportMappingQueryName())
-		//		{
-		//			return false;
-		//		}
-		//	}		
-		//}
-    	
+        if (!query.isNamed() || saveAs) {
+            if (!getQueryNameFromUser(saveAs)) {
+                return false;
+            }
+        }
+
         UsageTracker.incrUsageCount("QB.SaveQuery." + query.getContextName());
         
         //This is necessary to indicate that a query has been changed when only field deletes have occurred.
         //If the query's timestampModified is not modified the schema export tool doesn't know the 
         //export schema needs to be rebuilt.
-        if (!saveAs && query.getId() != null)
-        {
+        if (!saveAs && query.getId() != null) {
         	int origCount = BasicSQLUtils.getCountAsInt("select count(*) from spqueryfield where spqueryid=" + query.getId());
-        	if (origCount > query.getFields().size())
-        	{
+        	if (origCount > query.getFields().size()) {
         		query.setTimestampModified(new Timestamp(System.currentTimeMillis()));
         	}
         }
         
         TableQRI tableQRI = (TableQRI) tableList.getSelectedValue();
-        if (tableQRI != null)
-        {
+        if (tableQRI != null) {
             short position = 0;
             
             Set<Integer> queryFldsWithoutPanels = new HashSet<Integer>();
-            for (SpQueryField qf : query.getFields())
-            {
+            for (SpQueryField qf : query.getFields()) {
             	//System.out.println(qf.getFieldName());
             	queryFldsWithoutPanels.add(qf.getId());
             }
             
-            for (QueryFieldPanel qfp : queryFieldItems)
-            {
-                if (qfp.getQueryField() != null)
-                {
+            for (QueryFieldPanel qfp : queryFieldItems) {
+                if (qfp.getQueryField() != null) {
                 	SpQueryField qf = qfp.getQueryField();
                 	queryFldsWithoutPanels.remove(qf.getId());
                 	qf.setPosition(position);
@@ -3388,93 +3397,71 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 }
             }
 
-            if (!checkCriteriaLengths(query))
-            {    	
+            if (!checkCriteriaLengths(query)) {
             	return false;
             }
 
             //Remove query fields for which panels could be created in order to prevent
             //repeat of missing fld message in getQueryFieldPanels() whenever this query is loaded.
-            for (Integer qfId : queryFldsWithoutPanels)
-            {
+            for (Integer qfId : queryFldsWithoutPanels) {
             	//this is real lame but should hardly ever need to be executed
-            	for (SpQueryField qf : query.getFields())
-            	{
-                    if (qfId != null && qf != null && qf.getId() != null && qfId.equals(qf.getId()))
-            		{
+            	for (SpQueryField qf : query.getFields()) {
+                    if (qfId != null && qf != null && qf.getId() != null && qfId.equals(qf.getId())) {
             			query.getFields().remove(qf);
             			break;
             		}
             	}
             }
 
-            if (query.getSpQueryId() == null || saveAs)
-            {
-                if (query.getSpQueryId() != null && saveAs)
-                {
+            if (query.getSpQueryId() == null || saveAs) {
+                if (query.getSpQueryId() != null && saveAs) {
                     query = cloneTheQuery();
-                    if (schemaMapping != null)
-                    {
+                    if (schemaMapping != null) {
                     	schemaMapping = cloneTheSchemaMapping(query);
                     }
-                    queryNavBtn.setEnabled(true);
+                    //queryNavBtn.setEnabled(true);
+                    queryNavBtn.setIsAccented(false);
                 }
                 
-                queryNavBtn = ((QueryTask) task).saveNewQuery(query, schemaMapping, false); // false tells it to
-                                                                                // disable the
-                                                                                // navbtn
-
+                queryNavBtn = ((QueryTask) task).saveNewQuery(query, schemaMapping, false);
+                QueryTask otherQueryTask =  (QueryTask)ContextMgr.getTaskByClass(task instanceof BatchEditTask ? QueryTask.class : BatchEditTask.class);
+                if (otherQueryTask != null) {
+                    WorkbenchTask wbTask = (WorkbenchTask)ContextMgr.getTaskByClass(WorkbenchTask.class);
+                    if (!(otherQueryTask instanceof BatchEditTask) || (wbTask != null && wbTask.getUpdateSchemaForTable(query.getContextTableId()) != null)) {
+                        otherQueryTask.addSavedQueryToSideBar(query, true);
+                    }
+                }
                 query.setNamed(true); //XXX this isn't getting persisted!!!!!!!!!
-//                if (query.getSpQueryId() != null && saveAs)
-//                {
-//                    try 
-//                    {
-//                    	this.setupUI();
-//                    } catch (QueryTask.QueryBuilderContextException e) {
-//                    	//It can't happen here. 
-//                    }
-//                }   
-                
+
                 SubPaneMgr.getInstance().renamePane(this, query.getName());
                 
                 return true;
             }
             
             
-            if (schemaMapping != null)
-            {
-            	//result =  DataModelObjBase.saveWithError(true, query, schemaMapping);
+            if (schemaMapping != null) {
             	result =  DataModelObjBase.saveWithError(true, schemaMapping, query);
-            }
-            else
-            {
+            } else {
             	result =  DataModelObjBase.saveWithError(true, query);
             }
-            if (result)
-            {
+            if (result) {
                 DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-            	try
-            	{
+            	try {
             		query = session.get(SpQuery.class, query.getId());
             		query.forceLoad(true);
             		schemaMapping = query.getMapping();
-            		if (schemaMapping != null)
-            		{
+            		if (schemaMapping != null) {
             			schemaMapping.forceLoad();
             		}
-            	}
-            	finally
-            	{
+            	} finally {
             		session.close();
             	}
             }
             return result;
         }
         //else
-        {
-            log.error("No Context selected!");
-            return false;
-        }
+        log.error("No Context selected!");
+        return false;
     }
 
     /**
@@ -3672,8 +3659,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 
 
     /**
-     * @param parentQRI
-     * @param tableTree
      * @param model
      */
     protected void createNewList(final TableQRI tblQRI, final DefaultListModel model)
@@ -3996,12 +3981,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         		return true;
         	//This allows CreatedByAgent and ModifiedByAgent to be expanded. But there is another check somewhere that prevents "loop backs":
         	//If you expand CreatedByAgent, in the resulting fields list CreatedByAgent is not expandable.
-        	} else if (/*alias.getParent() != null && alias.getParent().getTableInfo().getTableId() != Agent.getClassTableId() 
-        			&& */("modifiedByAgent".equals(alias.getField()) || "createdByAgent".equals(alias.getField()))) {
-        		return true;
-        	} else {
-        		return false;
-        	}
+        	} else /*alias.getParent() != null && alias.getParent().getTableInfo().getTableId() != Agent.getClassTableId()
+        			&& */
+                return ("modifiedByAgent".equals(alias.getField()) || "createdByAgent".equals(alias.getField()));
         }
         
         return false;
@@ -4181,7 +4163,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 JLabel colHeaderLbl = (JLabel)sp.getColumnHeader().getComponent(0);
                 if (item instanceof TableQRI)
                 {
-                    colHeaderLbl.setText(((TableQRI)item).getTitle());
+                    colHeaderLbl.setText(item.getTitle());
                 }
                 else
                 {
@@ -4289,8 +4271,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             		return new RelQRI((TableQRI) qri, relInfo);
             	}
                 throw new RuntimeException(QueryBldrPane.class.getName() + ": unable to determine relationship."
-                		+ ((TableQRI )qri).getTableTree().getField() + " <-> " 
-            			+ ((TableQRI )qri).getTableTree().getParent().getField());
+                		+ qri.getTableTree().getField() + " <-> "
+            			+ qri.getTableTree().getParent().getField());
             }
         }
         return null;
@@ -4380,10 +4362,10 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 					{
 						if (lb.isVisible())
 						{
-							for (int i = 0; i < ((DefaultListModel) lb
-									.getModel()).getSize(); i++)
+							for (int i = 0; i < lb
+									.getModel().getSize(); i++)
 							{
-								BaseQRI qriI = (BaseQRI )((DefaultListModel) lb.getModel()).getElementAt(i);
+								BaseQRI qriI = (BaseQRI ) lb.getModel().getElementAt(i);
 								if (qriI != null)
 								{
 									boolean match = qriI == qri;
@@ -4559,8 +4541,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     }
     
     /**
-     * @param kids
-     * @param field
      * @param tableIds
      * @param level
      * @return
@@ -4578,7 +4558,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         for (int k=0; k<tbl.getKids(); k++)
         {
             TableTree kid = tbl.getKid(k);
-            boolean checkKid = kid.isAlias() ? fixAliases(kid, ttHash) : true;
+            boolean checkKid = !kid.isAlias() || fixAliases(kid, ttHash);
             if (checkKid && (kid.getTableQRI().getRelationship() == null 
             		|| !kid.getTableQRI().getRelationship().isHidden()))
             {
@@ -5045,7 +5025,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     /**
      * Add QueryFieldItem to the list created with a TableFieldPair.
      * 
-     * @param fieldItem the TableFieldPair to be in the list
      */
     protected QueryFieldPanel addQueryFieldItem(final FieldQRI fieldQRI, final SpQueryField queryField, final boolean loading)
     {
@@ -5299,11 +5278,16 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         	}
         	SubPaneMgr.getInstance().removePane(qbResultPane);
         }
-        
+        ((QueryTask)(ContextMgr.getTaskByClass(QueryTask.class))).qBldrPaneShutDown();
+        BatchEditTask bet = (BatchEditTask)(ContextMgr.getTaskByClass(BatchEditTask.class));
+        if (bet != null) {
+            bet.qBldrPaneShutDown();
+        }
         query = null;
         if (queryNavBtn != null)
         {
-            queryNavBtn.setEnabled(true);
+            //queryNavBtn.setEnabled(true);
+            queryNavBtn.setIsAccented(false);
         }
         
         /*NOTE: runningResults or completedResults may still be pointing to this so
@@ -5551,6 +5535,40 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     public SpQuery getQuery()
     {
         return query;
+    }
+    
+    /**
+     * @return
+     */
+    public Pair<SpQuery,Map<SpQueryField, String>> getQueryForBatchEdit() {
+    	updateFieldPositions();
+    	return new Pair<SpQuery, Map<SpQueryField, String>>(getQuery(), getColumnHeaders());
+    }
+    
+    /**
+     * @return
+     */
+    protected Map<SpQueryField, String> getColumnHeaders() {
+    	Map<SpQueryField, String> result = new HashMap<SpQueryField, String>();
+        for (QueryFieldPanel qfp : queryFieldItems) {
+            if (qfp.getQueryField() != null) {
+            	result.put(qfp.getQueryField(), qfp.getLabel());
+            }
+        }
+    	return result;
+    }
+    /**
+     * 
+     */
+    protected void updateFieldPositions() {
+    	short position = 0;
+        for (QueryFieldPanel qfp : queryFieldItems) {
+            if (qfp.getQueryField() != null) {
+            	SpQueryField qf = qfp.getQueryField();
+            	qf.setPosition(position);
+            	position++;
+            }
+        }
     }
     
     /* (non-Javadoc)

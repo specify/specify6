@@ -985,7 +985,6 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
             obj.preparationAttrs.add(newPA);
             newPA.setPreparation(obj);
         }
-         
         obj.setGUID();
         return obj;
     }

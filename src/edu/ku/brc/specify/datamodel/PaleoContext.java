@@ -19,27 +19,17 @@
 */
 package edu.ku.brc.specify.datamodel;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.Vector;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import org.apache.log4j.Logger;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
-import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.Vector;
 
 /**
  * @author rods
@@ -59,6 +49,8 @@ import edu.ku.brc.specify.conversion.BasicSQLUtils;
     })
 public class PaleoContext extends DisciplineMember implements Cloneable
 {
+    protected static final Logger log = Logger.getLogger(PaleoContext.class);
+
     protected Integer paleoContextId;
     
     protected String paleoContextName;
@@ -161,6 +153,27 @@ public class PaleoContext extends DisciplineMember implements Cloneable
     }
 
     /**
+     * -
+     * @param originalObj
+     * @param deep  if true then copy and clone children
+     * @param session
+     * @return
+     */
+    @Override
+    public boolean initializeClone(DataModelObjBase originalObj, boolean deep, final DataProviderSessionIFace session) {
+        paleoContextId = null;
+        if (deep) {
+            log.error(getClass().getName() + ": initializeClone not supported when deep parameter is true.");
+            return false;
+        } else {
+            collectionObjects = new HashSet<>();
+            collectingEvents = new HashSet<>();
+            localities = new HashSet<>();
+            return true;
+        }
+    }
+
+    /**
      * @return the paleoContextName
      */
     @Column(name="PaleoContextName", unique=false, nullable=true, insertable=true, updatable=true, length=80)
@@ -193,7 +206,7 @@ public class PaleoContext extends DisciplineMember implements Cloneable
     }
     
     /**
-     * @param collectionObjects
+     * @param localities
      */
     public void setLocalities(Set<Locality> localities) 
     {

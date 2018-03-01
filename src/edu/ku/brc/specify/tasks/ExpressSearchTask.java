@@ -132,7 +132,10 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
     public static final  String GLOBAL_SEARCH       = "GLOBAL_SEARCH";
     
 
-    public static final int    RESULTS_THRESHOLD  = 20000;
+    public static final int    RESULTS_THRESHOLD_LARGE  = 50000;
+    public static final int    RESULTS_THRESHOLD_STD = 20000;
+    public static final int    RESULTS_THRESHOLD = 3500000000L <= Runtime.getRuntime().maxMemory()
+            ? RESULTS_THRESHOLD_LARGE : RESULTS_THRESHOLD_STD;
     public static final String EXPRESSSEARCH      = "Express_Search";
     public static final String CHECK_INDEXER_PATH = "CheckIndexerPath";
     
@@ -162,6 +165,8 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
     
     
     protected ESResultsSubPane              queryResultsPane      = null;
+    protected ESResultsSubPane              batchEditResultsPane  = null;
+    protected ESResultsSubPane              rsQbResultsPane       = null;
     protected SIQueryForIdResults           searchWarningsResults = null;
     protected JStatusBar                    statusBar             = null;
     protected boolean                       doingDebug            = false;
@@ -173,13 +178,9 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
     public ExpressSearchTask()
     {
         super(EXPRESSSEARCH, getResourceString(EXPRESSSEARCH));
-        
         iconName = "Search";
-        
         closeOnLastPane = true;
-
         CommandDispatcher.register(EXPRESSSEARCH, this);
-        
         instance = this;
     }
 
@@ -766,27 +767,32 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
      * 
      * @param hqlStr the HQL query string
      */
-    protected void doHQLQuery(final QueryForIdResultsIFace  results, final Boolean reusePanel)
-    {
-        if (reusePanel == null || !reusePanel)
-        {
+    protected void doHQLQuery(final QueryForIdResultsIFace  results, final Boolean reusePanel, final Boolean isBatchEdit,
+                              final Boolean isRSView,
+                              final String tabText) {
+        if (reusePanel == null || !reusePanel) {
             ESResultsSubPane expressSearchPane = new ESResultsSubPane(getResourceString("ES_QUERY_RESULTS"), this, true);
             addSubPaneToMgr(expressSearchPane);
             expressSearchPane.addSearchResults(results);
             
-        } else
-        {
-            if (queryResultsPane == null)
-            {
-                //queryResultsPane = new ESResultsSubPane(getResourceString("ES_QUERY_RESULTS"), this, true);
-                queryResultsPane = new QBResultsSubPane(getResourceString("ES_QUERY_RESULTS"), this, true);
-                queryResultsPane.setIcon(IconManager.getIcon("Query", IconManager.IconSize.Std16));
-                
-            } else
-            {
-                queryResultsPane.reset();
+        } else {
+            Boolean isRs = isRSView == null ? false : true;
+            ESResultsSubPane pane = isRs ? queryResultsPane : isBatchEdit ? batchEditResultsPane : queryResultsPane;
+            if (pane == null) {
+                String txt = isRs ? tabText : getResourceString("ES_QUERY_RESULTS");
+                pane = new QBResultsSubPane(txt, this, true);
+                pane.setIcon(IconManager.getIcon(isRs ? "RecordSet" : isBatchEdit ? "BatchEdit" : "Query", IconManager.IconSize.Std16));
+                if (isBatchEdit) {
+                    batchEditResultsPane = pane;
+                } else if (isRs) {
+                    rsQbResultsPane = pane;
+                } else {
+                    queryResultsPane = pane;
+                }
+            } else {
+                pane.reset();
             }
-            queryResultsPane.addSearchResults(results);
+            pane.addSearchResults(results);
         }
     }
 
@@ -960,7 +966,8 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
             
             if (cmdAction.isAction("HQL"))
             {
-                doHQLQuery((QueryForIdResultsIFace)cmdAction.getData(), (Boolean)cmdAction.getProperty("reuse_panel"));
+                doHQLQuery((QueryForIdResultsIFace)cmdAction.getData(), (Boolean)cmdAction.getProperty("reuse_panel"),
+                        (Boolean)cmdAction.getProperty("is_batch_edit"), (Boolean)cmdAction.getProperty("is_qb_rs_view"), (String)cmdAction.getProperty("tab_text"));
                 
             } else if (cmdAction.isAction("ExpressSearch"))
             {
@@ -1005,9 +1012,10 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
     @Override
     public void subPaneRemoved(SubPaneIFace subPane)
     {
-        if (subPane == queryResultsPane)
-        {
+        if (subPane == queryResultsPane) {
             queryResultsPane = null;
+        } else if (subPane == batchEditResultsPane) {
+            batchEditResultsPane = null;
         }
         super.subPaneRemoved(subPane);
     }
@@ -1468,92 +1476,62 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
             searchBox.resetSearchIcon();
         }
     }
-    
-    /**
-     * @param results
-     * @return
-     */
-    protected boolean isQueryBuilderResults(final QueryForIdResultsIFace results)
-    {
-    	//return queryResultsPane != null && results != null && queryResultsPane.contains(results);
-        /* strange, seemingly windows-only issue (see doSearchComplete()) also arises when
-         * the results have not yet been added to the queryResultsPane when doSearchComplete() is executed
-         * (same reason esrto.hasResults() in doSearchComplete() returns false),
-         * so must check type of results.
-         */
-    	return queryResultsPane != null && results instanceof QBQueryForIdResultsHQL;
+
+    protected ESResultsSubPane getQResultsPane(final QueryForIdResultsIFace results) {
+        //see earlier revision for comments if problems arise with contains(results) calls.
+        if (queryResultsPane != null && results != null && queryResultsPane.contains(results)) {
+            return queryResultsPane;
+        } else if (batchEditResultsPane != null && results != null && batchEditResultsPane.contains(results)) {
+            return batchEditResultsPane;
+        } else if (rsQbResultsPane != null && results != null && rsQbResultsPane.contains(results)) {
+            return rsQbResultsPane;
+        } else {
+            return null;
+        }
     }
     /**
      * @param cmdAction
      */
-    protected void doSearchComplete(final CommandAction cmdAction)
-    {
-        if (statusBar != null)
-        {
+    protected void doSearchComplete(final CommandAction cmdAction) {
+        if (statusBar != null) {
             statusBar.setProgressDone(EXPRESSSEARCH);
-            if (cmdAction.getData() instanceof JPAQuery)
-            {
+            if (cmdAction.getData() instanceof JPAQuery) {
                 QueryForIdResultsIFace   results = (QueryForIdResultsIFace)cmdAction.getProperty("QueryForIdResultsIFace");
                 ESResultsTablePanelIFace esrto   = (ESResultsTablePanelIFace)cmdAction.getProperty("ESResultsTablePanelIFace");
-                
-                if (!isQueryBuilderResults(results) && esrto != null && !esrto.hasResults())
-                {
-                /* hmmmmmm.... A strange, seemingly windows-only issue has been occurring where
-                 * the propertyChange event that updates the table used in the esrto.hasResults() call
-                 * has not finished when the if statement above is executed, so esrto.hasResults() incorrectly
-                 * returns false. I have added the !isQueryBuilderResults() condition because so far this problem has only
-                 * occurred for the QueryBuilder and I don't know if the method for determining 'hasResults()'
-                 * in the QueryBuilder results block below are applicable for all types of results.
-                 * 
-                 * We occasionally see this on a Virtual machine, more investigation is needed.
-                 * 
-                 */
-                    //displayNoResults("QB_NO_RESULTS");
+
+                ESResultsSubPane qResults = getQResultsPane(results);
+                if (qResults == null && esrto != null && !esrto.hasResults()) {
                     results.complete();
-                    UIRegistry.showLocalizedError("QB_NO_RESULTS_UNK");
+                    displayNoResults("QB_NO_RESULTS");
                     return;
                 }
 
                 //Only execute this block for QueryBuilder results...
-                if (isQueryBuilderResults(results))
-                {
+                if (qResults != null) {
                     int     rowCount = ((JPAQuery) cmdAction.getData()).getDataObjects().size();
                     boolean isError  = ((JPAQuery) cmdAction.getData()).isInError();
                     boolean isCancelled = ((JPAQuery) cmdAction.getData()).isCancelled();
                     boolean showPane = !isError && !isCancelled && rowCount > 0;
                     //print status bar msg if error or rowCount == 0, 
                     //else show the queryResults pane if rowCount > 0
-                    int index = SubPaneMgr.getInstance().indexOfComponent(queryResultsPane.getUIComponent());
-                    if (index == -1)
-                    {
-                        if (showPane)
-                        {
-                            addSubPaneToMgr(queryResultsPane);
+                    int index = SubPaneMgr.getInstance().indexOfComponent(qResults.getUIComponent());
+                    if (index == -1) {
+                        if (showPane) {
+                            addSubPaneToMgr(qResults);
                         }
-                    }
-                    else
-                    {
-                        if (showPane)
-                        {
-                            SubPaneMgr.getInstance().showPane(queryResultsPane);
-                        }
-                        else
-                        {
-                            SubPaneMgr.getInstance().removePane(queryResultsPane, false);
+                    } else {
+                        if (showPane) {
+                            SubPaneMgr.getInstance().showPane(qResults);
+                        } else {
+                            SubPaneMgr.getInstance().removePane(qResults, false);
                         }
                     }
                     results.complete();
-                    if (isError)
-                    {
+                    if (isError) {
                         statusBar.setErrorMessage(getResourceString("QB_RUN_ERROR"));
-                    }
-                    
-                    else if (rowCount == 0)
-                    {
+                    } else if (rowCount == 0) {
                         displayNoResults("QB_NO_RESULTS");
-                    }
-                    else
-                    {
+                    } else {
                         statusBar.setText(null);
                     }
                 }

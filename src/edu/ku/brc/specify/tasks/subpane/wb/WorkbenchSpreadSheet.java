@@ -12,19 +12,22 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
+import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
+import net.sf.jasperreports.engine.export.Grid;
 import org.apache.commons.lang.StringUtils;
-import org.jdesktop.swingx.sort.TableSortController;
 import org.jdesktop.swingx.table.TableColumnExt;
 
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
+import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.ui.TableSearcher;
 import edu.ku.brc.ui.TableSearcherCell;
@@ -210,33 +213,26 @@ public class WorkbenchSpreadSheet extends SpreadSheet
      * @param colIdx
      * @return a comparator suitable for the data type of the field the column at colIdx maps to.
      */
-    protected Comparator<String> getComparatorForCol(final int colIdx)
-    {
+    protected Comparator<String> getComparatorForCol(final int colIdx) {
     	GridTableHeader mapping = ((GridTableModel )model).getColMapping(colIdx);
-    	Class<?> dataClass = mapping.getDataType(); //WorkbenchTask.getDataType(mapping);
-    	if (dataClass.equals(Calendar.class))
-    	{
+    	Class<?> dataClass = WorkbenchTask.getDataType((WorkbenchTemplateMappingItem) mapping, workbenchPaneSS.isUpdateDataSet());
+    	if (dataClass.equals(Calendar.class)) {
     		return new DateColumnComparator();
     	}
-    	if (dataClass.equals(Boolean.class))
-    	{
+    	if (dataClass.equals(Boolean.class)) {
     		return new BooleanColumnComparator();
     	}
-    	if (isGeoRefMapping(mapping))
-    	{
+    	if (isGeoRefMapping(mapping)) {
     		return new GeoRefColumnComparator();
     	}
-    	if (Number.class.isAssignableFrom(dataClass))
-    	{
+    	if (Number.class.isAssignableFrom(dataClass)) {
     		return new NumericColumnComparator();
     	}
-    	if (mapping.getFieldName().equalsIgnoreCase("catalognumber")  && mapping.getTableName().equalsIgnoreCase("collectionobject"))
-    	{
+    	if (mapping.getFieldName().equalsIgnoreCase("catalognumber")  && mapping.getTableName().equalsIgnoreCase("collectionobject")) {
     		DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(1);
     		DBFieldInfo fi = ti.getFieldByName("catalogNumber");
     		UIFieldFormatterIFace format = fi.getFormatter();
-    		if (format != null && format.isNumeric())
-    		{
+    		if (format != null && format.isNumeric()) {
     			return new NumericColumnComparator();
     		}
     	}
@@ -275,47 +271,72 @@ public class WorkbenchSpreadSheet extends SpreadSheet
 	 * @see edu.ku.brc.ui.tmanfe.SpreadSheet#createMenuForSelection(java.awt.Point)
 	 */
 	@Override
-	protected JPopupMenu createMenuForSelection(final Point pnt) 
-	{
+	protected JPopupMenu createMenuForSelection(final Point pnt) {
 		JPopupMenu result = super.createMenuForSelection(pnt);
 		final int modelCol = convertColumnIndexToModel(columnAtPoint(pnt));
-        if (getSelectedColumnCount() == 1 && getModel().getColumnClass(modelCol).equals(String.class))
-        {
+        if (getSelectedColumnCount() == 1 && getModel().getColumnClass(modelCol).equals(String.class)) {
             final int[] rows = getSelectedRowModelIndexes();
-            if (rows.length > 1 && StringUtils.isNotBlank((String )getValueAt(rows[0], modelCol)))
-            {
+            if (rows.length > 1 && StringUtils.isNotBlank((String )getValueAt(rows[0], modelCol))) {
              	final UIFieldFormatterIFace fldFormatter = workbenchPaneSS.getFormatterForCol(modelCol);
-             	if (fldFormatter != null && fldFormatter.isIncrementer())
-             	{
+             	if (fldFormatter != null && fldFormatter.isIncrementer()) {
              		int insertPosition = -1;
-             		for (int i = 0; i < result.getComponentCount(); i++)
-             		{
+             		for (int i = 0; i < result.getComponentCount(); i++) {
              			Component c = result.getComponent(i);
              			if (c instanceof JMenuItem 
-             					&& ((JMenuItem)c).getText().equals(UIRegistry.getResourceString("SpreadSheet.FillDown")))
-             			{
+             					&& ((JMenuItem)c).getText().equals(UIRegistry.getResourceString("SpreadSheet.FillDown"))) {
              				insertPosition = i;
              				break;
              			}
              					
              		}
              		JMenuItem mi = new JMenuItem(UIRegistry.getResourceString("WorkbenchSpreadSheet.FillDownIncrement"));
-             		if (insertPosition == -1)
-             		{
+             		if (insertPosition == -1) {
              			result.add(mi);
-             		} else
-             		{
+             		} else {
              			result.insert(mi, insertPosition);
              		}
              		mi.addActionListener(new ActionListener() {
-             			public void actionPerformed(ActionEvent ae)
-             			{
+             			public void actionPerformed(ActionEvent ae) {
              				((GridTableModel )model).fillAndIncrement(modelCol, rows[0], rows, fldFormatter);
              				popupMenu.setVisible(false);
              			}
              		});
-             	}
-            }
+             	} 
+            }             	
+            List<WorkbenchDataItem> items = workbenchPaneSS.getDataItems(rows, modelCol);
+            int stat = WorkbenchDataItem.VAL_OK;
+         	if (items.size() > 0 && items.get(0) != null) {
+         		stat = items.get(0).getEditorValidationStatus();
+         	}
+         	if ((stat & WorkbenchDataItem.VAL_EDIT) != 0 || (stat & WorkbenchDataItem.VAL_ERROR) != 0) {
+         		//not forcing all selected cells to be edited.
+         		//but first cell IS required to be edited.
+         		JMenuItem mi = new JMenuItem(UIRegistry.getResourceString("WorkbenchSpreadSheet.RestoreOriginalValues"));
+         		int insertPosition = -1;
+         		for (int i = 0; i < result.getComponentCount(); i++) {
+         			Component c = result.getComponent(i);
+         			if (c instanceof JMenuItem 
+         					&& ((JMenuItem)c).getText().equals(UIRegistry.getResourceString("SpreadSheet.FillDown"))) {
+         				insertPosition = i;
+         				break;
+         			}
+         					
+         		}
+         		if (insertPosition == -1) {
+         			result.add(mi, 0);
+         		} else {
+         			result.insert(mi, insertPosition);
+         		}
+         		mi.addActionListener(new ActionListener() {
+         			public void actionPerformed(ActionEvent ae) {
+         				workbenchPaneSS.restoreOriginalValues(items);
+						workbenchPaneSS.validateRows(rows);
+         				popupMenu.setVisible(false);
+						((GridTableModel)model).fireDataChanged();
+         			}
+         		});             		
+         	}
+
         }
 		return result;
 	}

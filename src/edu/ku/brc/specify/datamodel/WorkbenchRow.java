@@ -826,7 +826,7 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
                 	wbdi.setRequired(true);
                 }
                 items.put(inx, wbdi);
-                workbenchDataItems.add(wbdi);
+                //workbenchDataItems.add(wbdi);
             }
         }
         
@@ -840,13 +840,9 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
             {
                 updateGeoRefTextFldsIfNecessary(wbdi.getWorkbenchTemplateMappingItem());
             }
-            if (wbdi.getValidationStatus() == WorkbenchDataItem.VAL_ERROR)
+            if ((wbdi.getValidationStatus() & WorkbenchDataItem.VAL_ERROR) != 0)
             {
-                wbdi.setValidationStatus(WorkbenchDataItem.VAL_ERROR_EDIT);
-            }
-            else if (wbdi.getValidationStatus() == WorkbenchDataItem.VAL_OK)
-            {
-                wbdi.setValidationStatus(WorkbenchDataItem.VAL_NONE);
+                wbdi.setValidationStatus((short)(wbdi.getValidationStatus() | WorkbenchDataItem.VAL_EDIT));
             }
         }
         return wbdi;
@@ -855,31 +851,22 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
     /**
      * @param wbdi
      */
-    public void updateGeoRefTextFldsIfNecessary(final WorkbenchTemplateMappingItem map)
-    {
-        if (map.getTableName().equals("locality"))
-        {
-            
+    public void updateGeoRefTextFldsIfNecessary(final WorkbenchTemplateMappingItem map) {
+        if (map.getTableName().equals("locality")) {
             if (map.getFieldName().equalsIgnoreCase("latitude1") || map.getFieldName().equalsIgnoreCase("latitude2")
-                    || map.getFieldName().equalsIgnoreCase("longitude1") || map.getFieldName().equalsIgnoreCase("longitude2"))
-            {
-                for (WorkbenchDataItem geoFld : getGeoCoordFlds())
-                {
+                    || map.getFieldName().equalsIgnoreCase("longitude1") || map.getFieldName().equalsIgnoreCase("longitude2")) {
+                for (WorkbenchDataItem geoFld : getGeoCoordFlds()) {
                     WorkbenchTemplateMappingItem geoMap = geoFld.getWorkbenchTemplateMappingItem();
-                    if (geoMap.getFieldName().equalsIgnoreCase("latitude1"))
-                    {
+                    if (geoMap.getFieldName().equalsIgnoreCase("latitude1")) {
                         setLat1Text(getLatString(geoFld.getCellData()));
                     }
-                    else if (geoMap.getFieldName().equalsIgnoreCase("latitude2"))
-                    {
+                    else if (geoMap.getFieldName().equalsIgnoreCase("latitude2")) {
                         setLat2Text(getLatString(geoFld.getCellData()));
                     }
-                    else if (geoMap.getFieldName().equalsIgnoreCase("longitude1"))
-                    {
+                    else if (geoMap.getFieldName().equalsIgnoreCase("longitude1")) {
                         setLong1Text(getLongString(geoFld.getCellData()));
                     }
-                    else if (geoMap.getFieldName().equalsIgnoreCase("longitude2"))
-                    {
+                    else if (geoMap.getFieldName().equalsIgnoreCase("longitude2")) {
                         setLong2Text(getLongString(geoFld.getCellData()));
                     }
                 }
@@ -894,14 +881,11 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
      * @return data items that map to latitude1/2 or longitude1/2. 
      */
     @Transient
-    protected List<WorkbenchDataItem> getGeoCoordFlds()
-    {
+    public List<WorkbenchDataItem> getGeoCoordFlds() {
         LinkedList<WorkbenchDataItem> result = new LinkedList<WorkbenchDataItem>();
-        for (WorkbenchDataItem wbdi : workbenchDataItems)
-        {
+        for (WorkbenchDataItem wbdi : workbenchDataItems) {
             WorkbenchTemplateMappingItem map = wbdi.getWorkbenchTemplateMappingItem();
-            if (map.getTableName().equals("locality")) 
-            {
+            if (map.getTableName().equals("locality")) {
                 if (map.getFieldName().equalsIgnoreCase("latitude1") || map.getFieldName().equalsIgnoreCase("latitude2")
                         || map.getFieldName().equalsIgnoreCase("longitude1") || map.getFieldName().equalsIgnoreCase("longitude2"))
                 result.add(wbdi);

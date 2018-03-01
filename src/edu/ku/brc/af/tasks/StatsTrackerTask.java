@@ -149,6 +149,7 @@ public class StatsTrackerTask extends BaseTask
      * @param doExit call exit
      * @param doSilent don't show any UI while sending stats
      * @param doSendDoneEvent send a STATS_SEND_DONE command on the UI thread.
+     * @param doInBackground if false, wait till send is done before continuing -- necessary when switching collections.
      */
     public void sendStats(final boolean doExit, final boolean doSilent, final boolean doSendDoneEvent)
     {
@@ -210,7 +211,15 @@ public class StatsTrackerTask extends BaseTask
                     worker.addPropertyChangeListener(pcl);
                 }
             }
-            worker.execute();
+            if (!doSilent) {
+                worker.execute();
+            } else {
+                try {
+                    sendStats();
+                } catch (Exception e) {
+                    log.error(e);
+                }
+            }
         }
     }
     
@@ -477,9 +486,15 @@ public class StatsTrackerTask extends BaseTask
             postParams.add(new NameValuePair("id", installID)); //$NON-NLS-1$
     
             //get ISA number
-            Collection collection = AppContextMgr.getInstance().hasContext() ?
-            			AppContextMgr.getInstance().getClassObject(Collection.class) :
-            			null;
+            Collection collection = null;
+            try {
+                collection = AppContextMgr.getInstance().hasContext() ?
+                        AppContextMgr.getInstance().getClassObject(Collection.class) :
+                        null;
+            } catch (Exception ex) {
+                //in case context has been messed with by collection change proceeding in parallel with stats send
+                collection = null;
+            }
             String isaNumber = collection == null ? "N/A" : collection.getIsaNumber();
             try 
             {

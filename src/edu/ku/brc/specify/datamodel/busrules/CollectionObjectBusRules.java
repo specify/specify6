@@ -19,51 +19,16 @@
 */
 package edu.ku.brc.specify.datamodel.busrules;
 
-import static edu.ku.brc.ui.UIHelper.createLabel;
-import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
-import static edu.ku.brc.ui.UIRegistry.getResourceString;
-import static edu.ku.brc.ui.UIRegistry.showLocalizedMsg;
-
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Frame;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.sql.Timestamp;
-import java.util.List;
-import java.util.Vector;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.SoftBevelBorder;
-
-import org.apache.commons.lang.StringUtils;
-
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.prefs.AppPreferences;
-import edu.ku.brc.af.ui.forms.BusinessRulesIFace;
-import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
-import edu.ku.brc.af.ui.forms.FormDataObjIFace;
-import edu.ku.brc.af.ui.forms.FormViewObj;
+import edu.ku.brc.af.ui.forms.*;
 import edu.ku.brc.af.ui.forms.FormViewObj.FVOFieldInfo;
-import edu.ku.brc.af.ui.forms.MultiView;
-import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.persist.AltViewIFace;
 import edu.ku.brc.af.ui.forms.persist.FormCellFieldIFace;
@@ -73,33 +38,32 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
-import edu.ku.brc.specify.datamodel.Accession;
-import edu.ku.brc.specify.datamodel.Agent;
-import edu.ku.brc.specify.datamodel.CollectingEvent;
-import edu.ku.brc.specify.datamodel.Collection;
-import edu.ku.brc.specify.datamodel.CollectionObject;
-import edu.ku.brc.specify.datamodel.CollectionObjectAttribute;
+import edu.ku.brc.specify.datamodel.*;
 import edu.ku.brc.specify.datamodel.Container;
-import edu.ku.brc.specify.datamodel.DeaccessionPreparation;
-import edu.ku.brc.specify.datamodel.Determination;
-import edu.ku.brc.specify.datamodel.Discipline;
-import edu.ku.brc.specify.datamodel.LoanPreparation;
-import edu.ku.brc.specify.datamodel.PaleoContext;
-import edu.ku.brc.specify.datamodel.PrepType;
-import edu.ku.brc.specify.datamodel.Preparation;
-import edu.ku.brc.specify.datamodel.Project;
-import edu.ku.brc.specify.datamodel.RecordSet;
-import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.plugins.SeriesProcCatNumPlugin;
 import edu.ku.brc.specify.tasks.RecordSetTask;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
-import edu.ku.brc.ui.CommandAction;
-import edu.ku.brc.ui.CommandDispatcher;
-import edu.ku.brc.ui.CustomDialog;
-import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.*;
 import edu.ku.brc.ui.dnd.SimpleGlassPane;
 import edu.ku.brc.util.Pair;
+import org.apache.commons.lang.StringUtils;
+
+import javax.swing.*;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.SoftBevelBorder;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.sql.Timestamp;
+import java.util.List;
+import java.util.Vector;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import static edu.ku.brc.ui.UIHelper.createLabel;
+import static edu.ku.brc.ui.UIRegistry.*;
 
 /**
  * @author rods
@@ -1091,13 +1055,15 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                 try 
                 {
                 	carryForwardCo = session.get(CollectionObject.class, ((CollectionObject)formViewObj.getDataObj()).getId());
+                	
                 } finally
                 {
                 	session.close();
                 }
+                Agent modifiedBy = carryForwardCo.getModifiedByAgent();
+                carryForwardCo = null;
                 
-                
-                Thread.sleep(666); //Perhaps this is unnecessary, but it seems
+                Thread.sleep(AppPreferences.getLocalPrefs().getInt("BatchEntryNapTimeMSecs", 666)); //Perhaps this is unnecessary, but it seems
                 //to prevent sporadic "illegal access to loading collection" hibernate errors.
                 try
                 {
@@ -1111,7 +1077,8 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                             //Collection doesn't get set in co.initialize(), or carryForward, but it needs to be set.
                             co.setCollection(AppContextMgr.getInstance().getClassObject(Collection.class));
                             //ditto, but doesn't so much need to be set
-                            co.setModifiedByAgent(carryForwardCo.getModifiedByAgent()); 
+                            //co.setModifiedByAgent(carryForwardCo.getModifiedByAgent()); 
+                            co.setModifiedByAgent(modifiedBy);
                             
                             co.setCatalogNumber(currentCat);
                             formViewObj.setNewObject(co);
@@ -1213,9 +1180,14 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
         		SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
-						CommandAction cmd = new CommandAction(RecordSetTask.RECORD_SET, RecordSetTask.ADD_TO_NAV_BOX);
-						cmd.setData(batchRS);
-						CommandDispatcher.dispatch(cmd);
+                        RecordSetTask rsTsk = (RecordSetTask) ContextMgr.getTaskByClass(RecordSetTask.class);
+                            if (rsTsk != null) {
+                                rsTsk.addRecordSetToNavBox(batchRS);
+                            } else {
+                                CommandAction cmd = new CommandAction(RecordSetTask.RECORD_SET, RecordSetTask.ADD_TO_NAV_BOX);
+                                cmd.setData(batchRS);
+                                CommandDispatcher.dispatch(cmd);
+                            }
 					}
         		});
         	}

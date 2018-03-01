@@ -61,6 +61,8 @@ public class AttachmentUtils
         mimeMap = (MimetypesFileTypeMap)FileTypeMap.getDefaultFileTypeMap();
         mimeMap.addMimeTypes("image/tif    tif");
         mimeMap.addMimeTypes("image/tif    TIF");
+        mimeMap.addMimeTypes("image/tif    tiff");
+        mimeMap.addMimeTypes("image/tif    TIFF");
         mimeMap.addMimeTypes("image/jpeg   jpg");
         mimeMap.addMimeTypes("image/jpeg   JPG");
         mimeMap.addMimeTypes("image/jpeg   jpeg");

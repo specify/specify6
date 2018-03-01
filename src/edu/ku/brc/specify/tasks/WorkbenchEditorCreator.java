@@ -23,6 +23,7 @@ import java.util.Set;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 
+import edu.ku.brc.af.core.Taskable;
 import org.apache.log4j.Logger;
 
 import com.google.common.base.Function;
@@ -43,12 +44,14 @@ abstract class WorkbenchEditorCreator
     final DataProviderSessionIFace                      session;
     final boolean                                       showImageView;
     final BaseTask                                      thisTask;
+    final Taskable                                      srcTask;
     private final boolean                               isReadOnly;
-    private final SwingWorker<WorkbenchPaneSS, Integer> worker;    
-    
+    private final SwingWorker<WorkbenchPaneSS, Integer> worker;
+    private final boolean isUpdate;
+
 	public WorkbenchEditorCreator(Workbench workbench,
 			DataProviderSessionIFace session, boolean showImageView,
-			BaseTask thisTask, boolean isReadOnly)
+			BaseTask thisTask, boolean isReadOnly, Taskable srcTask, boolean isUpdate)
 	{
 		this.workbench = workbench;
 
@@ -57,6 +60,8 @@ abstract class WorkbenchEditorCreator
 		this.showImageView = showImageView;
 		this.thisTask = thisTask;
 		this.isReadOnly = isReadOnly;
+		this.srcTask = srcTask;
+		this.isUpdate = isUpdate;
 		
 		worker = new SwingWorker<WorkbenchPaneSS, Integer>()
 		{
@@ -145,7 +150,7 @@ abstract class WorkbenchEditorCreator
              //force load the workbench here instead of calling workbench.forceLoad() because
              //is so time-consuming and needs progress bar.
              //workbench.getWorkbenchTemplate().forceLoad();
-             workbench.getWorkbenchTemplate().checkMappings(WorkbenchTask.getDatabaseSchema());
+             //workbench.getWorkbenchTemplate().checkMappings(WorkbenchTask.getDatabaseSchema());
              //UIRegistry.getStatusBar().incrementValue(workbench.getName());
              int count = 0;
              // Adjust paint increment for number of rows in DataSet
@@ -207,8 +212,8 @@ abstract class WorkbenchEditorCreator
              }
              
              workbenchPane = new WorkbenchPaneSS(workbench.getName(), thisTask, workbench, 
-                     showImageView, isReadOnly);
-             
+                     showImageView, isReadOnly, isUpdate);
+             workbenchPane.setSrcTask(srcTask);
              if (convertedAnImage)
              {
                  Component topFrame = UIRegistry.getTopWindow();

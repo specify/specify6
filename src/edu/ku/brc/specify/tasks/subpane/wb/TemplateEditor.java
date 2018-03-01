@@ -32,6 +32,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -149,6 +150,7 @@ public class TemplateEditor extends CustomDialog
 
 	protected ImportDataFileInfo							dataFileInfo		= null;
 	protected WorkbenchTemplate								workbenchTemplate	= null;
+	protected String                                        schemaName          = null;
 	protected DBTableIdMgr									databaseSchema;
 	protected List<TreeDefItemStandardEntry>				taxRanks			= null;
 
@@ -171,13 +173,14 @@ public class TemplateEditor extends CustomDialog
      * @param dlg the dialog this will be housed into
      * @param dataFileInfo the information about the data file.
      */
-    public TemplateEditor(final Frame frame, final String title, final ImportDataFileInfo dataFileInfo) throws Exception
+    public TemplateEditor(final Frame frame, final String title, final ImportDataFileInfo dataFileInfo, final String schemaName) throws Exception
     {
         super(frame, title, true, OKCANCELHELP, null);
         
         this.dataFileInfo    = dataFileInfo;
         this.isMappedToAFile = dataFileInfo != null;
         this.isEditMode      = false;
+        this.schemaName      = schemaName;
         
         helpContext = dataFileInfo == null ? "WorkbenchNewMapping" : "WorkbenchEditMapping";
         
@@ -190,13 +193,14 @@ public class TemplateEditor extends CustomDialog
      * @param dlg the dialog this will be housed into
      * @param dataFileInfo the information about the data file.
      */
-    public TemplateEditor(final Frame frame, final String title, final WorkbenchTemplate wbTemplate) throws Exception
+    public TemplateEditor(final Frame frame, final String title, final WorkbenchTemplate wbTemplate, final String schemaName) throws Exception
     {
         super(frame, title, true, OKCANCELHELP, null);
         
         this.workbenchTemplate = wbTemplate;
         this.isMappedToAFile   = StringUtils.isNotEmpty(wbTemplate.getSrcFilePath());
         this.isEditMode        = this.workbenchTemplate != null;
+        this.schemaName        = schemaName;
         
         helpContext = "WorkbenchEditMapping";
         
@@ -214,7 +218,9 @@ public class TemplateEditor extends CustomDialog
     {
         super.createUI();
                 
-        databaseSchema = WorkbenchTask.getDatabaseSchema();
+        //databaseSchema = WorkbenchTask.getDatabaseSchema();
+        //databaseSchema = WorkbenchTask.buildDatabaseSchema("locality_update_wb_datamodel");
+        databaseSchema = schemaName == null ? WorkbenchTask.getDatabaseSchema(false) : WorkbenchTask.buildDatabaseSchema(schemaName);
         
         int disciplineeId = AppContextMgr.getInstance().getClassObject(Discipline.class).getDisciplineId();
         SchemaI18NService.getInstance().loadWithLocale(SpLocaleContainer.WORKBENCH_SCHEMA, 
@@ -228,7 +234,8 @@ public class TemplateEditor extends CustomDialog
         Vector<TableInfo> tableInfoList = new Vector<TableInfo>();
         for (DBTableInfo ti : databaseSchema.getTables())
         {
-            if (StringUtils.isNotEmpty(ti.toString()))
+            if (Arrays.binarySearch(WorkbenchTask.restrictedTables, ti.getName().toLowerCase()) < 0 
+            		&& StringUtils.isNotEmpty(ti.toString()))
             {
             	TableInfo tableInfo = new TableInfo(ti, IconManager.STD_ICON_SIZE);
                 tableInfoList.add(tableInfo); 

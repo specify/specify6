@@ -172,26 +172,25 @@ public class LoanReturnDlg extends JDialog
             
             JPanel mainPanel = new JPanel();
             
-            System.out.println("Num Loan Preps for Loan: "+loan.getLoanPreparations());
+            //System.out.println("Num Loan Preps for Loan: "+loan.getLoanPreparations());
             
             HashMap<Integer, Pair<CollectionObject, Vector<LoanPreparation>>> colObjHash = new HashMap<Integer, Pair<CollectionObject, Vector<LoanPreparation>>>();
             for (LoanPreparation loanPrep : loan.getLoanPreparations())
             {
-                CollectionObject        colObj = loanPrep.getPreparation().getCollectionObject();
-                System.out.println("For LoanPrep ColObj Is: "+colObj.getIdentityTitle());
-                
-                Vector<LoanPreparation> list = null;
-                Pair<CollectionObject, Vector<LoanPreparation>> pair = colObjHash.get(colObj.getId());
-                if (pair == null)
-                {
-                    list = new Vector<LoanPreparation>();
-                    colObjHash.put(colObj.getId(), new Pair<CollectionObject, Vector<LoanPreparation>>(colObj, list));
-                } else
-                {
-                     list = pair.second;
+                CollectionObject        colObj = loanPrep.getPreparation() == null ? null : loanPrep.getPreparation().getCollectionObject();
+                //System.out.println("For LoanPrep ColObj Is: "+colObj.getIdentityTitle());
+                if (colObj != null) {
+                    Vector<LoanPreparation> list = null;
+                    Pair<CollectionObject, Vector<LoanPreparation>> pair = colObjHash.get(colObj.getId());
+                    if (pair == null) {
+                        list = new Vector<LoanPreparation>();
+                        colObjHash.put(colObj.getId(), new Pair<CollectionObject, Vector<LoanPreparation>>(colObj, list));
+                    } else {
+                        list = pair.second;
 
+                    }
+                    list.add(loanPrep);
                 }
-                list.add(loanPrep);
             }
             
             int             colObjCnt = colObjHash.size();

@@ -69,10 +69,10 @@ import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
+import javax.swing.table.*;
 import javax.swing.text.JTextComponent;
 
+import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 /*import org.jdesktop.swingx.decorator.Filter;
@@ -100,7 +100,7 @@ import edu.ku.brc.util.Pair;
  * 
  **************************************************************************************************/
 @SuppressWarnings("serial")
-public class SpreadSheet  extends SearchableJXTable implements ActionListener
+public class SpreadSheet  extends SearchableJXTable implements ActionListener, RHCellOwner
 {
     protected static final Logger log = Logger.getLogger(SpreadSheet.class);
     
@@ -575,67 +575,66 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
     {
         return scrollPane;
     }
-    
+
+    protected boolean unEditableColumnsInSelection() {
+        for (int c : getSelectedColumns()) {
+            int cm = convertColumnIndexToModel(c);
+            TableCellRenderer renderer = columnModel.getColumn(cm).getCellRenderer();
+            if (!((WorkbenchPaneSS.WbCellRenderer)renderer).isEditable()){
+                return true;
+            }
+        }
+        return false;
+    }
     /**
      * CReates the popup menu for a cell. (THis really needs to be moved outside of this class).
      * @param pnt the point to pop it up
      * @return the popup menu
      */
-    protected JPopupMenu createMenuForSelection(final Point pnt)
-    {
+    protected JPopupMenu createMenuForSelection(final Point pnt) {
         //final int row = rowAtPoint(pnt);
         
         Class<?> cellClass = getModel().getColumnClass(convertColumnIndexToModel(columnAtPoint(pnt)));
         boolean isImage =  cellClass == ImageIcon.class || cellClass == Image.class;
-        
+        boolean unEditableCellsSelected = unEditableColumnsInSelection();
         JPopupMenu pMenu = new JPopupMenu();
         UsageTracker.incrUsageCount("WB.SpreadsheetContextMenu");
-        if (getSelectedColumnCount() == 1)
-        {
+        if (getSelectedColumnCount() == 1) {
             final int[] rows = getSelectedRowModelIndexes();
-            if (rows.length > 1)
-            {
-                //if (row == rows[0])
-                //{
-                    if (!isImage)
-                    {
-                        JMenuItem mi = pMenu.add(new JMenuItem(UIRegistry.getResourceString("SpreadSheet.FillDown")));
-                        mi.addActionListener(new ActionListener() {
-                            public void actionPerformed(ActionEvent ae)
-                            {
-                                int selectedUICol = getSelectedColumn();
-                                int selectedModelCol = convertColumnIndexToModel(selectedUICol);
-                                model.fill(selectedModelCol, rows[0], rows);
-                                popupMenu.setVisible(false);
-                            }
-                        });
-                    }
-                //} else if (row == rows[rows.length-1])
-                //{
-                    if (!isImage)
-                    {
-                        JMenuItem mi = pMenu.add(new JMenuItem(UIRegistry.getResourceString("Spreadsheet.FillUp"))); 
-                        mi.addActionListener(new ActionListener() {
-                            public void actionPerformed(ActionEvent ae)
-                            {
-                                int selectedUICol = getSelectedColumn();
-                                int selectedModelCol = convertColumnIndexToModel(selectedUICol);
-                                model.fill(selectedModelCol, rows[rows.length-1], rows);
-                                popupMenu.setVisible(false);
-                            }
-                        });
-                    }
-                //}
+            if (rows.length > 1) {
+               if (!isImage) {
+                    JMenuItem mi = pMenu.add(new JMenuItem(UIRegistry.getResourceString("SpreadSheet.FillDown")));
+                    mi.setEnabled(!unEditableCellsSelected);
+                    mi.addActionListener(new ActionListener() {
+                        public void actionPerformed(ActionEvent ae) {
+                            int selectedUICol = getSelectedColumn();
+                            int selectedModelCol = convertColumnIndexToModel(selectedUICol);
+                            model.fill(selectedModelCol, rows[0], rows);
+                            popupMenu.setVisible(false);
+                        }
+                    });
+                }
+                if (!isImage) {
+                    JMenuItem mi = pMenu.add(new JMenuItem(UIRegistry.getResourceString("Spreadsheet.FillUp")));
+                    mi.setEnabled(!unEditableCellsSelected);
+                    mi.addActionListener(new ActionListener() {
+                        public void actionPerformed(ActionEvent ae) {
+                            int selectedUICol = getSelectedColumn();
+                            int selectedModelCol = convertColumnIndexToModel(selectedUICol);
+                            model.fill(selectedModelCol, rows[rows.length-1], rows);
+                            popupMenu.setVisible(false);
+                        }
+                    });
+                }
             }
         }
         
         
-        if (!isImage)
-        {        
+        if (!isImage) {
             JMenuItem mi = pMenu.add(new JMenuItem(UIRegistry.getResourceString("SpreadSheet.ClearCells")));
+            mi.setEnabled(!unEditableCellsSelected);
             mi.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent ae)
-                {
+                public void actionPerformed(ActionEvent ae) {
                     int[] rows = getSelectedRowModelIndexes();
                     int[] cols = getSelectedColumnModelIndexes();
 
@@ -645,12 +644,11 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
             });
         }
         
-        if (deleteAction != null)
-        {
+        if (deleteAction != null) {
             JMenuItem mi = pMenu.add(new JMenuItem(UIRegistry.getResourceString("SpreadSheet.DeleteRows"))); 
+            mi.setEnabled(unEditableCellsSelected);
             mi.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent ae)
-                {
+                public void actionPerformed(ActionEvent ae) {
                     deleteAction.actionPerformed(ae);
                     popupMenu.setVisible(false);
                 }
@@ -658,21 +656,18 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
         }
 
         //add copy, paste, cut
-        if (!isImage) //copy, paste currently only implemented for string data
-        {
+        if (!isImage) { //copy, paste currently only implemented for string data
         	boolean isSelection = getSelectedColumnCount() > 0 && getSelectedRowCount() > 0;
-        	if (pMenu.getComponentCount() > 0)
-        	{
+        	if (pMenu.getComponentCount() > 0) {
         		pMenu.add(new JPopupMenu.Separator());
         	}
         	JMenuItem mi = pMenu.add(new JMenuItem(UIRegistry
 					.getResourceString("CutMenu")));
-			mi.setEnabled(isSelection && !isImage); // copy, paste currently
+			mi.setEnabled(isSelection && !isImage && !unEditableCellsSelected); // copy, paste currently
 													// only implemented for
 													// string data
 			mi.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent ae)
-				{
+				public void actionPerformed(ActionEvent ae) {
 					SwingUtilities.invokeLater(new Runnable() {
 
 						/*
@@ -681,8 +676,7 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
 						 * @see java.lang.Runnable#run()
 						 */
 						@Override
-						public void run()
-						{
+						public void run() {
 							cutOrCopy(true);
 
 						}
@@ -693,8 +687,7 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
 			mi = pMenu.add(new JMenuItem(UIRegistry.getResourceString("CopyMenu")));
 			mi.setEnabled(isSelection && !isImage);
 			mi.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent ae)
-				{
+				public void actionPerformed(ActionEvent ae) {
 					SwingUtilities.invokeLater(new Runnable() {
 
 						/*
@@ -714,10 +707,9 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
 			});
 			mi = pMenu
 					.add(new JMenuItem(UIRegistry.getResourceString("PasteMenu")));
-			mi.setEnabled(isSelection && !isImage && canPasteFromClipboard());
+			mi.setEnabled(isSelection && !isImage && canPasteFromClipboard() && !unEditableCellsSelected);
 			mi.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent ae)
-				{
+				public void actionPerformed(ActionEvent ae) {
 					SwingUtilities.invokeLater(new Runnable() {
 
 						/*
@@ -726,8 +718,7 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
 						 * @see java.lang.Runnable#run()
 						 */
 						@Override
-						public void run()
-						{
+						public void run() {
 							paste();
 
 						}
@@ -866,10 +857,8 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
      * 
      * Cut or copy selected cells into the Clipboard
      */
-    public void cutOrCopy(final boolean isCut)
-    {
-        if (!canCutOrCopy())
-        {
+    public void cutOrCopy(final boolean isCut) {
+        if (!canCutOrCopy()) {
         	return;
         }
     	StringBuffer sbf = new StringBuffer();
@@ -880,23 +869,21 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
         int[] rowsselected = getSelectedRows();
         int[] colsselected = getSelectedColumns();
         
-        for (int i = 0; i < numrows; i++)
-        {
-            for (int j = 0; j < numcols; j++)
-            {
+        for (int i = 0; i < numrows; i++) {
+            for (int j = 0; j < numcols; j++) {
                 Object val = getValueAt(rowsselected[i], colsselected[j]);
-                if (val == null || "".equals(val)) //Add place holder for empty cell
-                {
+                if (val == null || "".equals(val)) { //Add place holder for empty cell
                 	val = "\b";
                 }
             	sbf.append(val);
-                if (j < numcols - 1)
-                {
+                if (j < numcols - 1) {
                     sbf.append("\t");
                 }
-                if (isCut)
-                {
-                    setValueAt("", rowsselected[i], colsselected[j]);
+                if (isCut) {
+                    WorkbenchPaneSS.WbCellRenderer renderer = (WorkbenchPaneSS.WbCellRenderer)columnModel.getColumn(colsselected[j]).getCellRenderer();
+                    if (renderer.isEditable()) {
+                        setValueAt("", rowsselected[i], colsselected[j]);
+                    }
                 }
             }
             if (numrows > 1)
@@ -927,38 +914,31 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
         int[] cols = getSelectedColumns();
         pastedRows[0] = -1;
         pastedRows[1] = -1;
-        if (rows != null && cols != null && rows.length > 0 && cols.length > 0)
-        {
+        if (rows != null && cols != null && rows.length > 0 && cols.length > 0) {
             int startRow = rows[0];
             pastedRows[0] = startRow;
             int startCol = cols[0];
-            try
-            {
+            try {
                 Clipboard sysClipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-                if (sysClipboard.isDataFlavorAvailable(DataFlavor.stringFlavor))
-                {
+                if (sysClipboard.isDataFlavorAvailable(DataFlavor.stringFlavor)) {
                 	String trstring = (String )sysClipboard.getData(DataFlavor.stringFlavor);
                 	StringTokenizer st1 = new StringTokenizer(trstring, "\n\r");
-                	for (int i = 0; st1.hasMoreTokens(); i++)
-                	{
+                	for (int i = 0; st1.hasMoreTokens(); i++) {
                 		String   rowstring = st1.nextToken();
                 		//System.out.println("Row [" + rowstring+"]");
                 		String[] tokens    = StringUtils.splitPreserveAllTokens(rowstring, '\t');
-                		for (int j = 0; j < tokens.length; j++)
-                		{
-                			if (startRow + i < getRowCount() && startCol + j < getColumnCount())
-                			{
+                		for (int j = 0; j < tokens.length; j++) {
+                			if (startRow + i < getRowCount() && startCol + j < getColumnCount()) {
                 				int colInx = startCol + j;
-                				if (tokens[j].length() <= model.getColDataLen(colInx))
-                				{
+                				int modelColLen = model.getColDataLen(colInx);
+                				WorkbenchPaneSS.WbCellRenderer renderer = (WorkbenchPaneSS.WbCellRenderer)columnModel.getColumn(colInx).getCellRenderer();
+                				if (renderer.isEditable() && (tokens[j].length() <= modelColLen || modelColLen == -1)) {
                 					String token = tokens[j];
-                					if ("\b".equals(token)) //is placeholder for empty cell
-                					{
+                					if ("\b".equals(token)) { //is placeholder for empty cell
                 						token = "";
                 					}
                 					setValueAt(token, startRow + i, colInx);
-                				} else
-                				{
+                				} else {
                 					String msg = String.format(getResourceString("UI_NEWDATA_TOO_LONG"), new Object[] { model.getColumnName(startCol + j), model.getColDataLen(colInx) } );
                 					UIRegistry.getStatusBar().setErrorMessage(msg);
                 					Toolkit.getDefaultToolkit().beep();
@@ -969,12 +949,9 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
                 		pastedRows[1] = pastedRows[1] + 1;
                 	}
                 }
-            } catch (IllegalStateException ex)
-            {
+            } catch (IllegalStateException ex) {
             	UIRegistry.displayStatusBarErrMsg(getResourceString("Spreadsheet.ClipboardUnavailable"));
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                 edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpreadSheet.class, ex);
                 ex.printStackTrace();
@@ -1324,53 +1301,6 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
 
     }
 
-	
-	class RowHeaderLabel extends JComponent
-    {
-        protected String rowNumStr;
-        protected int    rowNum;
-        protected Font   font;
-   
-        protected int    labelWidth  = Integer.MAX_VALUE;     
-        protected int    labelheight = Integer.MAX_VALUE;     
-        
-        public RowHeaderLabel(int rowNum, final Font font)
-        {
-            this.rowNum    = rowNum;
-            this.rowNumStr = Integer.toString(rowNum);
-            this.font      = font;
-        }
-
-        public int getRowNum()
-        {
-            return rowNum;
-        }
-
-        /* (non-Javadoc)
-         * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
-         */
-        @Override
-        protected void paintComponent(Graphics g)
-        {
-            super.paintComponent(g);
-            
-            g.setFont(font);
-            
-            if (labelWidth == Integer.MAX_VALUE)
-            {
-                FontMetrics fm = getFontMetrics(font);
-                labelheight = fm.getAscent();
-                labelWidth  = fm.stringWidth(rowNumStr);
-            }
-            
-            Insets    ins  = getInsets();
-            Dimension size = this.getSize();
-            int y = size.height - ((size.height - labelheight) / 2) - ins.bottom;
-            
-            g.drawString(rowNumStr, (size.width - labelWidth) / 2, y);
-        }
-    }
-    
 
     /* (non-Javadoc)
      * @see javax.swing.JTable#getModel()
@@ -1431,181 +1361,29 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
             rhCellMouseAdapter = null;
         }
     }
-    
-    /**
-     * MouseAdapter for selecting rows by clicking and dragging on the Row Headers.
-     */
-    class RHCellMouseAdapter extends MouseAdapter
-    {
-        protected JTable table;
-        protected Hashtable<Integer, Boolean> selectionHash = new Hashtable<Integer, Boolean>();
-        protected Hashtable<Integer, Boolean> doubleSelected = new Hashtable<Integer, Boolean>();
-        protected int selAnchor = -1;
-        protected int selLead   = -1;
-        
-        // these fields are important when a user ctrl-clicks a row and then drags
-        protected boolean ctrlWasDown = false;
-        protected boolean dragIsDeselecting = false;
-        
-        public RHCellMouseAdapter(final JTable table)
-        {
-            this.table = table;
-        }
 
-        /* (non-Javadoc)
-         * @see java.awt.event.MouseAdapter#mousePressed(java.awt.event.MouseEvent)
-         */
-        @SuppressWarnings("synthetic-access")
-        @Override
-        public void mousePressed(MouseEvent e) 
-        {
-            log.debug("mousePressed entered");
-            log.debug("anchor: " + selAnchor);
-            log.debug("lead   :" + selLead);
-            
-            if (isEditing())
-            {
-                getCellEditor().stopCellEditing();
-            }
-            
-            RowHeaderLabel lbl = (RowHeaderLabel)e.getSource();
-            int            row = lbl.getRowNum()-1;
-            
-            // toggle the selection state of the clicked row
-            // and set the current row as the new anchor
-            boolean ctrlDown = false;
-            if (UIHelper.getOSType() == OSTYPE.MacOSX)
-            {
-            	ctrlDown = e.isMetaDown();
-            }
-            else
-            {
-            	ctrlDown = e.isControlDown();
-            }
-            if (ctrlDown)
-            {
-                ListSelectionModel selModel = table.getSelectionModel();
-                
-                // figure out the selection state of this row
-                boolean wasSelected = table.getSelectionModel().isSelectedIndex(row);
-                
-                // toggle the selection state of this row
-                if (wasSelected)
-                {
-                    // deselect it
-                    selModel.removeSelectionInterval(row, row);
-                    dragIsDeselecting = true;
-                }
-                else
-                {
-                    // select it and make it the new anchor
-                    selModel.addSelectionInterval(row, row);
-                    dragIsDeselecting = false;
-                }
-                selAnchor = row;
-                selLead   = row;
-                ctrlWasDown = true;
-            }
-            else if (e.isShiftDown())
-            {
-                ListSelectionModel selModel = table.getSelectionModel();
-
-                selModel.removeSelectionInterval(selAnchor, selLead);
-                selModel.addSelectionInterval(selAnchor, row);
-                selLead = row;
-            }
-            else // no modifier keys are down
-            {
-                // just select the current row
-                // and set it as the new anchor
-                table.setRowSelectionInterval(row, row);
-
-                table.setColumnSelectionInterval(0, table.getColumnCount()-1);
-                selAnchor = selLead = row;
-                
-                prevRowSelInx = getSelectedRow();
-                prevColSelInx = 0;
-            }
-            
-            rowSelectionStarted = true;
-            table.getSelectionModel().setValueIsAdjusting(true);
-            
-            log.debug("anchor: " + selAnchor);
-            log.debug("lead   :" + selLead);
-            log.debug("mousePressed exited");
-        }
-
-        /* (non-Javadoc)
-         * @see java.awt.event.MouseAdapter#mouseReleased(java.awt.event.MouseEvent)
-         */
-        @SuppressWarnings("synthetic-access")
-        @Override
-        public void mouseReleased(MouseEvent e) 
-        {
-            log.debug("mouseReleased entered");
-            log.debug("anchor: " + selAnchor);
-            log.debug("lead   :" + selLead);
-            
-            // the user has released the mouse button, so we're done selecting rows
-            //RowHeaderLabel lbl = (RowHeaderLabel)e.getSource();
-            //int            row = lbl.getRowNum()-1;
-
-            rowSelectionStarted = false;
-            table.getSelectionModel().setValueIsAdjusting(false);
-            ctrlWasDown = false;
-            dragIsDeselecting = false;
-            
-            log.debug("anchor: " + selAnchor);
-            log.debug("lead   :" + selLead);
-            log.debug("mouseReleased exited");
-        }
-
-        /* (non-Javadoc)
-         * @see java.awt.event.MouseAdapter#mouseEntered(java.awt.event.MouseEvent)
-         */
-        @SuppressWarnings("synthetic-access")
-        @Override
-        public void mouseEntered(MouseEvent e) 
-        {
-            // the user has clicked and is dragging, we are (de)selecting multiple rows...
-            if (rowSelectionStarted)
-            {
-                log.debug("mouseEntered entered");
-                log.debug("anchor: " + selAnchor);
-                log.debug("lead   :" + selLead);
-                
-                RowHeaderLabel lbl = (RowHeaderLabel)e.getSource();
-                int row    = lbl.getRowNum()-1;
-                selLead = row;
-                if (ctrlWasDown)
-                {
-                    if (dragIsDeselecting)
-                    {
-                        table.removeRowSelectionInterval(selAnchor, row);
-                    }
-                    else
-                    {
-                        table.addRowSelectionInterval(selAnchor, row);
-                    }
-                }
-                else
-                {
-                    table.setRowSelectionInterval(selAnchor, row);
-                }
-                table.setColumnSelectionInterval(0, table.getColumnCount()-1);
-                log.debug("anchor: " + selAnchor);
-                log.debug("lead   :" + selLead);
-                log.debug("mouseEntered exited");
-            }
-        }
-        
-        /**
-         * Cleans up references.
-         */
-        public void cleanUp()
-        {
-            this.table = null;
-        }
+    @Override
+    public void setPrevRowSelInx(int inx) {
+        prevRowSelInx = inx;
     }
-    
+
+    @Override
+    public void setPrevColSelInx(int inx) {
+        prevColSelInx = inx;
+    }
+
+    @Override
+    public void setRowSelectionStarted(boolean b) {
+        rowSelectionStarted = b;
+    }
+
+    @Override
+    public boolean isRowSelectionStarted() {
+        return rowSelectionStarted;
+    }
+
+    @Override
+    public JTable getTable() {
+        return this;
+    }
 }

@@ -40,6 +40,9 @@ import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import org.apache.log4j.Logger;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -137,9 +140,34 @@ public class Storage extends DataModelObjBase implements AttachmentOwnerIFace<St
         storageAttachments = new HashSet<StorageAttachment>();
     }
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.AttachmentOwnerIFace#getAttachmentReferences()
+    /**
+     * -
+     * @param originalObj
+     * @param deep  if true then copy and clone children
+     * @param session
+     * @return
      */
+    @Override
+    public boolean initializeClone(DataModelObjBase originalObj, boolean deep, final DataProviderSessionIFace session) {
+        storageId = null;
+        if (deep) {
+            log.error(getClass().getName() + ": initializeClone not supported when deep parameter is true.");
+            return false;
+        } else {
+            preparations = new HashSet<>();
+            containers = new HashSet<>();
+            children = new HashSet<>();
+            acceptedChildren = new HashSet<>();
+
+            storageAttachments = new HashSet<>();
+
+            return true;
+        }
+    }
+
+    /* (non-Javadoc)
+         * @see edu.ku.brc.specify.datamodel.AttachmentOwnerIFace#getAttachmentReferences()
+         */
     @Override
     @Transient
     public Set<StorageAttachment> getAttachmentReferences() {
@@ -566,7 +594,6 @@ public class Storage extends DataModelObjBase implements AttachmentOwnerIFace<St
      * in the process is a "direction indicator" for the tree determining whether the name
      * should start with the higher nodes and work down to the given node or vice versa.
      * 
-     * @param node the node to get the full name for
      * @return the full name
      */
     public String fixFullName()

@@ -853,7 +853,7 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
                 defaultFormat = convertIntToFORMAT(AppPreferences.getRemote().getInt(LatLonUI.FMT_PREF, 0));
             } else
             {
-                defaultFormat = convertIntToFORMAT(locality.getOriginalLatLongUnit());
+                defaultFormat = convertIntToFORMAT(locality.getOriginalLatLongUnit() == null ? 0 : locality.getOriginalLatLongUnit());
             }
             choosenFormat = defaultFormat;
             

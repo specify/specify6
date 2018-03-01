@@ -65,9 +65,17 @@ public class UploadToolPanel extends JPanel implements TimingTarget
     protected JLabel				unmatchedCellCountLbl  = null;
     protected JCheckBox             autoAssignCatNumChk    = null;
     protected JLabel                autoAssignCatNumLbl    = null;
+    
+    //updates only
+    protected JCheckBox				showEditedCellsChk	   = null;
+    protected JButton			    prevEditedCellBtn      = null;
+    protected JButton				nextEditedCellBtn	   = null;
+    protected JLabel				editedCellCountLbl    = null;
+    
     protected JButton				helpBtn                = null;
 
     protected final WorkbenchPaneSS	wbSS;
+    protected Boolean isForUpdate                          = false;
     protected List<UploadField> configuredFields           = null;
     protected List<UploadField> autoAssables               = null;
     protected boolean uiCreated = false;
@@ -140,12 +148,8 @@ public class UploadToolPanel extends JPanel implements TimingTarget
         nextInvalidCellBtn.setVisible(wbSS.isDoIncrementalValidation());
         invalidCellCountLbl.setVisible(wbSS.isDoIncrementalValidation());
 
-    	//autoMatchChk = UIHelper.createI18NCheckBox("WorkbenchPaneSS.AutoMatchChk");
     	autoMatchChk = UIHelper.createI18NCheckBox("");
     	autoMatchChk.setSelected(wbSS.isDoIncrementalMatching());
-    	//autoMatchChk.setBackground(edu.ku.brc.specify.tasks.subpane.wb.CellRenderingAttributes.newDataBackground);
-    	//autoMatchChk.setBorder(new BorderUIResource.LineBorderUIResource(edu.ku.brc.specify.tasks.subpane.wb.CellRenderingAttributes.newDataBorder));
-    	//autoMatchChk.setBorderPainted(true);
     	autoMatchChk.addActionListener(new ActionListener() {
         	
 			@Override
@@ -208,8 +212,68 @@ public class UploadToolPanel extends JPanel implements TimingTarget
         
         JLabel sep1 = new JLabel(IconManager.getIcon("Separator"));
 
+    	this.isForUpdate = wbSS.isUpdateDataSet();
+    	
+    	autoMatchPanel.setVisible(!isForUpdate);
+    	autoValidateChk.setEnabled(!isForUpdate);
+
+    	showEditedCellsChk = UIHelper.createI18NCheckBox("");
+    	showEditedCellsChk.setSelected(wbSS.isDoIncrementalEditChecking());
+    	showEditedCellsChk.setEnabled(false);
+    	showEditedCellsChk.addActionListener(new ActionListener() {
+    	
+    		@Override
+    		public void actionPerformed(ActionEvent e) {
+    			if (showEditedCellsChk.isSelected()) {
+    				//System.out.println("turning on auto-validation");
+    				wbSS.turnOnIncrementalEditChecking();
+    				prevEditedCellBtn.setVisible(true);
+    				nextEditedCellBtn.setVisible(true);
+    				editedCellCountLbl.setVisible(true);
+    			} else {
+    				//System.out.println("turning off auto-validation");
+    				wbSS.turnOffIncrementalEditChecking();
+    				prevEditedCellBtn.setVisible(false);
+    				nextEditedCellBtn.setVisible(false);
+    				editedCellCountLbl.setVisible(false);
+    			}
+    		}
+    	
+    	});
+
+    	JPanel showEditedPanel = new JPanel(new BorderLayout());
+    	showEditedPanel.add(showEditedCellsChk, BorderLayout.WEST);
+    	JLabel showEditedLbl = UIHelper.createLabel(UIRegistry.getResourceString("WorkbenchPaneSS.ShowEditedCellsChk"));
+    	showEditedLbl.setBorder(new BorderUIResource.LineBorderUIResource(edu.ku.brc.specify.tasks.subpane.wb.CellRenderingAttributes.editedBorder));
+    	showEditedLbl.setBackground(edu.ku.brc.specify.tasks.subpane.wb.CellRenderingAttributes.editedBackground);
+    	showEditedLbl.setOpaque(true);
+    	showEditedPanel.add(showEditedLbl, BorderLayout.CENTER);
+
+        Action prevEditAction = wbSS.addRecordKeyMappings(wbSS.getSpreadSheet(), KeyEvent.VK_F9, "PrevEdit", new AbstractAction() {
+            public void actionPerformed(ActionEvent ae)
+            {
+                wbSS.goToEditedCell(false);
+            }
+        }, 0);
+        prevEditedCellBtn = UIHelper.createIconBtn("WBValidatorUp", IconManager.IconSize.Std24,
+        		"WB_PREV_EDIT", false, prevEditAction);
+        Action nextEditAction = wbSS.addRecordKeyMappings(wbSS.getSpreadSheet(), KeyEvent.VK_F10, "NextEdit", new AbstractAction() {
+            public void actionPerformed(ActionEvent ae) {
+                wbSS.goToEditedCell(true);
+            }
+        }, 0);
+        nextEditedCellBtn = UIHelper.createIconBtn("WBValidatorDown", IconManager.IconSize.Std24, 
+        		"WB_NEXT_EDIT", false, nextEditAction);
+        editedCellCountLbl = UIHelper.createLabel(String.format(UIRegistry.getResourceString("WB_EDITED_CELL_COUNT"), 0));
+        
+        prevEditedCellBtn.setVisible(wbSS.isDoIncrementalEditChecking());
+        nextEditedCellBtn.setVisible(wbSS.isDoIncrementalEditChecking());
+        editedCellCountLbl.setVisible(wbSS.isDoIncrementalEditChecking());
+        showEditedPanel.setVisible(isForUpdate);
+        
         JPanel autoAssignCatNumPanel = new JPanel(new BorderLayout());
         autoAssignCatNumChk = UIHelper.createI18NCheckBox("");
+        autoAssignCatNumChk.setSelected(false);
         autoAssignCatNumLbl = UIHelper.createLabel("");
         //autoAssignCatNumLbl.setBorder(new BorderUIResource.LineBorderUIResource(edu.ku.brc.specify.tasks.subpane.wb.CellRenderingAttributes.newDataBorder));
         //autoAssignCatNumLbl.setBackground(edu.ku.brc.specify.tasks.subpane.wb.CellRenderingAttributes.newDataBackground);
@@ -218,50 +282,59 @@ public class UploadToolPanel extends JPanel implements TimingTarget
         autoAssignCatNumPanel.add(autoAssignCatNumLbl, BorderLayout.CENTER);
         autoAssignCatNumPanel.setVisible(false);
         
-    	this.autoAssables = wbSS.getAutoAssignableFlds();
+    	if (!isForUpdate) {
+            this.autoAssables = wbSS.getAutoAssignableFlds();
+
+            if (autoAssables != null && autoAssables.size() > 0) {
+                UploadField catno = null;
+                for (UploadField uf : autoAssables) {
+                    if (uf.getField().getFieldInfo() != null) {
+                        DBFieldInfo ufi = uf.getField().getFieldInfo();
+                        if (ufi.getName().equalsIgnoreCase("catalognumber") &&
+                                ufi.getTableInfo().getName().equalsIgnoreCase("collectionobject")) {
+                            catno = uf;
+                            //break;
+                        }
+                    }
+                }
+                if (catno != null) {
+                    autoAssignCatNumPanel.setVisible(true);
+                    configuredFields = new ArrayList<UploadField>();
+                    configuredFields.add(catno);
+                    autoAssignCatNumLbl.setText(String.format(UIRegistry.getResourceString("WB_UPLOAD_AutoAssCatChk"),
+                            catno.getField().getFieldInfo().getTitle()));
+                    boolean doAutoFill = AppPreferences.getLocalPrefs().getBoolean(wbAutoFillPrefName + "." + wbSS.getWorkbench().getId(), catno.isAutoAssignForUpload());
+                    catno.setAutoAssignForUpload(doAutoFill);
+                    autoAssignCatNumChk.setSelected(catno.isAutoAssignForUpload());
+                    final UploadField catno_uf = catno;
+                    autoAssignCatNumChk.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            //System.out.println(UploadToolPanel.this.autoAssables);
+                            catno_uf.setAutoAssignForUpload(autoAssignCatNumChk.isSelected());
+                            AppPreferences.getLocalPrefs().putBoolean(wbAutoFillPrefName + "."
+                                    + wbSS.getWorkbench().getId(), autoAssignCatNumChk.isSelected());
+                            if (wbSS.isDoIncrementalValidation()) {
+                                wbSS.validateAll(null);
+                            }
+                        }
+                    });
+                }
+            }
+        }
+        if (isForUpdate) {
+            autoAssignCatNumPanel.setVisible(false);
+            autoAssignCatNumChk.setSelected(false);
+        }
     	
-    	if (autoAssables != null && autoAssables.size() > 0) {
-    		UploadField catno = null;
-    		for (UploadField uf : autoAssables) {
-    			if (uf.getField().getFieldInfo() != null) {
-    				DBFieldInfo ufi = uf.getField().getFieldInfo();
-    				if (ufi.getName().equalsIgnoreCase("catalognumber") &&
-    						ufi.getTableInfo().getName().equalsIgnoreCase("collectionobject")) {
-    					catno = uf;
-    					//break;
-    				}
-    			}
-    		}
-    		if (catno != null) {
-    			autoAssignCatNumPanel.setVisible(true);
-    			configuredFields = new ArrayList<UploadField>();
-    			configuredFields.add(catno);
-    			autoAssignCatNumLbl.setText(String.format(UIRegistry.getResourceString("WB_UPLOAD_AutoAssCatChk"), 
-    					catno.getField().getFieldInfo().getTitle()));
-    	        boolean doAutoFill = AppPreferences.getLocalPrefs().getBoolean(wbAutoFillPrefName + "." + wbSS.getWorkbench().getId(), catno.isAutoAssignForUpload());
-    	        catno.setAutoAssignForUpload(doAutoFill);
-    			autoAssignCatNumChk.setSelected(catno.isAutoAssignForUpload());
-    			final UploadField catno_uf = catno;
-    			autoAssignCatNumChk.addActionListener(new ActionListener() {
-    				@Override
-    				public void actionPerformed(ActionEvent e) {
-    					//System.out.println(UploadToolPanel.this.autoAssables);
-    					catno_uf.setAutoAssignForUpload(autoAssignCatNumChk.isSelected());
-    					AppPreferences.getLocalPrefs().putBoolean(wbAutoFillPrefName + "." 
-    							+ wbSS.getWorkbench().getId(), autoAssignCatNumChk.isSelected());
-    					if (wbSS.isDoIncrementalValidation()) {
-    						wbSS.validateAll(null);
-    					}
-    				}    	        	
-    	        });
-    		}
-    	}
-        
+        sep1.setVisible(autoMatchPanel.isVisible());
         JLabel sep2 = new JLabel(IconManager.getIcon("Separator"));
-        sep2.setVisible(autoAssignCatNumPanel.isVisible());
+        sep2.setVisible(showEditedPanel.isVisible());
+        JLabel sep3 = new JLabel(IconManager.getIcon("Separator"));
+        sep3.setVisible(autoAssignCatNumPanel.isVisible());
         JComponent[] compsArray = {/*autoValidateChk*/autoValidatePanel, invalidCellCountLbl,
                                    prevInvalidCellBtn,  nextInvalidCellBtn, sep1, /*autoMatchChk*/autoMatchPanel,
-                                   unmatchedCellCountLbl, prevUnmatchedCellBtn, nextUnmatchedCellBtn, sep2, autoAssignCatNumPanel, helpBtn};
+                                   unmatchedCellCountLbl, prevUnmatchedCellBtn, nextUnmatchedCellBtn, sep2, showEditedPanel, editedCellCountLbl, prevEditedCellBtn, nextEditedCellBtn, sep3, autoAssignCatNumPanel, helpBtn};
         Vector<JComponent> availableComps = new Vector<JComponent>(compsArray.length);
         for (JComponent c : compsArray)
         {
@@ -392,11 +465,12 @@ public class UploadToolPanel extends JPanel implements TimingTarget
         prefSize.height = (int)(super.getPreferredSize().height * sizeFrac);
         
         Component c = getParent().getParent();
-        c.invalidate();
-        c.doLayout();
-        c.validate();
-        c.repaint();
-        
+        if (c != null) {
+            c.invalidate();
+            c.doLayout();
+            c.validate();
+            c.repaint();
+        }
         this.invalidate();
         this.repaint();
         this.validate();
@@ -422,7 +496,7 @@ public class UploadToolPanel extends JPanel implements TimingTarget
     /**
      * 
      */
-    public void contract()
+    public void contract(int duration)
     {
         if (mode == CONTRACTED || shrinking || expanding)
         {
@@ -431,7 +505,7 @@ public class UploadToolPanel extends JPanel implements TimingTarget
         
         shrinking = true;
         // start animation to shrink the panel
-        Animator expander = new Animator(300,this);
+        Animator expander = new Animator(duration,this);
         expander.start();
     }
 
@@ -476,6 +550,12 @@ public class UploadToolPanel extends JPanel implements TimingTarget
         	prevUnmatchedCellBtn.setEnabled(wbSS.getUnmatchedCellCount() > 0);
         	nextUnmatchedCellBtn.setEnabled(wbSS.getUnmatchedCellCount()  > 0);
         	unmatchedCellCountLbl.setText(String.format(UIRegistry.getResourceString("WB_UNMATCHED_CELL_COUNT"), wbSS.getUnmatchedCellCount()));
+
+        	if (isForUpdate) {
+        		prevEditedCellBtn.setEnabled(wbSS.getEditedCellCount() > 0);
+        		nextEditedCellBtn.setEnabled(wbSS.getEditedCellCount()  > 0);
+        		editedCellCountLbl.setText(String.format(UIRegistry.getResourceString("WB_EDITED_CELL_COUNT"), wbSS.getEditedCellCount()));
+        	}
         } else {
         	updateBtnOnUiCreate = true;
         }
@@ -502,7 +582,18 @@ public class UploadToolPanel extends JPanel implements TimingTarget
 		nextUnmatchedCellBtn.setVisible(false);
 		unmatchedCellCountLbl.setVisible(false);
     }
+
     /**
+     * 
+     */
+    public void uncheckAutoEditChecking()
+    {
+    	this.showEditedCellsChk.setSelected(false);
+    	prevEditedCellBtn.setVisible(false);
+    	nextEditedCellBtn.setVisible(false);
+    	editedCellCountLbl.setVisible(false);
+    }
+/**
      * @return true if panel is expanded.
      */
     public boolean isExpanded()

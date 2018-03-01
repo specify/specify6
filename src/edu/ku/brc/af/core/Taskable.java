@@ -185,6 +185,12 @@ public interface Taskable extends SecurityOptionIFace
      * @return whether the task should be configurable for Permissions
      */
     public abstract boolean isPermissionsSettable();
+
+    /**
+     *
+     * @return whether task should be on task bar
+     */
+    public abstract boolean isViewable();
     
     /**
      * @return the help context

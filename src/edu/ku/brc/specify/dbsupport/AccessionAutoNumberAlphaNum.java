@@ -19,9 +19,7 @@
 */
 package edu.ku.brc.specify.dbsupport;
 
-import java.util.List;
-import java.util.Properties;
-import java.util.Vector;
+import java.util.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -82,13 +80,72 @@ public class AccessionAutoNumberAlphaNum extends AutoNumberGeneric
     {
         Division    currDivision = AppContextMgr.getInstance().getClassObject(Division.class);
         
-        String ansSQL = "SELECT ans.AutonumberingSchemeID, ans.FormatName, ans.IsNumericOnly, ans.SchemeName, dv.Name, dv.DivisionID " +
+        String ansSQL = "SELECT ans.AutonumberingSchemeID, dv.DivisionID, ans.FormatName " +
         		        "FROM autonumberingscheme ans " +
         		        "Inner Join autonumsch_div ad ON ans.AutoNumberingSchemeID = ad.AutoNumberingSchemeID " +
         		        "Inner Join division dv ON ad.DivisionID = dv.UserGroupScopeId WHERE dv.UserGroupScopeId = %d AND FormatName = '%s'";
         String sql = String.format(ansSQL, currDivision.getId(), formatter.getName());
         log.debug(sql);
-        
+        List<Object[]> rows = BasicSQLUtils.query(sql);
+
+        Set<Integer> ansIds = new HashSet<>();
+        Set<Integer> divIds = new HashSet<>();
+        for (Object[] row: rows) {
+            ansIds.add((Integer)row[0]);
+            divIds.add((Integer)row[1]);
+        }
+        if (ansIds.size() != 1) {
+            if (ansIds.size() == 0) {
+                errorMsg = "The[" + formatter.getName() + "]";
+            } else if (ansIds.size() > 1) {
+                errorMsg = "Too many Formatters named [" + formatter.getName() + "]";
+            }
+            log.debug(errorMsg);
+            return null;
+        }
+        Integer yearVal = null;
+        if (yearPos != null && StringUtils.isNotEmpty(value) && value.length() >= yearPos.second) {
+            yearVal = extractIntegerValue(yearPos, value).intValue();
+        }
+        StringBuilder sb = new StringBuilder("SELECT a.accessionNumber FROM Accession a Join a.division dv Join dv.numberingSchemes ans WHERE ans.id = ");
+        sb.append(ansIds.iterator().next());
+        sb.append(" AND dv.id in (");
+        for (Integer dvId : divIds) {
+            sb.append(dvId);
+            sb.append(',');
+        }
+        sb.setLength(sb.length()-1);
+        sb.append(')');
+        if (yearVal != null) {
+            sb.append(" AND ");
+            sb.append(yearVal);
+            sb.append(" = substring("+fieldName+","+(yearPos.first+1)+","+(yearPos.second-yearPos.first)+")");
+        }
+        sb.append(" ORDER BY");
+        try {
+            if (yearPos != null) {
+                sb.append(" substring(" + fieldName + "," + (yearPos.first + 1) + "," + (yearPos.second - yearPos.first) + ") desc");
+            }
+            if (pos != null) {
+                if (yearPos != null) {
+                    sb.append(", ");
+                }
+                sb.append(" substring(" + fieldName + "," + (pos.first + 1) + "," + (pos.second - pos.first) + ") desc");
+            }
+            System.out.println("AccessionAutoNumberAlphaNum - " + sb.toString());
+            List<?> list = session.createQuery(sb.toString()).setMaxResults(1).list();
+            if (list.size() == 1) {
+                return list.get(0).toString();
+            }
+        } catch (Exception ex) {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AccessionAutoNumberAlphaNum.class, ex);
+            ex.printStackTrace();
+        }
+        return null;
+
+/*
+
         Vector<Object[]> rows = BasicSQLUtils.query(sql);
         Integer ansID = null;
         if (rows.size() == 1)
@@ -189,6 +246,6 @@ public class AccessionAutoNumberAlphaNum extends AutoNumberGeneric
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AccessionAutoNumberAlphaNum.class, ex);
             ex.printStackTrace();
         }
-        return null;
+        return null;*/
     }
 }

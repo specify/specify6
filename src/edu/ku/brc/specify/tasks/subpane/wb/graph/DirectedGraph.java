@@ -394,18 +394,14 @@ public class DirectedGraph<E, F>
     /**
      * @return set of all vertices which have no edges leading into them.
      */
-    public Set<Vertex<E>> sources()
-    {
-        Set<Vertex<E>> notSources = new HashSet<Vertex<E>>();
-        for (Vertex<E> v : vertices)
-        {
+    public Set<Vertex<E>> sources() {
+        Set<Vertex<E>> notSources = new HashSet<>();
+        for (Vertex<E> v : vertices) {
             notSources.addAll(getAdjacentVertices(v));
         }
-        Set<Vertex<E>> result = new HashSet<Vertex<E>>();
-        for (Vertex<E> v : vertices)
-        {
-            if (!notSources.contains(v))
-            {
+        Set<Vertex<E>> result = new HashSet<>();
+        for (Vertex<E> v : vertices) {
+            if (!notSources.contains(v)) {
                 result.add(v);
             }
         }
@@ -551,28 +547,21 @@ public class DirectedGraph<E, F>
      * 
      * Performs a topological sort from each source of the graph. Then merges the sorts together and returns the result.
      */
-    public Vector<Vertex<E>> getTopoSort() throws DirectedGraphException
-    {
-        Vector<Vector<Vertex<E>>> sorts = new Vector<Vector<Vertex<E>>>();
-        for (Vertex<E> v : sources())
-        {
+    public Vector<Vertex<E>> getTopoSort() throws DirectedGraphException {
+        Vector<Vector<Vertex<E>>> sorts = new Vector<>();
+        for (Vertex<E> v : sources()) {
             log.debug("topoSorting: " + v.getLabel());
             sorts.add(topoSort(v));
         }
-        Vector<Vertex<E>> result = new Vector<Vertex<E>>();
-        for (Vertex<E> v : sorts.get(0))
-        {
+        Vector<Vertex<E>> result = new Vector<>();
+        for (Vertex<E> v : sorts.get(0)) {
             result.add(v);
         }
-        try
-        {
-            for (int s = 1; s < sorts.size(); s++)
-            {
+        try {
+            for (int s = 1; s < sorts.size(); s++) {
                 mergeSort(sorts.get(s), result);
             }
-        }
-        catch (DirectedGraphException e)
-        {
+        } catch (DirectedGraphException e) {
             throw e;
         }
         return result;

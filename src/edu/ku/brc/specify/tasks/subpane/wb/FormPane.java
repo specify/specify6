@@ -507,7 +507,7 @@ public class FormPane extends JPanel implements FormPaneWrapper
      */
     protected JComponent createUIComp(final WorkbenchTemplateMappingItem wbtmi)
     {
-        return createUIComp(WorkbenchTask.getDataType(wbtmi), 
+        return createUIComp(WorkbenchTask.getDataType(wbtmi, this.workbenchPane.isUpdateDataSet()),
                             wbtmi.getCaption(), 
                             wbtmi.getFieldName(), 
                             wbtmi.getFieldType(),
@@ -810,7 +810,7 @@ public class FormPane extends JPanel implements FormPaneWrapper
         }
         
         WorkbenchTemplateMappingItem wbtmi = inputPanel.getWbtmi();
-        inputPanel.setComp(createUIComp(WorkbenchTask.getDataType(wbtmi), 
+        inputPanel.setComp(createUIComp(WorkbenchTask.getDataType(wbtmi, false),
                                         wbtmi.getCaption(), 
                                         wbtmi.getFieldName(), 
                                         fieldType, 
@@ -1337,13 +1337,11 @@ public class FormPane extends JPanel implements FormPaneWrapper
     	String toolTip = null;
 		LineBorder border = null;
 		WorkbenchDataItem wbCell = wbRow.getItems().get(ip.getWbtmi().getViewOrder());
-		if (wbCell != null)
-		{ 
+		if (wbCell != null) {
 			toolTip = wbCell.getStatusText();
-			if( wbCell.getEditorValidationStatus() == WorkbenchDataItem.VAL_ERROR && workbenchPane.isDoIncrementalValidation())
-			{				
+			if((wbCell.getEditorValidationStatus() & WorkbenchDataItem.VAL_ERROR) != 0 && workbenchPane.isDoIncrementalValidation()) {
 				border = new LineBorder(workbenchPane.getCellDecorator().errorBorder);
-			} else if (wbCell.getEditorValidationStatus() == WorkbenchDataItem.VAL_NEW_DATA && workbenchPane.isDoIncrementalMatching())
+			} else if ((wbCell.getEditorValidationStatus() & WorkbenchDataItem.VAL_NEW_DATA) != 0 && workbenchPane.isDoIncrementalMatching())
 			{
 				border = new LineBorder(workbenchPane.getCellDecorator().newDataBorder);
 			} else

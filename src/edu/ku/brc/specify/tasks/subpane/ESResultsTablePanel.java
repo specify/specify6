@@ -544,7 +544,7 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
      */
     protected List<ServiceInfo> getServices()
     {
-        List<ServiceInfo> services = new Vector<ServiceInfo>(ContextMgr.checkForServices(results.getTableId()));
+        List<ServiceInfo> services = new Vector<ServiceInfo>(ContextMgr.checkForServices(results.getTableId(), results));
         if (results instanceof ServiceProviderIFace)
         {
             List<ServiceInfo> additionalServices = ((ServiceProviderIFace)results).getServices(this);

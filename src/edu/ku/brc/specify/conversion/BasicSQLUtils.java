@@ -1434,27 +1434,21 @@ public class BasicSQLUtils
      * @param obj the object to convert
      * @return the string representation
      */
-    public static String getStrValue(final Object obj, final String newFieldType)
-    {
-        if (obj == null)
-        {
+    public static String getStrValue(final Object obj, final String newFieldType) {
+        if (obj == null) {
             return "NULL";
 
-        } 
-        else if (obj instanceof net.sourceforge.jtds.jdbc.ClobImpl )
-        {
+        } else if (obj instanceof net.sourceforge.jtds.jdbc.ClobImpl) {
             //log.debug("instance of Clob");
             String str = "";
-            ClobImpl clob = (ClobImpl)obj;
+            ClobImpl clob = (ClobImpl) obj;
             //log.debug("tyring to get clob");
-            try
-            {
-                str =  clob.getSubString(1, (int) clob.length());
+            try {
+                str = clob.getSubString(1, (int) clob.length());
 //                str = escapeStringLiterals(str);
 //                return '"'+str+'"';
                 return getEscapedSQLStrExpr(str);
-            } catch (SQLException ex)
-            {
+            } catch (SQLException ex) {
                 edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
                 edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BasicSQLUtils.class, ex);
                 log.error("error occurred trying to get string from clob for SQL Server driver");
@@ -1464,16 +1458,14 @@ public class BasicSQLUtils
             }
             //return getStrValue(obj, null);    
             return obj.toString();
-        }
-        else if (obj instanceof String)
-        {
-            String str = (String)obj;
+        } else if (obj instanceof String) {
+            String str = (String) obj;
 //            if (str.indexOf('"') > -1 || str.indexOf('\\') > -1 || str.indexOf('\'') > -1)
 //            {
 //                str = escapeStringLiterals(str);
 //            }
 //            return '"'+str+'"';
-            	return getEscapedSQLStrExpr(str);
+            return getEscapedSQLStrExpr(str);
 //            String str = (String)obj;
 //            if (str.indexOf('"') > -1 || str.indexOf('\\') > -1)
 //            {
@@ -1485,13 +1477,10 @@ public class BasicSQLUtils
 //            }
 //            return '"'+str+'"';
 
-        } else if (obj instanceof Integer)
-        {
-            if (newFieldType != null)
-            {
-                if (newFieldType.toLowerCase().indexOf("date") ==  0)
-                {
-                	getPartialDate(obj, datePair);
+        } else if (obj instanceof Integer) {
+            if (newFieldType != null) {
+                if (newFieldType.toLowerCase().indexOf("date") == 0) {
+                    getPartialDate(obj, datePair);
                     return datePair.getDateStr();
 
                 }
@@ -1499,24 +1488,24 @@ public class BasicSQLUtils
                 else if (newFieldType.equalsIgnoreCase("bit") || newFieldType.equalsIgnoreCase("tinyint") || newFieldType.equalsIgnoreCase("boolean"))
                 //else if (newFieldType.equalsIgnoreCase("bit(1)") || newFieldType.equalsIgnoreCase("tinyint(1)"))
                 {
-                    int val = ((Integer)obj).intValue();
+                    int val = ((Integer) obj).intValue();
                     return Integer.toString(val == 0 ? 0 : 1);
                 }
                 ////Meg dropped the (1) from the newFieldType check, field metadata didn't include the (1) values
                 //else if (newFieldType.equalsIgnoreCase("bit") || newFieldType.equalsIgnoreCase("tinyint"))
-                else if (newFieldType.equalsIgnoreCase("bit(1)") || newFieldType.equalsIgnoreCase("tinyint(1)"))
-                {
-                    int val = ((Integer)obj).intValue();
+                else if (newFieldType.equalsIgnoreCase("bit(1)") || newFieldType.equalsIgnoreCase("tinyint(1)")) {
+                    int val = ((Integer) obj).intValue();
                     return Integer.toString(val == 0 ? 0 : 1);
                 }
-                return ((Integer)obj).toString();
+                return ((Integer) obj).toString();
             }
-            return ((Integer)obj).toString();
+            return ((Integer) obj).toString();
 
-        } else if (obj instanceof Date)
-        {
-            return '"'+dateTimeFormatter.format((Date)obj) + '"';
+        } else if (obj instanceof Date) {
+            return '"' + dateTimeFormatter.format((Date) obj) + '"';
 
+        } else if (obj instanceof Calendar) {
+            return '"' + dateFormatter.format(((Calendar)obj).getTime()) + '"';
         } else if (obj instanceof Float)
         {
             return ((Float)obj).toString();

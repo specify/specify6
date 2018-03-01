@@ -50,6 +50,8 @@
     <field column="First Name" name="firstName" type="java.lang.String" length="50"/>
     <field column="Initials" name="initials" type="java.lang.String" length="8" />
     <field column="Interests" name="interests" type="java.lang.String" length="255" />
+    <field column="URL" name="url" type="java.lang.String" />
+    <field column="Suffix" name="suffix" type="java.lang.String" />
     <field column="Job Title" name="jobTitle" type="java.lang.String" length="50" />
     <field column="Last Name"  name="lastName" type="java.lang.String" length="120"/>
     <field column="Middle Initials" name="middleInitial" type="java.lang.String" length="50"/>
@@ -167,6 +169,9 @@
     <field column="Start Time" name="startTime" type="java.lang.Short"/>
     <field column="End Time" name="endTime" type="java.lang.Short"/>
     <field column="Remarks (Collecting Trip)" name="collectingTripRemarks" type="java.lang.String" length="4096"/>
+    <field column="Text1 (Collecting Trip)" name="collectingTripText1" type="java.lang.String" length="4096"/>
+    <field column="Text2 (Collecting Trip)" name="collectingTripText2" type="java.lang.String" length="4096"/>
+    <field column="Number 1 (Collecting Trip)" name="collectingTripNumber1" type="java.lang.Float" length="24"/>
   </table>
   
   <table classname="edu.ku.brc.specify.datamodel.CollectionObject" table="collectionobject" tableid="1" lazy="true">
@@ -294,7 +299,6 @@
   </table>  
   -->
   
-  <!--
   <table classname="edu.ku.brc.specify.datamodel.DNASequence" table="dnasequence" tableid="121" >
       <field column="AmbiguousResidues 1" name="ambiguousResidues1" type="java.lang.Integer" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
       <field column="BOLDBarcodeID 1" name="boldBarcodeId1" type="java.lang.String" length="32" indexName="BOLDBarcodeIDX" updatable="true" required="false" unique="false" indexed="true" partialDate="false"/>
@@ -347,9 +351,7 @@
       <field column="YesNo3 2" name="yesNo32" type="java.lang.Boolean" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
 
   </table>
-  -->
  
-  <!--
   <table classname="edu.ku.brc.specify.datamodel.DNASequencingRun" table="dnasequencingrun" tableid="88" searchable="true" abbrv="dnar">
       <field column="Number1" name="number1" type="java.lang.Float" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
       <field column="Number2" name="number2" type="java.lang.Float" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
@@ -376,7 +378,6 @@
       <field column="YesNo2" name="yesNo2" type="java.lang.Boolean" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
       <field column="YesNo3" name="yesNo3" type="java.lang.Boolean" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
   </table>
-  -->
 
   
   <table classname="edu.ku.brc.specify.datamodel.Determination" table="determination" tableid="9" lazy="true">
@@ -611,7 +612,7 @@
     <field column="Georeference Date" name="geoRefDetDate" type="java.util.Calendar" />
     <field column="GeoRefDetRef" name="geoRefDetRef" type="java.lang.String" length="100"/>
     <field column="GeoRefVerificationStatus" name="geoRefVerificationStatus" type="java.lang.String" length="50"/>
-    <field column="Max Uncertainty" name="maxUncertaintyEst" type="java.math.BigDecimal"/>
+    <field column="Max Uncertainty" name="estUncertainty" type="java.math.BigDecimal"/>
     <field column="Max Uncertainty Unit" name="MaxUncertaintyEstUnit" type="java.lang.String" length="8" />
     <field column="NoGeoRefBecause" name="noGeoRefBecause" type="java.lang.String" length="100"/>
     <field column="Original Coord System" name="originalCoordSystem" type="java.lang.String" length="32"/>
@@ -622,6 +623,8 @@
     <field column="Text 1" name="text1" type="text" length="500"/>
     <field column="Text 2" name="text2" type="text" length="500"/>
     <field column="Text 3" name="text3" type="text" length="500"/>
+    <field column="UncertaintyPolygon" name="uncertaintyPolygon" type="text"/>
+    <field column="ErrorPolygon" name="errorPolygon" type="text"/>
     <field column="Georeferenced By Last Name" name="geoRefByLast" type="java.lang.String" length="120"/> 
     <field column="Georeferenced By First Name" name="geoRefByFirst" type="java.lang.String" length="50"/> 
     <field column="Georeferenced By Middle Initials" name="geoRefByMiddle" type="java.lang.String" length="50"/> 
@@ -748,7 +751,15 @@
     <field column="Citation Title (Locality) 3" name="localityCitation3" type="java.lang.String" length="255"/>
     <field column="Citation Title (Locality) 4" name="localityCitation4" type="java.lang.String" length="255"/>
   </table>
+  
+  <table classname="edu.ku.brc.specify.datamodel.MaterialSample" table="materialsample" tableid="151" lazy="true" >
+  	<field column="GGBN Sample Designation" name="GGBN_sampleDesignation" type="java.lang.String" />
+  </table>
 
+  <table classname="edu.ku.brc.specify.datamodel.DNASequence" table="dnasequence" tableid="121" >
+      <field column="BOLDBarcodeID" name="boldBarcodeId" type="java.lang.String" />
+  </table>
+  
   <table classname="edu.ku.brc.specify.datamodel.OtherIdentifier" table="otheridentifier" tableid="61" searchable="true" abbrv="oi">
     <field column="Other Identifier 1" name="otherIdentifier1" type="java.lang.String" length="64"/>
     <field column="Other Identifier Institution 1" name="otherIdentifierInstitution1" type="java.lang.String" length="64"/>
@@ -1010,7 +1021,7 @@
     <field column="Vial 8" name="vial8" type="java.lang.String" length="64"/>
   </table>
   
-  <!-- table classname="edu.ku.brc.specify.datamodel.PreparationAttribute" table="preparationattribute" tableid="91" lazy="true" query="false">
+  <table classname="edu.ku.brc.specify.datamodel.PreparationAttribute" table="preparationattribute" tableid="91" lazy="true" query="false">
     <field column="Remarks (Preparation Attribute)" name="preparationAttributeRemarks" type="java.lang.String" length="4096"/>
     <field column="Number 1 (Preparation Attribute)" name="preparationAttributeNumber1" type="java.lang.Float" length="24"/>
     <field column="Number 2 (Preparation Attribute)" name="preparationAttributeNumber2" type="java.lang.Float" length="24"/>
@@ -1051,7 +1062,7 @@
     <field column="YesNo 2 (Preparation Attribute)" name="preparationAttributeYesNo2" type="java.lang.Short" length="5"/>
     <field column="YesNo 3 (Preparation Attribute)" name="preparationAttributeYesNo3" type="java.lang.Short" length="5"/>
     <field column="YesNo 4 (Preparation Attribute)" name="preparationAttributeYesNo4" type="java.lang.Short" length="5"/>
-  </table-->
+  </table>
   
   <table classname="edu.ku.brc.specify.datamodel.ReferenceWork" table="referencework" tableid="69" lazy="true" >
     <field column="Reference Work Type" name="referenceWorkType" type="byte" length="24"/>

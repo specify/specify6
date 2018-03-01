@@ -37,6 +37,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import org.apache.log4j.Logger;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -143,6 +144,28 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
     }
 
     // End Initializer
+    /**
+     * -
+     * @param originalObj
+     * @param deep  if true then copy and clone children
+     * @param session
+     * @return
+     */
+    @Override
+    public boolean initializeClone(DataModelObjBase originalObj, boolean deep, final DataProviderSessionIFace session) {
+        geologicTimePeriodId = null;
+        if (deep) {
+            log.error(getClass().getName() + ": initializeClone not supported when deep parameter is true.");
+            return false;
+        } else {
+            children = new HashSet<>();
+            acceptedChildren = new HashSet<>();
+            bioStratsPaleoContext = new HashSet<>();
+            chronosStratsPaleoContext = new HashSet<>();
+            setGUID();
+            return true;
+        }
+    }
 
     // Property accessors
 
@@ -614,7 +637,6 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
      * in the process is a "direction indicator" for the tree determining whether the name
      * should start with the higher nodes and work down to the given node or vice versa.
      * 
-     * @param node the node to get the full name for
      * @return the full name
      */
     public String fixFullName()
@@ -699,7 +721,6 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
     /**
      * Returns the number of proper descendants for node.
      * 
-     * @param node the node to count descendants for
      * @return the number of proper descendants
      */
     @Transient
@@ -716,7 +737,6 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
     /**
      * Determines if children are allowed for the given node.
      * 
-     * @param item the node to examine
      * @return <code>true</code> if children are allowed as defined by the node's tree definition, false otherwise
      */
     public boolean childrenAllowed()

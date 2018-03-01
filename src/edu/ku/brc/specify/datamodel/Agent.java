@@ -19,37 +19,12 @@
 */
 package edu.ku.brc.specify.datamodel;
 
-import java.util.Calendar;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.Vector;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
-
-import org.apache.commons.lang.StringUtils;
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
-import org.hibernate.annotations.Index;
-
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.ui.db.PickListDBAdapterIFace;
 import edu.ku.brc.af.ui.db.PickListItemIFace;
 import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.busrules.AgentBusRules;
 import edu.ku.brc.specify.dbsupport.TypeCode;
@@ -57,6 +32,14 @@ import edu.ku.brc.specify.dbsupport.TypeCodeItem;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.UIRegistry;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.Index;
+
+import javax.persistence.*;
+import java.util.*;
 
 /**
 
@@ -77,6 +60,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
                                                        AttachmentOwnerIFace<AgentAttachment>,
                                                        Cloneable
 {
+    protected static final Logger log = Logger.getLogger(Agent.class);
 
     // Fields
     private static Agent                    userAgent = null;
@@ -389,7 +373,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
     /**
      *      * of Person
      */
-    @Column(name = "LastName", length = 120)
+    @Column(name = "LastName", length = 128)
     public String getLastName() {
         return this.lastName;
     }
@@ -1165,7 +1149,26 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
         
         return obj;
     }
-    
+
+    /**
+     *
+     * @param originalObj
+     * @param deep  if true then copy and clone children
+     * @param session
+     * @return
+     */
+    @Override
+    public boolean initializeClone(DataModelObjBase originalObj, boolean deep, DataProviderSessionIFace session) {
+        if (deep) {
+            log.error(getClass().getName() + ": initializeClone is not implemented for deep = true.");
+            return false;
+        }
+        this.specifyUser = null;
+        this.collectors.clear();
+        setGUID();
+        return true;
+    }
+
     /**
      * @param obj
      */

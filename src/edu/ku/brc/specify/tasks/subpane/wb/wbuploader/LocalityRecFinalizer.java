@@ -36,33 +36,70 @@ import edu.ku.brc.util.LatLonConverter;
 public class LocalityRecFinalizer implements UploadedRecFinalizerIFace
 {
 
+    private Boolean isUpdateUpload = null;
+
+    /**
+     *
+     * @param uploader
+     * @return
+     */
+    private boolean isUpdateUpload(final Uploader uploader) {
+        return isUpdateUpload == null ? isUpdateUpload = uploader.isUpdateUpload() : isUpdateUpload;
+    }
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadedRecFinalizerIFace#finalizeForWrite(edu.ku.brc.specify.datamodel.DataModelObjBase, int, edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader)
      */
     @Override
-    public void finalizeForWrite(DataModelObjBase rec, int recNum, Uploader uploader) throws UploaderException
+    public boolean finalizeForWrite(final DataModelObjBase rec, int recNum, final Uploader uploader) throws UploaderException
     {
         //This assumes that rec is a newly uploaded/created record. 
         //XXX Updates -- Will need to be re-worked when record updates are implemented
         Locality loc = (Locality )rec;
+        String origLat1Text = loc.getLat1text();
+        String origLat2Text = loc.getLat2text();
+        String origLong1Text = loc.getLong1text();
+        String origLong2Text = loc.getLong2text();
+        String origLatLongType = loc.getLatLongType();
+        Integer origOrigLatLongUnit = loc.getOriginalLatLongUnit();
+        Byte origSrcLatLongUnit = loc.getSrcLatLongUnit();
         WorkbenchRow wbRow = uploader.getWb().getRow(uploader.getRow());
-        loc.setLat1text(wbRow.getLat1Text());
-        loc.setLat2text(wbRow.getLat2Text());
-        loc.setLong1text(wbRow.getLong1Text());
-        loc.setLong2text(wbRow.getLong2Text());
-        if (loc.getLatitude1() != null && loc.getLatLongType() == null) {
-        	if (loc.getLatitude2() == null) {
-        		//seems there's no formal definition of the allowed values for latlongtype??
-        		loc.setLatLongType("Point");
-        	} else {
-        		//hmmm...assume Line
-        		loc.setLatLongType("Line");
-        	}
+        if (!isUpdateUpload(uploader) || wbRow.getGeoCoordFlds().size() > 0) {
+            loc.setLat1text(wbRow.getLat1Text());
+            loc.setLat2text(wbRow.getLat2Text());
+            loc.setLong1text(wbRow.getLong1Text());
+            loc.setLong2text(wbRow.getLong2Text());
+            if (loc.getLatitude1() != null && loc.getLatLongType() == null) {
+                if (loc.getLatitude2() == null) {
+                    //seems there's no formal definition of the allowed values for latlongtype??
+                    loc.setLatLongType("Point");
+                } else {
+                    //hmmm...assume Line
+                    loc.setLatLongType("Line");
+                }
+            }
+            LatLonConverter.FORMAT fmt = new GeoRefConverter().getLatLonFormat(StringUtils.stripToNull(wbRow.getLat1Text()));
+            if (!isUpdateUpload) {
+                loc.setSrcLatLongUnit((byte) fmt.ordinal());
+            }
+            loc.setOriginalLatLongUnit(fmt.ordinal());
         }
-        LatLonConverter.FORMAT fmt = new GeoRefConverter().getLatLonFormat(StringUtils.stripToNull(wbRow.getLat1Text()));
-        loc.setOriginalLatLongUnit(fmt.ordinal());
-        loc.setSrcLatLongUnit((byte )fmt.ordinal());
-        
+        return changed(origLat1Text, loc.getLat1text())
+                || changed(origLat2Text, loc.getLat2text())
+                || changed(origLong1Text, loc.getLong2text())
+                || changed(origLong2Text, loc.getLong2text())
+                || changed(origLatLongType, loc.getLatLongType())
+                || changed(origOrigLatLongUnit, loc.getOriginalLatLongUnit())
+                || changed(origSrcLatLongUnit, loc.getSrcLatLongUnit());
     }
 
+    /**
+     *
+     * @param v1
+     * @param v2
+     * @return
+     */
+    private boolean changed(final Object v1, final Object v2) {
+       return ((v1 == null) ^ (v2 == null))
+               || (v1 != null && !v1.equals(v2));
+    }
 }

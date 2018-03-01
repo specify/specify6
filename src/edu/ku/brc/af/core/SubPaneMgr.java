@@ -460,15 +460,11 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
             
             checkForTaskableConfig();
             
-               SwingUtilities.invokeLater(new Runnable() {
-                    public void run()
-                    {
-                        if (index > -1 && index < SubPaneMgr.this.getComponentCount())
-                        {
-                            setSelectedIndex(index);
-                        }
-                    }
-                });
+               SwingUtilities.invokeLater(() -> {
+                   if (index > -1 && index < SubPaneMgr.this.getComponentCount()) {
+                       setSelectedIndex(index);
+                   }
+               });
             
             return newPane;
             

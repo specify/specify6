@@ -785,10 +785,10 @@ public class DatamodelGenerator
                     
                     // rods 07/10/08 - Used to skip all relationships that point to themselves
                     // that works now and is needed.
-                    if (typeClass == null ||
-                        typeClass == AttributeIFace.class || 
+                    if (typeClass == null || typeClass.isInterface() //general fix for problems with interfaces for std java compiler.
+                        /*typeClass == AttributeIFace.class ||
                         typeClass == PickListItemIFace.class || 
-                        typeClass == RecordSetItemIFace.class)
+                        typeClass == RecordSetItemIFace.class*/)
                     {
                         continue;
                     }

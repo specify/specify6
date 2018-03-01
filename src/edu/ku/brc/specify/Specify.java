@@ -97,6 +97,7 @@ import javax.swing.event.HyperlinkListener;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
+import edu.ku.brc.specify.tasks.WorkbenchTask;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
@@ -260,13 +261,15 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
     private static final Logger  log                = Logger.getLogger(Specify.class);
     
     public static final boolean IS_DEVELOPMENT       = true;
+    public static final int HIBERNATE_BATCH_SIZE     = 25; //should match the hibernate.jdbc.batch_size setting in hibernate.cfg.xml
+
     private static final String sendStatsPrefName    = "usage_tracking.send_stats";
     private static final String sendISAStatsPrefName = "usage_tracking.send_isa_stats";
     private static final String UPDATE_CHK_ERROR     = "Specify.UPDATE_CHK_ERROR";
     private static final String ERRMSG               = "ERRMSG";
     private static final String STATS_SEND_DONE      = "STATS_SEND_DONE";
     private static final String MANAGED_RELEASES     = "MANAGED_RELEASES";  
-    
+
     // The preferred size of the demo
     private static final int    PREFERRED_WIDTH    = 1024;
     private static final int    PREFERRED_HEIGHT   = 768;
@@ -1085,7 +1088,11 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                                 // Actually we really need to start over
                                 // "true" means that it should NOT use any cached values it can find to automatically initialize itself
                                 // instead it should ask the user any questions as if it were starting over
-                                restartApp(null, databaseName, userName, true, false);
+                                SwingUtilities.invokeLater(new Runnable() {
+                                    public void run() {
+                                        restartApp(null, databaseName, userName, true, false);
+                                    }
+                                });
                             }
                         }
                     });
@@ -2275,7 +2282,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         "<p>The Specify Software Project is "+ //$NON-NLS-1$
         "funded by the Advances in Biological Informatics Program, " + //$NON-NLS-1$
         "U.S. National Science Foundation  (Grant NSF/BIO: 1565098 and earlier awards).<br><br>" + //$NON-NLS-1$
-        "Specify 6 Copyright \u00A9 2017 University of Kansas Center for Research. " + 
+        "Specify 6 Copyright \u00A9 2018 University of Kansas Center for Research. " +
         "Specify comes with ABSOLUTELY NO WARRANTY.<br><br>" + //$NON-NLS-1$
         "This is free software licensed under GNU General Public License 2 (GPL2).</P></font></html>"; //$NON-NLS-1$
 
@@ -2579,8 +2586,27 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             StatsTrackerTask statsTrackerTask = (StatsTrackerTask)TaskMgr.getTask("StatsTracker");
             if (statsTrackerTask != null)
             {
+                statsTrackerTask.initialize(); //sets domain ids from current appcontext, which will change as stats send runs in background.
                 statsTrackerTask.setSendSecondaryStatsAllowed(canSendISAStats);
-                statsTrackerTask.sendStats(false, true, false);
+                try {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            UIRegistry.writeSimpleGlassPaneMsg(
+                                    "CLOSING_COLLECTION",
+                                    WorkbenchTask.GLASSPANE_FONT_SIZE);
+                        }
+                    });
+                    statsTrackerTask.sendStats(false, true, false);
+
+                } finally {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            UIRegistry.clearSimpleGlassPaneMsg();
+                        }
+                    });
+                }
             }
         }
     }
@@ -2607,7 +2633,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
 
         if (!firstTime)
         {
-            checkAndSendStats();
+           checkAndSendStats();
         }
         
         UIRegistry.dumpPaths();
@@ -2818,7 +2844,8 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                                      "FixNullTreeableFields", "FixNullDatePrecisions", 
                                      "fixSymbiotaExportSchema"};
         final boolean[] isFixed   = new boolean[prefNames.length];
-        
+
+
         boolean anyNeededToBeFixed = false;
         for (int i=0;i<isFixed.length;i++)
         {
@@ -2948,8 +2975,10 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                     	}
                     }
                     inx++;
-                    
+
+
                     CheckDBAfterLogin fixer = new CheckDBAfterLogin();
+                    fixer.fillPrepGuids();
                     fixer.checkMultipleLocalities();
                     fixer.sendDNACounts();
                     

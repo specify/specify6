@@ -81,7 +81,7 @@ public class StartUpTask extends edu.ku.brc.af.tasks.StartUpTask
     private static final String ATTACHMENT_PATH_PREF = "attachment.path";
 
     private static final String WELCOME_BTN_PREF = "StartupTask.OnTaskbar";
-    private static final String SPECIFY_SPLASH   = "SpecifySplash";
+    private static final String SPECIFY_SPLASH   = "SpecifySmallSplash";
     
     private ToolBarDropDownBtn welcomeBtn;
     private int                indexOfTBB = 0;

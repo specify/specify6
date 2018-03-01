@@ -93,11 +93,11 @@ public class GridTableModel extends SpreadSheetModel
         headers.clear();
         headers.addAll(workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems());
         Collections.sort(headers);
-        
-        sgrHeading = new SgrHeading((short) headers.size());
 
-        headers.add(sgrHeading);
-        
+//        sgrHeading = new SgrHeading((short) headers.size());
+//
+//        headers.add(sgrHeading);
+
         if (imageMappingItem != null)
         {
             headers.add(imageMappingItem);
@@ -356,13 +356,10 @@ public class GridTableModel extends SpreadSheetModel
      * @see edu.ku.brc.ui.tmanfe.SpreadSheetModel#clearCells(int[], int[])
      */
     @Override
-    public void clearCells(int[] rows, int[] cols)
-    {
-        for (int rowInx : rows)
-        {
+    public void clearCells(int[] rows, int[] cols) {
+        for (int rowInx : rows) {
             WorkbenchRow wbRow = getWorkbench().getRow(rowInx);
-            for (int col : cols)
-            {
+            for (int col : cols) {
                 wbRow.setData("", (short)col, true);
             }
         }
@@ -404,10 +401,12 @@ public class GridTableModel extends SpreadSheetModel
         	{
         		setValueAt(value, rowInx, colInx);
         	}
-        	if (!workbenchPaneSS.validateRows(rowInxs) && isBatchMode())
-        	{
-        		fireDataChanged();
-        	}
+            workbenchPaneSS.validateRows(rowInxs);
+            fireDataChanged();
+//        	if (!workbenchPaneSS.validateRows(rowInxs) && isBatchMode())
+//        	{
+//        		fireDataChanged();
+//        	}
         } finally
         {
         	if (isBatchMode())
@@ -434,10 +433,12 @@ public class GridTableModel extends SpreadSheetModel
         		setValueAt(value, rowInx, colInx);
         		value = incrementer.formatToUI(incrementer.getNextNumber(incrementer.formatFromUI(value).toString(), true).toString());
         	}
-        	if (!workbenchPaneSS.validateRows(rowInxs) && isBatchMode())
-        	{
-        		fireDataChanged();
-        	}
+            workbenchPaneSS.validateRows(rowInxs);
+            fireDataChanged();
+//        	if (!workbenchPaneSS.validateRows(rowInxs) && isBatchMode())
+//        	{
+//        		fireDataChanged();
+//        	}
         } finally
         {
         	if (isBatchMode())

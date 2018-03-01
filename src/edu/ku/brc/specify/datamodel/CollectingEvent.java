@@ -40,6 +40,8 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import org.apache.log4j.Logger;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
@@ -70,6 +72,7 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
                                                                  Comparable<CollectingEvent>,
                                                                  Cloneable
 {
+    protected static final Logger log = Logger.getLogger(CollectingEvent.class);
 
     // Fields    
 
@@ -973,6 +976,15 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
         }
 
         return obj;
+    }
+
+    @Override
+    public boolean initializeClone(DataModelObjBase originalObj, boolean deep, DataProviderSessionIFace session) {
+        if (deep) {
+            log.error(getClass().getName() + ": initializeClone is not implemented for deep = true.");
+            return false;
+        }
+        return true;
     }
 
 

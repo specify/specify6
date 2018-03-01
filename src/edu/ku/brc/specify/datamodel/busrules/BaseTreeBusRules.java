@@ -879,6 +879,10 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
     @SuppressWarnings("unchecked")
     protected void updateFullNamesIfNecessary(T node, DataProviderSessionIFace session)
     {        
+    	if (!(node.getDefinition().getDoNodeNumberUpdates() && node.getDefinition().getNodeNumbersAreUpToDate())) {
+        	return;
+        }
+    	
         if (node.getTreeId() == null)
         {
             // this is a new node

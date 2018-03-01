@@ -101,7 +101,7 @@
 
   <target name="compile-mac">
     <mkdir dir="${build.root}/classes-mac"/>
-    <javac srcdir="${source.root}" destdir="${build.root}/classes-mac" classpathref="compile.classpath.mac">
+    <javac srcdir="${source.root}" destdir="${build.root}/classes-mac" classpathref="compile.classpath.mac" debug="on">
       <compilerarg value="-XDignore.symbol.file"/>
     </javac>
   </target>
@@ -109,7 +109,7 @@
 
   <target name="compile-nonmac">
     <mkdir dir="${build.root}/classes-nonmac"/>
-    <javac srcdir="${source.root}" destdir="${build.root}/classes-nonmac" classpathref="compile.classpath.nonmac">
+    <javac srcdir="${source.root}" destdir="${build.root}/classes-nonmac" classpathref="compile.classpath.nonmac" debug="on">
       <compilerarg value="-XDignore.symbol.file"/>
     </javac>
   </target>

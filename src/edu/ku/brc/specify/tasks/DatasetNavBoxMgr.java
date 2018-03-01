@@ -70,6 +70,15 @@ public class DatasetNavBoxMgr
         this.workbenchTask = workbenchTask;
     }
 
+    /**
+     * @param obj
+     * @return
+     */
+    protected boolean shouldAddToNavBox(final Workbench obj) {
+    	String srcName = obj.getWorkbenchTemplate().getSrcFilePath();
+    	return srcName == null || !srcName.startsWith("<<#spatch#>>");
+    }
+    
     public NavBox createWorkbenchNavBox(String actionType)
     {
         DataSetNavBox navBox = null;
@@ -83,7 +92,9 @@ public class DatasetNavBoxMgr
                     " order by name");
             for (Object obj : list)
             {
-                addWorkbenchToNavBox(navBox, (Workbench)obj);
+                if (shouldAddToNavBox((Workbench)obj)) {
+                	addWorkbenchToNavBox(navBox, (Workbench)obj);
+                }
             }
             
         } catch (Exception ex)
@@ -109,9 +120,10 @@ public class DatasetNavBoxMgr
 
     public void addWorkbench(Workbench workbench)
     {
-        for (WeakReference<DataSetNavBox> boxRef : navBoxes) if (boxRef.get() != null)
-        {
-            addWorkbenchToNavBox(boxRef.get(), workbench);
+        if (shouldAddToNavBox(workbench)) {
+        	for (WeakReference<DataSetNavBox> boxRef : navBoxes) if (boxRef.get() != null) {
+        		addWorkbenchToNavBox(boxRef.get(), workbench);
+        	}
         }
     }
     

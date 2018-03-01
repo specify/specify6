@@ -19,66 +19,16 @@
 */
 package edu.ku.brc.specify.tasks;
 
-import static edu.ku.brc.helpers.XMLHelper.getAttr;
-import static edu.ku.brc.ui.UIRegistry.getResourceString;
-
-import java.awt.FileDialog;
-import java.awt.Frame;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
-import java.lang.ref.SoftReference;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.Vector;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import javax.swing.ImageIcon;
-import javax.swing.JComponent;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPopupMenu;
-import javax.swing.JTable;
-import javax.swing.SwingUtilities;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.dom4j.Element;
-
 import com.thoughtworks.xstream.XStream;
-
 import edu.ku.brc.af.auth.BasicPermisionPanel;
 import edu.ku.brc.af.auth.PermissionEditorIFace;
-import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.af.core.AppResourceIFace;
-import edu.ku.brc.af.core.ContextMgr;
-import edu.ku.brc.af.core.DroppableNavBox;
-import edu.ku.brc.af.core.NavBox;
-import edu.ku.brc.af.core.NavBoxIFace;
-import edu.ku.brc.af.core.NavBoxItemIFace;
-import edu.ku.brc.af.core.NavBoxMgr;
-import edu.ku.brc.af.core.SubPaneIFace;
-import edu.ku.brc.af.core.SubPaneMgr;
-import edu.ku.brc.af.core.ToolBarItemDesc;
-import edu.ku.brc.af.core.UsageTracker;
+import edu.ku.brc.af.core.*;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBRelationshipInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.af.prefs.PreferencesDlg;
 import edu.ku.brc.af.ui.db.ERTICaptionInfo;
 import edu.ku.brc.af.ui.db.QueryForIdResultsIFace;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayDialog;
@@ -93,47 +43,40 @@ import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Collection;
-import edu.ku.brc.specify.datamodel.DataModelObjBase;
-import edu.ku.brc.specify.datamodel.RecordSet;
-import edu.ku.brc.specify.datamodel.SpExportSchemaMapping;
-import edu.ku.brc.specify.datamodel.SpQuery;
-import edu.ku.brc.specify.datamodel.SpQueryField;
-import edu.ku.brc.specify.datamodel.SpReport;
-import edu.ku.brc.specify.datamodel.SpecifyUser;
-import edu.ku.brc.specify.datamodel.Taxon;
-import edu.ku.brc.specify.datamodel.TaxonTreeDef;
-import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
-import edu.ku.brc.specify.datamodel.TreeDefIface;
-import edu.ku.brc.specify.datamodel.TreeDefItemIface;
-import edu.ku.brc.specify.datamodel.Treeable;
+import edu.ku.brc.specify.datamodel.*;
 import edu.ku.brc.specify.dbsupport.RecordTypeCodeBuilder;
+import edu.ku.brc.specify.prefs.FormattingPrefsPanel;
 import edu.ku.brc.specify.tasks.subpane.SQLQueryPane;
-import edu.ku.brc.specify.tasks.subpane.qb.ERTICaptionInfoQB;
-import edu.ku.brc.specify.tasks.subpane.qb.QBLiveDataSource;
-import edu.ku.brc.specify.tasks.subpane.qb.QBQueryForIdResultsHQL;
-import edu.ku.brc.specify.tasks.subpane.qb.QBReportInfoPanel;
-import edu.ku.brc.specify.tasks.subpane.qb.QueryBldrPane;
-import edu.ku.brc.specify.tasks.subpane.qb.QueryFieldPanel;
-import edu.ku.brc.specify.tasks.subpane.qb.SearchResultReportServiceInfo;
-import edu.ku.brc.specify.tasks.subpane.qb.TableTree;
-import edu.ku.brc.specify.tasks.subpane.qb.TreeLevelQRI;
+import edu.ku.brc.specify.tasks.subpane.qb.*;
+import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS;
 import edu.ku.brc.specify.tools.schemalocale.SchemaLocalizerDlg;
 import edu.ku.brc.specify.ui.db.ResultSetTableModel;
 import edu.ku.brc.specify.ui.treetables.TreeDefinitionEditor;
-import edu.ku.brc.ui.ChooseFromListDlg;
-import edu.ku.brc.ui.CommandAction;
-import edu.ku.brc.ui.CommandDispatcher;
-import edu.ku.brc.ui.CustomDialog;
-import edu.ku.brc.ui.DataFlavorTableExt;
-import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.RolloverCommand;
-import edu.ku.brc.ui.ToggleButtonChooserDlg;
-import edu.ku.brc.ui.ToggleButtonChooserPanel;
-import edu.ku.brc.ui.ToolBarDropDownBtn;
-import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.*;
+import edu.ku.brc.ui.dnd.DataActionEvent;
 import edu.ku.brc.ui.dnd.Trash;
 import edu.ku.brc.util.Pair;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.dom4j.Element;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.lang.ref.SoftReference;
+import java.sql.Timestamp;
+import java.util.*;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
+
+import static edu.ku.brc.helpers.XMLHelper.getAttr;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 /**
  * This task will enable the user to create queries, save them and execute them.
@@ -143,15 +86,17 @@ import edu.ku.brc.util.Pair;
  * @author rods
  *
  */
-public class QueryTask extends BaseTask 
+public class QueryTask extends BaseTask implements SubPaneMgrListener 
 {
     private static final Logger log = Logger.getLogger(QueryTask.class);
-    
+
     // Static Data Members
     public static final String QUERY                = "Query";
     public static final String SAVE_QUERY           = "Save";
     public static final String REFRESH_QUERIES      = "RefreshQueries";
     public static final String QUERY_RESULTS_REPORT = "QueryResultsReport";
+    public static final String QUERY_RESULTS_BATCH_EDIT = "QueryResultsBatchEdit";
+    public static final String VIEW_RS_QUERY_RESULTS="ViewRSQueryResults";
     protected static final String XML_PATH_PREF     = "Query.XML.Dir";
     
     public static final DataFlavor QUERY_FLAVOR = new DataFlavor(QueryTask.class, QUERY);
@@ -172,6 +117,9 @@ public class QueryTask extends BaseTask
     protected List<String>             extraQueries;
     protected List<String>             stdQueries       = new ArrayList<String>();
     protected int                        nonFavCount      = 0;
+    
+    protected AtomicReference<RecordSetIFace>  rsToDisplay = new AtomicReference<RecordSetIFace>(null);
+    protected AtomicBoolean previousQBldrPaneShuttingDown = new AtomicBoolean(false);
     
     //protected List<DBTableInfo>               tableInfos       = new ArrayList<DBTableInfo>();
     
@@ -194,11 +142,12 @@ public class QueryTask extends BaseTask
         CommandDispatcher.register(name, this);   
         CommandDispatcher.register(TreeDefinitionEditor.TREE_DEF_EDITOR, this);
         CommandDispatcher.register(SchemaLocalizerDlg.SCHEMA_LOCALIZER, this);
+        CommandDispatcher.register(PreferencesDlg.PREFERENCES, this);
     }
+    
     
     /**
      * Ask the user for information needed to fill in the data object. (Could be refactored with WorkBench Task)
-     * @param data the data object
      * @return true if OK, false if cancelled
      */
     public static boolean askUserForInfo(final String viewSetName, 
@@ -321,8 +270,7 @@ public class QueryTask extends BaseTask
         
     /**
      * Reads a single list from the database.
-     * @param resName the name of the resource to use to save it.
-     * @return the list 
+     * @return the list
      */
     @SuppressWarnings("unchecked")
     protected Vector<String> readResourceForList(final String resourceName)
@@ -508,7 +456,7 @@ public class QueryTask extends BaseTask
                     rs.initialize();
                     rs.set(query.getName(), SpQuery.getClassTableId(), RecordSet.GLOBAL);
                     rs.addItem(query.getSpQueryId());
-                    addToNavBox(rs);
+                    addToNavBox(rs, query.getContextTableId());
                 }
             }
             // Persist out to database
@@ -872,9 +820,10 @@ public class QueryTask extends BaseTask
     {
         final DBTableInfo tableInfo = DBTableIdMgr.getInstance()
                 .getByShortClassName(shortClassName);
-        actionNavBox.add(NavBox.createBtnWithTT(String.format(
+
+        NavBoxItemIFace nbb = NavBox.createBtnWithTT(String.format(
                 getResourceString("QB_CREATE_NEWQUERY"), tableInfo.getTitle()), tableInfo
-                .getName(),
+                        .getName(),
                 // name,
                 getResourceString("QB_CREATE_NEWQUERY_TT"), IconManager.STD_ICON_SIZE,
                 new ActionListener()
@@ -883,7 +832,9 @@ public class QueryTask extends BaseTask
                     {
                         new NewQueryWorker(tableInfo).start();
                     }
-                }));
+                });
+        nbb.setData(tableInfo);
+        actionNavBox.add(nbb);
     }
 
     /**
@@ -959,9 +910,8 @@ public class QueryTask extends BaseTask
     /**
      * register services at initialization.
      */
-    protected void registerServices()
-    {
-    	ContextMgr.registerService(new ReportServiceInfo());    
+    protected void registerServices() {
+    	ContextMgr.registerService(new ReportServiceInfo());
     }
     
     /**
@@ -997,42 +947,47 @@ public class QueryTask extends BaseTask
     
     /**
      * Adds a Query to the Left Pane NavBox (Refactor this with Workbench)
-     * @param query the Query to be added
      * @return the nav box
      */
-    protected NavBoxItemIFace addToNavBox(final RecordSet recordSet)
+    protected NavBoxItemIFace addToNavBox(final RecordSet recordSet, int contextTblId)
     {
         //boolean canDelete = AppContextMgr.isSecurityOn() ? getPermissions().canDelete() : true;
         boolean canDelete = ((QueryTask )ContextMgr.getTaskByClass(QueryTask.class)).isPermitted();
         final RolloverCommand roc = (RolloverCommand) makeDnDNavBtn(navBox, recordSet.getName(),
-                "Query", null,
+                //"Query",
+                DBTableIdMgr.getInstance().getInfoById(contextTblId).getName(),
+                null,
                 canDelete ? new CommandAction(getQueryType(), DELETE_CMD_ACT, recordSet) : null, 
                 true, true);
         roc.setToolTip(getResourceString("QY_CLICK2EDIT"));
         roc.setData(recordSet);
-        roc.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(final ActionEvent e)
-            {
-                new EditQueryWorker(recordSet.getOnlyItem().getRecordId(), (RolloverCommand) e
-                        .getSource()).start();
+        roc.addActionListener(new ActionListener() {
+            public void actionPerformed(final ActionEvent e) {
+            	Object data = e instanceof DataActionEvent ? ((DataActionEvent)e).getData() : null;
+            	RecordSetIFace rs = null;
+            	if (data instanceof RecordSetProxy) {
+            		rs = RecordSetTask.loadRecordSet((RecordSetProxy)data);
+            	}
+            	Object src = rs == null ? e.getSource() : ((DataActionEvent)e).getDestObj();
+                new EditQueryWorker(recordSet.getOnlyItem().getRecordId(), (RolloverCommand)src, rs).start();
             }
         });
         NavBoxItemIFace nbi = (NavBoxItemIFace)roc;
         
         DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(recordSet.getTableId());
-        if (tblInfo != null)
-        {
+        if (tblInfo != null) {
             ImageIcon rsIcon = tblInfo.getIcon(IconManager.STD_ICON_SIZE);
-            if (rsIcon != null)
-            {
+            if (rsIcon != null) {
                 nbi.setIcon(rsIcon);
             }
         }
         
+        
         roc.addDragDataFlavor(new DataFlavorTableExt(getClass(), getQueryType(), recordSet.getTableId()));
-        if (canDelete)
-        {
+        Integer qId = recordSet.getRecordSetItems().iterator().next().getRecordId();
+        //Integer tableId = BasicSQLUtils.querySingleObj("select contexttableid from spquery where spqueryid = " + qId);
+        roc.addDropDataFlavor(new DataFlavorTableExt(RecordSetTask.class, RecordSetTask.RECORD_SET, contextTblId));//RecordSetTask.RECORDSET_FLAVOR);
+        if (canDelete) {
             roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
         }        
         return nbi;
@@ -1065,7 +1020,7 @@ public class QueryTask extends BaseTask
 		// XXX Users will probably want to share queries??
 		return "From SpQuery as sq Inner Join sq.specifyUser as user where sq.isFavorite = true AND user.specifyUserId = "
 				+ AppContextMgr.getInstance().getClassObject(SpecifyUser.class)
-						.getSpecifyUserId() + " ORDER BY ordinal";
+						.getSpecifyUserId() + " ORDER BY contextTableId, sq.name";
 	}
     
     /**
@@ -1102,7 +1057,7 @@ public class QueryTask extends BaseTask
                     	rs.initialize();
                     	rs.set(query.getName(), SpQuery.getClassTableId(), RecordSet.GLOBAL);
                     	rs.addItem(query.getSpQueryId());
-                    	addToNavBox(rs);
+                    	addToNavBox(rs, query.getContextTableId());
                     }
                 }
             }
@@ -1243,6 +1198,7 @@ public class QueryTask extends BaseTask
 					starterPane = null;
 				} else if (queryBldrPane != null) 
 				{
+					previousQBldrPaneShuttingDown.set(true);
 					SubPaneMgr.getInstance().replacePane(queryBldrPane, newPane);
 				}
 				queryBldrPane = newPane;
@@ -1267,6 +1223,14 @@ public class QueryTask extends BaseTask
 
         extendedNavBoxes.clear();
         extendedNavBoxes.addAll(navBoxes);
+
+        RecordSetTask rsTask = (RecordSetTask)ContextMgr.getTaskByClass(RecordSetTask.class);
+
+        List<NavBoxIFace> nbs = rsTask.getNavBoxes();
+        if (nbs != null)
+        {
+            extendedNavBoxes.addAll(nbs);
+        }
 
         return extendedNavBoxes;
     }
@@ -1310,7 +1274,6 @@ public class QueryTask extends BaseTask
     
     /**
      * Save a record set.
-     * @param recordSets the rs to be saved
      */
     public RolloverCommand saveNewQuery(final SpQuery query, final SpExportSchemaMapping schemaMapping, final boolean enabled)
     {        
@@ -1323,13 +1286,25 @@ public class QueryTask extends BaseTask
 
         persistQuery(query, schemaMapping);
 
+
+        RolloverCommand roc = addSavedQueryToSideBar(query, enabled);
+
+        String msg = String.format(getResourceString("WB_SAVED"), new Object[] { query.getName()} );
+        UIRegistry.getStatusBar().setText(msg);
+
+        return roc;
+    }
+
+    public RolloverCommand addSavedQueryToSideBar(final SpQuery query, final boolean enabled) {
         RecordSet rs = new RecordSet();
         rs.initialize();
         rs.set(query.getName(), SpQuery.getClassTableId(), RecordSet.GLOBAL);
         rs.addItem(query.getSpQueryId());
-        
-        RolloverCommand roc = (RolloverCommand)addToNavBox(rs);
-        roc.setEnabled(enabled);
+
+        RolloverCommand roc = (RolloverCommand)addToNavBox(rs, query.getContextTableId());
+        //roc.setEnabled(enabled);
+        roc.setEnabled(true);
+        roc.setIsAccented(!enabled);
 
         NavBoxMgr.getInstance().addBox(navBox);
 
@@ -1342,14 +1317,9 @@ public class QueryTask extends BaseTask
         NavBoxMgr.getInstance().doLayout();
         NavBoxMgr.getInstance().repaint();
         UIRegistry.forceTopFrameRepaint();
-        
-        
-        String msg = String.format(getResourceString("WB_SAVED"), new Object[] { query.getName()} );
-        UIRegistry.getStatusBar().setText(msg);
-
         return roc;
     }
-    
+
     /**
      * @param query
      * @param session
@@ -1400,11 +1370,13 @@ public class QueryTask extends BaseTask
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         boolean transOpen = false;
         SpQuery query = session.get(SpQuery.class, rs.getOnlyItem().getRecordId());
-        try
-        {
-            query.forceLoad(true);            
-            if (okToDeleteQuery(query, session))
-            {
+        //suddenly the trash can itself 'requests deletes' which can cause double deletions and null pointer exceptions
+        if (query ==  null) {
+            return true;
+        }
+        try {
+            query.forceLoad(true);
+            if (okToDeleteQuery(query, session)) {
                 session.beginTransaction();
                 transOpen = true;
                 deleteThisQuery(query, session);
@@ -1412,23 +1384,19 @@ public class QueryTask extends BaseTask
                 transOpen = false;
                 return true;
             }
-            
-        } catch (Exception ex)
-        {
+
+        } catch (Exception ex) {
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryTask.class, ex);
-            if (transOpen)
-            {
+            if (transOpen) {
                 session.rollback();
             }
             ex.printStackTrace();
             log.error(ex);
-        }
-        finally
-        {
+        } finally {
             session.close();
         }
-        return false;
+    return false;
     }
 
 
@@ -1437,13 +1405,23 @@ public class QueryTask extends BaseTask
      * This method first checks to see if the boxItem is not null and uses that, if
      * it is null then it looks the box up by name and used that
      * @param boxItem the box item to be deleted
-     * @param recordSets the record set that is "owned" by some UI object that needs to be deleted (used for secondary lookup
-     */
+    */
     protected void deleteQueryFromUI(final NavBoxItemIFace boxItem, final RecordSet rs)
     {
         deleteDnDBtn(navBox, boxItem != null ? boxItem : getBoxByTitle(navBox, rs.getName()));
     }
-    
+
+    protected Vector<Vector<Object>> getSelectedResults(final Vector<Vector<Object>> results, final int[] selectedRows) {
+        if (selectedRows.length == 0) {
+            return results;
+        } else {
+            Vector<Vector<Object>> result = new Vector<>();
+            for (int r : selectedRows) {
+                result.add(results.get(r));
+            }
+            return result;
+        }
+    }
        /**
      * Processes all Commands of type QUERY.
      * @param cmdAction the command to be processed
@@ -1474,7 +1452,91 @@ public class QueryTask extends BaseTask
         	UIRegistry.forceTopFrameRepaint();
         	return;
         }
-        
+
+        if (!cmdAction.isConsumed() && cmdAction.isAction(QUERY_RESULTS_BATCH_EDIT)) {
+            if (queryBldrPane != null) {
+                for (SubPaneIFace pane : SubPaneMgr.getInstance().getSubPanes()) {
+                    if (pane instanceof WorkbenchPaneSS) {
+                        if (((WorkbenchPaneSS)pane).isUpdateDataSet()) {
+                            UIRegistry.showLocalizedMsg(getResourceString("QB_BATCH_EDITOR_ALREADY_OPEN"));
+                            cmdAction.setConsumed(true);
+                            return;
+                        }
+                    }
+                }
+
+                JTable dataTbl = (JTable) cmdAction.getProperties().get("jtable");
+                if (dataTbl != null) {
+                    ResultSetTableModel rsm = (ResultSetTableModel) dataTbl.getModel();
+                    if (rsm.getQueryForIdResults() == queryBldrPane.getCompletedResults()) {
+                        if (rsm.isLoadingCells()) {
+                            UIRegistry.writeTimedSimpleGlassPaneMsg(UIRegistry.getResourceString("QB_NO_BATCH_EDIT_WHILE_LOADING_RESULTS"),
+                                    5000, null, null, true);
+                            return;
+                        }
+                        WorkbenchTask wbTask = (WorkbenchTask) ContextMgr.getTaskByClass(WorkbenchTask.class);
+                        UsageTracker.incrUsageCount("BE.BatchEditQueryResults."
+                                + queryBldrPane.getQueryForBatchEdit().getFirst().getContextName());
+                        cmdAction.setConsumed(true);
+                        wbTask.batchEditQueryResults(queryBldrPane.getQueryForBatchEdit(), (RecordSetIFace) cmdAction.getData(),
+                                getSelectedResults(queryBldrPane.getResultsCache(), dataTbl.getSelectedRows()), this);
+                        return;
+                    }
+                }
+            }
+        }
+
+        if (!(this instanceof BatchEditTask) && !cmdAction.isConsumed() && cmdAction.isAction(VIEW_RS_QUERY_RESULTS)) {
+            RecordSetIFace recordSet = null;
+            if (cmdAction.getData() instanceof RecordSetIFace) {
+                recordSet = (RecordSetIFace)cmdAction.getData();
+
+            } else if (cmdAction.getData() instanceof RolloverCommand) {
+                RolloverCommand roc = (RolloverCommand)cmdAction.getData();
+                if (roc.getData() instanceof RecordSetIFace) {
+                    recordSet = (RecordSetIFace)roc.getData();
+                }
+            }
+            if (recordSet.getNumItems() > 0) {
+                List<NavBoxItemIFace> nbis = new ArrayList<>();
+                for (NavBoxItemIFace nbi: navBox.getItems()) {
+                    if (nbi instanceof RolloverCommand) {
+                        RolloverCommand roc = (RolloverCommand) nbi;
+                        boolean keeper = false;
+                        for (DataFlavor df : roc.getDropDataFlavors()) {
+                            if (df instanceof DataFlavorTableExt) {
+                                keeper = ((DataFlavorTableExt)df).getTableIds().indexOf(recordSet.getDbTableId()) != -1;
+                                if (keeper) {
+                                    break;
+                                }
+                            }
+                        }
+                        if (keeper) {
+                            nbis.add(nbi);
+                        }
+                    }
+                }
+                if (nbis.size() > 0) {
+                    ChooseFromListDlg<NavBoxItemIFace> dlg = new ChooseFromListDlg<>((Frame)UIRegistry.getTopWindow(),
+                            getResourceString("RS_PICK_QUERY"), nbis);
+                    UIHelper.centerAndShow(dlg);
+                    if (!dlg.isCancelled()) {
+                        RolloverCommand roc = (RolloverCommand)dlg.getSelectedObject();
+                        int queryId = ((RecordSet) roc.getData()).getOnlyItem().getRecordId();
+                        queryBldrPane.runQ4RS(queryId, recordSet);
+                    }
+                } else {
+                    UIRegistry.showLocalizedError("NO_QUERIES_AVAILABLE_FOR_RS_VIEW",
+                            DBTableIdMgr.getInstance().getTitleForId(recordSet.getDbTableId()));
+                }
+            } else {
+                UIRegistry.showLocalizedError("RS_HAS_NO_ITEMS", recordSet.getName());
+            }
+            cmdAction.setConsumed(true);
+        }
+
+
+
         if (cmdAction.isAction(QUERY_RESULTS_REPORT))
 		{
 			SearchResultReportServiceInfo selectedRep = null;
@@ -1587,41 +1649,72 @@ public class QueryTask extends BaseTask
      * @see edu.ku.brc.specify.ui.CommandListener#doCommand(edu.ku.brc.specify.ui.CommandAction)
      */
     @Override
-    public void doCommand(CommandAction cmdAction)
-    {
+    public void doCommand(CommandAction cmdAction) {
         super.doCommand(cmdAction);
         
-        if (cmdAction.isType(getQueryType()))
-        {
+        if (cmdAction.isType(getQueryType())) {
             processQueryCommands(cmdAction);
+        } else if (cmdAction.isType(RecordSetTask.RECORD_SET) && cmdAction.isAction("Clicked")) {
+            processRecordSetCommand(cmdAction);
             
-        }
-        else if (cmdAction.isType(TreeDefinitionEditor.TREE_DEF_EDITOR))
-        {
+        } else if (cmdAction.isType(TreeDefinitionEditor.TREE_DEF_EDITOR)) {
             //all we care to know is that a treeDefintion got changed somehow 
             this.configurationHasChanged.set(true);
-        }
-        else if (cmdAction.isType(SchemaLocalizerDlg.SCHEMA_LOCALIZER))
-        {
+        } else if (cmdAction.isType(SchemaLocalizerDlg.SCHEMA_LOCALIZER)) {
             //XXX should check whether changed schema actually is the schema in use? 
             // e.g. If German schema was saved when English is in use then ignore??
             this.configurationHasChanged.set(true);
             SwingUtilities.invokeLater(new Runnable(){
-                public void run()
-                {
-                    if (SubPaneMgr.getInstance().getCurrentSubPane() == queryBldrPane)
-                    {
-                        if (queryBldrPane != null)
-                        {
+                public void run() {
+                    if (SubPaneMgr.getInstance().getCurrentSubPane() == queryBldrPane) {
+                        if (queryBldrPane != null) {
                             queryBldrPane.showingPane(true);
                         }
                     }                    
                 }
             });
+        } else if (cmdAction.isType(PreferencesDlg.PREFERENCES)) {
+            prefsChanged((AppPreferences)cmdAction.getData());
+        }
+
+    }
+
+    protected void prefsChanged(final AppPreferences appPrefs) {
+        if (appPrefs == AppPreferences.getRemote()) {
+            String    iconNameStr = appPrefs.get(FormattingPrefsPanel.getDisciplineImageName(), "CollectionObject");
+            ImageIcon iconImage   = IconManager.getIcon(iconNameStr, IconManager.STD_ICON_SIZE);
+            List<List<NavBoxIFace>> boxes = new ArrayList<>(2);
+            boxes.add(navBoxes);
+            boxes.add(extendedNavBoxes);
+            for (List<NavBoxIFace> box : boxes){
+                if (iconImage != null) {
+                    for (NavBoxIFace nb : navBoxes) {
+                        for (NavBoxItemIFace nbi : nb.getItems()) {
+                            Object data = nbi.getData();
+                            int tblId = -1;
+                            if (data instanceof DBTableInfo) {
+                                tblId = ((DBTableInfo)data).getTableId();
+                            } else if (data instanceof RecordSet) {
+                                int queryId = ((RecordSet)data).getOnlyItem().getRecordId();
+                                tblId = BasicSQLUtils.querySingleObj("select contexttableid from spquery where spqueryid = " + queryId);
+                            }
+                            if (tblId == CollectionObject.getClassTableId()) {
+                                nbi.setIcon(iconImage);
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
-    
+    /**
+     * @param cmdAction
+     */
+    protected void processRecordSetCommand(CommandAction cmdAction) {
+        if (ContextMgr.getCurrentContext() == this && cmdAction.getSrcObj() instanceof RecordSetIFace) {
+        }
+    }
 
     //--------------------------------------------------------------
     // Inner Classes
@@ -2075,7 +2168,7 @@ public class QueryTask extends BaseTask
                 rs.initialize();
                 rs.set(query.getFirst().getName(), SpQuery.getClassTableId(), RecordSet.GLOBAL);
                 rs.addItem(query.getFirst().getSpQueryId());
-                addToNavBox(rs);
+                addToNavBox(rs, query.getFirst().getContextTableId());
             }
             
             navBox.validate();
@@ -2394,7 +2487,7 @@ public class QueryTask extends BaseTask
         SwingUtilities.invokeLater(new Runnable() {
             public void run()
             {
-                new EditQueryWorker(queryBldrPane.getQuery().getId(), queryBldrPane.getQueryNavBtn()).start();
+                new EditQueryWorker(queryBldrPane.getQuery().getId(), queryBldrPane.getQueryNavBtn(), null).start();
             }
         });
     }
@@ -2421,31 +2514,69 @@ public class QueryTask extends BaseTask
     {
         protected final Integer queryId;
         protected final RolloverCommand queryNavBtn;
+        protected final RecordSetIFace rs;
         
-        public EditQueryWorker(final Integer queryId, final RolloverCommand queryNavBtn)
+        public EditQueryWorker(final Integer queryId, final RolloverCommand queryNavBtn, final RecordSetIFace rs)
         {
             super();
             this.queryId = queryId;
             this.queryNavBtn = queryNavBtn;
+            this.rs = rs;
         }
 
         @Override
-        public void finished()
-        {
+        public void finished() {
             super.finished();
-            if (queryBldrPane == null || queryBldrPane.aboutToShutdown())
-            {
-                if (editQuery(queryId))
-                {
-                	queryNavBtn.setEnabled(false);
+    		rsToDisplay.set(rs);
+            if (queryBldrPane == null || queryBldrPane.aboutToShutdown()) {
+                if (editQuery(queryId)) {
+            		for (NavBoxItemIFace nb : navBox.getItems()) {
+            			if (nb instanceof RolloverCommand) {
+            				//RolloverCommand.class.cast(nb).setActive(nb == roc);
+            				RolloverCommand.class.cast(nb).setIsAccented(nb == queryNavBtn);
+            			}
+            		}
+                	//queryNavBtn.setEnabled(false);
                 	queryBldrPane.setQueryNavBtn(queryNavBtn);
+                	if (!previousQBldrPaneShuttingDown.get() && rsToDisplay.get() != null) {
+                		rsToDisplay.set(null);
+                		queryBldrPane.doSearch(rs);
+                	}
                 }
             }
         }
         
     }
     
-    protected class EditOtherQueryWorker extends OpenQueryWorker
+    /**
+     * @return
+     */
+    public void qBldrPaneShutDown() {
+    	previousQBldrPaneShuttingDown.set(false);
+		RecordSetIFace rs = rsToDisplay.getAndSet(null);
+		if (rs != null) {
+			queryBldrPane.doSearch(rs);
+		}
+    	
+    }
+
+    
+    /* (non-Javadoc)
+	 * @see edu.ku.brc.af.tasks.BaseTask#subPaneRemoved(edu.ku.brc.af.core.SubPaneIFace)
+	 */
+	@Override
+	public void subPaneRemoved(SubPaneIFace subPane) {
+		// TODO Auto-generated method stub
+		super.subPaneRemoved(subPane);
+		if (subPane instanceof QBResultsSubPane) {
+			RecordSetIFace rs = rsToDisplay.getAndSet(null);
+			if (rs != null) {
+				queryBldrPane.doSearch(rs);
+			}
+		}
+	}
+
+	protected class EditOtherQueryWorker extends OpenQueryWorker
     {
         protected final Integer queryId;
         

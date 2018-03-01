@@ -19,58 +19,7 @@
 */
 package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 
-import static edu.ku.brc.ui.UIHelper.createLabel;
-import static edu.ku.brc.ui.UIRegistry.getResourceString;
-
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Frame;
-import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.sql.SQLException;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.Vector;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JMenuBar;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
-import javax.swing.SwingUtilities;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.SoftBevelBorder;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.hibernate.HibernateException;
-
-import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.af.core.ServiceInfo;
-import edu.ku.brc.af.core.Taskable;
+import edu.ku.brc.af.core.*;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
@@ -80,44 +29,17 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.helpers.ImageMetaDataHelper;
+import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.SpecifyUserTypes;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
-import edu.ku.brc.specify.datamodel.Accession;
-import edu.ku.brc.specify.datamodel.Address;
-import edu.ku.brc.specify.datamodel.Agent;
-import edu.ku.brc.specify.datamodel.Attachment;
-import edu.ku.brc.specify.datamodel.AttachmentOwnerIFace;
-import edu.ku.brc.specify.datamodel.CollectingEvent;
-import edu.ku.brc.specify.datamodel.CollectingTrip;
+import edu.ku.brc.specify.datamodel.*;
 import edu.ku.brc.specify.datamodel.Collection;
-import edu.ku.brc.specify.datamodel.CollectionObject;
-import edu.ku.brc.specify.datamodel.DataModelObjBase;
-import edu.ku.brc.specify.datamodel.Determination;
-import edu.ku.brc.specify.datamodel.FieldNotebook;
-import edu.ku.brc.specify.datamodel.FieldNotebookPage;
-import edu.ku.brc.specify.datamodel.FieldNotebookPageSet;
-import edu.ku.brc.specify.datamodel.GeoCoordDetail;
-import edu.ku.brc.specify.datamodel.Locality;
-import edu.ku.brc.specify.datamodel.LocalityDetail;
-import edu.ku.brc.specify.datamodel.ObjectAttachmentIFace;
-import edu.ku.brc.specify.datamodel.RecordSet;
-import edu.ku.brc.specify.datamodel.SpecifyUser;
-import edu.ku.brc.specify.datamodel.Taxon;
-import edu.ku.brc.specify.datamodel.Treeable;
-import edu.ku.brc.specify.datamodel.Workbench;
-import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
-import edu.ku.brc.specify.datamodel.WorkbenchRow;
-import edu.ku.brc.specify.datamodel.WorkbenchRowExportedRelationship;
-import edu.ku.brc.specify.datamodel.WorkbenchRowImage;
-import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
+import edu.ku.brc.specify.dbsupport.SpecifyDeleteHelper;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr.SCOPE;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr.USER_ACTION;
-import edu.ku.brc.specify.tasks.DataEntryTask;
-import edu.ku.brc.specify.tasks.InteractionsTask;
-import edu.ku.brc.specify.tasks.RecordSetTask;
-import edu.ku.brc.specify.tasks.ReportsBaseTask;
-import edu.ku.brc.specify.tasks.WorkbenchTask;
+import edu.ku.brc.specify.tasks.*;
+import edu.ku.brc.specify.tasks.subpane.qb.QueryBldrPane;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS;
 import edu.ku.brc.specify.tasks.subpane.wb.graph.DirectedGraph;
 import edu.ku.brc.specify.tasks.subpane.wb.graph.DirectedGraphException;
@@ -127,17 +49,40 @@ import edu.ku.brc.specify.tasks.subpane.wb.schema.Field;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Relationship;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Table;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMappingDefRel.ImportMappingRelFld;
-import edu.ku.brc.ui.CommandAction;
-import edu.ku.brc.ui.CommandDispatcher;
-import edu.ku.brc.ui.CustomDialog;
-import edu.ku.brc.ui.JStatusBar;
-import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.*;
 import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.Pair;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRField;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+
+import javax.swing.*;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.SoftBevelBorder;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.sql.SQLException;
+import java.text.ParseException;
+import java.util.*;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+
+import static edu.ku.brc.ui.UIHelper.createLabel;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 /**
  * @author timo
@@ -281,7 +226,7 @@ public class Uploader implements ActionListener, KeyListener
     /**
      * The currently executing upload task.
      */
-    protected UploaderTask                          currentTask = null;
+    protected AtomicReference<UploaderTask> currentTask = new AtomicReference<>(null);
 
     /**
      * the index of the currently processing row in the dataset.
@@ -309,8 +254,31 @@ public class Uploader implements ActionListener, KeyListener
     
     protected boolean 	                            additionalLocksSet = false;
     protected static final Logger                   log                      = Logger.getLogger(Uploader.class);
-   
-      
+
+    public List<UploadTable> getUploadedTablesForCurrentRow() {
+        return uploadedTablesForCurrentRow;
+    }
+
+    private List<UploadTable> uploadedTablesForCurrentRow;
+
+    protected boolean wasCommitted = false;
+    protected boolean wasRolledBack = false;
+
+    protected DataProviderSessionIFace theUploadBatchEditSession;
+
+    protected SpecifyDeleteHelper deleteHelper = null;
+
+    /**
+     *
+     * @return
+     */
+    protected SpecifyDeleteHelper getDeleteHelper() {
+        if (deleteHelper == null) {
+            deleteHelper = new SpecifyDeleteHelper();
+        }
+        return deleteHelper;
+    }
+
     private class SkippedAttachment extends BaseUploadMessage
     {
     	protected int row;
@@ -332,6 +300,71 @@ public class Uploader implements ActionListener, KeyListener
     	
     	
     }
+
+    protected Set<Integer> getUploadedRows() {
+        Set<Integer> result = new HashSet<>();
+        Integer allOfEm = getWb().getWorkbenchRows().size();
+        for (UploadTable t : uploadTables) {
+            for (UploadedRecordInfo u : t.getAllUploadedRecords()) {
+                result.add(u.getWbRow());
+            }
+            if (result.size() == allOfEm) {
+                break;
+            }
+        }
+        return result;
+    }
+
+    public List<Pair<Integer,Object>>  getUpdateUploadAffectedRecsSql() {
+        List<Pair<Integer, Object>> result = new ArrayList<>();
+        UploadTable root = getRootTable();
+        //List<UploadedRecordInfo> uploaded = root.getAllUploadedRecords();
+        Set<Integer> uploaded = getUploadedRows();
+        int rootTableId = root.getTable().getTableInfo().getTableId();
+        //result.add(new Pair<>(rootTableId, uploaded.size()));
+        result.add(new Pair<>(rootTableId, uploaded.size()));
+        if (rootTableId != CollectionObject.getClassTableId() && rootTableId != Preparation.getClassTableId()
+                && rootTableId != Agent.getClassTableId()) {
+            StringBuilder idStr = new StringBuilder("wbr.rownumber in(");
+            boolean comma = false;
+            int r = 0;
+            for (Integer rowNumber : uploaded) {
+                if (comma) {
+                    idStr.append(",");
+                } else {
+                    comma = true;
+                }
+                idStr.append(rowNumber);
+                r++;
+                if (r % 1000 == 0)  {
+                    idStr.append(")");
+                    if (r < uploaded.size() - 1) {
+                        idStr.append(" or wbr.rownumber in(");
+                    }
+                    comma = false;
+                }
+            }
+            if (r % 1000 != 0) {
+                idStr.append(")");
+            }
+            if (rootTableId == CollectingEvent.getClassTableId()) {
+                String sql = "select count(*) from collectingevent ce inner join collectionobject co on "
+                    + "co.collectingeventid = ce.collectingeventid inner join workbenchrow wbr on wbr.recordid = ce.collectingeventid"
+                    + " where wbr.workbenchid = " + theWb.getWorkbenchId() + " and ("
+                    + idStr + ")";
+                result.add(new Pair<>(CollectionObject.getClassTableId(), sql));
+            } else if (rootTableId == Locality.getClassTableId()) {
+                String sql = "select count(*) from locality l inner join collectingevent ce on "
+                        + "ce.localityid = l.localityid inner join collectionobject co on "
+                        + "co.collectingeventid = ce.collectingeventid inner join workbenchrow wbr on wbr.recordid = l.localityid"
+                        + " where wbr.workbenchid = " + theWb.getWorkbenchId() + " and ("
+                        + idStr + ")";
+                result.add(new Pair<>(CollectionObject.getClassTableId(), sql));
+            }
+        }
+        return result;
+    }
+
     /**
      * @author timbo
      *
@@ -339,8 +372,7 @@ public class Uploader implements ActionListener, KeyListener
      *
      * Stores information about rows that were not uploaded during an upload.
      */
-    @SuppressWarnings("unused")
-    private class SkippedRow extends BaseUploadMessage
+    protected class SkippedRow extends BaseUploadMessage
     {
         protected UploaderException cause;
         protected int               row;
@@ -840,7 +872,6 @@ public class Uploader implements ActionListener, KeyListener
 
     /**
      * @param db
-     * @param uploadData
      * @throws UploaderException
      */
     public Uploader(DB db, UploadData importData, final WorkbenchPaneSS wbSS, final Workbench theWb, final java.util.Collection<WorkbenchTemplateMappingItem> wbItems,
@@ -920,26 +951,32 @@ public class Uploader implements ActionListener, KeyListener
      * @return the 'root' or 'main' table for a dataset
      * 
      * This will be the table that has no one-to-many or one-to-one child tables or 'owns' all its child tables. 
+     * 
+     * OR... the ExportedFromTable...
      */
-    protected UploadTable getRootTable()
-    {
+    protected UploadTable getRootTable() {
     	//First, construct all tables that are 'owned' by other tables and their non-'owner' parents.
     	HashSet<UploadTable> ruledChildrenAndTheirReqs = new HashSet<UploadTable>();
-    	for (UploadTable ut : uploadTables)
-    	{
-    		if (ut.isMatchChild())
-    		{
+    	for (UploadTable ut : uploadTables) {
+    		if (ut.isMatchChild()) {
     			ruledChildrenAndTheirReqs.add(ut);
     			processParentsForRootTableSearch(ut, ruledChildrenAndTheirReqs);
     		}
     	}
     	//Then move backwards through the ALREADY ordered upload tables until we get to a table 
     	//that is not in the list constructed above 
-    	for (int t = uploadTables.size() - 1; t >= 0; t--)
-    	{
-    		if (!uploadTables.get(t).isMatchChild() && !ruledChildrenAndTheirReqs.contains(uploadTables.get(t)))
-    		{
-    			return uploadTables.get(t);
+    	if (theWb.getExportedFromTableName() == null) {
+    		for (int t = uploadTables.size() - 1; t >= 0; t--) {
+    			if (!uploadTables.get(t).isMatchChild() && !ruledChildrenAndTheirReqs.contains(uploadTables.get(t))) {
+    				return uploadTables.get(t);
+    			}
+    		}
+    	} else {
+    		for (int t = uploadTables.size() - 1; t >= 0; t--) {
+    			//Fingers crossed that the ExportedFromTable is not a MatchChild, RuledChild or RuledChildReq
+    			if (uploadTables.get(t).getTblClass().getName().equals(theWb.getExportedFromTableName())) {
+    				return uploadTables.get(t);
+    			}
     		}
     	}
     	return null;
@@ -986,60 +1023,34 @@ public class Uploader implements ActionListener, KeyListener
     }
 
     /**
-     * Adds extra upload tables. Currently only adds Determination if necessary when Genus/Species
-     * are selected. Also should add CollectingEvent if Locality and CollectionObject are present.
+     * Adds extra upload tables. Adds Determination if necessary when Genus/Species
+     * are selected. And adds CollectingEvent if Locality and CollectionObject are present.
      * And others???
      */
-    protected void addEmptyUploadTables() throws UploaderException
-    {
-        
-        boolean genSpPresent = false, detPresent = false, locPresent = false, coPresent = false, cePresent = false;
-        for (UploadTable ut : uploadTables)
-        {
-            if (ut.getTblClass().equals(Determination.class))
-            {
-                detPresent = true;
-            }
-            if (ut.getTblClass().equals(Locality.class))
-            {
-                locPresent = true;
-            }
-            if (ut.getTblClass().equals(CollectionObject.class))
-            {
-                coPresent = true;
-            }
-            if (ut.getTblClass().equals(CollectingEvent.class))
-            {
-                cePresent = true;
-            }
+    protected void addEmptyUploadTables() throws UploaderException {
+        Set<Class<?>> clss = new HashSet<>();
+        for (UploadTable ut : uploadTables) {
+            clss.add(ut.getTblClass());
         }
-        if (!detPresent)
-        {
+        if (!clss.contains(Determination.class)) {
             int maxSeq = 0;
-            for (WorkbenchTemplateMappingItem mapI : workbenchTemplateMappingItems)
-            {
-                if (isDetTaxLevelMapping(mapI))
-                {
+            boolean genSpPresent = false;
+            for (WorkbenchTemplateMappingItem mapI : workbenchTemplateMappingItems) {
+                if (isDetTaxLevelMapping(mapI)) {
                     genSpPresent = true;
-                    try
-                    {
+                    try {
                         String fldName = mapI.getFieldName();
-                        if (Integer.valueOf(fldName.substring(fldName.length() - 1)) > maxSeq)
-                        {
+                        if (Integer.valueOf(fldName.substring(fldName.length() - 1)) > maxSeq) {
                             maxSeq = Integer.valueOf(fldName.substring(fldName.length() - 1));
                         }
-                    }
-                    catch (NumberFormatException e)
-                    {
+                    } catch (NumberFormatException e) {
                         genSpPresent = false;
                     }
                 }
             }
-            if (genSpPresent)
-            {
+            if (genSpPresent) {
                 UploadTable det = new UploadTable(this, db.getSchema().getTable("Determination"), null);
-                for (int seq = 0; seq < maxSeq; seq++)
-                {
+                for (int seq = 0; seq < maxSeq; seq++) {
                     UploadField fld = new UploadField(db.getSchema().getField("determination",
                             "collectionobjectid"), -1, null, null);
                     fld.setSequence(seq);
@@ -1049,13 +1060,30 @@ public class Uploader implements ActionListener, KeyListener
                 uploadTables.add(det);
             }
         }
-        if (!cePresent && locPresent && coPresent)
-        {
+        if (!clss.contains(CollectingEvent.class)
+                && (clss.contains(Locality.class) || clss.contains(CollectingTrip.class) || clss.contains(CollectingEventAttribute.class))
+                && clss.contains(CollectionObject.class)) {
             UploadTable ce = new UploadTable(this, db.getSchema().getTable("CollectingEvent"), null);
             ce.init();
             ce.addField(new UploadField(db.getSchema().getField("collectingevent",
                     "stationfieldnumber"), -1, null, null));
             uploadTables.add(ce);
+        }
+        if (!clss.contains(PaleoContext.class) && clss.contains(CollectionObject.class)) {
+            boolean paleoTreePresent = false;
+            for (WorkbenchTemplateMappingItem mapI : workbenchTemplateMappingItems) {
+                if (mapI.getTableName().equalsIgnoreCase("lithostrat")
+                        || mapI.getTableName().equalsIgnoreCase("geologictimeperiod")) {
+                    paleoTreePresent = true;
+                    break;
+                }
+            }
+            if (paleoTreePresent) {
+                UploadTable pc = new UploadTable(this, db.getSchema().getTable("PaleoContext"), null);
+                pc.init();
+                pc.addField(new UploadField(db.getSchema().getField("paleocontext", "paleocontextname"), -1, null, null));
+                uploadTables.add(pc);
+            }
         }
     }
 
@@ -1148,32 +1176,24 @@ public class Uploader implements ActionListener, KeyListener
     /**
      * @throws UploaderException builds the uploadGraph.
      */
-    protected void buildUploadGraph() throws UploaderException
-    {
-        uploadGraph = new DirectedGraph<Table, Relationship>();
-        try
-        {
-            for (UploadTable t : uploadTables)
-            {
+    protected void buildUploadGraph() throws UploaderException {
+        uploadGraph = new DirectedGraph<>();
+        try {
+            for (UploadTable t : uploadTables) {
                 String label = t.getTable().getName();
-                if (uploadGraph.getVertexByLabel(label) == null)
-                {
+                if (uploadGraph.getVertexByLabel(label) == null) {
                     uploadGraph.addVertex(new Vertex<Table>(label, t.getTable()));
                 }
             }
-            for (Edge<Table, Relationship> edge : db.getGraph().getEdges())
-            {
+            for (Edge<Table, Relationship> edge : db.getGraph().getEdges()) {
                 Vector<UploadTable> its1 = getUploadTable(edge.getPointA().getData());
                 Vector<UploadTable> its2 = getUploadTable(edge.getPointB().getData());
-                if (its1.size() > 0 && its2.size() > 0)
-                {
+                if (its1.size() > 0 && its2.size() > 0) {
                     uploadGraph.addEdge(edge.getPointA().getLabel(), edge.getPointB().getLabel(),
                             edge.getData());
                 }
             }
-        }
-        catch (DirectedGraphException e)
-        {
+        } catch (DirectedGraphException e) {
             logDebug(e);
             throw new UploaderException(e, UploaderException.ABORT_IMPORT);
         }
@@ -1589,29 +1609,22 @@ public class Uploader implements ActionListener, KeyListener
      * 
      * Orders uploadTables according to dependencies in uploadGraph.
      */
-    protected void orderUploadTables() throws UploaderException
-    {
-        try
-        {
+    protected void orderUploadTables() throws UploaderException {
+        try {
             Vector<Vertex<Table>> topoSort = uploadGraph.getTopoSort();
             Vector<UploadTable> newTables = new Vector<UploadTable>();
-            for (Vertex<Table> v : topoSort)
-            {
+            for (Vertex<Table> v : topoSort) {
                 Vector<UploadTable> its = getUploadTable(v.getData());
-                for (UploadTable it : its)
-                {
+                for (UploadTable it : its) {
                     newTables.add(it);
                     uploadTables.remove(it);
                 }
-                if (uploadTables.size() == 0)
-                {
+                if (uploadTables.size() == 0) {
                     break;
                 }
             }
             uploadTables = newTables;
-        }
-        catch (DirectedGraphException ex)
-        {
+        } catch (DirectedGraphException ex) {
             throw new UploaderException(ex);
         }
     }
@@ -1648,7 +1661,6 @@ public class Uploader implements ActionListener, KeyListener
     }
     	
     /**
-     * @param fld
      * @return msg describing current cell contents length and max length for the mapped fld
      */
     protected String getInvalidLengthErrMsg(String value, int maxlen) {
@@ -1670,24 +1682,26 @@ public class Uploader implements ActionListener, KeyListener
         Vector<UploadTableInvalidValue> result = new Vector<UploadTableInvalidValue>();
         int startRow = rowToValidate != -1 ? rowToValidate : 0;
         int endRow = rowToValidate != -1 ? rowToValidate + 1 : uploadData.getRows();
-        Integer[] colWidths = wbSS != null ? null : WorkbenchPaneSS.getMaxColWidths(theWb);
+        Integer[] colWidths = wbSS != null ? null : WorkbenchPaneSS.getMaxColWidths(theWb, isUpdateUpload());
+        boolean isUpdate = isUpdateUpload();
         for (Vector<UploadField> ufs : uploadTable.getUploadFields()) {
             for (UploadField uf : ufs) {
                 if (uf.getIndex() != -1) {
                     for (int r = startRow; r < endRow; r++) {
-                        String value = wbSS != null ? wbSS.getSpreadSheet().getValueAt(r, uf.getIndex()).toString()
-                        		: uploadData.get(r, uf.getIndex()).toString();
-                        int maxlen = wbSS != null ? wbSS.getColumnMaxWidth(uf.getIndex()) : colWidths[uf.getIndex()];
-                        if (uf.getField().getFieldInfo() != null) {
-                        	maxlen = uf.getField().getFieldInfo().getLength();
-                        }
-                        if (maxlen != -1 && value.length() > maxlen)
-                        {
-                            result.add(new UploadTableInvalidValue(null, uploadTable, uf, r,
-                                    new UploaderException(
-                                            getInvalidLengthErrMsg(value, maxlen),
-                                            //getResourceString(WB_CELL_LENGTH_EXCEPTION),
-                                            UploaderException.INVALID_DATA)));
+                        if (!isUpdate || rowHasEdits(r)) {
+                            String value = wbSS != null ? wbSS.getSpreadSheet().getValueAt(r, uf.getIndex()).toString()
+                                    : uploadData.get(r, uf.getIndex()).toString();
+                            int maxlen = wbSS != null ? wbSS.getColumnMaxWidth(uf.getIndex()) : colWidths[uf.getIndex()];
+                            if (uf.getField().getFieldInfo() != null) {
+                                maxlen = uf.getField().getFieldInfo().getLength();
+                            }
+                            if (maxlen != -1 && value.length() > maxlen) {
+                                result.add(new UploadTableInvalidValue(null, uploadTable, uf, r,
+                                        new UploaderException(
+                                                getInvalidLengthErrMsg(value, maxlen),
+                                                //getResourceString(WB_CELL_LENGTH_EXCEPTION),
+                                                UploaderException.INVALID_DATA)));
+                            }
                         }
                     }
                 }
@@ -1701,9 +1715,9 @@ public class Uploader implements ActionListener, KeyListener
      * @param col
      * @return list of invalid values
      */
-    public Vector<UploadTableInvalidValue> validateData(int row, int col)
+    public List<UploadTableInvalidValue> validateData(int row, int col)
     {
-        Vector<UploadTableInvalidValue> result = new Vector<UploadTableInvalidValue>();
+        List<UploadTableInvalidValue> result = new ArrayList<UploadTableInvalidValue>();
     	//XXX figure out which table is associated with col.
         for (UploadTable tbl : uploadTables) {
         	tbl.clearBlankness();
@@ -1724,24 +1738,54 @@ public class Uploader implements ActionListener, KeyListener
     	return result;
     }
     
-    public Vector<UploadField> checkChangedData(int row) throws Exception
-    {
+    /**
+     * @param row
+     * @return
+     * @throws Exception
+     */
+    public List<Pair<UploadField, Object>> checkChangedData(int row, boolean forceLoad) throws Exception {
+		List<Pair<UploadField, Object>> result = new ArrayList<Pair<UploadField, Object>>();
+    	//if (rowHasEdits(row)) {
+    		getRootTable().loadExportedRecord(row, theWb.getRow(row).getRecordId(), forceLoad);
     	
-    	getRootTable().loadExportedRecord(/*row, */theWb.getRow(row).getRecordId());
-    	
-    	Vector<UploadField> result = new Vector<UploadField>();
-    	for (UploadTable ut : uploadTables)
-    	{
-    		result.addAll(ut.getChangedFields(row));
+    		for (UploadTable ut : uploadTables) {
+    			loadRow(ut, row);
+    			result.addAll(ut.getChangedFields(row));
+    		}
+    	//}
+    	return result;
+    }
+    
+    /**
+     * @param row
+     * @return
+     */
+    protected boolean rowHasEdits(int row) {
+    	WorkbenchRow r = theWb.getRow(row);
+    	for (WorkbenchDataItem di : r.getWorkbenchDataItems()) {
+    		int stat = di.getEditorValidationStatus();
+    		if ((stat & WorkbenchDataItem.VAL_EDIT) != 0) {
+    			return true;
+    		}
     	}
-    	if (result.size() > 0)
-    	{
-    		//for (UploadField fld : result)
-    		//{
-    			//System.out.println(fld.getWbFldName());
-    		//}
+    	return false;
+    }
+    
+    /**
+     * @param row
+     * @return
+     */
+    protected List<WorkbenchDataItem> getEditedItems(int row) {
+    	WorkbenchRow r = theWb.getRow(row);
+    	List<WorkbenchDataItem> result = new ArrayList<WorkbenchDataItem>();
+    	for (WorkbenchDataItem di : r.getWorkbenchDataItems()) {
+    		int stat = di.getEditorValidationStatus();
+    		if ((stat & WorkbenchDataItem.VAL_EDIT) != 0) {
+    			result.add(di);
+    		}
     	}
     	return result;
+    	
     }
     
     /**
@@ -1750,43 +1794,35 @@ public class Uploader implements ActionListener, KeyListener
      * @return true if other records than the current exported rec for child tables use 
      * the specified ut record.
      */
-    public boolean recIsShared(final UploadTable ut, final Integer recID)
-    {
+    public boolean recIsShared(final UploadTable ut, final Integer recID) {
     	int utIndex = -1;
     	boolean result = false;
-    	for (int t = 0; t < uploadTables.size(); t++)
-    	{
+    	for (int t = 0; t < uploadTables.size(); t++) {
     		if (ut == uploadTables.get(t))
     		{
     			utIndex = t;
     			break;
     		}
     	}
-    	if (utIndex != -1)
-    	{
-    		for (int t = utIndex+1; t < uploadTables.size(); t++)
-    		{
+    	if (utIndex != -1) {
+    		for (int t = utIndex+1; t < uploadTables.size(); t++) {
     			UploadTable tbl = uploadTables.get(t);
     			ParentTableEntry pte = tbl.getParentTableEntry(ut);
-    			if (pte != null)
-    			{
+    			if (pte != null) {
     				String sql = "select count(*) from " + tbl.getTblClass().getSimpleName().toLowerCase() 
     					+ " where " + pte.getParentRel().getRelatedField() + " = " 
     					+ ut.getExportedRecord().getId() + " and " 
     					+ tbl.getTable().getTableInfo().getPrimaryKeyName() + " != "
     					+ tbl.getExportedRecord().getId();
     				Integer cnt = BasicSQLUtils.getCount(sql);
-    				if (cnt != null && cnt > 0)
-    				{
+    				if (cnt != null && cnt > 0) {
     					return true;
-    				} else if (recIsShared(tbl, tbl.getExportedRecord().getId()))
-    				{
+    				} else if (recIsShared(tbl, tbl.getExportedRecord().getId())) {
     					return true;
     				}
     			}
     		}
     	}
-    	
     	return result;
     }
     
@@ -1973,78 +2009,55 @@ public class Uploader implements ActionListener, KeyListener
     /**
      * Validates contents of all cells in dataset.
      */
-    public boolean validateData(boolean doInBackground)
-    {
+    public boolean validateData(boolean doInBackground) {
         dataValidated = false;
         setOpKiller(null);
 
         final Vector<UploadTableInvalidValue> issues = new Vector<UploadTableInvalidValue>();
 
-        final UploaderTask validateTask = new UploaderTask(true, "WB_UPLOAD_CANCEL_MSG")
-        {
+        final UploaderTask validateTask = new UploaderTask(true, "WB_UPLOAD_CANCEL_MSG") {
             @Override
-            public Object doInBackground()
-            {
+            public Object doInBackground() {
                 start();
-            	try
-                {
+            	try {
                     int progress = 0;
                     initProgressBar(0, uploadTables.size(), true, 
-                            getResourceString("WB_UPLOAD_VALIDATING") + " " + getResourceString("ERD_TABLE"), false);
-                    for (UploadTable tbl : uploadTables)
-                    {
+                            getResourceString("WB_UPLOAD_VALIDATING") + " " + getResourceString("ERD_TABLE"), mainPanel.getCurrOpProgress());
+                    for (UploadTable tbl : uploadTables) {
                     	tbl.clearBlankness();
                     }
-                    for (UploadTable tbl : uploadTables)
-                    {
-                        setCurrentOpProgress(++progress);
+                    for (UploadTable tbl : uploadTables) {
+                        setCurrentOpProgress(++progress, mainPanel.getCurrOpProgress());
                         issues.addAll(validateLengths(tbl, -1, -1));
                         issues.addAll(tbl.validateValues(uploadData));
                     }
                     Collections.sort(issues);
                     dataValidated = issues.size() == 0;
                     return dataValidated;
-                }
-                catch (Exception ex)
-                {
+                } catch (Exception ex) {
                     setOpKiller(ex);
                     return false;
                 }
             }
 
             @Override
-            public void done()
-            {
+            public void done() {
                 super.done();
                 validationIssues = issues;
                 statusBar.setText("");
-                if (cancelled)
-                {
+                if (cancelled) {
                     setCurrentOp(Uploader.INITIAL_STATE);
-                }
-                else if (dataValidated && resolver.isResolved() && mainPanel != null)
-                {
+                } else if (dataValidated && resolver.isResolved() && mainPanel != null) {
                     mainPanel.addMsg(new BaseUploadMessage(getResourceString("WB_DATASET_VALIDATED")));
                     setCurrentOp(Uploader.READY_TO_UPLOAD);
-                }
-                else if (mainPanel != null)
-                {
+                    if (isUpdateUpload()) {
+                        SwingUtilities.invokeLater(() -> actionPerformed(new ActionEvent(mainPanel.getDoUploadBtn(), 0, UploadMainPanel.DO_UPLOAD)));
+                    }
+                } else if (mainPanel != null) {
                     mainPanel.addMsg(new BaseUploadMessage(getResourceString("WB_INVALID_DATASET")));
                     setCurrentOp(Uploader.USER_INPUT);
                 }
             }
-
-//			/* (non-Javadoc)
-//			 * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader.UploaderTask#cancelTask()
-//			 */
-//			@Override
-//			public synchronized void cancelTask()
-//			{
-//				super.cancelTask();
-//				interrupt();
-//			}
-
-            
         };
         
         SwingUtilities.invokeLater(new Runnable() {
@@ -2077,27 +2090,18 @@ public class Uploader implements ActionListener, KeyListener
         return result;
     }
 
-    protected synchronized void cancelTask(final UploaderTask task)
-    {
+    protected synchronized void cancelTask(final UploaderTask task) {
         boolean tooLate = true;
-        if (!task.isDone())
-        {
+        if (!task.isDone()) {
             tooLate = false;
-//            boolean undo = UIRegistry.displayConfirm(getResourceString("WB_UPLOAD_FORM_TITLE"),
-//                getResourceString(task.getCancelMsg()), getResourceString("YES"),
-//                getResourceString("NO"), JOptionPane.QUESTION_MESSAGE);
-            if (!task.isDone())
-            {
+            if (!task.isDone()) {
                 task.setUndo(false);
                 task.cancelTask();
-            }
-            else
-            {
+            } else {
                 tooLate = true;
             }
         }
-        if (tooLate)
-        {
+        if (tooLate) {
             UIRegistry.displayErrorDlg(getResourceString("WB_UPLOAD_TASK_ALREADY_COMPLETE"));
         }
     }
@@ -2153,9 +2157,8 @@ public class Uploader implements ActionListener, KeyListener
      * @param tbl
      * @return true if tbl is represented in the Workbench schema.
      */
-    protected boolean isInWBSchema(final Table tbl)
-    {
-        return WorkbenchTask.getDatabaseSchema().getInfoById(tbl.getTableInfo().getTableId()) != null;
+    protected boolean isInWBSchema(final Table tbl) {
+        return WorkbenchTask.getDatabaseSchema(isUpdateUpload()).getInfoById(tbl.getTableInfo().getTableId()) != null;
     }
     
     /**
@@ -2220,41 +2223,30 @@ public class Uploader implements ActionListener, KeyListener
         //This could become very very very inefficient if the number of tables in the Workbench Schema gets larger.
         Vector<Vector<Table>> result = new Vector<Vector<Table>>();
         DirectedGraph<Table, Relationship> dbGraph = this.db.getSchema().getGraph();
-        for (Vertex<Table> newTbl : dbGraph.getVertices())
-        {
-            if (!isTreeable(newTbl.getData()) && isInWBSchema(newTbl.getData()))
-            {
-                if (!isInUploadGraph(newTbl))
-                {
+        for (Vertex<Table> newTbl : dbGraph.getVertices()) {
+            if (!isTreeable(newTbl.getData()) && isInWBSchema(newTbl.getData())) {
+                if (!isInUploadGraph(newTbl)) {
                     uploadGraph.addVertex(newTbl);
-                    for (Vertex<Table> adj : dbGraph.getAdjacentVertices(newTbl))
-                    {
+                    for (Vertex<Table> adj : dbGraph.getAdjacentVertices(newTbl)) {
                         //Vertex<Table> endPt = uploadGraph.getVertexByData(adj.getData());
                         Vertex<Table> endPt = getMatchingVertexInUpload(adj.getData());
-                        if (endPt != null)
-                        {
+                        if (endPt != null) {
                             uploadGraph.addEdge(newTbl.getLabel(), endPt.getLabel());
                         }
                     }
-                    for (Vertex<Table> adj : dbGraph.into(newTbl.getData()))
-                    {
+                    for (Vertex<Table> adj : dbGraph.into(newTbl.getData())) {
                         Vertex<Table> endPt = getMatchingVertexInUpload(adj.getData());
-                        if (endPt != null)
-                        {
+                        if (endPt != null) {
                             uploadGraph.addEdge(endPt.getLabel(), newTbl.getLabel());
                         }
                     }
-                    if (uploadGraph.isConnected())
-                    {
+                    if (uploadGraph.isConnected()) {
                         Vector<Table> newTblResult = new Vector<Table>();
                         newTblResult.add(newTbl.getData());
                         result.add(newTblResult);
-                    }
-                    else if (depth - 1 > 0)
-                    {
+                    } else if (depth - 1 > 0) {
                         Vector<Vector<Table>> results = connectUploadGraph(depth - 1);
-                        for (Vector<Table> tbls : results)
-                        {
+                        for (Vector<Table> tbls : results) {
                             tbls.add(newTbl.getData());
                             result.add(tbls);
                         }
@@ -2269,10 +2261,13 @@ public class Uploader implements ActionListener, KeyListener
     /**
      * @return true if the upload is updating existing records
      */
-    public boolean isUpdateUpload()
-    {
+    public boolean isUpdateUpload() {
     	UploadTable root = getRootTable();
-    	return theWb.getExportedFromTableName() != null && root != null && root.isUpdateMatches();
+    	//umm...shouldn't the root table just be the ExportedFromTable if it exists?? 
+    	return theWb.getExportedFromTableName() != null
+                && (theWb.getWorkbenchTemplate().getSrcFilePath() == null
+                    || theWb.getWorkbenchTemplate().getSrcFilePath().toLowerCase().startsWith("<<#spatch#>>"))
+                && root != null && root.isUpdateMatches();
     }
     
     /**
@@ -2431,7 +2426,7 @@ public class Uploader implements ActionListener, KeyListener
     }
 
     /**
-     * @param tblClass
+     * @param uploadTable
      * @return true if attachments can be uploaded for tblClass
      * 
      * Lots of UI work needs to be done before we can support attachments
@@ -2691,20 +2686,21 @@ public class Uploader implements ActionListener, KeyListener
         missingRequiredFields.clear();
         Iterator<RelatedClassSetter> rces;
         Iterator<DefaultFieldEntry> dfes;
+        UploadTable root = getRootTable();
+        boolean isUp = isUpdateUpload();
         for (UploadTable t : uploadTables)
         {
-            try
-            {
-                rces = t.getRelatedClassDefaults();
-            }
-            catch (ClassNotFoundException ex)
-            {
-                log.error(ex);
-                return null;
-            }
-            while (rces.hasNext())
-            {
-                missingRequiredClasses.add(rces.next());
+            if (!isUp || t != root) {
+            	try {
+            		rces = t.getRelatedClassDefaults();
+            	}
+            	catch (ClassNotFoundException ex) {
+            		log.error(ex);
+            		return null;
+            	}
+            	while (rces.hasNext()) {
+            		missingRequiredClasses.add(rces.next());
+            	}
             }
 
             try
@@ -3005,45 +3001,48 @@ public class Uploader implements ActionListener, KeyListener
      * 
      * Sets up for upload.
      */
-    protected void prepareToUpload(DataProviderSessionIFace theSession) throws UploaderException
-    {
+    protected void prepareToUpload() throws UploaderException {
         //XXX What is the dbTableId field in workbench for? ExportedFromTableName may not even be necessary. Based on use of dbTableId in recordset
     	//it looks like it was designed to for exported records...
         Integer updateTblId = isUpdateUpload() ? DBTableIdMgr.getInstance().getIdByClassName(theWb.getExportedFromTableName()) : null;
         setUpdateTableId(updateTblId);
-    	if (currentOp != SUCCESS_PARTIAL)
-        {
-            for (UploadTable t : uploadTables)
-            {
-                t.setTblSession(theSession);
+        boolean isUpdate = isUpdateUpload();
+    	if (currentOp != SUCCESS_PARTIAL) {
+            for (UploadTable t : uploadTables) {
             	t.setMatchRecordId(t.isMatchRecordId() || (updateTblId != null && updateTblId == t.getTable().getTableInfo().getTableId()));
                 if (updateTblId != null && updateTblId == CollectionObject.getClassTableId() 
                 		&& t.getTable().getTableInfo().getTableId() == CollectingEvent.getClassTableId()
-                		&& AppContextMgr.getInstance().getClassObject(Collection.class).getIsEmbeddedCollectingEvent())
-                {
+                		&& AppContextMgr.getInstance().getClassObject(Collection.class).getIsEmbeddedCollectingEvent()) {
                 	t.setMatchRecordId(true);
                 }
                 t.setUpdateMatches(isUpdateUpload());
-                t.prepareToUpload();
+                t.prepareToUpload(isUpdate);
             }
             newAttachments.clear();
             // But may want option to ONLY upload rows that were skipped...
             skippedRows.clear();
             messages.clear();
             uploadStartRow = 0;
-        } else
-        {
+        } else {
         	uploadStartRow = rowUploading;
-        	if (theWb.getRow(rowUploading).getUploadStatus() == WorkbenchRow.UPLD_SUCCESS)
-        	{
+        	if (theWb.getRow(rowUploading).getUploadStatus() == WorkbenchRow.UPLD_SUCCESS) {
         		uploadStartRow++; //never should be more than row behind.
         	}
         }
-        if (uploadedObjectViewer != null)
-        {
+        if (uploadedObjectViewer != null) {
         	uploadedObjectViewer.closeView();
         }
         newMessages.clear();
+    }
+
+    /**
+     *
+     * @param session
+     */
+    protected void setSession(final DataProviderSessionIFace session) {
+        for (UploadTable t : uploadTables) {
+            t.setTblSession(session);
+        }
     }
 
     /**
@@ -3051,12 +3050,10 @@ public class Uploader implements ActionListener, KeyListener
      * 
      * Puts UI into correct state for current upload phase.
      */
-    public synchronized void setCurrentOp(final String opName)
-    {
+    public synchronized void setCurrentOp(final String opName) {
         previousOp = currentOp;
         currentOp = opName;
-        if (mainPanel == null)
-        {
+        if (mainPanel == null) {
             log.error("UI does not exist.");
             return;
         }
@@ -3092,13 +3089,12 @@ public class Uploader implements ActionListener, KeyListener
                                    final int max,
                                    final boolean paintString,
                                    final String itemName,
-                                   final boolean useAppProgress)
+                                   final JProgressBar progBar)
     {
         SwingUtilities.invokeLater(new Runnable() {
-           public void run()
-           {
-               if (!useAppStatBar && mainPanel == null)
-               {
+           final boolean useAppProgress = progBar == null;
+            public void run() {
+               if (!useAppStatBar && mainPanel == null) {
                    log.error("UI does not exist.");
                    return;
                }
@@ -3106,40 +3102,28 @@ public class Uploader implements ActionListener, KeyListener
                maxProgVal = max;
                indeterminateProgress = minProgVal == 0 && maxProgVal == 0;
                useAppStatBar = useAppProgress;
-               if (useAppStatBar)
-               {
-                   if (indeterminateProgress)
-                   {
+               if (useAppStatBar) {
+                   if (indeterminateProgress) {
                        UIRegistry.getStatusBar().setIndeterminate("UPLOADER", indeterminateProgress);
-                   }
-                   else
-                   {
+                   } else {
                        UIRegistry.getStatusBar().setProgressRange("UPLOADER", minProgVal, maxProgVal);
                    }
-               }
-               else
-               {
-                   JProgressBar pb = mainPanel.getCurrOpProgress();
-                   pb.setVisible(true);
-                   if (indeterminateProgress)
-                   {
-                       pb.setIndeterminate(true);
-                       pb.setString("");
-                   }
-                   else
-                   {
-                       if (pb.isIndeterminate())
-                       {
-                           pb.setIndeterminate(false);
+               } else {
+                   progBar.setVisible(true);
+                   if (indeterminateProgress) {
+                       progBar.setIndeterminate(true);
+                       progBar.setString("");
+                   } else {
+                       if (progBar.isIndeterminate()) {
+                           progBar.setIndeterminate(false);
                        }
-                       pb.setStringPainted(paintString);
-                       if (paintString)
-                       {
-                           pb.setName(itemName);
+                       progBar.setStringPainted(paintString);
+                       if (paintString) {
+                           progBar.setName(itemName);
                        }
-                       pb.setMinimum(minProgVal);
-                       pb.setMaximum(maxProgVal);
-                       pb.setValue(minProgVal);
+                       progBar.setMinimum(minProgVal);
+                       progBar.setMaximum(maxProgVal);
+                       progBar.setValue(minProgVal);
                    }}
                }
         });
@@ -3150,68 +3134,69 @@ public class Uploader implements ActionListener, KeyListener
      * 
      * Sets progress bar progress.
      */
-    protected void setCurrentOpProgress(final int val)
-    {
-        SwingUtilities.invokeLater(new Runnable()
-        {
-            public void run()
-            {
-
-                if (mainPanel == null && !useAppStatBar)
-                {
-                    log.error("UI does not exist.");
-                    return;
-                }
-                if (!indeterminateProgress)
-                {
-                    if (useAppStatBar && !indeterminateProgress)
-                    {
-                        if (val == -1)
-                        {
-                            UIRegistry.getStatusBar().incrementValue("UPLOADER");
-                        }
-                        else
-                        {
-                            UIRegistry.getStatusBar().setValue("UPLOADER", val);
-                        }
+    protected void setCurrentOpProgress(final int val, final JProgressBar pb) {
+        SwingUtilities.invokeLater(() -> {
+            if (mainPanel == null && !useAppStatBar) {
+                log.error("UI does not exist.");
+                return;
+            }
+            if (!indeterminateProgress) {
+                if (useAppStatBar && !indeterminateProgress) {
+                    if (val == -1) {
+                        UIRegistry.getStatusBar().incrementValue("UPLOADER");
+                    } else {
+                        UIRegistry.getStatusBar().setValue("UPLOADER", val);
                     }
-                    else
-                    {
-                        JProgressBar pb = mainPanel.getCurrOpProgress();
-                        int newVal = val == -1 ? Math.min(pb.getValue()+1, pb.getMaximum()) : val;
-                        pb.setValue(newVal);
-                        if (pb.isStringPainted())
-                        {
-                            pb.setString(String.format(getResourceString("WB_UPLOAD_PROGRESSBAR_TEXT"),
-                                new Object[] { pb.getName(), Integer.toString(newVal),
-                                        Integer.toString(pb.getMaximum()) }));
-                        }
+                } else {
+                    int newVal = val == -1 ? Math.min(pb.getValue() + 1, pb.getMaximum()) : val;
+                    pb.setValue(newVal);
+                    if (pb.isStringPainted()) {
+                        pb.setString(String.format(getResourceString("WB_UPLOAD_PROGRESSBAR_TEXT"),
+                                new Object[]{pb.getName(), Integer.toString(newVal),
+                                        Integer.toString(pb.getMaximum())}));
                     }
                 }
             }
         });
     }
 
-    protected void showUploadProgress(final int val)
-    {
-        SwingUtilities.invokeLater(new Runnable()
-        {
-            public void run()
-            {
-                if (mainPanel == null)
-                {
-                    log.error("UI does not exist.");
-                    return;
+    protected void setCurrentOpProgress(final int val, final BatchEditProgressDialog dlg) {
+        final List<UploadMessage> newMsgCopy = new ArrayList<>(newMessages);
+        SwingUtilities.invokeLater(() -> {
+            if (!dlg.isUploadDone()) {
+                JProgressBar pb = dlg.getProgress();
+                if (!indeterminateProgress) {
+                    if (useAppStatBar && !indeterminateProgress) {
+                        if (val == -1) {
+                            UIRegistry.getStatusBar().incrementValue("UPLOADER");
+                        } else {
+                            UIRegistry.getStatusBar().setValue("UPLOADER", val);
+                        }
+                    } else {
+                        int newVal = val == -1 ? Math.min(pb.getValue() + 1, pb.getMaximum()) : val;
+                        pb.setValue(newVal);
+                        if (pb.isStringPainted()) {
+                            pb.setString(String.format(getResourceString("WB_BE_UPLOAD_PROGRESSBAR_TEXT"),
+                                    newVal, pb.getMaximum()));
+                        }
+                    }
                 }
-                setCurrentOpProgress(val);
-                synchronized (Uploader.this)
-                {
-                	for (UploadMessage newMsg : newMessages)
-                	{
-                		mainPanel.addMsg(newMsg);
-                		messages.add(newMsg);
-                	}
-                	newMessages.clear();
+            }
+            dlg.addMsgs(newMsgCopy);
+        });
+    }
+    protected void showUploadProgress(final int val, final JProgressBar pb) {
+        final List<UploadMessage> newMsgCopy = new ArrayList<>(newMessages);
+        SwingUtilities.invokeLater(() -> {
+            if (mainPanel == null) {
+                log.error("UI does not exist.");
+                return;
+            }
+            setCurrentOpProgress(val, pb);
+            synchronized (Uploader.this) {
+                for (UploadMessage newMsg : newMsgCopy) {
+                    mainPanel.addMsg(newMsg);
+                    messages.add(newMsg);
                 }
             }
         });
@@ -3219,7 +3204,7 @@ public class Uploader implements ActionListener, KeyListener
 
     public void undoStep()
     {
-        setCurrentOpProgress(-1);
+        setCurrentOpProgress(-1, mainPanel.getCurrOpProgress());
     }
     
     protected void updateObjectsCreated()
@@ -3368,7 +3353,7 @@ public class Uploader implements ActionListener, KeyListener
         }
         if (mainPanel != null)
         {
-            closeMainForm(false);
+            closeMainForm(false, null);
         }
         return true;
     }
@@ -3383,7 +3368,7 @@ public class Uploader implements ActionListener, KeyListener
         {
             //NOTE the uploadedRecs structure in UploadTable is cleared at the beginning up each upload,
         	//after an undo, uploadedRecs will still contain the records that were 'undone'.
-            result += ut.getUploadedRecs().size();
+            result += ut.getUploadedRecTotalCount();
         }
         return result;
     }
@@ -3392,31 +3377,81 @@ public class Uploader implements ActionListener, KeyListener
      * Shuts down upload UI.
      * @param notifyWB - If true, notify this Uploader's WorkBench.
      */
-    public void closeMainForm(boolean notifyWB)
-    {
-        try
-        {
+    public void closeMainForm(boolean notifyWB, final String action) {
+        try {
             logDebug("closing main form");
             mainPanel.setVisible(false);
             mainPanel = null;
             closeUploadedDataViewers();
 
-            for (Component c : keyListeningTo)
-            {
+            for (Component c : keyListeningTo) {
                 logDebug("removing key listener");
                 c.removeKeyListener(this);
             }
             keyListeningTo.clear();
 
-            if (notifyWB)
-            {
-                wbSS.uploadDone();
+            if (notifyWB) {
+                wbSS.uploadDone(action);
+                if (isUpdateUpload()) {
+                    if (UploadMainPanel.COMMIT_AND_CLOSE_BATCH_UPDATE.equals(action)) {
+                        Taskable beTask = wbSS.getSrcTask();
+                        final SubPaneIFace wbPane = SubPaneMgr.getInstance().getCurrentSubPane();
+                        SubPaneIFace qbp = null;
+                        if (beTask != null) {
+                            java.util.Collection<SubPaneIFace> panes = SubPaneMgr.getInstance().getSubPanes();
+                            for (SubPaneIFace pane : panes) {
+                                if (pane.getTask() == beTask) {
+                                    qbp = pane;
+                                    break;
+                                }
+                            }
+                        }
+                        final SubPaneIFace qbPane = qbp;
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (qbPane != null) {
+                                    SubPaneMgr.getInstance().showPane(qbPane);
+                                    final QueryBldrPane qb = (QueryBldrPane)qbPane;
+                                    SwingUtilities.invokeLater(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            //redisplay recs from dataset in qb results
+                                            qb.doSearch(getBatchEditRS());
+                                        }
+                                    });
+                                }
+                                SubPaneMgr.getInstance().removePane(wbPane);
+                            }
+                        });
+                    }
+                }
             }
         }
         finally
         {
             currentUpload = null;
         }
+    }
+
+    /**
+     *
+     * @return a list of the records in the batch-edited wb.
+     */
+    protected RecordSet getBatchEditRS() {
+        SortedSet<Integer> ids =  new TreeSet<>();
+        for (WorkbenchRow row : getWb().getWorkbenchRowsAsList()) {
+            ids.add(row.getRecordId());
+        }
+        RecordSet result = new RecordSet();
+        result.initialize();
+        result.set("zzz",
+                getRootTable().getTable().getTableInfo().getTableId(),
+                RecordSet.WB_UPLOAD);
+        for (Integer id : ids) {
+            result.addItem(id);
+        }
+        return result;
     }
 
     public UploadMainPanel getMainPanel()
@@ -3447,98 +3482,182 @@ public class Uploader implements ActionListener, KeyListener
      * 
      * Responds to user actions in UI.
      */
-    public void actionPerformed(ActionEvent e)
-    {
-        if (e.getActionCommand().equals(UploadMainPanel.VALIDATE_CONTENT))
-        {
+    public void actionPerformed(ActionEvent e) {
+        if (e.getActionCommand().equals(UploadMainPanel.VALIDATE_CONTENT)) {
             validateData(true);
-        }
-        else if (e.getActionCommand().equals(UploadMainPanel.DO_UPLOAD))
-        {
-            if (isUpdateUpload())
-            {
-            	if (!isValidUpdateUpload())
-            	{
+        } else if (e.getActionCommand().equals(UploadMainPanel.DO_UPLOAD)) {
+            if (isUpdateUpload()) {
+            	if (!isValidUpdateUpload()) {
             		UIRegistry.showError("This dataset contains mappings which are not updateable");
             		return;
             	}
-            	if (!UIRegistry.displayConfirm("Ready to Update", "This update cannot be undone. Are you sure you want to continue?", "Yes", "No", JOptionPane.WARNING_MESSAGE))
-            	{
-            		return;
-            	}
+                if (mainPanel != null) {
+                    SwingUtilities.invokeLater(() -> mainPanel.getBtnPane().setVisible(false));
+                }
             }
         	uploadIt(true);
-        }
-        else if (e.getActionCommand().equals(UploadMainPanel.VIEW_UPLOAD))
-        {
-            if (currentOp.equals(Uploader.SUCCESS) || currentOp.equals(Uploader.SUCCESS_PARTIAL))
-            {
+        } else if (e.getActionCommand().equals(UploadMainPanel.VIEW_UPLOAD)) {
+            if (currentOp.equals(Uploader.SUCCESS) || currentOp.equals(Uploader.SUCCESS_PARTIAL)) {
             	viewAllObjectsCreatedByUpload();
             }
-        }
-        else if (e.getActionCommand().equals(UploadMainPanel.VIEW_SETTINGS))
-        {
+        } else if (e.getActionCommand().equals(UploadMainPanel.VIEW_SETTINGS)) {
             showSettings();
-            if (currentOp.equals(Uploader.READY_TO_UPLOAD) && !resolver.isResolved())
-            {
+            if (currentOp.equals(Uploader.READY_TO_UPLOAD) && !resolver.isResolved()) {
                 setCurrentOp(Uploader.USER_INPUT);
             }
-            else if (currentOp.equals(Uploader.USER_INPUT) && resolver.isResolved())
-            {
+            else if (currentOp.equals(Uploader.USER_INPUT) && resolver.isResolved()) {
                 setCurrentOp(Uploader.READY_TO_UPLOAD);
             }
-        }
-        else if (e.getActionCommand().equals(UploadMainPanel.CLOSE_UI))
-        {
-            if (aboutToShutdown(null))
-            {
-                closeMainForm(true);
+        } else if (e.getActionCommand().equals(UploadMainPanel.CLOSE_UI)) {
+            if (aboutToShutdown(null, UploadMainPanel.CLOSE_UI, getCurrentOp().equals(Uploader.FAILURE))) {
+                closeMainForm(true, UploadMainPanel.CLOSE_UI);
             }
-        }
-        else if (e.getActionCommand().equals(UploadMainPanel.UNDO_UPLOAD))
-        {
-            if (UIRegistry.displayConfirm(getResourceString("WB_UPLOAD_FORM_TITLE"),
-                    getResourceString("WB_UNDO_UPLOAD_MSG"), getResourceString("OK"),
-                    getResourceString("CANCEL"), JOptionPane.QUESTION_MESSAGE))
-            {
-                undoUpload(true, false, true);
+        } else if (e.getActionCommand().equals(UploadMainPanel.CANCEL_AND_CLOSE_BATCH_UPDATE)
+                || e.getActionCommand().equals(UploadMainPanel.COMMIT_AND_CLOSE_BATCH_UPDATE)) {
+            if (currentTask.get() != null && currentTask.get().isCancellable()) {
+                int rv = showShutDownDlg(true, UploadMainPanel.CANCEL_AND_CLOSE_BATCH_UPDATE);
+                if (rv == JOptionPane.YES_OPTION) {
+                    cancelRunningBatchEdit();
+                } else {
+                    return;
+                }
+            } else {
+                rollBackOrCommitBatchEdit(e.getActionCommand(), false, true);
             }
-        }
-        else if (e.getActionCommand().equals(UploadMainPanel.TBL_DBL_CLICK))
-        {
-            mainPanel.getViewUploadBtn().setEnabled(canViewUpload(currentOp));
-            if (currentOp.equals(Uploader.SUCCESS) || currentOp.equals(Uploader.SUCCESS_PARTIAL))
-            {
-            	viewAllObjectsCreatedByUpload();
+        } else if (e.getActionCommand().equals(UploadMainPanel.UNDO_UPLOAD)) {
+                if (UIRegistry.displayConfirm(getResourceString("WB_UPLOAD_FORM_TITLE"),
+                        getResourceString("WB_UNDO_UPLOAD_MSG"), getResourceString("OK"),
+                        getResourceString("CANCEL"), JOptionPane.QUESTION_MESSAGE)) {
+                    undoUpload(true, false, true);
+                }
+        } else if (e.getActionCommand().equals(UploadMainPanel.TBL_DBL_CLICK)) {
+                mainPanel.getViewUploadBtn().setEnabled(canViewUpload(currentOp));
+                if (currentOp.equals(Uploader.SUCCESS) || currentOp.equals(Uploader.SUCCESS_PARTIAL)) {
+                    viewAllObjectsCreatedByUpload();
+                }
+        } else if (e.getActionCommand().equals(UploadMainPanel.TBL_CLICK)) {
+                mainPanel.getViewUploadBtn().setEnabled(canViewUpload(currentOp));
+        } else if (e.getActionCommand().equals(UploadMainPanel.MSG_CLICK)) {
+                goToMsgWBCell((Component)e.getSource(), false);
+        } else if (e.getActionCommand().equals(UploadMainPanel.PRINT_INVALID)) {
+                printInvalidValReport();
+        } else if (e.getActionCommand().equals(UploadMainPanel.CANCEL_OPERATION)) {
+            if (currentTask.get() != null && currentTask.get().isCancellable()) {
+                    cancelTask(currentTask.get());
+            } else {
+                    log.info("ignoring action: " + e.getActionCommand());
             }
+        } else {
+                log.error("Unrecognized action: " + e.getActionCommand());
         }
-        else if (e.getActionCommand().equals(UploadMainPanel.TBL_CLICK))
-        {
-            mainPanel.getViewUploadBtn().setEnabled(canViewUpload(currentOp));
-        }
-        else if (e.getActionCommand().equals(UploadMainPanel.MSG_CLICK))
-        {
-            goToMsgWBCell((Component)e.getSource(), false);
-        }
-        else if (e.getActionCommand().equals(UploadMainPanel.PRINT_INVALID))
-        {
-            printInvalidValReport();
-        }
-        else if (e.getActionCommand().equals(UploadMainPanel.CANCEL_OPERATION))
-        {
-            if (currentTask != null && currentTask.isCancellable())
-            {
-                cancelTask(currentTask);
-            }
-            else
-            {
-                log.info("ignoring action: " + e.getActionCommand());
-            }
-        }
-        else
-            log.error("Unrecognized action: " + e.getActionCommand());
     }
 
+    /**
+     *
+     */
+    protected void cancelRunningBatchEdit() {
+        cancelTask(currentTask.get());
+        Runnable sleeper = new Runnable() {
+            @Override
+            public void run() {
+                long now = System.currentTimeMillis();
+                while (currentTask.get() != null && System.currentTimeMillis() - now < 15000L) {
+                    try {
+                        Thread.sleep(171);
+                    } catch (InterruptedException ex) {
+                        log.warn(ex);
+                    }
+                }
+                if (currentTask.get() != null) {
+                    throw new RuntimeException("Unable to stop batch edit process.");
+                }
+                rollBackOrCommitBatchEdit(UploadMainPanel.CANCEL_AND_CLOSE_BATCH_UPDATE, true, true);
+            }
+        };
+        new Thread(sleeper).start();
+    }
+
+    protected void rollBackOrCommitBatchEdit(final String action, boolean force, boolean closeUploadPanel) {
+        int rv = force ? JOptionPane.YES_OPTION : showShutDownDlg(true, action);
+        if (rv == JOptionPane.YES_OPTION) {
+            final boolean rollBack = UploadMainPanel.CANCEL_AND_CLOSE_BATCH_UPDATE.equals(action);
+            if (theUploadBatchEditSession != null) {
+                Session s = ((edu.ku.brc.specify.dbsupport.HibernateDataProviderSession) theUploadBatchEditSession).getSession();
+                Transaction t = s.getTransaction();
+                if (!t.wasCommitted() && !t.wasRolledBack()) {
+                   Thread rollComT = new Thread() {
+                        @Override
+                        public void run() {
+                            super.run();
+                            SwingUtilities.invokeLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    //UIHelper.centerAndShow(progDlg);
+                                    //GlassPane's don't come with indeterminate progress bars, so maybe progDlg is better???
+                                    UIRegistry.writeSimpleGlassPaneMsg(getResourceString(rollBack ? "WB_BATCH_EDIT_ROLLING_BACK" : "WB_BATCH_EDIT_COMMITTING"),
+                                            WorkbenchTask.GLASSPANE_FONT_SIZE);
+                                }
+                            });
+                            if (rollBack) {
+                                theUploadBatchEditSession.rollback();
+                            } else {
+                                try {
+                                    theUploadBatchEditSession.commit();
+                                } catch (Exception ex) {
+                                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, ex);
+                                    throw new RuntimeException(ex);
+                                }
+                            }
+                            theUploadBatchEditSession.close();
+                            theUploadBatchEditSession = null;
+                            SwingUtilities.invokeLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    //progDlg.setVisible(false);
+                                    UIRegistry.clearSimpleGlassPaneMsg();
+                                }
+                            });
+                            if (closeUploadPanel && aboutToShutdown(null, action, true))
+                                closeMainForm(true, action);
+                        }
+                    };
+                    rollComT.start();
+
+                }
+            } else {
+                if (closeUploadPanel && aboutToShutdown(null, action, true)) {
+                    closeMainForm(true, action);
+                }
+            }
+            if (!closeUploadPanel) {
+                SwingUtilities.invokeLater(() -> {
+                    mainPanel.getBtnPane().setVisible(true);
+                    mainPanel.closeBtn.setVisible(true);
+                    mainPanel.cancelBtn.setVisible(false);
+                    mainPanel.commitCloseBatchUpdateBtn.setVisible(false);
+                    mainPanel.cancelCloseBatchUpdateBtn.setVisible(false);
+                });
+            }
+        }
+    }
+
+    protected int showShutDownDlg(boolean isUpdate, final String action) {
+        String msg;
+        if (!isUpdate) {
+            msg = String.format(getResourceString("WB_UPLOAD_CONFIRM_SAVE"), theWb.getName());
+        } else if (UploadMainPanel.CANCEL_AND_CLOSE_BATCH_UPDATE.equals(action)) {
+            msg = getResourceString("WB_BATCH_EDIT_CONFIRM_CANCEL");
+        } else if (UploadMainPanel.COMMIT_AND_CLOSE_BATCH_UPDATE.equals(action)) {
+            msg = String.format(getResourceString("WB_BATCH_EDIT_CONFIRM_COMMIT"), theWb.getName());
+        } else {
+            msg = String.format(getResourceString("WB_UPLOAD_CONFIRM_SAVE"), theWb.getName());
+        }
+        String title = getResourceString(!isUpdate ? "WB_UPLOAD_FORM_TITLE" : "WB_BATCH_EDIT_FORM_TITLE");
+        JFrame topFrame = (JFrame) UIRegistry.getTopWindow();
+        return JOptionPane.showConfirmDialog(topFrame, msg, title,
+                isUpdate ? JOptionPane.YES_NO_OPTION : JOptionPane.YES_NO_CANCEL_OPTION);
+    }
     /**
      * Called when the WorkbenchPaneSS for the uploaded dataset is shutting down, and when
      * the Upload UI 'Close' button is clicked.
@@ -3546,68 +3665,56 @@ public class Uploader implements ActionListener, KeyListener
      * @param shuttingDownSS - the dataset that is shutting down.
      * @return true if the Uploader can be closed, otherwise false.
      */
-    public boolean aboutToShutdown(final WorkbenchPaneSS shuttingDownSS)
+    public boolean aboutToShutdown(final WorkbenchPaneSS shuttingDownSS, final String action, boolean force)
     {
-        if (shuttingDownSS != null && shuttingDownSS != wbSS)
-        {
+        if (shuttingDownSS != null && shuttingDownSS != wbSS) {
             return true;
         }
-        if (currentTask != null || 
-        		(shuttingDownSS != null && (currentOp.equals(Uploader.SUCCESS)  || currentOp.equals(Uploader.SUCCESS_PARTIAL)) && getUploadedObjects() > 0))
-        {
-            JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), getResourceString("WB_UPLOAD_BUSY_CANNOT_CLOSE"));
+        if (!(wasCommitted || wasRolledBack) && currentTask.get() != null ||
+        		(shuttingDownSS != null && (currentOp.equals(Uploader.SUCCESS)  || currentOp.equals(Uploader.SUCCESS_PARTIAL)) && getUploadedObjects() > 0)) {
+            JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), getResourceString(isUpdateUpload() ? "WB_BATCH_EDIT_PENDING_EDITS" :"WB_UPLOAD_BUSY_CANNOT_CLOSE"));
             return false;
         }
         
         boolean result = true;
 
-        if (uploadedObjectViewer != null)
-        {
+        if (uploadedObjectViewer != null) {
         	uploadedObjectViewer.closeView();
         }
 
-        if (result && shuttingDownSS == null && 
-        		(currentOp.equals(Uploader.SUCCESS)  || currentOp.equals(Uploader.SUCCESS_PARTIAL)) && getUploadedObjects() > 0 && !isUpdateUpload())
-        {
+        if (result && shuttingDownSS == null
+                && (currentOp.equals(Uploader.SUCCESS)
+                        || currentOp.equals(Uploader.SUCCESS_PARTIAL)
+                        || wasCommitted)
+                && getUploadedObjects() > 0) {
             result = false;
-        	String msg = String.format(getResourceString("WB_UPLOAD_CONFIRM_SAVE"), theWb.getName());
-            JFrame topFrame = (JFrame)UIRegistry.getTopWindow();
-            int rv = JOptionPane.showConfirmDialog(topFrame,
-                                                   msg,
-                                                   getResourceString("WB_UPLOAD_FORM_TITLE"),
-                                                   JOptionPane.YES_NO_CANCEL_OPTION);
-            
-            if (rv == JOptionPane.YES_OPTION)
-            {
+            boolean isUpdate = isUpdateUpload();
+            int rv = force ? JOptionPane.YES_OPTION : showShutDownDlg(isUpdate, action);
+            if (rv == JOptionPane.YES_OPTION) {
                 saveRecordSets();
                 result = true;
                 wbSS.saveObject();
-            }
-            else if (rv == JOptionPane.NO_OPTION)
-            {
+            } else if (rv == JOptionPane.NO_OPTION) {
                 undoUpload(shuttingDownSS == null, true, true);
                 result = true;
             }
-            //else rv equals JOptionPane.CANCEL_OPTION or CLOSED_OPTION
-            if (result)
-            {
-                for (UploadTable ut : uploadTables)
-                {
-                    try
-                    {
+
+            if (result) {
+                for (UploadTable ut : uploadTables) {
+                    try {
                         ut.shutdown();
-                    }
-                    catch (UploaderException ex)
-                    {
+                    } catch (UploaderException ex) {
                         edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                         edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, ex);
                         throw new RuntimeException(ex);
                     }
                 }
             }
-        } 
-        if (additionalLocksSet)
-        {
+            if (deleteHelper != null) {
+                deleteHelper.done(true);
+            }
+        }
+        if (additionalLocksSet) {
         	freeAdditionalLocks();
         }
         return result; 
@@ -3882,27 +3989,20 @@ public class Uploader implements ActionListener, KeyListener
     /**
      * Builds form for upload UI.
      */
-    protected void buildMainUI()
-    {
+    protected void buildMainUI() {
         mainPanel = new UploadMainPanel(isUpdateUpload());
 
         SortedSet<UploadInfoRenderable> uts = new TreeSet<UploadInfoRenderable>();
-        for (UploadTable ut : uploadTables)
-        {
+        for (UploadTable ut : uploadTables) {
             UploadInfoRenderable render = new UploadInfoRenderable(ut);
-            if (uts.contains(render))
-            {
-                for (UploadInfoRenderable r : uts)
-                {
-                    if (r.equals(render))
-                    {
+            if (uts.contains(render)) {
+                for (UploadInfoRenderable r : uts) {
+                    if (r.equals(render)) {
                         r.addTable(ut);
                         break;
                     }
                 }
-            }
-            else
-            {
+            } else {
                 uts.add(new UploadInfoRenderable(ut));
             }
         }
@@ -3922,44 +4022,40 @@ public class Uploader implements ActionListener, KeyListener
 //        SwingUtilities.invokeLater(new Runnable() {
 //           public void run()
 //           {
-               if (mainPanel == null)
-               {
+               if (mainPanel == null) {
                    log.error("UI does not exist.");
                    return;
                }
                
-               if (op.equals(Uploader.RETRIEVING_UPLOADED_DATA))
-               {
+               if (op.equals(Uploader.RETRIEVING_UPLOADED_DATA)) {
             	   //There's really nothing to do in this case anymore
             	   return;
                }
                
                int uploadedObjects = getUploadedObjects();
                
-               if (op.equals(Uploader.SUCCESS) || op.equals(Uploader.SUCCESS_PARTIAL))
-               {
-                   if (mainPanel.getUploadTbls().getSelectedIndex() == -1)
-                   {
+               if (op.equals(Uploader.SUCCESS) || op.equals(Uploader.SUCCESS_PARTIAL)) {
+                   if (mainPanel.getUploadTbls().getSelectedIndex() == -1) {
                        // assuming list is not empty
                        mainPanel.getUploadTbls().setSelectedIndex(0);
                    }
                }
 
-               if (op.equals(Uploader.SUCCESS) || op.equals(Uploader.SUCCESS_PARTIAL)) 
-               {
-            	   if (uploadedObjects > 0 && !isUpdateUpload())
-            	   {
+               if (op.equals(Uploader.SUCCESS) || op.equals(Uploader.SUCCESS_PARTIAL)) {
+            	   if (uploadedObjects > 0 && !isUpdateUpload()) {
             		   mainPanel.closeBtn.setText(getResourceString("WB_UPLOAD.COMMIT"));
             	   }
-            	   else
-            	   {
+            	   else {
             		   mainPanel.closeBtn.setText(getResourceString("CLOSE"));
+            		   mainPanel.commitCloseBatchUpdateBtn.setEnabled(true);
+                       //closeMainForm(true);
             	   }
                }
                
                if (op.equals(Uploader.READY_TO_UPLOAD))
                {
             	   mainPanel.closeBtn.setText(getResourceString("CLOSE"));
+                   mainPanel.commitCloseBatchUpdateBtn.setEnabled(false);
                }
                
                
@@ -3987,7 +4083,7 @@ public class Uploader implements ActionListener, KeyListener
             	   }
                }
             	   
-               mainPanel.getCancelBtn().setVisible(mainPanel.getCancelBtn().isEnabled());
+               mainPanel.getCancelBtn().setVisible(!isUpdateUpload() && mainPanel.getCancelBtn().isEnabled());
 
                mainPanel.getDoUploadBtn().setEnabled(canUpload(op));
 
@@ -4154,7 +4250,7 @@ public class Uploader implements ActionListener, KeyListener
     protected boolean canValidateContent(final String op)
     {
         return /*op.equals(Uploader.USER_INPUT) ||*/ op.equals(Uploader.INITIAL_STATE)
-                || op.equals(Uploader.FAILURE);
+                /*|| op.equals(Uploader.FAILURE)*/;
     }
 
     /**
@@ -4220,7 +4316,7 @@ public class Uploader implements ActionListener, KeyListener
      */
     protected boolean canViewUpload(final String op)
     {
-        return (op.equals(Uploader.SUCCESS) || op.equals(Uploader.SUCCESS_PARTIAL)) && mainPanel.getUploadTbls().getSelectedIndex() != -1;
+        return !isUpdateUpload() && ((op.equals(Uploader.SUCCESS) || op.equals(Uploader.SUCCESS_PARTIAL)) && mainPanel.getUploadTbls().getSelectedIndex() != -1);
     }
 
     /**
@@ -4228,14 +4324,13 @@ public class Uploader implements ActionListener, KeyListener
      */
     public void uploadIt(boolean doInBackground) 
     {
-        try
-        {
+        final int toiletSize = Specify.HIBERNATE_BATCH_SIZE;
+        try {
         	buildIdentifier();
             setOpKiller(null);
-            prepareToUpload(null);
+            prepareToUpload();
 
-            final UploaderTask uploadTask = new UploaderTask(true, "WB_CANCEL_UPLOAD_MSG")
-            {
+            final UploaderTask uploadTask = new UploaderTask(true, "WB_CANCEL_UPLOAD_MSG") {
                 boolean success = false;
                 boolean paused = false;
                 Integer updateTblId = null;
@@ -4244,19 +4339,13 @@ public class Uploader implements ActionListener, KeyListener
                 /**
                  * @throws UploaderException
                  */
-                protected void setupExportedTable() throws UploaderException
-                {
-                	if (updateTblId != null)
-                	{
-                		for (UploadTable ut : uploadTables)
-                		{
-                			if (ut.getTable().getTableInfo().getTableId() == updateTblId)
-                			{
-                				if (exportedTable == null)
-                				{
+                protected void setupExportedTable() throws UploaderException {
+                	if (updateTblId != null) {
+                		for (UploadTable ut : uploadTables) {
+                			if (ut.getTable().getTableInfo().getTableId() == updateTblId) {
+                				if (exportedTable == null) {
                 					exportedTable = ut;
-                				} else
-                				{
+                				} else {
                 					throw new UploaderException("Unable to determine base exported table", UploaderException.ABORT_IMPORT);
                 				}
                 			}
@@ -4267,152 +4356,276 @@ public class Uploader implements ActionListener, KeyListener
                 /**
                  * 
                  */
-                protected void setExportedRecordIds() throws Exception
-                {
-                	DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+                protected void setExportedRecordIds() throws Exception {
+                	DataProviderSessionIFace session = theUploadBatchEditSession != null
+                            ? theUploadBatchEditSession
+                            : DataProviderFactory.getInstance().createSession();
                 	Class<?> cls = DBTableIdMgr.getInstance().getInfoById(updateTblId).getClassObj();
-                	try
-                	{
+                	try {
                 		DataModelObjBase obj = (DataModelObjBase )session.get(cls, getRowRecordId(rowUploading));
-                		if (obj != null)
-                		{
+                		if (obj != null) {
                 			obj.forceLoad();
                 		}
                 		exportedTable.setExportedRecordId(obj);
-                	} finally
-                	{
-                		session.close();
+                	} finally {
+                	    if (theUploadBatchEditSession == null) {
+                            session.close();
+                        }
                 	}
                 	
                 }
-                
+
+                /**
+                 *
+                 * @return
+                 */
+                protected BatchEditProgressDialog createAndShowProgDlg(boolean isUpdate) {
+                    if (!isUpdate) {
+                        return null;
+                    } else {
+                        final BatchEditProgressDialog result = new BatchEditProgressDialog(getResourceString("WB_BATCH_EDIT_FORM_TITLE"),
+                                getResourceString("WB_BATCH_EDIT_IN_PROCESS"), Uploader.this,
+                                DBTableIdMgr.getInstance().getInfoById(updateTblId).getName(), Uploader.this);
+                        //result.setResizable(false);
+                        result.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+                        result.setModal(true);
+                        result.setAlwaysOnTop(true);
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                result.setVisible(true);
+                            }
+                        });
+                        return result;
+                    }
+                }
+
                 @SuppressWarnings("synthetic-access")
                 @Override
-                public Object doInBackground()
-                {
+                public Object doInBackground() {
                     start();
-                	initProgressBar(0, uploadData.getRows(), true, 
-                        getResourceString("WB_UPLOAD_UPLOADING") + " " + getResourceString("WB_ROW"), false);
-                    try
-                    {
-                    	updateTblId = getUpdateTableId();
+                    boolean isUpdate = isUpdateUpload();
+                    boolean crashed = false;
+                    theUploadBatchEditSession = isUpdate ? DataProviderFactory.getInstance().createSession() : null;
+                    if (isUpdate) {
+                        setSession(theUploadBatchEditSession);
+                        updateTblId = getUpdateTableId();
+                        if (updateTblId != null) {
+                            UsageTracker.incrUsageCount("BE.Apply." + DBTableIdMgr.getInstance().getInfoById(updateTblId).getName());
+                        }
+                    }
+                    final BatchEditProgressDialog progDlg = createAndShowProgDlg(isUpdate);
+                    initProgressBar(0, uploadData.getRows(), true,
+                            getResourceString(updateTblId == null ? "WB_UPLOAD_UPLOADING" : "WB_UPLOAD_UPDATING") + " " + getResourceString("WB_ROW"),
+                            mainPanel.getCurrOpProgress());
+                    if (progDlg != null) {
+                        SwingUtilities.invokeLater(() -> mainPanel.getCurrOpProgress().setVisible(false));
+                        initProgressBar(0, uploadData.getRows(), true,
+                                getResourceString(updateTblId == null ? "WB_UPLOAD_UPLOADING" : "WB_UPLOAD_UPDATING") + " " + getResourceString("WB_ROW"),
+                                progDlg.getProgress());
+                    }
+                    try {
                     	setupExportedTable();
-                        for (rowUploading = uploadStartRow; rowUploading < uploadData.getRows();)
-                        {
+                    	if (UIHelper.isMacOS() && progDlg != null) {
+                    	    progDlg.restoreOriginalSize();
+                        }
+                        if (theUploadBatchEditSession != null) {
+                            theUploadBatchEditSession.beginTransaction();
+                        }
+                        int writesSinceFlush = 0;
+                        for (rowUploading = uploadStartRow; rowUploading < uploadData.getRows();) {
+                            newMessages.clear();
                         	boolean rowAborted = false;
-                        	if (cancelled)
-                        	{
+                        	if (cancelled) {
                         		paused = true;
                         		break;
                         	}
-                        	logDebug("uploading row "
-								+ String.valueOf(rowUploading));
+                        	logDebug("uploading row " + String.valueOf(rowUploading));
 
-                        	if (rowUploading == 0)
-                        	{
-                        		showUploadProgress(1);
+                        	if (rowUploading == 0) {
+                        		showUploadProgress(1, mainPanel.getCurrOpProgress());
+                        		if (progDlg != null) {
+                                    showUploadProgress(1, progDlg.getProgress());
+                                }
                         	}
 
-                        	if (!uploadData.isEmptyRow(rowUploading))
-                        	{
-                            	imagesForRow.clear();
-                            	if (updateTblId != null)
-                            	{
-                            		setExportedRecordIds();
+                        	if (!uploadData.isEmptyRow(rowUploading) && (updateTblId == null || rowHasEdits(rowUploading))) {
+                            	List<UploadTable> tblsWithChanges = new ArrayList<UploadTable>();
+                            	List<UploadTable> tblsToSkip = new ArrayList<>();
+                            	if (updateTblId != null) {
+                            		for (UploadTable t: uploadTables) {
+                            			loadRow(t, rowUploading);
+                            			if (t.rowHasChanges(rowUploading, tblsWithChanges)) {
+                            				tblsWithChanges.add(t);
+                            			}
+                            		}
                             	}
-                            	imagesForRow.addAll(uploadData.getWbRow(rowUploading).getWorkbenchRowImages());
-                        		for (UploadTable t : uploadTables)
-                        		{
-                        			if (cancelled)
-                        			{
-                        				break;
-                        			}
-                        			try
-                        			{
-                        				if (theWb
-											.getRow(rowUploading)
-											.getUploadStatus() != WorkbenchRow.UPLD_SUCCESS)
-                        				{
-                        					uploadRow(t, rowUploading);
-                        				} else
-                        				{
-                        					throw new UploaderException(
-												getResourceString("WB_UPLOAD_ROW_ALREADY_UPLOADED"),
-												UploaderException.ABORT_ROW);
-                        				}
-                        			} catch (UploaderException ex)
-                        			{
-                        				if (ex.getStatus() == UploaderException.ABORT_ROW)
-                        				{
-                        					logDebug(ex.getMessage());
-                        					abortRow(ex, rowUploading);
-                        					rowAborted = true;
+                        		imagesForRow.clear();
+                            	uploadedTablesForCurrentRow.clear();
+                        		if (updateTblId == null || tblsWithChanges.size() > 0) {
+                        			if (updateTblId != null) {
+                        				setExportedRecordIds();
+                        			}                            	
+                        			imagesForRow.addAll(uploadData.getWbRow(rowUploading).getWorkbenchRowImages());
+                        			for (UploadTable t : uploadTables) {
+                        				if (cancelled) {
                         					break;
                         				}
-                        				throw ex;
+                        				try {
+                        					if (theWb.getRow(rowUploading).getUploadStatus() != WorkbenchRow.UPLD_SUCCESS) {
+                        						if (uploadRow(t, rowUploading, tblsWithChanges, updateTblId)) {
+                        						    uploadedTablesForCurrentRow.add(t);
+                                                }
+                        						tblsWithChanges.remove(t);
+                        					} else {
+                        						throw new UploaderException(getResourceString("WB_UPLOAD_ROW_ALREADY_UPLOADED"), UploaderException.ABORT_ROW);
+                        					}
+                        				} catch (UploaderException ex) {
+                        					if (ex.getStatus() == UploaderException.ABORT_ROW) {
+                        						logDebug(ex.getMessage());
+                        						abortRow(ex, rowUploading);
+                        						rowAborted = true;
+                        						break;
+                        					}
+                        					throw ex;
+                        				}
+                        				updateObjectsCreated();
                         			}
-                        			updateObjectsCreated();
                         		}
                         	}
 
-                            if (!rowAborted)
-                            {
-                            	theWb.getRow(rowUploading).setUploadStatus(
-                            			WorkbenchRow.UPLD_SUCCESS);
+                            if (!rowAborted) {
+                            	theWb.getRow(rowUploading).setUploadStatus(WorkbenchRow.UPLD_SUCCESS);
                             }
-                            if (!cancelled)
-                            {
+                            if (!cancelled) {
                             	rowUploading++;
+                            	writesSinceFlush += uploadedTablesForCurrentRow.size();
+                                if (theUploadBatchEditSession != null && writesSinceFlush >= toiletSize) {
+                                    theUploadBatchEditSession.flush();
+                                    theUploadBatchEditSession.clear();
+                                    writesSinceFlush = 0;
+                                }
                             }
-                            showUploadProgress(rowUploading);
+                            showUploadProgress(rowUploading, mainPanel.getCurrOpProgress());
+                        	if (progDlg != null) {
+                                setCurrentOpProgress(rowUploading, progDlg);
+                            }
                         }
                     }
-                    catch (Exception ex)
-                    {
+                    catch (Exception ex) {
                         setOpKiller(ex);
-                        return false;
+                        ex.printStackTrace();
+                        crashed = true;
                     }
-                    success = !cancelled || (cancelled && paused);
+                    success = !crashed && (!cancelled || (cancelled && paused));
+                    try {
+                        if (!crashed) {
+                            if (progDlg != null) {
+                                SwingUtilities.invokeLater(() -> progDlg.finishingTouches());
+                            }
+                            if (isUpdate) {
+                                for (int t = uploadTables.size() - 1; t >= 0; t--) {
+                                    uploadTables.get(t).finishUpload(cancelled, theUploadBatchEditSession);
+                                }
+                            }
+                        }
+                        finishTransaction(progDlg, cancelled, crashed);
+                    } catch (Exception ex) {
+                        success = false;
+                        setOpKiller(ex);
+                    }
                     return success;
                 }
 
-                @Override
-                public void done()
-                {
-                    try
-                    {
-                    	//for (UploadTable t : uploadTables)
-                    	for (int t = uploadTables.size() - 1; t >= 0; t--)
-                    	{
-                    		uploadTables.get(t).finishUpload(cancelled && !paused, null);
-                    	}
-                    } catch (Exception ex)
-                    {
-                    	success = false;
-                    	setOpKiller(ex);
-                    }
-                    super.done();
-                    statusBar.setText("");
-                    if (success)
-                    {
-                        if (!paused)
-                        {
-                        	setCurrentOp(Uploader.SUCCESS);
-                        } else
-                        {
-                        	setCurrentOp(Uploader.SUCCESS_PARTIAL);
+                protected void finishTransaction(final BatchEditProgressDialog progDlg, boolean cancelled, boolean crashed) {
+                    if (progDlg != null) {
+                        if (!cancelled && !crashed) {
+                            try {
+                                SwingUtilities.invokeAndWait(() -> progDlg.batchEditDone());
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, ex);
+                            }
+                            long tickTime = System.currentTimeMillis();
+                            long waitTime = 0L;
+                            while (progDlg.getTicks() > 0 && !progDlg.isCancelPressed() && !progDlg.isCommitPressed()) {
+                                try {
+                                    Thread.sleep(79);
+                                    waitTime = System.currentTimeMillis() - tickTime;
+                                    if (waitTime > 970) {
+                                        progDlg.tick();
+                                        waitTime = 0;
+                                        tickTime = System.currentTimeMillis();
+                                    }
+                                } catch (InterruptedException ie) {
+                                    log.error(ie);
+                                    break;
+                                }
+                            }
+                        }
+                        boolean commit = progDlg.isCommitPressed();
+                        if (commit) {
+                            try {
+                                theUploadBatchEditSession.commit();
+                                theUploadBatchEditSession.close();
+                                theUploadBatchEditSession = null;
+                                wasCommitted = true;
+                                SwingUtilities.invokeLater(() -> progDlg.commitSuccess());
+                            } catch (Exception ex) {
+                                //Oh no.
+                                success = false;
+                                ex.printStackTrace();
+                                theUploadBatchEditSession.close();
+                                theUploadBatchEditSession = null;
+                                wasRolledBack = true;
+                                SwingUtilities.invokeLater(() -> progDlg.commitFail());
+                            }
+                        } else {
+                            boolean wasTimeout = false;
+                            if (!progDlg.isCancelPressed()) {
+                                SwingUtilities.invokeLater(() -> progDlg.cancelPressed());
+                                wasTimeout = true;
+                            }
+                            theUploadBatchEditSession.rollback();
+                            theUploadBatchEditSession.close();
+                            theUploadBatchEditSession = null;
+                            wasRolledBack = true;
+                            final boolean timedOut = wasTimeout;
+                            SwingUtilities.invokeLater(() -> progDlg.cancelCompleted(timedOut));
                         }
                     }
-                    else
-                    {
+                }
+
+                @Override
+                public void done() {
+                    super.done();
+                    statusBar.setText("");
+                    if (updateTableId.get() == -1) {
+                        try {
+                            for (int t = uploadTables.size() - 1; t >= 0; t--) {
+                                uploadTables.get(t).finishUpload(cancelled, null);
+                            }
+                        } catch (UploaderException uex) {
+                            success = false;
+                            setOpKiller(uex);
+                        }
+                    }
+                    if (success) {
+                        if (!paused) {
+                        	setCurrentOp(Uploader.SUCCESS);
+
+                            } else {
+                        	setCurrentOp(Uploader.SUCCESS_PARTIAL);
+                        }
+                    } else {
                         mainPanel.clearObjectsCreated();
                         //undoUpload will clear opKiller, so save it and reassign, after call. (iffy?)
                         Exception savedOpKiller = getOpKiller();
                         undoUpload(false, false, undo);
                         setOpKiller(savedOpKiller);
 
-                        if (!cancelled)
-                        {
+                        if (!cancelled) {
                             setCurrentOp(Uploader.FAILURE);
                         }
                     }
@@ -4422,32 +4635,24 @@ public class Uploader implements ActionListener, KeyListener
 
             UIRegistry.getStatusBar().setText(getResourceString(Uploader.UPLOADING));
             uploadTask.execute();
-            if (mainPanel == null)
-            {
+            if (mainPanel == null) {
                 initUI(Uploader.UPLOADING);
-            }
-            else
-            {
+            } else {
                 setCurrentOp(Uploader.UPLOADING);
             }
             
-            if (!doInBackground)
-            {
-            	try
-            	{
+            if (!doInBackground) {
+            	try {
             		uploadTask.get();
-            	} catch (ExecutionException ex)
-            	{
+            	} catch (ExecutionException ex) {
             		//hopefully it will be clear to caller that something went wrong?
-            	} catch (InterruptedException ex)
-            	{
+            	} catch (InterruptedException ex) {
             		//hopefully it will be clear to caller that something went wrong?
             	}
             	//uploadTask.finished();
             }
         }
-        catch (UploaderException ex)
-        {
+        catch (UploaderException ex) {
             setOpKiller(ex);
         }
     }
@@ -4625,13 +4830,14 @@ public class Uploader implements ActionListener, KeyListener
                 matchSet.setRemember(true);
                 matchSet.setMatchEmptyValues(true);
             }
-            int toiletSize = 200;
+            int toiletSize = Specify.HIBERNATE_BATCH_SIZE;
             DataProviderSessionIFace theSession = DataProviderFactory.getInstance().createSession();
             try {
             	theSession.beginTransaction();
             	buildIdentifier();
             	setOpKiller(null);
-            	prepareToUpload(theSession);
+            	prepareToUpload();
+            	setSession(theSession);
             	HashMap<UploadTable, HashMap<Integer,Integer>> uploadedRecs = new HashMap<UploadTable, HashMap<Integer,Integer>>();
             	for (UploadTable ut : uploadTables) {
             		if (ut.isCheckMatchInfo()) {
@@ -4639,6 +4845,7 @@ public class Uploader implements ActionListener, KeyListener
             		}
             	}
             	int rowsSinceFlush = 0;
+            	List<UploadTable> changedTbls = new ArrayList<UploadTable>(); //used in Sp6 for batch edits
             	try {
             		Integer updateTblId = getUpdateTableId();
             		UploadTable exportedTable = setupExportedTableSansUI(updateTblId);
@@ -4654,7 +4861,7 @@ public class Uploader implements ActionListener, KeyListener
             				for (UploadTable t : uploadTables) {
             					try {
             						if (theWb.getRow(rowUploading).getUploadStatus() != WorkbenchRow.UPLD_SUCCESS) {
-            							uploadRow(t, rowUploading);
+            							uploadRow(t, rowUploading, changedTbls, null);
             						} else {
             							throw new UploaderException(getResourceString("WB_UPLOAD_ROW_ALREADY_UPLOADED"), UploaderException.ABORT_ROW);
             						}
@@ -4731,7 +4938,7 @@ public class Uploader implements ActionListener, KeyListener
                 		}
                 	}
                 }
-            	currentTask = null;
+            	currentTask.set(null);
             	if (success) {
             		if (doCommit) {
             			theSession.commit();
@@ -4780,8 +4987,8 @@ public class Uploader implements ActionListener, KeyListener
 		for (UploadTable t : uploadTables) {
 			if (t.isCheckMatchInfo() && !t.isSkipMatching()) {
 				Integer[] mCount = t.getMatchCountForCurrentRow();
-				SortedSet<UploadedRecordInfo> urs = t.getUploadedRecs() == null || t.getUploadedRecs().size() == 0 ? 
-						new TreeSet<UploadedRecordInfo>() : t.getUploadedRecs().tailSet(new UploadedRecordInfo(null, rowUploading, 0, null));
+				SortedSet<UploadedRecordInfo> urs = t.getUploadedRecs().getSecond() == null || t.getUploadedRecs().getSecond().size() == 0 ?
+						new TreeSet<>() : t.getUploadedRecs().getSecond().tailSet(new UploadedRecordInfo(null, rowUploading, 0, null));
 				if (urs.size() == 0) {
 					urs.add(new UploadedRecordInfo(null, rowUploading, 0, null));
 				}
@@ -4902,43 +5109,37 @@ public class Uploader implements ActionListener, KeyListener
     {
         setOpKiller(null);
 
-        final UploaderTask undoTask = new UploaderTask(false, "")
-        {
+            final UploaderTask undoTask = new UploaderTask(false, "") {
             boolean success = false;
             boolean removeObjects = completeUndo;
-            Vector<UploadTable> undone = new Vector<UploadTable>();
-            
+            List<UploadTable> undone = new ArrayList<UploadTable>();
+            boolean theSessionWasNull = theUploadBatchEditSession == null;
             @Override
             public Object doInBackground()
             {
                 start();
-            	if (removeObjects)
-                {
-                    try
-                    {
-                        if (isUserCmd)
-                        {
-                            SwingUtilities.invokeAndWait(new Runnable()
-                            {
-                                public void run()
-                                {
+                if (theUploadBatchEditSession != null) {
+                    theUploadBatchEditSession.rollback();
+                    theUploadBatchEditSession.close();
+                    theUploadBatchEditSession = null;
+                } else if (removeObjects) {
+                    try {
+                        if (isUserCmd) {
+                            SwingUtilities.invokeAndWait(new Runnable() {
+                                public void run() {
                                     initProgressBar(0, getUploadedObjects(), true,
                                             getResourceString("WB_UPLOAD_UNDOING") + " "
                                                     + getResourceString("WB_UPLOAD_OBJECT"),
-                                            shuttingDown);
+                                            mainPanel.getCurrOpProgress());
                                 }
                             });
-                        }
-                        else
-                        {
-                            SwingUtilities.invokeLater(new Runnable()
-                            {
-                                public void run()
-                                {
+                        } else {
+                            SwingUtilities.invokeLater(new Runnable() {
+                                public void run() {
                                     initProgressBar(0, getUploadedObjects(), true,
                                             getResourceString("WB_UPLOAD_CLEANING_UP") + " "
                                                     + getResourceString("WB_UPLOAD_OBJECT"),
-                                            shuttingDown);
+                                            mainPanel.getCurrOpProgress());
                                 }
                             });
                         }
@@ -4946,12 +5147,10 @@ public class Uploader implements ActionListener, KeyListener
                         boolean isEmbeddedCE = AppContextMgr.getInstance().getClassObject(
                                 Collection.class).getIsEmbeddedCollectingEvent();
                         undoAttachments();
-                        try
-                        {
+                        try {
                             AppContextMgr.getInstance().getClassObject(Collection.class)
                                     .setIsEmbeddedCollectingEvent(false);
-                            for (int ut = fixedUp.size() - 1; ut >= 0; ut--)
-                            {
+                            for (int ut = fixedUp.size() - 1; ut >= 0; ut--) {
                                 // setCurrentOpProgress(fixedUp.size() - ut, false);
                                 logDebug("undoing " + fixedUp.get(ut).getTable().getName());
                                 fixedUp.get(ut).undoUpload(true);
@@ -4959,15 +5158,11 @@ public class Uploader implements ActionListener, KeyListener
                             }
                             success = true;
                             return success;
-                        }
-                        finally
-                        {
+                        } finally {
                             AppContextMgr.getInstance().getClassObject(Collection.class)
                                     .setIsEmbeddedCollectingEvent(isEmbeddedCE);
                         }
-                    }
-                    catch (Exception ex)
-                    {
+                    } catch (Exception ex) {
                         setOpKiller(ex);
                         return false;
                     }
@@ -4978,18 +5173,14 @@ public class Uploader implements ActionListener, KeyListener
             }
 
             @Override
-            public void done()
-            {
-                if (removeObjects)
-                {
-                	try
-                	{
+            public void done() {
+                if (theSessionWasNull && removeObjects) {
+                	try {
                 		for (UploadTable ut : undone)
                 		{
                 			ut.finishUndoUpload();
                 		}
-                	} catch (Exception ex)
-                	{
+                	} catch (Exception ex) {
                 		setOpKiller(ex);
                 		success = false;
                 	}
@@ -4997,10 +5188,8 @@ public class Uploader implements ActionListener, KeyListener
                 
             	super.done();
                 
-                if (removeObjects)
-                {
-                    for (WorkbenchRow wbRow : theWb.getWorkbenchRows())
-                    {
+                if (theSessionWasNull && removeObjects) {
+                    for (WorkbenchRow wbRow : theWb.getWorkbenchRows()) {
                         wbRow.setUploadStatus(WorkbenchRow.UPLD_NONE); 
                     }
                     wbSS.setChanged(false);
@@ -5008,19 +5197,15 @@ public class Uploader implements ActionListener, KeyListener
                 
                 statusBar.setText("");
                 statusBar.setProgressDone("UPLOADER");
-                if (shuttingDown)
-                {
-                    SwingUtilities.invokeLater(new Runnable()
-                    {
-                        public void run()
-                        {
+                if (shuttingDown) {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
                             UIRegistry.clearSimpleGlassPaneMsg();
 
                         }
                     });
                 }
-                if (getOpKiller() != null)
-                {
+                if (getOpKiller() != null) {
                     JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), String.format(
                             getResourceString("WB_UPLOAD_CLEANUP_FAILED"), new Object[] {
                                     getResourceString((isUserCmd ? "WB_UPLOAD_UNDO_BTN"
@@ -5029,46 +5214,36 @@ public class Uploader implements ActionListener, KeyListener
                             JOptionPane.WARNING_MESSAGE);
 
                 }
-                if (mainPanel != null)
-                {
+                if (mainPanel != null) {
                     mainPanel.clearObjectsCreated();
-                    if (success)
-                    {
-                        if (removeObjects)
-                        {
+                    if (success) {
+                        if (removeObjects) {
                             setCurrentOp(Uploader.READY_TO_UPLOAD);
-                        }
-                        else
-                        {
+                        } else if (!isUpdateUpload()){
                             setCurrentOp(Uploader.SUCCESS_PARTIAL);
+                        } else {
+                            setCurrentOp(Uploader.FAILURE);
                         }
-                    }
-                    else
-                    {
+                    } else {
                         setCurrentOp(Uploader.FAILURE);
                     }
                 }
-                if (shuttingDown && !isUserCmd)
-                {
+                if (shuttingDown && !isUserCmd) {
                 	wbSS.decShutdownLock();
                 	wbSS.shutdown();
                 }
             }
 
         };
-        if (recordSets != null)
-        {
+        if (recordSets != null) {
             recordSets.clear();
             recordSets = null;
         }
         UIRegistry.displayStatusBarText(getResourceString((isUserCmd ? Uploader.UNDOING_UPLOAD
                 : Uploader.CLEANING_UP)));
-        if (shuttingDown)
-        {
-            SwingUtilities.invokeLater(new Runnable()
-            {
-                public void run()
-                {
+        if (shuttingDown) {
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
                     UIRegistry.writeSimpleGlassPaneMsg(String.format(
                             getResourceString("WB_UPLOAD_CLEANING_UP") + "...", theWb
                                     .getName()), WorkbenchTask.GLASSPANE_FONT_SIZE);
@@ -5076,8 +5251,7 @@ public class Uploader implements ActionListener, KeyListener
                 }
             });
         }
-        if (shuttingDown && !isUserCmd)
-        {
+        if (shuttingDown && !isUserCmd) {
             wbSS.incShutdownLock();
         }
         undoTask.execute();
@@ -5117,25 +5291,29 @@ public class Uploader implements ActionListener, KeyListener
         protected boolean cancellable = false;
         protected long startTime;
         protected long endTime;
-        
+
+
         public UploaderTask(boolean cancellable, String cancelMsg)
         {
             super();
             this.cancellable = cancellable;
             this.cancelMsg = cancelMsg;
-            currentTask = this;
+            currentTask.set(this);
         }
         
         public void start()
         {
             startTime = System.nanoTime();
+            uploadedTablesForCurrentRow = new ArrayList<UploadTable>();
+            wasCommitted = false;
+            wasRolledBack = false;
         }
                 
         @Override
         public void done()
         {
             super.done();
-            currentTask = null;
+            currentTask.set(null);
             done = true;
             endTime = System.nanoTime();
             logDebug("UploaderTask time elapsed: " + Long.toString((endTime-startTime)/1000000000L));
@@ -5261,16 +5439,11 @@ public class Uploader implements ActionListener, KeyListener
      * @param t
      * @param row
      */
-    public void loadRow(final UploadTable t, int row)
-    {
-        for (UploadField field : uploadFields)
-        {
+    public void loadRow(final UploadTable t, int row) {
+        for (UploadField field : uploadFields) {
             logDebug("   uploading field: " + field.getWbFldName());
-            //System.out.println("   uploading field: " + field.getWbFldName());
-        	if (field.getField().getTable().equals(t.getTable()))
-            {
-                if (field.getIndex() != -1)
-                {
+        	if (field.getField() != null && field.getField().getTable().equals(t.getTable())) {
+                if (field.getIndex() != -1) {
                     uploadCol(field, uploadData.get(row, field.getIndex()));
                 }
             }
@@ -5283,36 +5456,34 @@ public class Uploader implements ActionListener, KeyListener
      * 
      * imports data in row belonging to t's Table.
      */
-    protected void uploadRow(final UploadTable t, int row) throws UploaderException
-    {
-        loadRow(t, row);
-    	try
-        {
-            writeRow(t, row);
-        }
-        catch (UploaderException ex)
-        {
-            //ex.getCause().printStackTrace();
-        	logDebug(ex.getMessage() + " (" + t.getTable().getName() + ", row "
+    protected boolean uploadRow(final UploadTable t, int row, final List<UploadTable> tblsWithChanges, final Integer updateTblId) throws UploaderException {
+        boolean uploadedIt = false;
+        if (updateTblId == null || tblsWithChanges.size() > 0) {
+        	loadRow(t, row);
+        	boolean tblAndAncestorsUnchanged = updateTblId == null;
+            if (tblsWithChanges.size() > 0) {
+                if (tblsWithChanges.indexOf(t) == -1) {
+                    tblAndAncestorsUnchanged = true;
+                    for (UploadTable a : t.getAncestorTables()) {
+                        if (tblsWithChanges.indexOf(a) != -1) {
+                            tblAndAncestorsUnchanged = false;
+                            break;
+                        }
+                    }
+                }
+            }
+        	try {
+        		writeRow(t, row, tblAndAncestorsUnchanged);
+        		uploadedIt = !tblAndAncestorsUnchanged;
+        	}
+        	catch (UploaderException ex) {
+        		//ex.getCause().printStackTrace();
+        		logDebug(ex.getMessage() + " (" + t.getTable().getName() + ", row "
                     + Integer.toString(row) + ")");
-            throw ex;
+        		throw ex;
+        	}
         }
-    }
-
-    protected void uploadRowSavelessly(final UploadTable t, int row) throws UploaderException
-    {
-        loadRow(t, row);
-    	try
-        {
-            writeRowSavelessly(t, row);
-        }
-        catch (UploaderException ex)
-        {
-            //ex.getCause().printStackTrace();
-        	logDebug(ex.getMessage() + " (" + t.getTable().getName() + ", row "
-                    + Integer.toString(row) + ")");
-            throw ex;
-        }
+        return uploadedIt;
     }
 
     /**
@@ -5331,19 +5502,18 @@ public class Uploader implements ActionListener, KeyListener
 
     /**
      * @param t
+     * @param row
+     * @param tblAndAncestorsUnchanged
      * @throws UploaderException
      * 
      * writes data (if necessary) for t.
      */
-    protected void writeRow(final UploadTable t, int row) throws UploaderException
-    {
-        t.writeRow(row);
+    protected void writeRow(final UploadTable t, int row, boolean tblAndAncestorsUnchanged) throws UploaderException {
+        t.writeRow(row, tblAndAncestorsUnchanged);
         Set<WorkbenchRowImage> imagesToAttach = new HashSet<WorkbenchRowImage>();
-        for (int i = imagesForRow.size() -1; i >= 0; i--)
-        {
+        for (int i = imagesForRow.size() -1; i >= 0; i--) {
         	WorkbenchRowImage wri = imagesForRow.get(i);
-        	if (getAttachToTable(wri) == t)
-        	{
+        	if (getAttachToTable(wri) == t) {
         		imagesToAttach.add(wri);
         		imagesForRow.remove(i);
         	}
@@ -5351,27 +5521,6 @@ public class Uploader implements ActionListener, KeyListener
         attachImages(t, imagesToAttach);
     }
 
-    /**
-     * @param t
-     * @throws UploaderException
-     * 
-     * writes data (if necessary) for t.
-     */
-    protected void writeRowSavelessly(final UploadTable t, int row) throws UploaderException
-    {
-        t.writeRowSavelessly(row);
-        /*Set<WorkbenchRowImage> imagesToAttach = new HashSet<WorkbenchRowImage>();
-        for (int i = imagesForRow.size() -1; i >= 0; i--)
-        {
-        	WorkbenchRowImage wri = imagesForRow.get(i);
-        	if (getAttachToTable(wri) == t)
-        	{
-        		imagesToAttach.add(wri);
-        		imagesForRow.remove(i);
-        	}
-        }
-        attachImages(t, imagesToAttach);*/
-    }
 
     /**
      * @param cls
@@ -5576,39 +5725,31 @@ public class Uploader implements ActionListener, KeyListener
      */
     protected void createRecordSets()
     {
-        if (recordSets != null)
-        {
+        if (recordSets != null)  {
             recordSets.clear();
         }
-        else
-        {
+        else {
             recordSets = new Vector<RecordSet>(uploadTables.size());
         }
 
         UploadTable root = getRootTable();
-        for (UploadTable ut : uploadTables)
-        {
+        for (UploadTable ut : uploadTables)  {
             RecordSet rs = ut.getRecordSet(ut == root);
-            if (rs.getNumItems() > 0)
-            {
+            if (rs.getNumItems() > 0)  {
                 recordSets.add(rs);
             }
         }
         //combine recordSets with identical names...
-        Collections.sort(recordSets, new Comparator<RecordSet>()
-                {
+        Collections.sort(recordSets, new Comparator<RecordSet>()  {
                     public int compare(RecordSet rs1, RecordSet rs2)
                     {
                         return rs1.getName().compareTo(rs2.getName());
                     }
                 });
-        for (int rs=recordSets.size()-1; rs>0; rs--)
-        {
-            if (recordSets.get(rs).getName().equals(recordSets.get(rs-1).getName()))
-            {
+        for (int rs=recordSets.size()-1; rs>0; rs--)  {
+            if (recordSets.get(rs).getName().equals(recordSets.get(rs-1).getName()))  {
                 recordSets.get(rs-1).addAll(recordSets.get(rs).getItems());
-                for (RecordSetItemIFace rsi : recordSets.get(rs).getItems())
-                {
+                for (RecordSetItemIFace rsi : recordSets.get(rs).getItems())  {
                     recordSets.get(rs-1).addItem(rsi);
                 }
                 recordSets.remove(rs);
@@ -5622,45 +5763,36 @@ public class Uploader implements ActionListener, KeyListener
     /**
      * Saves recordSets to the database.
      */
-    protected void saveRecordSets()
-    {
-        if (recordSets == null || recordSets.size() == 0)
-        {
+    protected void saveRecordSets()  {
+        if (recordSets == null || recordSets.size() == 0)  {
             createRecordSets();
         }
 
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        try
-        {
+        try  {
             UploadTable root = getRootTable();
-        	for (RecordSet rs : recordSets)
-			{
+        	for (RecordSet rs : recordSets)  {
 				BusinessRulesIFace busRule = DBTableIdMgr.getInstance()
 						.getBusinessRule(RecordSet.class);
-				if (busRule != null)
-				{
+				if (busRule != null)  {
 					busRule.beforeSave(rs, session);
 				}
+				rs.setModifiedByAgent(rs.getCreatedByAgent());
 				session.beginTransaction();
-				try
-				{
+				try {
 					session.save(rs);
-					if (busRule != null)
-					{
-						if (!busRule.beforeSaveCommit(rs, session))
-						{
+					if (busRule != null)  {
+						if (!busRule.beforeSaveCommit(rs, session))  {
 							session.rollback();
 							throw new Exception(
 									"Business rules processing failed");
 						}
 					}
 					session.commit();
-					if (busRule != null)
-					{
+					if (busRule != null)  {
 						busRule.afterSaveCommit(rs, session);
 					}
-					if (rs.getType() == RecordSet.GLOBAL && rs.getDbTableId() == root.getTable().getTableInfo().getTableId())
-					{
+					if (rs.getType() == RecordSet.GLOBAL && rs.getDbTableId() == root.getTable().getTableInfo().getTableId())  {
 						final RecordSet mergedRs = session.merge(rs);
 		        		SwingUtilities.invokeLater(new Runnable() {
 
@@ -5669,15 +5801,19 @@ public class Uploader implements ActionListener, KeyListener
 							 */
 							@Override
 							public void run() {
-								CommandAction cmd = new CommandAction(RecordSetTask.RECORD_SET, RecordSetTask.ADD_TO_NAV_BOX);
-								cmd.setData(mergedRs);
-								CommandDispatcher.dispatch(cmd);
+							    /*RecordSetTask rsTsk = (RecordSetTask)ContextMgr.getTaskByClass(RecordSetTask.class);
+							    if (rsTsk != null) {
+							        rsTsk.addRecordSetToNavBox(mergedRs);
+                                } else*/ {
+                                    CommandAction cmd = new CommandAction(RecordSetTask.RECORD_SET, RecordSetTask.ADD_TO_NAV_BOX);
+                                    cmd.setData(mergedRs);
+                                    CommandDispatcher.dispatch(cmd);
+                                }
 							}
 		        			
 		        		});
 					}
-				} catch (Exception ex)
-				{
+				} catch (Exception ex)  {
 					edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
 					edu.ku.brc.exceptions.ExceptionTracker.getInstance()
 							.capture(Uploader.class, ex);
@@ -5685,14 +5821,12 @@ public class Uploader implements ActionListener, KeyListener
 				}
 			}
         }
-        catch (Exception ex)
-        {
+        catch (Exception ex)  {
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, ex);
             throw new RuntimeException(ex);
         }
-        finally
-        {
+        finally {
             session.close();
         }
     }
@@ -5900,8 +6034,7 @@ public class Uploader implements ActionListener, KeyListener
      * 
      * @return true if successful.
      */
-    public static boolean unlockUpload()
-    {
+    public static boolean unlockUpload() {
         return TaskSemaphoreMgr.unlock(getLockTitle(), "WORKBENCHUPLOAD",  TaskSemaphoreMgr.SCOPE.Discipline);
     }
 
@@ -6081,7 +6214,16 @@ public class Uploader implements ActionListener, KeyListener
     		unlockTrees(trees);
     	}
     }
-    
+
+    public boolean containsTable(final DBTableInfo tblInfo) {
+        for (UploadTable ut : uploadTables) {
+            if (ut.getTable().getTableInfo() != null
+                    && tblInfo.getTableId() == ut.getTable().getTableInfo().getTableId()) {
+                return true;
+            }
+        }
+        return false;
+    }
     /**
      * @param umsbp
      * 
@@ -6092,13 +6234,10 @@ public class Uploader implements ActionListener, KeyListener
     	umsbp.applySettingToAll(uploadTables);
     }
     
-    public void loadRecordToWb(final DataModelObjBase rec, final Workbench wb) throws Exception
-    {
+    public void loadRecordToWb(final DataModelObjBase rec, final Workbench wb, Vector<Object> queryResultRow) throws Exception {
     	UploadTable t = null;
-    	for (UploadTable ut : uploadTables)
-    	{
-    		if (ut.getTblClass().equals(rec.getClass()))
-    		{
+    	for (UploadTable ut : uploadTables) {
+    		if (ut.getTblClass().equals(rec.getClass())){
     			t = ut;
     		}
     	}
@@ -6106,16 +6245,19 @@ public class Uploader implements ActionListener, KeyListener
     	t.loadRecord(rec, 0);
     	WorkbenchRow row = wb.addRow();
     	row.setRecordId(rec.getId());
-    	for (UploadTable ut : uploadTables)
-    	{
+    	for (UploadTable ut : uploadTables){
     		int seq = 0;
-    		boolean isOneToMany = ut.getUploadFields().size() > 1 || ut.getTable().getName().equalsIgnoreCase("address");
-    		for (Vector<UploadField> flds : ut.getUploadFields())
-    		{
-				if (ut.getCurrentRecord(seq) != null)
-				{
-					if (isOneToMany)
-					{
+    		//XXX!!! cheap trick. needs to check relationship type (don't forget zero-to-many) 
+    		boolean isOneToMany = ut.getUploadFields().size() > 1 || ut.getTable().getName().equalsIgnoreCase("address") 
+    				|| ut.getTable().getName().equalsIgnoreCase("localitydetail")
+    				|| ut.getTable().getName().equalsIgnoreCase("geocoorddetail")
+    				|| ut.getTable().getName().equalsIgnoreCase("preparation")
+    				|| ut.getTable().getName().equalsIgnoreCase("otheridentifier")
+    				|| ut.getTable().getName().equalsIgnoreCase("dnasequence")
+    				|| ut.getTable().getName().equalsIgnoreCase("determination");
+    		for (Vector<UploadField> flds : ut.getUploadFields()){
+				if (ut.getCurrentRecord(seq) != null){
+					if (isOneToMany){
 						WorkbenchRowExportedRelationship wber = new WorkbenchRowExportedRelationship();
 						wber.initialize();
 						wber.setWorkbenchRow(row);
@@ -6126,13 +6268,10 @@ public class Uploader implements ActionListener, KeyListener
 						wber.setRecordId(ut.getCurrentRecord(seq).getId());
 					}
 					//wber.setRelationshipName() ??? - skipping it: assuming that for uploader a table is only one-to-many'ed once from a parent.
-					for (UploadField fld : flds)
-					{
-						if (fld.getIndex() != -1)
-						{
+					for (UploadField fld : flds){
+						if (fld.getIndex() != -1){
     						Object value = fld.getGetter().invoke(ut.getCurrentRecord(seq));
-    						if (value != null)
-    						{
+    						if (value != null){
     							WorkbenchTemplateMappingItem mi = wb.getMappingFromColumn((short )fld.getIndex());
     							WorkbenchDataItem di = new WorkbenchDataItem();
     							di.initialize();
@@ -6140,9 +6279,8 @@ public class Uploader implements ActionListener, KeyListener
     							di.setWorkbenchRow(row);
     							di.setRowNumber(row.getRowNumber());
     							di.setRequired(mi.getIsRequired());
-    							//XXX need to deal with formatting and stuff using fld.DBFieldInfo ...
-    							di.setCellData(ut.getTextForFieldValue(fld, value, 0));
-    							row.getWorkbenchDataItems().add(di);
+                                row.getWorkbenchDataItems().add(di);
+    							row.setData(ut.getTextForFieldValue(fld, value, 0), di.getColumnNumber(), true);
     						}
     					}
     				}
@@ -6150,6 +6288,23 @@ public class Uploader implements ActionListener, KeyListener
     			seq++;
     		}
     	}
+    	for (WorkbenchTemplateMappingItem mi : wb.getWorkbenchTemplate().getWorkbenchTemplateMappingItems()) {
+    	    if (mi.getSrcTableId() == -1) {
+    	        Object data = queryResultRow.get(mi.getViewOrder());
+    	        if (data != null) {
+                    WorkbenchDataItem di = new WorkbenchDataItem();
+                    di.initialize();
+                    di.setWorkbenchTemplateMappingItem(mi);
+                    di.setWorkbenchRow(row);
+                    di.setRowNumber(row.getRowNumber());
+                    di.setRequired(mi.getIsRequired());
+                    //XXX need to deal with formatting and stuff using fld.DBFieldInfo ...
+                    di.setCellData(data.toString());
+                    row.getWorkbenchDataItems().add(di);
+
+                }
+            }
+        }
     }
 
 

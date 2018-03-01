@@ -36,11 +36,15 @@ public class Smusher {
 	 * @return
 	 */
 	protected String getText(Integer startVal, Integer endVal) {
-		String result = startVal.toString();
-		if (!startVal.equals(endVal)) {
-			result += "-" + endVal.toString();
-		} 
-		return result;
+	    if (startVal == null) {
+	        return null;
+        } else {
+            String result = startVal.toString();
+            if (!startVal.equals(endVal)) {
+                result += "-" + endVal.toString();
+            }
+            return result;
+        }
 	}
 	
 	/**
@@ -86,7 +90,8 @@ public class Smusher {
 						return false;
 					}
 				} else {
-					if (currentVal + 1 != Integer.valueOf(row.get(i).toString())) {
+				    Integer sVal = getSmushVal(row.get(i));
+					if (currentVal == null || sVal == null || !(Integer.valueOf(currentVal + 1).equals(sVal))) {
 						return false;
 					}
 				}
@@ -94,7 +99,14 @@ public class Smusher {
 		}
 		return true;
 	}
-	
+
+	private Integer getSmushVal(final Object val) {
+	    if (val == null) {
+	        return null;
+        } else {
+	        return Integer.valueOf(val.toString());
+        }
+    }
 	/**
 	 * @return
 	 */
@@ -106,26 +118,29 @@ public class Smusher {
 		int r = 0;
 		Vector<Object> row = null;
 		List<Integer> ids = null;
+		boolean newSmush = true;
 		while (r < toSmush.size()+1) {
 			if (r < toSmush.size()) {
 				row = toSmush.get(r);
-				if (currentVal == null) {
-					startVal = Integer.valueOf(row.get(smushCol).toString());
+				if (newSmush) {
+					startVal = getSmushVal(row.get(smushCol));
 					startRow = row;
 					if (recordIdCol != -1) {
 						ids = new ArrayList<Integer>();
 						ids.add((Integer )row.get(recordIdCol));
 					}
-					currentVal = Integer.valueOf(row.get(smushCol).toString());
+					currentVal = getSmushVal(row.get(smushCol));
+					newSmush = false;
 				} else {
 					if (isSmushable(startRow, row, currentVal)) {
-						currentVal =  Integer.valueOf(row.get(smushCol).toString());
+						currentVal =  getSmushVal(row.get(smushCol));
 						if (recordIdCol != -1) {
 							ids.add((Integer )row.get(recordIdCol));
 						}
 					} else {
 						result.add(newRow(startVal, currentVal, startRow, ids));
 						currentVal = null;
+						newSmush = true;
 						r--;
 					}
 					

@@ -418,7 +418,7 @@ public class SystemPrefs extends GenericPrefsPanel
      */
     public static void resetSplashImage()
     {
-        IconEntry entry      = IconManager.getIconEntryByName("SpecifySplash");
+        IconEntry entry      = IconManager.getIconEntryByName("SpecifySmallSplash");
         IconEntry entryCache = IconManager.getIconEntryByName("SpecifySplashCache");
         entry.setIcon(entryCache.getIcon());
     }
@@ -431,7 +431,7 @@ public class SystemPrefs extends GenericPrefsPanel
         String userSplashIconPath = AppPreferences.getLocalPrefs().get(SPECIFY_BG_IMG_PATH, null);
         if (StringUtils.isNotEmpty(userSplashIconPath))
         {
-            IconEntry entry = IconManager.getIconEntryByName("SpecifySplash");
+            IconEntry entry = IconManager.getIconEntryByName("SpecifySmallSplash");
             if (entry != null)
             {
                 try

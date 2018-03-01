@@ -43,7 +43,7 @@ public class CollectionObjectRecFinalizer implements UploadedRecFinalizerIFace
      * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadedRecFinalizerIFace#finalizeForWrite(edu.ku.brc.specify.datamodel.DataModelObjBase, int)
      */
     @Override
-    public void finalizeForWrite(DataModelObjBase rec, int recNum, final Uploader uploader)
+    public boolean finalizeForWrite(DataModelObjBase rec, int recNum, final Uploader uploader)
     {
         /*CollectionObject co = (CollectionObject )rec;
         if (co.getCatalogedDate() == null)
@@ -55,7 +55,7 @@ public class CollectionObjectRecFinalizer implements UploadedRecFinalizerIFace
         {
             co.setCataloger(co.getCreatedByAgent());
         }*/
-
+        return false;
     }
 
 }

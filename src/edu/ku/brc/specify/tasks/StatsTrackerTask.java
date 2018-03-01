@@ -144,7 +144,7 @@ public class StatsTrackerTask extends edu.ku.brc.af.tasks.StatsTrackerTask
     {
         if (hasChanged)
         {
-            ImageIcon img = IconManager.getIcon("SpecifySplash");
+            ImageIcon img = IconManager.getIcon("SpecifySmallSplash");
             
             CellConstraints    cc = new CellConstraints();
             PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g,150px", "f:p:g,2px,p"));

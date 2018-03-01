@@ -511,12 +511,12 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
         //final NodeNumberer<N,D,I> nodeNumberer = new NodeNumberer<N,D,I>((D )this);
         final TreeRebuilder<N,D,I> treeRebuilder = theSession == null ? new TreeRebuilder<N,D,I>((D )this, minRank, rebuildMode) : new TreeRebuilder<N,D,I>((D)this, minRank, rebuildMode, theSession);
         final JStatusBar nStatusBar = useProgDlg ? null : getStatusBar();      
-        String progDlgMsg = getResourceString("BaseTreeDef.UPDATING_TREE_DLG");
         final ProgressDialog progDlg =  nStatusBar != null || !isOnUIThread ? null :
-                    new ProgressDialog(progDlgMsg, false, false);
+                    new ProgressDialog(getResourceString("BaseTreeDef.UPDATING_TREE_DLG"), false, false);
         if (nStatusBar != null)
         {
             nStatusBar.setProgressRange(treeRebuilder.getProgressName(), 0, 100);
+            nStatusBar.setText(String.format(getResourceString("BaseTreeDef.UPDATING_TREE"), this.getName()));
             
         } else if (isOnUIThread)
         {
@@ -695,7 +695,11 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
 
                 setRenumberingNodes(false);
                 setNodeNumbersAreUpToDate(treeRebuilder.hasCompletedOK());
-                
+                if (nStatusBar != null) {
+                    displayStatusBarText("");
+                    nStatusBar.setProgressDone(treeRebuilder.getProgressName());
+                }
+
             } catch (Exception ex)
             {
                 ex.printStackTrace();
