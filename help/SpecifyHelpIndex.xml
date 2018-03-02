@@ -21,6 +21,12 @@
 	<indexitem text="Auto Numbering" target="GE" mergetype="javax.help.SortMerge" />
 	<indexitem text="Backup and Restore tool" target="Backup_Restore" mergetype="javax.help.SortMerge" />
 	<indexitem text="Batch Identify" target="Forms_Batch_Determine" mergetype="javax.help.SortMerge" />
+	<indexitem text="Batch Edit" target="BatchEdit">
+		<indexitem text="Edit Records" target="Batch_Editing" />
+		<indexitem text="Choosing Data" target="Choose_Data" />
+		<indexitem text="Apply Edits" target="Apply_Edits" />
+		<indexitem text="Edited Records" target="Edited_Records" />
+	</indexitem>
 	<indexitem text="Block Logins" target="block_logins" mergetype="javax.help.SortMerge" />
 	<indexitem text="Carry Forward" target="Carry_Forward" mergetype="javax.help.SortMerge" />
 	<indexitem text="Change Collection" target="intro_Change_Collection" mergetype="javax.help.SortMerge" />
