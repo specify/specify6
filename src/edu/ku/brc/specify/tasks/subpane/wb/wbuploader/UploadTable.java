@@ -6723,7 +6723,7 @@ public class UploadTable implements Comparable<UploadTable>
         String tblName = showRecordSetInUI ? "" :
         	DBTableIdMgr.getInstance().getByShortClassName(tblClass.getSimpleName()).getTitle() + "_";
         String uploadName = isUpdateMatches() && showRecordSetInUI ?
-                suffixBeWBName(uploader.getWb().getName(), showRecordSetInUI, maxNameLength)
+                suffixBeWBName(uploader.getWb().getSrcFilePath(), showRecordSetInUI, maxNameLength)
                 : uploader.getIdentifier();
         return tblName + uploadName;
     }
@@ -6735,15 +6735,20 @@ public class UploadTable implements Comparable<UploadTable>
     }
 
     protected String suffixBeWBName(final String name, boolean showRecordSetInUI, int maxNameLength) {
-        String newName = crapOutOfBEWBName(name);
         List<Object> names = BasicSQLUtils.querySingleCol("select name from recordset where `type` = "
                 + (showRecordSetInUI ? RecordSet.GLOBAL : RecordSet.WB_UPLOAD)
-                + " and name like '" + newName + "%' order by name");
+                + " and name like '" + name + "%' order by name");
         Integer append = 1;
-        while (names.indexOf(newName + " " + append) != -1 && (newName + " " + append).length() < maxNameLength) {
+        while (names.indexOf(name + " " + append) != -1 && (name + " " + append).length() < maxNameLength) {
             append++;
         }
-        return newName + " " + append;
+        int maxLen = DBTableIdMgr.getInstance().getInfoById(RecordSet.getClassTableId()).getFieldByName("Name").getLength();
+        String coreName = name;
+        if ((coreName + " " + append).length() > maxLen) {
+            int diff = (coreName + " " + append).length() - 64;
+            coreName = coreName.substring(0, coreName.length() - diff - 1);
+        }
+        return coreName + " " + append;
     }
     /**
      * @return

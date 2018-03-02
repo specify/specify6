@@ -1732,20 +1732,21 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         workbench.initialize();
         workbench.setSpecifyUser(AppContextMgr.getInstance().getClassObject(SpecifyUser.class));
         
-        if (StringUtils.isNotEmpty(wbName))
-        {
+        if (StringUtils.isNotEmpty(wbName)) {
             workbench.setName(wbName);
         }
         
-        if (workbenchTemplate != null)
-        {
+        if (workbenchTemplate != null) {
             workbenchTemplate.setSpecifyUser(workbench.getSpecifyUser());
             workbench.setWorkbenchTemplate(workbenchTemplate);
             workbenchTemplate.getWorkbenches().add(workbench);
-            
-            if (fillInWorkbenchNameAndAttrs(workbench, wbName, false, alwaysAskForName))
-            {
+            if (fillInWorkbenchNameAndAttrs(workbench, wbName, false, alwaysAskForName)) {
                 workbenchTemplate.setName(workbench.getName());
+                if (workbenchTemplate.getSrcFilePath().contains("<<#spatch#>>")) {
+                    //stash queryname
+                    workbench.setSrcFilePath(workbenchTemplate.getRemarks());
+                    workbenchTemplate.setRemarks(null);
+                }
                 return workbench;
             }
         }
@@ -3278,11 +3279,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         try {
     		WorkbenchTemplate template = getTemplateFromQuery(query);
     		if (template != null) {
-    		    String name = template.getName();
-    		    if (name.length() > 64) {
-    		        name = name.substring(name.length() - 64);
-                }
-   			    Workbench workbench = createNewWorkbenchDataObj(name, template, false);
+   			    Workbench workbench = createNewWorkbenchDataObj(template.getName(), template, false);
     			if (workbench != null) {
     				fillandSaveWorkbench(new Pair<>(rs, results), workbench,  true, srcTask);
     			}
@@ -3607,7 +3604,15 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     	String nowStr = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Timestamp(System.currentTimeMillis()));
     	String tag = "<<#spatch#>>:Q:" + query.getContextTableId() + "-" + nowStr;
     	wt.setSrcFilePath(tag);
-    	wt.setName(query.getName() + " -- " + nowStr);
+        String qName = query.getName();
+        int maxLen = DBTableIdMgr.getInstance().getInfoById(RecordSet.getClassTableId()).getFieldByName("Name").getLength();
+        if ((qName + " -- " + nowStr).length() > maxLen) {
+            int diff = (qName + " -- " + nowStr).length() - maxLen;
+            qName = qName.substring(0, qName.length() - diff - 1);
+        }
+        String name =  qName + " -- " + nowStr;
+        wt.setName(name);
+        wt.setRemarks(query.getName());
     	return wt;
     }
 
