@@ -2161,7 +2161,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             addLabel(values, infoPB, UIHelper.createI18NLabel(hasReged ? "Specify.HASREG" : "Specify.NOTREG"),cc.xy(3, y)); y += 2;
             
             String isaNumber = RegisterSpecify.getISANumber();
-            addLabel(values, infoPB, UIHelper.createI18NFormLabel("Specify.ISANUM"), cc.xy(1, y));
+            addLabel(values, infoPB, UIHelper.createI18NFormLabel("Specify.MemberNum"), cc.xy(1, y));
             addLabel(values, infoPB, UIHelper.createLabel(StringUtils.isNotEmpty(isaNumber) ? isaNumber : ""),cc.xy(3, y)); y += 2;
             
             if (serverName != null)
@@ -2275,10 +2275,10 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
     public static String getAboutText(final String appNameArg, final String appVersionArg)
     {
         return "<html><font face=\"sans-serif\" size=\"11pt\">"+appNameArg+" " + appVersionArg +  //$NON-NLS-1$ //$NON-NLS-2$
-        "<br><br>Specify Software Project<br>" +//$NON-NLS-1$
+        "<br><br>Specify Software Consortium<br>" +//$NON-NLS-1$
         "Biodiversity Institute<br>University of Kansas<br>1345 Jayhawk Blvd.<br>Lawrence, KS  USA 66045<br><br>" +  //$NON-NLS-1$
         "<a href=\"http://www.specifysoftware.org\">www.specifysoftware.org</a>"+ //$NON-NLS-1$
-        "<br><a href=\"mailto:specify@ku.edu\">specify@ku.edu</a><br>" +  //$NON-NLS-1$
+        "<br><a href=\"mailto:support@specifysoftware.org\">support@specifysoftware.org</a><br>" +  //$NON-NLS-1$
         "<p>The Specify Software Project is "+ //$NON-NLS-1$
         "funded by the Advances in Biological Informatics Program, " + //$NON-NLS-1$
         "U.S. National Science Foundation  (Grant NSF/BIO: 1565098 and earlier awards).<br><br>" + //$NON-NLS-1$
