@@ -3605,7 +3605,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     	String tag = "<<#spatch#>>:Q:" + query.getContextTableId() + "-" + nowStr;
     	wt.setSrcFilePath(tag);
         String qName = query.getName();
-        int maxLen = DBTableIdMgr.getInstance().getInfoById(RecordSet.getClassTableId()).getFieldByName("Name").getLength();
+        int maxLen = DBTableIdMgr.getInstance().getInfoById(WorkbenchTemplate.getClassTableId()).getFieldByName("Name").getLength();
         if ((qName + " -- " + nowStr).length() > maxLen) {
             int diff = (qName + " -- " + nowStr).length() - maxLen;
             qName = qName.substring(0, qName.length() - diff - 1);
