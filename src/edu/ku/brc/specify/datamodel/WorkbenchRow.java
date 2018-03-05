@@ -1106,7 +1106,10 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
     
     @Transient
     public int getErrorEstimateIndex() {
-        int result = workbench.getColumnIndex(GeoCoordDetail.class, "estUncertainty");
+        int result = workbench.getColumnIndex(GeoCoordDetail.class, "uncertrad");
+        if (result == -1) {
+            workbench.getColumnIndex(GeoCoordDetail.class, "estUncertainty");
+        }
         if (result == -1) {
             result = workbench.getColumnIndex(GeoCoordDetail.class, "maxUncertaintyEst");
         }
