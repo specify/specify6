@@ -1087,49 +1087,49 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
         {
             AgentVariant newObj = (AgentVariant)cObj.clone();
             dst.variants.add(newObj);
-            cObj.setAgent(dst);
+            newObj.setAgent(dst);
         }
         
         for (AgentGeography cObj : src.agentGeographies)
         {
             AgentGeography newObj = (AgentGeography)cObj.clone();
             dst.agentGeographies.add(newObj);
-            cObj.setAgent(dst);
+            newObj.setAgent(dst);
         }
         
         for (AgentSpecialty cObj : src.agentSpecialties)
         {
             AgentSpecialty newObj = (AgentSpecialty)cObj.clone();
             dst.agentSpecialties.add(newObj);
-            cObj.setAgent(dst);
+            newObj.setAgent(dst);
         }
         
         for (Collector cObj : src.collectors)
         {
             Collector newObj = (Collector)cObj.clone();
             dst.collectors.add(newObj);
-            cObj.setAgent(dst);
+            newObj.setAgent(dst);
         }
         
         for (GroupPerson cObj : src.members)
         {
             GroupPerson newObj = (GroupPerson)cObj.clone();
             dst.members.add(newObj);
-            cObj.setMember(dst);
+            newObj.setMember(dst);
         }
         
         for (GroupPerson cObj : src.groups)
         {
             GroupPerson newObj = (GroupPerson)cObj.clone();
             dst.groups.add(newObj);
-            cObj.setGroup(dst);
+            newObj.setGroup(dst);
         }
         
         for (Agent cObj : src.orgMembers)
         {
             Agent newObj = (Agent)cObj.clone();
             dst.orgMembers.add(newObj);
-            cObj.setOrganization(dst);
+            newObj.setOrganization(dst);
         }
     }
     
