@@ -104,7 +104,7 @@
     <field column="Georeference Date" name="geoRefDetDate" type="java.util.Calendar" />
     <field column="GeoRefDetRef" name="geoRefDetRef" type="java.lang.String" length="100"/>
     <field column="GeoRefVerificationStatus" name="geoRefVerificationStatus" type="java.lang.String" length="50"/>
-    <field column="Max Uncertainty" name="estUncertainty" type="java.math.BigDecimal"/>
+    <field column="Max Uncertainty" name="uncertrad" type="java.math.BigDecimal"/>
     <field column="Max Uncertainty Unit" name="MaxUncertaintyEstUnit" type="java.lang.String" length="8" />
     <field column="NoGeoRefBecause" name="noGeoRefBecause" type="java.lang.String" length="100"/>
     <field column="Original Coord System" name="originalCoordSystem" type="java.lang.String" length="32"/>
