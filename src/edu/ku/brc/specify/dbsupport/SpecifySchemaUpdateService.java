@@ -2541,13 +2541,13 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         boolean result = true;
         if (dupsPresent) {
             update(conn, "alter table preparation add index tempprepguididx(GUID)");
-            BasicSQLUtils.update("SET optimizer_switch = 'derived_merge=off'");
+            BasicSQLUtils.update("SET @@optimizer_switch = 'derived_merge=off'");
             BasicSQLUtils.update("update preparation pup inner join (select preparationid from preparation p " +
                     "inner join (select guid from preparation where guid is not null group by 1 having " +
                     "count(guid) > 1) dups on dups.guid = p.guid where p.preparationid != " +
                     "(select preparationid from preparation d2 where d2.guid = p.guid order by " +
                     "timestampcreated limit 1)) topup on topup.preparationid = pup.preparationid set pup.guid = null");
-            BasicSQLUtils.update("SET optimizer_switch = 'derived_merge=default'");
+            BasicSQLUtils.update("SET @@optimizer_switch = 'derived_merge=default'");
             update(conn, "alter table preparation drop index tempprepguididx");
             dups = BasicSQLUtils.query(conn, sql);
             result = dups.size() == 0;
