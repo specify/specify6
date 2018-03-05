@@ -282,22 +282,24 @@ public class UploadToolPanel extends JPanel implements TimingTarget
         autoAssignCatNumPanel.add(autoAssignCatNumLbl, BorderLayout.CENTER);
         autoAssignCatNumPanel.setVisible(false);
         
-    	if (!isForUpdate) {
             this.autoAssables = wbSS.getAutoAssignableFlds();
 
-            if (autoAssables != null && autoAssables.size() > 0) {
-                UploadField catno = null;
-                for (UploadField uf : autoAssables) {
-                    if (uf.getField().getFieldInfo() != null) {
-                        DBFieldInfo ufi = uf.getField().getFieldInfo();
-                        if (ufi.getName().equalsIgnoreCase("catalognumber") &&
-                                ufi.getTableInfo().getName().equalsIgnoreCase("collectionobject")) {
-                            catno = uf;
-                            //break;
-                        }
+        if (autoAssables != null && autoAssables.size() > 0) {
+            UploadField catno = null;
+            for (UploadField uf : autoAssables) {
+                if (uf.getField().getFieldInfo() != null) {
+                    DBFieldInfo ufi = uf.getField().getFieldInfo();
+                    if (ufi.getName().equalsIgnoreCase("catalognumber") &&
+                            ufi.getTableInfo().getName().equalsIgnoreCase("collectionobject")) {
+                        catno = uf;
+                        //break;
                     }
                 }
-                if (catno != null) {
+            }
+            if (catno != null) {
+                if (isForUpdate) {
+                    catno.setAutoAssignForUpload(false);
+                } else {
                     autoAssignCatNumPanel.setVisible(true);
                     configuredFields = new ArrayList<UploadField>();
                     configuredFields.add(catno);
