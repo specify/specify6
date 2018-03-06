@@ -826,6 +826,7 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
                 	wbdi.setRequired(true);
                 }
                 items.put(inx, wbdi);
+                workbench.getMappingFromColumn(col).getWorkbenchDataItems().add(wbdi);
                 //workbenchDataItems.add(wbdi);
             }
         }
@@ -1106,7 +1107,10 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
     
     @Transient
     public int getErrorEstimateIndex() {
-        int result = workbench.getColumnIndex(GeoCoordDetail.class, "uncertrad");
+        int result = workbench.getColumnIndex(GeoCoordDetail.class, "MaxUncertaintyEstValue");
+        if (result == -1) {
+            workbench.getColumnIndex(GeoCoordDetail.class, "uncertrad");
+        }
         if (result == -1) {
             workbench.getColumnIndex(GeoCoordDetail.class, "estUncertainty");
         }

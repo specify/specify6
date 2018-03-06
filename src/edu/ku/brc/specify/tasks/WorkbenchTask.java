@@ -1941,7 +1941,6 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                          session.beginTransaction();
                          session.save(workbench);
                          session.commit();
-                         session.flush();
                          datasetNavBoxMgr.addWorkbench(workbench);
                          updateNavBoxUI(null);
                          return true;
