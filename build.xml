@@ -283,7 +283,7 @@
     <attribute name="ext-frag"/>
     <sequential>
       <delete file="${installer.dir}/non-mac-application-adapter.jar" />
-      <copy file="${build.root}/${jar.name}-mac.jar" tofile="${installer.dir}/${jar.name}.jar" />
+      <copy overwrite="true" file="${build.root}/${jar.name}-mac.jar" tofile="${installer.dir}/${jar.name}.jar" />
 
       <exec executable="${install4j.dir}/bin/install4jc">
         <arg value="--quiet"/>
@@ -304,7 +304,7 @@
     <attribute name="ext-frag"/>
     <sequential>
       <copy file="${system.dep.libs.dir}/non-mac-application-adapter.jar" todir="${installer.dir}" />
-      <copy file="${build.root}/${jar.name}-nonmac.jar" tofile="${installer.dir}/${jar.name}.jar" />
+      <copy overwrite="true" file="${build.root}/${jar.name}-nonmac.jar" tofile="${installer.dir}/${jar.name}.jar" />
 
       <exec executable="${install4j.dir}/bin/install4jc">
         <arg value="--quiet"/>
