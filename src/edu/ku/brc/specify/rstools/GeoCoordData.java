@@ -163,7 +163,7 @@ public class GeoCoordData implements GeoCoordDataIFace
      * @return the errorRadius
      */
     @Override
-    public BigDecimal getErrorEstimate()
+    public BigDecimal getErrorEst()
     {
         return errorEstimate;
     }
@@ -172,7 +172,7 @@ public class GeoCoordData implements GeoCoordDataIFace
      * @see edu.ku.brc.services.biogeomancer.GeoCoordDataIFace#setErrorEstimate(java.lang.String)
      */
     @Override
-    public void setErrorEstimate(BigDecimal errorEstimate)
+    public void setErrorEst(BigDecimal errorEstimate)
     {
         this.errorEstimate = errorEstimate;
     }

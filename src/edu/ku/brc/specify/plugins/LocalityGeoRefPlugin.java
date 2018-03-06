@@ -47,7 +47,6 @@ import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
 import edu.ku.brc.af.ui.forms.validation.ValTextField;
 import edu.ku.brc.services.biogeomancer.GeoCoordDataIFace;
 import edu.ku.brc.services.biogeomancer.GeoCoordProviderListenerIFace;
-import edu.ku.brc.specify.datamodel.GeoCoordDetail;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.plugins.latlon.LatLonUI;
@@ -398,7 +397,7 @@ public class LocalityGeoRefPlugin extends JButton implements GetSetValueIFace,
                {
                    ((GetSetValueIFace)comp).setValue("GEOLocate", null);
                }
-               latLonUI.setErrorInfo(gcData.getErrorPolygon(), gcData.getErrorEstimate());
+               latLonUI.setErrorInfo(gcData.getErrorPolygon(), gcData.getErrorEst());
            }
        }
     }

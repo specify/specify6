@@ -54,7 +54,7 @@ public interface GeoCoordDataIFace
     
     public abstract String getErrorPolygon();
     
-    public abstract BigDecimal getErrorEstimate();
+    public abstract BigDecimal getErrorEst();
     
     //--------------------------------------------
     //-- This portion is used for setting the data
@@ -66,7 +66,7 @@ public interface GeoCoordDataIFace
     
     public abstract void setErrorPolygon(String errorPolygon);
     
-    public abstract void setErrorEstimate(BigDecimal errorEstimate);
+    public abstract void setErrorEst(BigDecimal errorEstimate);
     
     public abstract String getXML();
 }

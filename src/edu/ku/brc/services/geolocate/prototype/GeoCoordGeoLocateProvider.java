@@ -263,7 +263,7 @@ public class GeoCoordGeoLocateProvider implements GeoCoordServiceProviderIFace, 
                                 item.set(String.format("%7.5f", latitude), String.format("%7.5f", longitude)); //$NON-NLS-1$ //$NON-NLS-2$
                                 
                                 item.setErrorPolygon(chosenResult.getErrorPolygon());
-                                item.setErrorEstimate(chosenResult.getErrorEstimate());
+                                item.setErrorEst(chosenResult.getErrorEstimate());
                                 itemsUpdated++;
                             }
                         }

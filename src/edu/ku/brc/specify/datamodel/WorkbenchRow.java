@@ -218,27 +218,35 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
     /* (non-Javadoc)
      * @see edu.ku.brc.services.biogeomancer.GeoCoordDataIFace#getErrorRadius()
      */
-    @Override
     @Column(name = "ErrorEstimate", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
     public BigDecimal getErrorEstimate() {
         return errorEstimate;
+    }
+
+    public void setErrorEstimate(BigDecimal errorEstimate) {
+        this.errorEstimate = errorEstimate;
+    }
+
+    @Override
+    @Transient
+    public BigDecimal getErrorEst() {
+        return this.errorEstimate;
     }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.services.biogeomancer.GeoCoordDataIFace#setErrorEstimate(java.math.BigDecimal)
      */
     @Override
-    public void setErrorEstimate(BigDecimal errorEstimate) {
-    	
-        this.errorEstimate = errorEstimate;
+    @Transient
+    public void setErrorEst(BigDecimal errorEstimate) {
+        this.setErrorEstimate(errorEstimate);
         if (workbench != null) {
-        	Integer col = getErrorEstimateIndex();
-        	if (col != -1) {
-        		setData(this.errorEstimate == null ? "" : this.errorEstimate.toString(), col.shortValue(), false);
-        	}
+            Integer col = getErrorEstimateIndex();
+            if (col != -1) {
+                setData(this.errorEstimate == null ? "" : this.errorEstimate.toString(), col.shortValue(), false);
+            }
         }
     }
-
     /* (non-Javadoc)
      * @see edu.ku.brc.services.biogeomancer.GeoCoordDataIFace#setErrorPolygon(java.lang.String)
      */
