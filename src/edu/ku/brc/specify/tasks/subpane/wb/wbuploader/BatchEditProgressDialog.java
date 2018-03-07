@@ -280,8 +280,16 @@ public class BatchEditProgressDialog extends JDialog {
     }
 
     protected void cancelCompleted(boolean wasTimeout) {
+        cancelCompleted(wasTimeout, false);
+    }
+
+    protected void cancelCompleted(boolean wasTimeout, boolean  crashed) {
         cancelled.set(true);
-        endStageStatus(wasTimeout ? "WB_BATCH_EDIT_TIMED_OUT" : "WB_BATCH_EDIT_CANCELLED");
+        if (crashed) {
+            endStageStatus("WB_BATCH_EDIT_CRASHED");
+        } else {
+            endStageStatus(wasTimeout ? "WB_BATCH_EDIT_TIMED_OUT" : "WB_BATCH_EDIT_CANCELLED");
+        }
     }
 
     protected void moreTimePressed() {

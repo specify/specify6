@@ -4333,9 +4333,9 @@ public class Uploader implements ActionListener, KeyListener
             final UploaderTask uploadTask = new UploaderTask(true, "WB_CANCEL_UPLOAD_MSG") {
                 boolean success = false;
                 boolean paused = false;
+                boolean uploadBatchEditTransOpen = false;
                 Integer updateTblId = null;
                 UploadTable exportedTable = null;
-                
                 /**
                  * @throws UploaderException
                  */
@@ -4431,6 +4431,7 @@ public class Uploader implements ActionListener, KeyListener
                         }
                         if (theUploadBatchEditSession != null) {
                             theUploadBatchEditSession.beginTransaction();
+                            uploadBatchEditTransOpen = true;
                         }
                         int writesSinceFlush = 0;
                         for (rowUploading = uploadStartRow; rowUploading < uploadData.getRows();) {
@@ -4584,15 +4585,26 @@ public class Uploader implements ActionListener, KeyListener
                         } else {
                             boolean wasTimeout = false;
                             if (!progDlg.isCancelPressed()) {
-                                SwingUtilities.invokeLater(() -> progDlg.cancelPressed());
+                                SwingUtilities.invokeLater(() -> {
+                                    if (crashed) {
+                                        String msgText = getResourceString("WB_BATCH_EDIT_UNHANDLED_EXCEPTION");
+                                        if (getOpKiller() != null) {
+                                            msgText += ": " + getOpKiller().getClass().getSimpleName() + " - " + getOpKiller().getLocalizedMessage();
+                                        }
+                                        progDlg.addMsg(new BaseUploadMessage(msgText));
+                                    }
+                                    progDlg.cancelPressed();
+                                });
                                 wasTimeout = true;
                             }
-                            theUploadBatchEditSession.rollback();
+                            if (uploadBatchEditTransOpen) {
+                                theUploadBatchEditSession.rollback();
+                            }
                             theUploadBatchEditSession.close();
                             theUploadBatchEditSession = null;
                             wasRolledBack = true;
                             final boolean timedOut = wasTimeout;
-                            SwingUtilities.invokeLater(() -> progDlg.cancelCompleted(timedOut));
+                            SwingUtilities.invokeLater(() -> progDlg.cancelCompleted(timedOut, crashed));
                         }
                     }
                 }
