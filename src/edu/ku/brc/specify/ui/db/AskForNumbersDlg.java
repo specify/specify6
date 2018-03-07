@@ -24,6 +24,8 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import java.awt.BorderLayout;
 import java.awt.Frame;
 import java.awt.HeadlessException;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
@@ -129,6 +131,22 @@ public class AskForNumbersDlg extends CustomDialog implements ChangeListener
         super.createUI();
         
         textArea     = UIHelper.createTextArea(5, 30);
+        textArea.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                getApplyBtn().setEnabled(StringUtils.isEmpty(textArea.getText()));
+            }
+        });
         errorPanel   = new NumberEditorPanel(textArea, this, "AFN_NUMFMT_ERROR");
         missingPanel = new NumberEditorPanel(textArea, this, "AFN_NOTFND_ERROR");
         
