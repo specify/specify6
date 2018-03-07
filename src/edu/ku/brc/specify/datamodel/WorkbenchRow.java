@@ -245,6 +245,10 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
             if (col != -1) {
                 setData(this.errorEstimate == null ? "" : this.errorEstimate.toString(), col.shortValue(), false);
             }
+            col = getErrorEstimateUnitIndex();
+            if (col != -1) {
+                setData(this.errorEstimate == null ? "" : "m", col.shortValue(), false);
+            }
         }
     }
     /* (non-Javadoc)
@@ -1126,6 +1130,11 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
             result = workbench.getColumnIndex(GeoCoordDetail.class, "maxUncertaintyEst");
         }
         return result;
+    }
+
+    @Transient
+    public int getErrorEstimateUnitIndex() {
+        return workbench.getColumnIndex(GeoCoordDetail.class, "MaxUncertaintyEstUnit");
     }
 
     ////////////////////////////////////////////////////
