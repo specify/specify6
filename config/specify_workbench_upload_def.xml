@@ -546,6 +546,10 @@
     <field table="GeoCoordDetail" name="geoRefByLast" relationshipname="geoRefDetBy"  relatedfieldname="lastName"/>
     <field table="GeoCoordDetail" name="geoRefByMiddle" relationshipname="geoRefDetBy"  relatedfieldname="middleInitial"/>
     <field table="GeoCoordDetail" name="geoRefByTitle" relationshipname="geoRefDetBy" relatedfieldname="title"/>
+    <field table="GeoCoordDetail" name="compiledByFirst" relationshipname="geoRefCompiledBy"  relatedfieldname="firstName"/>
+    <field table="GeoCoordDetail" name="compiledByLast" relationshipname="geoRefCompiledBy"  relatedfieldname="lastName"/>
+    <field table="GeoCoordDetail" name="compiledByMiddle" relationshipname="geoRefCompiledBy"  relatedfieldname="middleInitial"/>
+    <field table="GeoCoordDetail" name="compiledByTitle" relationshipname="geoRefCompiledBy" relatedfieldname="title"/>
 
  
     <!-- geography -->

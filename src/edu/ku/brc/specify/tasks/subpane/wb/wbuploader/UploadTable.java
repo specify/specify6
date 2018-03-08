@@ -1603,6 +1603,10 @@ public class UploadTable implements Comparable<UploadTable>
                 {
                 	setterName = "GeoRefDetBy";
                 }
+                else if (tblClass.equals(GeoCoordDetail.class) && setterName.equals("CompiledBy"))
+                {
+                    setterName = "GeoRefCompiledBy";
+                }
                 else if (tblClass.equals(FieldNotebook.class) && setterName.equals("Agent"))
                 {
                 	setterName = "OwnerAgent";

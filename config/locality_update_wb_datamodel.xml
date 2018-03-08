@@ -23,6 +23,11 @@
     <field column="Georeferenced By First Name" name="geoRefByFirst" type="java.lang.String" length="50"/>
     <field column="Georeferenced By Middle Initials" name="geoRefByMiddle" type="java.lang.String" length="50"/>
     <field column="Georeferenced By Title" name="geoRefByTitle" type="java.lang.String" length="50"/>
+    <field column="Compiled Date" name="geoRefCompiledDate" type="java.util.Calendar" />
+    <field column="Compiled By By Last Name" name="compiledByLast" type="java.lang.String" length="120"/>
+    <field column="Compiled By First Name" name="compiledByFirst" type="java.lang.String" length="50"/>
+    <field column="Compiled By Middle Initials" name="compiledByMiddle" type="java.lang.String" length="50"/>
+    <field column="Compiled By Title" name="compiledByTitle" type="java.lang.String" length="50"/>
     <field column="Georeference Remarks" name="geoRefRemarks" type="java.lang.String" length="255"/>
   </table>
 
