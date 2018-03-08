@@ -4588,8 +4588,14 @@ public class Uploader implements ActionListener, KeyListener
                                 SwingUtilities.invokeLater(() -> {
                                     if (crashed) {
                                         String msgText = getResourceString("WB_BATCH_EDIT_UNHANDLED_EXCEPTION");
+                                        if (rowUploading != -1) {
+                                            msgText = getResourceString("WB_UPLOAD_ROW") + " " + (rowUploading + 1) + ": " + msgText;
+                                        }
                                         if (getOpKiller() != null) {
-                                            msgText += ": " + getOpKiller().getClass().getSimpleName() + " - " + getOpKiller().getLocalizedMessage();
+                                            msgText += ": " + getOpKiller().getClass().getSimpleName();
+                                            if (getOpKiller().getLocalizedMessage() != null) {
+                                                msgText += " - " + getOpKiller().getLocalizedMessage();
+                                            }
                                         }
                                         progDlg.addMsg(new BaseUploadMessage(msgText));
                                     }
