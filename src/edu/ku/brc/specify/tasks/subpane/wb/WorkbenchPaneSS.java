@@ -1387,7 +1387,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             String originalValue = originalVal;
             if (originalValue.contains(before)) {
                 originalValue = StringUtils.replaceOnce(originalValue, before, "");
-                originalValue = StringUtils.replaceOnce(originalValue, after, "");
+                originalValue = StringUtils.reverse(StringUtils.replaceOnce(StringUtils.reverse(originalValue), after, ""));
                 if (originalValue.startsWith("'") && originalValue.endsWith("'")) {
                     originalValue = originalValue.substring(1, originalValue.length() - 1);
                 }
