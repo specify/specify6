@@ -456,6 +456,7 @@
         <alias name="PaleoContext" field="paleoContext" />
         <table name="GeoCoordDetail" field="geoCoordDetails">
         	<alias name="Agent" field="geoRefDetBy"/>
+            <alias name="Agent" field="geoRefCompiledBy"/>
        		<alias name="Agent" field="createdByAgent" />
       		<alias name="Agent" field="modifiedByAgent" />
         </table>
