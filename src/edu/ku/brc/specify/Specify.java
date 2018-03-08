@@ -1053,6 +1053,49 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         openPrefsEditor(AppPreferences.getGlobalPrefs(), "GLOBAL_PREFS");
     }
 
+    private void changeCollection() {
+        AppPreferences appPrefs             = AppPreferences.getRemote();
+        Boolean        canSendStats         = appPrefs.getBoolean(sendStatsPrefName, null); //$NON-NLS-1$
+        Boolean        canSendISAStats      = appPrefs.getBoolean(sendISAStatsPrefName, null); //$NON-NLS-1$
+
+        if (canSendStats == null) {
+            canSendStats = true;
+            appPrefs.putBoolean(sendStatsPrefName, canSendStats); //$NON-NLS-1$
+        }
+
+        if (canSendStats) {
+            StatsTrackerTask statsTrackerTask = (StatsTrackerTask) TaskMgr.getTask("StatsTracker");
+            if (statsTrackerTask != null) {
+                statsTrackerTask.initialize(); //sets domain ids from current appcontext, which will change as stats send runs in background.
+                statsTrackerTask.setSendSecondaryStatsAllowed(canSendISAStats);
+                class StatsWorker extends javax.swing.SwingWorker<Object, Object> {
+                    @Override
+                    public String doInBackground() {
+                        try {
+                            SwingUtilities.invokeLater(() -> UIRegistry.writeSimpleGlassPaneMsg(
+                                    String.format(getResourceString("Specify.CLOSING_COLLECTION"),
+                                            AppContextMgr.getInstance().getClassObject(Collection.class).getCollectionName()),
+                                    WorkbenchTask.GLASSPANE_FONT_SIZE));
+                            statsTrackerTask.sendStats(false, true, false);
+                        } catch (Exception ex) {
+                            log.error(ex);
+                        }
+                        return null;
+                    }
+
+                    @Override
+                    protected void done() {
+                        SwingUtilities.invokeLater(() -> UIRegistry.clearSimpleGlassPaneMsg());
+                        // Actually we really need to start over
+                        // "true" means that it should NOT use any cached values it can find to automatically initialize itself
+                        // instead it should ask the user any questions as if it were starting over
+                        SwingUtilities.invokeLater(() -> restartApp(null, databaseName, userName, true, false));
+                    }
+                }
+                (new StatsWorker()).execute();
+            }
+        }
+    }
     /**
      * Create menus
      */
@@ -1085,14 +1128,14 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                             if (SubPaneMgr.getInstance().aboutToShutdown())
                             {
                                
+                                /* fix for #59 */
+                                SwingUtilities.invokeLater(() -> changeCollection());
+                                /* PRE fix for #59
                                 // Actually we really need to start over
                                 // "true" means that it should NOT use any cached values it can find to automatically initialize itself
                                 // instead it should ask the user any questions as if it were starting over
-                                SwingUtilities.invokeLater(new Runnable() {
-                                    public void run() {
-                                        restartApp(null, databaseName, userName, true, false);
-                                    }
-                                });
+                                SwingUtilities.invokeLater(() -> restartApp(null, databaseName, userName, true, false));
+                                */
                             }
                         }
                     });
@@ -2588,25 +2631,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             {
                 statsTrackerTask.initialize(); //sets domain ids from current appcontext, which will change as stats send runs in background.
                 statsTrackerTask.setSendSecondaryStatsAllowed(canSendISAStats);
-                try {
-                    SwingUtilities.invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            UIRegistry.writeSimpleGlassPaneMsg(
-                                    "CLOSING_COLLECTION",
-                                    WorkbenchTask.GLASSPANE_FONT_SIZE);
-                        }
-                    });
-                    statsTrackerTask.sendStats(false, true, false);
-
-                } finally {
-                    SwingUtilities.invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            UIRegistry.clearSimpleGlassPaneMsg();
-                        }
-                    });
-                }
+                statsTrackerTask.sendStats(false, true, false);
             }
         }
     }
@@ -2631,11 +2656,13 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             dbLoginPanel.getStatusBar().setText(getResourceString("Specify.INITIALIZING_APP")); //$NON-NLS-1$
         }
 
+        /* PRE #59
         if (!firstTime)
         {
-           checkAndSendStats();
+            checkAndSendStats();
         }
-        
+        */
+
         UIRegistry.dumpPaths();
         
         try
