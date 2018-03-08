@@ -2,10 +2,12 @@
 
   <table classname="edu.ku.brc.specify.datamodel.Preparation" table="preparation" tableid="63" lazy="true" >
     <field column="Prepared Date" name="preparedDate" type="calendar_date"/>
+    <!--
     <field column="Prepared First Name By" name="preparedFirstNameBy" type="java.lang.String"/>
     <field column="Prepared Last Name By" name="preparedLastNameBy" type="java.lang.String"/>
     <field column="Prepared Middle Initials By" name="preparedMiddleBy" type="java.lang.String" />
     <field column="Prepared Title By" name="preparedTitleBy" type="java.lang.String" />
+    -->
     <field column="Prep Type" name="prepType" type="text"/>
     <field column="Prep Count1" name="count" type="java.lang.Integer"/>
     <field column="Storage Location" name="storageLocation" type="java.lang.String"/>
