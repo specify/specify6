@@ -211,7 +211,7 @@ public class TableModel2Excel
                 // set the sheet name to HSSF Test
                 wb.setSheetName(0, title);
                 
-                for (short rownum = 0; rownum < (short)tableModel.getRowCount(); rownum++)
+                for (int rownum = 0; rownum < tableModel.getRowCount(); rownum++)
                 {
                     // create a row
                     HSSFRow row = sheet.createRow(rownum+1);
