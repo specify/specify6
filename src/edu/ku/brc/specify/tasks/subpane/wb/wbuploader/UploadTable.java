@@ -201,6 +201,7 @@ public class UploadTable implements Comparable<UploadTable>
     protected Integer									exportedRecordId = null;
     protected DataModelObjBase                          exportedRecord = null;
     protected boolean									reusingExportedRec = false;
+    protected boolean                                   currentRecSetFromExportedRec = false;
     //for a one-to-many child, exportedRecordId will hold the parent's ID,
     //exportedOneToManyID stores the child's recordID for the current 'sequence' - 1st collector, 2nd collector... 
     protected Integer 									exportedOneToManyId = null;
@@ -4392,6 +4393,7 @@ public class UploadTable implements Comparable<UploadTable>
                         throw new UploaderException(e, UploaderException.ABORT_IMPORT);
                     }
                     addDisusedRec(exportedRecord);
+                    currentRecSetFromExportedRec = true;
                 }
                 setCurrentRecord(newRec, recNum);
             }
@@ -5758,7 +5760,13 @@ public class UploadTable implements Comparable<UploadTable>
             InvocationTargetException, IllegalAccessException, ParseException,
             NoSuchMethodException, InstantiationException, SQLException   {
         if (updateMatches) {
-            return doSkipMatch || isRemovedRecord(recNum, tblAndAncestorsUnchanged) || (!tblAndAncestorsUnchanged && !findMatch(recNum, false, null, null) || updateMatches);
+            if (doSkipMatch || isRemovedRecord(recNum, tblAndAncestorsUnchanged)) {
+                return true;
+            }
+            if (tblAndAncestorsUnchanged) {
+                return false;
+            }
+            return findMatch(recNum, false, null, null) || reusingExportedRec || currentRecSetFromExportedRec;
         } else {
             return doSkipMatch || !findMatch(recNum, false, null, null);
         }
@@ -5780,6 +5788,7 @@ public class UploadTable implements Comparable<UploadTable>
         //System.out.println("writeRowOrNot: " + this.table.getName() + " (" + wbCurrentRow + ")");
         autoAssignedVal = null;  //assumes one autoassign field per table.
         reusingExportedRec = false;
+        currentRecSetFromExportedRec = false;
         boolean doSkipMatch = false;
         if (!updateMatches) {
         	doSkipMatch = skipMatch || isMatchChild() //Bug #9375 don't prevent dup manies in 1-manies. May cause constraint violations for some tables.
