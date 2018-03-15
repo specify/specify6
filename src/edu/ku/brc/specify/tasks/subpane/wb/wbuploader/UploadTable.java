@@ -4229,6 +4229,7 @@ public class UploadTable implements Comparable<UploadTable>
         if (skipMatching && !matchRecordId && (overrideParentParams == null || overrideParentParams.size() == 0)) {
             if (updateMatches) {
                 setCurrentRecordFromExportedRecord(recNum);
+                return true;
             }
             return false;
         }
