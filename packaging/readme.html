@@ -1,70 +1,36 @@
 <!doctype html>
 <html>
-<head>
-<meta charset="utf-8">
-<title>
-Specify 6.6.06 Release Notes
-</title>
-</head>
-<body>
-<p>
-  <h3>Specify Software Project</h3>
-</p>
-<strong>Release Notes</strong><br>
-Specify 6.6.06 <br>
-11 October 2017
-<br>
-<h4>Important Installation Notes:</h4>
-<ol>
-	<li>This release is compatible with all Java (JRE) 8.x versions but is not yet adapted to the recent Oracle Java Runtime Environment 9.</li>
-	<li>Sites operating Specify 6 and Specify 7 simultaneously against the same database must update both platforms to release levels: 6.6.06 and 7.3 repectively, in order to continue to provide access from both platforms.</li></ol>
- 
-<h4>Database Schema Changes:</h4>
-<ol>
-  <li>With this release, we made Specify compliant with the Global Genome Biodiversity Network's (GGBN) "Material Sample" Darwin Core extension for DNA/RNA extract metadata (<a href="https://terms.tdwg.org/wiki/GGBN_Data_Standard">https://terms.tdwg.org/wiki/GGBN_Data_Standard</a>).  We added the data table “Material Sample” along with data fields in several Specify tables to accommodate DNA Extract and DNA Sequence metadata as defined by the GGBN (<a href="http://www.ggbn.org/">http://www.ggbn.org/</a>). Data fields (terms) added are from the GGBN Vocabularies: Amplification, Material Sample, Permit, and Preparation. As before, the existing Specify "Preparation" table describes physical object types, like skins, skeletons, seeds, and tissues. The new Material Sample table describes chemical extract samples derived from Preparations.  The existing Specify "DNA Sequence" data table describes molecular information derived (e.g. sequenced) from a Material Sample (in a new relationship to the Material Sample table with this release) or from a Collection Object (the pre-existing Specify relationship to DNA Sequence). &nbsp;We added a second new table "DNA Primer" to describe primer information for Sanger methods. Specify sites using the DNA Sequence table prior to this release as a child of Collection Object should contact the Specify Project to discuss the possibility of using the Material Sample--DNA Sequence relationship in its place. More information is available on the Specify Project web site about the new (GGBN) Material Sample table and its relationships to the Preparation and DNA Sequence tables. These Specify extensions were done in collaboration with the Global Genome Biodiversity Network and were financially supported by them.</li>
-  <li>Added several fields for NIH SRA accession numbers to enable linking sample and sequence data from next generation methods deposited in NIH SRA databases to the corresponding DNA Sequence record in Specify. This allows http link-outs to molecular data at NIH, sequenced from specimens/tissues/extracts in the collection.</li>
-  <li>Existing TDWG Audubon Core standard fields were supplemented with additional commonly used Audubon Core vocabulary terms (fields) for describing and exporting multimedia objects (Attachments in Specify). </li>
-  <li>Added AdminContact (Agent) field to the Collection table for identifying collections in feedback statistics.
-  <li>Added long integer fields to Taxon&nbsp;table to allow for assignment of numeric codes to taxa for sorting and ordering taxon names in query results. </li>
-  <li>Added text fields to Borrow Materials&nbsp;table to allow extended description of borrowed materials.</li>
-  <li>Added text and logical (yes/no) fields to the Collection Object Attributes table.</li>
-  <li>Added 4 memo fields, 16 logical fields, 11 string, and 2 integer fields to the Taxon table in response to requests to handle IUCN Red List information on species conservation status.</li>
-  <li>Expanded the AltCatalogNumber field to 64 characters to better handle long legacy numbering schemes.</li>
-  <li>Added Geocoordinate error estimate fields to the Workbench Row table to allow them to be imported.</li>
-  <li>Increased the length of picklist value and title fields from 64 to 128 chars to accommodate user needs for long, formatted selection strings.</li>
-</ol>
+  <head>
+    <meta charset="utf-8">
+    <title>
+      Specify 6.7.00 Release Notes
+    </title>
+  </head>
+  <body>
+    <p>
+      <h3>Specify Software Consortium</h3>
+    </p>
+    <strong>
+      <br>Release Notes
+      <br>Specify 6.7.00
+      <br>14 March 2018
+      <br></strong><br>
+    <p>
 
-<h4>Software Changes:</h4>
-
-<ol>
-  <li>PaleoMap, a plug-in that shows the paleo localities of fossils was created and contributed by Tomislav Urban, Texas Advanced Computing Center (TACC) for Specify 7. It was easily embedded within Specify 6 and is now accessible on the Collecting Event form&nbsp;for Paleontology collections new to Specify (with this release). With form configuration it can be added to the user interface for existing Specify paleo databases. We thank Tomislav Urban and TACC for contributing this outstanding plug-in.&nbsp;2017-08-25&nbsp;&nbsp;(10297)</li>
-  <li> Enabled Borrow Materials and Borrow Return Materials data to be viewed as a grid&nbsp;&nbsp;2017-09-01&nbsp;&nbsp;(Bugzilla 10336, 10308)</li>
-  <li>Added Start and End Period default values to Chronostrat records to allow for sorting on tree displays and for use by PaleoMap plug-in.  2017-09-01&nbsp;&nbsp;(10296)</li>
-<li>Changed the default formatter for Collecting Event Query Combo Boxes on Collection Object forms from showing start date, to show Station Field Number, Locality Name, Geography Full Name, and Latitude1/Longitude1. 2017-08-31&nbsp;(10332)</li>
-<li>Passwords are no longer stored where they should not be. (External authentication is in development.) 2017-08-28&nbsp;&nbsp;(10294)</li>
-<li>If the Specify Software Project Update server is offline or inaccessible, Specify continues to startup as expected. 2017-08-23&nbsp;&nbsp;(10228)</li>
-<li>Added AltCatNumber to the list of fields that can be searched with simple search. 2017-08-22  (10307)</li>
-<li>One can now upload Reference Work table data through the Specify Workbench without associated Collection Objects. 2017-08-18  (10293)</li>
-<li>Added field AdminContactName to the Collection data table and included it in feedback stats. 2017-08-18  (10322)</li>
-<li>Drag-and-drop operations in Taxon trees now update TimestampModified field in Taxon table. This fixes the problem of Specify overlooking changes in the Taxon tree while identifying updated records to export to iDigBio or GBIF (through IPT), or to the Specify web portal. 2017-08-18 (10251)</li>
-<li>Containers can now be uploaded via Specify Workbench; the capability is configured in the Workbench Import Configuration file. 2017-08-18&nbsp;&nbsp;(10317) </li>
-<li>Appropriate Collecting Event data are associated with Localities in the Google Earth plug-in.  2017-08-17  (10318)</li>
-<li>The "-" character is no longer allowed in numeric catalog numbers.  2017-08-16 (10300)</li>
-<li>Reference Work records can be deleted when they are associated with a Journal record.  2017-08-16  (10209)</li>
-<li>QueryCombo box search windows now use customized field captions found in the form schema.  2017-08-16  (10248)</li>
-<li>Uploads of bulk attachments can now be handled for Interaction records (gifts, loans, accessions, exchanges, etc.).  2017-08-15  (10305)</li>
-<li>Catalog numbers are only auto-assigned if 'Auto Fill Catalog Numbers' is checked in the Workbench. 2017-07-25  (10302)</li>
-<li>Spreadsheet cells that contain only space characters can now be uploaded through the Specify Workbench.  2017-07-17  (10306)</li>
-<li>For queries, fields for tree data ranks parameterized with "Empty" or "Not Empty" criteria now filter correctly. 2017-05-19  (10295)</li>
-<li>The Specify Workbench Uploader no longer erroneously creates multiple GeoCoordDetail records for an existing locality. (10298)</li>
-<li>Checking the status of data export caches in the Data Exporter and Symbiota Exporter to see if records need to be added to export table, is now much quicker. 2017-05-16&nbsp;&nbsp;(10288)</li>
-<li>Clone Locality function will now clone everything in Locality, when PaleoContext is configured as an embedded data object in the Locality form. 2017-03-28  (10292)</li>
-<li>Auto incrementing of Catalog Numbers works for any portion of a multi-part catalog number that is numeric and set to auto-increment. 2017-03-15  (10291)</li>
-<li>LocalityDetail Text1 field on forms uses the appropriate database field. 2017-09-29 (10348)</li>
-<li>When a query for an export data mapping returns zero records the Data Exporter works as expected. 2017-09-25 (10354)</li>
-<li>Fixed issues with hiding and showing the Attachments task bar entry. 2017-09-21 (10353)</li>
-<li>Updated the URL to Lifemapper for distribution maps. 2017-09-21 (10349)</li>
-<li>Data Exporter is now more robust on Macs. 2017-09-26 (10345)</li>
-</ol>
-</body>
+    </p>
+    
+    <ol>
+      <li>Specify 6.7 adds an often requested capability, Batch Editing.  The new module enables bulk changes to key data tables.  Batch Editing will be particularly useful for improving data quality by correcting inconsistencies and by bulk filling empty data fields.  The editing process begins with a query on one of five base tables: Agent, Collecting Event, Collection Object, Locality, or Preparation.  There is new context sensitive help for Batch Editing and an introductory video tutorial will soon be viewable from the Specify Collections Consortium web site.<br>
+        <p>
+          Batch Editing is a powerful and sometimes nuanced feature, capable of changing thousands of records with a few mouse clicks. It is good to have a basic understanding of the core Specify data table relationships before using the new module.  Once changes are applied, they are permanent.  With such data changing power, a small, inadvertent editing mistake might permanently make your data massively incorrect and unusable. It is very smart to have a fresh backup copy of your database before applying massive changes, in case a backup copy needs to be restored.</p></li>
+      <br>
+      <li> We are pleased to display on our splash screens, the logos of the first three Founding Member Institutions of the Specify Collections Consortium: University of Florida, University of Michigan, and the University of Kansas.  If you would like to see your institution among those of these collections leaders, let us know.</li>
+      <br>
+      <li>Specify can now export Query Results to xls-format (Excel) files for data sets containing tens of thousands of records.</li><br>
+      <li>Added the fields GeoRefCompiledBy and GeoRefCompileddate to the GeoCoordDetail table and made the fields accessible through the WorkBench and Batch Editing.</li><br>
+      <li>When using GeoLocate, the WorkBench now fills the MaxUncertaintyEstUnit by default with “m”.</li><br>
+      <li>MaxUncertaintyEst values import correctly into the WorkBench from external files.</li><br>
+      <li>If a Preparation record is cloned, the value of the Preparation GUID field is not. A bug in earlier Specify versions duplicated GUIDs in cloned Preparation records.  This release includes a script to assign a new GUID to any existing preparation records that hold duplicate GUIDs.</li>
+    </ol>
+  </body>
 </html>
