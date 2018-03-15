@@ -5866,6 +5866,8 @@ public class UploadTable implements Comparable<UploadTable>
                                     setCurrentRecord(exportedRecord, recNum);
                                 }
                             }
+                        } else if (updateMatches) {
+                            setCurrentRecord(getExportedRecord(), recNum);
                         }
                     } else {
                         if (exportedOneToManyId != null) {
@@ -5873,6 +5875,7 @@ public class UploadTable implements Comparable<UploadTable>
                         }
                         setCurrentRecord(null, recNum);
                     }
+
                 } while(fallDown());
                 finishRow();
             } catch (InstantiationException ieEx) {
