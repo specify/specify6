@@ -1061,7 +1061,10 @@ public class SpecifyDeleteHelper
              
             ResultSet rs  = session == null ? stmt.executeQuery(sql) : null;
             DataProviderSessionIFace.QueryIFace q = session == null ? null : session.createQuery(sql, true);
-            List<?> qr = q.list();
+            List<?> qr = null;
+            if (session != null) {
+                qr = q.list();
+            }
             int i = 0;
             while ((rs != null && rs.next()) || (session != null && i < qr.size())) {
                 int rowId = session == null ? rs.getInt(1) : (Integer)qr.get(i++);
