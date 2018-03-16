@@ -1411,13 +1411,14 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
         deleteDnDBtn(navBox, boxItem != null ? boxItem : getBoxByTitle(navBox, rs.getName()));
     }
 
-    protected Vector<Vector<Object>> getSelectedResults(final Vector<Vector<Object>> results, final int[] selectedRows) {
+    protected Vector<Vector<Object>> getSelectedResults(final Vector<Vector<Object>> results, final JTable table) {
+        int[] selectedRows = table.getSelectedRows();
         if (selectedRows.length == 0) {
             return results;
         } else {
             Vector<Vector<Object>> result = new Vector<>();
             for (int r : selectedRows) {
-                result.add(results.get(r));
+                result.add(results.get(table.convertRowIndexToModel(r)));
             }
             return result;
         }
@@ -1479,7 +1480,7 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
                                 + queryBldrPane.getQueryForBatchEdit().getFirst().getContextName());
                         cmdAction.setConsumed(true);
                         wbTask.batchEditQueryResults(queryBldrPane.getQueryForBatchEdit(), (RecordSetIFace) cmdAction.getData(),
-                                getSelectedResults(queryBldrPane.getResultsCache(), dataTbl.getSelectedRows()), this);
+                                getSelectedResults(queryBldrPane.getResultsCache(), dataTbl), this);
                         return;
                     }
                 }
