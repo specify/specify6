@@ -202,6 +202,8 @@ public class UploadTable implements Comparable<UploadTable>
     protected DataModelObjBase                          exportedRecord = null;
     protected boolean									reusingExportedRec = false;
     protected boolean                                   currentRecSetFromExportedRec = false;
+    protected boolean                                   updateAddingNewRecord = false;
+
     //for a one-to-many child, exportedRecordId will hold the parent's ID,
     //exportedOneToManyID stores the child's recordID for the current 'sequence' - 1st collector, 2nd collector... 
     protected Integer 									exportedOneToManyId = null;
@@ -4410,7 +4412,12 @@ public class UploadTable implements Comparable<UploadTable>
     protected void setCurrentRecordFromMatch(final DataModelObjBase match, int recNum)
     	throws IllegalAccessException, InstantiationException, SQLException, UploaderException {
         if (match == null && updateMatches && !isUploadRoot) {
-            setCurrentRecordFromExportedRecord(recNum);
+            if (exportedRecordId != null) {
+                setCurrentRecordFromExportedRecord(recNum);
+            } else {
+                updateAddingNewRecord = true;
+                setCurrentRecord(match, recNum);
+            }
         } else {
         	setCurrentRecord(match, recNum);
         }
@@ -5767,7 +5774,7 @@ public class UploadTable implements Comparable<UploadTable>
             if (tblAndAncestorsUnchanged) {
                 return false;
             }
-            return findMatch(recNum, false, null, null) || reusingExportedRec || currentRecSetFromExportedRec;
+            return findMatch(recNum, false, null, null) || updateAddingNewRecord || reusingExportedRec || currentRecSetFromExportedRec;
         } else {
             return doSkipMatch || !findMatch(recNum, false, null, null);
         }
@@ -5790,6 +5797,7 @@ public class UploadTable implements Comparable<UploadTable>
         autoAssignedVal = null;  //assumes one autoassign field per table.
         reusingExportedRec = false;
         currentRecSetFromExportedRec = false;
+        updateAddingNewRecord = false;
         boolean doSkipMatch = false;
         if (!updateMatches) {
         	doSkipMatch = skipMatch || isMatchChild() //Bug #9375 don't prevent dup manies in 1-manies. May cause constraint violations for some tables.
