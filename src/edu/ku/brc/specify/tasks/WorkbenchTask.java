@@ -1831,6 +1831,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         return true;
     }
 
+
     /**
      * @param rs
      * @param wb
@@ -1853,6 +1854,12 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                     return false;
                 }
         		Set<Integer> itemIdsAdded = new TreeSet<Integer>();
+        		HashMap<Integer, Vector<Object>> qrHash = new HashMap<>();;
+        		if (queryResults != null) {
+                    for (Vector<Object> row : queryResults) {
+                        qrHash.put((Integer) row.get(row.size() - 1), row);
+                    }
+                }
         		int r = 0;
         		for (RecordSetItemIFace item : rs.getOrderedItems()) {
         			Integer id = item.getRecordId();
@@ -1860,7 +1867,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         				DataModelObjBase obj = (DataModelObjBase )session.get(cls, item.getRecordId());
         				if (obj != null) {
         					obj.forceLoad();
-        					wbv.getUploader().loadRecordToWb(obj, wb, queryResults == null ? null : queryResults.get(r));
+        					wbv.getUploader().loadRecordToWb(obj, wb, queryResults == null ? null : qrHash.get(obj.getId()));
         				}
         				itemIdsAdded.add(id);
         			}
