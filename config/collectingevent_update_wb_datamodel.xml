@@ -232,6 +232,13 @@
     <field column="YesNo 5 (Locality Detail)" name="localityDetailYesNo5" type="boolean"/>
   </table>
 
+  <table classname="edu.ku.brc.specify.datamodel.Geography" table="geography" tableid="3" lazy="true">
+    <field column="Continent" name="continent" type="java.lang.String" length="64"/>
+    <field column="Country" name="country" type="java.lang.String" length="64"/>
+    <field column="State" name="state" type="java.lang.String" length="64"/>
+    <field column="County" name="county" type="java.lang.String" length="64"/>
+  </table>
+
   <!--table classname="edu.ku.brc.specify.datamodel.PaleoContext" table="paleocontext" tableid="32" searchable="true" abbrv="pc">
     <field column="Paleo Context Name" name="paleoContextName" type="java.lang.String" />
     <field column="Remarks" name="remarks" type="java.lang.String" />
