@@ -251,18 +251,24 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
             }
         }
     }
+
+    public void setErrorPolygon(String errorPolygon) {
+        this.errorPolygon = errorPolygon;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.services.biogeomancer.GeoCoordDataIFace#setErrorPolygon(java.lang.String)
      */
     @Override
-    public void setErrorPolygon(String errorPolygon) {
+    public void setErrorPoly(String errorPolygon) {
         this.errorPolygon = errorPolygon;
-    	if (workbench != null) {
-    		Integer col = getErrorPolygonIndex();
-    		if (col != -1) {
-    			setData(this.errorPolygon, col.shortValue(), false);
-    		}
-    	}
+        if (workbench != null) {
+            Integer col = getErrorPolygonIndex();
+            if (col != -1) {
+                setData(this.errorPolygon, col.shortValue(), false);
+            }
+        }
+
     }
 
     /**

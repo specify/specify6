@@ -262,7 +262,7 @@ public class GeoCoordGeoLocateProvider implements GeoCoordServiceProviderIFace, 
                                 Double longitude = chosenResult.getWGS84Coordinate().getLongitude();
                                 item.set(String.format("%7.5f", latitude), String.format("%7.5f", longitude)); //$NON-NLS-1$ //$NON-NLS-2$
                                 
-                                item.setErrorPolygon(chosenResult.getErrorPolygon());
+                                item.setErrorPoly(chosenResult.getErrorPolygon());
                                 item.setErrorEst(chosenResult.getErrorEstimate());
                                 itemsUpdated++;
                             }

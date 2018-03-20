@@ -181,7 +181,7 @@ public class GeoCoordData implements GeoCoordDataIFace
      * @see edu.ku.brc.services.biogeomancer.GeoCoordDataIFace#setErrorPolygon(java.lang.String)
      */
     @Override
-    public void setErrorPolygon(String errorPolygon)
+    public void setErrorPoly(String errorPolygon)
     {
         this.errorPolygon = errorPolygon;
     }

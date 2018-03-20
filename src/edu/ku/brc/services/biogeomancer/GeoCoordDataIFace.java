@@ -64,7 +64,7 @@ public interface GeoCoordDataIFace
     
     public abstract void setXML(String xml);
     
-    public abstract void setErrorPolygon(String errorPolygon);
+    public abstract void setErrorPoly(String errorPolygon);
     
     public abstract void setErrorEst(BigDecimal errorEstimate);
     
