@@ -44,6 +44,7 @@ import javax.swing.ImageIcon;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.hibernate.LazyInitializationException;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
@@ -844,7 +845,11 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
                 	wbdi.setRequired(true);
                 }
                 items.put(inx, wbdi);
-                workbench.getMappingFromColumn(col).getWorkbenchDataItems().add(wbdi);
+                try {
+                    workbench.getMappingFromColumn(col).getWorkbenchDataItems().add(wbdi);
+                } catch (LazyInitializationException e) {
+                    //oh well we tried
+                }
                 //workbenchDataItems.add(wbdi);
             }
         }
