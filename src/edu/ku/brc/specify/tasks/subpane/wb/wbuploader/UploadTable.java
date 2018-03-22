@@ -1641,6 +1641,16 @@ public class UploadTable implements Comparable<UploadTable>
     }
 
 
+    protected void addChildToParentSet(DataModelObjBase rec, DataModelObjBase parentRec, ParentTableEntry pt) {
+        //fuck generality
+        if (parentRec instanceof Locality) {
+            if (rec instanceof GeoCoordDetail) {
+                ((Locality)parentRec).getGeoCoordDetails().add((GeoCoordDetail)rec);
+            } else if (rec instanceof LocalityDetail) {
+                ((Locality)parentRec).getLocalityDetails().add((LocalityDetail)rec);
+            }
+        }
+    }
 
     /**
      * @param rec - the record being prepared to write to the database.
@@ -1673,6 +1683,9 @@ public class UploadTable implements Comparable<UploadTable>
                         }
                     }
                     pt.getSetter().invoke(rec, arg);
+                    if (updateMatches) {
+                        addChildToParentSet(rec, parentRec, pt);
+                    }
                     requirementsMet = requirementsMet && (arg[0] != null || !pt.isRequired());
                 }
             }
@@ -3298,6 +3311,45 @@ public class UploadTable implements Comparable<UploadTable>
         }
         overrides.putAll(getParentOverridesForExportedRecMatching(recNum));
         overrides.putAll(getSpecialChildrenOverridesForExportedRecMatching(recNum, restrictedVals));
+        return checkOverrides(overrides);
+    }
+
+    protected Map<DBInfoBase, Object> checkOverrides(Map<DBInfoBase, Object> overrides) {
+        if (this.tblClass.equals(Locality.class)) {
+            DBTableInfo locInfo = DBTableIdMgr.getInstance().getInfoByTableName("locality");
+            DBFieldInfo lat1 = locInfo.getFieldByName("latitude1");
+            DBFieldInfo lat2 = locInfo.getFieldByName("latitude2");
+            DBFieldInfo lng1 = locInfo.getFieldByName("longitude1");
+            DBFieldInfo lng2 = locInfo.getFieldByName("longitude1");
+            if (overrides.containsKey(lat1) || overrides.containsKey(lat2)
+                    || overrides.containsKey(lng1) || overrides.containsKey(lng2)) {
+                WorkbenchRow wbRow = uploader.getWb().getRow(wbCurrentRow);
+                GeoRefConverter geoRefConverter = new GeoRefConverter();
+                LatLonConverter.FORMAT fmt;
+                fmt = geoRefConverter.getLatLonFormat(StringUtils.stripToNull(wbRow.getLat1Text()));
+                overrides.put(locInfo.getFieldByName("originalLatLongUnit"), fmt.ordinal());
+                DBFieldInfo llType = locInfo.getFieldByName("latLongType");
+                if (!overrides.containsKey(llType)) {
+                    boolean pnt1Changed = overrides.containsKey(lat1) || overrides.containsKey(lng1);
+                    boolean pnt2Changed = overrides.containsKey(lat2) || overrides.containsKey(lng2);
+                    if (pnt1Changed || pnt2Changed) {
+                        boolean pnt1Cleared = pnt1Changed && overrides.get(lat1) == null;
+                        boolean pnt2Cleared = pnt2Changed && overrides.get(lat2) == null;
+                        Locality rec = (Locality) getExportedRecord();
+                        if (rec != null) {
+                            boolean origPoint2Present = rec.getLatitude2() != null;
+                            if (pnt1Cleared) {
+                                overrides.put(llType, null);
+                            } else if (pnt2Cleared) {
+                                overrides.put(llType, "Point");
+                            } else if (pnt2Changed && !origPoint2Present) {
+                                overrides.put(llType, "Line");  //hello: or "Rect"?
+                            }
+                        }
+                    }
+                }
+            }
+        }
         return overrides;
     }
 
@@ -3311,7 +3363,8 @@ public class UploadTable implements Comparable<UploadTable>
         return overrides;
     }
 
-    protected Pair<Boolean, CriteriaIFace> getUpdateMatchCriteriaFromExportedRecord(final DataProviderSessionIFace session,
+    protected Pair<Boolean, CriteriaIFace>
+    getUpdateMatchCriteriaFromExportedRecord(final DataProviderSessionIFace session,
                                                                                     int recNum, final List<MatchRestriction> restrictedVals,
                                                                                     final HashMap<UploadTable, DataModelObjBase> overrideParentParams)
             throws UploaderException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
@@ -4295,7 +4348,7 @@ public class UploadTable implements Comparable<UploadTable>
             }
         	setCurrentRecordFromMatch(match, recNum);
             if (match != null) {
-                if (updateMatches && matchRecordId && !reusingExportedRec) {
+                if (updateMatches && ((matchRecordId && !reusingExportedRec) || specialChildren.size() > 0)) {
                 	match.forceLoad();
                 }
                 //XXX Updates
@@ -4976,7 +5029,32 @@ public class UploadTable implements Comparable<UploadTable>
        }
        return false;
    }
-   
+
+   protected static int intimakeFORMAT(LatLonConverter.FORMAT fmt) {
+       //public enum FORMAT          {DDDDDD, DDMMSS, DDMMMM, None}
+       switch (fmt) {
+           case DDDDDD: return 0;
+           case DDMMMM: return 1;
+           case DDMMSS: return 2;
+           default: return 3;
+       }
+   }
+
+   protected static LatLonConverter.FORMAT getLeastCommonFmt(LatLonConverter.FORMAT fmt1, LatLonConverter.FORMAT fmt2) {
+       if (fmt1.equals(fmt2)) {
+           return fmt1;
+       } else if (fmt1.equals(LatLonConverter.FORMAT.None) || fmt2.equals(LatLonConverter.FORMAT.None)){
+           return null;
+       } else {
+           int f1 = intimakeFORMAT(fmt1);
+           int f2 = intimakeFORMAT(fmt2);
+           if (f1 < f2) {
+               return fmt2;
+           } else {
+               return fmt1;
+           }
+       }
+   }
     /**
      * @param row
      * @param uploadData
@@ -5080,11 +5158,8 @@ public class UploadTable implements Comparable<UploadTable>
 								|| fldName.equalsIgnoreCase("longitude1")
 								|| fldName.equalsIgnoreCase("longitude2")) {
 							llFld = fld;
-							LatLonConverter.FORMAT fmt = geoRefConverter
-									.getLatLonFormat(StringUtils
-											.stripToNull(fld.getValue()));
-							LatLonConverter.FORMAT llFmt = fldName
-									.endsWith("1") ? llFmt1 : llFmt2;
+							LatLonConverter.FORMAT fmt = geoRefConverter.getLatLonFormat(StringUtils.stripToNull(fld.getValue()));
+							LatLonConverter.FORMAT llFmt = fldName.endsWith("1") ? llFmt1 : llFmt2;
 							boolean checkDecimalPlaces = true;
 							if (llFmt == null) {
 								llFmt = fmt;
@@ -5094,17 +5169,12 @@ public class UploadTable implements Comparable<UploadTable>
 									llFmt2 = fmt;
 								}
 							} else {
-								if (!llFmt.equals(fmt)) {
+								//fmt = getLeastCommonFmt(llFmt, fmt);
+							    if (!llFmt.equals(fmt)) {
+                                //if (fmt != null) {
 									checkDecimalPlaces = false;
-									invalidValues
-											.add(new UploadTableInvalidValue(
-													null,
-													this,
-													getLatLongFlds(),
-													row,
-													new Exception(
-															UIRegistry
-																	.getResourceString("WB_UPLOADER_INVALID_LATLONG"))));
+									invalidValues.add(new UploadTableInvalidValue(null, this, getLatLongFlds(), row,
+													new Exception(UIRegistry.getResourceString("WB_UPLOADER_INVALID_LATLONG"))));
 								} 
 							}
 							if (checkDecimalPlaces && fmt != null && fmt != LatLonConverter.FORMAT.None) {

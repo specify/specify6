@@ -18,7 +18,7 @@ public class RecordMatchUtils {
     protected static final Logger log = Logger.getLogger(UploadTable.class);
 
     private static String[] systemFldNames = {"TimestampCreated", "TimestampModified", "Version", "Lat1Text", "Lat2Text",
-            "Long1Text", "Long2Text", "ModifiedByAgentID", "CreatedByAgentID", "GUID", "Fullname", "NodeNumber",
+            "Long1Text", "Long2Text", "SrcLatLongUnit", "ModifiedByAgentID", "CreatedByAgentID", "GUID", "Fullname", "NodeNumber",
             "HighestChildNodeNumber"
     };
 
@@ -445,6 +445,16 @@ public class RecordMatchUtils {
         return result;
     }
 
+    private static boolean tblHasOverrides(final List<DBInfoBase> tblFlds, final Map<DBInfoBase, Object> overrides) {
+        for (DBInfoBase fld : tblFlds) {
+            if (overrides.containsKey(fld)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
     /**
      *
      * @param baseTbl
@@ -463,23 +473,34 @@ public class RecordMatchUtils {
         Integer relatedCount = 0;
         DBRelationshipInfo rel = tblFlds.getFirst();
         DBTableInfo tbl = rel == null ? baseTbl : DBTableIdMgr.getInstance().getByClassName(rel.getClassName());
-        if (recs.size() > 0) {
-            if (recs.size() == 1 && recs.get(0) == null) {
+        List<DBInfoBase> flds = tblFlds.getSecond();
+        boolean isOverridden = tblHasOverrides(flds, overrides);
+        if (recs.size() > 0 || isOverridden) {
+            if (recs.size() == 1 && recs.get(0) == null && !isOverridden) {
                 conditions.add(baseTbl.getAbbrev() + "0." + rel.getColName() + " is null");
             } else {
                 relatedCount = recs.size();
-                List<DBInfoBase> flds = tblFlds.getSecond();
                 int seq = 0;
-                for (DataModelObjBase rec : recs) {
+                List<DataModelObjBase> adjustedRecs;
+                if (relatedCount == 0) {
+                    adjustedRecs = new ArrayList<>();
+                    adjustedRecs.add(null);
+                } else {
+                    adjustedRecs = recs;
+                }
+                for (DataModelObjBase rec : adjustedRecs) {
                     for (DBInfoBase obj : flds) {
                         boolean doOverride = overrides.containsKey(obj);
-                        Object val = doOverride  ? overrides.get(obj) : getValueForFld(obj, rec, tbl);
+                        Object val = doOverride  ? overrides.get(obj) : (relatedCount > 0? getValueForFld(obj, rec, tbl) : null);
                         String cond = getSQLCondition(obj, val, tbl, seq);
                         if (!"".equals(cond)) {
                             conditions.add(cond);
                         }
                     }
                     seq++;
+                }
+                if (relatedCount == 0) {
+                    relatedCount = 1; //to force a join to the related table.
                 }
             }
         } else {
