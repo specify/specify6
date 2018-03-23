@@ -18,7 +18,7 @@ public class RecordMatchUtils {
     protected static final Logger log = Logger.getLogger(UploadTable.class);
 
     private static String[] systemFldNames = {"TimestampCreated", "TimestampModified", "Version", "Lat1Text", "Lat2Text",
-            "Long1Text", "Long2Text", "SrcLatLongUnit", "ModifiedByAgentID", "CreatedByAgentID", "GUID", "Fullname", "NodeNumber",
+            "Long1Text", "Long2Text", "OriginalLatLongUnit", "ModifiedByAgentID", "CreatedByAgentID", "GUID", "Fullname", "NodeNumber",
             "HighestChildNodeNumber"
     };
 

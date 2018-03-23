@@ -60,6 +60,7 @@ import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -705,7 +706,16 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
             srcLatLon2.second = lonStr2;
             
             // Correct the format if it is wrong
-            FORMAT checkFmt = latStr1 != null ? geoRefCnv.getLatLonFormat(latStr1) : panels[currentInx].getDefaultFormat();
+            FORMAT checkFmt;
+            if (latStr1 != null) {
+                checkFmt = GeoRefConverter.getLeastCommonFmt(geoRefCnv.getLatLonFormat(latStr1),geoRefCnv.getLatLonFormat(lonStr1));
+                if (latStr2 != null) {
+                    checkFmt = GeoRefConverter.getLeastCommonFmt(checkFmt,
+                            GeoRefConverter.getLeastCommonFmt(geoRefCnv.getLatLonFormat(latStr2),geoRefCnv.getLatLonFormat(lonStr2)));
+                }
+            } else {
+                checkFmt = panels[currentInx].getDefaultFormat();
+            }
             //log.debug("srcFormat: "+srcFormat+" <-  checkFmt: "+checkFmt);
             if (checkFmt != srcFormat)
             {

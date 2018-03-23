@@ -302,7 +302,33 @@ public class GeoRefConverter implements StringConverter
         }
         return LatLonConverter.FORMAT.None;
     }
-    
+
+    protected static int intimakeFORMAT(LatLonConverter.FORMAT fmt) {
+        //public enum FORMAT          {DDDDDD, DDMMSS, DDMMMM, None}
+        switch (fmt) {
+            case DDDDDD: return 0;
+            case DDMMMM: return 1;
+            case DDMMSS: return 2;
+            default: return 3;
+        }
+    }
+
+    public static LatLonConverter.FORMAT getLeastCommonFmt(LatLonConverter.FORMAT fmt1, LatLonConverter.FORMAT fmt2) {
+        if (fmt1.equals(fmt2)) {
+            return fmt1;
+        } else if (fmt1.equals(LatLonConverter.FORMAT.None) || fmt2.equals(LatLonConverter.FORMAT.None)){
+            return null;
+        } else {
+            int f1 = intimakeFORMAT(fmt1);
+            int f2 = intimakeFORMAT(fmt2);
+            if (f1 < f2) {
+                return fmt2;
+            } else {
+                return fmt1;
+            }
+        }
+    }
+
     /**
      * @param args
      * @throws Exception 

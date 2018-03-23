@@ -3320,14 +3320,22 @@ public class UploadTable implements Comparable<UploadTable>
             DBFieldInfo lat1 = locInfo.getFieldByName("latitude1");
             DBFieldInfo lat2 = locInfo.getFieldByName("latitude2");
             DBFieldInfo lng1 = locInfo.getFieldByName("longitude1");
-            DBFieldInfo lng2 = locInfo.getFieldByName("longitude1");
+            DBFieldInfo lng2 = locInfo.getFieldByName("longitude2");
             if (overrides.containsKey(lat1) || overrides.containsKey(lat2)
                     || overrides.containsKey(lng1) || overrides.containsKey(lng2)) {
                 WorkbenchRow wbRow = uploader.getWb().getRow(wbCurrentRow);
                 GeoRefConverter geoRefConverter = new GeoRefConverter();
                 LatLonConverter.FORMAT fmt;
-                fmt = geoRefConverter.getLatLonFormat(StringUtils.stripToNull(wbRow.getLat1Text()));
-                overrides.put(locInfo.getFieldByName("originalLatLongUnit"), fmt.ordinal());
+                fmt = GeoRefConverter.getLeastCommonFmt(geoRefConverter.getLatLonFormat(StringUtils.stripToNull(wbRow.getLat1Text())),
+                                                    geoRefConverter.getLatLonFormat(StringUtils.stripToNull(wbRow.getLong1Text())));
+                String lat2Text = wbRow.getLat2Text();
+                if (lat2Text != null && !"".equals(lat2Text)) {
+                    LatLonConverter.FORMAT fmt2 = GeoRefConverter.getLeastCommonFmt(geoRefConverter.getLatLonFormat(StringUtils.stripToNull(wbRow.getLat2Text())),
+                            geoRefConverter.getLatLonFormat(StringUtils.stripToNull(wbRow.getLong2Text())));
+                    fmt = GeoRefConverter.getLeastCommonFmt(fmt, fmt2);
+
+                }
+                overrides.put(locInfo.getFieldByName("srcLatLongUnit"), fmt.ordinal());
                 DBFieldInfo llType = locInfo.getFieldByName("latLongType");
                 if (!overrides.containsKey(llType)) {
                     boolean pnt1Changed = overrides.containsKey(lat1) || overrides.containsKey(lng1);
@@ -5030,31 +5038,6 @@ public class UploadTable implements Comparable<UploadTable>
        return false;
    }
 
-   protected static int intimakeFORMAT(LatLonConverter.FORMAT fmt) {
-       //public enum FORMAT          {DDDDDD, DDMMSS, DDMMMM, None}
-       switch (fmt) {
-           case DDDDDD: return 0;
-           case DDMMMM: return 1;
-           case DDMMSS: return 2;
-           default: return 3;
-       }
-   }
-
-   protected static LatLonConverter.FORMAT getLeastCommonFmt(LatLonConverter.FORMAT fmt1, LatLonConverter.FORMAT fmt2) {
-       if (fmt1.equals(fmt2)) {
-           return fmt1;
-       } else if (fmt1.equals(LatLonConverter.FORMAT.None) || fmt2.equals(LatLonConverter.FORMAT.None)){
-           return null;
-       } else {
-           int f1 = intimakeFORMAT(fmt1);
-           int f2 = intimakeFORMAT(fmt2);
-           if (f1 < f2) {
-               return fmt2;
-           } else {
-               return fmt1;
-           }
-       }
-   }
     /**
      * @param row
      * @param uploadData
@@ -5169,9 +5152,9 @@ public class UploadTable implements Comparable<UploadTable>
 									llFmt2 = fmt;
 								}
 							} else {
-								//fmt = getLeastCommonFmt(llFmt, fmt);
-							    if (!llFmt.equals(fmt)) {
-                                //if (fmt != null) {
+								fmt = GeoRefConverter.getLeastCommonFmt(llFmt, fmt);
+							    //if (!llFmt.equals(fmt)) {
+                                if (fmt == null) {
 									checkDecimalPlaces = false;
 									invalidValues.add(new UploadTableInvalidValue(null, this, getLatLongFlds(), row,
 													new Exception(UIRegistry.getResourceString("WB_UPLOADER_INVALID_LATLONG"))));

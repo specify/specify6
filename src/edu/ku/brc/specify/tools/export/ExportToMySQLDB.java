@@ -923,11 +923,11 @@ public class ExportToMySQLDB
 		return result;
 	}
 	
-	protected static String formatLatLng(String fldName, BigDecimal latLng, Integer originalLatLngUnit,
+	protected static String formatLatLng(String fldName, BigDecimal latLng, Integer srcLatLngUnit,
 			String srcTxt) throws SQLException {
 		String result = null;
-		if (originalLatLngUnit != null && latLng != null) {
-			LatLonConverter.FORMAT fmt = LatLonConverter.FORMAT.values()[originalLatLngUnit];
+		if (srcLatLngUnit != null && latLng != null) {
+			LatLonConverter.FORMAT fmt = LatLonConverter.FORMAT.values()[srcLatLngUnit];
 			LatLonConverter.LATLON llType = getLatLngType(fldName);
 			if (LatLonConverter.FORMAT.DDDDDD.equals(fmt) && StringUtils.isNotBlank(srcTxt)) {
 				result = srcTxt;
@@ -983,7 +983,7 @@ public class ExportToMySQLDB
 		Statement stmt = conn.createStatement();
 		try
 		{
-			ResultSet rs = stmt.executeQuery("select ifnull(OriginalLatLongUnit, 0), Lat1Text, Long1Text from "
+			ResultSet rs = stmt.executeQuery("select ifnull(SrcLatLongUnit, 0), Lat1Text, Long1Text from "
 					+ "collectionobject co inner join collectingevent ce on ce.collectingeventid = co.collectingeventid "
 					+ "inner join locality l on l.localityid = ce.localityid where co.CollectionObjectID = " + rowId);
 			if (rs.next())
@@ -1146,7 +1146,7 @@ public class ExportToMySQLDB
 			}
 		}
 		Connection conn = connection != null ? connection : DBConnection.getInstance().createConnection();
-		String sql = "SELECT DISTINCT l.LocalityID, ifnull(l.OriginalLatLongUnit, 0), l.Latitude1, l.Longitude1, l.Latitude2, l.Longitude2, "
+		String sql = "SELECT DISTINCT l.LocalityID, ifnull(l.SrcLatLongUnit, 0), l.Latitude1, l.Longitude1, l.Latitude2, l.Longitude2, "
 				+ "l.Lat1Text, l.Long1Text, l.Lat2Text, l.Long2Text FROM `" + tableName + "` t" 
 				+ " INNER JOIN collectionobject co ON co.CollectionObjectID=t."
 				+ tableName + "ID INNER JOIN collectingevent ce ON ce.CollectingEventID="

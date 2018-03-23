@@ -81,26 +81,26 @@ public class LocalityRecFinalizer implements UploadedRecFinalizerIFace
             LatLonConverter.FORMAT fmt;
 
             // reversion to old format handling:
-            fmt = geoRefConverter.getLatLonFormat(StringUtils.stripToNull(loc.getLat1text()));
+            //fmt = geoRefConverter.getLatLonFormat(StringUtils.stripToNull(loc.getLat1text()));
 
-            /* for new format checking...
+            /* for new format checking...*/
             if (loc.getLat1text() == null) {
                 fmt = LatLonConverter.FORMAT.None;
             } else {
-                fmt = UploadTable.getLeastCommonFmt(geoRefConverter.getLatLonFormat(StringUtils.stripToNull(loc.getLat1text())),
+                fmt = GeoRefConverter.getLeastCommonFmt(geoRefConverter.getLatLonFormat(StringUtils.stripToNull(loc.getLat1text())),
                         geoRefConverter.getLatLonFormat(StringUtils.stripToNull(loc.getLong1text())));
                 if (loc.getLat2text() != null) {
-                    fmt = UploadTable.getLeastCommonFmt(fmt, UploadTable.getLeastCommonFmt(geoRefConverter.getLatLonFormat(StringUtils.stripToNull(loc.getLat1text())),
+                    fmt = GeoRefConverter.getLeastCommonFmt(fmt, GeoRefConverter.getLeastCommonFmt(geoRefConverter.getLatLonFormat(StringUtils.stripToNull(loc.getLat1text())),
                             geoRefConverter.getLatLonFormat(StringUtils.stripToNull(loc.getLong1text()))));
                 }
             }
             if (fmt == null) {
                 fmt = LatLonConverter.FORMAT.None;
             }
-            ...gnikcehc tamrof wen rof*/
-            if (!isUpdateUpload || rec.getId() == null) {
+            /*...gnikcehc tamrof wen rof*/
+            //if (!isUpdateUpload || rec.getId() == null) {
                 loc.setOriginalLatLongUnit(fmt.ordinal());
-            }
+            //}
             loc.setSrcLatLongUnit((byte)fmt.ordinal());
         }
         return changed(origLat1Text, loc.getLat1text())

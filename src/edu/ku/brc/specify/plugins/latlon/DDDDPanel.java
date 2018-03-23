@@ -779,7 +779,7 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
             {
                 if (includeEmptyCheck && cnt == completeCnt)
                 {
-                    if (valState != UIValidatable.ErrorType.Error)
+                    if (valState != UIValidatable.ErrorType.Error && cnt == 0)
                     {
                         valState = UIValidatable.ErrorType.Incomplete;
                     }
