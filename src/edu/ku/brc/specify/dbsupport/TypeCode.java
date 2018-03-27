@@ -119,6 +119,11 @@ public class TypeCode implements PickListDBAdapterIFace, ComboBoxModel
         return null;
     }
 
+    public void addEmptyItem() {
+        if (items != null) {
+            items.add(0, new TypeCodeItem("", null));
+        }
+    }
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.PickListDBAdapterIFace#getItem(int)
      */
