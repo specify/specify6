@@ -967,7 +967,9 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
             	RecordSetIFace rs = null;
             	if (data instanceof RecordSetProxy) {
             		rs = RecordSetTask.loadRecordSet((RecordSetProxy)data);
-            	}
+            	} else if (data instanceof RecordSetIFace) {
+            	    rs = (RecordSetIFace)data;
+                }
             	Object src = rs == null ? e.getSource() : ((DataActionEvent)e).getDestObj();
                 new EditQueryWorker(recordSet.getOnlyItem().getRecordId(), (RolloverCommand)src, rs).start();
             }
