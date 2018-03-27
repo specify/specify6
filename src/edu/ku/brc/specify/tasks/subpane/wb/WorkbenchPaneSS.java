@@ -55,6 +55,7 @@ import edu.ku.brc.services.mapping.SimpleMapLocation;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.*;
 import edu.ku.brc.specify.dbsupport.RecordTypeCodeBuilder;
+import edu.ku.brc.specify.dbsupport.TypeCode;
 import edu.ku.brc.specify.rstools.ExportFileConfigurationFactory;
 import edu.ku.brc.specify.rstools.ExportToFile;
 import edu.ku.brc.specify.rstools.GoogleEarthExporter;
@@ -85,7 +86,10 @@ import sun.swing.table.DefaultTableCellHeaderRenderer;
 
 import javax.swing.*;
 import javax.swing.border.Border;
-import javax.swing.event.*;
+import javax.swing.event.DocumentListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TableModelEvent;
 import javax.swing.plaf.basic.BasicBorders;
 import javax.swing.table.*;
 import javax.swing.text.Caret;
@@ -101,6 +105,7 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static edu.ku.brc.ui.UIHelper.*;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
@@ -455,11 +460,13 @@ public class WorkbenchPaneSS extends BaseSubPane
                         @Override
                         public Object construct() {
                             try {
-                                List<SubPaneIFace> badPanes = checkOpenTasksForUpload(uploadAfterSave);
-                                if (badPanes.size() > 0) {
-                                	UIRegistry.displayInfoMsgDlgLocalized(String.format(getResourceString("WB_UPLOAD_CLOSE_ALL_MSG"), getListOfBadTasks(badPanes)));
-                                	saveBtn.setEnabled(true);
-                                	return null;
+                                if (uploadAfterSave) {
+                                    List<SubPaneIFace> badPanes = checkOpenTasksForUpload(uploadAfterSave);
+                                    if (badPanes.size() > 0) {
+                                        UIRegistry.displayInfoMsgDlgLocalized(String.format(getResourceString("WB_UPLOAD_CLOSE_ALL_MSG"), getListOfBadTasks(badPanes)));
+                                        saveBtn.setEnabled(true);
+                                        return null;
+                                    }
                                 }
                                 saveObject();
                                 if (uploadAfterSave) {
@@ -3568,56 +3575,54 @@ public class WorkbenchPaneSS extends BaseSubPane
     	}
     	return result;
     }
-    
+
+//    private ValComboBoxFromQuery buildQcbxForCellEditor(final String name, final String dataObjFormatterName) {
+//        return TypeSearchForQueryFactory.getInstance().createValComboBoxFromQuery(name, 0, dataObjFormatterName, null);
+//    }
+
+
     /**
      * @param wbtmi
      * @return
      */
-    protected GridCellEditor getCellEditor(WorkbenchTemplateMappingItem wbtmi, int fieldWidth, JButton theSaveBtn, Element uploadDefs)
-    {
+    protected GridCellEditor getCellEditor(WorkbenchTemplateMappingItem wbtmi, int fieldWidth, JButton theSaveBtn, Element uploadDefs) {
     	PickListDBAdapterIFace pickList = null;
-
-    	
     	DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoByTableName(getActualTableName(wbtmi.getTableName(), wbtmi.getFieldName(), uploadDefs));
-    	if (tblInfo != null)
-    	{
+    	if (tblInfo != null) {
     		String fldName = wbtmi.getFieldName();
     		@SuppressWarnings("unchecked")
     		List<Object> flds = uploadDefs.selectNodes("field");
-    		for (Object fld : flds)
-    		{
+    		for (Object fld : flds) {
     			String table = XMLHelper.getAttr((Element )fld, "table", null);
     			String field = XMLHelper.getAttr((Element )fld, "name", null);
-    			if (wbtmi.getTableName().equalsIgnoreCase(table) && wbtmi.getFieldName().equalsIgnoreCase(field))
-    			{
+    			if (wbtmi.getTableName().equalsIgnoreCase(table) && wbtmi.getFieldName().equalsIgnoreCase(field)) {
     				fldName = XMLHelper.getAttr((Element )fld, "actualname", fldName);
     				break;
     			}
     		}
+//    		if (wbtmi.getFieldName().equalsIgnoreCase(tblInfo.getIdColumnName())) {
+//    		    return new GridCellQueryComboEditor(buildQcbxForCellEditor(UploadTable.capitalize(tblInfo.getName()), tblInfo.getDataObjFormatter()),
+//                        wbtmi.getCaption(), fieldWidth, theSaveBtn);
+//            }
     		DBFieldInfo fldInfo = tblInfo.getFieldByName(fldName);
-    		if (fldInfo != null)
-    		{
-    			if (!StringUtils.isEmpty(fldInfo.getPickListName()))
-    			{
+    		if (fldInfo != null) {
+    			if (!StringUtils.isEmpty(fldInfo.getPickListName())) {
     				pickList = PickListDBAdapterFactory.getInstance().create(
     						fldInfo.getPickListName(), false);
-    			} else if (RecordTypeCodeBuilder.isTypeCodeField(fldInfo))
-    			{
+    			} else if (RecordTypeCodeBuilder.isTypeCodeField(fldInfo)) {
     				pickList = RecordTypeCodeBuilder.getTypeCode(fldInfo);
+                    ((TypeCode)pickList).addEmptyItem();
     			}     		
     		} 
-    		if (tblInfo.getTableId() == Preparation.getClassTableId())
-    		{
+    		if (tblInfo.getTableId() == Preparation.getClassTableId()) {
     			fldName = wbtmi.getFieldName();
-    			if (fldName.startsWith("prepType") && StringUtils.isNumeric(fldName.replace("prepType", "")))
-    			{
+    			if (fldName.startsWith("prepType") && StringUtils.isNumeric(fldName.replace("prepType", ""))) {
     				pickList = PickListDBAdapterFactory.getInstance().create("prepType", false);
     			}
     					
     		}
     	} 
-     	if (pickList == null)
-    	{
+     	if (pickList == null) {
     		return new GridCellEditor(new JTextField(), wbtmi.getCaption(), fieldWidth, theSaveBtn);	
     	}
     	JComboBox<PickListItemIFace> comboBox = new JComboBox<PickListItemIFace>(pickList.getList());
@@ -5053,7 +5058,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 		private final int startRow;
 		private final int endRow;
 		private final boolean useGlassPane;
-		private SimpleGlassPane glassPane;
+		private AtomicReference<SimpleGlassPane> glassPane = new AtomicReference<>(null);
 		private final boolean allowCancel;
 		private final AtomicBoolean cancelledByUser = new AtomicBoolean(false);
 		
@@ -5075,7 +5080,114 @@ public class WorkbenchPaneSS extends BaseSubPane
 			this.endRow = endRow;
 			this.useGlassPane = useGlassPane;
 			this.allowCancel = allowCancel;
-		}
+            if (useGlassPane)
+            {
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        ValidationWorker.this.glassPane.set(UIRegistry.writeSimpleGlassPaneMsg(
+                                String.format(getResourceString("WorkbenchPaneSS.Validating"),
+                                        new Object[] {isUpdateDataSet() ? "" : workbench.getName()}),
+                                WorkbenchTask.GLASSPANE_FONT_SIZE, true));
+                        if (allowCancel)
+                        {
+                            UIRegistry.displayStatusBarText(getResourceString("WorkbenchPaneSS.CancelValidationHint"));
+                            ValidationWorker.this.glassPane.get().addMouseListener(new MouseListener() {
+
+                                /*
+                                 * (non-Javadoc)
+                                 *
+                                 * @see
+                                 * java.awt.event.MouseListener#mouseClicked(java.awt
+                                 * .event.MouseEvent)
+                                 */
+                                @Override
+                                public void mouseClicked(MouseEvent arg0) {
+                                    if (!arg0.isConsumed())
+                                    {
+                                        if (arg0.getClickCount() == 2)
+                                        {
+                                            SwingUtilities.invokeLater(new Runnable() {
+
+                                                /* (non-Javadoc)
+                                                 * @see java.lang.Runnable#run()
+                                                 */
+                                                @Override
+                                                public void run() {
+                                                    if (UIRegistry.displayConfirmLocalized(
+                                                            "WorkbenchPaneSS.CancelValidationConfirmTitle",
+                                                            "WorkbenchPaneSS.CancelValidationConfirmMsg", "YES", "NO",
+                                                            JOptionPane.QUESTION_MESSAGE))
+                                                    {
+                                                        cancelledByUser.set(true);
+                                                    }
+                                                }
+
+
+                                            });
+                                        }
+                                    }
+                                }
+
+                                /*
+                                 * (non-Javadoc)
+                                 *
+                                 * @see
+                                 * java.awt.event.MouseListener#mouseEntered(java.awt
+                                 * .event.MouseEvent)
+                                 */
+                                @Override
+                                public void mouseEntered(MouseEvent arg0) {
+                                    // TODO Auto-generated method stub
+
+                                }
+
+                                /*
+                                 * (non-Javadoc)
+                                 *
+                                 * @see
+                                 * java.awt.event.MouseListener#mouseExited(java.awt
+                                 * .event.MouseEvent)
+                                 */
+                                @Override
+                                public void mouseExited(MouseEvent arg0) {
+                                    // TODO Auto-generated method stub
+
+                                }
+
+                                /*
+                                 * (non-Javadoc)
+                                 *
+                                 * @see
+                                 * java.awt.event.MouseListener#mousePressed(java.awt
+                                 * .event.MouseEvent)
+                                 */
+                                @Override
+                                public void mousePressed(MouseEvent arg0) {
+                                    // TODO Auto-generated method stub
+
+                                }
+
+                                /*
+                                 * (non-Javadoc)
+                                 *
+                                 * @see
+                                 * java.awt.event.MouseListener#mouseReleased(java.awt
+                                 * .event.MouseEvent)
+                                 */
+                                @Override
+                                public void mouseReleased(MouseEvent arg0) {
+                                    // TODO Auto-generated method stub
+
+                                }
+
+                            });
+                        }
+
+                    }
+                });
+            }
+        }
 
 		/*
 		 * (non-Javadoc)
@@ -5083,177 +5195,60 @@ public class WorkbenchPaneSS extends BaseSubPane
 		 * @see javax.swing.SwingWorker#doInBackground()
 		 */
 		@Override
-		protected Object doInBackground() throws Exception
-		{
-			if (useGlassPane)
-			{
-	            this.glassPane = UIRegistry.writeSimpleGlassPaneMsg(
-	            		String.format(getResourceString("WorkbenchPaneSS.Validating"),
-                                new Object[] {isUpdateDataSet() ? "" : workbench.getName()}),
-	            		WorkbenchTask.GLASSPANE_FONT_SIZE, true);
-				if (allowCancel)
-				{
-					UIRegistry.displayStatusBarText(getResourceString("WorkbenchPaneSS.CancelValidationHint"));
-					this.glassPane.addMouseListener(new MouseListener() {
-
-						/*
-						 * (non-Javadoc)
-						 * 
-						 * @see
-						 * java.awt.event.MouseListener#mouseClicked(java.awt
-						 * .event.MouseEvent)
-						 */
-						@Override
-						public void mouseClicked(MouseEvent arg0) {
-							if (!arg0.isConsumed())
-							{
-								if (arg0.getClickCount() == 2)
-								{
-									SwingUtilities.invokeLater(new Runnable() {
-
-										/* (non-Javadoc)
-										 * @see java.lang.Runnable#run()
-										 */
-										@Override
-										public void run() {
-											if (UIRegistry.displayConfirmLocalized(
-													"WorkbenchPaneSS.CancelValidationConfirmTitle",
-													"WorkbenchPaneSS.CancelValidationConfirmMsg", "YES", "NO", 
-													JOptionPane.QUESTION_MESSAGE))
-											{
-												cancelledByUser.set(true);
-											}
-										}
-										
-										
-									});
-								}
-							}						
-						}
-
-						/*
-						 * (non-Javadoc)
-						 * 
-						 * @see
-						 * java.awt.event.MouseListener#mouseEntered(java.awt
-						 * .event.MouseEvent)
-						 */
-						@Override
-						public void mouseEntered(MouseEvent arg0) {
-							// TODO Auto-generated method stub
-
-						}
-
-						/*
-						 * (non-Javadoc)
-						 * 
-						 * @see
-						 * java.awt.event.MouseListener#mouseExited(java.awt
-						 * .event.MouseEvent)
-						 */
-						@Override
-						public void mouseExited(MouseEvent arg0) {
-							// TODO Auto-generated method stub
-
-						}
-
-						/*
-						 * (non-Javadoc)
-						 * 
-						 * @see
-						 * java.awt.event.MouseListener#mousePressed(java.awt
-						 * .event.MouseEvent)
-						 */
-						@Override
-						public void mousePressed(MouseEvent arg0) {
-							// TODO Auto-generated method stub
-
-						}
-
-						/*
-						 * (non-Javadoc)
-						 * 
-						 * @see
-						 * java.awt.event.MouseListener#mouseReleased(java.awt
-						 * .event.MouseEvent)
-						 */
-						@Override
-						public void mouseReleased(MouseEvent arg0) {
-							// TODO Auto-generated method stub
-
-						}
-
-					});
-				}
-			} 		
+		protected Object doInBackground() throws Exception {
 			boolean checkedCatNums = catNumChecker == null;
-			if (rows != null)
-			{
+			if (rows != null) {
 				int count = rows.length;
 				int rowCount = 0;
-				for (int row : rows)
-				{
-					if (cancelledByUser.get())
-					{
+				for (int row : rows) {
+					if (cancelledByUser.get()) {
 						break;
 					}
-					
 					//int adjustedRow = adjustRow(row);
-					if (row != -1)
-					{
+					if (row != -1) {
 
-						if (!checkedCatNums)
-						{
+						if (!checkedCatNums) {
 							Vector<Integer> badCats = catNumChecker.checkValues(rows);
 							updateRowValidationStatus(row, -1, badCats);
 							checkedCatNums = true;
-						}
-						else
-						{
+						} else {
 							updateRowValidationStatus(row, -1, null);
 						}
 					}
-					if (useGlassPane)
-					{
+					if (useGlassPane) {
 						//System.out.println((int)( (100.0 * ++rowCount) / count));
-						glassPane.setProgress((int)( (100.0 * ++rowCount) / count));
+						if (glassPane.get() != null) {
+                            glassPane.get().setProgress((int) ((100.0 * ++rowCount) / count));
+                        }
 					}
 				}
-			} else
-			{
+			} else {
 				int count = endRow - startRow + 1;
 				int rowCount = 0;
-				try 
-				{
-					for (int row = startRow; row <= endRow; row++)
-					{
-						if (cancelledByUser.get())
-						{
+				try {
+					for (int row = startRow; row <= endRow; row++) {
+						if (cancelledByUser.get()) {
 							break;
 						}
 						//int adjustedRow = adjustRow(row);
-						if (row != -1)
-						{
-							if (!checkedCatNums)
-							{
+						if (row != -1) {
+							if (!checkedCatNums) {
 								Vector<Integer> badCats = catNumChecker.checkValues(rows);
 								updateRowValidationStatus(row, -1, badCats);
 								checkedCatNums = true;
-							}
-							else
-							{
+							} else {
 								updateRowValidationStatus(row, -1, null);
 							}
 						}
-						if (useGlassPane)
-						{
+						if (useGlassPane) {
 							int progress = (int)( (100.0 * ++rowCount) / count);
 							//System.out.println(progress);
-							glassPane.setProgress(progress);
+                            if (glassPane.get() != null) {
+                                glassPane.get().setProgress(progress);
+                            }
 						}
 					}
-				} catch (Exception ex)
-				{
+				} catch (Exception ex) {
 					ex.printStackTrace();
 				}
 			}
@@ -5378,7 +5373,7 @@ public class WorkbenchPaneSS extends BaseSubPane
      * @param glassPane
      * @param allowCancel
      */
-    protected void validateRows(final int[] rows, final int startRow, final int endRow, boolean doSecretly, final SimpleGlassPane glassPane, final boolean allowCancel)
+    public void validateRows(final int[] rows, final int startRow, final int endRow, boolean doSecretly, final SimpleGlassPane glassPane, final boolean allowCancel)
     {
     	
     	ValidationWorker newWorker = new ValidationWorker(rows, startRow, endRow, !doSecretly, allowCancel);
@@ -5487,14 +5482,12 @@ public class WorkbenchPaneSS extends BaseSubPane
         //protected UndoManager undoManager = new UndoManager();
         protected boolean             isEditable = true;
 
-        public GridCellEditor(final JTextField textField, final String caption, final int length, final JButton gcSaveBtn)
-        {
+        public GridCellEditor(final JTextField textField, final String caption, final int length, final JButton gcSaveBtn) {
             super(textField);
             init(textField, caption, length, gcSaveBtn);
          }
         
-        public GridCellEditor(final JComboBox<?> combo, final String caption, final int length, final JButton gcSaveBtn)
-        {
+        public GridCellEditor(final JComboBox<?> combo, final String caption, final int length, final JButton gcSaveBtn) {
         	super(combo);
         	init(combo, caption, length, gcSaveBtn);
         }
@@ -5701,6 +5694,74 @@ public class WorkbenchPaneSS extends BaseSubPane
         }
      }
 
+     // experimental
+//     public class GridCellQueryComboEditor extends GridCellEditor {
+//         public ValComboBoxFromQuery getQcbx() {
+//             return qcbx;
+//         }
+//
+//         public DataProviderSessionIFace getSession() {
+//             return session;
+//         }
+//
+//         public DataModelObjBase getDataObj(final Object id) {
+//             return session.get(Locality.class, Integer.valueOf((String)id));
+//         }
+//
+//         ValComboBoxFromQuery qcbx;
+//         DataProviderSessionIFace session;
+//
+//	    public GridCellQueryComboEditor(final ValComboBoxFromQuery qcbx, final String caption,
+//                                         final int length, final JButton gcSaveBtn) {
+//             super(qcbx.getTextWithQuery().getTextField(), caption, length, gcSaveBtn);
+//             this.qcbx = qcbx;
+//             session = DataProviderFactory.getInstance().createSession();
+//         }
+//
+//         @Override
+//         protected void finalize() throws Throwable {
+//             super.finalize();
+//             if (session != null && session.isOpen()) {
+//                 session.close();
+//             }
+//         }
+//
+//         /* (non-Javadoc)
+//          * @see edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS.GridCellEditor#getTableCellEditorComponent(javax.swing.JTable, java.lang.Object, boolean, int, int)
+//          */
+//         @Override
+//         public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+//             editCol = column;
+//             editRow = row;
+//
+//             System.out.println("GridCellQueryComboEditor.getTableCellEditorComponent");
+//             qcbx.setValue(getDataObj(value), value.toString());
+//             return uiComponent;
+//         }
+//
+//         /* (non-Javadoc)
+//          * @see javax.swing.CellEditor#getCellEditorValue()
+//          */
+//         @Override
+//         public Object getCellEditorValue() {
+//             //DataModelObjBase result = (DataModelObjBase)qcbx.getValue();
+//             System.out.println("GridCellQueryComboEditor.getCellEditorValue");
+//             return qcbx.getTextWithQuery().getTextField().getText();
+////             if (result != null) {
+////                 return result.getId();
+////             } else {
+////                 return "";
+////             }
+//         }
+//
+//         /* (non-Javadoc)
+//          * @see edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS.GridCellEditor#endStopCellEditProcessing()
+//          */
+//         @Override
+//         protected void endStopCellEditProcessing() {
+//             //don't do nuthin.
+//         }
+//     }
     /**
      * @author timo
      *
@@ -5786,16 +5847,14 @@ public class WorkbenchPaneSS extends BaseSubPane
      *
      *Renderer for workbench cells that checks cells validation status and status text.
      */
-    public class WbCellRenderer extends DefaultTableCellRenderer
-    {
+    public class WbCellRenderer extends DefaultTableCellRenderer {
 		/* (non-Javadoc)
 		 * @see javax.swing.table.DefaultTableCellRenderer#getTableCellRendererComponent(javax.swing.JTable, java.lang.Object, boolean, boolean, int, int)
 		 */
 		@Override
 		public Component getTableCellRendererComponent(JTable table,
 				Object value, boolean isSelected, boolean hasFocus,
-				int tblRow, int tblColumn)
-		{
+				int tblRow, int tblColumn) {
 			JLabel lbl = (JLabel) super.getTableCellRendererComponent(
 					table, value, isSelected, hasFocus, tblRow,
 					tblColumn);
@@ -5803,13 +5862,18 @@ public class WorkbenchPaneSS extends BaseSubPane
 			int          modelRow = spreadSheet.convertRowIndexToModel(tblRow);
 			WorkbenchRow wbRow    = workbench.getRow(modelRow);
 			String       cardImageFullPath = wbRow.getCardImageFullPath();
-			if (cardImageFullPath != null)
-			{
+			if (cardImageFullPath != null) {
 				String filename = FilenameUtils.getBaseName(cardImageFullPath);
 				filename = FilenameUtils.getName(cardImageFullPath);
 				lbl.setText(filename);
 				lbl.setHorizontalAlignment(SwingConstants.CENTER);
 			}
+//			if (table.getColumnModel().getColumn(tblColumn).getCellEditor() instanceof GridCellQueryComboEditor) {
+//                GridCellQueryComboEditor e = ((GridCellQueryComboEditor)table.getColumnModel().getColumn(tblColumn).getCellEditor());
+//			    e.getQcbx().setValue(e.getDataObj(value), value.toString());
+//			    System.out.println("wbcellrenderer.gettablecellrendercomponent");
+//                lbl.setText(e.getQcbx().getTextWithQuery().getTextField().getText());
+//            }
 			lbl.setEnabled(isEditable);
 			return lbl;
 		}
