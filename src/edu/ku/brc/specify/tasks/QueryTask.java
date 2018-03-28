@@ -2530,7 +2530,7 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
         @Override
         public void finished() {
             super.finished();
-    		rsToDisplay.set(rs);
+    		rsToDisplay.set(rs == null ? null : (rs.getDbTableId() == SpQuery.getClassTableId() ? null : rs));
             if (queryBldrPane == null || queryBldrPane.aboutToShutdown()) {
                 if (editQuery(queryId)) {
             		for (NavBoxItemIFace nb : navBox.getItems()) {
@@ -2556,8 +2556,8 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
      */
     public void qBldrPaneShutDown() {
     	previousQBldrPaneShuttingDown.set(false);
-		RecordSetIFace rs = rsToDisplay.getAndSet(null);
-		if (rs != null) {
+    	RecordSetIFace rs = rsToDisplay.getAndSet(null);
+		if (rs != null && rs.getDbTableId() != SpQuery.getClassTableId()) {
 			queryBldrPane.doSearch(rs);
 		}
     	
@@ -2573,7 +2573,7 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
 		super.subPaneRemoved(subPane);
 		if (subPane instanceof QBResultsSubPane) {
 			RecordSetIFace rs = rsToDisplay.getAndSet(null);
-			if (rs != null) {
+			if (rs != null && rs.getDbTableId() != SpQuery.getClassTableId()) {
 				queryBldrPane.doSearch(rs);
 			}
 		}
