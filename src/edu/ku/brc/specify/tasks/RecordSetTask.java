@@ -36,10 +36,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
 
 import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
@@ -820,144 +817,77 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
             RecordSetIFace srcRecordSet = srcObj instanceof RecordSetProxy ? ((RecordSetProxy)srcObj).getRecordSet() : (RecordSetIFace)srcObj;
             RecordSetIFace dstRecordSet = dstObj instanceof RecordSetProxy ? ((RecordSetProxy)dstObj).getRecordSet() : (RecordSetIFace)dstObj;
             
-            if (srcRecordSet != null && dstRecordSet != null)
-            {
+            if (srcRecordSet != null && dstRecordSet != null) {
                // It' just easier to build this up front
                 DBTableInfo srcTI = DBTableIdMgr.getInstance().getInfoById(srcRecordSet.getDbTableId());
                 DBTableInfo dstTI = DBTableIdMgr.getInstance().getInfoById(dstRecordSet.getDbTableId());
                 String mergeErrStr = String.format(getResourceString(MERGE_ERR), new Object[] {srcTI.getShortClassName(), dstTI.getShortClassName()});
 
-                if (srcRecordSet.getDbTableId().equals(dstRecordSet.getDbTableId()))
-                {
+                if (srcRecordSet.getDbTableId().equals(dstRecordSet.getDbTableId())) {
                     List<Integer> dstIdList = RecordSet.getIdList(dstRecordSet.getRecordSetId(), null);
                     List<Integer> srcIdList;
-                    if (srcRecordSet.getRecordSetId() == null)
-                    {
-                        srcIdList = new Vector<Integer>();
-                        for (RecordSetItemIFace rsi : srcRecordSet.getOrderedItems())
-                        {
+                    if (srcRecordSet.getRecordSetId() == null) {
+                        srcIdList = new Vector<>();
+                        for (RecordSetItemIFace rsi : srcRecordSet.getOrderedItems()) {
                             srcIdList.add(rsi.getRecordId());
                         }
-                    } else
-                    {
+                    } else {
                         srcIdList = RecordSet.getIdList(srcRecordSet.getRecordSetId(), null);
                     }
-                    
-                    boolean debug = true;
-                    if (debug)
-                    {
-                        log.debug("Source:");
-                        for (Integer id : srcIdList)
-                        {
-                            log.debug(" "+id);
-                        }                
-                        log.debug("Dest:");
-                        for (Integer id : dstIdList)
-                        {
-                            log.debug(" "+id);
-                        }    
-                        log.debug("");
-                    }
-                    
-                    Hashtable<Integer, Boolean> dupHash = new Hashtable<Integer, Boolean>();
-                    for (Integer id : dstIdList)
-                    {
-                        dupHash.put(id, true);
-                    }    
 
-                    List<Integer> newIdsList = new ArrayList<Integer>(srcIdList.size() + dstIdList.size());
-                    for (Integer id : srcIdList)
-                    {
-                        if (dupHash.get(id) == null)
-                        {
-                            //dstRecordSet.addItem(id); // for saving with Hibernate
-                            newIdsList.add(id);
+                    Set<Integer> dstSet = new TreeSet<>(dstIdList);
+                    List<Integer> newIdsList = new ArrayList<>(srcIdList.size() + dstIdList.size());
+                    for (Integer srcId : srcIdList) {
+                        if (dstSet.add(srcId)) {
+                            newIdsList.add(srcId);
                         }
                     }
-                    
-                    if (debug)
-                    {
-                        log.debug("");
-                        log.debug("New Dest:");
-                        for (RecordSetItemIFace rsi : dstRecordSet.getItems())
-                        {
-                            log.debug(" "+rsi.getRecordId());
-                        }                
-                        log.debug("");
-                    }
-                    
-                    if (newIdsList.size() > 0)
-                    {
-                        //long start = System.currentTimeMillis();
-                        boolean success = false;
-                        
-                        if (true) // Use SQL to save the merge RecordSets
-                        {
-                            boolean    doRollback = false;
-                            Connection connection = DBConnection.getInstance().getConnection();
-                            Statement  stmt       = null;
-                            try
-                            {
-                                connection.setAutoCommit(false);
-                                stmt = connection.createStatement();
-                                for (int i=0; i < newIdsList.size(); i++)
-                                {
-                                    stmt.executeUpdate("INSERT INTO recordsetitem (RecordSetID, RecordID, OrderNumber) VALUES ("
+                    boolean success = false;
+                    if (newIdsList.size() > 0) {
+                        boolean    doRollback = false;
+                        Connection connection = DBConnection.getInstance().getConnection();
+                        Statement  stmt       = null;
+                        try {
+                            connection.setAutoCommit(false);
+                            stmt = connection.createStatement();
+                            for (int i=0; i < newIdsList.size(); i++) {
+                                stmt.executeUpdate("INSERT INTO recordsetitem (RecordSetID, RecordID, OrderNumber) VALUES ("
                                     		+dstRecordSet.getRecordSetId()+","+newIdsList.get(i)+","+i+")");
+                            }
+                            connection.commit();
+                            success = true;
+                        } catch (SQLException ex) {
+                            edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+                            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(RecordSetTask.class, ex);
+                            ex.printStackTrace();
+                            doRollback = true;
+                        } finally {
+                            try {
+                                if (doRollback) {
+                                    connection.rollback();
                                 }
-                                connection.commit();
-                                success = true;
-                                
-                            } catch (SQLException ex)
-                            {
-                                edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
-                                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(RecordSetTask.class, ex);
-                                ex.printStackTrace();
-                                doRollback = true;
-                                
-                            } finally
-                            {
-                                try
-                                {
-                                    if (doRollback)
-                                    {
-                                        connection.rollback();
-                                    }
-                                    if (stmt != null)
-                                    {
-                                        stmt.close();
-                                    }
-                                    
-                                    connection.setAutoCommit(true);
-                                    
-                                } catch (SQLException ex2)
-                                {
+                                if (stmt != null) {
+                                    stmt.close();
+                                }
+                                connection.setAutoCommit(true);
+                            } catch (SQLException ex2) {
                                     edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
                                     edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(RecordSetTask.class, ex2);
                                     ex2.printStackTrace();
-                                }
                             }
-                        //} else
-                        //{
-                        //    success = persistRecordSet(dstRecordSet);
                         }
-                        //System.err.println("Time: "+(System.currentTimeMillis() - start));
-                        
-                        if (success)
-                        {
+
+                        if (success) {
                             String msg = String.format(getResourceString("RecordSetTask.MERGE_SUCCESS"), new Object[] {srcTI.getShortClassName(), dstTI.getShortClassName()});
                             UIRegistry.displayStatusBarText(msg);
-                        } else
-                        {
+                        } else {
                             JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), mergeErrStr, getResourceString("Error"), JOptionPane.ERROR_MESSAGE);
                         }
                     }
-                } else
-                {
+                } else {
                     JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), mergeErrStr, getResourceString("Error"), JOptionPane.ERROR_MESSAGE);
                 }
-            } else
-            {
+            } else {
                 log.error("The src or the dst RecordSet were null src["+srcRecordSet+"]  dst["+dstRecordSet+"]");
             }
         }  
