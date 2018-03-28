@@ -83,7 +83,7 @@ metadata-extractor.jar                  2.6.4
 
 
 wwlibs
-	worldwind package					2.0.0 (beta daily 964.1862)						
+	worldwind package					2.1
 	
 Missing information:
 --------------------
