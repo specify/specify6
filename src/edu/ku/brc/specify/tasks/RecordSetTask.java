@@ -401,7 +401,7 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
      * Save a record set.
      * @param recordSet the rs to be saved
      */
-    public void saveNewRecordSet(final RecordSet recordSet)
+    public void saveNewRecordSet(final RecordSet recordSet, boolean addToNavBox)
     {
         boolean isOKToAdd = true;
         /*
@@ -419,13 +419,19 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
             recordSet.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
             recordSet.setOwner(AppContextMgr.getInstance().getClassObject(SpecifyUser.class));
             
-            if (persistRecordSet(recordSet))
+            if (persistRecordSet(recordSet) && addToNavBox)
             {
                 addRecordSetToNavBox(recordSet);
             }
         }
     }
-    
+
+    public void saveNewRecordSet(final RecordSet recordSet)
+    {
+        saveNewRecordSet(recordSet, true);
+    }
+
+
     /**
      * Adds recordSet to the Recordset navbox list. And notifies the Labels task.
      * 

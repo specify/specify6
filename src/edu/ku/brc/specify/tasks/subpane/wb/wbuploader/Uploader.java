@@ -5789,54 +5789,57 @@ public class Uploader implements ActionListener, KeyListener
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         try  {
             UploadTable root = getRootTable();
+            RecordSetTask rsTsk = (RecordSetTask)ContextMgr.getTaskByClass(RecordSetTask.class);
         	for (RecordSet rs : recordSets)  {
-				BusinessRulesIFace busRule = DBTableIdMgr.getInstance()
-						.getBusinessRule(RecordSet.class);
-				if (busRule != null)  {
-					busRule.beforeSave(rs, session);
-				}
-				rs.setModifiedByAgent(rs.getCreatedByAgent());
-				session.beginTransaction();
-				try {
-					session.save(rs);
-					if (busRule != null)  {
-						if (!busRule.beforeSaveCommit(rs, session))  {
-							session.rollback();
-							throw new Exception(
-									"Business rules processing failed");
-						}
-					}
-					session.commit();
-					if (busRule != null)  {
-						busRule.afterSaveCommit(rs, session);
-					}
-					if (rs.getType() == RecordSet.GLOBAL && rs.getDbTableId() == root.getTable().getTableInfo().getTableId())  {
-						final RecordSet mergedRs = session.merge(rs);
-		        		SwingUtilities.invokeLater(new Runnable() {
+			    rsTsk.saveNewRecordSet(rs, rs.getType() == RecordSet.GLOBAL && rs.getDbTableId() == root.getTable().getTableInfo().getTableId());
 
-							/* (non-Javadoc)
-							 * @see java.lang.Runnable#run()
-							 */
-							@Override
-							public void run() {
-							    /*RecordSetTask rsTsk = (RecordSetTask)ContextMgr.getTaskByClass(RecordSetTask.class);
-							    if (rsTsk != null) {
-							        rsTsk.addRecordSetToNavBox(mergedRs);
-                                } else*/ {
-                                    CommandAction cmd = new CommandAction(RecordSetTask.RECORD_SET, RecordSetTask.ADD_TO_NAV_BOX);
-                                    cmd.setData(mergedRs);
-                                    CommandDispatcher.dispatch(cmd);
-                                }
-							}
-		        			
-		        		});
-					}
-				} catch (Exception ex)  {
-					edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-					edu.ku.brc.exceptions.ExceptionTracker.getInstance()
-							.capture(Uploader.class, ex);
-					session.rollback();
-				}
+//                BusinessRulesIFace busRule = DBTableIdMgr.getInstance()
+//						.getBusinessRule(RecordSet.class);
+//				if (busRule != null)  {
+//					busRule.beforeSave(rs, session);
+//				}
+//				rs.setModifiedByAgent(rs.getCreatedByAgent());
+//				session.beginTransaction();
+//				try {
+//					session.save(rs);
+//					if (busRule != null)  {
+//						if (!busRule.beforeSaveCommit(rs, session))  {
+//							session.rollback();
+//							throw new Exception(
+//									"Business rules processing failed");
+//						}
+//					}
+//					session.commit();
+//					if (busRule != null)  {
+//						busRule.afterSaveCommit(rs, session);
+//					}
+//					if (rs.getType() == RecordSet.GLOBAL && rs.getDbTableId() == root.getTable().getTableInfo().getTableId())  {
+//						final RecordSet mergedRs = session.merge(rs);
+//		        		SwingUtilities.invokeLater(new Runnable() {
+//
+//							/* (non-Javadoc)
+//							 * @see java.lang.Runnable#run()
+//							 */
+//							@Override
+//							public void run() {
+//							    /*RecordSetTask rsTsk = (RecordSetTask)ContextMgr.getTaskByClass(RecordSetTask.class);
+//							    if (rsTsk != null) {
+//							        rsTsk.addRecordSetToNavBox(mergedRs);
+//                                } else*/ {
+//                                    CommandAction cmd = new CommandAction(RecordSetTask.RECORD_SET, RecordSetTask.ADD_TO_NAV_BOX);
+//                                    cmd.setData(mergedRs);
+//                                    CommandDispatcher.dispatch(cmd);
+//                                }
+//							}
+//
+//		        		});
+//					}
+//				} catch (Exception ex)  {
+//					edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+//					edu.ku.brc.exceptions.ExceptionTracker.getInstance()
+//							.capture(Uploader.class, ex);
+//					session.rollback();
+//				}
 			}
         }
         catch (Exception ex)  {
