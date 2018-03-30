@@ -180,11 +180,10 @@ public class TableTree implements Cloneable, Comparable<TableTree>
      */
     public void clearKids()
     {
-//        for (TableTree kid : kids)
-//        {
-//        	kid.clearKids();
-//        	kid.setParent(null);
-//        }
+        for (TableTree kid : kids) {
+        	kid.clearKids();
+        	kid.setParent(null);
+        }
     	kids.clear();
     }
     /**
@@ -231,20 +230,22 @@ public class TableTree implements Cloneable, Comparable<TableTree>
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#clone()
      */
     @Override
-    public Object clone() throws CloneNotSupportedException
-    {
+    public Object clone() throws CloneNotSupportedException {
         TableTree obj = (TableTree)super.clone();
-        
-        obj.kids      = new Vector<TableTree>();
-        for (TableTree tt : kids)
-        {
+//        String fullname = (field != null ? field + "-" : "") + name;
+//        TableTree p = parent;
+//        while (p != null) {
+//            fullname += "." + p.name;
+//            p = p.parent;
+//        }
+//        System.out.println("cloning " + fullname);
+        obj.kids      = new Vector<>();
+        for (TableTree tt : kids) {
             TableTree newKid = (TableTree)tt.clone();
             obj.addKid(newKid);
         }
         
-        if (tableQRI != null)
-        {
-            //obj.tableQRI = (TableQRI)tableQRI.clone();
+        if (tableQRI != null) {
             obj.setTableQRIClone(tableQRI);
         }
         return obj;

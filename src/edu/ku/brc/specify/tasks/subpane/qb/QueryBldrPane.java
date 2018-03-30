@@ -3666,7 +3666,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 
         model.clear();
         if (tblQRI != null) {
-            Vector<BaseQRI> sortList = new Vector<BaseQRI>();
+            Vector<BaseQRI> sortList = new Vector<>();
 
             for (int f = 0; f < tblQRI.getFields(); f++) {
                 if (!tblQRI.getField(f).isFieldHidden()) {
@@ -3676,16 +3676,14 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             for (int k = 0; k < tblQRI.getTableTree().getKids(); k++) {
                 boolean addIt;
                 TableTree kidK = tblQRI.getTableTree().getKid(k);
+                //System.out.println(kidK.getName() + " - " + kidK.getField());
                 if (kidK.isAlias()) {
-                	addIt = tblIsDisplayable(kidK, tableTreeHash.get(kidK.getName())
-                            .getTableInfo()) && fixAliases(kidK, tableTreeHash);
+                	addIt = tblIsDisplayable(kidK, tableTreeHash.get(kidK.getName()).getTableInfo()) && fixAliases(kidK, tableTreeHash);
                 } else {
-                    addIt = !kidK.getTableInfo().isHidden()
-                            && tblIsDisplayable(kidK, kidK.getTableInfo());
+                    addIt = !kidK.getTableInfo().isHidden() && tblIsDisplayable(kidK, kidK.getTableInfo());
                 }
                 if (addIt) {
-                    if (kidK.getTableQRI().getRelationship() == null
-                            || !kidK.getTableQRI().getRelationship().isHidden()) {
+                    if (kidK.getTableQRI().getRelationship() == null || !kidK.getTableQRI().getRelationship().isHidden()) {
                         sortList.add(tblQRI.getTableTree().getKid(k).getTableQRI());
                     }
                 }
@@ -3800,16 +3798,16 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         			if (parent.getTableInfo() != null && parent.getTableInfo().getTableId() == tblInfo.getTableId()) {
                         if (parent.getField() != null) {
                             if (parent.getField().startsWith("accepted") || parent.getField().startsWith("hybrid")) {
-                                if (++ahloop > 1) {
+                                if (++ahloop > 0) {
                                     return false;
                                 }
                             } else if (parent.getField().equalsIgnoreCase("parent")) {
-                                if (++ploop > 5) {
+                                if (++ploop > 10) {
                                     return false;
                                 }
                             }
                         }
-                        if (++tloop > 24) {
+                        if (++tloop > 25) {
                             return false;
                         }
         			} else {
@@ -3821,7 +3819,10 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 TableTree parent = alias.getParent();
                 int tloop = 0;
                 while (parent != null) {
-                    if (tloop++ > 24) {
+//                    if (parent.getField().startsWith("accepted") || parent.getField().startsWith("hybrid")) {
+//                        return false;
+//                    }
+                    if (tloop++ > 25) {
                         return false;
                     }
                     parent = parent.getParent();
@@ -5096,12 +5097,15 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     {
         if (tbl.isAlias()) {
             TableTree tt = hash.get(tbl.getName());
+//            System.out.println("fixAliases: " + tbl.getField() + " - " + tbl.getName() + " ********************************************");
+//            System.out.println(tt.getField() + " - " + tt.getName());
             if (tt != null) {
                 if (!tt.getTableInfo().isHidden() && tblIsDisplayable(tbl, tt.getTableInfo())) {
                     tbl.clearKids();
                     try {
                         for (int k = 0; k < tt.getKids(); k++) {
                             tbl.addKid((TableTree) tt.getKid(k).clone());
+                            //System.out.println();
                         }
                         tbl.setTableInfo(tt.getTableInfo());
                         tbl.setTableQRIClone(tt.getTableQRI());

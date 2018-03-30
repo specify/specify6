@@ -2413,7 +2413,7 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
             for (int t = 0; t < treeRoot.getKids(); t++)
             {
                 TableTree tt = treeRoot.getKid(t);
-                result.put(tt.getName(), tt);
+                result.put(tt.getName(), (TableTree)tt.clone());
                 log.debug("Adding[" + tt.getName() + "] to hash");
             }
         }
