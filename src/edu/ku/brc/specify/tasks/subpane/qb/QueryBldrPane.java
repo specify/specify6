@@ -3665,45 +3665,27 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     {
 
         model.clear();
-        if (tblQRI != null)
-        {
+        if (tblQRI != null) {
             Vector<BaseQRI> sortList = new Vector<BaseQRI>();
 
-            for (int f = 0; f < tblQRI.getFields(); f++)
-            {
-                if (!tblQRI.getField(f).isFieldHidden())
-                {
+            for (int f = 0; f < tblQRI.getFields(); f++) {
+                if (!tblQRI.getField(f).isFieldHidden()) {
                     sortList.add(tblQRI.getField(f));
                 }
             }
-            for (int k = 0; k < tblQRI.getTableTree().getKids(); k++)
-            {
+            for (int k = 0; k < tblQRI.getTableTree().getKids(); k++) {
                 boolean addIt;
                 TableTree kidK = tblQRI.getTableTree().getKid(k);
-                if (kidK.isAlias())
-                {
-//                	if (!fixAliases(kidK, tableTreeHash))
-//                    {
-//                        addIt = false;
-//                    }
-//                    else
-//                    {
-//                        addIt = tblIsDisplayable(kidK, tableTreeHash.get(kidK.getName())
-//                                .getTableInfo());
-//                    }
+                if (kidK.isAlias()) {
                 	addIt = tblIsDisplayable(kidK, tableTreeHash.get(kidK.getName())
                             .getTableInfo()) && fixAliases(kidK, tableTreeHash);
-                }
-                else
-                {
+                } else {
                     addIt = !kidK.getTableInfo().isHidden()
                             && tblIsDisplayable(kidK, kidK.getTableInfo());
                 }
-                if (addIt)
-                {
+                if (addIt) {
                     if (kidK.getTableQRI().getRelationship() == null
-                            || !kidK.getTableQRI().getRelationship().isHidden())
-                    {
+                            || !kidK.getTableQRI().getRelationship().isHidden()) {
                         sortList.add(tblQRI.getTableTree().getKid(k).getTableQRI());
                     }
                 }
@@ -3711,8 +3693,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 
             Collections.sort(sortList);
             checkFldUsage(tblQRI.getTableTree(), sortList);
-            for (QryListRendererIFace qri : sortList)
-            {
+            for (QryListRendererIFace qri : sortList) {
                 model.addElement(qri);
             }
         }
@@ -3772,8 +3753,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      * @param tblInfo
      * @return true if aliasTbl should be displayed in the fields list for the current context.
      */
-    protected static boolean tblIsDisplayable(final TableTree aliasTbl, final DBTableInfo tblInfo)
-    {
+    protected static boolean tblIsDisplayable(final TableTree aliasTbl, final DBTableInfo tblInfo) {
         /*
         if (aliasTbl.isAlias())
         {
@@ -3782,7 +3762,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         //else
         return true;
         */
-        
+
         return !isCyclic(aliasTbl, tblInfo.getTableId()) || isCyclicable(aliasTbl, tblInfo);
         
     }
@@ -3793,13 +3773,10 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      * @return true if the specified alias represents a table that is already
      * present in the alias' tabletree.
      */
-    protected static boolean isCyclic(final TableTree alias, final int tblId)
-    {
+    protected static boolean isCyclic(final TableTree alias, final int tblId) {
         TableTree parent = alias.getParent();
-        while (parent != null)
-        {
-            if (parent.getTableInfo() != null && parent.getTableInfo().getTableId() == tblId)
-            {
+        while (parent != null) {
+            if (parent.getTableInfo() != null && parent.getTableInfo().getTableId() == tblId) {
                 return true;
             }
             parent = parent.getParent();
@@ -3812,130 +3789,116 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      * @param tblInfo
      * @return true if it is OK for the specified alias to create a cycle.
      */
-    protected static boolean isCyclicable(final TableTree alias, final DBTableInfo tblInfo)
-    {
-        if  (Treeable.class.isAssignableFrom(tblInfo.getClassObj()))
-        {
-        	if (alias.getField() != null && (alias.getField().startsWith("accepted") || alias.getField().startsWith("hybrid")))
-        	{
+    protected static boolean isCyclicable(final TableTree alias, final DBTableInfo tblInfo) {
+        if  (Treeable.class.isAssignableFrom(tblInfo.getClassObj())) {
+        	if (alias.getField() != null && (alias.getField().startsWith("accepted") || alias.getField().startsWith("hybrid"))) {
         		TableTree parent = alias.getParent();
-        		int loop = 0;
-        		while (parent != null)
-        		{
-        			if (parent.getTableInfo() != null && parent.getTableInfo().getTableId() == tblInfo.getTableId())
-        			{
-        				if (parent.getField() != null && (alias.getField().startsWith("accepted") || alias.getField().startsWith("hybrid")))
-        				{
-        					if(++loop > 1)
-        					{
-        						return false;
-        					}
-        				}
-        			}
-        			else
-        			{
+        		int ahloop = 0;
+        		int ploop = 0;
+        		int tloop = 0;
+        		while (parent != null) {
+        			if (parent.getTableInfo() != null && parent.getTableInfo().getTableId() == tblInfo.getTableId()) {
+                        if (parent.getField() != null) {
+                            if (parent.getField().startsWith("accepted") || parent.getField().startsWith("hybrid")) {
+                                if (++ahloop > 1) {
+                                    return false;
+                                }
+                            } else if (parent.getField().equalsIgnoreCase("parent")) {
+                                if (++ploop > 5) {
+                                    return false;
+                                }
+                            }
+                        }
+                        if (++tloop > 24) {
+                            return false;
+                        }
+        			} else {
         				break;
         			}
         			parent = parent.getParent();
         		}
-        	}
+        	} else {
+                TableTree parent = alias.getParent();
+                int tloop = 0;
+                while (parent != null) {
+                    if (tloop++ > 24) {
+                        return false;
+                    }
+                    parent = parent.getParent();
+                }
+
+            }
         	return true;
-        }
-        else if (Container.class.isAssignableFrom(tblInfo.getClassObj()))
-        {
+
+        } else if (Container.class.isAssignableFrom(tblInfo.getClassObj())) {
     		TableTree parent = alias.getParent();
-        	if (alias.getField().equals("parent"))
-        	{
-        		if (parent != null)
-        		{
+        	if (alias.getField().equals("parent")) {
+        		if (parent != null) {
         			//prevent loop back to parent container from expansion of Container.children
-        			if (parent.getTableInfo() != null && parent.getTableInfo().getTableId() == tblInfo.getTableId())
-        			{
-        				if (parent.getField() != null && parent.getField().equals("children"))
-        				{
+        			if (parent.getTableInfo() != null && parent.getTableInfo().getTableId() == tblInfo.getTableId()) {
+        				if (parent.getField() != null && parent.getField().equals("children")) {
         					return false;
         				}
         			}
         		}
         		int parentCount = 0;
-        		while (parent != null && parentCount < maxParentChainLen)
-        		{
+        		while (parent != null && parentCount < maxParentChainLen) {
         			parentCount++;
         			TableTree grandParent = null;
-        			if (parent.getTableInfo() != null && parent.getTableInfo().getTableId() == tblInfo.getTableId())
-        			{
-        				if (parent.getField() != null && parent.getField().equals("parent"))
-        				{
+        			if (parent.getTableInfo() != null && parent.getTableInfo().getTableId() == tblInfo.getTableId()) {
+        				if (parent.getField() != null && parent.getField().equals("parent")) {
         					grandParent = parent.getParent();
         				}
         			}    
         			parent = grandParent;
         		}
-        		if (parentCount == maxParentChainLen)
-        		{
+        		if (parentCount == maxParentChainLen) {
         			return false;
         		}
 
-        	} else if (alias.getField().equals("children"))
-        	{
-        		if (parent != null)
-        		{
+        	} else if (alias.getField().equals("children")) {
+        		if (parent != null) {
         			//prevent loop back to children container from expansion of Container.parent
-        			if (parent.getTableInfo() != null && parent.getTableInfo().getTableId() == tblInfo.getTableId())
-        			{
-        				if (parent.getField() != null && parent.getField().equals("parent"))
-        				{
+        			if (parent.getTableInfo() != null && parent.getTableInfo().getTableId() == tblInfo.getTableId()) {
+        				if (parent.getField() != null && parent.getField().equals("parent")) {
         					return false;
         				}
         			}
         		}
-        		
-        	}
-        	else if (alias.getField().equals("container"))
-        	{
-        		if (parent != null)
-        		{
+
+        	} else if (alias.getField().equals("container")) {
+        		if (parent != null) {
         			//prevent loop back to container from expansion of Container.collectionObjects relationship
-        			if (parent.getTableInfo() != null && parent.getTableInfo().getTableId() == CollectionObject.getClassTableId())
-        			{
-        				if (parent.getField() != null && parent.getField().equals("collectionObjects"))
-        				{
+        			if (parent.getTableInfo() != null && parent.getTableInfo().getTableId() == CollectionObject.getClassTableId()) {
+        				if (parent.getField() != null && parent.getField().equals("collectionObjects")) {
         					return false;
         				}
         			}
         			
         			//prevent loop back to continer from expansion of Container.collectionObjectKids relationship
         			//Assuming that a container's collectionobject can't be contained in another container. 
-        			if (parent.getTableInfo() != null && parent.getTableInfo().getTableId() == CollectionObject.getClassTableId())
-        			{
-        				if (parent.getField() != null && parent.getField().equals("collectionObjectKids"))
-        				{
+        			if (parent.getTableInfo() != null && parent.getTableInfo().getTableId() == CollectionObject.getClassTableId()) {
+        				if (parent.getField() != null && parent.getField().equals("collectionObjectKids")) {
         					return false;
         				}
         			}
         		}
         		
-        	} else if (alias.getField().equals("containerOwner"))
-        	{
+        	} else if (alias.getField().equals("containerOwner")) {
 				// prevent loop back to container from expansion of Container.collectionObjects relationship
 				// Assuming that collectionobjects linked by this relationship won't be containers.
 				if (parent.getTableInfo() != null
 						&& parent.getTableInfo().getTableId() == CollectionObject
-								.getClassTableId())
-				{
+								.getClassTableId()) {
 					if (parent.getField() != null
-							&& parent.getField().equals("collectionObjects"))
-					{
+							&& parent.getField().equals("collectionObjects")) {
 						return false;
 					}
 				}
-				if (parent != null)
-        		{
+				if (parent != null) {
         			//prevent loop back to continer owner from expansion of Container.collectionObjectKids relationship
-        			if (parent.getTableInfo() != null && parent.getTableInfo().getTableId() == CollectionObject.getClassTableId())
-        			{
-        				if (parent.getField() != null && parent.getField().equals("collectionObjectKids"))
-        				{
+        			if (parent.getTableInfo() != null && parent.getTableInfo().getTableId() == CollectionObject.getClassTableId()) {
+        				if (parent.getField() != null && parent.getField().equals("collectionObjectKids")) {
         					return false;
         				}
         			}
@@ -3943,40 +3906,29 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         		}
         	}         		
         	return true;
-        } else if (CollectionObject.class.isAssignableFrom(tblInfo.getClassObj()))
-    	{
+        } else if (CollectionObject.class.isAssignableFrom(tblInfo.getClassObj())) {
     		TableTree parent = alias.getParent();
-//    		if (parent != null && parent.getTableInfo().getTableId() == Container.getClassTableId())
-//    		{
-//    			return true;
-//    		}
-    		if (parent != null && parent.getTableInfo().getTableId() == CollectionRelationship.getClassTableId())
-    		{
+    		if (parent != null && parent.getTableInfo().getTableId() == CollectionRelationship.getClassTableId()) {
     			//prevent looping back to left side when leftSideRels has been opened from parent
     			if (alias.getField().equals("leftSide") && 
-    					parent.getField() != null && parent.getField().equals("leftSideRels")) 
-    			{
+    					parent.getField() != null && parent.getField().equals("leftSideRels")) {
     				return false;
     			}
     			//prevent looping back to right side when rightSideRels has been opened from parent
     			if (alias.getField().equals("rightSide") && 
-    					parent.getField() != null && parent.getField().equals("rightSideRels")) 
-    			{
+    					parent.getField() != null && parent.getField().equals("rightSideRels")) {
     				return false;
     			}
     		}
-    		
     		return true;
     	}
 
-        else if (CollectionRelationship.class.isAssignableFrom(tblInfo.getClassObj()))
-    	{
+        else if (CollectionRelationship.class.isAssignableFrom(tblInfo.getClassObj())) {
     		return true;
     	}
         	
         
-        else if (Agent.class.isAssignableFrom(tblInfo.getClassObj()))
-        {
+        else if (Agent.class.isAssignableFrom(tblInfo.getClassObj())) {
         	if (alias.getParent() != null && ("members".equals(alias.getParent().getField()) || "groups".equals(alias.getParent().getField()))) {
         		return true;
         	//This allows CreatedByAgent and ModifiedByAgent to be expanded. But there is another check somewhere that prevents "loop backs":
@@ -3993,22 +3945,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             ////assuming isCyclic
             //&& !Taxon.class.isAssignableFrom(tblInfo.getClassObj()) || !isAncestorClass(alias, Determination.class);
     }
-    
-//    protected boolean isAncestorClass(final TableTree tbl, final Class<?> cls)
-//    {
-//        TableTree parent = tbl.getParent();
-//        while (parent != null)
-//        {
-//            if (parent.getTableInfo() != null && parent.getTableInfo().getClassObj().equals(cls))
-//            {
-//                return true;
-//            }
-//            parent = parent.getParent();
-//        }
-//        return false;
-//    }
-    
-    
+
     /**
      * @param parentList
      */
@@ -5157,38 +5094,19 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      */
     protected static boolean fixAliases(final TableTree tbl, final Hashtable<String, TableTree> hash)
     {
-        if (tbl.isAlias())
-        {
+        if (tbl.isAlias()) {
             TableTree tt = hash.get(tbl.getName());
-            if (tt != null)
-            {
-                if (!tt.getTableInfo().isHidden() && tblIsDisplayable(tbl, tt.getTableInfo()))
-                {
+            if (tt != null) {
+                if (!tt.getTableInfo().isHidden() && tblIsDisplayable(tbl, tt.getTableInfo())) {
                     tbl.clearKids();
-                    try
-                    {
-                        for (int k = 0; k < tt.getKids(); k++)
-                        {
-//                            if (tblIsDisplayable(tt.getKid(k), tableTreeHash.get(tt.getKid(k).getName()).getTableInfo());
-//                        	
-//                        	if (tt.getKid(k).getTableInfo() == null)
-//                            {
-//                            	System.out.println("TableInfo is null for " + tt.getKid(k).getName() + " - " + tt.getKid(k).getField());
-//                            }
-//                            else if (tt.getKid(k).getTableInfo() != null && tblIsDisplayable(tt.getKid(k), tt.getKid(k).getTableInfo()))
-//                            {
-                            	tbl.addKid((TableTree) tt.getKid(k).clone());
-//                            } else 
-//                            {
-//                            	System.out.println("Skipping " +  tt.getKid(k).getName() + " - " + tt.getKid(k).getField());
-//                            }
+                    try {
+                        for (int k = 0; k < tt.getKids(); k++) {
+                            tbl.addKid((TableTree) tt.getKid(k).clone());
                         }
                         tbl.setTableInfo(tt.getTableInfo());
                         tbl.setTableQRIClone(tt.getTableQRI());
                         return true;
-                    }
-                    catch (CloneNotSupportedException ex)
-                    {
+                    } catch (CloneNotSupportedException ex) {
                         UsageTracker.incrHandledUsageCount();
                         edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryBldrPane.class, ex);
                         throw new RuntimeException(ex);

@@ -1769,11 +1769,11 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
         if (tableTree == null || tableTree.get() == null || needToRebuildTableTree())
         {
             tableTreeHash = null;
-            tableTree = new SoftReference<TableTree>(readTables());
+            tableTree = new SoftReference<>(readTables());
         }
         if (tableTreeHash == null || tableTreeHash.get() == null || needToRebuildTableTree())
         {
-            tableTreeHash = new SoftReference<Hashtable<String, TableTree>>(buildTableTreeHash(tableTree.get()));
+            tableTreeHash = new SoftReference<>(buildTableTreeHash(tableTree.get()));
         }
         configurationHasChanged.set(false);
     }
@@ -1814,7 +1814,7 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
         {
             clearTableTree(tableTree.get());
         }
-        return new Pair<TableTree, Hashtable<String, TableTree>>(tableTree.get(), tableTreeHash.get());
+        return new Pair<>(tableTree.get(), tableTreeHash.get());
         
     }
         
