@@ -7,6 +7,13 @@
 
 package edu.ku.brc.services.geolocate.prototype.client;
 
+import edu.ku.brc.af.prefs.AppPreferences;
+
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
+import java.sql.Connection;
+
 public class GeolocatesvcLocator extends org.apache.axis.client.Service implements edu.ku.brc.services.geolocate.prototype.client.Geolocatesvc {
 
     public GeolocatesvcLocator() {
@@ -22,7 +29,12 @@ public class GeolocatesvcLocator extends org.apache.axis.client.Service implemen
     }
 
     // Use to get a proxy class for geolocatesvcSoap
-    private java.lang.String geolocatesvcSoap_address = "http://www.museum.tulane.edu/webservices/geolocatesvcv2/geolocatesvc.asmx";
+    private final static String GEOLOCATE_BASE_URL_DEFAULT = "http://www.museum.tulane.edu/webservices/";
+    private final static String GEOLOCATE_BASE_URL_PREF = "GEOLOCATE_BASE_URL";
+    public final static String GEOLOCATE_BASE_URL = AppPreferences.getRemote().get(GEOLOCATE_BASE_URL_PREF, GEOLOCATE_BASE_URL_DEFAULT);
+    private java.lang.String geolocatesvcSoap_address = GEOLOCATE_BASE_URL + "geolocatesvcv2/geolocatesvc.asmx";
+
+    private static int connects = 0;
 
     public java.lang.String getgeolocatesvcSoapAddress() {
         return geolocatesvcSoap_address;
@@ -43,6 +55,21 @@ public class GeolocatesvcLocator extends org.apache.axis.client.Service implemen
        java.net.URL endpoint;
         try {
             endpoint = new java.net.URL(geolocatesvcSoap_address);
+            if (0 == connects++) {
+                try {
+                    URLConnection con = endpoint.openConnection();
+                    URL origURL = con.getURL();
+                    con.connect();
+                    InputStream is = con.getInputStream();
+                    URL redirectedURL = con.getURL();
+                    is.close();
+                    if (!redirectedURL.equals(origURL)) {
+                        System.out.println("redirected " + redirectedURL);
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
         }
         catch (java.net.MalformedURLException e) {
             throw new javax.xml.rpc.ServiceException(e);
@@ -105,7 +132,7 @@ public class GeolocatesvcLocator extends org.apache.axis.client.Service implemen
     }
 
     public javax.xml.namespace.QName getServiceName() {
-        return new javax.xml.namespace.QName("http://www.museum.tulane.edu/webservices/", "geolocatesvc");
+        return new javax.xml.namespace.QName(GEOLOCATE_BASE_URL, "geolocatesvc");
     }
 
     private java.util.HashSet ports = null;
@@ -113,7 +140,7 @@ public class GeolocatesvcLocator extends org.apache.axis.client.Service implemen
     public java.util.Iterator getPorts() {
         if (ports == null) {
             ports = new java.util.HashSet();
-            ports.add(new javax.xml.namespace.QName("http://www.museum.tulane.edu/webservices/", "geolocatesvcSoap"));
+            ports.add(new javax.xml.namespace.QName(GEOLOCATE_BASE_URL, "geolocatesvcSoap"));
         }
         return ports.iterator();
     }

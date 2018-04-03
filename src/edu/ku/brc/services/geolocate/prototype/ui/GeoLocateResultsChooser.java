@@ -1,5 +1,6 @@
 package edu.ku.brc.services.geolocate.prototype.ui;
 
+import edu.ku.brc.services.geolocate.prototype.client.GeolocatesvcLocator;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.IconManager;
 import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
@@ -86,7 +87,7 @@ public class GeoLocateResultsChooser extends CustomDialog
  			public void actionPerformed(ActionEvent e) {
  	            try
  	            {
- 	            	String url = "http://www.museum.tulane.edu/geolocate/web/WebGeoref.aspx?v=1";
+ 	            	String url = GeolocatesvcLocator.GEOLOCATE_BASE_URL.replaceFirst("services/", "geolocate/") + "web/WebGeoref.aspx?v=1";
  	            	
             		Georef_Result_Set res = rowsAndResults.get(rowIndex).second;
             		GeoCoordDataIFace loc = rowsAndResults.get(rowIndex).first;

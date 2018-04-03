@@ -98,16 +98,16 @@ public class GeographicPoint  implements java.io.Serializable {
         new org.apache.axis.description.TypeDesc(GeographicPoint.class, true);
 
     static {
-        typeDesc.setXmlType(new javax.xml.namespace.QName("http://www.museum.tulane.edu/webservices/", "GeographicPoint"));
+        typeDesc.setXmlType(new javax.xml.namespace.QName(GeolocatesvcLocator.GEOLOCATE_BASE_URL, "GeographicPoint"));
         org.apache.axis.description.ElementDesc elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("latitude");
-        elemField.setXmlName(new javax.xml.namespace.QName("http://www.museum.tulane.edu/webservices/", "Latitude"));
+        elemField.setXmlName(new javax.xml.namespace.QName(GeolocatesvcLocator.GEOLOCATE_BASE_URL, "Latitude"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "double"));
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
         elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("longitude");
-        elemField.setXmlName(new javax.xml.namespace.QName("http://www.museum.tulane.edu/webservices/", "Longitude"));
+        elemField.setXmlName(new javax.xml.namespace.QName(GeolocatesvcLocator.GEOLOCATE_BASE_URL, "Longitude"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "double"));
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
