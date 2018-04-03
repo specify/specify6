@@ -22,7 +22,7 @@ public class GeolocatesvcLocator extends org.apache.axis.client.Service implemen
     }
 
     // Use to get a proxy class for geolocatesvcSoap
-    private java.lang.String geolocatesvcSoap_address = "http://www.museum.tulane.edu/webservices/geolocatesvcv2/geolocatesvc.asmx";
+    private java.lang.String geolocatesvcSoap_address = "http://geolocate-proxy.specifycloud.org/webservices/geolocatesvcv2/geolocatesvc.asmx";
 
     public java.lang.String getgeolocatesvcSoapAddress() {
         return geolocatesvcSoap_address;
