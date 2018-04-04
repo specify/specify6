@@ -764,7 +764,7 @@ public class LatLonConverter
         
         StringBuilder sb = new StringBuilder();
         
-        sb.append(String.format("%"+decimalLen+"."+decimalLen+"f", bd.abs()));
+        sb.append(String.format("%3."+decimalLen+"f", bd.abs()).trim());
         
         if (degreesFMT == DEGREES_FORMAT.Symbol)
         {
