@@ -2543,18 +2543,37 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             //System.out.println("alter table preparation add index tempprepguididx(GUID)");
             update(conn, "alter table preparation add index tempprepguididx(GUID)");
             //System.out.println("SET optimizer_switch = 'derived_merge=off'"");
-            BasicSQLUtils.update(conn,"SET optimizer_switch = 'derived_merge=off'");
-            //System.out.println("update preparation pup inner join (select preparationid from preparation p ...");
-            BasicSQLUtils.update(conn, "update preparation pup inner join (select preparationid from preparation p " +
-                    "inner join (select guid from preparation where guid is not null group by 1 having " +
-                    "count(guid) > 1) dups on dups.guid = p.guid where p.preparationid != " +
-                    "(select preparationid from preparation d2 where d2.guid = p.guid order by " +
-                    "timestampcreated limit 1)) topup on topup.preparationid = pup.preparationid set pup.guid = null");
-            //System.out.println("SET optimizer_switch = 'derived_merge=default'");
-            BasicSQLUtils.update(conn, "SET optimizer_switch = 'derived_merge=default'");
-            BasicSQLUtils.update(conn, "alter table preparation drop index tempprepguididx");
-            dups = BasicSQLUtils.query(conn, sql);
-            result = dups.size() == 0;
+            boolean exceptionSkipSetting = BasicSQLUtils.isSkipTrackExceptions();
+            try {
+                if (!exceptionSkipSetting) {
+                    BasicSQLUtils.setSkipTrackExceptions(true);
+                }
+                BasicSQLUtils.update(conn, "SET optimizer_switch = 'derived_merge=off'");
+                if (!exceptionSkipSetting) {
+                    BasicSQLUtils.setSkipTrackExceptions(false);
+                }
+                //System.out.println("update preparation pup inner join (select preparationid from preparation p ...");
+                BasicSQLUtils.update(conn, "update preparation pup inner join (select preparationid from preparation p " +
+                        "inner join (select guid from preparation where guid is not null group by 1 having " +
+                        "count(guid) > 1) dups on dups.guid = p.guid where p.preparationid != " +
+                        "(select preparationid from preparation d2 where d2.guid = p.guid order by " +
+                        "timestampcreated limit 1)) topup on topup.preparationid = pup.preparationid set pup.guid = null");
+                //System.out.println("SET optimizer_switch = 'derived_merge=default'");
+                if (!exceptionSkipSetting) {
+                    BasicSQLUtils.setSkipTrackExceptions(true);
+                }
+                BasicSQLUtils.update(conn, "SET optimizer_switch = 'derived_merge=default'");
+                if (!exceptionSkipSetting) {
+                    BasicSQLUtils.setSkipTrackExceptions(false);
+                }
+                BasicSQLUtils.update(conn, "alter table preparation drop index tempprepguididx");
+                dups = BasicSQLUtils.query(conn, sql);
+                result = dups.size() == 0;
+            } finally {
+                if (!exceptionSkipSetting) {
+                    BasicSQLUtils.setSkipTrackExceptions(false);
+                }
+            }
         }
         if (result) {
             BasicSQLUtils.update(conn, "alter table preparation add unique index PrepGuidIDX(guid)");
