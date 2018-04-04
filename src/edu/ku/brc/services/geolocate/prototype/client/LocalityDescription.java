@@ -166,31 +166,31 @@ public class LocalityDescription  implements java.io.Serializable {
         new org.apache.axis.description.TypeDesc(LocalityDescription.class, true);
 
     static {
-        typeDesc.setXmlType(new javax.xml.namespace.QName(GeolocatesvcLocator.GEOLOCATE_BASE_URL, "LocalityDescription"));
+        typeDesc.setXmlType(new javax.xml.namespace.QName(GeolocatesvcLocator.getGeoLocateNameSpaceURL(), "LocalityDescription"));
         org.apache.axis.description.ElementDesc elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("localityString");
-        elemField.setXmlName(new javax.xml.namespace.QName(GeolocatesvcLocator.GEOLOCATE_BASE_URL, "LocalityString"));
+        elemField.setXmlName(new javax.xml.namespace.QName(GeolocatesvcLocator.getGeoLocateNameSpaceURL(), "LocalityString"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
         elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("country");
-        elemField.setXmlName(new javax.xml.namespace.QName(GeolocatesvcLocator.GEOLOCATE_BASE_URL, "Country"));
+        elemField.setXmlName(new javax.xml.namespace.QName(GeolocatesvcLocator.getGeoLocateNameSpaceURL(), "Country"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
         elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("state");
-        elemField.setXmlName(new javax.xml.namespace.QName(GeolocatesvcLocator.GEOLOCATE_BASE_URL, "State"));
+        elemField.setXmlName(new javax.xml.namespace.QName(GeolocatesvcLocator.getGeoLocateNameSpaceURL(), "State"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
         elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("county");
-        elemField.setXmlName(new javax.xml.namespace.QName(GeolocatesvcLocator.GEOLOCATE_BASE_URL, "County"));
+        elemField.setXmlName(new javax.xml.namespace.QName(GeolocatesvcLocator.getGeoLocateNameSpaceURL(), "County"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);

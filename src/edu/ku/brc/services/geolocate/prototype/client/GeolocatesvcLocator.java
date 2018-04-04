@@ -9,7 +9,10 @@ package edu.ku.brc.services.geolocate.prototype.client;
 
 import edu.ku.brc.af.prefs.AppPreferences;
 
+import java.io.BufferedReader;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.sql.Connection;
@@ -29,12 +32,109 @@ public class GeolocatesvcLocator extends org.apache.axis.client.Service implemen
     }
 
     // Use to get a proxy class for geolocatesvcSoap
-    private final static String GEOLOCATE_BASE_URL_DEFAULT = "http://www.museum.tulane.edu/webservices/";
-    private final static String GEOLOCATE_BASE_URL_PREF = "GEOLOCATE_BASE_URL";
-    public final static String GEOLOCATE_BASE_URL = AppPreferences.getRemote().get(GEOLOCATE_BASE_URL_PREF, GEOLOCATE_BASE_URL_DEFAULT);
-    private java.lang.String geolocatesvcSoap_address = GEOLOCATE_BASE_URL + "geolocatesvcv2/geolocatesvc.asmx";
+    private final static String GEOLOCATE_SERVICE_URL_DEFAULT = "http://www.museum.tulane.edu/webservices/geolocatesvcv2/geolocatesvc.asmx";
+    private final static String GEOLOCATE_SERVICE_URL_PREF = "GEOLOCATE_SERVICE_URL";
+    private final static String GEOLOCATE_NAMESPACE_URL_DEFAULT = "http://www.museum.tulane.edu/webservices/";
+    private final static String GEOLOCATE_NAMESPACE_URL_PREF = "GEOLOCATE_NAMESPACE_URL";
+    private final static String GEOLOCATE_WEB_URL_DEFAULT = "http://www.museum.tulane.edu/geolocate/web/WebGeoref.aspx?v=1";
+    private final static String GEOLOCATE_WEB_URL_PREF = "GEOLOCATE_WEB_URL";
+    private final static String GEOLOCATE_SOAP_URL_DEFAULT = "http://www.museum.tulane.edu/webservices/";
+    private final static String GEOLOCATE_SOAP_URL_PREF = "GEOLOCATE_SOAP_URL";
+    private static String GEOLOCATE_SERVICE_URL = (AppPreferences.getRemote().get(GEOLOCATE_SERVICE_URL_PREF, GEOLOCATE_SERVICE_URL_DEFAULT));
+    private static String GEOLOCATE_NAMESPACE_URL = (AppPreferences.getRemote().get(GEOLOCATE_NAMESPACE_URL_PREF, GEOLOCATE_NAMESPACE_URL_DEFAULT));
+    private static String GEOLOCATE_WEB_URL = AppPreferences.getRemote().get(GEOLOCATE_WEB_URL_PREF, GEOLOCATE_WEB_URL_DEFAULT);
+    private static String GEOLOCATE_SOAP_URL = AppPreferences.getRemote().get(GEOLOCATE_SOAP_URL_PREF, GEOLOCATE_SOAP_URL_DEFAULT);
 
-    private static int connects = 0;
+    private static boolean[] redirectChecks = {false, false, false, false};
+
+    public static String getGeoLocateServiceURL() {
+        GEOLOCATE_SERVICE_URL =  getURL(GEOLOCATE_SERVICE_URL, GEOLOCATE_SERVICE_URL_PREF, 0);
+        return GEOLOCATE_SERVICE_URL;
+    }
+    public static String getGeoLocateNameSpaceURL() {
+        GEOLOCATE_NAMESPACE_URL = getURL(GEOLOCATE_NAMESPACE_URL, GEOLOCATE_NAMESPACE_URL_PREF, 1);
+        return GEOLOCATE_NAMESPACE_URL;
+    }
+    public static String getGeoLocateWebURL() {
+        GEOLOCATE_WEB_URL = getURL(GEOLOCATE_WEB_URL, GEOLOCATE_WEB_URL_PREF, 2);
+        return GEOLOCATE_WEB_URL;
+    }
+    public static String getGeoLocateSoapURL() {
+        GEOLOCATE_SOAP_URL = getURL(GEOLOCATE_SOAP_URL, GEOLOCATE_SOAP_URL_PREF, 3);
+        return GEOLOCATE_SOAP_URL;
+    }
+
+    private static String getURL(String currentURL, String prefName, int redirectCheckIdx) {
+        if (redirectChecks[redirectCheckIdx]) {
+            return currentURL;
+        } else {
+            String newURL = checkForRedirect(currentURL);
+            redirectChecks[redirectCheckIdx] = true;
+            if (!newURL.equals(currentURL)) {
+                AppPreferences.getRemote().put(prefName, newURL);
+            }
+            return newURL;
+        }
+    }
+
+    /* we might need something like this to deal redirects for the geolocate services...*/
+    private static String checkForRedirect(String url) {
+
+        try {
+
+            //String url = "http://www.twitter.com";
+            //String url = GEOLOCATE_SERVICE_URL_DEFAULT;
+
+            URL obj = new URL(url);
+            HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
+            conn.setReadTimeout(3000);
+            conn.addRequestProperty("Accept-Language", "en-US,en;q=0.8");
+            conn.addRequestProperty("User-Agent", "Mozilla");
+            conn.addRequestProperty("Referer", "google.com");
+
+            //System.out.println("Request URL ... " + url);
+
+            boolean redirect = false;
+
+            // normally, 3xx is redirect
+            int status = conn.getResponseCode();
+            if (status != HttpURLConnection.HTTP_OK) {
+                if (status == HttpURLConnection.HTTP_MOVED_TEMP
+                        || status == HttpURLConnection.HTTP_MOVED_PERM
+                        || status == HttpURLConnection.HTTP_SEE_OTHER)
+                    redirect = true;
+            }
+
+            //System.out.println("Response Code ... " + status);
+
+            if (redirect) {
+
+                // get redirect url from "location" header field
+                return conn.getHeaderField("Location");
+
+                // get the cookie if need, for login
+                //String cookies = conn.getHeaderField("Set-Cookie");
+
+                // open the new connnection again
+//                conn = (HttpURLConnection) new URL(newUrl).openConnection();
+//                conn.setRequestProperty("Cookie", cookies);
+//                conn.addRequestProperty("Accept-Language", "en-US,en;q=0.8");
+//                conn.addRequestProperty("User-Agent", "Mozilla");
+//                conn.addRequestProperty("Referer", "google.com");
+//
+//                System.out.println("Redirect to URL : " + newUrl);
+
+            } else {
+                return url;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return url;
+        }
+
+    } /**/
+
+    private java.lang.String geolocatesvcSoap_address = getGeoLocateServiceURL();
 
     public java.lang.String getgeolocatesvcSoapAddress() {
         return geolocatesvcSoap_address;
@@ -47,29 +147,16 @@ public class GeolocatesvcLocator extends org.apache.axis.client.Service implemen
         return geolocatesvcSoapWSDDServiceName;
     }
 
+
     public void setgeolocatesvcSoapWSDDServiceName(java.lang.String name) {
         geolocatesvcSoapWSDDServiceName = name;
     }
+
 
     public edu.ku.brc.services.geolocate.prototype.client.GeolocatesvcSoap getgeolocatesvcSoap() throws javax.xml.rpc.ServiceException {
        java.net.URL endpoint;
         try {
             endpoint = new java.net.URL(geolocatesvcSoap_address);
-            if (0 == connects++) {
-                try {
-                    URLConnection con = endpoint.openConnection();
-                    URL origURL = con.getURL();
-                    con.connect();
-                    InputStream is = con.getInputStream();
-                    URL redirectedURL = con.getURL();
-                    is.close();
-                    if (!redirectedURL.equals(origURL)) {
-                        System.out.println("redirected " + redirectedURL);
-                    }
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-            }
         }
         catch (java.net.MalformedURLException e) {
             throw new javax.xml.rpc.ServiceException(e);
@@ -132,7 +219,7 @@ public class GeolocatesvcLocator extends org.apache.axis.client.Service implemen
     }
 
     public javax.xml.namespace.QName getServiceName() {
-        return new javax.xml.namespace.QName(GEOLOCATE_BASE_URL, "geolocatesvc");
+        return new javax.xml.namespace.QName(GeolocatesvcLocator.getGeoLocateNameSpaceURL(), "geolocatesvc");
     }
 
     private java.util.HashSet ports = null;
@@ -140,7 +227,7 @@ public class GeolocatesvcLocator extends org.apache.axis.client.Service implemen
     public java.util.Iterator getPorts() {
         if (ports == null) {
             ports = new java.util.HashSet();
-            ports.add(new javax.xml.namespace.QName(GEOLOCATE_BASE_URL, "geolocatesvcSoap"));
+            ports.add(new javax.xml.namespace.QName(GeolocatesvcLocator.getGeoLocateNameSpaceURL(), "geolocatesvcSoap"));
         }
         return ports.iterator();
     }

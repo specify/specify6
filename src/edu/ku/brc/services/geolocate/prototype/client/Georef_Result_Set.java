@@ -174,30 +174,30 @@ public class Georef_Result_Set  implements java.io.Serializable {
         new org.apache.axis.description.TypeDesc(Georef_Result_Set.class, true);
 
     static {
-        typeDesc.setXmlType(new javax.xml.namespace.QName(GeolocatesvcLocator.GEOLOCATE_BASE_URL, "Georef_Result_Set"));
+        typeDesc.setXmlType(new javax.xml.namespace.QName(GeolocatesvcLocator.getGeoLocateNameSpaceURL(), "Georef_Result_Set"));
         org.apache.axis.description.ElementDesc elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("engineVersion");
-        elemField.setXmlName(new javax.xml.namespace.QName(GeolocatesvcLocator.GEOLOCATE_BASE_URL, "EngineVersion"));
+        elemField.setXmlName(new javax.xml.namespace.QName(GeolocatesvcLocator.getGeoLocateNameSpaceURL(), "EngineVersion"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
         elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("numResults");
-        elemField.setXmlName(new javax.xml.namespace.QName(GeolocatesvcLocator.GEOLOCATE_BASE_URL, "NumResults"));
+        elemField.setXmlName(new javax.xml.namespace.QName(GeolocatesvcLocator.getGeoLocateNameSpaceURL(), "NumResults"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"));
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
         elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("executionTimems");
-        elemField.setXmlName(new javax.xml.namespace.QName(GeolocatesvcLocator.GEOLOCATE_BASE_URL, "ExecutionTimems"));
+        elemField.setXmlName(new javax.xml.namespace.QName(GeolocatesvcLocator.getGeoLocateNameSpaceURL(), "ExecutionTimems"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "double"));
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
         elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("resultSet");
-        elemField.setXmlName(new javax.xml.namespace.QName(GeolocatesvcLocator.GEOLOCATE_BASE_URL, "ResultSet"));
-        elemField.setXmlType(new javax.xml.namespace.QName(GeolocatesvcLocator.GEOLOCATE_BASE_URL, "Georef_Result"));
+        elemField.setXmlName(new javax.xml.namespace.QName(GeolocatesvcLocator.getGeoLocateNameSpaceURL(), "ResultSet"));
+        elemField.setXmlType(new javax.xml.namespace.QName(GeolocatesvcLocator.getGeoLocateNameSpaceURL(), "Georef_Result"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         elemField.setMaxOccursUnbounded(true);

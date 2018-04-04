@@ -87,8 +87,8 @@ public class GeoLocateResultsChooser extends CustomDialog
  			public void actionPerformed(ActionEvent e) {
  	            try
  	            {
- 	            	String url = GeolocatesvcLocator.GEOLOCATE_BASE_URL.replaceFirst("webservices/", "geolocate/") + "web/WebGeoref.aspx?v=1";
- 	            	
+ 	            	//String url = GeolocatesvcLocator.GEOLOCATE_BASE_URL.replaceFirst("webservices/", "geolocate/") + "web/WebGeoref.aspx?v=1";
+ 	            	String url = GeolocatesvcLocator.getGeoLocateWebURL();
             		Georef_Result_Set res = rowsAndResults.get(rowIndex).second;
             		GeoCoordDataIFace loc = rowsAndResults.get(rowIndex).first;
             		
