@@ -122,11 +122,11 @@ public abstract class PermissionEnumerator
         String desc = UIRegistry.getLocalizedMessage(descKey, securityOption.getShortDesc());
 
         PermissionEditorIFace editPanel = securityOption.getPermEditorPanel();
-        if (editPanel != null) {
+        if (editPanel != null || !"Task".equals(permBaseName)) {
             // add newly created permission to the bag that will be returned
             perms.add(new GeneralPermissionEditorRow(perm, oPerm, permBaseName, securityOption.getPermissionTitle(),
                     desc, icon, editPanel, admin));
-        }
+       }
     }
     
     /**
