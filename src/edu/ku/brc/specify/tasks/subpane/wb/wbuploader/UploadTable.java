@@ -3335,7 +3335,7 @@ public class UploadTable implements Comparable<UploadTable>
                     fmt = GeoRefConverter.getLeastCommonFmt(fmt, fmt2);
 
                 }
-                overrides.put(locInfo.getFieldByName("srcLatLongUnit"), fmt.ordinal());
+                overrides.put(locInfo.getFieldByName("srcLatLongUnit"), fmt == null ? LatLonConverter.FORMAT.None : fmt.ordinal());
                 DBFieldInfo llType = locInfo.getFieldByName("latLongType");
                 if (!overrides.containsKey(llType)) {
                     boolean pnt1Changed = overrides.containsKey(lat1) || overrides.containsKey(lng1);
