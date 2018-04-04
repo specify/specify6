@@ -1042,11 +1042,11 @@ public class DataObjFieldFormatMgr
                     //System.out.println(aggStr.toString());
                     
                     int aggCount = (agg.getCount() != null)? agg.getCount() : 0;
-                    if (aggCount > 0 && count > aggCount - 1)
+                    if (aggCount > 0 && count >= aggCount - 1)
                     {
                         // add the ending string at the end of the aggregated string and quit loop
                         String endingStr = agg.getEnding();
-                        if (StringUtils.isNotEmpty(endingStr))
+                        if (itemsAsCol.size() > count+1 && StringUtils.isNotEmpty(endingStr))
                         {
                             aggStr.append(endingStr);
                         }
