@@ -1612,6 +1612,7 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
         					src = rsm.getRecordSet(selectedRows, false);
         				}
         			}
+        			cmdAction.setConsumed(true);
         			final CommandAction cmd = new CommandAction(
         					ReportsBaseTask.REPORTS, ReportsBaseTask.PRINT_REPORT, src);
         			cmd.setProperty("title", rsm.getResults().getTitle());
