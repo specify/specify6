@@ -43,7 +43,8 @@ public class MaterialSample extends CollectionMember {
     protected String GGBN_medium;
     protected String GGBN_purificationMethod;
     protected String GGBN_quality;
-    protected Calendar GGBN_qualityCheckDate;
+	protected Calendar GGBN_qualityCheckDate;
+	protected Calendar extractionDate;
     protected String GGBN_qualityRemarks;
     protected Float GGBN_absorbanceRatio260_230;
     protected Float GGBN_absorbanceRatio260_280;
@@ -103,6 +104,7 @@ public class MaterialSample extends CollectionMember {
         GGBN_purificationMethod = null;
         GGBN_quality = null;
         GGBN_qualityCheckDate = null;
+        extractionDate = null;
         GGBN_qualityRemarks = null;
         GGBN_absorbanceRatio260_230 = null;
         GGBN_absorbanceRatio260_280 = null;
@@ -378,7 +380,23 @@ public class MaterialSample extends CollectionMember {
 	 * @return the gGBN_qualityCheckDate
 	 */
     @Temporal(TemporalType.DATE)
-    @Column(name = "GGBNQualityCheckDate")
+    @Column(name = "ExtractionDate")
+	public Calendar getExtractionDate() {
+		return extractionDate;
+	}
+
+	/**
+	 * @param extractionDate the extractionDate to set
+	 */
+	public void setExtractionDate(Calendar extractionDate) {
+		this.extractionDate = extractionDate;
+	}
+
+	/**
+	 * @return the gGBN_qualityCheckDate
+	 */
+	@Temporal(TemporalType.DATE)
+	@Column(name = "GGBNQualityCheckDate")
 	public Calendar getGGBN_qualityCheckDate() {
 		return GGBN_qualityCheckDate;
 	}

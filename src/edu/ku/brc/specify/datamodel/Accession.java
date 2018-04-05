@@ -64,6 +64,8 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
 	protected String text1;
 	protected String text2;
 	protected String text3;
+    protected String text4;
+    protected String text5;
 	protected Float number1;
 	protected Float number2;
 	protected String remarks;
@@ -115,6 +117,8 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
         text1 = null;
         text2 = null;
         text3 = null;
+        text4 = null;
+        text5 = null;
         number1 = null;
         number2 = null;
         remarks = null;
@@ -410,6 +414,32 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
      *      * User definable
      */
     @Lob
+    @Column(name = "Text4", length = 65535)
+    public String getText4() {
+        return this.text4;
+    }
+
+    public void setText4(String text4) {
+        this.text4 = text4;
+    }
+
+    /**
+     *      * User definable
+     */
+    @Lob
+    @Column(name = "Text5", length = 65535)
+    public String getText5() {
+        return this.text5;
+    }
+
+    public void setText5(String text5) {
+        this.text5 = text5;
+    }
+
+    /**
+     *      * User definable
+     */
+    @Lob
     @Column(name = "Text3", length = 65535)
     public String getText3() {
         return this.text3;
@@ -419,7 +449,7 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
         this.text3 = text3;
     }
 
-    
+
     /**
 	 * @return the integer1
 	 */
