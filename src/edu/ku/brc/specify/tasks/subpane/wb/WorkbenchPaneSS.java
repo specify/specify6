@@ -2401,7 +2401,8 @@ public class WorkbenchPaneSS extends BaseSubPane
                     if (selection.length > 0) {
                         validateRows(selection);
                     } else {
-                        validateRows(0, spreadSheet.getRowCount() - 1);
+                        //validateRows(0, spreadSheet.getRowCount() - 1);
+                        validateAll(null);
                     }
                 });
             }
@@ -2561,7 +2562,8 @@ public class WorkbenchPaneSS extends BaseSubPane
                     if (selection.length > 0) {
                         validateRows(selection);
                     } else {
-                        validateRows(0, spreadSheet.getRowCount() - 1);
+                        //validateRows(0, spreadSheet.getRowCount() - 1);
+                        validateAll(null);
                     }
                 });
 			}
@@ -2848,7 +2850,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     protected List<CellPosition> convertColumnContents(int columnIndex, int[] rows, GeoRefConverter converter, String outputFormat,
     		LatLonConverter.LATLON latOrLon, LatLonConverter.DEGREES_FORMAT degFmt)
     {
-        List<CellPosition> unconverted = new Vector<CellPosition>();
+        List<CellPosition> unconverted = new Vector<>();
         
         if (columnIndex == -1)
         {
