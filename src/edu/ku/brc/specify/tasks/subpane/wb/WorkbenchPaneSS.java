@@ -2395,6 +2395,15 @@ public class WorkbenchPaneSS extends BaseSubPane
             {
             	geoRefConvertDlg = null;
             	super.cancelButtonPressed();
+            	//validation also done in window listener below
+                final int[] selection = spreadSheet.getSelectedRowModelIndexes();
+                SwingUtilities.invokeLater(() -> {
+                    if (selection.length > 0) {
+                        validateRows(selection);
+                    } else {
+                        validateRows(0, spreadSheet.getRowCount() - 1);
+                    }
+                });
             }
             
             @Override
@@ -2545,7 +2554,16 @@ public class WorkbenchPaneSS extends BaseSubPane
 			@Override
 			public void windowClosed(WindowEvent e)
 			{
-				geoRefConvertDlg = null;
+			    geoRefConvertDlg = null;
+                //validation also cancel handler above
+                final int[] selection = spreadSheet.getSelectedRowModelIndexes();
+			    SwingUtilities.invokeLater(() -> {
+                    if (selection.length > 0) {
+                        validateRows(selection);
+                    } else {
+                        validateRows(0, spreadSheet.getRowCount() - 1);
+                    }
+                });
 			}
 
 			/* (non-Javadoc)
@@ -2863,7 +2881,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             try
             {
                 convertedValue = converter.convert(StringUtils.stripToNull(currentValue), outputFormat, latOrLon, degFmt);
-                
+                convertedValue = convertedValue.replaceAll("  ", " ").replaceAll("  ", " ");
             }
             catch (Exception e)
             {
