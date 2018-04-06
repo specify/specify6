@@ -187,7 +187,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 {
     protected static final Logger  log = Logger.getLogger(SpecifySchemaUpdateService.class);
     
-    private final int OVERALL_TOTAL = 60; //the number of incOverall() calls (+1 or +2)
+    private final int OVERALL_TOTAL = 62; //the number of incOverall() calls (+1 or +2)
     
     private static final String TINYINT4 = "TINYINT(4)";
     private static final String INT11    = "INT(11)";
@@ -2502,8 +2502,24 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                             return false;
                         }
                     }
-
                     frame.incOverall();
+
+                    frame.setDesc("Changing CollectionObjectAttribute.Number8 to an integer.");
+                    sql = "alter table collectionobjectattribute modify column number8 int";
+                    if (-1 == update(conn, sql)) {
+                        errMsgList.add("update error: " + sql);
+                        return false;
+                    }
+                    frame.incOverall();
+
+                    frame.setDesc("Changing CollectionObjectAttribute.Number30 to an integer.");
+                    sql = "alter table collectionobjectattribute modify column number30 int";
+                    if (-1 == update(conn, sql)) {
+                        errMsgList.add("update error: " + sql);
+                        return false;
+                    }
+                    frame.incOverall();
+
 
                     frame.setProcess(0, 100);
 
