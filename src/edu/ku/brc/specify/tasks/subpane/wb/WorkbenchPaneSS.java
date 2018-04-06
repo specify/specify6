@@ -2896,28 +2896,23 @@ public class WorkbenchPaneSS extends BaseSubPane
                 continue;
             }
 
-            workbench.getWorkbenchRowsAsList().get(rowIndex).setData(convertedValue, (short)columnIndex, true);
-            model.setValueAt(convertedValue, rowIndex, columnIndex, !(converter instanceof GeoRefConverter));
+            model.setValueAt(convertedValue, rowIndex, columnIndex, true);
             if (!currentValue.equals(convertedValue))
             {
                 setChanged(true);
             }
         }
         
-        SwingUtilities.invokeLater(new Runnable()
-        {
-            public void run()
+        SwingUtilities.invokeLater(() -> {
+            ListSelectionModel selModel = spreadSheet.getSelectionModel();
+            for (int rowIndex: selectedRows)
             {
-                ListSelectionModel selModel = spreadSheet.getSelectionModel();
-                for (int rowIndex: selectedRows)
-                {
-                    selModel.addSelectionInterval(rowIndex, rowIndex);
-                }
-                ListSelectionModel colSelModel = spreadSheet.getColumnModel().getSelectionModel();
-                for (int colIndex: selectedCols)
-                {
-                    colSelModel.addSelectionInterval(colIndex, colIndex);
-                }
+                selModel.addSelectionInterval(rowIndex, rowIndex);
+            }
+            ListSelectionModel colSelModel = spreadSheet.getColumnModel().getSelectionModel();
+            for (int colIndex: selectedCols)
+            {
+                colSelModel.addSelectionInterval(colIndex, colIndex);
             }
         });
         return unconverted;
