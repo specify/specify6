@@ -2895,7 +2895,8 @@ public class WorkbenchPaneSS extends BaseSubPane
                 unconverted.add(new CellPosition(rowIndex, columnIndex));
                 continue;
             }
-            
+
+            workbench.getWorkbenchRowsAsList().get(rowIndex).setData(convertedValue, (short)columnIndex, true);
             model.setValueAt(convertedValue, rowIndex, columnIndex, !(converter instanceof GeoRefConverter));
             if (!currentValue.equals(convertedValue))
             {
