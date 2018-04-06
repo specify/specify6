@@ -172,6 +172,16 @@
 
 	<!-- collectionobjectattribute -->
     <field table="CollectionObjectAttribute" name="colObjAttributeRemarks" actualname="Remarks"/>
+    <field table="CollectionObjectAttribute" name="colObjAttributeInteger1" actualname="Integer1"/>
+    <field table="CollectionObjectAttribute" name="colObjAttributeInteger2" actualname="Integer2"/>
+    <field table="CollectionObjectAttribute" name="colObjAttributeInteger3" actualname="Integer3"/>
+    <field table="CollectionObjectAttribute" name="colObjAttributeInteger4" actualname="Integer4"/>
+    <field table="CollectionObjectAttribute" name="colObjAttributeInteger5" actualname="Integer5"/>
+    <field table="CollectionObjectAttribute" name="colObjAttributeInteger6" actualname="Integer6"/>
+    <field table="CollectionObjectAttribute" name="colObjAttributeInteger7" actualname="Integer7"/>
+    <field table="CollectionObjectAttribute" name="colObjAttributeInteger8" actualname="Integer8"/>
+    <field table="CollectionObjectAttribute" name="colObjAttributeInteger9" actualname="Integer9"/>
+    <field table="CollectionObjectAttribute" name="colObjAttributeInteger10" actualname="Integer10"/>
     <field table="CollectionObjectAttribute" name="colObjAttributeNumber1" actualname="Number1"/>
     <field table="CollectionObjectAttribute" name="colObjAttributeNumber2" actualname="Number2"/>
     <field table="CollectionObjectAttribute" name="colObjAttributeNumber3" actualname="Number3"/>

@@ -170,6 +170,16 @@
 
   <table classname="edu.ku.brc.specify.datamodel.CollectionObjectAttribute" table="collectionobjectattribute" tableid="93" lazy="true" query="false">
     <field column="Remarks (Col. Obj. Attribute)" name="colObjAttributeRemarks" type="java.lang.String" length="4096"/>
+    <field column="Integer 1 (Col. Obj. Attribute)" name="colObjAttributeInteger1" type="java.lang.Integer" />
+    <field column="Integer 2 (Col. Obj. Attribute)" name="colObjAttributeInteger2" type="java.lang.Integer" />
+    <field column="Integer 3 (Col. Obj. Attribute)" name="colObjAttributeInteger3" type="java.lang.Integer" />
+    <field column="Integer 4 (Col. Obj. Attribute)" name="colObjAttributeInteger4" type="java.lang.Integer" />
+    <field column="Integer 5 (Col. Obj. Attribute)" name="colObjAttributeInteger5" type="java.lang.Integer" />
+    <field column="Integer 6 (Col. Obj. Attribute)" name="colObjAttributeInteger6" type="java.lang.Integer" />
+    <field column="Integer 7 (Col. Obj. Attribute)" name="colObjAttributeInteger7" type="java.lang.Integer" />
+    <field column="Integer 8 (Col. Obj. Attribute)" name="colObjAttributeInteger8" type="java.lang.Integer" />
+    <field column="Integer 9 (Col. Obj. Attribute)" name="colObjAttributeInteger9" type="java.lang.Integer" />
+    <field column="Integer 10 (Col. Obj. Attribute)" name="colObjAttributeInteger10" type="java.lang.Integer" />
     <field column="Number 1 (Col. Obj. Attribute)" name="colObjAttributeNumber1" type="java.lang.Float" length="24"/>
     <field column="Number 2 (Col. Obj. Attribute)" name="colObjAttributeNumber2" type="java.lang.Float" length="24"/>
     <field column="Number 3 (Col. Obj. Attribute)" name="colObjAttributeNumber3" type="java.lang.Float" length="24"/>
@@ -177,7 +187,7 @@
     <field column="Number 5 (Col. Obj. Attribute)" name="colObjAttributeNumber5" type="java.lang.Float" length="24"/>
     <field column="Number 6 (Col. Obj. Attribute)" name="colObjAttributeNumber6" type="java.lang.Float" length="24"/>
     <field column="Number 7 (Col. Obj. Attribute)" name="colObjAttributeNumber7" type="java.lang.Float" length="24"/>
-    <field column="Number 8 (Col. Obj. Attribute)" name="colObjAttributeNumber8" type="java.lang.Byte" length="3"/>
+    <field column="Number 8 (Col. Obj. Attribute)" name="colObjAttributeNumber8" type="java.lang.Integer" />
     <field column="Number 9 (Col. Obj. Attribute)" name="colObjAttributeNumber9" type="java.lang.Float" length="24"/>
     <field column="Number 10 (Col. Obj. Attribute)" name="colObjAttributeNumber10" type="java.lang.Float" length="24"/>
     <field column="Number 11 (Col. Obj. Attribute)" name="colObjAttributeNumber11" type="java.lang.Float" length="24"/>
@@ -199,7 +209,7 @@
     <field column="Number 27 (Col. Obj. Attribute)" name="colObjAttributeNumber27" type="java.lang.Float" length="24"/>
     <field column="Number 28 (Col. Obj. Attribute)" name="colObjAttributeNumber28" type="java.lang.Float" length="24"/>
     <field column="Number 29 (Col. Obj. Attribute)" name="colObjAttributeNumber29" type="java.lang.Float" length="24"/>
-    <field column="Number 30 (Col. Obj. Attribute)" name="colObjAttributeNumber30" type="java.lang.Short" length="5"/>
+    <field column="Number 30 (Col. Obj. Attribute)" name="colObjAttributeNumber30" type="java.lang.Integer" length="5"/>
     <field column="Number 31 (Col. Obj. Attribute)" name="colObjAttributeNumber31" type="java.lang.Float" length="24"/>
     <field column="Number 32 (Col. Obj. Attribute)" name="colObjAttributeNumber32" type="java.lang.Float" length="24"/>
     <field column="Number 33 (Col. Obj. Attribute)" name="colObjAttributeNumber33" type="java.lang.Float" length="24"/>
