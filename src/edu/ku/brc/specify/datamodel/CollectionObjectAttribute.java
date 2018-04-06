@@ -65,7 +65,7 @@ public class CollectionObjectAttribute extends CollectionMember implements Clone
     protected Float number5;
     protected Float number6;
     protected Float number7;
-    protected Byte   number8;
+    protected Integer number8;
     protected Float  number9;
     protected Float  number10;
     protected Float number11;
@@ -87,7 +87,7 @@ public class CollectionObjectAttribute extends CollectionMember implements Clone
     protected Float number27;
     protected Float number28;
     protected Float number29;
-    protected Short number30;
+    protected Integer number30;
     protected Float number31;
     protected Float number32;
     protected Float number42;
@@ -1056,7 +1056,7 @@ public class CollectionObjectAttribute extends CollectionMember implements Clone
     }
 
     @Column(name = "Number30", unique = false, nullable = true, insertable = true, updatable = true)
-    public Short getNumber30()
+    public Integer getNumber30()
     {
         return number30;
     }
@@ -1122,7 +1122,7 @@ public class CollectionObjectAttribute extends CollectionMember implements Clone
     }
 
     @Column(name = "Number8", unique = false, nullable = true, insertable = true, updatable = true)
-    public Byte getNumber8()
+    public Integer getNumber8()
     {
         return number8;
     }
@@ -1451,7 +1451,7 @@ public class CollectionObjectAttribute extends CollectionMember implements Clone
         this.number3 = number3;
     }
 
-    public void setNumber30(Short number30)
+    public void setNumber30(Integer number30)
     {
         this.number30 = number30;
     }
@@ -1506,7 +1506,7 @@ public class CollectionObjectAttribute extends CollectionMember implements Clone
         this.number7 = number7;
     }
 
-    public void setNumber8(Byte number8)
+    public void setNumber8(Integer number8)
     {
         this.number8 = number8;
     }
