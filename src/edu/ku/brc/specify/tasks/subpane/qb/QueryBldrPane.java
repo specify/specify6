@@ -1256,12 +1256,12 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 			@Override
 			public void run()
 			{
-				distinctChk.setSelected(query.isSelectDistinct());
+				distinctChk.setSelected(query.isSelectDistinct() && !(getTask() instanceof BatchEditTask));
 				countOnlyChk.setSelected(query.getCountOnly() == null ? false : query.getCountOnly());
 				countOnly = countOnlyChk.isSelected();
 				searchSynonymyChk.setSelected(query.getSearchSynonymy() == null ? searchSynonymy : query.getSearchSynonymy());
 				searchSynonymy = searchSynonymyChk.isSelected();
-				smushedChk.setSelected(query.getSmushed() == null ? smushed : query.getSmushed());
+				smushedChk.setSelected((query.getSmushed() == null ? smushed : query.getSmushed()) && !(getTask() instanceof BatchEditTask));
 				smushed = smushedChk.isSelected();
 			}
         	
