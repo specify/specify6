@@ -15,7 +15,7 @@ import java.util.Vector;
 public class Smusher {
 
 	protected int smushCol;
-	int recordIdCol = 0;
+	int recordIdCol = -1;
 	protected Vector<Vector<Object>> toSmush;
 	
 	/**

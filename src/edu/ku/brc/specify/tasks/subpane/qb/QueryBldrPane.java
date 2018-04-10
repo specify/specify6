@@ -5733,19 +5733,23 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 	 * @return
 	 */
 	public int getRecordIdCol() {
-		return getRecordIdCol(queryFieldItems);
+        if (distinctChk.isSelected()) {
+            return -1;
+        } else {
+            return getRecordIdCol(queryFieldItems);
+        }
 	}
 	/**
 	 * @return
 	 */
 	public static int getRecordIdCol(List<QueryFieldPanel> qfps) {
-		int col = 0;
-		for (QueryFieldPanel qfp : qfps) {
-			if (qfp.isForDisplay()) {
-				col++;
-			}
-		}
-		return col;
+	    int col = 0;
+        for (QueryFieldPanel qfp : qfps) {
+            if (qfp.isForDisplay()) {
+                    col++;
+                }
+        }
+        return col;
 	}
 }
 
