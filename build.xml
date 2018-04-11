@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="Specify 6 Build File" basedir=".">
+<project name="Specify 6 Build File" xmlns:if="ant:if" xmlns:unless="ant:unless" basedir=".">
   <presetdef name="javac">
     <javac includeantruntime="false" />
   </presetdef>
@@ -288,6 +288,13 @@
       <exec executable="${install4j.dir}/bin/install4jc">
         <arg value="--quiet"/>
         <arg value="--faster"/>
+
+        <arg value="--win-keystore-password=${win-keystore-password}" />
+        <arg value="--mac-keystore-password=${mac-keystore-password}"/>
+        <arg value="--disable-signing" unless:true="${code.signing}" />
+        <arg value="-D" />
+        <arg value="macPkcs12File=${mac.pkcs12},windowsPkcs12File=${win.pkcs12}" />
+
         <arg value="--release=${specify.SPECIFY_VERSION}" />
         <arg value="--destination=@{packages.dir}" />
         <arg value="--build-ids=24" />
@@ -309,6 +316,13 @@
       <exec executable="${install4j.dir}/bin/install4jc">
         <arg value="--quiet"/>
         <arg value="--faster"/>
+
+        <arg value="--win-keystore-password=${win-keystore-password}" />
+        <arg value="--mac-keystore-password=${mac-keystore-password}"/>
+        <arg value="--disable-signing" unless:true="${code.signing}" />
+        <arg value="-D" />
+        <arg value="macPkcs12File=${mac.pkcs12},windowsPkcs12File=${win.pkcs12}" />
+
         <arg value="--release=${specify.SPECIFY_VERSION}" />
         <arg value="--destination=@{packages.dir}" />
         <arg value="--build-ids=176,179" />
@@ -319,6 +333,13 @@
       <exec executable="${install4j.dir}/bin/install4jc">
         <arg value="--quiet"/>
         <arg value="--faster"/>
+
+        <arg value="--win-keystore-password=${win-keystore-password}" />
+        <arg value="--mac-keystore-password=${mac-keystore-password}"/>
+        <arg value="--disable-signing" unless:true="${code.signing}" />
+        <arg value="-D" />
+        <arg value="macPkcs12File=${mac.pkcs12},windowsPkcs12File=${win.pkcs12}" />
+
         <arg value="--release=${specify.SPECIFY_VERSION}" />
         <arg value="--destination=@{packages.dir}" />
         <arg value="--build-ids=1965,1873" />
