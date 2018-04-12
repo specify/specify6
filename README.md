@@ -22,7 +22,7 @@ free software licensed under GNU General Public License 2
 
 ## Building Specify 6
 
-Building Specify 6 requires the **JDK v1.8** and **Apache Ant v1.9**.
+Building Specify 6 requires the **JDK v1.8** and **Apache Ant v1.9.3**.
 
 The following build targets are available:
 
@@ -87,6 +87,32 @@ All packaging products will be found in the `packages/`
 directory. Internal style packages will be in `packages/internal`, and
 release style packages will be in `packages/external`.
 
+### Code Signing
+
+The Windows and Mac installers can be code signed by passing the
+following properties to Ant:
+
+* `code.signing` set to "true" to enable code signing.
+
+* `win.pkcs12` with the path to the Windows code signing certificate
+  with root and intermediate certificates.
+
+* `win-keystore-password` with the encryption password for the above.
+
+* `mac.pkcs12` with the path to the Mac code signing key.
+
+* `mac-keystore-password` with the encryption password for the above.
+
+For example:
+
+```sh
+ant package-all \
+    -Dcode.signing=true \
+    -Dwin.pkcs12=/mnt/biteme/BI/Specify/Specify6/Certificates/WindowsCertificates/certwithroot.pfx \
+    -Dwin-keystore-password=SECRET \
+    -Dmac.pkcs12=/mnt/biteme/BI/Specify/Specify6/Certificates/MacOsCertificates/SpecifyMacOSCert.p12 \
+    -Dmac-keystore-password=SECRET
+```
 ## Automated Builds
 
 This repository is equiped with automated builds using *Travis
