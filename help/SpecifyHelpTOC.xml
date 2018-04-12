@@ -166,7 +166,7 @@
 		<tocitem text="Batch Editing" target="BatchEdit">
 			<tocitem text="Choosing Data to Edit" target="Choose_Data" />
 			<tocitem text="Batch Editing" target="Batch_Editing" />
-			<tocitem text="Applying Edits" target="Apply_Edits" />
+			<tocitem text="Applying Your Edits" target="Apply_Edits" />
 			<tocitem text="Batch Edited Record Sets" target="Edited_Records" />
 		</tocitem>
 		<tocitem text="Reports and Labels" target="Reports">
@@ -243,9 +243,6 @@
 			<tocitem text="WorkBench Uploader" target="uploading" />
 			<tocitem text="Specify File Slicer" target="slicer" />
 			<tocitem text="WorkBench Schema Configuration" target="wb_schema_config" />
-			<tocitem text="Introducing SGR" target="sgr_intro">
-				<tocitem text="Using SGR" target="SGR" />
-			</tocitem>
 		</tocitem>
 	</tocitem>
 </toc>

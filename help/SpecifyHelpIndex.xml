@@ -21,12 +21,6 @@
 	<indexitem text="Auto Numbering" target="GE" mergetype="javax.help.SortMerge" />
 	<indexitem text="Backup and Restore tool" target="Backup_Restore" mergetype="javax.help.SortMerge" />
 	<indexitem text="Batch Identify" target="Forms_Batch_Determine" mergetype="javax.help.SortMerge" />
-	<indexitem text="Batch Edit" target="BatchEdit">
-		<indexitem text="Edit Records" target="Batch_Editing" />
-		<indexitem text="Choosing Data" target="Choose_Data" />
-		<indexitem text="Apply Edits" target="Apply_Edits" />
-		<indexitem text="Edited Records" target="Edited_Records" />
-	</indexitem>
 	<indexitem text="Block Logins" target="block_logins" mergetype="javax.help.SortMerge" />
 	<indexitem text="Carry Forward" target="Carry_Forward" mergetype="javax.help.SortMerge" />
 	<indexitem text="Change Collection" target="intro_Change_Collection" mergetype="javax.help.SortMerge" />
@@ -82,7 +76,6 @@
 	</indexitem>
 	<indexitem text="Introduction to Specify" target="Intro" mergetype="javax.help.SortMerge" />
 	<indexitem text="Keyboard Shortcuts" target="Keyboard_Functions" mergetype="javax.help.SortMerge" />
-	<indexitem text="Lifemapper" target="Lifemapper" mergetype="javax.help.SortMerge" />
 	<indexitem text="Loan/Gift_Catalog Number Dialog" target="AskForCatNumbers" mergetype="javax.help.SortMerge" />
 	<indexitem text="Loan/Gift _ Choose Record Set" target="ChooseRecordSet" mergetype="javax.help.SortMerge" />
 	<indexitem text="Login Process" target="Login" mergetype="javax.help.SortMerge" />
@@ -93,14 +86,6 @@
 	<indexitem text="Pick List" mergetype="javax.help.SortMerge">
 		<indexitem text="System Pick List" target="Pick_List" mergetype="javax.help.SortMerge" />
 		<indexitem text="User Defined Pick List" target="User_Pick_List" />
-	</indexitem>
-	<indexitem text="Pick Lists" mergetype="javax.help.SortMerge">
-		<indexitem text="System Pick List" target="Pick_List" mergetype="javax.help.SortMerge">
-			<indexitem text="Import/Export" target="sys_import_picklist" mergetype="javax.help.SortMerge" />
-		</indexitem>
-		<indexitem text="User Defined" target="User_Pick_List" mergetype="javax.help.SortMerge">
-			<indexitem text="Import/Export" target="user_import_picklist" mergetype="javax.help.SortMerge" />
-		</indexitem>
 	</indexitem>
 	<indexitem text="Plugins" target="Plugins" mergetype="javax.help.SortMerge">
 		<indexitem text="GEOLocate" target="BioGeo" mergetype="javax.help.SortMerge" />
@@ -162,7 +147,6 @@
 	<indexitem text="Security Summary" mergetype="javax.help.SortMerge" />
 	<indexitem text="Series Data Entry" target="Forms_Series_Entry" mergetype="javax.help.SortMerge" />
 	<indexitem text="Services" target="Services" mergetype="javax.help.SortMerge" />
-	<indexitem text="SGR" target="SGR" mergetype="javax.help.SortMerge" />
 	<indexitem text="Simple Search" target="SS" mergetype="javax.help.SortMerge">
 		<indexitem text="Configure Related Tables" target="ESConfigRelatedTables" mergetype="javax.help.SortMerge" />
 		<indexitem text="Configure Results Ordering" target="ESConfigResultsOrdering" mergetype="javax.help.SortMerge" />
