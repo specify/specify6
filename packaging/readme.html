@@ -13,24 +13,26 @@
     <strong>
       <br>Release Notes
       <br>Specify 6.7.00
-      <br>14 March 2018
+      <br>13 April 2018
       <br></strong><br>
     <p>
 
     </p>
     
     <ol>
-      <li>Specify 6.7 adds an often requested capability, Batch Editing.  The new module enables bulk changes to key data tables.  Batch Editing will be particularly useful for improving data quality by correcting inconsistencies and by bulk filling empty data fields.  The editing process begins with a query on one of five base tables: Agent, Collecting Event, Collection Object, Locality, or Preparation.  There is new context sensitive help for Batch Editing and an introductory video tutorial will soon be viewable from the Specify Collections Consortium web site.<br>
+      <li>Specify 6.7 adds Batch Editing, a powerful new capability for bulk changes to Specify core data tables.  Batch Editing will be particularly useful for improving data quality by correcting inconsistencies and by batch filling empty data fields.  The editing process begins with a query on one of five base tables: Agent, Collecting Event, Collection Object, Locality, or Preparation.  There is embedded context sensitive help and a Batch Editing video tutorial on the Specify Collection Consortium web site.<br>
         <p>
-          Batch Editing is a powerful and sometimes nuanced feature, capable of changing thousands of records with a few mouse clicks. It is good to have a basic understanding of the core Specify data table relationships before using the new module.  Once changes are applied, they are permanent.  With such data changing power, a small, inadvertent editing mistake might permanently make your data massively incorrect and unusable. It is very smart to have a fresh backup copy of your database before applying massive changes, in case a backup copy needs to be restored.</p></li>
+          Batch Editing is capable of changing thousands of records with a few mouse clicks. It is important to have a basic understanding of core Specify data table relationships before using it. Once changes are reviewed and applied, they become permanent. Specify does not save a copy of original data that has been changed. With the power to alter large numbers of records easily, a small, inadvertent editing mistake could have unexpected consequences and make a large number of your Specify records incorrect and unusable. A very smart risk avoidance strategy would be to create a fresh backup copy of your database before Batch Editing, in case the backup copy is needed to restore your database.</p></li>
       <br>
-      <li> We are pleased to display on our splash screens, the logos of the first three Founding Member Institutions of the Specify Collections Consortium: University of Florida, University of Michigan, and the University of Kansas.  If you would like to see your institution among those of these collections leaders, let us know.</li>
+      <li> We are pleased to display on the Specify splash screen, the logos of the initial Founding Partners of the Specify Collection Consortium: the University of Florida, University of Michigan, and University of Kansas. If you would like to see your institution among these collections leaders, tell us how we can help.</li>
       <br>
       <li>Specify can now export Query Results to xls-format (Excel) files for data sets containing tens of thousands of records.</li><br>
-      <li>Added the fields GeoRefCompiledBy and GeoRefCompileddate to the GeoCoordDetail table and made the fields accessible through the WorkBench and Batch Editing.</li><br>
+      <li>We added the fields GeoRefCompiledBy and GeoRefCompileddate to the GeoCoordDetail table and made them accessible through the WorkBench and Batch Editing.</li><br>
       <li>When using GeoLocate, the WorkBench now fills the MaxUncertaintyEstUnit by default with “m”.</li><br>
-      <li>MaxUncertaintyEst values import correctly into the WorkBench from external files.</li><br>
-      <li>If a Preparation record is cloned, the value of the Preparation GUID field is not. A bug in earlier Specify versions duplicated GUIDs in cloned Preparation records.  This release includes a script to assign a new GUID to any existing preparation records that hold duplicate GUIDs.</li>
+      <li>MaxUncertaintyEst values now import correctly into the WorkBench from external files.</li><br>
+      <li>If a Preparation record is cloned, the value of the Preparation GUID field is not. A bug in earlier Specify versions duplicated GUIDs in cloned Preparation records.  This update includes logic to assign a new GUID to any existing preparation records that hold duplicate GUIDs.</li><br>
+      <li>We added the ability to process loans for Collection Objects that are not cataloged.</li>
+      
     </ol>
   </body>
 </html>
