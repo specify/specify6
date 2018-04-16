@@ -187,7 +187,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 {
     protected static final Logger  log = Logger.getLogger(SpecifySchemaUpdateService.class);
     
-    private final int OVERALL_TOTAL = 62; //the number of incOverall() calls (+1 or +2)
+    private final int OVERALL_TOTAL = 63; //the number of incOverall() calls (+1 or +2)
     
     private static final String TINYINT4 = "TINYINT(4)";
     private static final String INT11    = "INT(11)";
@@ -2495,8 +2495,8 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     //
                     //-------------------------------------------------------------------------------
 
-                    frame.setDesc("Creating index for Preparation GUID");
-                    if (!doesIndexExist("preparation", "PrepGuidIDX")) {
+                    frame.setDesc("Fixing index for Preparation GUID");
+                    if (!doesIndexExist("preparation", "PrepGuidIDX") && doesColumnExist(databaseName, "preparation", "GUID")) {
                         if (!fixDupPrepGuids(conn)) {
                             errMsgList.add("update error: Fix Prep GUIDs");
                             return false;
@@ -2550,53 +2550,42 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     }
 
     private boolean fixDupPrepGuids(final Connection conn) {
-        String sql = "select GUID, group_concat(preparationid order by preparationid) from preparation "
+        String sql = "select GUID, count(preparationid), group_concat(preparationid order by preparationid) from preparation "
                 + "where GUID is not null group by 1 having count(preparationid) > 1 order by 1";
         List<Object[]> dups = BasicSQLUtils.query(conn, sql);
         boolean dupsPresent = dups.size() > 0;
         boolean result = true;
+        int inc = 1;
+        frame.setProcessPercent(false);
+        int max = dupsPresent ? dups.size() + 4 : 2;
+        frame.setProcess(0, max);
         if (dupsPresent) {
             //System.out.println("alter table preparation add index tempprepguididx(GUID)");
             update(conn, "alter table preparation add index tempprepguididx(GUID)");
-            //System.out.println("SET optimizer_switch = 'derived_merge=off'"");
-            boolean exceptionSkipSetting = BasicSQLUtils.isSkipTrackExceptions();
-            try {
-                if (!exceptionSkipSetting) {
-                    BasicSQLUtils.setSkipTrackExceptions(true);
-                }
-                BasicSQLUtils.update(conn, "SET optimizer_switch = 'derived_merge=off'");
-                if (!exceptionSkipSetting) {
-                    BasicSQLUtils.setSkipTrackExceptions(false);
-                }
-                //System.out.println("update preparation pup inner join (select preparationid from preparation p ...");
-                BasicSQLUtils.update(conn, "update preparation pup inner join (select preparationid from preparation p " +
-                        "inner join (select guid from preparation where guid is not null group by 1 having " +
-                        "count(guid) > 1) dups on dups.guid = p.guid where p.preparationid != " +
-                        "(select preparationid from preparation d2 where d2.guid = p.guid order by " +
-                        "timestampcreated limit 1)) topup on topup.preparationid = pup.preparationid set pup.guid = null");
-                //System.out.println("SET optimizer_switch = 'derived_merge=default'");
-                if (!exceptionSkipSetting) {
-                    BasicSQLUtils.setSkipTrackExceptions(true);
-                }
-                BasicSQLUtils.update(conn, "SET optimizer_switch = 'derived_merge=default'");
-                if (!exceptionSkipSetting) {
-                    BasicSQLUtils.setSkipTrackExceptions(false);
-                }
-                BasicSQLUtils.update(conn, "alter table preparation drop index tempprepguididx");
-                dups = BasicSQLUtils.query(conn, sql);
-                result = dups.size() == 0;
-            } finally {
-                if (!exceptionSkipSetting) {
-                    BasicSQLUtils.setSkipTrackExceptions(false);
+            frame.setProcess(inc++);
+            for (Object[] dup : dups) {
+                String ids[] = ((String)dup[2]).split(",");
+                sql = "update preparation set guid = null where guid = '" + dup[0] + "' and preparationid != " + ids[0];
+                int r = BasicSQLUtils.update(conn, sql);
+                frame.setProcess(inc++);
+                if (((Number)dup[1]).intValue() != r+1) {
+                    result =  false;
+                    break;
                 }
             }
+            BasicSQLUtils.update(conn, "alter table preparation drop index tempprepguididx");
+            frame.setProcess(inc++);
         }
         if (result) {
             BasicSQLUtils.update(conn, "alter table preparation add unique index PrepGuidIDX(guid)");
+            frame.setProcess(inc++);
             BasicSQLUtils.update(conn, "update preparation set guid = uuid(), timestampmodified=now(), " +
                     "modifiedbyagentid = createdbyagentid where guid is null");
+            frame.setProcess(inc++);
         }
         //System.out.println("CHECK!!!!!!!!!!!!!!!!" + result);
+        frame.processDone();
+        frame.getProcessProgress().setIndeterminate(true);
         return result;
     }
 

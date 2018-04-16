@@ -463,7 +463,9 @@ public class WorkbenchPaneSS extends BaseSubPane
                                 if (uploadAfterSave) {
                                     List<SubPaneIFace> badPanes = checkOpenTasksForUpload(uploadAfterSave);
                                     if (badPanes.size() > 0) {
-                                        UIRegistry.displayInfoMsgDlgLocalized(String.format(getResourceString("WB_UPLOAD_CLOSE_ALL_MSG"), getListOfBadTasks(badPanes)));
+                                        UIRegistry.displayInfoMsgDlgLocalized(String.format(
+                                                getResourceString(isForBatchEdit ? "BATCH_EDIT_CLOSE_TABS_MSG" :"WB_UPLOAD_CLOSE_ALL_MSG"),
+                                                getListOfBadTasks(badPanes)));
                                         saveBtn.setEnabled(true);
                                         return null;
                                     }
