@@ -14,9 +14,6 @@
     <title>Batch Editor</title>
   </head>
   <body bgcolor="#ffffff">
-    <p>
-       &nbsp;
-    </p>
     <table background="../images/topbar.png" border="0" width="100%">
       <tbody>
       <tr>
@@ -35,11 +32,11 @@
       'batch' of data using an interface very similar to the WorkBench. Batch Editing is a powerful
       method to improve data quality -- it can potentially change thousands of data records with
       just a few mouse clicks. Once edits are made and confirmed, changes will be permanent and
-      they cannot be rolled back. We recommend you take the following precautions:
+      they cannot be rolled back. We enthusiastically recommend you take the following precautions:
     </p>
     <ol>
       <li>
-        Make a backup of your data before using the Batch Editor
+        Make a backup of your data before using the Batch Editor.
       </li>
       <li>
         Ensure that you understand the relationships represented by the fields and tables you wish
@@ -61,7 +58,7 @@
       </li>
     </ol>
     <p>
-       A few other notes regarding the Batch Editor:
+       Additional notes regarding the Batch Editor:
     </p>
     <ul>
       <li>
@@ -71,43 +68,45 @@
         starting the batch edit process.
       </li>
       <li>
-        Batch editing is only available to users with the <em>Admin</em> or <em>Manager</em> status
-        who also have access to both the Query Builder and WorkBench tools. If you wish to enable
-        batch editing for a <em>Full Access</em> user please contact the Specify team.
+        Batch editing is only available to users with an&nbsp;<em>Admin</em> or <em>Manager</em>
+        status who also have access to both the Query Builder and WorkBench tools. If you wish to
+        enable Batch Editing for a <em>Full Access</em> user please contact the Specify team.
       </li>
       <li>
-        At this time Taxonomy, Stratigraphy and Lithostratigraph&nbsp;information can only be
-        viewed, and not edited&nbsp;in the Batch Editor tool.
+        In this release,&nbsp;Taxonomy, Stratigraphy and Lithostratigraphy&nbsp;tree-structured
+        information can only be viewed, and not edited&nbsp;in the Batch Editor tool.
       </li>
       <li>
-        Fields that are read only in the schema, unique identifiers (such as GUID or Catalog
+        Fields that are readonly in the schema, such as unique identifiers (such as GUID or Catalog
         Number), formatted or aggregated can only be viewed, and not edited&nbsp;in the Batch
         Editor tool.
       </li>
       <li>
-        When deleting values in geography and locality tree fields only fields without child data
+        When deleting values in Geography and Locality tree fields only fields without child data
         can be deleted, one can delete children in tree fields as long as there are no child
         records.
       </li>
       <li>
         When you bring data into the Batch Editor, you are essentially 'checking it out' from the
-        database so that you may make changes that will later be validated and applied. If other
-        users are also accessing and editing the same data, this can result in&nbsp;a different
-        version of data in the database when your Batch Editing session is attempting to validate
-        them. In this instance Specify will not commit the change and will alert you to this action
-        in a status dialog.
+        database so that you may make changes that will later be validated and applied. If, by
+        chance,&nbsp;other users are also accessing and editing the same data records, this can
+        result in&nbsp;a different version of data in the database when your Batch Editing session
+        is attempting to validate them. In this instance Specify will not commit the change and
+        will alert you to this action in a status dialog.
       </li>
       <li>
-        When more than one collection resides in a single database some tables are shared;
-        therefore, changes in any of the shared tables will affect other collections.
+        When more than one collection resides in a single database changes made in any of the
+        shared tables will affect other collections. For instance, Locality information is shared
+        at the Discipline level; therefore, changes made to Locality records in one collection are
+        reflected in all other collections within the same Discipline in the database.
       </li>
     </ul>
     <p>
        The following documentation for the Batch Editor is meant only as a basic overview. To
-      better explain the changes that will be made to related data when using the Batch Editing
-      tool we have created a video which demonstrates these changes using real workflows. That
-      video can be found on our website:&nbsp;&lt;
-      <a href="http://www.sustain.specifysoftware.org/support/helpcasts/">sustain.specifysoftware.org/support/helpcasts</a>;
+      better explain the changes that will be made to records in related tables&nbsp;when using the
+      Batch Editing tool the Project has&nbsp;created a video which demonstrates these changes
+      using real workflows. That video can be found on our website:<a href=
+      "http://www.sustain.specifysoftware.org/support/helpcasts/">&nbsp;sustain.specifysoftware.org/support/helpcasts</a>
     </p>
     <p>
        &nbsp;
@@ -124,7 +123,7 @@
        &nbsp;
     </p>
     <p>
-       <img alt="batch edit" src="../images/documentation_1.png">
+       <img alt="batch edit" src="../images/be_documentation_1.png">
     </p>
     <p>
        &nbsp;
@@ -177,14 +176,15 @@
       Specify basically 'flattens' the data when bringing it into the batch editor. Therefore,
       changes made to fields in the batch editor will only affect that single Collection Object
       record. However, when creating queries from one of the other tables, the changes made will be
-      reflected in all related records. The Batch Editing video explains this in more detail:
-      <a href="http://www.sustain.specifysoftware.org/support/helpcasts/">sustain.specifysoftware.org/support/helpcasts</a>;
+      reflected in all related records. The Batch Editing video explains this in more detail:<a
+      href=
+      "http://www.sustain.specifysoftware.org/support/helpcasts/">&nbsp;sustain.specifysoftware.org/support/helpcasts</a>
     </p>
     <p>
        &nbsp;
     </p>
     <p>
-       <img alt="batch edit" src="../images/documentation_2.png">
+       <img alt="batch edit" src="../images/be_documentation_2.png">
     </p>
     <p>
        &nbsp;
@@ -202,7 +202,7 @@
     </p>
     <p>
        Otherwise, click the <em>Search</em> button at the bottom of the Workspace to display your
-      query results. The data you see in the query results screen is the exact data that will be
+      query results. The data you see in the Query Results screen is the exact data that will be
       displayed in the Batch Editor.
     </p>
     <p>
@@ -232,19 +232,19 @@
        &nbsp;
     </p>
     <p>
-       <img alt="batch edit" src="../images/documentation_3.png">
+       <img alt="batch edit" src="../images/be_documentation_3.png">
     </p>
     <p>
        &nbsp;
     </p>
     <p>
-       Your data is now available to manipulate in the Batch Editor tool. The Batch Editor
+       Your data are now available to manipulate in the Batch Editor tool. The Batch Editor
       interface is similar to the WorkBench, with the same features for manipulating data, such as;
       copy, past, sort, fill up, fill down, etc. For more information about the tools available
       please <a href="../Workbench/GridEditing.html">Click Here.</a>
     </p>
     <p>
-       <em><strong>Note:</strong></em> When deleting terms in the batch editor ensure that there
+       <em><strong>Note:</strong></em> When deleting terms in the Batch Editor ensure that there
       are no spaces in the field.
     </p>
     <p>
@@ -254,24 +254,25 @@
        <u>Data Validation Panel</u>
     </p>
     <p>
-       The Batch Editor also includes a Data Validation panel at the bottom-left of the Workspace.
-      Fields containing invalid data are highlighted in red and fields containing edited data are
-      highlighted in green. The panel also displays a total count of affected fields.
+       The Batch Editor also includes a Data Validation panel at the lower-left corner&nbsp;of the
+      Workspace. Fields containing invalid data are highlighted in red and fields containing edited
+      data are highlighted in green. The panel also displays a count of the fields affected in both
+      categories. The adjacent triangles can be used to find the next affected data field.
     </p>
     <p>
        <em><strong>Note:</strong></em> Changes made in the Batch Editor can not be applied when
-      invalid data is present.
+      invalid data are entered.
     </p>
     <p>
        <em><strong>Note:</strong></em> Not all fields are available for editing in the Batch
-      Editor. Non-editable fields are grayed out.
+      Editor. Columns of non-editable fields are grayed out.
     </p>
     <p>
        &nbsp;
     </p>
     <p>
        If at any time during editing you wish to revert back to the original data, click the
-      <em>Undo All</em> button located at the bottom-right of the Workspace screen.
+      <em>Undo All</em> button located at the lower-right corner&nbsp;of the Workspace screen.
     </p>
     <p>
        Once you have finished editing your data and are ready to commit your changes, click the
@@ -281,7 +282,7 @@
        &nbsp;
     </p>
     <p>
-       <img alt="batch edit" src="../images/documentation_4.png">
+       <img alt="batch edit" src="../images/be_documentation_4.png">
     </p>
     <p>
        &nbsp;
@@ -291,8 +292,8 @@
     </p>
     <p>
        Specify will now validate your data, and display statistics about the changes you are about
-      to make. At this point your changes have not been&nbsp;committed to the database, and you can
-      click the <em>Cancel</em> button without losing your edits.
+      to make, but the Batch Editor has not commited those changes to the database.&nbsp;If
+      necessary, you can click the <em>Cancel</em> button without losing your edits.
     </p>
     <p>
        The Batch Progress dialog will display both alerts regarding the&nbsp;progress in validating
@@ -300,19 +301,20 @@
     </p>
     <ul>
       <li>
-        Applying your edits is a progress statement
+        Applying your edits is a progress statement.
       </li>
       <li>
-        Validating changes to the database is a progress statement
+        Validating changes to the database is a progress statement.
       </li>
       <li>
-        Number of edits successfully applied and validated
+        Number of edits successfully applied and validated will display once the process is
+        complete.
       </li>
     </ul>
     <blockquote>
       <p>
-         Typically this will display that All edits were successfully applied; however, if a
-        concurrent user edited one of the records while you were batch editing, Specify will
+         Typically the status&nbsp;will state that all edits were successfully applied; however, if
+        a concurrent user edited one of the records while you were batch editing, Specify will
         recognize this and skip those records. If you wish to verify this with a co-worker you can
         click the <em>Cancel</em> button at the bottom of the dialog to cancel the process. The
         Batch Editor will still be displayed with all your previous changes and you can apply the
@@ -329,12 +331,12 @@
          This message displays the total number of records that will be updated in each table that
         is affected by the batch edit. It is meant to help you understand the relationships
         to&nbsp;tables that are affected by your changes. If these numbers do not reflect the
-        changes you believe you made we recommend that you cancel the update at this time. It may
-        be useful&nbsp;to select only a few records to load into the batch editor, make your edits,
-        and then apply them in the batch editor. Once that is complete you can create queries on
-        those changed records that allow you to better understand how the edits you made have
-        affected related fields and tables, and whether you wish to proceed in making those changes
-        to all your records.
+        changes you believe you made we recommend that you cancel the update to discover the
+        reason. It may be useful&nbsp;to select only a few records to load into the batch editor,
+        make your edits, and then apply them in the Batch Editor. Once that is complete you can
+        create queries on those changed records that allow you to better understand how the edits
+        you made have affected related fields and tables, and whether you wish to proceed in making
+        those changes to all your records.
       </p>
     </blockquote>
     <ul>
@@ -343,15 +345,13 @@
       </li>
     </ul>
     <p>
-       A timer also appears on the Batch Process dialog, allowing you 3 minutes to either commit or
-      cancel your changes. When you bring data into the batch editor, you are essentially 'checking
-      it out' from the database so that you may make changes that will later be validated and
-      applied. If other users are also accessing and editing the same data, it can result in&nbsp;a
-      different version of data in the database than when the data was originally checked out. In
-      this instance Specify will not commit the change and will alert you to this action in the
-      status dialog. Once the validation process has completed, Specify will not check the version
-      of the data again. For that reason, we limit the amount of time between the validation
-      completion and the choice to either commit or cancel the updates.
+       A timer also appears on the Batch Process dialog, allowing you 180 seconds&nbsp;to either
+      commit or cancel your changes. When you bring data into the Batch Editor, you are essentially
+      'checking it out' from the database so that you may make changes that will later be validated
+      and applied. If other users are also accessing and editing the same data, it can result
+      in&nbsp;a different version of data in the database than when the data was originally checked
+      out. In this instance Specify will not commit the change and will alert you to this action in
+      the status dialog.
     </p>
     <p>
        Click <em>OK</em> to close the dialog.
@@ -364,24 +364,24 @@
     </p>
     <p>
        Upon completion of a Batch Edit the records are saved in a new Record Set. If you saved the
-      original query used to define the data you edited, then the resulting record set will use the
-      same name as the query. If you did not save the query the record set will be saved
-      wtih&nbsp;the name of the table used to create the query followed by a number that increments
-      by 1 each time that the query was used for a batch edit. For example, if you created a
-      Collecting Event query but did not save it, the ensuing record set would be named: New
+      original query used to define the data you edited, then the resulting Record Set will use the
+      same name as the query. If you did not save the query the Record Set will be saved
+      with&nbsp;the name of the table used to create the query followed by a number that increments
+      by 1 each time that the query was used for a Batch Edit. For example, if you created a
+      Collecting Event query but did not save it, the ensuing Record Set would be named: New
       Collecting Event Query 1. You do not need to save these Record Sets, they are only meant to
       give you an opportunity to see the edited records at a later time. You may find it convenient
       to rename the record sets with the name or objective of the Batch or perhaps the date.
     </p>
     <ul>
       <li>
-        View the records in the Record Set in Specify data forms by clicking on the record set name
-        in the sidebar.
+        View the changed records in the Record Set in Specify's data forms by left-clicking on the
+        Record Set name in the sidebar.
       </li>
       <li>
-        View the records in the Record Set in a spreadsheet format by right-mouse clicking the
-        Record Set name&nbsp;in the side bar and choosing <em>View with saved Query</em> in the
-        pop-up dialog.
+        View the records in the Record Set in a spreadsheet format by right-clicking the Record Set
+        name&nbsp;in the side bar and then choosing <em>View with saved Query</em> in the pop-up
+        dialog.
       </li>
     </ul>
     <p>
