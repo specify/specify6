@@ -2318,7 +2318,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
     public static String getAboutText(final String appNameArg, final String appVersionArg)
     {
         return "<html><font face=\"sans-serif\" size=\"11pt\">"+appNameArg+" " + appVersionArg +  //$NON-NLS-1$ //$NON-NLS-2$
-        "<br><br>Specify Software Consortium<br>" +//$NON-NLS-1$
+        "<br><br>Specify Collections Consortium<br>" +//$NON-NLS-1$
         "Biodiversity Institute<br>University of Kansas<br>1345 Jayhawk Blvd.<br>Lawrence, KS  USA 66045<br><br>" +  //$NON-NLS-1$
         "<a href=\"http://www.specifysoftware.org\">www.specifysoftware.org</a>"+ //$NON-NLS-1$
         "<br><a href=\"mailto:support@specifysoftware.org\">support@specifysoftware.org</a><br>" +  //$NON-NLS-1$
