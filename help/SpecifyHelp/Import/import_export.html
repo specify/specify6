@@ -1,90 +1,238 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<link href="../../main.css" rel="stylesheet" type="text/css" media="screen" />
-<title>Import and Export Forms and Reports</title>
+  <head>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+    <link href="../../main.css" rel="stylesheet" type="text/css" media="screen">
+    <meta name="generator" content="Helen">
 <style type="text/css">
 <!--
-..style8 {font-size: xx-large}
+..style8 {
+  font-size: xx-large;
+}
 -->
 </style>
-</head>
-
-<BODY BGCOLOR=#ffffff>
-<table width="100%" border="0" background="../../images/topbar.png">
-  <tr>
-    <td>&nbsp;</td>
-  </tr>
-</table>
-<h2><strong><a name="import_export" id="import_export"></a>Import/Export</strong> Forms and Reports</h2>
-<p>At this time Specify 6 does not include a Form Editor, as was found in Specify 5. The forms have been created  to be  flexible and can be exported as XML and either edited by on-site staff or emailed to the Specify staff for assistance with form editing and customization. Forms are imported and exported using the Resource Import/Export tool. Forms are exported as a set of forms, or form set, and are imported back into Specify as a form set as well. </p>
-<p>Reports can also be imported and exported through the use of the Resource Import/Export tool. Reports are created from a query and export as a file that contains both the report and query. Reports are typically exported so they may be shared with other users within the community.</p>
-<p><a name="import_nonspecify_report" id="import_nonspecify_report"></a>Users that can program in MySQL can create their own report for inclusion in Specify 6. Create the Report including this Report Query Where clause: &quot;where co.collectionobjectid $P!{itemnum}, and include a parameter named &quot;itemnum&quot;. </p>
-<p>&nbsp;</p>
-<p>Importing and exporting is based on the same levels that are found within the institution, with the addition of a <em>System</em> level:</p>
-<ul>
-  <li>System</li>
-  <ul>
-    <li>Institution</li>
+    <title>Import and Export Forms and Reports</title>
+  </head>
+  <body bgcolor="#ffffff">
+    <table width="100%" border="0" background="../../images/topbar.png">
+      <tr>
+        <td>
+          &nbsp;
+        </td>
+      </tr>
+    </table>
+    <h2>
+       <strong><a name="import_export" id="import_export"></a>Import/Export</strong> Forms and
+      Reports
+    </h2>
+    <p>
+       At this time Specify 6 does not include a Form Editor, as was found in Specify 5. The forms
+      have been created to be flexible and can be exported as XML and either edited by on-site
+      staff or emailed to the Specify staff for assistance with form editing and customization.
+      Forms are imported and exported using the Resource Import/Export tool. Forms are exported as
+      a set of forms, or form set, and are imported back into Specify as a form set as well.
+    </p>
+    <p>
+       Reports can also be imported and exported through the use of the Resource Import/Export
+      tool. Reports are created from a query and export as a file that contains both the report and
+      query. Reports are typically exported so they may be shared with other users within the
+      community.
+    </p>
+    <p>
+       <a name="import_nonspecify_report" id="import_nonspecify_report"></a>Users that can program
+      in MySQL can create their own report for inclusion in Specify 6. Create the Report including
+      this Report Query Where clause: "where co.collectionobjectid $P!{itemnum}, and include a
+      parameter named "itemnum".
+    </p>
+    <p>
+       &nbsp;
+    </p>
+    <p>
+       Importing and exporting is based on the same levels that are found within the institution,
+      with the addition of a <em>System</em> level:
+    </p>
     <ul>
-      <li>Division</li>
-      <ul>
-        <li>Discipline</li>
+      <li>
+        System
+      </li>
+      <li style=" list-style-type: none; list-style-image: none;">
         <ul>
-          <li>Collection</li>
-          <ul>
-            <li>Group</li>
+          <li>
+            Institution
+          </li>
+          <li style=" list-style-type: none; list-style-image: none;">
             <ul>
-              <li>Users</li>
+              <li>
+                Division
+              </li>
+              <li style=" list-style-type: none; list-style-image: none;">
+                <ul>
+                  <li>
+                    Discipline
+                  </li>
+                  <li style=" list-style-type: none; list-style-image: none;">
+                    <ul>
+                      <li>
+                        Collection
+                      </li>
+                      <li style=" list-style-type: none; list-style-image: none;">
+                        <ul>
+                          <li>
+                            Group
+                          </li>
+                          <li style=" list-style-type: none; list-style-image: none;">
+                            <ul>
+                              <li>
+                                Users
+                              </li>
+                            </ul>
+                          </li>
+                        </ul>
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
             </ul>
-          </ul>
+          </li>
         </ul>
-      </ul>
+      </li>
     </ul>
-  </ul>
-</ul>
-<p>For each level the imported resource (form or report) is made available to other users at and below it. This is based on the permissions for the person importing. Resources imported at the bottom (User) level will be made available to the user only. At the User Type (Group) level the resource is accessible to all users within the collection that are part of the same Group as the individual user. </p>
-<p>Forms are named for the Table they represent. For instance, the Collection Object form is named CollectionObject. As stated above, forms are imported and exported as a form set. When the Form tab is active the window splits to show the name of the form set on the left and the individual forms that are included in the set on the right. Imported forms will replace existing forms if they share the same name. To add forms simply name the form set a unique name. Specify walks up the tree starting at the User level when loading forms for display within Specify. In other words, if a CollectionObject form is located at both the User level and the Discipline level, Specify will find and display only the User level form.</p>
-<p>Resources can not be imported or exported from the <em>System</em> level. It holds the set of resources that Specify ships with and can be used to restore the resources if needed.</p>
-<p>&nbsp;</p>
-<p>Choose <em>System &gt; Resource Import/Export</em> to open the Import/Export tool. This Import/Export tool (and menu) is only available to Administrators.</p>
-<p>&nbsp;</p>
-<h3>Import/Export Tool</h3>
-<blockquote>
-  <p>You will receive a warning dialog informing you that the changes will require Specify to shut down and restart. </p>
-  <p>You will then see this dialog:</p>
-  <p align="center"><img src="../../images/import_choose_user.png" alt="user" width="568" height="170" /></p>
-</blockquote>
-<p align="center" class="imgcaption">Choose a User</p>
-<blockquote>
-  <h4><u>Changing Forms for Another User</u></h4>
-  <p>If you wish to import forms for a single user other than yourself  click the <em>Different User</em> button. A dialog containing a list of users for the current division will be provided. If you wish to import forms for a user in another division you must first <a href="../Intro/intro.html#change_collections">Change Collections</a> to a collection in the desired division.</p>
-  <h4><u>Changing Forms for Yourself</u></h4>
-  <p>If you wish to change your forms click the <em>My Resources</em> button.</p>
-  <p>&nbsp;</p>
-  <p align="center"><img src="../../images/import_dialog.png" alt="dialog" width="565" height="389" /></p>
-  <p align="center" class="imgcaption">Resource Import/Export</p>
-  <p>&nbsp;</p>
-  <h4><u>Resource Import/Export Tool</u></h4>
-  <p>The Resource Import/Export tool will open.</p>
-  <blockquote>
-    <p>A prompt at the top of the tool displays the name of the user chosen to receive the imported form or report. </p>
-    <p>You must then choose the level at which you wish the resource to be imported into and accessed by: </p>
+    <p>
+       For each level the imported resource (form or report) is made available to other users at
+      and below it. This is based on the permissions for the person importing. Resources imported
+      at the bottom (User) level will be made available to the user only. At the User Type (Group)
+      level the resource is accessible to all users within the collection that are part of the same
+      Group as the individual user.
+    </p>
+    <p>
+       Forms are named for the Table they represent. For instance, the Collection Object form is
+      named CollectionObject. As stated above, forms are imported and exported as a form set. When
+      the Form tab is active the window splits to show the name of the form set on the left and the
+      individual forms that are included in the set on the right. Imported forms will replace
+      existing forms if they share the same name. To add forms simply name the form set a unique
+      name. Specify walks up the tree starting at the User level when loading forms for display
+      within Specify. In other words, if a CollectionObject form is located at both the User level
+      and the Discipline level, Specify will find and display only the User level form.
+    </p>
+    <p>
+       Resources can not be imported or exported from the <em>System</em> level. It holds the set
+      of resources that Specify ships with and can be used to restore the resources if needed.
+    </p>
+    <p>
+       &nbsp;
+    </p>
+    <p>
+       Choose <em>System &gt; Resource Import/Export</em> to open the Import/Export tool. This
+      Import/Export tool (and menu) is only available to Administrators.
+    </p>
+    <p>
+       &nbsp;
+    </p>
+    <h3>
+       Import/Export Tool
+    </h3>
     <blockquote>
-      <p><strong>User</strong> - only the person displayed at the top of the tool.</p>
-      <p><strong>User Type</strong> - entire group the user belongs to within the current collection.</p>
-      <p><strong>Collection </strong>- all users within the current collection.</p>
-      <p><strong>Discipline -</strong> all users within the current discipline (including all collections within the discipline).</p>
-      <p><strong>Institution</strong> - all Specify users currently active in Specify.</p>
+      <p>
+         You will receive a warning dialog informing you that the changes will require Specify to
+        shut down and restart.
+      </p>
+      <p>
+         You will then see this dialog:
+      </p>
+      <p align="center">
+         <img src="../../images/import_choose_user.png" alt="user" width="568" height="170">
+      </p>
     </blockquote>
-    <p>A tab at the top of the tool allows the choice of importing/exporting either a Form Set or Report.</p>
-    <p>Next, simply choose a Form Set/Report Resource from left pane and click the <em>Import</em> button to import a resource. </p>
-    <p>Or; choose a Form Set/Report Resource from the right pane and click the <em>Export</em> button to export a resource.</p>
-  </blockquote>
-</blockquote>
-<h3><strong><a name="revert_forms" id="revert_forms"></a>Revert</strong></h3>
-<blockquote>
-  <p>Revert will delete ALL files that have ever been imported. The Uploader tool remembers the files that Specify shipped with at each level and reverts back to those files. If the Uploader recognizes imported files the <em>Revert</em> button will become enabled. </p>
-</blockquote>
-</BODY>
+    <p align="center" class="imgcaption">
+       Choose a User
+    </p>
+    <blockquote>
+      <h4>
+         <u>Changing Forms for Another User</u>
+      </h4>
+      <p>
+         If you wish to import forms for a single user other than yourself click the <em>Different
+        User</em> button. A dialog containing a list of users for the current division will be
+        provided. If you wish to import forms for a user in another division you must first <a
+        href="../Intro/intro.html#change_collections">Change Collections</a> to a collection in the
+        desired division.
+      </p>
+      <h4>
+         <u>Changing Forms for Yourself</u>
+      </h4>
+      <p>
+         If you wish to change your forms click the <em>My Resources</em> button.
+      </p>
+      <p>
+         &nbsp;
+      </p>
+      <p align="center">
+         <img src="../../images/import_dialog.png" alt="dialog" width="565" height="389">
+      </p>
+      <p align="center" class="imgcaption">
+         Resource Import/Export
+      </p>
+      <p>
+         &nbsp;
+      </p>
+      <h4>
+         <u>Resource Import/Export Tool</u>
+      </h4>
+      <p>
+         The Resource Import/Export tool will open.
+      </p>
+      <blockquote>
+        <p>
+           A prompt at the top of the tool displays the name of the user chosen to receive the
+          imported form or report.
+        </p>
+        <p>
+           You must then choose the level at which you wish the resource to be imported into and
+          accessed by:
+        </p>
+        <blockquote>
+          <p>
+             <strong>User</strong> - only the person displayed at the top of the tool.
+          </p>
+          <p>
+             <strong>User Type</strong> - entire group the user belongs to within the current
+            collection.
+          </p>
+          <p>
+             <strong>Collection</strong> - all users within the current collection.
+          </p>
+          <p>
+             <strong>Discipline -</strong> all users within the current discipline (including all
+            collections within the discipline).
+          </p>
+          <p>
+             <strong>Institution</strong> - all Specify users currently active in Specify.
+          </p>
+        </blockquote>
+        <p>
+           A tab at the top of the tool allows the choice of importing/exporting either a Form Set
+          or Report.
+        </p>
+        <p>
+           Next, simply choose a Form Set/Report Resource from left pane and click the
+          <em>Import</em> button to import a resource.
+        </p>
+        <p>
+           Or; choose a Form Set/Report Resource from the right pane and click the <em>Export</em>
+          button to export a resource.
+        </p>
+      </blockquote>
+    </blockquote>
+    <h3>
+       <strong><a name="revert_forms" id="revert_forms"></a>Revert</strong>
+    </h3>
+    <blockquote>
+      <p>
+         Revert will delete ALL files that have ever been imported. The Uploader tool remembers the
+        files that Specify shipped with at each level and reverts back to those files. If the
+        Uploader recognizes imported files the <em>Revert</em> button will become enabled.
+      </p>
+    </blockquote>
+  </body>
 </html>

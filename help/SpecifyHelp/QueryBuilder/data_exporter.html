@@ -1,12 +1,10 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html;
-      charset=windows-1252">
-    <link href="../../main.css" type="text/css" media="screen"
-      rel="stylesheet">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link href="../../main.css" type="text/css" media="screen" rel="stylesheet">
     <meta name="generator" content="Helen">
-    <style type="text/css">
+<style type="text/css">
 <!--
 .style1 {
   font-style: italic;
@@ -16,108 +14,144 @@
     <title>Data Exporter</title>
   </head>
   <body bgcolor="#ffffff">
+    <p>
+       &nbsp;
+    </p>
     <table background="../images/topbar.png" border="0" width="100%">
       <tbody>
-        <tr>
-          <td>&nbsp; </td>
-        </tr>
+      <tr>
+        <td>
+          &nbsp;
+        </td>
+      </tr>
       </tbody>
     </table>
-    <h2> <a name="data_exporter"></a>Data Exporter </h2>
-    <p> The Data Exporter application is used to build, update and
-      export data files for use by IPT or a web portal. The term 'build'
-      refers to the process Specify uses to load data into the skeleton,
-      or schema, of a database. Before a data file can be built, a
-      'schema map' must first be created using the Schema Mapping Editor
-      inside Specify. If you have not created a schema map you will need
-      to close the Data Exporter tool, reopen Specify and create the
-      schema map using the Schema Mapper tool. For documentation
-      explaining how to create a schema map please refer to <a
-        href="../QueryBuilder/third_party.html">Web Publishing</a>. </p>
-    <p> The Data Exporter tool actually creates a table, or cache, in
-      the database containing all relevant data, based on the map that
-      was created from inside Specify.&nbsp; This table of data is then indexed and exported, along with other relevant files,
-      for use in a web portal. Or, the cache is exported as a tab delimited text file for importing
-      into IPT.&nbsp; </p>
-    <p> The Data Exporter application is located in the bin directory
-      within the Specify application directory, which stores the
-      executable files for Specify. Double click <em>DataExporter</em>
-      (or select it from Start/Program Files/Specify on Windows) to
-      launch the tool. Users are required to login using their Specify
-      Username and Password. </p>
-    <p> The Data Exporter application opens as a three column table with
-      action buttons. </p>
-    <p align="center"> <img src="../../images/export_tool.png"> </p>
-    <p class="imgcaption" align="center">Data Exporter Tool</p>
+    <h2>
+       <a name="data_exporter"></a>Data Exporter
+    </h2>
+    <p>
+       The Data Exporter application is used to build, update and export data files for use by IPT
+      or a web portal. The term 'build' refers to the process Specify uses to load data into the
+      skeleton, or schema, of a database. Before a data file can be built, a 'schema map' must
+      first be created using the Schema Mapping Editor inside Specify. If you have not created a
+      schema map you will need to close the Data Exporter tool, reopen Specify and create the
+      schema map using the Schema Mapper tool. For documentation explaining how to create a schema
+      map please refer to <a href="../QueryBuilder/third_party.html">Web Publishing</a>.
+    </p>
+    <p>
+       The Data Exporter tool actually creates a table, or cache, in the database containing all
+      relevant data, based on the map that was created from inside Specify.&nbsp; This table of
+      data is then indexed and exported, along with other relevant files, for use in a web portal.
+      Or, the cache is exported as a tab delimited text file for importing into IPT.&nbsp;
+    </p>
+    <p>
+       The Data Exporter application is located in the bin directory within the Specify application
+      directory, which stores the executable files for Specify. Double click <em>DataExporter</em>
+      (or select it from Start/Program Files/Specify on Windows) to launch the tool. Users are
+      required to login using their Specify Username and Password.
+    </p>
+    <p>
+       The Data Exporter application opens as a three column table with action buttons.
+    </p>
+    <p align="center">
+       <img src="../../images/export_tool.png">
+    </p>
+    <p class="imgcaption" align="center">
+       Data Exporter Tool
+    </p>
     <ul type="disc">
-      <li> The <strong>Mapping</strong> column of the table indicates
-        the name of both the mapping and table. </li><br />
-      <li> The <strong>Last Update</strong> column lists the date and
-        time of the last update of the cache. </li><br />
-      <li>The<strong> Status</strong> column indicates whether the cache has ever been build, up to date, orout of date. If the cache is out of date, it also indicates the number of rows which require updating. The number of out of date rows includes the number of rows that have been deleted from the database, edited in the database and added since the last update. This information reflects the database contents at the time the exporter was launched; it will not reflect changes to the database that occur while the exporter is running. </li>
+      <li>
+        The <strong>Mapping</strong> column of the table indicates the name of both the mapping and
+        table.
+      </li>
+      <li style=" list-style-type: none; list-style-image: none;">
+        <br>
+      </li>
+      <li>
+        The <strong>Last Update</strong> column lists the date and time of the last update of the
+        cache.
+      </li>
+      <li style=" list-style-type: none; list-style-image: none;">
+        <br>
+      </li>
+      <li>
+        The <strong>Status</strong> column indicates whether the cache has ever been build, up to
+        date, or out of date. If the cache is out of date, it also indicates the number of rows
+        which require updating. The number of out of date rows includes the number of rows that
+        have been deleted from the database, edited in the database and added since the last
+        update. This information reflects the database contents at the time the exporter was
+        launched; it will not reflect changes to the database that occur while the exporter is
+        running.
+      </li>
     </ul>
-    <p>&nbsp; </p>
-    <h3> <strong>Available Actions</strong> </h3>
+    <p>
+       &nbsp;
+    </p>
+    <h3>
+       <strong>Available Actions</strong>
+    </h3>
     <ul>
-      <li> <strong>Show SQL</strong> - Click this button for a mapping
-        whose cache has been completed to generate a dialog showing an
-        SQL select statement that can be copied and used when defining
-        database connections to the cache for IPT or other data
-        providers.
+      <li>
+        <strong>Show SQL</strong> - Click this button for a mapping whose cache has been completed
+        to generate a dialog showing an SQL select statement that can be copied and used when
+        defining database connections to the cache for IPT or other data providers. 
         <blockquote>
-          <p> <em><strong>Note</strong></em>: the SQL is based on the
-            current cache structure. If the cache needs to be rebuilt
-            and mappings have been changed, the SQL statement generated
-            will not reflect the changes until the cache is updated. </p>
+          <p>
+             <em><strong>Note</strong></em>: the SQL is based on the current cache structure. If
+            the cache needs to be rebuilt and mappings have been changed, the SQL statement
+            generated will not reflect the changes until the cache is updated.
+          </p>
         </blockquote>
       </li>
-      <li> <em> </em> <strong>Build/Update</strong> - This will
-        update the cache.&nbsp;When the cache is built or updated it is
-        writing to the database; therefore, the username and password
-        for the database is required before Specify can complete the
-        task. </li>
+      <li>
+        <strong>Build/Update</strong> - This will update the cache.&nbsp;When the cache is built or
+        updated it is writing to the database; therefore, the username and password for the
+        database is required before Specify can complete the task.
+      </li>
     </ul>
     <blockquote>
-      <p> For caches that do not need to be built, only out-of-date rows
-        are updated. This is significantly faster than an initial build
-        which can take a long time.&nbsp; Updates are not allowed for
-        mappings that are being edited or updated by another user;
-        therefore, users should close all schema mappings before
-        updating.</p>
+      <p>
+         For caches that do not need to be built, only out-of-date rows are updated. This is
+        significantly faster than an initial build which can take a long time.&nbsp; Updates are
+        not allowed for mappings that are being edited or updated by another user; therefore, users
+        should close all schema mappings before updating.
+      </p>
       <blockquote>
-        <p><b><i>Note:</i></b> building/updating the cache will require
-          the IT (MySQL) Username and Password.<br>
+        <p>
+           <b><i>Note:</i></b> building/updating the cache will require the IT (MySQL) Username and
+          Password.<br>
         </p>
       </blockquote>
     </blockquote>
     <ul>
-      <li> <strong>Export</strong> - This exports the current contents
-        of the cache to a tab-delimited text file for IPT.<br>
+      <li>
+        <strong>Export</strong> - This exports the current contents of the cache to a tab-delimited
+        text file for IPT.<br>
       </li>
     </ul>
     <ul>
-      <li><b>Export for Web Portal</b> - Files for Solr and the web
-        portal will be generated and exported as a .zip file.<br>
+      <li>
+        <b>Export for Web Portal</b> - Files for Solr and the web portal will be generated and
+        exported as a .zip file.<br>
         <br>
       </li>
     </ul>
-    <p> <em><br>
-        Cancelling an Operation</em> - You can cancel an update or
-      export by clicking the <img src="../../images/close_hover.png">&nbsp;(close)
-
-
-
-
-
-      button to close the application window. You will be asked to
-      confirm the cancellation. If you cancel, you will need to start
-      from the beginning the next time you perform the operation. </p>
+    <p>
+       <em><br>
+       Cancelling an Operation</em> - You can cancel an update or export by clicking the <img src=
+      "../../images/close_hover.png">&nbsp;(close) button to close the application window. You will
+      be asked to confirm the cancellation. If you cancel, you will need to start from the
+      beginning the next time you perform the operation.
+    </p>
     <blockquote>
-      <p> <strong><span class="style1">Note</span></strong><span
-          class="style1">:</span>&nbsp; If you cancel an update that
-        required a rebuild, the pre-existing cache will have been
-        deleted. </p>
+      <p>
+         <strong><span class="style1">Note</span></strong><span class="style1">:</span>&nbsp; If
+        you cancel an update that required a rebuild, the pre-existing cache will have been
+        deleted.
+      </p>
     </blockquote>
-    <p>&nbsp; </p>
+    <p>
+       &nbsp;
+    </p>
   </body>
 </html>

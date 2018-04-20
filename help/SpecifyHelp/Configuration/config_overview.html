@@ -1,89 +1,249 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<link href="../../main.css" rel="stylesheet" type="text/css" media="screen" />
-<title>Specify Setup</title>
-</head>
-
-<body bgcolor="#ffffff">
-<table width="100%" border="0" background="../../images/topbar.png">
-  <tr>
-    <td>&nbsp;</td>
-  </tr>
-</table>
-<h2>Specify Setup</h2>
-<p>Specify's flexible design can accommodate a single user with a single collection, or multiple collections representing multiple disciplines within an institution - all sharing the same database. This is accomplished by creating relationships among collection data, as well as modeling how collections are organized within institutions themselves, and then configuring components within Specify specifically for each institutional level. </p>
-<p>What this means for the  user, is that Specify 6 can be configured to work congruently with existing collection management procedures, but it requires a thoughtful setup process. This process may vary depending on how Specify was installed. If you were a Specify 5 user and have worked with the Specify staff to convert your data, many of the setup steps will have been performed for you. However, it is still recommended that you read the help sections for each of the modules to better understand how each module can be utilized for your specific needs. </p>
-<p>If you installed Specify 6 and ran the Specify Setup Wizard to create a new, blank database, the Specify 6 team recommends that you now perform the following procedures to customize the Specify setup to your particular needs.</p>
-<p>1. Add institutional levels (divisions, disciplines, collections)</p>
-<blockquote>
-  <p>Systems that were created by first running the Specify Setup Wizard will include one of each of the institutional levels (institution, division, discipline, collection and user). Most systems will require more than one of each of these institutional levels.</p>
-  <p><a href="../Configuration/institution_hierarchy.html">Add collections, disciplines and divisions</a> in the System Configuration<em> at System &gt; System Setup &gt; Configuration</em>.</p>
-</blockquote>
-<p>&nbsp;</p>
-<p>2. Add users and set user permissions</p>
-<blockquote>
-  <p>Once these institutional levels are configured, users can be added to each of the collections. Specify  offers an extensive permission system which controls each user's access to both the data and tools within Specify.</p>
-  <p><a href="../Security/permissions.html">Add users and set user permissions</a> using the Security tools found at <em>System &gt; System Setup &gt; Security Tools</em>.</p>
-  <p>Once the institutional levels, users and permissions are complete, information specific to each discipline can be configured. </p>
-</blockquote>
-<p>&nbsp;</p>
-<p>3. Check and/or set Tree Definitions</p>
-<blockquote>
-  <p>A Storage tree that can be accessed by the entire institution was created using the Setup Wizard. Taxon, Geography, Lithostratigraphy and Chronostratigraphy (if applicable) trees were also created, which are shared by each collection within the division. </p>
-  <p>The ranks in the trees as well as the Enforced ranks and Full Name configuration were also created for each tree in a division. These are considered part of the Tree Definition, and it is recommended that users check these <a href="../Trees/editing_tree_def.html">Tree D</a><a href="../Trees/editing_tree_def.html">efinitions</a> before entering data.  Tree Definitions are found by clicking the <img src="../../images/Tree-32x32.png" width="20" height="20" /> <em>Tree</em> button on the Tab Bar, then clicking the appropriate <em>Tree Definition</em> button on the side bar.</p>
-</blockquote>
-<p>&nbsp;</p>
-<p>4. Customize the Schema Configuration</p>
-<blockquote>
-  <p>A number of changes can be made to the fields and tables within Specify by using the Schema Configuration tool:</p>
-  <ul>
-    <li>Hide Fields</li>
-    <li>Change Captions</li>
-    <li>Set Required Fields</li>
-    <li>Change Table Format</li>
-    <li>Change a Field Format</li>
-    <li>Configure Table Aggregation</li>
-  </ul>
-  <p>&nbsp;</p>
-  <p><a href="../SchemaConfig/schema_config.html">Editing the schema configuration</a> allows users to customize fields and tables within Specify for each of the disciplines. The Schema Configuration tool is found at <em>System &gt; Schema Configuration</em>.</p>
-</blockquote>
-<p><a href="../Intro/number_formats.html"></a>5. Customize System Pick Lists and Preparation Types</p>
-<blockquote>
-  <p>A variety of <a href="../PickList/system_picklist.html">System Pick Lists</a> exist within the Specify form system as drop-down lists. These can be edited in a System Configuration module, found at <em>System &gt; System Setup &gt; Configuration.</em> System Pick Lists refer to fields that are denoted as Pick Lists within Specify itself. Fields that are not denoted as Pick Lists by Specify are referred to as User-Defined Pick Lists. User-Defined Pick Lists require a change to any forms that include the field and should NOT be changed until the new form has been imported into Specify. </p>
-  <p>The <a href="../Configuration/prep_type.html">Preparation Type</a> pick list ships with specific data for each discipline, which can be edited in the Configuration tool as well.</p>
-</blockquote>
-<p>6. Create Reports</p>
-<blockquote>
-  <p><a href="../ReportsLabels/reports.html">Reports</a> can be created for use in Specify. Reports may include labels for specimens or invoices for loans as well as reports for collection data. Each institution will have different needs. It is helpful to have reports created before users start entering data into the database that are based on your specific needs. Specify harnesses the power of iReport 3.0, an open source report writing software package, by modifying the original iReport version to  interact with Queries created in Specify 6 and data supplied from the Specify 6 database. <a href="../ReportsLabels/specifyireports.html">SpecifyiReport</a> is a separate application and must be launched separately from Specify. SpecifyiReport is located in the Specify application <em><strong>bin</strong></em> directory.</p>
-</blockquote>
-<p>7. Change Attachment Storage Location</p>
-<blockquote>
-<p><a href="../Data_Entry/attachments_overview#store_attach">Attachments</a> are copied, renamed using a unique name,
-      and stored in an Attachment Storage location. Only the path to the
-      attachment storage location is stored in the Specify database. The
-      Specify Setup Wizard sets a default storage location on the local
-      drive but this location can be changed in System Preferences:<br />
-</p>
-<ul>
-  <li>For Mac: Specify &gt; Preferences &gt; System &gt;
-  Attachment Storage Location.</li>
-  <li>For PC and Linux: Choose Edit &gt; Preferences &gt; System
-    &gt; Attachment Storage Location.</li>
-</ul>
-</blockquote>
-<p>8. Customize the Backup and Restore function</p>
-<blockquote>
-  <p>A <a href="../Restore/backup_restore.html">Backup and Restore</a> tool ships with Specify  as a separate application. It allows IT personnel to backup and restore the database to the MySQL location on the server, or a local disk. BackupAndRestore is located in the Specify application directory, in the <strong><em>bin</em></strong> file, which stores the executable files for Specify.</p>
- 
-</p></blockquote>
-  <p>  9. Review the Specify Forms and contact the Specify team with any customization needs. </p> 
-<blockquote> 
-  <p>Forms in Specify can be customized to include new fields and/or exclude fields not being used by a collection. At this time, Specify 6 does not include a Form Editor, as was found in Specify 5. It is important to note that the forms have been created programmatically to be extremely flexible and can be exported as xml and either edited by on-site staff or emailed to the Specify staff. The original forms should not be edited from the hard drive, they must be exported and then reimported! Forms are exported via the Importing/Exporting tool, which exports an entire form set. Form sets reside at the Discipline level in Specify, which means that all Collections within a Discipline access the same forms, but form sets can then be reimported at any institutional level. For instance, the default form set for a discipline could be exported, edited, and reimported at a collection level, allowing all users in that collection to use the new set of forms. If you wish to have a member of the Specify team edit the form and have an ISA with Specify, please contact them at <a href="mailto:specify@ku.edu" target="_blank">specify@ku.edu</a>. </p>
-  <p>New in Specify 6.5.05, paleo data table relationships have been revised and collections can now link specimens to PaleoContext via the relationship which best fits their conceptualization and linking preferences. Specify has the default relationship of Paleo Context linked to the Collecting Event table as a 1-to-Many relationship, but this relationship can be altered to a 1-to-1 relationship through manipulation of the form structure. Paleo Context can, in much the same way, also be linked to the Collection Object and Locality tables with either a 1-to-Many or 1-to-1 relationship using a similar form and database schema modification. </p>
-  <p>For more information about customized forms or paelo context relationships, please contact the Specify team at <a href="mailto:specify@ku.edu" target="_blank">specify@ku.edu</a>.</p>
-</blockquote>
-  <p>    
-  <p>&nbsp;</p>
-</body>
+  <head>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+    <link href="../../main.css" rel="stylesheet" type="text/css" media="screen">
+    <meta name="generator" content="Helen">
+    <title>Specify Setup</title>
+  </head>
+  <body bgcolor="#ffffff">
+    <table width="100%" border="0" background="../../images/topbar.png">
+      <tr>
+        <td>
+          &nbsp;
+        </td>
+      </tr>
+    </table>
+    <h2>
+       Specify Setup
+    </h2>
+    <p>
+       Specify's flexible design can accommodate a single user with a single collection, or
+      multiple collections representing multiple disciplines within an institution - all sharing
+      the same database. This is accomplished by creating relationships among collection data, as
+      well as modeling how collections are organized within institutions themselves, and then
+      configuring components within Specify specifically for each institutional level.
+    </p>
+    <p>
+       What this means for the user, is that Specify 6 can be configured to work congruently with
+      existing collection management procedures, but it requires a thoughtful setup process. This
+      process may vary depending on how Specify was installed. If you were a Specify 5 user and
+      have worked with the Specify staff to convert your data, many of the setup steps will have
+      been performed for you. However, it is still recommended that you read the help sections for
+      each of the modules to better understand how each module can be utilized for your specific
+      needs.
+    </p>
+    <p>
+       If you installed Specify 6 and ran the Specify Setup Wizard to create a new, blank database,
+      the Specify 6 team recommends that you now perform the following procedures to customize the
+      Specify setup to your particular needs.
+    </p>
+    <p>
+       1. Add institutional levels (divisions, disciplines, collections)
+    </p>
+    <blockquote>
+      <p>
+         Systems that were created by first running the Specify Setup Wizard will include one of
+        each of the institutional levels (institution, division, discipline, collection and user).
+        Most systems will require more than one of each of these institutional levels.
+      </p>
+      <p>
+         <a href="../Configuration/institution_hierarchy.html">Add collections, disciplines and
+        divisions</a> in the System Configuration <em>at System &gt; System Setup &gt;
+        Configuration</em>.
+      </p>
+    </blockquote>
+    <p>
+       &nbsp;
+    </p>
+    <p>
+       2. Add users and set user permissions
+    </p>
+    <blockquote>
+      <p>
+         Once these institutional levels are configured, users can be added to each of the
+        collections. Specify offers an extensive permission system which controls each user's
+        access to both the data and tools within Specify.
+      </p>
+      <p>
+         <a href="../Security/permissions.html">Add users and set user permissions</a> using the
+        Security tools found at <em>System &gt; System Setup &gt; Security Tools</em>.
+      </p>
+      <p>
+         Once the institutional levels, users and permissions are complete, information specific to
+        each discipline can be configured.
+      </p>
+    </blockquote>
+    <p>
+       &nbsp;
+    </p>
+    <p>
+       3. Check and/or set Tree Definitions
+    </p>
+    <blockquote>
+      <p>
+         A Storage tree that can be accessed by the entire institution was created using the Setup
+        Wizard. Taxon, Geography, Lithostratigraphy and Chronostratigraphy (if applicable) trees
+        were also created, which are shared by each collection within the division.
+      </p>
+      <p>
+         The ranks in the trees as well as the Enforced ranks and Full Name configuration were also
+        created for each tree in a division. These are considered part of the Tree Definition, and
+        it is recommended that users check these <a href="../Trees/editing_tree_def.html">Tree
+        Definitions</a> before entering data. Tree Definitions are found by clicking the <img src=
+        "../../images/Tree-32x32.png" width="20" height="20"> <em>Tree</em> button on the Tab Bar,
+        then clicking the appropriate <em>Tree Definition</em> button on the side bar.
+      </p>
+    </blockquote>
+    <p>
+       &nbsp;
+    </p>
+    <p>
+       4. Customize the Schema Configuration
+    </p>
+    <blockquote>
+      <p>
+         A number of changes can be made to the fields and tables within Specify by using the
+        Schema Configuration tool:
+      </p>
+      <ul>
+        <li>
+          Hide Fields
+        </li>
+        <li>
+          Change Captions
+        </li>
+        <li>
+          Set Required Fields
+        </li>
+        <li>
+          Change Table Format
+        </li>
+        <li>
+          Change a Field Format
+        </li>
+        <li>
+          Configure Table Aggregation
+        </li>
+      </ul>
+      <p>
+         &nbsp;
+      </p>
+      <p>
+         <a href="../SchemaConfig/schema_config.html">Editing the schema configuration</a> allows
+        users to customize fields and tables within Specify for each of the disciplines. The Schema
+        Configuration tool is found at <em>System &gt; Schema Configuration</em>.
+      </p>
+    </blockquote>
+    <p>
+       <a href="../Intro/number_formats.html"></a>5. Customize System Pick Lists and Preparation
+      Types
+    </p>
+    <blockquote>
+      <p>
+         A variety of <a href="../PickList/system_picklist.html">System Pick Lists</a> exist within
+        the Specify form system as drop-down lists. These can be edited in a System Configuration
+        module, found at <em>System &gt; System Setup &gt; Configuration.</em> System Pick Lists
+        refer to fields that are denoted as Pick Lists within Specify itself. Fields that are not
+        denoted as Pick Lists by Specify are referred to as User-Defined Pick Lists. User-Defined
+        Pick Lists require a change to any forms that include the field and should NOT be changed
+        until the new form has been imported into Specify.
+      </p>
+      <p>
+         The <a href="../Configuration/prep_type.html">Preparation Type</a> pick list ships with
+        specific data for each discipline, which can be edited in the Configuration tool as well.
+      </p>
+    </blockquote>
+    <p>
+       6. Create Reports
+    </p>
+    <blockquote>
+      <p>
+         <a href="../ReportsLabels/reports.html">Reports</a> can be created for use in Specify.
+        Reports may include labels for specimens or invoices for loans as well as reports for
+        collection data. Each institution will have different needs. It is helpful to have reports
+        created before users start entering data into the database that are based on your specific
+        needs. Specify harnesses the power of iReport 3.0, an open source report writing software
+        package, by modifying the original iReport version to interact with Queries created in
+        Specify 6 and data supplied from the Specify 6 database. <a href=
+        "../ReportsLabels/specifyireports.html">SpecifyiReport</a> is a separate application and
+        must be launched separately from Specify. SpecifyiReport is located in the Specify
+        application <em><strong>bin</strong></em> directory.
+      </p>
+    </blockquote>
+    <p>
+       7. Change Attachment Storage Location
+    </p>
+    <blockquote>
+      <p>
+         <a href="../Data_Entry/attachments_overview#store_attach">Attachments</a> are copied,
+        renamed using a unique name, and stored in an Attachment Storage location. Only the path to
+        the attachment storage location is stored in the Specify database. The Specify Setup Wizard
+        sets a default storage location on the local drive but this location can be changed in
+        System Preferences:<br>
+      </p>
+      <ul>
+        <li>
+          For Mac: Specify &gt; Preferences &gt; System &gt; Attachment Storage Location.
+        </li>
+        <li>
+          For PC and Linux: Choose Edit &gt; Preferences &gt; System &gt; Attachment Storage
+          Location.
+        </li>
+      </ul>
+    </blockquote>
+    <p>
+       8. Customize the Backup and Restore function
+    </p>
+    <blockquote>
+      <p>
+         A <a href="../Restore/backup_restore.html">Backup and Restore</a> tool ships with Specify
+        as a separate application. It allows IT personnel to backup and restore the database to the
+        MySQL location on the server, or a local disk. BackupAndRestore is located in the Specify
+        application directory, in the <em><strong>bin</strong></em> file, which stores the
+        executable files for Specify.
+      </p>
+    </blockquote>
+    <p>
+       9. Review the Specify Forms and contact the Specify team with any customization needs.
+    </p>
+    <blockquote>
+      <p>
+         Forms in Specify can be customized to include new fields and/or exclude fields not being
+        used by a collection. At this time, Specify 6 does not include a Form Editor, as was found
+        in Specify 5. It is important to note that the forms have been created programmatically to
+        be extremely flexible and can be exported as xml and either edited by on-site staff or
+        emailed to the Specify staff. The original forms should not be edited from the hard drive,
+        they must be exported and then re-imported! Forms are exported via the Importing/Exporting
+        tool, which exports an entire form set. Form sets reside at the Discipline level in
+        Specify, which means that all Collections within a Discipline access the same forms, but
+        form sets can then be re-imported at any institutional level. For instance, the default
+        form set for a discipline could be exported, edited, and re-imported at a collection level,
+        allowing all users in that collection to use the new set of forms. If you wish to have a
+        member of the Specify team edit the form and have an ISA with Specify, please contact them
+        at&nbsp;<a href="mailto:specify@ku.edu" target="_blank">specify@ku.edu</a>.
+      </p>
+      <p>
+         New in Specify 6.5.05, paleo data table relationships have been revised and collections
+        can now link specimens to PaleoContext via the relationship which best fits their
+        conceptualization and linking preferences. Specify has the default relationship of
+        PaleoContext linked to the Collecting Event table as a 1-to-Many relationship, but this
+        relationship can be altered to a 1-to-1 relationship through manipulation of the form
+        structure. PaleoContext can, in much the same way, also be linked to the Collection Object
+        and Locality tables with either a 1-to-Many or 1-to-1 relationship using a similar form and
+        database schema modification.&nbsp;
+      </p>
+      <p>
+         For more information about customized forms or paleo context relationships, please contact
+        the Specify team at&nbsp;<a href="mailto:specify@ku.edu" target=
+        "_blank">specify@ku.edu</a>.
+      </p>
+    </blockquote>
+    <p>
+       &nbsp;
+    </p>
+    <p>
+       &nbsp;
+    </p>
+  </body>
 </html>

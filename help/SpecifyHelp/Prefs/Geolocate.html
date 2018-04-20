@@ -1,40 +1,108 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<link href="../../main.css" rel="stylesheet" type="text/css" media="screen" />
-<title>GEOLocate Preferences</title>
-</head>
-
-<BODY BGCOLOR=#ffffff>
-<table width="100%" border="0" background="../../images/topbar.png">
-  <tr>
-    <td>&nbsp;</td>
-  </tr>
-</table>
-<h2><img src="../../images/System32x32.png" alt=""/> GEOLocate Preferences</h2>
-<ul>
-  <li class="MichaelsChanges">For Mac: Choose<em> Specify &gt; Preferences &gt; GEOLocate. </em> </li>
-  <li class="MichaelsChanges">For Windows and Linux: Choose <em>Edit &gt; Preferences &gt; GEOLocate</em>.</li>
-</ul>
-<p align="center"><img src="../../images/pref_geolocate.png" alt="geolocate" /></p>
-<p align="center" class="imgcaption">GEOLocate Preference</p>
-
-<p>The GEOLocate preference allows features in GEOLocate to be turned on or off when using it to georeference data from Specify. </p>
-<ul>
-  <li><strong>Include Highway Crossings</strong> - When enabled, GEOLocate will search the locality string for bridge crossing information and attempt to pinpoint the locality at the intersection of the river and highway. This feature only works for U.S. localities and requires county data.</li><br />
-  <li><strong>Include Water Bodies - </strong>When enabled, GEOLocate will search the locality string for the names of  rivers and streams. If one is found, GEOLocate will snap the calculated  points to the nearest point on the waterbody. This feature only works  for U.S. localities and requires county data.</li>
-  <br />
-  <li><strong>Restrict to Lowest Administrative Unit</strong> - When enabled limits results found by GEOLocate to points within the lowest administrative unit in the locality description.</li><br />
-  <li><strong>Return Uncertainty Radius in Meters</strong> - When enabled GEOLocate will calculate and return the uncertainty radius, if one exists.</li><br />
-  <li><strong>Return Error Polygon</strong> - When enabled  GEOLocate will calculate and return the error polygon, if one exists.</li>
-  <strong><br />
-  </strong>
-  <li><strong>Displace Error Polygon</strong> - When enabled GEOLocate will use any distance value referred to in the Locality Description to displace the GEOLocate Error Polygon value (if one exists). For instance, if 10 miles North of Lawrence is in the Locality Description, but the Error Polygon in GEOLocate is a 30 mile radius around the center of Lawrence, GEOLocate will move the 30 mile radius 10 miles North of the center of Lawrence.</li>
-  <br />
-  <li><strong>Use GEOLocate's Map Server</strong> - When enabled  GEOLocate's map server is used, when disabled the World Wind map server is used.</li><br />
-  <li><strong>Language Key</strong> - tells GEOLocate what language to use to interpret the Locality Description.</li>
-</ul>
-<h2>&nbsp;</h2>
-<p>&nbsp;</p>
-</BODY>
+  <head>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+    <link href="../../main.css" rel="stylesheet" type="text/css" media="screen">
+    <meta name="generator" content="Helen">
+    <title>GEOLocate Preferences</title>
+  </head>
+  <body bgcolor="#ffffff">
+    <table width="100%" border="0" background="../../images/topbar.png">
+      <tr>
+        <td>
+          &nbsp;
+        </td>
+      </tr>
+    </table>
+    <h2>
+       <img src="../../images/System32x32.png" alt="">&nbsp;GEOLocate Preferences
+    </h2>
+    <ul>
+      <li class="michaelschanges">
+        For Mac: Choose <em>Specify &gt; Preferences &gt; GEOLocate.</em>
+      </li>
+      <li class="michaelschanges">
+        For Windows and Linux: Choose <em>Edit &gt; Preferences &gt; GEOLocate</em>.
+      </li>
+    </ul>
+    <p align="center">
+       <img src="../../images/pref_geolocate.png" alt="geolocate">
+    </p>
+    <p align="center" class="imgcaption">
+       GEOLocate Preference
+    </p>
+    <p>
+       The GEOLocate preference allows features in GEOLocate to be turned on or off when using it
+      to georeference data from Specify.
+    </p>
+    <ul>
+      <li>
+        <strong>Include Highway Crossings</strong> - When enabled, GEOLocate will search the
+        locality string for bridge crossing information and attempt to pinpoint the locality at the
+        intersection of the river and highway. This feature only works for U.S. localities and
+        requires county data.
+      </li>
+      <li style=" list-style-type: none; list-style-image: none;">
+        <br>
+      </li>
+      <li>
+        <strong>Include Water Bodies -</strong> When enabled, GEOLocate will search the locality
+        string for the names of rivers and streams. If one is found, GEOLocate will snap the
+        calculated points to the nearest point on the water body. This feature only works for U.S.
+        localities and requires county data.
+      </li>
+      <li style=" list-style-type: none; list-style-image: none;">
+        <br>
+      </li>
+      <li>
+        <strong>Restrict to Lowest Administrative Unit</strong> - When enabled limits results found
+        by GEOLocate to points within the lowest administrative unit in the locality description.
+      </li>
+      <li style=" list-style-type: none; list-style-image: none;">
+        <br>
+      </li>
+      <li>
+        <strong>Return Uncertainty Radius in Meters</strong> - When enabled GEOLocate will
+        calculate and return the uncertainty radius, if one exists.
+      </li>
+      <li style=" list-style-type: none; list-style-image: none;">
+        <br>
+      </li>
+      <li>
+        <strong>Return Error Polygon</strong> - When enabled GEOLocate will calculate and return
+        the error polygon, if one exists.
+      </li>
+      <li style=" list-style-type: none; list-style-image: none;">
+        <strong><br>
+        </strong>
+      </li>
+      <li>
+        <strong>Displace Error Polygon</strong> - When enabled GEOLocate will use any distance
+        value referred to in the Locality Description to displace the GEOLocate Error Polygon value
+        (if one exists). For instance, if 10 miles North of Lawrence is in the Locality
+        Description, but the Error Polygon in GEOLocate is a 30 mile radius around the center of
+        Lawrence, GEOLocate will move the 30 mile radius 10 miles North of the center of Lawrence.
+      </li>
+      <li style=" list-style-type: none; list-style-image: none;">
+        <br>
+      </li>
+      <li>
+        <strong>Use GEOLocate's Map Server</strong> - When enabled GEOLocate's map server is used,
+        when disabled the World Wind map server is used.
+      </li>
+      <li style=" list-style-type: none; list-style-image: none;">
+        <br>
+      </li>
+      <li>
+        <strong>Language Key</strong> - tells GEOLocate what language to use to interpret the
+        Locality Description.
+      </li>
+    </ul>
+    <h2>
+       &nbsp;
+    </h2>
+    <p>
+       &nbsp;
+    </p>
+  </body>
 </html>

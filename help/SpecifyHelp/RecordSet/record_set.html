@@ -1,159 +1,369 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<link href="../../main.css" rel="stylesheet" type="text/css" media="screen" />
-<title>Record Sets</title>
-</head><BODY BGCOLOR=#ffffff>
-<table width="100%" border="0" background="../../images/topbar.png">
-  <tr>
-    <td>&nbsp;</td>
-  </tr>
-</table><br />
-<h2><img src="../../images/record_sets_new.png" alt=""/> Record Sets</h2>
-<p>Both Simple Search and Query may return groups of records. These returns can be named and saved as a Record Set, by clicking the <img src="../../images/record_sets_new_20.png" alt="record set" width="20" height="20" />(Record Set) button in the results bar. </p>
-<p>The default permissions that Specify ships with allow Guest users to View the record sets, but not modify, add or delete them. All other users can use record sets in their entirety.</p>
-<h3><strong><a name="rs_create" id="rs_create"></a>Creating a Record Set </strong></h3>
-<blockquote>
-  <p>Record sets are created from the records in a results window of a Query or Simple Search. From within the results window:</p>
-  <ul>
-    <li>Click a single record, then click the <img src="../../images/record_sets_new_20.png" alt="record set" width="20" height="20" /> (Record Set) button to create a record set with a single record.</li>
-  </ul>
-
-  <ul>
-    <li>Command (for Mac) or Cntl (for PC) + click several records, then click the <img src="../../images/record_sets_new_20.png" alt="record set" width="20" height="20" /> (Record Set) button to create a record set that includes the selected records.    </li>
-  </ul>
-
-  <ul>
-    <li>Click the <img src="../../images/record_sets_new_20.png" alt="record set" width="20" height="20" /> (Record Set) button without selecting any records, (or click the <em>Select All</em> button at the bottom of the results,) to create a record set from all the records.</li>
-  </ul>
-
-</blockquote>
-<h3><strong><a name="record_set_add" id="record_set_add"></a>Adding records to a Record Set</strong></h3>
-
-<blockquote>
-    <p>Drop a record set onto another record set to merge them. Any duplicate records will be automatically removed. </p>
-  <p>Records can be added to a record set by selecting them from a results window and clicking the <img src="../../images/record_sets_dark_20.png" alt="record set" width="20" height="20" /> (Record Set) button at the bottom of the results. The <em>Choose a Record Set</em> dialog will appear:</p>
-<ul>
-      <li>Select a record set name in the list and click the <em>OK</em> button to add the selected records to the existing record set.</li>
-      <li>Click the <em>New</em> button to create a new record set</li>
-      <li>Click <em>Cancel</em> to close the dialog. </li>
-    </ul>
-  <p>Or, select the records to enable the <img src="../../images/record_sets_dark_20.png" alt="record set" width="20" height="20" /> (Record Set) button, then drag the button to an existing record set on the side bar to add the records to the existing record set. The existing record set and the new records must be from the same table to be compatible. As the button is dragged toward the side bar any existing record sets that can accept the new records will display a colored band.</p>
-    <p>New record sets can also be created by selecting one or multiple records within a record set and clicking the <img src="../../images/record_sets_dark_20.png" alt="record set" width="20" height="20" /> (Record Set) button from the results bar at the top of the results work space.</p>
-    <p>&nbsp;</p>
-</blockquote>
-<h3><strong><a name="rs_use" id="rs_use"></a>Using Record Sets</strong></h3>
-<blockquote>
-  <p>Record sets can also be dragged and dropped on other side bar items. Slightly drag the record set within the side bar, and any form, Interaction or Plugin that can accept the record set, will display a colored outline. When the record set has been dragged to the correct spot over the side bar item a triangle will appear within the outline. Items that can accept a record set will vary depending on the record set type. For example:</p>
-  <ul>
-    <li>In Data Entry the record set type must match the form type to open the records. For example, a Collecting Event record set  dropped on the Collecting Event side bar button will open a Collecting Event form that includes all the records in the record set. The records can then be stepped through using the navigation control at the bottom of the form.</li>
-  </ul>
-
-  <ul>
-    <li>In Interactions a Collection Object record set can be dropped on a Loan, Gift or Information Request. This will activate a dialog for choosing Prep Types from the record set to include in the Loan, Gift or Information Request.</li>
-  </ul>
- 
-  <ul>
-    <li>In Plugins  a Locality record set can be dropped on  GEOLocate to georeference the records, or on Google Earth to plot the records on a map.</li>
-  </ul>
-</blockquote>
-<p>&nbsp;</p>
-<h3><a name="rs_menu" id="rs_menu"></a>Record Set Context Menu</h3>
-<blockquote>
-  <p>Right-button-click on a record set to perform the following functions:</p>
-  <ul>
-    <li><strong>Rename</strong> activates a text field for the   record set name in the side bar. Type the new name into the text field, then type the <em>Return</em> key to deactivate the text field.</li>
-    <li><strong>Delete</strong> will delete the record set and remove it from the side bar.</li>
-    <li><strong>View</strong> opens a new results window listing the records in the set. The record set view will not be a duplicate of the original search results window, but is meant to provide a  list of the records in the record set. The results window status bar offers additional functionality.</li>
-  </ul>
-</blockquote>
-<table width="100%"><tr><td><img src="../../images/whitespace.png" /></td>
-<td>
-<table width="100%" border="1" cellspacing="2" cellpadding="6">
-  <tr>
-    <td width="16%"><u><strong>Button</strong></u></td>
-    <td width="84%"><u><strong>Function</strong></u></td>
-  </tr>
-  <tr>
-    <td><img src="../../images/record_sets_new_20.png" width="20" height="20" /></td>
-    <td>Create a new record set by selecting records and clicking the <em>Record Set</em> button. </td>
-  </tr>
-  <tr>
-    <td><img src="../../images/data_entry.png" alt="data entry" width="20" height="20" /></td>
-    <td>Open records in  form view.</td>
-  </tr>
-  <tr>
-    <td><img src="../../images/ExportExcelTemplate16x16.png" alt="export" width="20" height="20" /></td>
-    <td>Export the grid to MS Excel.</td>
-  </tr>
-  <tr>
-    <td><img src="../../images/printer.png" alt="print" width="32" height="28" /></td>
-    <td>Print the results Grid.</td>
-  </tr>
-</table>
-</td></tr></table>
-<blockquote>
-  <p>Records can also be selected within the window and added to another record set by clicking the <img src="../../images/record_sets_dark_20.png" alt="record set" width="20" height="20" /> (Record Set) button at the bottom of the results window and choosing a record set from the resulting dialog or dragging the <img src="../../images/record_sets_dark_20.png" alt="record set" width="20" height="20" /> (Record Set) button and dropping it on the desired record set in the side bar.</p>
-  <p>&nbsp;</p>
-</blockquote>
-<h3><a name="export_recordset" id="export_recordset">Export a Record Set</a></h3>
-<blockquote>
-  <p>New in version 6.3 of Specify, users may now export a record set through the WorkBench. The record set will export as an Excel spreadsheet. Exporting a record set is a three-step process:</p>
-  <ul>
-    <li>Create a mapping for the record set/data set or identifying a mapping to reuse</li>
-    <li>Create a data set from a record set</li>
-    <li>Export the data set</li>
-  </ul>
-  <p>The export is performed in the Specify WorkBench. To open the WorkBench click on the <img src="../../images/Workbench32x32.png" alt="workbench" width="20" height="20" /> (WorkBench) button. </p>
-  <p>Before a record set can be converted to a data set, a mapping must exist.  If a data set already exists with the same fields required by the record set you may skip this step and go to <a href="../RecordSet/record_set.html#create">Create a Data Set from Record Set</a>. If a data set with a duplicate mapping does not exist, then a mapping must be created by creating a data set.</p>
-  <p><u>Create a Mapping/Data Set</u></p>
-</blockquote>
-<ol>
-  <ol>
-    <ol>
-      <li>Click the <img src="../../images/NewDataSet16x16.png" width="16" height="16" /> <strong><em>New Data Set</em></strong> button on the side bar.</li>
-    </ol>
-  </ol>
-  <blockquote>
-    <p>A mapping 'maps' the tables and fields from the Specify schema to the columns they will occupy in the data set. A Help page for creating a mapping can be found in the <a href="../WorkBench/NewDataSet.html">New Data Set</a> documentation.</p>
-    <p>Once the Data Set mapping has been created and saved as a data set, it will appear on the side bar. </p>
-  </blockquote>
-</ol>
-<blockquote>
-  <p>&nbsp;</p>
-  <p><u><a name="create" id="create"></a>Create a Data Set from a Record Set</u></p>
-</blockquote>
-<ol>
-  <ol>
-    <ol>
-      <li>Click the <img src="../../images/NewDataSet16x16.png" alt="new" width="16" height="16" /> <strong><em>Create Data Set from Record Set</em></strong> button</li>
-      <li>Choose a record set from the dialog and click the <strong><em>OK</em></strong> button</li>
-    </ol>
+  <head>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+    <link href="../../main.css" rel="stylesheet" type="text/css" media="screen">
+    <meta name="generator" content="Helen">
+    <title>Record Sets</title>
+  </head>
+  <body bgcolor="#ffffff">
+    <table width="100%" border="0" background="../../images/topbar.png">
+      <tr>
+        <td>
+          &nbsp;
+        </td>
+      </tr>
+    </table>
+    <p>
+      <br>
+    </p>
+    <h2>
+       <img src="../../images/record_sets_new.png" alt="">&nbsp;Record Sets
+    </h2>
+    <p>
+       Both Simple Search and Query may return groups of records. These returns can be named and
+      saved as a Record Set, by clicking the <img src="../../images/record_sets_new_20.png" alt=
+      "record set" width="20" height="20">(Record Set) button in the results bar.
+    </p>
+    <p>
+       The default permissions that Specify ships with allow Guest users to View the record sets,
+      but not modify, add or delete them. All other users can use record sets in their entirety.
+    </p>
+    <h3>
+       <strong><a name="rs_create" id="rs_create"></a>Creating a Record Set</strong>
+    </h3>
     <blockquote>
-      <p>The next dialog lists the available data sets. </p>
+      <p>
+         Record sets are created from the records in a results window of a Query or Simple Search.
+        From within the results window:
+      </p>
+      <ul>
+        <li>
+          Click a single record, then click the <img src="../../images/record_sets_new_20.png" alt=
+          "record set" width="20" height="20"> (Record Set) button to create a record set with a
+          single record.
+        </li>
+      </ul>
+      <ul>
+        <li>
+          Command (for Mac) or Cntl (for PC) + click several records, then click the <img src=
+          "../../images/record_sets_new_20.png" alt="record set" width="20" height="20"> (Record
+          Set) button to create a record set that includes the selected records.
+        </li>
+      </ul>
+      <ul>
+        <li>
+          Click the <img src="../../images/record_sets_new_20.png" alt="record set" width="20"
+          height="20"> (Record Set) button without selecting any records, (or click the <em>Select
+          All</em> button at the bottom of the results,) to create a record set from all the
+          records.
+        </li>
+      </ul>
     </blockquote>
-    <ol>
-      <li>Choose the data set/mapping that you require. </li>
-      <li>Click the OK button.</li>
-    </ol>
+    <h3>
+       <strong><a name="record_set_add" id="record_set_add"></a>Adding records to a Record
+      Set</strong>
+    </h3>
     <blockquote>
-      <p>In the next dialog name the new data set. </p>
-      <p><em><strong>Note:</strong></em> When the data set opens the validation for invalid fields will be turned on. If the data set contains catalog number they will be marked as invalid and highlighted in red because Specify recognizes them as duplicates. The validation can be turned off by unchecking the <em>Highlight Invalid Cells</em> checkbox in the validation panel at the bottom of the work space.</p>
-      <p align="center"><img src="../../images/validation_screen.png" width="562" height="31" /></p>
-      <p align="center" class="imgcaption">Validation Panel </p>
-      <p><em><strong>Note:</strong></em> The mapping of a data set that was created from a record set may not be edited.</p>
-      <p>&nbsp;</p>
+      <p>
+         Drop a record set onto another record set to merge them. Any duplicate records will be
+        automatically removed.
+      </p>
+      <p>
+         Records can be added to a record set by selecting them from a results window and clicking
+        the <img src="../../images/record_sets_dark_20.png" alt="record set" width="20" height=
+        "20">&nbsp;(Record Set) button at the bottom of the results. The <em>Choose a Record
+        Set</em> dialog will appear:
+      </p>
+      <ul>
+        <li>
+          Select a record set name in the list and click the <em>OK</em> button to add the selected
+          records to the existing record set.
+        </li>
+        <li>
+          Click the <em>New</em> button to create a new record set
+        </li>
+        <li>
+          Click <em>Cancel</em> to close the dialog.
+        </li>
+      </ul>
+      <p>
+         Or, select the records to enable the <img src="../../images/record_sets_dark_20.png" alt=
+        "record set" width="20" height="20">&nbsp;(Record Set) button, then drag the button to an
+        existing record set on the side bar to add the records to the existing record set. The
+        existing record set and the new records must be from the same table to be compatible. As
+        the button is dragged toward the side bar any existing record sets that can accept the new
+        records will display a colored band.
+      </p>
+      <p>
+         New record sets can also be created by selecting one or multiple records within a record
+        set and clicking the <img src="../../images/record_sets_dark_20.png" alt="record set"
+        width="20" height="20">&nbsp;(Record Set) button from the results bar at the top of the
+        results work space.
+      </p>
+      <p>
+         &nbsp;
+      </p>
     </blockquote>
-  </ol>
-</ol>
-<blockquote>
-  <p><u>Export the Data Set</u></p>
-  <blockquote>
-    <p>Now you may export the data set by clicking the <img src="../../images/ExportDataSet16x16.png" alt="" width="16" height="16" /> <em><strong>Export Data Set</strong></em> button. A Help page for exporting a data set can be found in the <a href="../WorkBench/ExportDataSet.html">Export Data Set documentation</a>.</p>
-    <p>&nbsp;</p>
-  </blockquote>
-</blockquote>
-<p>&nbsp;</p>
-
-</BODY>
+    <h3>
+       <strong><a name="rs_use" id="rs_use"></a>Using Record Sets</strong>
+    </h3>
+    <blockquote>
+      <p>
+         Record sets can also be dragged and dropped on other side bar items. Slightly drag the
+        record set within the side bar, and any form, Interaction or Plugin that can accept the
+        record set, will display a colored outline. When the record set has been dragged to the
+        correct spot over the side bar item a triangle will appear within the outline. Items that
+        can accept a record set will vary depending on the record set type. For example:
+      </p>
+      <ul>
+        <li>
+          In Data Entry the record set type must match the form type to open the records. For
+          example, a Collecting Event record set dropped on the Collecting Event side bar button
+          will open a Collecting Event form that includes all the records in the record set. The
+          records can then be stepped through using the navigation control at the bottom of the
+          form.
+        </li>
+      </ul>
+      <ul>
+        <li>
+          In Interactions a Collection Object record set can be dropped on a Loan, Gift or
+          Information Request. This will activate a dialog for choosing Prep Types from the record
+          set to include in the Loan, Gift or Information Request.
+        </li>
+      </ul>
+      <ul>
+        <li>
+          In Plugins a Locality record set can be dropped on GEOLocate to georeference the records,
+          or on Google Earth to plot the records on a map.
+        </li>
+      </ul>
+    </blockquote>
+    <p>
+       &nbsp;
+    </p>
+    <h3>
+       <a name="rs_menu" id="rs_menu"></a>Record Set Context Menu
+    </h3>
+    <blockquote>
+      <p>
+         Right-button-click on a record set to perform the following functions:
+      </p>
+      <ul>
+        <li>
+          <strong>Rename</strong> activates a text field for the record set name in the side bar.
+          Type the new name into the text field, then type the <em>Return</em> key to deactivate
+          the text field.
+        </li>
+        <li>
+          <strong>Delete</strong> will delete the record set and remove it from the side bar.
+        </li>
+        <li>
+          <strong>View</strong> opens a new results window listing the records in the set. The
+          record set view will not be a duplicate of the original search results window, but is
+          meant to provide a list of the records in the record set. The results window status bar
+          offers additional functionality.
+        </li>
+      </ul>
+    </blockquote>
+    <table width="100%">
+      <tr>
+        <td>
+          <img src="../../images/whitespace.png"> 
+        </td>
+        <td>
+          <table width="100%" border="1" cellspacing="2" cellpadding="6">
+            <tr>
+              <td width="16%">
+                <u><strong>Button</strong></u> 
+              </td>
+              <td width="84%">
+                <u><strong>Function</strong></u> 
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <img src="../../images/record_sets_new_20.png" width="20" height="20"> 
+              </td>
+              <td>
+                Create a new record set by selecting records and clicking the <em>Record Set</em>
+                button.
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <img src="../../images/data_entry.png" alt="data entry" width="20" height="20"> 
+              </td>
+              <td>
+                Open records in form view.
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <img src="../../images/ExportExcelTemplate16x16.png" alt="export" width="20"
+                height="20"> 
+              </td>
+              <td>
+                Export the grid to MS Excel.
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <img src="../../images/printer.png" alt="print" width="32" height="28"> 
+              </td>
+              <td>
+                Print the results Grid.
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+    <blockquote>
+      <p>
+         Records can also be selected within the window and added to another record set by clicking
+        the <img src="../../images/record_sets_dark_20.png" alt="record set" width="20" height=
+        "20">&nbsp;(Record Set) button at the bottom of the results window and choosing a record
+        set from the resulting dialog or dragging the <img src=
+        "../../images/record_sets_dark_20.png" alt="record set" width="20" height=
+        "20">&nbsp;(Record Set) button and dropping it on the desired record set in the side bar.
+      </p>
+      <p>
+         &nbsp;
+      </p>
+    </blockquote>
+    <h3>
+       <a name="export_recordset" id="export_recordset">Export a Record Set</a>
+    </h3>
+    <blockquote>
+      <p>
+         New in version 6.3 of Specify, users may now export a record set through the WorkBench.
+        The record set will export as an Excel spreadsheet. Exporting a record set is a three-step
+        process:
+      </p>
+      <ul>
+        <li>
+          Create a mapping for the record set/data set or identifying a mapping to reuse
+        </li>
+        <li>
+          Create a data set from a record set
+        </li>
+        <li>
+          Export the data set
+        </li>
+      </ul>
+      <p>
+         The export is performed in the Specify WorkBench. To open the WorkBench click on the <img
+        src="../../images/Workbench32x32.png" alt="workbench" width="20" height=
+        "20">&nbsp;(WorkBench) button.
+      </p>
+      <p>
+         Before a record set can be converted to a data set, a mapping must exist. If a data set
+        already exists with the same fields required by the record set you may skip this step and
+        go to <a href="../RecordSet/record_set.html#create">Create a Data Set from Record Set</a>.
+        If a data set with a duplicate mapping does not exist, then a mapping must be created by
+        creating a data set.
+      </p>
+      <p>
+         <u>Create a Mapping/Data Set</u>
+      </p>
+    </blockquote>
+    <div style=" margin-left: 0;">
+      <div style=" margin-left: 0;">
+        <ol>
+          <li>
+            Click the <img src="../../images/NewDataSet16x16.png" width="16" height="16">
+            <strong><em>New Data Set</em></strong> button on the side bar.
+          </li>
+        </ol>
+      </div>
+      <blockquote>
+        <p>
+           A mapping 'maps' the tables and fields from the Specify schema to the columns they will
+          occupy in the data set. A Help page for creating a mapping can be found in the <a href=
+          "../WorkBench/NewDataSet.html">New Data Set</a> documentation.
+        </p>
+        <p>
+           Once the Data Set mapping has been created and saved as a data set, it will appear on
+          the side bar.
+        </p>
+      </blockquote>
+    </div>
+    <blockquote>
+      <p>
+         &nbsp;
+      </p>
+      <p>
+         <u><a name="create" id="create"></a>Create a Data Set from a Record Set</u>
+      </p>
+    </blockquote>
+    <div style=" margin-left: 0;">
+      <ol>
+        <li>
+          Click the <img src="../../images/NewDataSet16x16.png" alt="new" width="16" height="16">
+          <strong><em>Create Data Set from Record Set</em></strong> button
+        </li>
+        <li>
+          Choose a record set from the dialog and click the <strong><em>OK</em></strong> button
+        </li>
+      </ol>
+      <blockquote>
+        <p>
+           The next dialog lists the available data sets.
+        </p>
+      </blockquote>
+      <ol>
+        <li>
+          Choose the data set/mapping that you require.
+        </li>
+        <li>
+          Click the OK button.
+        </li>
+      </ol>
+      <blockquote>
+        <p>
+           In the next dialog name the new data set.
+        </p>
+        <p>
+           <strong><em>Note:</em></strong> When the data set opens the validation for invalid
+          fields will be turned on. If the data set contains catalog number they will be marked as
+          invalid and highlighted in red because Specify recognizes them as duplicates. The
+          validation can be turned off by unchecking the <em>Highlight Invalid Cells</em> checkbox
+          in the validation panel at the bottom of the work space.
+        </p>
+        <p align="center">
+           <img src="../../images/validation_screen.png" width="562" height="31">
+        </p>
+        <p align="center" class="imgcaption">
+           Validation Panel
+        </p>
+        <p>
+           <strong><em>Note:</em></strong> The mapping of a data set that was created from a record
+          set may not be edited.
+        </p>
+        <p>
+           &nbsp;
+        </p>
+      </blockquote>
+    </div>
+    <blockquote>
+      <p>
+         <u>Export the Data Set</u>
+      </p>
+      <blockquote>
+        <p>
+           Now you may export the data set by clicking the <img src=
+          "../../images/ExportDataSet16x16.png" alt="" width="16" height="16"> <strong><em>Export
+          Data Set</em></strong> button. A Help page for exporting a data set can be found in the
+          <a href="../WorkBench/ExportDataSet.html">Export Data Set documentation</a>.
+        </p>
+        <p>
+           &nbsp;
+        </p>
+      </blockquote>
+    </blockquote>
+    <p>
+       &nbsp;
+    </p>
+  </body>
 </html>

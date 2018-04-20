@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta content="text/html; charset=MacRoman" http-equiv="Content-Type">
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
     <link type="text/css" media="screen" href="../../main.css" rel="stylesheet">
     <meta name="generator" content="Helen">
 <style type="text/css">
@@ -13,11 +13,11 @@
 </style>
     <title>Editing a Tree Definition</title>
   </head>
-<body>
+  <body>
     <table border="0" width="100%" background="../../images/topbar.png">
       <tr>
-        <td>&nbsp;
-          
+        <td>
+          &nbsp;
         </td>
       </tr>
     </table>
@@ -37,10 +37,10 @@
       </tr>
     </table>
     <p>
-       The Tree Definition tool defines the levels, or ranks available in a tree as well as how these ranks
-      are enforced during data entry, and used in aggregating the full name. Tree Definition tools are
-      available for each of the trees. Nodes can not be added to a tree unless the rank isincluded in
-      the tree definition.
+       The Tree Definition tool defines the levels, or ranks available in a tree as well as how
+      these ranks are enforced during data entry, and used in aggregating the full name. Tree
+      Definition tools are available for each of the trees. Nodes can not be added to a tree unless
+      the rank is included in the tree definition.
     </p>
     <p>
        The Tree Definition is configured during both the Specify Setup Wizard and the Discipline
@@ -49,8 +49,8 @@
     </p>
     <p>
        Click the <em><img width="20" height="20" alt="tree" src=
-      "../../images/Tree-32x32.png">&nbsp;Trees</em> button on the task bar, then select a tree from
-      the side bar list under <em>Open Tree Definition</em>.
+      "../../images/Tree-32x32.png">&nbsp;Trees</em> button on the task bar, then select a tree
+      from the side bar list under <em>Open Tree Definition</em>.
     </p>
     <p>
        The resulting window displays a hierarchical list of included Ranks in a grid view.
@@ -58,116 +58,146 @@
     <p>
        A tree and corresponding form may not be open at the same time. If either a tree or form is
       open, the other will only be available in view mode. For example, if user A is editing the
-      Taxon tree,  user B will not be allowed to edit a Taxon form.    </p>
-<p>
+      Taxon tree, user B will not be allowed to edit a Taxon form.
+    </p>
+    <p>
        Also, a tree and tree definition representing the same table can not be open at the same
-      time. If the tree definition is open and the tree is selected the tree will replace the
-      tree definition in the same tab, therefore closing the tree definition. The tree definition is not
-      available to View and those without editing privileges may not access it.    </p>
-<p>&nbsp;
-       
+      time. If the tree definition is open and the tree is selected the tree will replace the tree
+      definition in the same tab, therefore closing the tree definition. The tree definition is not
+      available to View and those without editing privileges may not access it.
+    </p>
+    <p>
+       &nbsp;
     </p>
     <h3>
        <a id="tree_title" name="tree_title"></a>Edit a Tree Title
     </h3>
     <blockquote>
       <p>
-        Click on the <img width="16" height="16" alt="edit" src=
-      "../../images/Edit-2-16x16.png">&nbsp;(edit) button next to the tree title to edit the title
-        of the tree. This is also the name that will be given to the first node in the tree. </p>
+         Click on the <img width="16" height="16" alt="edit" src=
+        "../../images/Edit-2-16x16.png">&nbsp;(edit) button next to the tree title to edit the
+        title of the tree. This is also the name that will be given to the first node in the tree.
+      </p>
     </blockquote>
-<p>&nbsp;
-       
+    <p>
+       &nbsp;
     </p>
     <h3>
        <a id="tree_ranks" name="tree_ranks"></a>Edit / Add / Delete Ranks
     </h3>
     <blockquote>
       <p>
-        Buttons for editing (<img width="16" height="16" alt="edit" src=
-      "../../images/Edit-2-16x16.png">), and adding (<img width="16" height="16" alt="" src=
-      "../../images/add.png">), deleting (<img width="16" height="16" alt="delete" src=
-      "../../images/delete.png">) ranks are located at the bottom right of the Workspace window.
+         Buttons for editing (<img width="16" height="16" alt="edit" src=
+        "../../images/Edit-2-16x16.png">), and adding (<img width="16" height="16" alt="" src=
+        "../../images/add.png">), deleting (<img width="16" height="16" alt="delete" src=
+        "../../images/delete.png">) ranks are located at the bottom right of the Workspace window.
       </p>
       <p>
-        Select a rank, then either double click to edit the rank or select  <strong>edit</strong> or <strong>add</strong> to open the
-        Rank Properties dialog. New ranks will be added below the selected rank; therefore, select the parent of the rank you wish to add.  </p>
+         Select a rank, then either double click to edit the rank or select <strong>edit</strong>
+        or <strong>add</strong> to open the Rank Properties dialog. New ranks will be added below
+        the selected rank; therefore, select the parent of the rank you wish to add.
+      </p>
       <ul>
-        <li><strong>Name</strong> refers to the name of the rank used internally by Specify but not visible to the user.        </li><br />
-
-        <li><strong>Title</strong> is the name of the rank displayed to the user in the tree, queries and reports. </li><br />
-  
-        <li><strong>Remarks</strong> allows remarks to be entered regarding the rank.      </li><br />
-    
-        <li><strong>In Full Name</strong> will use the rank when displaying the full name for any
-          associated Collection Objects (which appears in the Taxon Full Name field of the taxon
-          table). The Full Name is also displayed in the Preferred Taxon field on the Determinations
-          form and is useful when running queries and reports when the full name is desired.<br>
+        <li>
+          <strong>Name</strong> refers to the name of the rank used internally by Specify but not
+          visible to the user.
         </li>
-        <br />
-    
-        <li><strong>Enforced</strong> ensures that the Rank can not be skipped when attaching children.       </li>
+        <li style=" list-style-type: none; list-style-image: none;">
+          <br>
+        </li>
+        <li>
+          <strong>Title</strong> is the name of the rank displayed to the user in the tree, queries
+          and reports.
+        </li>
+        <li style=" list-style-type: none; list-style-image: none;">
+          <br>
+        </li>
+        <li>
+          <strong>Remarks</strong> allows remarks to be entered regarding the rank.
+        </li>
+        <li style=" list-style-type: none; list-style-image: none;">
+          <br>
+        </li>
+        <li>
+          <strong>In Full Name</strong> will use the rank when displaying the full name for any
+          associated Collection Objects (which appears in the Taxon Full Name field of the taxon
+          table). The Full Name is also displayed in the Preferred Taxon field on the
+          Determinations form and is useful when running queries and reports when the full name is
+          desired.<br>
+        </li>
+        <li style=" list-style-type: none; list-style-image: none;">
+          <br>
+        </li>
+        <li>
+          <strong>Enforced</strong> ensures that the Rank can not be skipped when attaching
+          children.
+        </li>
       </ul>
       <p>
-        Click the delete button to delete a rank. Ranks may <strong>NOT</strong> be deleted if nodes
-        are associated with them. It is important to remember that the Institution tree is shared by
-        all collections in an institution and all other trees are shared by all collections within a
-        single Discipline. Ranks that are not being used by your collection may have associated nodes
-        in other collections and therefore can not be deleted.
+         Click the delete button to delete a rank. Ranks may <strong>NOT</strong> be deleted if
+        nodes are associated with them. It is important to remember that the Institution tree is
+        shared by all collections in an institution and all other trees are shared by all
+        collections within a single Discipline. Ranks that are not being used by your collection
+        may have associated nodes in other collections and therefore can not be deleted.
       </p>
       <p>
-        Once the change is saved the tree will update. If the tree is extremely large, this may take
-        several minutes.    </p>
+         Once the change is saved the tree will update. If the tree is extremely large, this may
+        take several minutes.
+      </p>
     </blockquote>
-<p>&nbsp;</p>
-<h3>
+    <p>
+       &nbsp;
+    </p>
+    <h3>
        <a id="update_tree_nodes" name="update_tree_nodes"></a><strong>Update Trees</strong>
     </h3>
     <blockquote>
       <p>
-        Any time a tree is edited it is also updated within the database. If this process is interrupted, the tree will need to update when Specify
-        re-launches. A prompt will appear notifying the user that the tree is updating. A manual
-        update can also be performed by clicking <em>System &gt; Trees &gt; Update</em> (tree type) <em>Tree</em>.    </p>
+         Any time a tree is edited it is also updated within the database. If this process is
+        interrupted, the tree will need to update when Specify re-launches. A prompt will appear
+        notifying the user that the tree is updating. A manual update can also be performed by
+        clicking <em>System &gt; Trees &gt; Update</em> (tree type) <em>Tree</em>.
+      </p>
     </blockquote>
-<p>&nbsp;
-       
+    <p>
+       &nbsp;
     </p>
     <h3>
        <a id="tree_pre" name="trees_pre"></a>Predefined Ranks
     </h3>
     <blockquote>
       <p>
-        Taxon, Chronostratigraphy, Geography and Lithostratigraphy include predefined ranks for the
-        tree definitions. The Geography, Chronostratigraphy and Lithostratigraphy predefined ranks
-        are also active within the tree definition. The Taxon tree includes many ranks that are not
-        active and are offered via a Predefined Ranks dialog when adding a Rank. If the list does not
-        include the desired Rank, one can be added by clicking the <em>Custom</em> button and naming
-        the rank in the ensuing <em>Edit Rank Properties</em> dialog.
+         Taxon, Chronostratigraphy, Geography and Lithostratigraphy include predefined ranks for
+        the tree definitions. The Geography, Chronostratigraphy and Lithostratigraphy predefined
+        ranks are also active within the tree definition. The Taxon tree includes many ranks that
+        are not active and are offered via a Predefined Ranks dialog when adding a Rank. If the
+        list does not include the desired Rank, one can be added by clicking the <em>Custom</em>
+        button and naming the rank in the ensuing <em>Edit Rank Properties</em> dialog.
       </p>
       <p>
-        If predefined ranks are deleted from the tree definition, they will be added back into the
+         If predefined ranks are deleted from the tree definition, they will be added back into the
         Predefined Ranks list in the dialog.
       </p>
       <p>
-        Whenever possible, it is highly recommended that users choose a predefined rank rather than
-        create a custom rank.
+         Whenever possible, it is highly recommended that users choose a predefined rank rather
+        than create a custom rank.
       </p>
       <p>
-        There is a limit to the number of custom ranks available between each predefined rank. When
-        custom ranks can no longer be added between the predefined ranks, the status bar message
-        <em>Unable to assign Rank</em> will appear.
+         There is a limit to the number of custom ranks available between each predefined rank.
+        When custom ranks can no longer be added between the predefined ranks, the status bar
+        message <em>Unable to assign Rank</em> will appear.
       </p>
       <blockquote>
         <p>
-          <em><strong>Note:</strong></em> Ranks must be defined in the tree definition before they can
-          be entered as nodes in either a tree or form. For example, the city of Lawrence can not be
-          added under Douglas County in a Geography tree if the tree definition does not include a rank
-          for City.
+           <em><strong>Note:</strong></em> Ranks must be defined in the tree definition before they
+          can be entered as nodes in either a tree or form. For example, the city of Lawrence can
+          not be added under Douglas County in a Geography tree if the tree definition does not
+          include a rank for City.
         </p>
       </blockquote>
     </blockquote>
-<p>&nbsp;
-       
+    <p>
+       &nbsp;
     </p>
   </body>
 </html>
