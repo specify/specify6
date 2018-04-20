@@ -1879,8 +1879,8 @@ public class FormViewObj implements Viewable,
                 }
                 
                 int rv = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(),
-                            isNewAndComplete ? UIRegistry.getLocalizedMessage("DiscardChanges", title) : UIRegistry.getLocalizedMessage("SaveChanges", title),
-                            isNewAndComplete ? getResourceString("DiscardChangesTitle") : getResourceString("SaveChangesTitle"),
+                            isNewAndComplete ? UIRegistry.getLocalizedMessage("SaveChanges", title) : UIRegistry.getLocalizedMessage("DiscardChanges", title),
+                            isNewAndComplete ? getResourceString("SaveChangesTitle") : getResourceString("DiscardChangesTitle"),
                             dlgOptions,
                             JOptionPane.QUESTION_MESSAGE,
                             null,
