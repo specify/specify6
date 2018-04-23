@@ -104,7 +104,7 @@ public class BatchEditTask extends QueryTask {
     protected boolean[][] getPermsArray()
     {
         return new boolean[][] {{true, true, true, true},
-                {true, true, true, true},
+                {false, false, false, false},
                 {false, false, false, false},
                 {false, false, false, false}};
     }

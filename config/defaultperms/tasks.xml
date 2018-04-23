@@ -357,6 +357,27 @@
     </hashtable>
   </entry>
   <entry>
+    <string>BatchEdit</string>
+    <hashtable>
+      <entry>
+        <string>Manager</string>
+        <tp name="BatchEdit" type="Manager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>Guest</string>
+        <tp name="BatchEdit" type="Guest" view="false" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>LimitedAccess</string>
+        <tp name="BatchEdit" type="LimitedAccess" view="false" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>FullAccess</string>
+        <tp name="BatchEdit" type="FullAccess" view="false" modify="false" del="false" add="false"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
     <string>Symbiota</string>
     <hashtable>
       <entry>
