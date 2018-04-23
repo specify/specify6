@@ -1,6 +1,7 @@
 package edu.ku.brc.specify.tasks;
 
 import com.google.common.io.PatternFilenameFilter;
+import edu.ku.brc.af.auth.BasicPermisionPanel;
 import edu.ku.brc.af.auth.PermissionEditorIFace;
 import edu.ku.brc.af.core.*;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
@@ -64,7 +65,9 @@ public class BatchEditTask extends QueryTask {
             boolean prereqTsksEnabled = queryTask != null && queryTask.isEnabled()
                     && workbenchTask != null && workbenchTask.isEnabled() && workbenchTask.getPermissions().canModify();
             this.isPermitted = prereqTsksEnabled
-                    && (!AppContextMgr.isSecurityOn() || SpecifyUser.isCurrentUserType(SpecifyUserTypes.UserType.Manager));
+                    && (!AppContextMgr.isSecurityOn() ||
+                    //SpecifyUser.isCurrentUserType(SpecifyUserTypes.UserType.Manager));
+                    getPermissions().canView());
         }
         return this.isPermitted;
     }
@@ -85,10 +88,27 @@ public class BatchEditTask extends QueryTask {
      * @see edu.ku.brc.af.tasks.BaseTask#getPermEditorPanel()
      */
     @Override
-    public PermissionEditorIFace getPermEditorPanel() {
-        //return null to remove task from security ui
-        return null;
+//    public PermissionEditorIFace getPermEditorPanel() {
+//        //return null to remove task from security ui
+//        return null;
+//    }
+    public PermissionEditorIFace getPermEditorPanel()
+    {
+        return new BasicPermisionPanel("BatchEditTask.PermTitle", "BatchEditTask.PermEnable", null,
+                null, null);
     }
+    /**
+     * @return the permissions array
+     */
+    @Override
+    protected boolean[][] getPermsArray()
+    {
+        return new boolean[][] {{true, true, true, true},
+                {true, true, true, true},
+                {false, false, false, false},
+                {false, false, false, false}};
+    }
+
 
     @Override
     protected boolean isLoadableQuery(SpQuery query) {
