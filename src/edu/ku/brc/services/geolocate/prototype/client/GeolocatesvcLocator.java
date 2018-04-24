@@ -32,13 +32,20 @@ public class GeolocatesvcLocator extends org.apache.axis.client.Service implemen
     }
 
     // Use to get a proxy class for geolocatesvcSoap
-    private final static String GEOLOCATE_SERVICE_URL_DEFAULT = "http://www.museum.tulane.edu/webservices/geolocatesvcv2/geolocatesvc.asmx";
+    //private final static String GEOLOCATE_SERVICE_URL_DEFAULT = "http://www.museum.tulane.edu/webservices/geolocatesvcv2/geolocatesvc.asmx";
+    //private final static String GEOLOCATE_SERVICE_URL_DEFAULT = "http://www.geo-locate.org/webservices/legacy/geolocatesvcv2/geolocatesvc.asmx";
+    private final static String GEOLOCATE_SERVICE_URL_DEFAULT = "http://www.geo-locate.org/webservices/geolocatesvcv2/geolocatesvc.asmx";
     private final static String GEOLOCATE_SERVICE_URL_PREF = "GEOLOCATE_SERVICE_URL";
-    private final static String GEOLOCATE_NAMESPACE_URL_DEFAULT = "http://www.museum.tulane.edu/webservices/";
+    //private final static String GEOLOCATE_NAMESPACE_URL_DEFAULT = "http://www.museum.tulane.edu/webservices/";
+    //private final static String GEOLOCATE_NAMESPACE_URL_DEFAULT = "http://www.geo-locate.org/webservices/legacy/";
+    private final static String GEOLOCATE_NAMESPACE_URL_DEFAULT = "http://geo-locate.org/webservices/";
     private final static String GEOLOCATE_NAMESPACE_URL_PREF = "GEOLOCATE_NAMESPACE_URL";
-    private final static String GEOLOCATE_WEB_URL_DEFAULT = "http://www.museum.tulane.edu/geolocate/web/WebGeoref.aspx?v=1";
+    //private final static String GEOLOCATE_WEB_URL_DEFAULT = "http://www.museum.tulane.edu/geolocate/web/WebGeoref.aspx?v=1";
+    private final static String GEOLOCATE_WEB_URL_DEFAULT = "http://www.geo-locate.org/web/WebGeoref.aspx?v=1";
     private final static String GEOLOCATE_WEB_URL_PREF = "GEOLOCATE_WEB_URL";
-    private final static String GEOLOCATE_SOAP_URL_DEFAULT = "http://www.museum.tulane.edu/webservices/";
+    //private final static String GEOLOCATE_SOAP_URL_DEFAULT = "http://www.museum.tulane.edu/webservices/";
+    //private final static String GEOLOCATE_SOAP_URL_DEFAULT = "http://www.geo-locate.org/webservices/legacy/";
+    private final static String GEOLOCATE_SOAP_URL_DEFAULT = "http://geo-locate.org/webservices/";
     private final static String GEOLOCATE_SOAP_URL_PREF = "GEOLOCATE_SOAP_URL";
     private static String GEOLOCATE_SERVICE_URL = (AppPreferences.getRemote().get(GEOLOCATE_SERVICE_URL_PREF, GEOLOCATE_SERVICE_URL_DEFAULT));
     private static String GEOLOCATE_NAMESPACE_URL = (AppPreferences.getRemote().get(GEOLOCATE_NAMESPACE_URL_PREF, GEOLOCATE_NAMESPACE_URL_DEFAULT));
