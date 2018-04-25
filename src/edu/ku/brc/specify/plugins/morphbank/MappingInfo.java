@@ -106,7 +106,7 @@ public class MappingInfo implements Comparable<MappingInfo>
 		{
 			return Double.class;
 		}
-		if (dwcType.endsWith(":nonnegativeinteger") || dwcType.endsWith(":positiveinteger"))
+		if (dwcType.endsWith(":nonnegativeinteger") || dwcType.endsWith(":positiveinteger") || dwcType.endsWith(":integer"))
 		{
 			return Integer.class;
 		}
@@ -114,7 +114,7 @@ public class MappingInfo implements Comparable<MappingInfo>
 		{
 			return Integer.class;
 		}
-		return null;
+		return String.class;
 	}
 
 	/**

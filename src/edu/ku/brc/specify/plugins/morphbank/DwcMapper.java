@@ -204,7 +204,7 @@ public class DwcMapper
 		List<String> selects = new ArrayList<String>();
 		selects.add(ExportPanel.getCacheTableName(mappingName) + "id"); 
 		for (MappingInfo mi : concepts) {
-			if (mi.getDataType().equals(java.util.Date.class)) {
+			if (java.util.Date.class.equals(mi.getDataType())) {
 				selects.add("date_format(`" + mi.getName() + "`,'%Y-%m-%d') `" + mi.getName() + "`");
 			} else {
 				selects.add("`" + mi.getName() + "`");
