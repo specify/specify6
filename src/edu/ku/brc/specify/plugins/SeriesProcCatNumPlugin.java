@@ -59,6 +59,8 @@ public class SeriesProcCatNumPlugin extends UIPluginBase implements ValFormatted
     private PanelBuilder               pb;
     private CellConstraints            cc          = new CellConstraints();
     private JPanel                     panel;
+    private String savedStart;
+    private String savedEnd;
     
     /**
      * @param textFieldStart
@@ -109,15 +111,22 @@ public class SeriesProcCatNumPlugin extends UIPluginBase implements ValFormatted
     /**
      * @return a pair representing the start and end catalogNumbers for the Batch.
      */
-    public Pair<String, String> getStartAndEndCatNumbers()
+    public Pair<String, String> getStartAndEndCatNumbers(boolean useSavedVals)
     {
-        String start = textFieldStart.getValue() != null ? textFieldStart.getValue().toString() : null;
-        String end = !isExpanded() ? null : (textFieldEnd.getValue() != null ? textFieldEnd.getValue().toString() : null);
-        if (end == null && start != null)
-        {
-        	end = start;
+        String start, end;
+        if (!useSavedVals) {
+            start = textFieldStart.getValue() != null ? textFieldStart.getValue().toString() : null;
+            end = !isExpanded() ? null : (textFieldEnd.getValue() != null ? textFieldEnd.getValue().toString() : null);
+            if (end == null && start != null) {
+                end = start;
+            }
+            savedStart = start;
+            savedEnd = end;
+        } else {
+            start = savedStart;
+            end = savedEnd;
         }
-    	return new Pair<String, String>(start, end);
+    	return new Pair<>(start, end);
     }
     
     /* (non-Javadoc)
