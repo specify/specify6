@@ -230,7 +230,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
     }
 
     /**
-     * @param disciplineType
+     * @param defaultValue
      * @return
      */
     public static Integer getPrepTypeIdFromDefVal(final String defaultValue)
@@ -631,7 +631,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
     }
     
     /**
-     * @param attOwner
+     * @param dObjAtt
      */
     @Override
     protected void addExtraObjectForProcessing(final Object dObjAtt)
@@ -858,7 +858,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
     		SeriesProcCatNumPlugin batchCtrl = getBatchPlugIn();
     		if (batchCtrl != null)
     		{
-    			result = processBatchContents(batchCtrl.getStartAndEndCatNumbers(), true, batchBeginIsDup, new Vector<String>());
+    			result = processBatchContents(batchCtrl.getStartAndEndCatNumbers(false), true, batchBeginIsDup, new Vector<>());
     			if (result.equals(STATUS.Error))
     			{
     				if (batchBeginIsDup)
@@ -1000,7 +1000,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
 			SeriesProcCatNumPlugin spCatNumPlugin = getBatchPlugIn();
 			if (spCatNumPlugin != null)
 			{
-				doCreateBatchOfColObj(spCatNumPlugin.getStartAndEndCatNumbers());
+				doCreateBatchOfColObj(spCatNumPlugin.getStartAndEndCatNumbers(true));
 			}
 		}
     }
