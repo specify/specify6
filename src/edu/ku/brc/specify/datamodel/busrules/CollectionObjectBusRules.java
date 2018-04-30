@@ -1049,7 +1049,6 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                 
             	int cnt = 0;
                 CollectionObject co = null;
-                //CollectionObject carryForwardCo = (CollectionObject )formViewObj.getDataObj();
                 CollectionObject carryForwardCo;
                 DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
                 try 
@@ -1060,9 +1059,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                 {
                 	session.close();
                 }
-                Agent modifiedBy = carryForwardCo.getModifiedByAgent();
-                carryForwardCo = null;
-                
+
                 Thread.sleep(AppPreferences.getLocalPrefs().getInt("BatchEntryNapTimeMSecs", 666)); //Perhaps this is unnecessary, but it seems
                 //to prevent sporadic "illegal access to loading collection" hibernate errors.
                 try
@@ -1078,15 +1075,14 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                             co.setCollection(AppContextMgr.getInstance().getClassObject(Collection.class));
                             //ditto, but doesn't so much need to be set
                             //co.setModifiedByAgent(carryForwardCo.getModifiedByAgent()); 
-                            co.setModifiedByAgent(modifiedBy);
+                            co.setModifiedByAgent(carryForwardCo.getModifiedByAgent());
                             
                             co.setCatalogNumber(currentCat);
                             formViewObj.setNewObject(co);
                             
                             if (formViewObj.saveObject())
                             {
-                            	objectsAdded.add(new Pair<Integer, String>(
-                            		(Integer )BasicSQLUtils.querySingleObj(coIdSql + co.getCatalogNumber() + "'"), co.getCatalogNumber()));
+                            	objectsAdded.add(new Pair<>(BasicSQLUtils.querySingleObj(coIdSql + co.getCatalogNumber() + "'"), co.getCatalogNumber()));
                             } else
                             {
                             	objectsNotAdded.add(formatter.formatToUI(co.getCatalogNumber()).toString());
