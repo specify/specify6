@@ -124,7 +124,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 
     protected static final String EXPORT_TEXT_PATH = "ExportPanel.TabDelimExportPath";
     protected static final String EXPORT_WEBPORTAL_PATH = "ExportPanelExportWebPortalPath";
-    protected static final long maxExportRowCount = 100000;
+    protected static final long maxExportRowCount = 1000;
     
     protected boolean exportIsThreaded = true;
     
@@ -1147,7 +1147,8 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 		 * ArrayList<Pair<Long,Double>>(1000); for (int i = 0; i < 1000; i++) {
 		 * stats.add(new Pair<Long, Double>(-1L, -1.0)); }
 		 */
-		while (rowsExported < cacheRowCount) {
+		boolean stopIt = false;
+		while (rowsExported < cacheRowCount && !stopIt) {
 			// long startTime = System.nanoTime();
 			QBDataSource src = new QBDataSource(hql.getHql(), hql.getArgs(),
 					hql.getSortElements(), cols, includeRecordIds);
@@ -1160,11 +1161,12 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 			src.startDataAcquisition();
 			// loading();
 
-			// XXX Assuming specimen-based export - 1 for baseTableId.
+			// XXX Assuming specimen-based export - 1 	 for baseTableId.
+			long rowsExportedTillNow = rowsExported;
 			rowsExported += ExportToMySQLDB.exportToTable(loopConn, cols, src,
 					exportQuery.getName(), dataSrcListeners, includeRecordIds,
 					false, true, 1, firstPass, bulkFilePath, theMapping.getSpExportSchemaMappingId());
-
+			stopIt = rowsExported == rowsExportedTillNow;
 			firstPass = false;
 		}
 		if (useBulkLoad) {
@@ -1310,7 +1312,8 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
             			stats.add(new Pair<Long, Double>(-1L, -1.0));
             		}
             		*/
-            		while (rowsExported < cacheRowCount)
+            		boolean stopIt = false;
+            		while (rowsExported < cacheRowCount && !stopIt)
             		{
             	        //long startTime = System.nanoTime();
             			QBDataSource src = new QBDataSource(hql.getHql(), hql.getArgs(), hql
@@ -1327,9 +1330,11 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
             			loading();
             			
             			//XXX Assuming specimen-based export - 1 for baseTableId.
-            			rowsExported += ExportToMySQLDB.exportToTable(loopConn, cols, src, exportQuery.getName(), dataSrcListeners, includeRecordIds, rebuild, 
+
+						long rowsExportedTillNow = rowsExported;
+						rowsExported += ExportToMySQLDB.exportToTable(loopConn, cols, src, exportQuery.getName(), dataSrcListeners, includeRecordIds, rebuild,
             					!rebuildExistingTbl, 1, firstPass, bulkFilePath, theMapping.getSpExportSchemaMappingId());
-            			
+            			stopIt = rowsExported == rowsExportedTillNow;
             			rebuild = false;
             			firstPass = false;
             		}
