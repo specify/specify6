@@ -124,7 +124,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 
     protected static final String EXPORT_TEXT_PATH = "ExportPanel.TabDelimExportPath";
     protected static final String EXPORT_WEBPORTAL_PATH = "ExportPanelExportWebPortalPath";
-    protected static final long maxExportRowCount = 1000;
+    protected static final long maxExportRowCount = 100000;
     
     protected boolean exportIsThreaded = true;
     
