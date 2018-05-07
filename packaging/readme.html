@@ -3,36 +3,36 @@
   <head>
     <meta charset="utf-8">
     <title>
-      Specify 6.7.00 Release Notes
+      Specify 6.7.01 Release Notes
     </title>
   </head>
   <body>
     <p>
       <h3>Specify Collections Consortium</h3>
     </p>
-    <strong>
-      <br>Release Notes
-      <br>Specify 6.7.00
-      <br>13 April 2018
-      <br></strong><br>
-    <p>
-
-    </p>
-    
+    <strong> <br>
+Release Notes <br>
+Specify 6.7.01 "Wolverine"<br>
+7 May 2018 <br>
+    </strong><br>
+    <p> Specify 6.7.01 is a minor maintenance update; it does not modify the database schema. </p>
     <ol>
-      <li>Specify 6.7 adds Batch Editing, a powerful new capability for bulk changes to Specify core data tables.  Batch Editing will be particularly useful for improving data quality by correcting inconsistencies and by batch filling empty data fields.  The editing process begins with a query on one of five base tables: Agent, Collecting Event, Collection Object, Locality, or Preparation.  There is embedded context sensitive help and a Batch Editing video tutorial on the Specify Collection Consortium web site.<br>
-        <p>
-          Batch Editing is capable of changing thousands of records with a few mouse clicks. It is important to have a basic understanding of core Specify data table relationships before using it. Once changes are reviewed and applied, they become permanent. Specify does not save a copy of original data that has been changed. With the power to alter large numbers of records easily, a small, inadvertent editing mistake could have unexpected consequences and make a large number of your Specify records incorrect and unusable. A very smart risk avoidance strategy would be to create a fresh backup copy of your database before Batch Editing, in case the backup copy is needed to restore your database.</p></li>
+      <li> Specify 6.7.01 adds the option to grant Batch Editing (BE) privileges to users in classes other than Managers and Administrators. BE is now available on the "Tools" page of the Specify Security Configuration tool. BE privileges may now be assigned to individual Full Access and Limited Access users.  By default, BE is turned on for Managers, and turned off for all other users.  When granting BE privileges, Workbench Upload and Query Builder access privileges must also be granted or else BE will not be visible or available to the user. &nbsp;John Torgerson (Michigan) championed this improved flexibility. </li>
       <br>
-      <li> We are pleased to display on the Specify splash screen, the logos of the initial Founding Partners of the Specify Collection Consortium: the University of Florida, University of Michigan, and University of Kansas. If you would like to see your institution among these collections leaders, tell us how we can help.</li>
+      <li>The GeoLocate Project is moving to a new institution and to new servers. We updated the links in Specify to the new GeoLocate addresses to maintain Specify's integration. &nbsp;Thanks to Nelson Rios (Yale) for his technical assistance. </li>
       <br>
-      <li>Specify can now export Query Results to xls-format (Excel) files for data sets containing tens of thousands of records.</li><br>
-      <li>We added the fields GeoRefCompiledBy and GeoRefCompileddate to the GeoCoordDetail table and made them accessible through the WorkBench and Batch Editing.</li><br>
-      <li>When using GeoLocate, the WorkBench now fills the MaxUncertaintyEstUnit by default with “m”.</li><br>
-      <li>MaxUncertaintyEst values now import correctly into the WorkBench from external files.</li><br>
-      <li>If a Preparation record is cloned, the value of the Preparation GUID field is not. A bug in earlier Specify versions duplicated GUIDs in cloned Preparation records.  This update includes logic to assign a new GUID to any existing preparation records that hold duplicate GUIDs.</li><br>
-      <li>We added the ability to process loans for Collection Objects that are not cataloged in the same loan with cataloged objects.</li>
+      <li>We fixed a 'regression' to an earlier change that had affected GUIDs on Preparation records. The original fix mostly filled in GUIDs for records that contained NULL values; it was applied during the schema update process for release 6.7.00. &nbsp;For a subset of databases using Preparations, the schema update would fail at the step: "Creating Index for Preparation GUID". For installations that updated to 6.7.00 and did not experience that update issue, this fix is not needed and it will have no effect.&nbsp;Thanks to the Univ. Florida and the Santa Barbara MNH for helping to solve the problem.</li>
+      <br>
+      <li>We clarified the use of the text: "Save Changes" and "Discard Changes" in the dialog window buttons that appear after data are entered into a Specify data form and when a user then attempts to close the tab or the program without saving the edits. </li>
+      <br>
+      <li>We fixed a rare problem involving series data entry that occurred when two series were created with ranges in inverse order, for example, a series with catalog numbers "600-620" was followed by a series with catalog numbers "500-550". &nbsp;When the user tried to save the new series entries Specify would create more than the desired number of records. </li>
+      <br>
+      <li>We fixed an issue with the Specify Data Exporter tool which would cause Specify to hang if more than 100,000 records had been updated and needed to be exported for an IPT cache or web portal update, and where records had been deleted in the database since the last export.  The Exporter now works correctly in this scenario.</li>
+      <br>
+      <li>A bug with the Symbiota connector that caused Specify to ingloriously crash with a stack trace window has been squashed. &nbsp;Thanks to Herrick Brown (Appalachian State Univ.) for bringing it to our attention.</li>
+      <br>
+     
       
-    </ol>
+  </ol>
   </body>
 </html>
