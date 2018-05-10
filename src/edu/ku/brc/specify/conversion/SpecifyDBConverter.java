@@ -329,7 +329,7 @@ public class SpecifyDBConverter extends AppBase
         
         if (mgr.connectToDBMS(itUsrPwd.first, itUsrPwd.second, hostName))
         {
-            BasicSQLUtils.setSkipTrackExceptions(true);
+            //BasicSQLUtils.setSkipTrackExceptions(true);
             
             //String sql = String.format("SELECT DISTINCT `COLUMNS`.TABLE_SCHEMA FROM `COLUMNS` WHERE `COLUMNS`.TABLE_NAME = '%s'", doSp5DBs ? "collectionobjectcatalog" : "taxon");
             Connection conn = mgr.getConnection();
@@ -337,7 +337,9 @@ public class SpecifyDBConverter extends AppBase
             for (Object[] row : dbNames)
             {
                 String dbName = row[0].toString();
-                
+                if (dbName.startsWith("#")) {
+                    continue;
+                }
                 //System.out.print("Database Found ["+dbName+"]  ");
                 conn.setCatalog(dbName);
                 

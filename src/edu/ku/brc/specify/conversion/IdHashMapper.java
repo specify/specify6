@@ -47,7 +47,7 @@ public class IdHashMapper implements IdMapperIFace
     
     protected static TableWriter tblWriter           = null;
     protected static boolean     enableDelete        = false;
-    protected static boolean     enableRemoveRecords = true;
+    protected static boolean     enableRemoveRecords = false;
 
 
     protected String            sql           = null;
