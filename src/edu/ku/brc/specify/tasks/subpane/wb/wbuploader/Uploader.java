@@ -2996,6 +2996,16 @@ public class Uploader implements ActionListener, KeyListener
     	int got = this.updateTableId.get();
     	return got >= 0 ? got : null;
     }
+
+    /*
+
+     */
+    public void updateUpdateStati() {
+        boolean isUpdate = isUpdateUpload();
+        for (UploadTable ut : uploadTables) {
+            ut.setUpdateMatches(isUpdate);
+        }
+    }
     /**
      * @throws UploaderException
      * 

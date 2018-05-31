@@ -73,7 +73,9 @@ public class WorkbenchValidator
         	Vector<UploadMessage> structureErrors = result.verifyUploadability();
         	if (structureErrors.size() > 0) {
         		throw new WorkbenchValidatorException(structureErrors);
-        	}
+        	} else {
+        		result.updateUpdateStati();
+			}
         	return result;
         } catch (Exception ex) {
         	ex.printStackTrace();
