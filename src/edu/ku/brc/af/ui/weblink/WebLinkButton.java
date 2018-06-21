@@ -351,11 +351,11 @@ public class WebLinkButton extends UIPluginBase implements ActionListener,
         return null;
     }
 
-    /**
-     * @param forToolTip creating it to just set into tooltip
-     * @param skipPrompt if true do not show the prompt
-     * @return
-     */
+                              /**
+                               * @param forToolTip creating it to just set into tooltip
+                               * @param skipPrompt if true do not show the prompt
+                               * @return
+                               */
     @SuppressWarnings("null")
     protected String buildURL(final boolean forToolTip, final boolean skipPrompt)
     {
@@ -450,63 +450,7 @@ public class WebLinkButton extends UIPluginBase implements ActionListener,
                     promptDialog = null;
                 }
             }
-            
-            byte[] chars = webLinkDef.getBaseURLStr().getBytes();
-            int i = 0;
-            for (byte b : webLinkDef.getBaseURLStr().getBytes())
-            {
-                if (b == '<' || b == '>')
-                {
-                    chars[i] = '\'';
-                }
-                i++;
-            }
-            String url = new String(chars);
-            for (String key : valueHash.keySet())
-            {
-                String val = valueHash.get(key);
-                if (val.equals("this"))
-                {
-                    val = valueHash.get("this");
-                }
-                /*try
-                {
-                    byte[] badChars = new byte[] {45};
-                    for (byte j : badChars)
-                    {
-                        String  str  = "%" + Integer.toHexString(j);
-                        String  with = ""+(char)j;
-                        boolean doSub = true;
-                        while (doSub)
-                        {
-                            if (val.indexOf(str) > -1)
-                            {
-                                val = StringUtils.replace(val, str, with);
-                                doSub = true;
-                            } else
-                            {
-                                doSub = false;
-                            }
-                        }
-                    }
-                    //val = URLEncoder.encode(val, "UTF-8");
-                    //val = URLEncoder.encode(val, "ISO-8859-1");
-
-                    url = StringUtils.replace(url, "'"+key+"'", (val != null ? val : "")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                    //url = URLEncoder.encode(url, "ISO-8859-1");
-                    //System.out.println("|"+key+"|"+url);
-                    
-                } catch (Exception ex) {}
-                */
-                
-                //System.out.println("|"+key+"|"+url);
-                // http://darwin2.nhm.ku.edu/ksem/collectionlabelimages/PL.Dylewska1964.05.20%20001.JPG
-                
-                url = StringUtils.replace(url, "'"+key+"'", (val != null ? val : "")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-            }
-            
-            url = StringUtils.replace(url, "AMP", "&"); //$NON-NLS-2$
-            return url;
+            return buildUrl(webLinkDef, valueHash);
         }
         
         if (textField != null)
@@ -516,7 +460,30 @@ public class WebLinkButton extends UIPluginBase implements ActionListener,
         
         return null;
     }
-    
+
+    public static String buildUrl(WebLinkDef def, Hashtable<String, String> valueHash) {
+
+        byte[] chars = def.getBaseURLStr().getBytes();
+        int i = 0;
+        for (byte b : def.getBaseURLStr().getBytes()) {
+            if (b == '<' || b == '>') {
+                chars[i] = '\'';
+            }
+            i++;
+        }
+        String url = new String(chars);
+        for (String key : valueHash.keySet()) {
+            String val = valueHash.get(key);
+            if (val.equals("this")) {
+                val = valueHash.get("this");
+            }
+            url = StringUtils.replace(url, "'"+key+"'", (val != null ? val : "")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        }
+        url = StringUtils.replace(url, "AMP", "&"); //$NON-NLS-2$
+        return url;
+    }
+
+
     /* (non-Javadoc)
      * @see javax.swing.JComponent#setEnabled(boolean)
      */

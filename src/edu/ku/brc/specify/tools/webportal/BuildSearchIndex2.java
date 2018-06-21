@@ -17,28 +17,21 @@
  */
 package edu.ku.brc.specify.tools.webportal;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
-
+import edu.ku.brc.af.core.SchemaI18NService;
+import edu.ku.brc.af.core.UsageTracker;
+import edu.ku.brc.af.core.db.DBFieldInfo;
+import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
+import edu.ku.brc.af.ui.weblink.WebLinkButton;
+import edu.ku.brc.af.ui.weblink.WebLinkMgr;
+import edu.ku.brc.af.ui.weblink.WebLinkDef;
+import edu.ku.brc.dbsupport.DBConnection;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.datamodel.CollectionObject;
+import edu.ku.brc.specify.datamodel.SpExportSchemaMapping;
+import edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace;
 import net.sf.json.JSONObject;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.NotImplementedException;
@@ -46,31 +39,23 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.util.CharArraySet;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.DoubleField;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.FloatField;
-import org.apache.lucene.document.IntField;
-import org.apache.lucene.document.LongField;
-import org.apache.lucene.document.StringField;
-import org.apache.lucene.document.TextField;
+import org.apache.lucene.document.*;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
 
-import edu.ku.brc.af.core.SchemaI18NService;
-import edu.ku.brc.af.core.UsageTracker;
-import edu.ku.brc.af.core.db.DBFieldInfo;
-import edu.ku.brc.af.core.db.DBTableIdMgr;
-import edu.ku.brc.af.core.db.DBTableInfo;
-import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
-import edu.ku.brc.dbsupport.DBConnection;
-import edu.ku.brc.specify.conversion.BasicSQLUtils;
-import edu.ku.brc.specify.datamodel.CollectionObject;
-import edu.ku.brc.specify.datamodel.SpExportSchemaMapping;
-import edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.sql.*;
+import java.util.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 /**
  * @author rod
@@ -637,7 +622,23 @@ public class BuildSearchIndex2
         json.accumulate("imageBaseUrl", StringUtils.replace(attachmentURL, "/web_asset_store.xml", ""));
         FileUtils.writeStringToFile(f,  json.toString(2), "utf8");
     }
-    	
+
+    protected String processValue(String value, ExportMappingInfo info) {
+		//check for weblink
+    	String wl = DBTableIdMgr.getInstance().getInfoById(info.getSpTblId()).getFieldByName(info.getSpFldName()).getWebLinkName();
+    	if (wl != null) {
+			WebLinkDef webLinkDef = WebLinkMgr.getInstance().get(wl);
+			if (webLinkDef != null) {
+				if (webLinkDef.getArgs().size() == 1 && "this".equals(webLinkDef.getArgs().get(0).getName())) {
+					Hashtable<String, String> valHash = new Hashtable<>();
+					valHash.put("this", value);
+					return WebLinkButton.buildUrl(webLinkDef, valHash);
+				}
+			}
+
+		}
+		return value;
+	}
     /**
      * 
      */
@@ -742,6 +743,7 @@ public class BuildSearchIndex2
 								if (value != null) {
 									ExportMappingInfo info = map
 											.getMappingByColIdx(c - 2);
+									value = processValue(value, info);
 									String fldType = getSolrFldType(info);
 									if (fldType.equals("string")) {
 										if (info.isFullTextSearch()) {
