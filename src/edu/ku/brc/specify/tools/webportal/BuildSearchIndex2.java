@@ -625,19 +625,21 @@ public class BuildSearchIndex2
 
     protected String processValue(String value, ExportMappingInfo info) {
 		//check for weblink
-    	String wl = DBTableIdMgr.getInstance().getInfoById(info.getSpTblId()).getFieldByName(info.getSpFldName()).getWebLinkName();
-    	if (wl != null) {
-			WebLinkDef webLinkDef = WebLinkMgr.getInstance().get(wl);
-			if (webLinkDef != null) {
-				if (webLinkDef.getArgs().size() == 1 && "this".equals(webLinkDef.getArgs().get(0).getName())) {
-					Hashtable<String, String> valHash = new Hashtable<>();
-					valHash.put("this", value);
-					return WebLinkButton.buildUrl(webLinkDef, valHash);
-				}
-			}
-
-		}
-		return value;
+        DBFieldInfo fld = info.getFldInfo();
+        if (fld != null) {
+            String wl = fld.getWebLinkName();
+            if (wl != null) {
+                WebLinkDef webLinkDef = WebLinkMgr.getInstance().get(wl);
+                if (webLinkDef != null) {
+                    if (webLinkDef.getArgs().size() == 1 && "this".equals(webLinkDef.getArgs().get(0).getName())) {
+                        Hashtable<String, String> valHash = new Hashtable<>();
+                        valHash.put("this", value);
+                        return WebLinkButton.buildUrl(webLinkDef, valHash);
+                    }
+                }
+            }
+        }
+        return value;
 	}
     /**
      * 
