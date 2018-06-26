@@ -394,7 +394,8 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 			@Override
 			protected MappingUpdateStatus doInBackground() throws Exception {
 				if (symTask.getSchemaMapping() != null) {
-					return ExportPanel.retrieveMappingStatus(symTask.getSchemaMapping(), getOverrideTimestamp());
+					return ExportPanel.retrieveMappingStatus(symTask.getSchemaMapping(),
+							sendAfterArchiveBuild.get() ? null : getOverrideTimestamp());
 				} else {
 					return null;
 				}
@@ -628,7 +629,7 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 	protected Timestamp getOverrideTimestamp() {
 		Timestamp overrideTimestamp = null;
 		Timestamp cacheExported = symTask.getSchemaMapping().getTimestampExported();
-		Timestamp symSent = symTask.getTheInstance().getLastPush() != null 
+		Timestamp symSent = symTask.getTheInstance().getLastPush() != null
 				? new Timestamp(symTask.getTheInstance().getLastPush().getTimeInMillis())
 				: null;
 		if (symSent != null && symSent.before(cacheExported)) {
@@ -659,7 +660,7 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 				newOrChangedRecsForCurrentUpdate.clear();
 		        return ExportPanel.updateInBackground(includeRecordIds, useBulkLoad, bulkFileDir, 
 		        		symTask.getSchemaMapping(), listener, conn, 
-		        		cacheRowCount, getOverrideTimestamp());
+		        		cacheRowCount, null);
 			}
 
 			/* (non-Javadoc)
