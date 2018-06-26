@@ -124,7 +124,7 @@ public class DwcMapper
 			+ "left join spexportschemaitem esi on esi.SpExportSchemaItemID = esim.ExportSchemaItemID inner join " 
 			+ "spexportschema es on es.SpExportSchemaID = esi.SpExportSchemaID inner join spqueryfield qf on "
 			+ "qf.SpQueryFieldID = esim.SpQueryFieldID inner join spquery q on q.SpQueryID = qf.SpQueryID where "
-			+ "esm.SpExportSchemaMappingID = " + mappingId;
+			+ "qf.IsDisplay and esm.SpExportSchemaMappingID = " + mappingId;
 	}
 	
 	/**
