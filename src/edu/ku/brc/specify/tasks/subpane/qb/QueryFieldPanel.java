@@ -1948,6 +1948,10 @@ public class QueryFieldPanel extends JPanel implements ActionListener
 						{
 							sortCheckbox.setEnabled(isDisplayedCkbx.isSelected());
 							ownerQuery.changeNotification(QueryFieldPanel.this);
+                            if (!isDisplayedCkbx.isSelected()) {
+                                schemaItemCBX.setSelectedIndex(0);
+                            }
+                            schemaItemCBX.setEnabled(isDisplayedCkbx.isSelected());
 						}
 					});
 				}
