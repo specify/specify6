@@ -1109,7 +1109,7 @@ public class CheckDBAfterLogin
 
     public static boolean fixPcTypeSearchDefForResource(Object resId) {
         String sql = "update spappresourcedata set data = replace(data,'pc.chronosStrat cs JOIN cs.definition csd '," +
-                "pc.chronosStrat cs LEFT JOIN cs.definition csd ') where spappresourceid = " + resId;
+                "'pc.chronosStrat cs LEFT JOIN cs.definition csd ') where spappresourceid = " + resId;
         return BasicSQLUtils.update(sql) != -1;
     }
 
