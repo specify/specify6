@@ -329,7 +329,7 @@ public class ExportCmdLine extends CmdAppBase {
 			ex.printStackTrace();
 			System.exit(1);
 		}
-		System.exit(0);
+		System.exit(ecl.isSuccess() ? 0 : 1)
 	}
 
 }
