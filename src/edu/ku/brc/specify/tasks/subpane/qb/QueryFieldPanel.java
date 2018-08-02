@@ -1353,8 +1353,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                                      final List<Pair<String, Object>> paramList)
             throws ParseException
     {
-        if (operatorCBX.getSelectedItem().equals(SpQueryField.OperatorType.EMPTY))
-        {
+        if (operatorCBX.getSelectedItem().equals(SpQueryField.OperatorType.EMPTY)) {
             boolean isNot = isNotCheckbox.isSelected();
             String nullCond = fieldQRI.getNullCondition(ta, schemaItem != null, isNot, getFormatName());
             if (fieldQRI.getDataClass().equals(String.class)) {
@@ -1365,35 +1364,27 @@ public class QueryFieldPanel extends JPanel implements ActionListener
         }
 
         
-        if (hasCriteria())
-        {
+        if (hasCriteria()) {
             boolean addNullConjunction = false;
             boolean nullPick = criteria instanceof PickListCriteriaCombo && ((PickListCriteriaCombo)criteria).nullItemIsPicked();
         	Object[] criteriaStrs = parseCriteria(getCriteriaText(true).trim());
             String criteriaFormula = "";
             //String operStr = operatorCBX.getSelectedItem().toString();
             String operStr = getOperatorQLText();
-            if (!(criteriaStrs[0] instanceof String) && !(criteriaStrs[0] instanceof Pair))
-            {
+            if (!(criteriaStrs[0] instanceof String) && !(criteriaStrs[0] instanceof Pair)) {
                 //XXX - If the field has a formatter and it returned non-String data
                 // then assume all parsing and conversion has been accomplished??
                 //(hopefully this will never occur)
                 log.info(fieldQRI.getFieldInfo() + ": formatter returned non-string data.");
                 criteriaFormula = concatCriteria(criteriaStrs, operStr, false, ta);
-            }
-            else
-            {
-                if (fieldQRI.getDataClass().equals(Boolean.class))
-                {
+            } else {
+                if (fieldQRI.getDataClass().equals(Boolean.class)) {
                     if (operStr.equals(SpQueryField.OperatorType
                             .getOp(SpQueryField.OperatorType.TRUE.getOrdinal())) ||
                             operStr.equals(SpQueryField.OperatorType
-                                    .getOp(SpQueryField.OperatorType.TRUEORNULL.getOrdinal())) )
-                    {
+                                    .getOp(SpQueryField.OperatorType.TRUEORNULL.getOrdinal())) ) {
                         criteriaFormula = "true";
-                    }
-                    else 
-                    {
+                    } else {
                         criteriaFormula = "false";
                     }
                     addNullConjunction = operStr.equals(SpQueryField.OperatorType
@@ -1401,74 +1392,50 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                             operStr.equals(SpQueryField.OperatorType
                                     .getOp(SpQueryField.OperatorType.TRUEORNULL.getOrdinal()));
                     operStr = "=";
-                }
-                else if (fieldQRI.getDataClass().equals(String.class) && !isNumericCatalogNumber())
-                {
+                } else if (fieldQRI.getDataClass().equals(String.class) && !isNumericCatalogNumber()) {
                     criteriaFormula = concatCriteria(criteriaStrs, operStr, !(pickList instanceof PickListTableAdapter), ta);
-                }
-                else if (fieldQRI.getDataClass().equals(Calendar.class) || fieldQRI.getDataClass().equals(java.sql.Timestamp.class))
-                {
-                	for (int p = 0; p < criteriaStrs.length; p++)
-                    {
+                } else if (fieldQRI.getDataClass().equals(Calendar.class) || fieldQRI.getDataClass().equals(java.sql.Timestamp.class)) {
+                	for (int p = 0; p < criteriaStrs.length; p++) {
                 		String paramName = "spparam" + paramList.size();
-                        try
-                        {
-                            if (fieldQRI instanceof DateAccessorQRI)
-                            {
+                        try {
+                            if (fieldQRI instanceof DateAccessorQRI) {
                             	new Integer((String )criteriaStrs[p]);
-                            }
-                            else
-                            {
+                            } else {
                             	Object arg = dateConverter.convert((String)criteriaStrs[p]);
-                            	if (fieldQRI.getDataClass().equals(java.sql.Timestamp.class))
-                            	{
+                            	if (fieldQRI.getDataClass().equals(java.sql.Timestamp.class)) {
                             		arg = new java.sql.Timestamp(((Calendar)arg).getTimeInMillis());
                             	}
                             	paramList.add(new Pair<String, Object>(paramName, arg));
                             }
-                        }
-                        catch (ParseException ex)
-                        {
+                        } catch (ParseException ex) {
                             throw new ParseException(getLabel()
                                     + " - "
                                     + String.format(UIRegistry.getResourceString("QB_PARSE_ERROR"),
                                             ex.getLocalizedMessage()), -1);
                         }
-                        if (p > 0)
-                        {
-                            if (operatorCBX.getSelectedItem() == SpQueryField.OperatorType.BETWEEN)
-                            {
+                        if (p > 0) {
+                            if (operatorCBX.getSelectedItem() == SpQueryField.OperatorType.BETWEEN) {
                                 criteriaFormula += " and ";
-                            }
-                            else
-                            {
+                            } else {
                                 criteriaFormula += ", ";
                             }
                         }
-                        if (fieldQRI instanceof DateAccessorQRI)
-                        {
+                        if (fieldQRI instanceof DateAccessorQRI) {
                         	criteriaFormula += (String )criteriaStrs[p];
-                        }
-                        else
-                        {
+                        } else {
                         	criteriaFormula += ":" + paramName;
                         }
                     }
                     if (SpQueryField.OperatorType.getOrdForOp(operStr) == SpQueryField.OperatorType.IN
-                            .getOrdinal())
-                    {
+                            .getOrdinal()) {
                         criteriaFormula = "(" + criteriaFormula + ")";
                     }
-                }
-                else if (Number.class.isAssignableFrom(fieldQRI.getDataClass()) || isNumericCatalogNumber())
-                {
+                } else if (Number.class.isAssignableFrom(fieldQRI.getDataClass()) || isNumericCatalogNumber()) {
                     Constructor<?> tester;
-                    try
-                    {
+                    try {
                         tester = isNumericCatalogNumber() ? BigInteger.class.getConstructor(String.class)
                         		: fieldQRI.getDataClass().getConstructor(String.class);
-                        for (int s = 0; s < criteriaStrs.length; s++)
-                        {
+                        for (int s = 0; s < criteriaStrs.length; s++) {
                             Object critter = criteriaStrs[s];
                             List<String> strs = new ArrayList<String>(2);
                             if (critter instanceof String) {
@@ -1491,13 +1458,11 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                             	//remove leading zeroes
                             	String newString = str;
                             	boolean isZeroes = false;
-                            	while (newString.startsWith("0"))
-                            	{
+                            	while (newString.startsWith("0")) {
                             		newString = newString.substring(1);
                             		isZeroes = true;
                             	}
-                            	if (isZeroes && StringUtils.isBlank(newString))
-                            	{
+                            	if (isZeroes && StringUtils.isBlank(newString)) {
                             		newString = "0";
                             	}
                             	newStrs.add(newString);
@@ -1509,21 +1474,15 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                             	criteriaStrs[s] = newStrs.get(0);
                             }
                         }
-                    }
-                    catch (NoSuchMethodException ex)
-                    {
+                    } catch (NoSuchMethodException ex) {
                         edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                         edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryFieldPanel.class, ex);
                         // this will never happen. trust me.
                         throw new RuntimeException(ex);
-                    }
-                    catch (InvocationTargetException ex)
-                    {
-                        if (ex.getTargetException() instanceof NumberFormatException)
-                        {
+                    } catch (InvocationTargetException ex) {
+                        if (ex.getTargetException() instanceof NumberFormatException) {
                             String msg = ex.getTargetException().getLocalizedMessage();
-                            if (StringUtils.isBlank(msg))
-                            {
+                            if (StringUtils.isBlank(msg)) {
                                 msg = ex.getTargetException().getClass().getSimpleName();
                                
                             }
@@ -1532,24 +1491,17 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                                     + String.format(UIRegistry.getResourceString("QB_PARSE_ERROR"), msg), -1);
                         }
                         throw new RuntimeException(ex);
-                    }
-                    catch (IllegalAccessException ex)
-                    {
+                    } catch (IllegalAccessException ex) {
                         edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                         edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryFieldPanel.class, ex);
                         throw new RuntimeException(ex);
-                    }
-                    catch (InstantiationException ex)
-                    {
+                    } catch (InstantiationException ex) {
                         edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                         edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryFieldPanel.class, ex);
                         throw new RuntimeException(ex);
-                    }
-                    catch (NumberFormatException ex)
-                    {
+                    } catch (NumberFormatException ex) {
                         String msg = ex.getLocalizedMessage();
-                        if (StringUtils.isBlank(msg))
-                        {
+                        if (StringUtils.isBlank(msg)) {
                             msg = ex.getClass().getSimpleName();
                         }
                         throw new ParseException(getLabel()
@@ -1560,21 +1512,15 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                 }
             }
             if (operStr.equals(SpQueryField.OperatorType
-                            .getOp(SpQueryField.OperatorType.CONTAINS.getOrdinal())))
-            {
+                            .getOp(SpQueryField.OperatorType.CONTAINS.getOrdinal()))) {
                 operStr = "Like";
             }
                             
-            if (criteriaFormula.length() > 0 || nullPick || fieldQRI instanceof TreeLevelQRI)
-            {
-                if (fieldQRI instanceof TreeLevelQRI)
-                {
-                    try
-                    {
+            if (criteriaFormula.length() > 0 || nullPick || fieldQRI instanceof TreeLevelQRI) {
+                if (fieldQRI instanceof TreeLevelQRI) {
+                    try {
                     	return ((TreeLevelQRI)fieldQRI).getNodeNumberCriteria(criteriaFormula, ta, operStr, isNotCheckbox.isSelected());
-                    }
-                    catch (ParseException pe)
-                    {
+                    } catch (ParseException pe) {
                         throw new ParseException(getLabel()
                                 + " - "
                                 + String.format(UIRegistry.getResourceString("QB_PARSE_ERROR"),
@@ -1590,23 +1536,19 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                         .getOp(SpQueryField.OperatorType.IN.getOrdinal()))) {
                 	str.append(fieldQRI.getSQLFldSpec(ta, true, schemaItem != null, getFormatName()) + " ");
                 }
-                if (nullPick && "=".equals(operStr))
-                {
+                if (nullPick && "=".equals(operStr)) {
                 	str.append(" is null ");
                 } else if (!operStr.equals(SpQueryField.OperatorType
                         .getOp(SpQueryField.OperatorType.IN.getOrdinal()))) {
                 	str.append(operStr);
                 }
                 str.append(" ");
-                if (!(nullPick && "=".equals(operStr)))
-                {
+                if (!(nullPick && "=".equals(operStr))) {
                 	str.append(criteriaFormula);
                 }
-                if (isNotCheckbox.isSelected()) 
-                {
+                if (isNotCheckbox.isSelected()) {
                     if (!operStr.equals(SpQueryField.OperatorType
-                            .getOp(SpQueryField.OperatorType.EMPTY.getOrdinal())))
-                    {
+                            .getOp(SpQueryField.OperatorType.EMPTY.getOrdinal()))) {
                         str.append(" or " + fieldQRI.getSQLFldSpec(ta, true, schemaItem != null, getFormatName()) + " is null");
                     }
                     str.append(")");
@@ -1620,7 +1562,10 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                 	//This is not technically correct, but probably will never matter, and possibly produce more desirable 
                 	//results then the technically correct criteria 
                 	result = "(" + result + " or " + fieldQRI.getSQLFldSpec(ta, true, schemaItem != null, getFormatName()) + " is null)";
-                }                
+                }
+                if (fieldQRI instanceof DateAccessorQRI) {
+                    result = ((DateAccessorQRI)fieldQRI).refineCriteria(ta, isNotCheckbox.isSelected(), result);
+                }
                 return result;
             }
         }
@@ -1948,10 +1893,6 @@ public class QueryFieldPanel extends JPanel implements ActionListener
 						{
 							sortCheckbox.setEnabled(isDisplayedCkbx.isSelected());
 							ownerQuery.changeNotification(QueryFieldPanel.this);
-                            if (!isDisplayedCkbx.isSelected()) {
-                                schemaItemCBX.setSelectedIndex(0);
-                            }
-                            schemaItemCBX.setEnabled(isDisplayedCkbx.isSelected());
 						}
 					});
 				}
