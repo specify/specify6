@@ -19,6 +19,8 @@
 */
 package edu.ku.brc.util;
 
+import edu.ku.brc.helpers.ProxyHelper;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -33,6 +35,7 @@ import java.util.HashMap;
 import java.util.Properties;
 import java.util.UUID;
 
+import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -707,6 +710,7 @@ public class FileCache implements DataCacheIFace
         HttpClient httpClient = new HttpClient();
 		GetMethod get = new GetMethod(url);
 		get.setFollowRedirects(true);
+		ProxyHelper.applyProxySettings(httpClient);
 		int result = httpClient.executeMethod(get);
 		if (result != 200)
 		{

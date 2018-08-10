@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
+import edu.ku.brc.helpers.ProxyHelper;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.PostMethod;
@@ -81,6 +82,7 @@ public class BioGeomancer
                                                  final String localityArg) throws IOException
     {
         HttpClient httpClient = new HttpClient();
+        ProxyHelper.applyProxySettings(httpClient);
         PostMethod postMethod = new PostMethod("http://130.132.27.130/cgi-bin/bgm-0.2/batch_test.pl"); //$NON-NLS-1$
         StringBuilder strBuf = new StringBuilder(128);
         strBuf.append("\""+ id + "\","); //$NON-NLS-1$ //$NON-NLS-2$

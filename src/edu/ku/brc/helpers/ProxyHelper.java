@@ -20,6 +20,8 @@
 package edu.ku.brc.helpers;
 
 import edu.ku.brc.af.prefs.AppPreferences;
+import org.apache.commons.httpclient.HostConfiguration;
+import org.apache.commons.httpclient.HttpClient;
 
 /**
  * @author rods
@@ -118,4 +120,21 @@ public class ProxyHelper
                       localPrefs.get(PROXY_PORT_HTTPS, null), 
                       false);
     }
+
+    public static void applyProxySettings(HttpClient httpClient) {
+        String proxyHost = System.getProperty("http.proxyHost");
+        if (proxyHost != null) {
+            Integer proxyPort = null;
+            try {
+                proxyPort = Integer.valueOf(System.getProperty("http.proxyPort"));
+            } catch (Exception e) {
+                //disregard stupid port
+                proxyPort = 8080;
+            }
+            HostConfiguration hc = new HostConfiguration();
+            hc.setProxy(proxyHost, proxyPort);
+            httpClient.setHostConfiguration(hc);
+        }
+    }
+
 }

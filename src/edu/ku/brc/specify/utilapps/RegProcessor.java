@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
 
+import edu.ku.brc.helpers.ProxyHelper;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.lang.StringUtils;
@@ -377,7 +378,7 @@ public class RegProcessor
         {
             HttpClient httpClient = new HttpClient();
             httpClient.getParams().setParameter("http.useragent", RegisterSpecify.class.getName()); //$NON-NLS-1$
-            
+            ProxyHelper.applyProxySettings(httpClient);
             String urlStr = UIRegistry.getResourceString(urlKey);
             
             PostMethod postMethod = new PostMethod(urlStr + (inclDmp ? "?dmp=1&" : ""));

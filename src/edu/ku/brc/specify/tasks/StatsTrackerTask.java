@@ -565,9 +565,10 @@ public class StatsTrackerTask extends edu.ku.brc.af.tasks.StatsTrackerTask
             {
                 //This is a workaround hack fix for #158.
                 //When #159 is fixed this will need to be rehacked around
-                if (Specify.getProxySettings().length <= 1) {
+                //if (Specify.getProxySettings().length <= 1) {
+                    //#159 is fixed
                     sendActivityStats(true);
-                }
+                //}
             } catch (Exception ex) {}
         }
     }

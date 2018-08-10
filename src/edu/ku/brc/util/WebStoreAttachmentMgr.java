@@ -49,12 +49,7 @@ import javax.crypto.spec.SecretKeySpec;
 import javax.swing.SwingUtilities;
 
 import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.HttpMethodBase;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.NameValuePair;
+import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.multipart.FilePart;
@@ -70,6 +65,7 @@ import org.dom4j.Element;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.helpers.ProxyHelper;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.specify.datamodel.Collection;
@@ -172,6 +168,7 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
        
        HttpClient client = new HttpClient();
        client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
+       ProxyHelper.applyProxySettings(client);
 
        try
        {
@@ -204,7 +201,8 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
             HttpClient client = new HttpClient();
             client.getHttpConnectionManager().getParams().setConnectionTimeout(timeoutMilliseconds);
             client.getHttpConnectionManager().getParams().setSoTimeout(timeoutMilliseconds);
-        
+            ProxyHelper.applyProxySettings(client);
+
             try
             {
                 int status = client.executeMethod(method);
@@ -378,7 +376,8 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
     
             HttpClient client = new HttpClient();
             client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
-        
+            ProxyHelper.applyProxySettings(client);
+
             try
             {
                 int status = client.executeMethod(method);
@@ -436,7 +435,8 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
     
             HttpClient client = new HttpClient();
             client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
-        
+            ProxyHelper.applyProxySettings(client);
+
             try
             {
                 int status = client.executeMethod(method);
@@ -794,7 +794,8 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
                 
         HttpClient client = new HttpClient();
         client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
-        
+        ProxyHelper.applyProxySettings(client);
+
         try
         {
             int status = client.executeMethod(getMethod);
@@ -955,6 +956,7 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
             filePost.setRequestEntity(new MultipartRequestEntity(parts, filePost.getParams()));
             HttpClient client = new HttpClient();
             client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
+            ProxyHelper.applyProxySettings(client);
 
             int status = client.executeMethod(filePost);
             updateServerTimeDelta(filePost);
@@ -1041,6 +1043,7 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
 
             HttpClient client = new HttpClient();
             client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
+            ProxyHelper.applyProxySettings(client);
 
             int status = client.executeMethod(postMethod);
             updateServerTimeDelta(postMethod);

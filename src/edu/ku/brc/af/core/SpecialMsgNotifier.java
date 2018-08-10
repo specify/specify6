@@ -25,6 +25,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 
+import edu.ku.brc.helpers.ProxyHelper;
+import edu.ku.brc.specify.Specify;
+import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.PostMethod;
@@ -129,6 +132,7 @@ public class SpecialMsgNotifier
         // check the website for the info about the latest version
         HttpClient httpClient = new HttpClient();
         httpClient.getParams().setParameter("http.useragent", getClass().getName()); //$NON-NLS-1$
+        ProxyHelper.applyProxySettings(httpClient);
         httpClient.getHttpConnectionManager().getParams().setConnectionTimeout(15000);
 
         PostMethod postMethod = new PostMethod(url);

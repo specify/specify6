@@ -19,24 +19,6 @@
 */
 package edu.ku.brc.af.tasks;
 
-import static edu.ku.brc.ui.UIRegistry.getResourceString;
-
-import java.beans.PropertyChangeListener;
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Vector;
-
-import javax.swing.SwingUtilities;
-
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.NameValuePair;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.ToolBarItemDesc;
@@ -45,12 +27,33 @@ import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.helpers.SwingWorker;
+import edu.ku.brc.helpers.ProxyHelper;
+import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
+import org.apache.commons.httpclient.*;
+import org.apache.commons.httpclient.methods.*;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+
+import javax.swing.*;
+import java.beans.PropertyChangeListener;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.List;
+import java.util.Vector;
+
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
+
+//import org.apache.http.impl.client.CloseableHttpClient;
+//import org.apache.http.impl.client.HttpClientBuilder;
+//import org.apache.http.client.params.HttpClientParams;
+//import org.apache.http.client.methods.HttpPost;
 
 /**
  * This class sends usage stats.
@@ -361,7 +364,8 @@ public class StatsTrackerTask extends BaseTask
         // check the website for the info about the latest version
         HttpClient httpClient = new HttpClient();
         httpClient.getParams().setParameter("http.useragent", userAgentName); //$NON-NLS-1$
-        
+
+        ProxyHelper.applyProxySettings(httpClient);
         PostMethod postMethod = new PostMethod(url);
         
         // get the POST parameters (which includes usage stats, if we're allowed to send them)
@@ -373,13 +377,13 @@ public class StatsTrackerTask extends BaseTask
             httpClient.executeMethod(postMethod);
             
             // get the server response
-            @SuppressWarnings("unused")
-            String responseString = postMethod.getResponseBodyAsString();
+            //unused
+            /*String responseString = postMethod.getResponseBodyAsString();
             
-            //if (StringUtils.isNotEmpty(responseString))
-            //{
-            //    System.err.println(responseString);
-            //}
+            if (StringUtils.isNotEmpty(responseString))
+            {
+                System.err.println(responseString);
+            }*/
 
         } catch (java.net.UnknownHostException ex)
         {
