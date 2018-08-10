@@ -35,6 +35,7 @@ import javax.swing.JLabel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingConstants;
 
+import edu.ku.brc.specify.Specify;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -562,7 +563,11 @@ public class StatsTrackerTask extends edu.ku.brc.af.tasks.StatsTrackerTask
         {
             try
             {
-                sendActivityStats(true);
+                //This is a workaround hack fix for #158.
+                //When #159 is fixed this will need to be rehacked around
+                if (Specify.getProxySettings().length <= 1) {
+                    sendActivityStats(true);
+                }
             } catch (Exception ex) {}
         }
     }
