@@ -541,9 +541,7 @@ public class StatsTrackerTask extends edu.ku.brc.af.tasks.StatsTrackerTask
         if (StringUtils.isNotEmpty(url))
         {
             Vector<NameValuePair> stats = createPostParameters(false);
-            appendBasicCollStats(stats);
             stats.add(new NameValuePair("Type",  isLoggingIn ? "0" : "1")); //$NON-NLS-1$
-            
             sendStats(url, stats, getClass().getName());
         }
     }
@@ -552,22 +550,21 @@ public class StatsTrackerTask extends edu.ku.brc.af.tasks.StatsTrackerTask
      * @see edu.ku.brc.af.tasks.BaseTask#doProcessAppCommands(edu.ku.brc.ui.CommandAction)
      */
     @Override
-    protected void doProcessAppCommands(CommandAction cmdAction)
-    {
+    protected void doProcessAppCommands(CommandAction cmdAction) {
         super.doProcessAppCommands(cmdAction);
         
         System.err.println("************************ Type: "+cmdAction.getType()+"  Action: "+cmdAction.getAction());
         
         if (cmdAction.isAction(APP_RESTART_ACT) ||
-            cmdAction.isAction(APP_START_ACT))
-        {
-            try
-            {
+            cmdAction.isAction(APP_START_ACT)) {
+            try {
                 //This is a workaround hack fix for #158.
                 //When #159 is fixed this will need to be rehacked around
                 //if (Specify.getProxySettings().length <= 1) {
                     //#159 is fixed
-                    sendActivityStats(true);
+                    if (AppPreferences.getRemote().getBoolean(Specify.hiddenSendStatsPrefName, true)) {
+                        sendActivityStats(true);
+                    }
                 //}
             } catch (Exception ex) {}
         }

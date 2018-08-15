@@ -98,6 +98,7 @@ import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
 import edu.ku.brc.specify.tasks.WorkbenchTask;
+import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
@@ -263,8 +264,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
     public static final boolean IS_DEVELOPMENT       = true;
     public static final int HIBERNATE_BATCH_SIZE     = 25; //should match the hibernate.jdbc.batch_size setting in hibernate.cfg.xml
 
-    private static final String sendStatsPrefName    = "usage_tracking.send_stats";
-    private static final String sendISAStatsPrefName = "usage_tracking.send_isa_stats";
+    public static final String hiddenSendStatsPrefName    = "usage_tracking.do_send_stats";
     private static final String UPDATE_CHK_ERROR     = "Specify.UPDATE_CHK_ERROR";
     private static final String ERRMSG               = "ERRMSG";
     private static final String STATS_SEND_DONE      = "STATS_SEND_DONE";
@@ -1055,19 +1055,13 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
 
     private void changeCollection() {
         AppPreferences appPrefs             = AppPreferences.getRemote();
-        Boolean        canSendStats         = appPrefs.getBoolean(sendStatsPrefName, null); //$NON-NLS-1$
-        Boolean        canSendISAStats      = appPrefs.getBoolean(sendISAStatsPrefName, null); //$NON-NLS-1$
-
-        if (canSendStats == null) {
-            canSendStats = true;
-            appPrefs.putBoolean(sendStatsPrefName, canSendStats); //$NON-NLS-1$
-        }
+        Boolean        canSendStats         = appPrefs.getBoolean(hiddenSendStatsPrefName, true); //$NON-NLS-1$
 
         if (canSendStats) {
             StatsTrackerTask statsTrackerTask = (StatsTrackerTask) TaskMgr.getTask("StatsTracker");
             if (statsTrackerTask != null) {
                 statsTrackerTask.initialize(); //sets domain ids from current appcontext, which will change as stats send runs in background.
-                statsTrackerTask.setSendSecondaryStatsAllowed(canSendISAStats);
+                statsTrackerTask.setSendSecondaryStatsAllowed(true);
                 class StatsWorker extends javax.swing.SwingWorker<Object, Object> {
                     @Override
                     public String doInBackground() {
@@ -1094,6 +1088,8 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                 }
                 (new StatsWorker()).execute();
             }
+        } else {
+            restartApp(null, databaseName, userName, true, false);
         }
     }
     /**
@@ -1671,7 +1667,6 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         return proxySettings;
     }
 
-    
     /**
      * 
      */
@@ -2452,40 +2447,30 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         {
             ex.printStackTrace();
             
-        } finally
-        {
-            if (okToShutdown && doAppExit)
-            {
-                Boolean canSendStats = false;
-                if (AppContextMgr.getInstance().hasContext())
-                {
-                    canSendStats = AppPreferences.getRemote().getBoolean(sendStatsPrefName, true); //$NON-NLS-1$
+        } finally {
+            if (okToShutdown && doAppExit) {
+                Boolean canSendStats = true;
+                if (AppContextMgr.getInstance().hasContext()) {
+                    canSendStats = AppPreferences.getRemote().getBoolean(hiddenSendStatsPrefName, true); //$NON-NLS-1$
                 }
                 
-                if (canSendStats)
-                {
-                    Boolean          canSendISAStats  = AppPreferences.getRemote().getBoolean(sendISAStatsPrefName, true); //$NON-NLS-1$
+                if (canSendStats) {
                     StatsTrackerTask statsTrackerTask = (StatsTrackerTask)TaskMgr.getTask(StatsTrackerTask.STATS_TRACKER);
-                    if (statsTrackerTask != null)
-                    {
+                    if (statsTrackerTask != null) {
                         UIRegistry.getTopWindow().setVisible(false);
-                        statsTrackerTask.setSendSecondaryStatsAllowed(canSendISAStats);
+                        statsTrackerTask.setSendSecondaryStatsAllowed(true);
                         statsTrackerTask.sendStats(false, false, true); // don't exit, show progress and send done event
                         
                         return false;
                     }
                     
-                } else
-                {
+                } else {
                     // Fake like we sent stats, needs to  to be placed into the event queue 
                     // so any other events can be processed.
-                    SwingUtilities.invokeLater(new Runnable()
-                    {
+                    SwingUtilities.invokeLater(new Runnable() {
                         @Override
-                        public void run()
-                        {
-                            try
-                            {
+                        public void run() {
+                            try {
                                 Thread.sleep(500); // wait half second before sending 'faked' done event.
                             } catch (Exception ex) {}
                             CommandDispatcher.dispatch(new CommandAction(BaseTask.APP_CMD_TYPE, STATS_SEND_DONE, null));
@@ -2612,25 +2597,15 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
     /**
      * This is called when switching Collections and NOT logging off.
      */
-    protected void checkAndSendStats()
-    {
+    protected void checkAndSendStats() {
         AppPreferences appPrefs             = AppPreferences.getRemote();
-        Boolean        canSendStats         = appPrefs.getBoolean(sendStatsPrefName, null); //$NON-NLS-1$
-        Boolean        canSendISAStats      = appPrefs.getBoolean(sendISAStatsPrefName, null); //$NON-NLS-1$
-        
-        if (canSendStats == null)
-        {
-            canSendStats = true;
-            appPrefs.putBoolean(sendStatsPrefName, canSendStats); //$NON-NLS-1$
-        }
-        
-        if (canSendStats)
-        {
+        Boolean        canSendStats         = appPrefs.getBoolean(hiddenSendStatsPrefName, true); //$NON-NLS-1$
+
+        if (canSendStats) {
             StatsTrackerTask statsTrackerTask = (StatsTrackerTask)TaskMgr.getTask("StatsTracker");
-            if (statsTrackerTask != null)
-            {
+            if (statsTrackerTask != null) {
                 statsTrackerTask.initialize(); //sets domain ids from current appcontext, which will change as stats send runs in background.
-                statsTrackerTask.setSendSecondaryStatsAllowed(canSendISAStats);
+                statsTrackerTask.setSendSecondaryStatsAllowed(true);
                 statsTrackerTask.sendStats(false, true, false);
             }
         }
@@ -2721,42 +2696,24 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         
         // Check Stats (this is mostly for the first time in.
         AppPreferences appPrefs             = AppPreferences.getRemote();
-        Boolean        canSendStats         = appPrefs.getBoolean(sendStatsPrefName, null); //$NON-NLS-1$
-        Boolean        canSendISAStats      = appPrefs.getBoolean(sendISAStatsPrefName, null); //$NON-NLS-1$
-        
-        // Make sure we have the proper defaults
-        if (canSendStats == null)
-        {
-            canSendStats = true;
-            appPrefs.putBoolean("usage_tracking.send_stats", canSendStats); //$NON-NLS-1$
-        }
-        
-        if (canSendISAStats == null)
-        {
-            canSendISAStats = true;
-            appPrefs.putBoolean(sendISAStatsPrefName, canSendISAStats); //$NON-NLS-1$
-        }
-        
-        if (status == AppContextMgr.CONTEXT_STATUS.OK)
-        {
+        Boolean        canSendStats         = appPrefs.getBoolean(hiddenSendStatsPrefName, true); //$NON-NLS-1$
+
+        if (status == AppContextMgr.CONTEXT_STATUS.OK) {
              // XXX Get the current locale from prefs PREF
             
-            if (AppContextMgr.getInstance().getClassObject(Discipline.class) == null)
-            {
+            if (AppContextMgr.getInstance().getClassObject(Discipline.class) == null) {
                 return;
             }
             
             // "false" means that it should use any cached values it can find to automatically initialize itself
-            if (firstTime)
-            {
+            if (firstTime) {
                 GraphicsConfiguration gc = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
                 
                 initialize(gc);
     
                 topFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
                 UIRegistry.register(UIRegistry.FRAME, topFrame);
-            } else
-            {
+            } else {
                 SubPaneMgr.getInstance().closeAll();
             }
             
@@ -2767,8 +2724,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             AppPrefsCache.addChangeListener("ui.formatting.scrdateformat", UIFieldFormatterMgr.getInstance());
 
             
-            if (changeCollectionMenuItem != null)
-            {
+            if (changeCollectionMenuItem != null) {
                 changeCollectionMenuItem.setEnabled(((SpecifyAppContextMgr)AppContextMgr.getInstance()).getNumOfCollectionsForUser() > 1);
             }
             
