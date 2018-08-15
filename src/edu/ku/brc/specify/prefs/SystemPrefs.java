@@ -77,9 +77,6 @@ public class SystemPrefs extends GenericPrefsPanel
     protected static final String SPECIFY_BG_IMG_PATH = "specify.bg.image";
     protected static final String VERSION_CHECK       = "version_check.auto";
     
-    protected static final String SEND_STATS          = "usage_tracking.send_stats";
-    protected static final String SEND_ISA_STATS      = "usage_tracking.send_isa_stats";
-    
     protected static final String USE_WORLDWIND       = "USE.WORLDWIND";
     protected static final String SYSTEM_HasOpenGL    = "SYSTEM.HasOpenGL";
     protected static final String ALWAYS_ASK_COLL     = "ALWAYS.ASK.COLL";
@@ -201,36 +198,6 @@ public class SystemPrefs extends GenericPrefsPanel
         ValCheckBox chk = form.getCompById("2");
         chk.setValue(localPrefs.getBoolean(VERSION_CHECK, true), "true");
         
-        chk = form.getCompById("3");
-        chk.setValue(remotePrefs.getBoolean(SEND_STATS, true), "true");
-        
-        chk = form.getCompById("9");
-        chk.setValue(remotePrefs.getBoolean(SEND_ISA_STATS, true), "true");
-        chk.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                Collection collection = AppContextMgr.getInstance().getClassObject(Collection.class);
-                if (collection != null)
-                {
-                    String isaNumber = collection.getIsaNumber();
-                    if (StringUtils.isNotEmpty(isaNumber) && !((JCheckBox)e.getSource()).isSelected()){
-                        //UIRegistry.showLocalizedMsg("ISA_STATS_WARNING");
-                    }
-                }
-            }
-         });
-        
-        // Not sure why the form isn't picking up the pref automatically
-        /* remove if worldwind is broken*/ValCheckBox useWWChk  = form.getCompById(USE_WORLDWIND);
-        /* remove if worldwind is broken*/ValCheckBox hasOGLChk = form.getCompById(SYSTEM_HasOpenGL);
-                
-        /* remove if worldwind is broken*/useWWChk.setValue(localPrefs.getBoolean(USE_WORLDWIND, false), null);
-        /* remove if worldwind is broken*/hasOGLChk.setValue(localPrefs.getBoolean(SYSTEM_HasOpenGL, false), null);
-        /* remove if worldwind is broken*/hasOGLChk.setEnabled(false);
-        
-        //ValCheckBox askCollChk = form.getCompById(ALWAYS_ASK_COLL);
-        //askCollChk.setValue(localPrefs.getBoolean(ALWAYS_ASK_COLL, false), null);
     }
     
     /**
@@ -325,24 +292,6 @@ public class SystemPrefs extends GenericPrefsPanel
             
             ValCheckBox chk = form.getCompById("2");
             localPrefs.putBoolean(VERSION_CHECK, (Boolean)chk.getValue());
-            
-            chk = form.getCompById("3");
-            remotePrefs.putBoolean(SEND_STATS, (Boolean)chk.getValue());
-            
-            chk = form.getCompById("9");
-            remotePrefs.putBoolean(SEND_ISA_STATS, (Boolean)chk.getValue());
-            
-            /* remove if worldwind is broken*/chk = form.getCompById(USE_WORLDWIND);
-            /* remove if worldwind is broken*/localPrefs.putBoolean(USE_WORLDWIND, (Boolean)chk.getValue());
-//            
-            /* remove if worldwind is broken*/chk = form.getCompById(SYSTEM_HasOpenGL);
-            /* remove if worldwind is broken*/localPrefs.putBoolean(SYSTEM_HasOpenGL, (Boolean)chk.getValue());
-//            
-            /* remove if worldwind is broken*/chk = form.getCompById(USE_WORLDWIND);
-            /* remove if worldwind is broken*/localPrefs.putBoolean(USE_WORLDWIND, (Boolean)chk.getValue());  
-            
-            //chk = form.getCompById(ALWAYS_ASK_COLL);
-            //localPrefs.putBoolean(ALWAYS_ASK_COLL, (Boolean)chk.getValue());
             
             ValComboBox localeCBX = form.getCompById("5");
             Locale item = (Locale)localeCBX.getComboBox().getSelectedItem();
