@@ -193,11 +193,11 @@ public class TaskSemaphoreMgr
                 }
                 return false;
                 
-            } catch (com.mysql.jdbc.exceptions.jdbc4.CommunicationsException ex)
-            {
-                UIRegistry.showLocalizedMsg("TIMEOUT_ERR");
-                
-            } catch (com.mysql.jdbc.exceptions.jdbc4.MySQLNonTransientConnectionException ex)
+//            } catch (com.mysql.jdbc.exceptions.jdbc4.CommunicationsException ex)
+//            {
+//                UIRegistry.showLocalizedMsg("TIMEOUT_ERR");
+//
+            } catch (java.sql.SQLNonTransientConnectionException ex)
             {
                 UIRegistry.showLocalizedMsg("TIMEOUT_ERR");
                 
