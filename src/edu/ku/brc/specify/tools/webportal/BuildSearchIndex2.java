@@ -715,7 +715,7 @@ public class BuildSearchIndex2
                 StringBuilder indexStr = new StringBuilder();
                 StringBuilder contents = new StringBuilder();
                 StringBuilder sb       = new StringBuilder();
-                String lat1 = null, lng1 = null, lat2 = null, lng2 = null;
+                String lat1 = null, lng1 = null, lat2 = null, lng2 = null, collCode = null;
                 solrFldXml = getFldsXmlForSchema(map, shortNames);
                 portalFldJson = getModelInJson(map, shortNames);
                 while (rs.next())
@@ -724,7 +724,7 @@ public class BuildSearchIndex2
                     indexStr.setLength(0);
                     contents.setLength(0);
                     sb.setLength(0);
-                    lat1 = null; lng1 = null; lat2 = null; lng2 = null;
+                    lat1 = null; lng1 = null; lat2 = null; lng2 = null; collCode = null;
                     for (int c = 1; c <= md.getColumnCount(); c++)
                     {
                     	if (includeColumn(c))
@@ -784,6 +784,9 @@ public class BuildSearchIndex2
 									} else if ("longitude2".equalsIgnoreCase(map.getMappingByColIdx(c - 2).getSpFldName())) {
 										lng2 = value;
 									}
+									if ("collectionCode".equalsIgnoreCase(info.getConcept())) {
+										collCode = value;
+									}
 								}
 							}
 						}
@@ -802,6 +805,9 @@ public class BuildSearchIndex2
 //                    	{
 //                    		geoc += " " + lat2 + " " + lng2;
 //                    	}
+						if (collCode != null) {
+							geoc += " " + collCode;
+						}
                         doc.add(new StringField("geoc", geoc, Field.Store.NO));
                     }
                     
