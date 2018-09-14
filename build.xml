@@ -22,7 +22,7 @@
   <fail unless="specify.SPECIFY_VERSION">Specify version not set.</fail>
 
   <property name="packages.dir" value="packages" />
-  <property name="install4j.dir" value="${user.home}/install4j5" />
+  <property name="install4j.dir" value="${user.home}/install4j7.0.7" />
   <property name="packaging.dir" value="packaging"/>
 
   <!-- Needed for building help search index -->
@@ -286,7 +286,7 @@
       <copy overwrite="true" file="${build.root}/${jar.name}-mac.jar" tofile="${installer.dir}/${jar.name}.jar" />
 
       <exec executable="${install4j.dir}/bin/install4jc">
-        <arg value="--quiet"/>
+        <!-- <arg value="-\-quiet"/> -->
         <arg value="--faster"/>
 
         <arg value="--win-keystore-password=${win-keystore-password}" />
@@ -314,7 +314,7 @@
       <copy overwrite="true" file="${build.root}/${jar.name}-nonmac.jar" tofile="${installer.dir}/${jar.name}.jar" />
 
       <exec executable="${install4j.dir}/bin/install4jc">
-        <arg value="--quiet"/>
+        <!-- <arg value="-\-quiet"/> -->
         <arg value="--faster"/>
 
         <arg value="--win-keystore-password=${win-keystore-password}" />
@@ -331,7 +331,7 @@
       <move file="@{packages.dir}/updates.xml" tofile="@{packages.dir}/updates.xml.winlinfull"/>
 
       <exec executable="${install4j.dir}/bin/install4jc">
-        <arg value="--quiet"/>
+        <!-- <arg value="-\-quiet"/> -->
         <arg value="--faster"/>
 
         <arg value="--win-keystore-password=${win-keystore-password}" />
