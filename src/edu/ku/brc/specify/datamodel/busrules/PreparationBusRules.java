@@ -36,6 +36,7 @@ import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.Gift;
 import edu.ku.brc.specify.datamodel.Deaccession;
 import edu.ku.brc.specify.datamodel.Preparation;
+import edu.ku.brc.specify.datamodel.ExchangeOut;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
@@ -92,6 +93,7 @@ public class PreparationBusRules extends AttachmentOwnerBaseBusRules
             int loanCnt = BasicSQLUtils.getCountAsInt("select count(distinct l.loanid) from loan l inner join loanpreparation lp on lp.loanid = l.loanid where not lp.isresolved and lp.preparationid = " + prep.getId());
             int giftCnt = BasicSQLUtils.getCountAsInt("select count(distinct l.giftid) from gift l inner join giftpreparation lp on lp.giftid = l.giftid where lp.preparationid = " + prep.getId());
             int deaccCnt = BasicSQLUtils.getCountAsInt("select count(distinct l.deaccessionid) from deaccession l inner join deaccessionpreparation lp on lp.deaccessionid = l.deaccessionid where lp.preparationid = " + prep.getId());
+            int exchCnt = BasicSQLUtils.getCountAsInt("select count(distinct l.exchangeoutid) from exchangeout l inner join exchangeoutprep lp on lp.exchangeoutid = l.exchangeoutid where lp.preparationid = " + prep.getId());
             if (loanCnt > 0) {
                 showLoans();
             }
@@ -100,6 +102,9 @@ public class PreparationBusRules extends AttachmentOwnerBaseBusRules
             }
             if (deaccCnt > 0) {
                 showDeaccessions();
+            }
+            if (exchCnt > 0) {
+                showExchanges();
             }
         }
     }
@@ -116,6 +121,10 @@ public class PreparationBusRules extends AttachmentOwnerBaseBusRules
 
     private void showDeaccessions() {
         this.showInteraction(DBTableIdMgr.getInstance().getInfoById(Deaccession.getClassTableId()));
+    }
+
+    private void showExchanges() {
+        this.showInteraction(DBTableIdMgr.getInstance().getInfoById(ExchangeOut.getClassTableId()));
     }
 
     private void showInteraction(DBTableInfo tbl) {
@@ -138,9 +147,11 @@ public class PreparationBusRules extends AttachmentOwnerBaseBusRules
 
                 DataProviderSessionIFace session = null;
                 try {
+                    String prepTblName = tbl.getName();
+                    prepTblName += "exchangeout".equalsIgnoreCase(prepTblName) ? "prep" : "preparation";
                     session = DataProviderFactory.getInstance().createSession();
                     String sql = " SELECT DISTINCT " + tbl.getName() + "." + tbl.getIdColumnName() + " FROM "
-                    + tbl.getName() +  " Inner Join " + tbl.getName() + "preparation AS lp ON " + tbl.getName() + "."
+                    + tbl.getName() +  " Inner Join " + prepTblName + " AS lp ON " + tbl.getName() + "."
                     + tbl.getIdColumnName() + " = lp." + tbl.getIdColumnName() + " WHERE ";
                     if (tbl.getFieldByName("IsClosed") != null) {
                         sql += "not " + tbl.getName() + ".IsClosed AND ";
