@@ -771,10 +771,6 @@
   	<field column="GGBN Sample Designation" name="GGBN_sampleDesignation" type="java.lang.String" />
   </table>
 
-  <table classname="edu.ku.brc.specify.datamodel.DNASequence" table="dnasequence" tableid="121" >
-      <field column="BOLDBarcodeID" name="boldBarcodeId" type="java.lang.String" />
-  </table>
-  
   <table classname="edu.ku.brc.specify.datamodel.OtherIdentifier" table="otheridentifier" tableid="61" searchable="true" abbrv="oi">
     <field column="Other Identifier 1" name="otherIdentifier1" type="java.lang.String" length="64"/>
     <field column="Other Identifier Institution 1" name="otherIdentifierInstitution1" type="java.lang.String" length="64"/>
