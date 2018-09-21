@@ -116,6 +116,11 @@
     <field column="Collector Last Name 8"  name="collectorLastName8" type="java.lang.String" length="120"/>
     <field column="Collector Middle Initials 8" name="collectorMiddle8" type="java.lang.String" length="50"/>
     <field column="Collector Title 8"  name="collectorTitle8" type="java.lang.String" length="50"/>
+    <field column="Permit 1" name="cePermit1" type="java.lang.String" length="64"/>
+    <field column="Permit 2" name="cePermit2" type="java.lang.String" length="64"/>
+    <field column="Permit 3" name="cePermit3" type="java.lang.String" length="64"/>
+    <field column="Permit 4" name="cePermit4" type="java.lang.String" length="64"/>
+    <field column="Permit 5" name="cePermit5" type="java.lang.String" length="64"/>
   </table>
 
   <table classname="edu.ku.brc.specify.datamodel.CollectingEventAttribute" table="collectingeventattribute" tableid="92" lazy="true" query="false">

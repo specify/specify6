@@ -2593,6 +2593,51 @@ public class UploadTable implements Comparable<UploadTable>
             			getRidOfSession(sessObj);
                     }
                 }
+                else if (child.getTblClass().equals(CollectingEventAuthorization.class))
+                {
+                    Pair<DataProviderSessionIFace, Boolean> sessObj = getSession();
+                    DataProviderSessionIFace matchSession = sessObj.getFirst();
+                    try
+                    {
+                        QueryIFace matchesQ = matchSession
+                                .createQuery("from CollectingEventAuthorization where collectingEventid = "
+                                        + match.getId(), false);
+                        List<?> matches = matchesQ.list();
+                        try
+                        {
+                            child.loadFromDataSet(wbCurrentRow);
+                            int childCount = 0;
+                            for (int c = 0; c < child.getUploadFields().size(); c++)
+                            {
+                                if (child.getCurrentRecord(c) != null)
+                                {
+                                    childCount++;
+                                }
+                            }
+                            if (matches.size() != childCount)
+                            {
+                                return false;
+                            }
+                            for (int rec = 0; rec < matches.size(); rec++)
+                            {
+                                CollectingEventAuthorization au1 = (CollectingEventAuthorization) matches.get(rec);
+                                CollectingEventAuthorization au2 = (CollectingEventAuthorization) child.getCurrentRecord(rec);
+                                if (!au1.getPermit().getId().equals(au2.getPermit().getId()))
+                                {
+                                    return  false;
+                                }
+                            }
+                        } finally
+                        {
+                            child.loadFromDataSet(child.wbCurrentRow);
+                        }
+                    }
+                    finally
+                    {
+                        getRidOfSession(sessObj);
+                    }
+
+                }
                 if (!result)
                 {
                     break;
@@ -2961,7 +3006,8 @@ public class UploadTable implements Comparable<UploadTable>
         if (tblClass.equals(CollectingEvent.class)) 
         { 
         	return childClass.equals(Collector.class)
-        		|| childClass.equals(CollectingEventAttribute.class);
+        		|| childClass.equals(CollectingEventAttribute.class)
+                    || childClass.equals(CollectingEventAuthorization.class);
         }
         if (tblClass.equals(CollectionObject.class)) 
         { 

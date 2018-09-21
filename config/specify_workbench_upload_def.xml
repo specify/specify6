@@ -79,6 +79,11 @@
     <field table="CollectingEvent" name="collectorMiddle8" onetomanysequence="7" sequencefield="orderNumber" actualtable="collector" relationshipname="agent" relatedfieldname="middleInitial"/>
     <field table="CollectingEvent" name="collectorTitle8" onetomanysequence="7" sequencefield="orderNumber" actualtable="collector" relationshipname="agent" relatedfieldname="title"/>
 	<field table="CollectingEvent" name="collectingEventRemarks" actualname="Remarks"/>
+    <field table="CollectingEvent" name="cePermit1" onetomanysequence="0" actualtable="collectingeventauthorization" relationshipname="permit" relatedfieldname="permitNumber"/>
+    <field table="CollectingEvent" name="cePermit2" onetomanysequence="1" actualtable="collectingeventauthorization" relationshipname="permit" relatedfieldname="permitNumber"/>
+    <field table="CollectingEvent" name="cePermit3" onetomanysequence="2" actualtable="collectingeventauthorization" relationshipname="permit" relatedfieldname="permitNumber"/>
+    <field table="CollectingEvent" name="cePermit4" onetomanysequence="3" actualtable="collectingeventauthorization" relationshipname="permit" relatedfieldname="permitNumber"/>
+    <field table="CollectingEvent" name="cePermit5" onetomanysequence="4" actualtable="collectingeventauthorization" relationshipname="permit" relatedfieldname="permitNumber"/>
 
   	<!-- collectingeventattribute -->
     <field table="CollectingEventAttribute"  name="collectingEventAttributeRemarks" actualname="Remarks" />
