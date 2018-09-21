@@ -875,7 +875,7 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
     /**
      *
      */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "collectingevent")
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "collectingEvent")
     @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<CollectingEventAuthorization> getCollectingEventAuthorizations() {
         return this.collectingEventAuthorizations;
