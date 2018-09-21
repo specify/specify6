@@ -95,7 +95,7 @@
         <table name="edu.ku.brc.specify.datamodel.CollectingEventAttribute" abbrev="cea" id="92" searchable="true">
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.CollectingEventAttributeBusRules</businessrule>
         </table>
-        <table name="edu.ku.brc.specify.datamodel.CollectingEventAuthorization" abbrev="aca" id="152" searchable="true">
+        <table name="edu.ku.brc.specify.datamodel.CollectingEventAuthorization" abbrev="ceau" id="152" searchable="true">
             <display dataobjformatter="CollectingEventAuthorization"/>
             <businessrule>edu.ku.brc.specify.datamodel.busrules.CollectingEventAuthorizationBusRules</businessrule>
         </table>
