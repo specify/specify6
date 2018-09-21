@@ -126,7 +126,7 @@ public class Permit extends DataModelObjBase implements AttachmentOwnerIFace<Per
         yesNo1 = null;
         yesNo2 = null;
         accessionAuthorizations = new HashSet<AccessionAuthorization>();
-        collectingEventAuthorizations = new HashSet<CollectingEventAuthorization>()
+        collectingEventAuthorizations = new HashSet<CollectingEventAuthorization>();
         issuedTo = null;
         issuedBy = null;
         permitAttachments = new HashSet<PermitAttachment>();
