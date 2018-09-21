@@ -77,6 +77,7 @@ public class Permit extends DataModelObjBase implements AttachmentOwnerIFace<Per
     protected Boolean                     yesNo1;
     protected Boolean                     yesNo2;
     protected Set<AccessionAuthorization> accessionAuthorizations;
+    protected Set<CollectingEventAuthorization> collectingEventAuthorizations;
     protected Agent                       issuedTo;
     protected Agent                       issuedBy;
     protected Set<PermitAttachment>       permitAttachments;
@@ -125,6 +126,7 @@ public class Permit extends DataModelObjBase implements AttachmentOwnerIFace<Per
         yesNo1 = null;
         yesNo2 = null;
         accessionAuthorizations = new HashSet<AccessionAuthorization>();
+        collectingEventAuthorizations = new HashSet<CollectingEventAuthorization>()
         issuedTo = null;
         issuedBy = null;
         permitAttachments = new HashSet<PermitAttachment>();
@@ -512,6 +514,20 @@ public class Permit extends DataModelObjBase implements AttachmentOwnerIFace<Per
 
     public void setAccessionAuthorizations(Set<AccessionAuthorization> accessionAuthorizations) {
         this.accessionAuthorizations = accessionAuthorizations;
+    }
+
+    /**
+     *
+     */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "permit")
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
+    public Set<CollectingEventAuthorization> getCollectingEventAuthorizations() {
+
+        return this.collectingEventAuthorizations;
+    }
+
+    public void setCollectingEventAuthorizations(Set<CollectingEventAuthorization> collectingEventAuthorizations) {
+        this.collectingEventAuthorizations = collectingEventAuthorizations;
     }
 
     /**

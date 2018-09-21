@@ -117,6 +117,7 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
     protected CollectingEventAttribute          collectingEventAttribute;      // Specify 5 Attributes table
     protected Set<CollectingEventAttr>          collectingEventAttrs;          // Generic Expandable Attributes
     protected Set<CollectingEventAttachment>    collectingEventAttachments;
+    protected Set<CollectingEventAuthorization> collectingEventAuthorizations;
 
     
 
@@ -181,7 +182,7 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
         collectingEventAttribute     = null;
         collectingEventAttrs         = new HashSet<CollectingEventAttr>();
         collectingEventAttachments   = new HashSet<CollectingEventAttachment>();
-        
+        collectingEventAuthorizations = new HashSet<CollectingEventAuthorization>();
         hasGUIDField = true;
         setGUID();
     }
@@ -853,6 +854,7 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
         }
         collectors.size();
         collectingEventAttrs.size();
+        collectingEventAuthorizations.size();
     }
 
     public void fullForceLoad()
@@ -866,7 +868,21 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
         	co.forceLoad();
         }
         collectors.size();
+        collectingEventAuthorizations.size();
         collectingEventAttrs.size();
+    }
+
+    /**
+     *
+     */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "collectingevent")
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+    public Set<CollectingEventAuthorization> getCollectingEventAuthorizations() {
+        return this.collectingEventAuthorizations;
+    }
+
+    public void setCollectingEventAuthorizations(Set<CollectingEventAuthorization> collectingEventAuthorizations) {
+        this.collectingEventAuthorizations = collectingEventAuthorizations;
     }
 
     /* (non-Javadoc)
@@ -945,6 +961,7 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
         obj.collectingEventAttribute     = null;
         obj.collectingEventAttrs         = new HashSet<CollectingEventAttr>();
         obj.collectingEventAttachments   = new HashSet<CollectingEventAttachment>();
+        obj.collectingEventAuthorizations = new HashSet<CollectingEventAuthorization>();
         obj.setGUID();
 
         
@@ -954,7 +971,13 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
             newCollector.setCollectingEvent(obj);
             obj.collectors.add(newCollector);
         }
-        
+
+        for (CollectingEventAuthorization auth : collectingEventAuthorizations) {
+            CollectingEventAuthorization newAuth = (CollectingEventAuthorization)auth.clone();
+            newAuth.setCollectingEvent(obj);
+            obj.collectingEventAuthorizations.add(newAuth);
+        }
+
         // Clone Attributes
         obj.collectingEventAttribute    = collectingEventAttribute != null ? (CollectingEventAttribute)collectingEventAttribute.clone() : null;
         obj.collectingEventAttrs        = new HashSet<CollectingEventAttr>();
