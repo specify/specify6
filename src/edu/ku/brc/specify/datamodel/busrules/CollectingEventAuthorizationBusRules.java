@@ -71,9 +71,7 @@ public class CollectingEventAuthorizationBusRules extends BaseBusRules
                         if (e != null && !e.getValueIsAdjusting())
                         {
                             FormDataObjIFace parentData = (FormDataObjIFace)formViewObj.getParentDataObj();
-                            Set<?>           setOfData  = parentData instanceof CollectingEvent ? ((CollectingEvent)parentData).getCollectingEventAuthorizations() :
-                                    ((RepositoryAgreement)parentData).getRepositoryAgreementAuthorizations();
-
+                            Set<?> setOfData  = ((CollectingEvent)parentData).getCollectingEventAuthorizations();
                             Permit permit = (Permit)permitQCBX.getValue();
                             if (countDataObjectById(setOfData, permit) > 1)
                             {
