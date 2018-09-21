@@ -103,6 +103,7 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
     
     protected Set<GiftPreparation>        giftPreparations;
     protected Set<LoanPreparation>        loanPreparations;
+    protected Set<ConservDescription>     conservDescriptions;
     protected PrepType                    prepType;
     protected CollectionObject            collectionObject;
     protected Agent                       preparedByAgent;
@@ -176,7 +177,8 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
         preparedByAgent = null;
         storage = null;
         deaccessionPreparations = new HashSet<DeaccessionPreparation>();
-        
+        conservDescriptions         = new HashSet<ConservDescription>();
+
         preparationAttribute   = null;
         preparationAttrs       = new HashSet<PreparationAttr>();
         preparationAttachments = new HashSet<PreparationAttachment>();
@@ -225,6 +227,21 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
     
     public void setPreparationId(Integer preparationId) {
         this.preparationId = preparationId;
+    }
+
+    /**
+     *
+     */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "preparation")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    public Set<ConservDescription> getConservDescriptions()
+    {
+        return this.conservDescriptions;
+    }
+
+    public void setConservDescriptions(final Set<ConservDescription> conservDescriptions)
+    {
+        this.conservDescriptions = conservDescriptions;
     }
 
     /**

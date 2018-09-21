@@ -76,6 +76,7 @@ public class ConservDescription extends DataModelObjBase implements AttachmentOw
     protected String             otherRecommendations;
     
     protected CollectionObject   collectionObject;
+    protected Preparation        preparation;
     protected Division           division;
     
     protected Set<ConservEvent>  events;
@@ -115,6 +116,7 @@ public class ConservDescription extends DataModelObjBase implements AttachmentOw
         displayRecommendations = null;
         otherRecommendations   = null;
         collectionObject     = null;
+        preparation = null;
         division             = AppContextMgr.getInstance().getClassObject(Division.class);
         events               = new HashSet<ConservEvent>();
         conservDescriptionAttachments = new HashSet<ConservDescriptionAttachment>();
@@ -338,6 +340,21 @@ public class ConservDescription extends DataModelObjBase implements AttachmentOw
     public void setOtherRecommendations(String otherRecommendations)
     {
         this.otherRecommendations = otherRecommendations;
+    }
+
+    /**
+     *
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "PreparationID", unique = false, nullable = true, insertable = true, updatable = true)
+    public Preparation getPreparation()
+    {
+        return this.preparation;
+    }
+
+    public void setPreparation(final Preparation preparation)
+    {
+        this.preparation = preparation;
     }
 
     /**
