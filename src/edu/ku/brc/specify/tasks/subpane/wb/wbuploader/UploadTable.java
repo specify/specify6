@@ -4682,27 +4682,26 @@ public class UploadTable implements Comparable<UploadTable>
     {
         String valList = "";
         //Map<String, PickListItemIFace> vals = fld.getValidValues();
-        if (vals != null)
-        {
+        if (vals != null) {
             int valCount = 0;
-        	for (String val : vals)
-            {
-                if (!StringUtils.isEmpty(valList))
-                {
+        	for (String val : vals) {
+                if (!StringUtils.isEmpty(valList)) {
                     valList += ", ";
                 }
                 valList += "'" + val + "'";
-                if (++valCount == 13)
-                {
+                if (++valCount == 13) {
                 	valList += " ...";
                 	break;
                 }
             }
-            if (fld.isReadOnlyValidValues())
-            {
-            	return String.format(UIRegistry.getResourceString("WB_UPLOAD_VALID_VALS"), valList);
-            } 
-            return String.format(UIRegistry.getResourceString("WB_UPLOAD_VALID_VALS_WARN"), valList);
+            if (valCount > 0) {
+                if (fld.isReadOnlyValidValues()) {
+                    return String.format(UIRegistry.getResourceString("WB_UPLOAD_VALID_VALS"), valList);
+                }
+                return String.format(UIRegistry.getResourceString("WB_UPLOAD_VALID_VALS_WARN"), valList);
+            } else {
+        	    return UIRegistry.getResourceString("WB_UPLOAD_NO_VALID_VALS");
+            }
         }
         // this should never happen
         log.error("Could not find picklist values for "
