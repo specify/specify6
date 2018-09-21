@@ -645,7 +645,12 @@ public class FormViewObj implements Viewable,
         }
         
         isBuildValid = true;
-        
+
+        Component san = UIRegistry.get("SaveAndNew");
+        if (san != null) {
+            this.setSaveAndNew(((JCheckBoxMenuItem)san).isSelected());
+        }
+
         isAutoNumberOn = AppPreferences.getLocalPrefs().getBoolean(AUTO_NUM, true);
         SwingUtilities.invokeLater(new Runnable()
         {
