@@ -371,6 +371,26 @@ public class CheckDBAfterLogin
         }
         return updated == toFix;
     }
+
+    public static boolean fixPaleoContextSearchView() {
+        String sql = "update spappresourcedata set `data` = replace(replace(`data`,'<cell type=\"label\" labelfor=\"pcn\"/>'," +
+                "'<cell type=\"label\" label=\"Paleo Context Name\"/>'), '<cell type=\"field\" id=\"pcn\" name=\"PaleoContextName\"" +
+                "isrequired=\"false\" uitype=\"text\"/>','<cell type=\"field\" id=\"pcn\" name=\"pc.PaleoContextName\" isrequired=\"false\" uitype=\"text\"/>') " +
+                "where spviewsetobjid is not null and `data` like '%<viewset name=\"Search\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+                "%<cell type=\"label\" labelfor=\"pcn\"/>%<cell type=\"field\" id=\"pcn\" name=\"PaleoContextName\" isrequired=\"false\" uitype=\"text\"/>%'";
+        String countSql = "select count(*) from spappresourcedata where spviewsetobjid is not null and `data` like " +
+                "'%<viewset name=\"Search\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">%<cell type=\"label\" " +
+                "labelfor=\"pcn\"/>%<cell type=\"field\" id=\"pcn\" name=\"PaleoContextName\" isrequired=\"false\" uitype=\"text\"/>%'";
+        Connection conn = DBConnection.getInstance().getConnection();
+        int toFix = BasicSQLUtils.getCountAsInt(countSql);
+        int updated = 0;
+        if (toFix > 0) {
+            updated = BasicSQLUtils.update(conn, sql);
+        }
+        return updated == toFix;
+    }
+
+
     /**
      * 
      */

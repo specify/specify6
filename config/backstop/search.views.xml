@@ -1097,8 +1097,8 @@ Good: <cell type="field" name="FieldNum" ...>
             
             <rows>
                 <row>
-                    <cell type="label" labelfor="pcn"/>
-                    <cell type="field" id="pcn" name="PaleoContextName" isrequired="false" uitype="text"/>
+                    <cell type="label" label="Paleo Context Name"/>
+                    <cell type="field" id="pcn" name="pc.PaleoContextName" isrequired="false" uitype="text"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="cs"/>
