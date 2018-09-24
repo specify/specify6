@@ -357,6 +357,20 @@ public class CheckDBAfterLogin
             //System.out.println("CHECKED!!!!!!!!!!!!!!!!!!!" + (nulls == updated));
         }
     }
+
+    public static boolean fixPaleoContextTypeSearch() {
+        String sql = "update spappresourcedata d inner join spappresource a on a.spappresourceid = d.spappresourceid set data = "
+            + "replace(data, ' pc.chronosStrat cs JOIN cs.definition ', ' pc.chronosStrat cs LEFT JOIN cs.definition ') where a.name = 'TypeSearches'";
+        String countSql =  "select count(*) from spappresourcedata d inner join spappresource a on a.spappresourceid = d.spappresourceid "
+            + "where data like '%  pc.chronosStrat cs JOIN cs.definition %'";
+        Connection conn = DBConnection.getInstance().getConnection();
+        int toFix = BasicSQLUtils.getCountAsInt(countSql);
+        int updated = 0;
+        if (toFix > 0) {
+            updated = BasicSQLUtils.update(conn, sql);
+        }
+        return updated == toFix;
+    }
     /**
      * 
      */
@@ -1091,26 +1105,6 @@ public class CheckDBAfterLogin
     		}
     		return false;
     	}
-    }
-
-    /**
-     *
-     * @return
-     */
-    public static boolean fixPaleoContextTypeSearch() {
-        String sql = "select spappresourceid from spappresource where name = 'TypeSearches'";
-        List<Object> resIds = BasicSQLUtils.querySingleCol(sql);
-        boolean result = true;
-        for (Object resId : resIds) {
-            result &= fixPcTypeSearchDefForResource(resId);
-        }
-        return result;
-    }
-
-    public static boolean fixPcTypeSearchDefForResource(Object resId) {
-        String sql = "update spappresourcedata set data = replace(data,'pc.chronosStrat cs JOIN cs.definition csd '," +
-                "'pc.chronosStrat cs LEFT JOIN cs.definition csd ') where spappresourceid = " + resId;
-        return BasicSQLUtils.update(sql) != -1;
     }
 
     /**
