@@ -849,13 +849,42 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         			}
         		}
         		addGeoCleanupTables();
+        		//add collectingeventauthorization if necessary
+                if (!doesTableExist(databaseName, "collectingeventauthorization")) {
+                    addCollectingEventAuth(conn);
+                    result = doesTableExist(databaseName, "collectingeventauthorization");
+                }
         	}
         	return result;
         } finally {
             if (dbConn != null) dbConn.close();
         }
     }
-    
+
+    private void addCollectingEventAuth(Connection conn) {
+        String sql = "CREATE TABLE `collectingeventauthorization` ("
+                + "  `CollectingEventAuthorizationID` int(11) NOT NULL AUTO_INCREMENT,"
+                + "  `TimestampCreated` datetime NOT NULL,"
+                + "  `TimestampModified` datetime DEFAULT NULL,"
+                + "  `Version` int(11) DEFAULT NULL,"
+                + "  `Remarks` text,"
+                + "  `PermitID` int(11) NOT NULL,"
+                + "  `CreatedByAgentID` int(11) DEFAULT NULL,"
+                + "`CollectingEventID` int(11) DEFAULT NULL,"
+                + "`ModifiedByAgentID` int(11) DEFAULT NULL,"
+                + "PRIMARY KEY (`CollectingEventAuthorizationID`),"
+                + "KEY `FK67DBF8977699B003` (`CreatedByAgentID`),"
+                + "KEY `FK67DBF897AD1F31F4` (`PermitID`),"
+                + "KEY `FK67DBF897B237E2BC` (`CollectingEventID`),"
+                + "KEY `FK67DBF8975327F942` (`ModifiedByAgentID`),"
+                + "CONSTRAINT `FK67DBF8975327F942` FOREIGN KEY (`ModifiedByAgentID`) REFERENCES `agent` (`agentid`),"
+                + "CONSTRAINT `FK67DBF8977699B003` FOREIGN KEY (`CreatedByAgentID`) REFERENCES `agent` (`agentid`),"
+                + "CONSTRAINT `FK67DBF897AD1F31F4` FOREIGN KEY (`PermitID`) REFERENCES `permit` (`permitid`),"
+                + "CONSTRAINT `FK67DBF897B237E2BC` FOREIGN KEY (`CollectingEventID`) REFERENCES `collectingevent` (`collectingeventid`) "
+                + ") ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci";
+
+        BasicSQLUtils.update(conn, sql);
+    }
     /**
      * @return
      */
