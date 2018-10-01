@@ -267,16 +267,32 @@ public class SeriesProcCatNumPlugin extends UIPluginBase implements ValFormatted
         repaint();
     }
 
+
+    @Override
+    public boolean needsUpdating() {
+        return textFieldStart.needsUpdating();
+    }
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.validation.AutoNumberableIFace#updateAutoNumbers()
      */
     @Override
-    public void updateAutoNumbers()
+    public String updateAutoNumbers()
     {
         if (!isExpanded)
         {
-            textFieldStart.updateAutoNumbers();
+            return textFieldStart.updateAutoNumbers();
         }
+        return null;
+    }
+
+    @Override
+    public String updateAutoNumbers(String val)
+    {
+        if (!isExpanded)
+        {
+            return textFieldStart.updateAutoNumbers(val);
+        }
+        return null;
     }
 
     //----------------------------------------------------------------------------------

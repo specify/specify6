@@ -1941,21 +1941,55 @@ public class FormViewObj implements Viewable,
     /**
      * Increments to the next number in the series.
      */
-    public void updateAutoNumbers()
-    {
-        if (isAutoNumberOn)
-        {
-            for (FVOFieldInfo fieldInfo : controlsById.values())
-            {   
+    public void updateAutoNumbers() {
+        if (isAutoNumberOn) {
+            List<FVOFieldInfo> autos = new ArrayList<>();
+            for (FVOFieldInfo fieldInfo : controlsById.values()) {
                 Component comp = fieldInfo.getComp();
-                if (comp instanceof AutoNumberableIFace && comp.isEnabled())
-                {
-                    ((AutoNumberableIFace)comp).updateAutoNumbers();
+                if (comp instanceof AutoNumberableIFace && comp.isEnabled() && ((AutoNumberableIFace)comp).isFormatterAutoNumber()) {
+                    autos.add(fieldInfo);
+                }
+            }
+
+            for (FVOFieldInfo auto : autos) {
+                if (list == null || list.size() == 1 || parentDataObj == null) {
+                    ((AutoNumberableIFace)auto.getComp()).updateAutoNumbers();
+                } else {
+                    String prevValue = null;
+                    DataObjectSettable ds = formViewDef.getDataSettable();
+                    DataObjectGettable dg = formViewDef.getDataGettable();
+                    Component comp = auto.getComp();
+                    for (Object dobj : list) {
+                        String objVal = dg.getFieldValue(dobj, auto.getName()).toString();
+                        ((GetSetValueIFace) comp).setValue(objVal, null);
+                        if (((AutoNumberableIFace) comp).needsUpdating()) {
+                            String newValue = ((AutoNumberableIFace) comp).updateAutoNumbers(prevValue == null ?
+                                    objVal : updateIncrementableChunks(objVal, prevValue));
+                            prevValue = newValue == null ? prevValue : newValue;
+                            FormHelper.setFieldValue(auto.getFormCell().getName(), dobj, newValue, dg, ds);
+                        } else {
+                            prevValue = null;
+                        }
+                    }
                 }
             }
         }
     }
-    
+
+    private String updateIncrementableChunks(String val, String update) {
+        if (val.length() != update.length()) {
+            return val; //nope
+        }
+        String result = "";
+        for (int i = 0; i < val.length(); i++) {
+            if (val.charAt(i) == '#') {
+                result += update.charAt(i);
+            } else {
+                result += val.charAt(i);
+            }
+        }
+        return result;
+    }
     /**
      * Returns whether a field with a given name or ID is auto-incremented.
      * @param fieldInfo the field info

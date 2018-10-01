@@ -702,7 +702,7 @@ public class ValFormattedTextField extends JPanel implements ValFormattedTextFie
             viewtextField.setText(text);
             return;
         }
-        
+
         shouldIgnoreNotifyDoc = !notify;
         
         boolean isTextEmpty = StringUtils.isEmpty(text);
@@ -831,26 +831,36 @@ public class ValFormattedTextField extends JPanel implements ValFormattedTextFie
     //--------------------------------------------------
     //-- AutoNumberableIFace Interface
     //--------------------------------------------------
-    
+
+    public boolean needsUpdating() {
+        return needsUpdating;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.validation.AutoNumberableIFace#updateAutoNumbers()
      */
-    public void updateAutoNumbers()
+    public String updateAutoNumbers()
+    {
+        return updateAutoNumbers(getText(), false);
+    }
+
+    public String updateAutoNumbers(final String val) {
+        return updateAutoNumbers(val, true);
+    }
+
+    public String updateAutoNumbers(final String val, final boolean doIncrement)
     {
         if (isAutoFmtOn && needsUpdating)
         {
-            String nextNum = formatter.getNextNumber(getText());
+            String nextNum = formatter.getNextNumber(val, !val.contains("#") && doIncrement);
             if (StringUtils.isNotEmpty(nextNum))
             {
                 try
                 {
                     setText(nextNum, false);
-                    //shouldIgnoreNotifyDoc  = true;
-                    //setValue(nextNum, nextNum);
-                    //shouldIgnoreNotifyDoc  = false;
                     needsUpdating = false;
-                    return;
-                    
+                    return getText();
+
                 } catch (Exception ex)
                 {
                     edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
@@ -860,8 +870,9 @@ public class ValFormattedTextField extends JPanel implements ValFormattedTextFie
             }
             needsUpdating = true;
         }
+        return null;
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.validation.AutoNumberableIFace#isFormatterAutoNumber()
      */
@@ -1113,10 +1124,11 @@ public class ValFormattedTextField extends JPanel implements ValFormattedTextFie
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.GetSetValueIFace#setValue(java.lang.Object, java.lang.String)
      */
-    public void setValue(final Object value, final String defaultValue)
+    public void setValue(final Object valueArg, final String defaultValue)
     {
         this.defaultValue = defaultValue;
 
+        Object value = formatter.formatToUI("").equals(valueArg) ? null : valueArg;
         String data;
 
         if (value != null)
@@ -1148,46 +1160,44 @@ public class ValFormattedTextField extends JPanel implements ValFormattedTextFie
             origValue = value;
         }
         
-        // Bug 9297 - Without the fix below popup forms with Auto-Incrementing 
-        // formatted number that have one segment will not work. 
-        boolean isPartialOkay = isPartialOK;
-        if (formatter != null && isPartialOK) 
-        {
-            isPartialOkay = formatter.isIncrementer() && formatter.getFields().size() > 1;
-        }
-        // Done Bug 9297
-        
-        String fmtVal;
-        if (formatter != null && !isPartialOkay)
-        {
-            if (formatter.isInBoundFormatter())
-            {
-                if (data.length() > 0 && data.length() != formatter.getLength())
-                {
-                    UIRegistry.showError(UIRegistry.getLocalizedMessage("ValFormattedTextField.WR_SIZE", formatter.getName(), data.length(), formatter.getLength()));
-                }
-                needsUpdating = (StringUtils.isEmpty(data) || data.length() != formatter.getLength()) && formatter.getAutoNumber() != null && formatter.isIncrementer();
-                
-                fmtVal = (String)formatter.formatToUI(data);
-                
-            } else 
-            {
-                if (value == null)
-                {
-                    needsUpdating = true;
-                }
-                fmtVal = data;
-            }
-        } else
-        {
-            fmtVal = data;
-        }
-        
-        setText(fmtVal);
+
+
+        setText(getFmtVal(data, value));
 
         validateState();
 
         repaint();
+    }
+
+    public String getFmtVal(final String strValue, final Object value) {
+        String fmtVal;
+        // Bug 9297 - Without the fix below popup forms with Auto-Incrementing
+        // formatted number that have one segment will not work.
+        boolean isPartialOkay = isPartialOK;
+        if (formatter != null && isPartialOK) {
+            isPartialOkay = formatter.isIncrementer() && formatter.getFields().size() > 1;
+        }
+        // Done Bug 9297
+        if (formatter != null && !isPartialOkay) {
+            if (formatter.isInBoundFormatter()) {
+                if (strValue.length() > 0 && strValue.length() != formatter.getLength()) {
+                    UIRegistry.showError(UIRegistry.getLocalizedMessage("ValFormattedTextField.WR_SIZE", formatter.getName(), strValue.length(), formatter.getLength()));
+                }
+                needsUpdating = (StringUtils.isEmpty(strValue) || strValue.length() != formatter.getLength() || strValue.contains("#"))
+                        && formatter.getAutoNumber() != null && formatter.isIncrementer();
+
+                fmtVal = (String)formatter.formatToUI(strValue);
+
+            } else {
+                if (value == null) {
+                    needsUpdating = true;
+                }
+                fmtVal = strValue;
+            }
+        } else {
+            fmtVal = strValue;
+        }
+        return fmtVal;
     }
 
     /* (non-Javadoc)

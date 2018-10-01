@@ -1596,15 +1596,12 @@ public class MultiView extends JPanel
      */
     public void updateAutoNumbers()
     {
-        FormViewObj formViewObj = getCurrentViewAsFormViewObj();
-        if (formViewObj != null)
-        {
-            //if (formViewObj.getValidator() != null && formViewObj.getValidator().hasChanged())
-            //{
-                formViewObj.updateAutoNumbers();
-            //}
+        if (currentViewable instanceof FormViewObj) {
+            ((FormViewObj)currentViewable).updateAutoNumbers();
+        } else if (currentViewable instanceof TableViewObj) {
+            ((TableViewObj)currentViewable).updateAutoNumbers();
         }
-        
+
         for (MultiView mv : kids)
         {
             mv.updateAutoNumbers();
