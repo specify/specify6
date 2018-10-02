@@ -3022,7 +3022,7 @@ public class UploadTable implements Comparable<UploadTable>
         }
         if (tblClass.equals(Locality.class))
         {
-        	return childClass.equals(GeoCoordDetail.class) || childClass.equals(LocalityDetail.class) || childClass.equals(LocalityCitation.class);
+        	return childClass.equals(GeoCoordDetail.class) || childClass.equals(LocalityDetail.class) || childClass.equals(LocalityCitation.class) || childClass.equals(LocalityNameAlias.class);
         }
         if (tblClass.equals(ReferenceWork.class))
         {
