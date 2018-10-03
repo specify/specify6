@@ -1438,18 +1438,26 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
 	    Statement stmt = null;
 		try
 		{
-			if (connection != null)
-			{
-				StringBuilder sb = new StringBuilder("GRANT ");
-				appendPerms(sb, permissions);
-                sb.append(String.format(" ON %s.* TO '%s'@'%s' IDENTIFIED BY '%s'",dbName, username, hostName, password));
-				
-                stmt = connection.createStatement();
-                //log.debug(sb.toString());
-                
+			if (connection != null) {
+                boolean isMySql8 = connection.getMetaData().getDatabaseProductVersion().startsWith("8.");
+                if (isMySql8) {
+                    String sql = String.format("CREATE USER '%s'@'%s' IDENTIFIED BY '%s'", username, hostName, password);
+                    stmt = connection.createStatement();
+                    int rv = stmt.executeUpdate(sql);
+                    if (rv != 0) {
+                        return false;
+                    }
+                }
+                StringBuilder sb = new StringBuilder("GRANT ");
+                appendPerms(sb, permissions);
+                if (!isMySql8) {
+                    sb.append(String.format(" ON %s.* TO '%s'@'%s' IDENTIFIED BY '%s'", dbName, username, hostName, password));
+                    stmt = connection.createStatement();
+                } else {
+                    sb.append(String.format(" ON %s.* TO '%s'@'%s'", dbName, username, hostName));
+                }
                 int rv = stmt.executeUpdate(sb.toString());
-
-				return rv == 0;
+                return rv == 0;
 			}
 			
 		} catch (Exception ex)
