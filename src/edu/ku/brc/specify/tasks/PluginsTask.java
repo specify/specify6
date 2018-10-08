@@ -288,7 +288,7 @@ public class PluginsTask extends BaseTask
         for (String rspName : rsPlugins.keySet())
         {
             Pair<String, Boolean> p = rsPlugins.get(rspName);
-            if (p != null)
+            if (p != null && p.getSecond())
             {
                 try
                 {
