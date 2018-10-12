@@ -2322,7 +2322,7 @@ public class iPadDBExporter implements VerifyCollectionListener
 	                {
 	                    //System.out.println("Error updating Locality: "+id);
 	                }
-	            } catch (java.sql.SQLIntegrityConstraintViolationException ex)
+	            } catch (com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException ex)
 	            {
 	                System.err.println(String.format("Key: %s  Val: %s", key, value));
 	                System.err.println(ex.getMessage());
@@ -2426,7 +2426,7 @@ public class iPadDBExporter implements VerifyCollectionListener
                     {
                         //System.out.println("Error updating Locality: "+id);
                     }
-                } catch (java.sql.SQLIntegrityConstraintViolationException ex)
+                } catch (com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException ex)
                 {
                     System.err.println(String.format("LocID: %d  GeoId: %d", id, rs.getInt(5)));
                     System.err.println(ex.getMessage());
