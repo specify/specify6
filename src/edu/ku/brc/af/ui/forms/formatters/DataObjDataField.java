@@ -139,7 +139,11 @@ public class DataObjDataField implements Cloneable
         }
         
         xmlAttr(sb, "format",    format);
-        xmlAttr(sb, "sep",       sep);
+        //this is a very specific fix for bug #185. Probably should add general xml special char handling to xml helper class...
+        xmlAttr(sb, "sep",
+				sep == null ? null : sep.replace("&","&amp;").replace("amp;amp;", "amp;"));
+        //...end fix
+		//xmlAttr(sb, "sep", sep);
         xmlAttr(sb, "formatter", dataObjFormatterName);
         xmlAttr(sb, "uifieldformatter", uiFieldFormatterName);
         sb.append(">");
