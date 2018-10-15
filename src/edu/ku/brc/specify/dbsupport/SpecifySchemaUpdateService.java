@@ -881,7 +881,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 + "CONSTRAINT `FK67DBF8977699B003` FOREIGN KEY (`CreatedByAgentID`) REFERENCES `agent` (`agentid`),"
                 + "CONSTRAINT `FK67DBF897AD1F31F4` FOREIGN KEY (`PermitID`) REFERENCES `permit` (`permitid`),"
                 + "CONSTRAINT `FK67DBF897B237E2BC` FOREIGN KEY (`CollectingEventID`) REFERENCES `collectingevent` (`collectingeventid`) "
-                + ") ENGINE=InnoDB DEFAULT CHARSET=utf8";
+                + ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
         BasicSQLUtils.update(conn, sql);
     }
