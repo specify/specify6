@@ -763,7 +763,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
      * @return
      */
     private boolean fixTypeSearchDefResourcesAfterDNAModelUpdate() {
-    	String sql = "SELECT SpAppResourceID FROM spappresource where `Name`='TypeSearches'";
+    	String sql = "SELECT a.SpAppResourceID FROM spappresource a inner join spappresourcedata ad on ad.spappresourceid = a.spappresourceid where a.`Name`='TypeSearches' and ad.data not like '%<typesearch tableid=\"150\"%'";
     	List<Object> resources = BasicSQLUtils.querySingleCol(sql);
     	if (resources != null && resources.size() > 0) {
     		String dnapSearch = "<typesearch tableid=\"150\" name=\"DNAPrimer\" searchfield=\"primerDesignator\" displaycols=\"primerDesignator\" format=\"%s\" dataobjformatter=\"\"/>";
@@ -778,7 +778,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     }
 
     private boolean fixDnaPrimerFormatterAfterDNAModelUpdate() {
-    	String sql = "SELECT SpAppResourceID FROM spappresource where `Name`='DataObjFormatters'";
+    	String sql = "SELECT a.SpAppResourceID FROM spappresource a inner join spappresourcedata ad on ad.spappresourceid = a.spappresourceid where a.`Name`='DataObjFormatters' and ad.data not like '%name=\"DNAPrimer\"%'";
     	List<Object> resources = BasicSQLUtils.querySingleCol(sql);
     	if (resources != null && resources.size() > 0) {
     		String dnaFmt =     "<format \n"
