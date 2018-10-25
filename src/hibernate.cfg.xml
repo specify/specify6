@@ -75,6 +75,7 @@
 		<mapping class="edu.ku.brc.specify.datamodel.CollectionObject"/>
 		<mapping class="edu.ku.brc.specify.datamodel.CollectionObjectAttachment"/>
 		<mapping class="edu.ku.brc.specify.datamodel.CollectionObjectAttr"/>
+		<mapping class="edu.ku.brc.specify.datamodel.CollectionObjectProperty"/>
 		<mapping class="edu.ku.brc.specify.datamodel.CollectingEventAttribute"/>
 		<mapping class="edu.ku.brc.specify.datamodel.CollectingEventAuthorization"/>
 		<mapping class="edu.ku.brc.specify.datamodel.CollectionRelType"/>

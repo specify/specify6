@@ -2,7 +2,7 @@
 
 <!-- 
 
-    Last used ID is 152 or 533
+    Last used ID is 153 or 533
     
     [0] are available
     
@@ -113,6 +113,9 @@
         <table name="edu.ku.brc.specify.datamodel.CollectionObjectAttr" abbrev="coa" id="28" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.CollectionObjectAttribute" abbrev="coas" id="93" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.CollectionObjectCitation" abbrev="coc" id="29" searchable="true"/>
+        <table name="edu.ku.brc.specify.datamodel.CollectionObjectProperty" abbrev="cop" id="153" workbench="true" searchable="true">
+            <display view="CollectionObjectProperty" newobjdlg="CollectionObjectPropertyDisplay"/>
+        </table>
         <table name="edu.ku.brc.specify.datamodel.CollectionRelType" abbrev="crt" id="98" >
         	<display searchdlg="CollectionRelTypeSearch" newobjdlg="CollectionRelType"/>
         </table>
