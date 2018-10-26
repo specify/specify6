@@ -137,6 +137,7 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
     protected Boolean                       deaccessioned;
     protected String                        catalogNumber;
     protected Calendar                      inventoryDate;
+    protected Byte                          inventoryDatePrecision;   // Accurate to Year, Month, Day
     protected String                        objectCondition;
     protected String                        availability;
     protected String                        restrictions;
@@ -763,6 +764,22 @@ public void setReservedText3(String reservedText3) {
     public void setInventoryDate(Calendar inventoryDate)
     {
         this.inventoryDate = inventoryDate;
+    }
+    /**
+     * @return the InventoryDatePrecision
+     */
+    @Column(name = "InventoryDatePrecision", unique = false, nullable = true, insertable = true, updatable = true)
+    public Byte getInventoryDatePrecision()
+    {
+        return inventoryDatePrecision != null ? this.inventoryDatePrecision : (byte)UIFieldFormatterIFace.PartialDateEnum.Full.ordinal();
+    }
+
+    /**
+     * @param inventoryDatePrecision the inventoryDatePrecision to set
+     */
+    public void setInventoryDatePrecision(Byte inventoryDatePrecision)
+    {
+        this.inventoryDatePrecision = inventoryDatePrecision;
     }
 
     /**
