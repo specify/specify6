@@ -291,7 +291,53 @@
     <field table="CollectionObjectAttribute" name="colObjAttributeInteger9" actualname="Integer9"/>
     <field table="CollectionObjectAttribute" name="colObjAttributeInteger10" actualname="Integer10"/>
 
- 	<!-- DNASequence -->
+
+    <field table="CollectionObjectProperty" name="date11" actualname="date1" onetomanysequence="0" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty" name="agent1LastName1" onetomanysequence="0" relationshipname="agent1" relatedfieldname="lastName"/>
+    <field table="CollectionObjectProperty" name="agent1FirstName1" onetomanysequence="0" relationshipname="agent1" relatedfieldname="firstName"/>
+    <field table="CollectionObjectProperty" name="agent1Middle1" onetomanysequence="0" relationshipname="agent1" relatedfieldname="middleInitial"/>
+    <field table="CollectionObjectProperty" name="integer11" actualname="integer1" onetomanysequence="0" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty" name="number11" actualname="number1" onetomanysequence="0" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty" name="text11" actualname="text1" onetomanysequence="0" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty" name="yesno11" actualname="yesno1" onetomanysequence="0" relationshipname="collectionObject"/>
+
+    <field table="CollectionObjectProperty" name="date12" actualname="date1" onetomanysequence="1" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty" name="agent1LastName2" onetomanysequence="1" relationshipname="agent1" relatedfieldname="lastName"/>
+    <field table="CollectionObjectProperty" name="agent1FirstName2" onetomanysequence="1" relationshipname="agent1" relatedfieldname="firstName"/>
+    <field table="CollectionObjectProperty" name="agent1Middle2" onetomanysequence="1" relationshipname="agent1" relatedfieldname="middleInitial"/>
+    <field table="CollectionObjectProperty" name="integer12" actualname="integer1" onetomanysequence="1" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty" name="number12" actualname="number1" onetomanysequence="1" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty" name="text12" actualname="text1" onetomanysequence="1" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty" name="yesno12" actualname="yesno1" onetomanysequence="1" relationshipname="collectionObject"/>
+
+    <field table="CollectionObjectProperty" name="date13" actualname="date1" onetomanysequence="2" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty" name="agent1LastName3" onetomanysequence="2" relationshipname="agent1" relatedfieldname="lastName"/>
+    <field table="CollectionObjectProperty" name="agent1FirstName3" onetomanysequence="2" relationshipname="agent1" relatedfieldname="firstName"/>
+    <field table="CollectionObjectProperty" name="agent1Middle3" onetomanysequence="2" relationshipname="agent1" relatedfieldname="middleInitial"/>
+    <field table="CollectionObjectProperty" name="integer13" actualname="integer1" onetomanysequence="2" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty" name="number13" actualname="number1" onetomanysequence="2" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty" name="text13" actualname="text1" onetomanysequence="2" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty" name="yesno13" actualname="yesno1" onetomanysequence="2" relationshipname="collectionObject"/>
+
+    <field table="CollectionObjectProperty" name="date14" actualname="date1" onetomanysequence="3" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty" name="agent1LastName4" onetomanysequence="3" relationshipname="agent1" relatedfieldname="lastName"/>
+    <field table="CollectionObjectProperty" name="agent1FirstName4" onetomanysequence="3" relationshipname="agent1" relatedfieldname="firstName"/>
+    <field table="CollectionObjectProperty" name="agent1Middle4" onetomanysequence="3" relationshipname="agent1" relatedfieldname="middleInitial"/>
+    <field table="CollectionObjectProperty" name="integer14" actualname="integer1" onetomanysequence="3" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty" name="number14" actualname="number1" onetomanysequence="3" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty" name="text14" actualname="text1" onetomanysequence="3" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty" name="yesno14" actualname="yesno1" onetomanysequence="3" relationshipname="collectionObject"/>
+
+    <field table="CollectionObjectProperty" name="date15" actualname="date1" onetomanysequence="4" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty" name="agent1LastName5" onetomanysequence="4" relationshipname="agent1" relatedfieldname="lastName"/>
+    <field table="CollectionObjectProperty" name="agent1FirstName5" onetomanysequence="4" relationshipname="agent1" relatedfieldname="firstName"/>
+    <field table="CollectionObjectProperty" name="agent1Middle5" onetomanysequence="4" relationshipname="agent1" relatedfieldname="middleInitial"/>
+    <field table="CollectionObjectProperty" name="integer15" actualname="integer1" onetomanysequence="4" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty" name="number15" actualname="number1" onetomanysequence="4" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty" name="text15" actualname="text1" onetomanysequence="4" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty" name="yesno15" actualname="yesno1" onetomanysequence="4" relationshipname="collectionObject"/>
+
+    <!-- DNASequence -->
 	  <field table="dnasequence" name="ambiguousResidues1" actualname="ambiguousResidues" onetomanysequence="0" relationshipname="collectionObject"/>
       <field table="dnasequence" name="boldBarcodeId1" actualname="boldBarcodeId" onetomanysequence="0" relationshipname="collectionObject"/>
       <field table="dnasequence" name="boldLastUpdateDate1" actualname="boldLastUpdateDate" onetomanysequence="0" relationshipname="collectionObject"/>

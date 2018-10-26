@@ -303,7 +303,55 @@
     <field column="YesNo 5 (Col. Obj. Attribute)" name="colObjAttributeYesNo5" type="boolean"/>
     <field column="YesNo 6 (Col. Obj. Attribute)" name="colObjAttributeYesNo6" type="boolean"/>
     <field column="YesNo 7 (Col. Obj. Attribute)" name="colObjAttributeYesNo7" type="boolean"/>
-  </table>  
+  </table>
+
+
+  <table classname="edu.ku.brc.specify.datamodel.CollectionObjectProperty" table="collectionobjectproperty" tableid="53" lazy="true" >
+    <field column="Date 1 1" name="date11" type="calendar_date"/>
+    <field column="Agent 1 Lastname 1" name="agent1LastName1" type="java.lang.String"/>
+    <field column="Agent 1 Firstname 1" name="agent1FirstName1" type="java.lang.String"/>
+    <field column="Agent 1 Middle 1" name="agent1Middle1" type="java.lang.String"/>
+    <field column="Integer 1 1" name="integer11" type="java.lang.Integer"/>
+    <field column="Number 1 1" name="number11" type="java.lang.Double"/>
+    <field column="Text 1 1" name="text11" type="java.lang.String"/>
+    <field column="YesNo 1 1" name="yesno11" type="boolean"/>
+
+    <field column="Date 1 2" name="date12" type="calendar_date"/>
+    <field column="Agent 1 Lastname 2" name="agent1LastName2" type="java.lang.String"/>
+    <field column="Agent 1 Firstname 2" name="agent1FirstName2" type="java.lang.String"/>
+    <field column="Agent 1 Middle 2" name="agent1Middle2" type="java.lang.String"/>
+    <field column="Integer 1 2" name="integer12" type="java.lang.Integer"/>
+    <field column="Number 1 2" name="number12" type="java.lang.Double"/>
+    <field column="Text 1 2" name="text12" type="java.lang.String"/>
+    <field column="YesNo 1 2" name="yesno12" type="boolean"/>
+
+    <field column="Date 1 3" name="date13" type="calendar_date"/>
+    <field column="Agent 1 Lastname 3" name="agent1LastName3" type="java.lang.String"/>
+    <field column="Agent 1 Firstname 3" name="agent1FirstName3" type="java.lang.String"/>
+    <field column="Agent 1 Middle 3" name="agent1Middle3" type="java.lang.String"/>
+    <field column="Integer 1 3" name="integer13" type="java.lang.Integer"/>
+    <field column="Number 1 3" name="number13" type="java.lang.Double"/>
+    <field column="Text 1 3" name="text13" type="java.lang.String"/>
+    <field column="YesNo 1 3" name="yesno13" type="boolean"/>
+
+    <field column="Date 1 4" name="date14" type="calendar_date"/>
+    <field column="Agent 1 Lastname 4" name="agent1LastName4" type="java.lang.String"/>
+    <field column="Agent 1 Firstname 4" name="agent1FirstName4" type="java.lang.String"/>
+    <field column="Agent 1 Middle 4" name="agent1Middle4" type="java.lang.String"/>
+    <field column="Integer 1 4" name="integer14" type="java.lang.Integer"/>
+    <field column="Number 1 4" name="number14" type="java.lang.Double"/>
+    <field column="Text 1 4" name="text14" type="java.lang.String"/>
+    <field column="YesNo 1 4" name="yesno14" type="boolean"/>
+
+    <field column="Date 1 5" name="date15" type="calendar_date"/>
+    <field column="Agent 1 Lastname 5" name="agent1LastName5" type="java.lang.String"/>
+    <field column="Agent 1 Firstname 5" name="agent1FirstName5" type="java.lang.String"/>
+    <field column="Agent 1 Middle 5" name="agent1Middle5" type="java.lang.String"/>
+    <field column="Integer 1 5" name="integer15" type="java.lang.Integer"/>
+    <field column="Number 1 5" name="number15" type="java.lang.Double"/>
+    <field column="Text 1 5" name="text15" type="java.lang.String"/>
+    <field column="YesNo 1 5" name="yesno15" type="boolean"/>
+  </table>
 
   <!--uncomment this section and to upload container info.
   The container relationship with collectionobject is not supported
