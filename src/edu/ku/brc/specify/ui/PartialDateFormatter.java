@@ -95,7 +95,7 @@ public class PartialDateFormatter extends UIFieldFormatter
             date = ((Calendar)datas[0]).getTime();
         }
         
-        Integer dType = datas[1] instanceof Number ? ((Number)datas[1]).intValue() : 1;
+        Integer dType = datas.length > 1 && datas[1] instanceof Number ? ((Number)datas[1]).intValue() : 1;
         
         if (datas.length == 2 && date != null)
         {
