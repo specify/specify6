@@ -119,6 +119,7 @@ import edu.ku.brc.specify.datamodel.Container;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
+import edu.ku.brc.specify.datamodel.GroupPerson;
 import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.specify.datamodel.SpExportSchema;
 import edu.ku.brc.specify.datamodel.SpExportSchemaItem;
@@ -3930,15 +3931,39 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         	
         
         else if (Agent.class.isAssignableFrom(tblInfo.getClassObj())) {
-        	if (alias.getParent() != null && ("members".equals(alias.getParent().getField()) || "groups".equals(alias.getParent().getField()))) {
-        		return true;
-        	//This allows CreatedByAgent and ModifiedByAgent to be expanded. But there is another check somewhere that prevents "loop backs":
-        	//If you expand CreatedByAgent, in the resulting fields list CreatedByAgent is not expandable.
-        	} else /*alias.getParent() != null && alias.getParent().getTableInfo().getTableId() != Agent.getClassTableId()
-        			&& */
-                return ("modifiedByAgent".equals(alias.getField()) || "createdByAgent".equals(alias.getField()));
+            if (alias.getParent() != null && ("members".equals(alias.getParent().getField()) || "groups".equals(alias.getParent().getField()))) {
+                TableTree parent = alias.getParent();
+                int gp = 0;
+                while (parent != null) {
+                    if (parent.getTableInfo() != null) {
+                        if (GroupPerson.class.isAssignableFrom(parent.getTableInfo().getClassObj())) {
+                            return gp++ < 2;
+                        }
+                    } else {
+                        break;
+                    }
+                    parent = parent.getParent();
+                }
+                return true;
+                //This allows CreatedByAgent and ModifiedByAgent to be expanded. But there is another check somewhere that prevents "loop backs":
+                //If you expand CreatedByAgent, in the resulting fields list CreatedByAgent is not expandable.
+            }
         }
-        
+
+        else if ("modifiedByAgent".equalsIgnoreCase(alias.getField()) || "createdByAgent".equalsIgnoreCase(alias.getField())) {
+            TableTree parent = alias.getParent();
+        	while (parent != null) {
+        	    if ("modifiedByAgent".equals(parent.getField()) || "createdByAgent".equals(parent.getField())) {
+        	        return false;
+        	    }
+        	    parent = parent.getParent();
+        	}
+        	return true;
+        }
+
+        //else if (GroupPerson.class.isAssignableFrom(tblInfo.getClassObj())) {
+//
+  //      }
         return false;
             //special conditions... (may be needed. For example for Determination and Taxon, but on the other hand
             //Determination <-> Taxon behavior seems ok for now.
