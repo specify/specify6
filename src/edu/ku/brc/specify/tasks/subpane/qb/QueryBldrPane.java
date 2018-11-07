@@ -3945,8 +3945,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     parent = parent.getParent();
                 }
                 return true;
-                //This allows CreatedByAgent and ModifiedByAgent to be expanded. But there is another check somewhere that prevents "loop backs":
-                //If you expand CreatedByAgent, in the resulting fields list CreatedByAgent is not expandable.
             }
         }
 
