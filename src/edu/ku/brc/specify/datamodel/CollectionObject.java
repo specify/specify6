@@ -154,6 +154,7 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
     protected CollectingEvent               collectingEvent;
     protected Set<CollectionObjectCitation> collectionObjectCitations;
     protected Set<Preparation>              preparations;
+    protected Set<CollectionObjectProperty> collectionObjectProperties;
     protected Set<Determination>            determinations;
     protected Set<Project>                  projects;
     // protected Set<DeaccessionPreparation> deaccessionPreparations;
@@ -178,6 +179,7 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
     protected Set<CollectionObjectAttachment> collectionObjectAttachments;
 
     protected Set<ExsiccataItem>              exsiccataItems;
+    protected Set<GGBNExtensionData> ggbnExtensionData;
     
     // Constructors
 
@@ -243,6 +245,7 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
         collectionObjectCitations = new HashSet<CollectionObjectCitation>();
         collectionObjectAttrs = new HashSet<CollectionObjectAttr>();
         preparations          = new HashSet<Preparation>();
+        collectionObjectProperties = new HashSet<CollectionObjectProperty>();
         determinations        = new HashSet<Determination>();
         projects              = new HashSet<Project>();
         //deaccessionPreparations = new HashSet<DeaccessionPreparation>();
@@ -265,6 +268,7 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
         collectionObjectAttachments = new HashSet<CollectionObjectAttachment>();
         
         exsiccataItems              = new HashSet<ExsiccataItem>();
+        ggbnExtensionData = new HashSet<GGBNExtensionData>();
         
         hasGUIDField = true;
         setGUID();
@@ -1060,6 +1064,31 @@ public void setReservedText3(String reservedText3) {
 
     public void setPreparations(Set<Preparation> preparations) {
         this.preparations = preparations;
+    }
+
+    /**
+     *
+     */
+    @OneToMany(mappedBy = "collectionObject")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    public Set<CollectionObjectProperty> getCollectionObjectProperties() {
+        return this.collectionObjectProperties;
+    }
+
+    public void setCollectionObjectProperties(Set<CollectionObjectProperty> collectionObjectProperties) {
+        this.collectionObjectProperties = collectionObjectProperties;
+    }
+    /**
+     *
+     */
+    @OneToMany(mappedBy = "collectionObject")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    public Set<GGBNExtensionData> getGGBNExtensionData() {
+        return this.ggbnExtensionData;
+    }
+
+    public void setGGBNExtensionData(Set<GGBNExtensionData> ggbnExtensionData) {
+        this.ggbnExtensionData = ggbnExtensionData;
     }
 
     /**

@@ -2,7 +2,7 @@
 
 <!-- 
 
-    Last used ID is 153 or 533
+    Last used ID is 155 or 533
     
     [0] are available
     
@@ -219,6 +219,9 @@
         <table name="edu.ku.brc.specify.datamodel.GeoCoordDetail" abbrev="gcd" id="123" searchable="true">
             <businessrule>edu.ku.brc.specify.datamodel.busrules.GeoCoordDetailBusRules</businessrule>
         </table>
+        <table name="edu.ku.brc.specify.datamodel.GGBNExtensionData" abbrev="ggbn" id="155" workbench="true" searchable="true">
+            <display view="GGBNExtensionData" newobjdlg="GGBNExtensionDataDisplay"/>
+        </table>
         <table name="edu.ku.brc.specify.datamodel.FundingAgent" abbrev="fa" id="146" searchable="true">
             <display view="FundingAgent" dataobjformatter="" newobjdlg="FundingAgentDisplay"/>
             <businessrule>edu.ku.brc.specify.datamodel.busrules.FundingAgentBusRules</businessrule>
@@ -354,7 +357,10 @@
         </table>
         <table name="edu.ku.brc.specify.datamodel.PreparationAttr" abbrev="ppa" id="64" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.PreparationAttribute" abbrev="ppas" id="91" searchable="true"/>
-        
+        <table name="edu.ku.brc.specify.datamodel.PreparationProperty" abbrev="ppp" id="154" workbench="true" searchable="true">
+            <display view="PreparationProperty" newobjdlg="PreparationPropertyDisplay"/>
+        </table>
+
         <table name="edu.ku.brc.specify.datamodel.PrepType" abbrev="ppt" id="65" searchable="true">
             <display view="PrepType" searchdlg="PrepTypeSearch" newobjdlg="PrepTypeDisplay"/>
             <businessrule>edu.ku.brc.specify.datamodel.busrules.PrepTypeBusRules</businessrule>                        

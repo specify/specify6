@@ -19,6 +19,8 @@ hibernate								3.2.1 GA                       LGPL v2.1
    commons-logging						dist w/ hibernate  (1.0.4)
    dom4j								dist w/ hibernate  (1.6.1)
    ehcache								dist w/ hibernate  (1.2.3)
+   hibernate-annotations.jar
+   hibernate-commons-annotations.jar
    jdbc2_0-stdext						dist w/ hibernate              Sun Binary Code License
    jta									dist w/ hibernate              Sun Binary Code License
    

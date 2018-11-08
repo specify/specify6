@@ -80,12 +80,25 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
     protected String                      text2;
     protected String					  text3;	
     protected String					  text4;	
-    protected String					  text5;	
+    protected String					  text5;
+    protected String                      text6;
+    protected String                      text7;
+    protected String                      text8;
+    protected String                      text9;
     protected Integer                     countAmt;
     protected String                      storageLocation;
     protected String                      remarks;
     protected Calendar                    preparedDate;
     protected Byte                        preparedDatePrecision;   // Accurate to Year, Month, Day
+    protected Calendar                    date1;
+    protected Byte                        date1Precision;
+    protected Calendar                    date2;
+    protected Byte                        date2Precision;
+    protected Calendar                    date3;
+    protected Byte                        date3Precision;
+    protected Calendar                    date4;
+    protected Byte                        date4Precision;
+
     protected String                      status;
     protected String                      sampleNumber;
     protected String                      description;             // from Specify 5
@@ -108,11 +121,13 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
     protected CollectionObject            collectionObject;
     protected Agent                       preparedByAgent;
     protected Storage                     storage;
+    protected Storage alternateStorage;
     protected Set<DeaccessionPreparation> deaccessionPreparations;
 
     protected PreparationAttribute        preparationAttribute;    // Specify 5 Attributes table
     protected Set<PreparationAttr>        preparationAttrs;        // Generic Expandable Attributes
     protected Set<PreparationAttachment>  preparationAttachments;
+    protected Set<PreparationProperty>    preparationProperties;
     
     protected Set<ExchangeInPrep>         exchangeInPreps;
     protected Set<ExchangeOutPrep>        exchangeOutPreps;
@@ -150,11 +165,23 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
         text3 = null;
         text4 = null;
         text5 = null;
+        text6 = null;
+        text7 = null;
+        text8 = null;
+        text9 = null;
         countAmt     = null;
         storageLocation = null;
         remarks      = null;
         preparedDate = null;
-        preparedDatePrecision = null;
+        preparedDatePrecision = 1;
+        date1 = null;
+        date1Precision = 1;
+        date2 = null;
+        date2Precision = 1;
+        date3 = null;
+        date3Precision = 1;
+        date4 = null;
+        date4Precision = 1;
         status       = null;
         sampleNumber = null;
         description  = null;
@@ -176,12 +203,14 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
         collectionObject = null;
         preparedByAgent = null;
         storage = null;
+        alternateStorage = null;
         deaccessionPreparations = new HashSet<DeaccessionPreparation>();
         conservDescriptions         = new HashSet<ConservDescription>();
 
         preparationAttribute   = null;
         preparationAttrs       = new HashSet<PreparationAttr>();
         preparationAttachments = new HashSet<PreparationAttachment>();
+        preparationProperties  = new HashSet<PreparationProperty>();
         
         exchangeInPreps  = new HashSet<ExchangeInPrep>();
         exchangeOutPreps = new HashSet<ExchangeOutPrep>();
@@ -229,6 +258,228 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
         this.preparationId = preparationId;
     }
 
+    /**
+     *
+     * @return
+     */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "Date1", unique = false, nullable = true, insertable = true, updatable = true)
+    public Calendar getDate1() {
+        return date1;
+    }
+
+    /**
+     *
+     * @param date1
+     */
+    public void setDate1(Calendar date1) {
+        this.date1 = date1;
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Column(name = "Date1Precision", unique = false, nullable = true, insertable = true, updatable = true)
+    public Byte getDate1Precision() {
+        return date1Precision;
+    }
+
+    /**
+     *
+     * @param date1Precision
+     */
+    public void setDate1Precision(Byte date1Precision) {
+        this.date1Precision = date1Precision;
+    }
+    /**
+     *
+     * @return
+     */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "Date2", unique = false, nullable = true, insertable = true, updatable = true)
+    public Calendar getDate2() {
+        return date2;
+    }
+
+    /**
+     *
+     * @param date2
+     */
+    public void setDate2(Calendar date2) {
+        date2 = date2;
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Column(name = "Date2Precision", unique = false, nullable = true, insertable = true, updatable = true)
+    public Byte getDate2Precision() {
+        return date2Precision;
+    }
+
+    /**
+     *
+     * @param date2Precision
+     */
+    public void setDate2Precision(Byte date2Precision) {
+        date2Precision = date2Precision;
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "Date3", unique = false, nullable = true, insertable = true, updatable = true)
+    public Calendar getDate3() {
+        return date3;
+    }
+
+    /**
+     *
+     * @param date3
+     */
+    public void setDate3(Calendar date3) {
+        date3 = date3;
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Column(name = "Date3Precision", unique = false, nullable = true, insertable = true, updatable = true)
+    public Byte getDate3Precision() {
+        return date3Precision;
+    }
+
+    /**
+     *
+     * @param date3Precision
+     */
+    public void setDate3Precision(Byte date3Precision) {
+        date3Precision = date3Precision;
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "Date4", unique = false, nullable = true, insertable = true, updatable = true)
+    public Calendar getDate4() {
+        return date4;
+    }
+
+    /**
+     *
+     * @param date4
+     */
+    public void setDate4(Calendar date4) {
+        date4 = date4;
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Column(name = "Date4Precision", unique = false, nullable = true, insertable = true, updatable = true)
+    public Byte getDate4Precision() {
+        return date4Precision;
+    }
+
+    /**
+     *
+     * @param date4Precision
+     */
+    public void setDate4Precision(Byte date4Precision) {
+        date4Precision = date4Precision;
+    }
+
+    /**
+     * @return the text6
+     */
+    @Lob
+    @Column(name = "Text6", length = 65535)
+    public String getText6() {
+        return text6;
+    }
+
+    /**
+     *
+     * @param text6
+     */
+    public void setText6(String text6) {
+        this.text6 = text6;
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Lob
+    @Column(name = "Text7", length = 65535)
+    public String getText7() {
+        return text7;
+    }
+
+    /**
+     *
+     * @param text7
+     */
+    public void setText7(String text7) {
+        this.text7 = text7;
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Lob
+    @Column(name = "Text8", length = 65535)
+    public String getText8() {
+        return text8;
+    }
+
+    /**
+     *
+     * @param text8
+     */
+    public void setText8(String text8) {
+        this.text8 = text8;
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Lob
+    @Column(name = "Text9", length = 65535)
+    public String getText9() {
+        return text9;
+    }
+
+    /**
+     *
+     * @param text9
+     */
+    public void setText9(String text9) {
+        this.text9 = text9;
+    }
+
+    /**
+     *
+     */
+    @OneToMany(mappedBy = "preparation")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    public Set<PreparationProperty> getPreparationProperties() {
+        return this.preparationProperties;
+    }
+
+    public void setPreparationProperties(Set<PreparationProperty> preparationProperties) {
+        this.preparationProperties = preparationProperties;
+    }
     /**
      *
      */
@@ -879,9 +1130,30 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
     public Storage getStorage() {
         return this.storage;
     }
-    
+
+    /**
+     *
+     * @param storage
+     */
     public void setStorage(Storage storage) {
         this.storage = storage;
+    }
+
+    /**
+     *
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "AlternateStorageID", unique = false, nullable = true, insertable = true, updatable = true)
+    public Storage getAlternateStorage() {
+        return alternateStorage;
+    }
+
+    /**
+     *
+     * @param alternateStorage
+     */
+    public void setAlternateStorage(Storage alternateStorage) {
+        this.alternateStorage = alternateStorage;
     }
 
     /**
