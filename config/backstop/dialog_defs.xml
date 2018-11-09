@@ -80,7 +80,7 @@
     <dialog type="display" view="PaleoContext"       name="PaleoContextDisplay"      class="edu.ku.brc.specify.datamodel.PaleoContext" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="Permit"             name="PermitDisplay"            class="edu.ku.brc.specify.datamodel.Permit"  helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="Preparation"        name="PreparationDisplay"       class="edu.ku.brc.specify.datamodel.Preparation" helpcontext="CBXQViewEdit"/>
-    <dialog type="display" view="PreparationProperty"name="PreparationPropertyDisplay"       class="edu.ku.brc.specify.datamodel.PreparationProperty" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="PreparationProperty" name="PreparationPropertyDisplay"       class="edu.ku.brc.specify.datamodel.PreparationProperty" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="ProjectSub"         name="ProjectSubDisplay"        class="edu.ku.brc.specify.datamodel.Project" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="ReferenceWork"      name="ReferenceWorkDisplay"     class="edu.ku.brc.specify.datamodel.ReferenceWork" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="RepositoryAgreement" name="RepositoryAgreementDisplay" class="edu.ku.brc.specify.datamodel.RepositoryAgreement" helpcontext="CBXQViewEdit"/>
