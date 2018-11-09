@@ -174,7 +174,7 @@ public class DwcMapper
 	{
 		return "select esi.FieldName, esi.DataType, qf.StringId, qf.IsRelFld, es.description from spexportschemaitemmapping esim inner join spexportschemaitem esi on "
 			+ "esi.SpExportSchemaItemID = esim.ExportSchemaItemID inner join spexportschema es on es.spexportschemaid = esi.spexportschemaid "
-			+ "inner join spqueryfield qf on qf.SpQueryFieldID = esim.SpQueryFieldID where esim.SpExportSchemaMappingID = "
+			+ "inner join spqueryfield qf on qf.SpQueryFieldID = esim.SpQueryFieldID where qf.IsDisplay and esim.SpExportSchemaMappingID = "
 			+ mappingId;
 	}
 	
