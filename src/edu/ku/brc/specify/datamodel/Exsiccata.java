@@ -50,7 +50,7 @@ public class Exsiccata extends DataModelObjBase implements java.io.Serializable
      protected Integer exsiccataId;
      protected String  title;
      protected String remarks;
-     protected String schedae
+     protected String schedae;
 
      protected ReferenceWork referenceWork;
      
@@ -136,7 +136,7 @@ public class Exsiccata extends DataModelObjBase implements java.io.Serializable
     /**
      * @return the Title
      */
-    @Column(name = "Title", unique = false, nullable = false, insertable = true, updatable = true
+    @Column(name = "Title", unique = false, nullable = false, insertable = true, updatable = true)
     public String getTitle()
     {
         return title;
