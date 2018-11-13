@@ -138,6 +138,8 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
     protected String                        catalogNumber;
     protected Calendar                      inventoryDate;
     protected Byte                          inventoryDatePrecision;   // Accurate to Year, Month, Day
+    protected Calendar date1;
+    protected Byte date1Precision;
     protected String                        objectCondition;
     protected String                        availability;
     protected String                        restrictions;
@@ -163,6 +165,7 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
     protected Accession                     accession;
     protected Agent                         cataloger;
     protected Agent                         inventorizedBy;
+    protected Agent agent1;
     protected Container                     container;        // The container it belongs to   (Associated with)
     protected Container                     containerOwner;   // The container it is a part of (Parent Container)
     protected Appraisal                     appraisal;
@@ -227,6 +230,8 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
         modifier              = null;
         catalogedDate         = null;
         catalogedDateVerbatim = null;
+        date1 = null;
+        date1Precision = 1;
         guid                  = null;
         altCatalogNumber      = null;
         deaccessioned         = null;
@@ -254,6 +259,7 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
         accession             = null;
         cataloger             = null;
         inventorizedBy        = null;
+        agent1 = null;
         container             = null;
         containerOwner        = null;
         paleoContext          = null;
@@ -675,6 +681,24 @@ public void setReservedText3(String reservedText3) {
 
     /**
      *
+     * @return
+     */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "Date1", unique = false, nullable = true, insertable = true, updatable = true)
+    public Calendar getDate1() {
+        return date1;
+    }
+
+    /**
+     *
+     * @param date1
+     */
+    public void setDate1(Calendar date1) {
+        this.date1 = date1;
+    }
+
+    /**
+     *
      */
     @Column(name = "CatalogedDateVerbatim", length = 32, unique = false, nullable = true, insertable = true, updatable = true)
     public String getCatalogedDateVerbatim() {
@@ -750,6 +774,23 @@ public void setReservedText3(String reservedText3) {
     public void setCatalogedDatePrecision(Byte catalogedDatePrecision)
     {
         this.catalogedDatePrecision = catalogedDatePrecision;
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Column(name = "Date1Precision", unique = false, nullable = true, insertable = true, updatable = true)
+    public Byte getDate1Precision() {
+        return date1Precision;
+    }
+
+    /**
+     *
+     * @param date1Precision
+     */
+    public void setDate1Precision(Byte date1Precision) {
+        this.date1Precision = date1Precision;
     }
 
     /**
@@ -1257,6 +1298,24 @@ public void setReservedText3(String reservedText3) {
 
     public void setCataloger(Agent cataloger) {
         this.cataloger = cataloger;
+    }
+
+    /**
+     *
+     * @return
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "Agent1ID", unique = false, nullable = true, insertable = true, updatable = true)
+    public Agent getAgent1() {
+        return agent1;
+    }
+
+    /**
+     *
+     * @param agent1
+     */
+    public void setAgent1(Agent agent1) {
+        this.agent1 = agent1;
     }
 
     /**
