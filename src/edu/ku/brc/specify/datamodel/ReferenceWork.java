@@ -87,6 +87,8 @@ public class ReferenceWork extends DataModelObjBase implements AttachmentOwnerIF
     protected String                        libraryNumber;
     protected String                        isbn;
     protected String                        remarks;
+    protected String doi;
+    protected String uri;
     protected String                        text1;
     protected String                        text2;
     protected Float                         number1;
@@ -137,6 +139,8 @@ public class ReferenceWork extends DataModelObjBase implements AttachmentOwnerIF
         libraryNumber = null;
         isbn    = null;
         remarks = null;
+        doi = null;
+        uri = null;
         text1 = null;
         text2 = null;
         number1 = null;
@@ -274,7 +278,42 @@ public class ReferenceWork extends DataModelObjBase implements AttachmentOwnerIF
         this.title = title;
     }
 
-    
+    /**
+     *
+     * @return
+     */
+    @Lob
+    @Column(name = "Doi", length = 65535)
+    public String getDoi() {
+        return doi;
+    }
+
+    /**
+     *
+     * @param doi
+     */
+    public void setDoi(String doi) {
+        this.doi = doi;
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Lob
+    @Column(name = "Uri", length = 65535)
+    public String getUri() {
+        return uri;
+    }
+
+    /**
+     *
+     * @param uri
+     */
+    public void setUri(String uri) {
+        this.uri = uri;
+    }
+
     /**
      * 
      */
