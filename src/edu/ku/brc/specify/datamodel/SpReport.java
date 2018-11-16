@@ -538,7 +538,8 @@ public class SpReport extends DataModelObjBase
     		Integer tries = 1;
     		while (!done)
     		{
-    			List<?> matches = session.getDataList("from SpQuery where name = '" + result.replace("'", "''") + "'");
+    			List<?> matches = session.getDataList("from SpQuery where name = '" + result.replace("'", "''")
+                        + "' and specifyUserId = " +  AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getId());
     			if (matches.size() == 0)
     			{
     				done = true;

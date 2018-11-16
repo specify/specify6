@@ -2087,10 +2087,11 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
         try
         {
             session = DataProviderFactory.getInstance().createSession();
-        	List<SpQuery> qs = session.getDataList(SpQuery.class);
-        	for (SpQuery q : qs)
+            List<?> qs = session.getDataList("from SpQuery where specifyUserId = "
+                    +  AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getId());
+        	for (Object q : qs)
         	{
-        		names.add(q.getName());
+        		names.add(((SpQuery)q).getName());
         	}
         } finally 
         {
@@ -2157,7 +2158,8 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
         Vector<String> names = new Vector<String>();
         
         //For exportschemamappings, mapping name is assumed to be the same as associated query name
-        List<Object> nameObjs = BasicSQLUtils.querySingleCol("select name from spquery order by 1");
+        List<Object> nameObjs = BasicSQLUtils.querySingleCol("select name from spquery where specifyuserid = "
+                + AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getId() + " order by 1");
         for (Object q : nameObjs)
         {
             names.add((String)q);

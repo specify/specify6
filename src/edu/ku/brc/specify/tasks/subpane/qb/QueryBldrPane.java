@@ -3603,7 +3603,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     {
                         fndQuery = session.getData(SpQuery.class, "name", newQueryName,
                                 DataProviderSessionIFace.CompareType.Equals);
-                        if (fndQuery != null)
+                        if (fndQuery != null && fndQuery.getSpecifyUser().getId() == AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getId())
                         {
                             UIRegistry.getStatusBar().setErrorMessage(
                                     String.format(getResourceString("QB_QUERY_EXISTS"),
