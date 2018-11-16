@@ -102,6 +102,15 @@
         <table name="edu.ku.brc.specify.datamodel.CollectingTrip" abbrev="clt" id="87" workbench="true" searchable="true">
             <display view="CollectingTripForm" searchdlg="CollectingTripSearch" newobjdlg="CollectingTripDisplay"/>
         </table>
+        <table name="edu.ku.brc.specify.datamodel.CollectingTripAttachment" abbrev="ctat" id="156" searchable="true">
+            <display view="ObjectAttachment" newobjdlg="CollectingTripAttachmentDisplay"/>
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentReferenceBaseBusRules</businessrule>
+        </table>
+        <table name="edu.ku.brc.specify.datamodel.CollectingTripAttribute" abbrev="cta" id="157" searchable="true" />
+        <table name="edu.ku.brc.specify.datamodel.CollectingTripAuthorization" abbrev="ctau" id="158" searchable="true">
+            <display dataobjformatter="CollectingTripAuthorization"/>
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.CollectingTripAuthorizationBusRules</businessrule>
+        </table>
         <table name="edu.ku.brc.specify.datamodel.CollectionObject" abbrev="co" id="1" workbench="true" searchable="true">
             <display view="CollectionObject" dataobjformatter="CollectionObject" searchdlg="CollectionObjectSearch" newobjdlg="CollectionObject"/>
             <businessrule>edu.ku.brc.specify.datamodel.busrules.CollectionObjectBusRules</businessrule>          
@@ -219,8 +228,8 @@
         <table name="edu.ku.brc.specify.datamodel.GeoCoordDetail" abbrev="gcd" id="123" searchable="true">
             <businessrule>edu.ku.brc.specify.datamodel.busrules.GeoCoordDetailBusRules</businessrule>
         </table>
-        <table name="edu.ku.brc.specify.datamodel.GGBNExtensionData" abbrev="ggbn" id="155" workbench="true" searchable="true">
-            <display view="GGBNExtensionData" newobjdlg="GGBNExtensionDataDisplay"/>
+        <table name="edu.ku.brc.specify.datamodel.VoucherRelationship" abbrev="vr" id="155" workbench="true" searchable="true">
+            <display view="VoucherRelationship" newobjdlg="VoucherRelationshipDisplay"/>
         </table>
         <table name="edu.ku.brc.specify.datamodel.FundingAgent" abbrev="fa" id="146" searchable="true">
             <display view="FundingAgent" dataobjformatter="" newobjdlg="FundingAgentDisplay"/>
@@ -389,7 +398,10 @@
         <table name="edu.ku.brc.specify.datamodel.Shipment" abbrev="sh" id="71" searchable="true">
             <businessrule>edu.ku.brc.specify.datamodel.busrules.ShipmentBusRules</businessrule>                                    
         </table>
-        
+        <table name="edu.ku.brc.specify.datamodel.VoucherRelationship" abbrev="vrel" id="155" workbench="true" searchable="true">
+            <display view="VoucherRelationship" newobjdlg="VoucherRelationshipDisplay"/>
+        </table>
+
         <!--  Internal Specify Tables -->
         <table name="edu.ku.brc.specify.datamodel.SpAppResource" abbrev="spar" id="514"/>
         <table name="edu.ku.brc.specify.datamodel.SpAppResourceData" abbrev="sparda" id="515"/>

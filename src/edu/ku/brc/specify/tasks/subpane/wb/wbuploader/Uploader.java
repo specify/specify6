@@ -3748,7 +3748,7 @@ public class Uploader implements ActionListener, KeyListener
                     getResourceString("WB_UPLOAD_SETTINGS"), true, CustomDialog.OK_BTN, usp,
                     CustomDialog.OK_BTN);
         }
-
+        cwin.setAlwaysOnTop(true);
         cwin.setModal(true);
         UIHelper.centerAndShow(cwin);
         if (!cwin.isCancelled())

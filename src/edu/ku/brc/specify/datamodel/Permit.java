@@ -78,6 +78,7 @@ public class Permit extends DataModelObjBase implements AttachmentOwnerIFace<Per
     protected Boolean                     yesNo2;
     protected Set<AccessionAuthorization> accessionAuthorizations;
     protected Set<CollectingEventAuthorization> collectingEventAuthorizations;
+    protected Set<CollectingTripAuthorization> collectingTripAuthorizations;
     protected Agent                       issuedTo;
     protected Agent                       issuedBy;
     protected Set<PermitAttachment>       permitAttachments;
@@ -127,6 +128,7 @@ public class Permit extends DataModelObjBase implements AttachmentOwnerIFace<Per
         yesNo2 = null;
         accessionAuthorizations = new HashSet<AccessionAuthorization>();
         collectingEventAuthorizations = new HashSet<CollectingEventAuthorization>();
+        collectingTripAuthorizations = new HashSet<CollectingTripAuthorization>();
         issuedTo = null;
         issuedBy = null;
         permitAttachments = new HashSet<PermitAttachment>();
@@ -528,6 +530,20 @@ public class Permit extends DataModelObjBase implements AttachmentOwnerIFace<Per
 
     public void setCollectingEventAuthorizations(Set<CollectingEventAuthorization> collectingEventAuthorizations) {
         this.collectingEventAuthorizations = collectingEventAuthorizations;
+    }
+
+    /**
+     *
+     */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "permit")
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
+    public Set<CollectingTripAuthorization> getCollectingTripAuthorizations() {
+
+        return this.collectingTripAuthorizations;
+    }
+
+    public void setCollectingTripAuthorizations(Set<CollectingTripAuthorization> collectingTripAuthorizations) {
+        this.collectingTripAuthorizations = collectingTripAuthorizations;
     }
 
     /**

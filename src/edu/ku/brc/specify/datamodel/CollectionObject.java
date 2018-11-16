@@ -24,8 +24,6 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -53,14 +51,11 @@ import org.hibernate.annotations.Index;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
-import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
-import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.dbsupport.AttributeIFace;
 import edu.ku.brc.dbsupport.AttributeProviderIFace;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
-import edu.ku.brc.specify.tasks.InteractionsTask;
 
 /**
 
@@ -182,7 +177,7 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
     protected Set<CollectionObjectAttachment> collectionObjectAttachments;
 
     protected Set<ExsiccataItem>              exsiccataItems;
-    protected Set<GGBNExtensionData> ggbnExtensionData;
+    protected Set<VoucherRelationship> voucherRelationships;
     
     // Constructors
 
@@ -247,14 +242,14 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
         
         collectingEvent       = null;
         appraisal             = null;
-        collectionObjectCitations = new HashSet<CollectionObjectCitation>();
-        collectionObjectAttrs = new HashSet<CollectionObjectAttr>();
-        preparations          = new HashSet<Preparation>();
-        collectionObjectProperties = new HashSet<CollectionObjectProperty>();
-        determinations        = new HashSet<Determination>();
-        projects              = new HashSet<Project>();
+        collectionObjectCitations = new HashSet<>();
+        collectionObjectAttrs = new HashSet<>();
+        preparations          = new HashSet<>();
+        collectionObjectProperties = new HashSet<>();
+        determinations        = new HashSet<>();
+        projects              = new HashSet<>();
         //deaccessionPreparations = new HashSet<DeaccessionPreparation>();
-        otherIdentifiers      = new HashSet<OtherIdentifier>();
+        otherIdentifiers      = new HashSet<>();
         collection            = null;
         accession             = null;
         cataloger             = null;
@@ -263,18 +258,18 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
         container             = null;
         containerOwner        = null;
         paleoContext          = null;
-        dnaSequences          = new HashSet<DNASequence>();
+        dnaSequences          = new HashSet<>();
         fieldNotebookPage     = null;
         
-        leftSideRels          = new HashSet<CollectionRelationship>();
-        rightSideRels         = new HashSet<CollectionRelationship>();
+        leftSideRels          = new HashSet<>();
+        rightSideRels         = new HashSet<>();
         
-        conservDescriptions         = new HashSet<ConservDescription>();
-        treatmentEvents             = new HashSet<TreatmentEvent>();
-        collectionObjectAttachments = new HashSet<CollectionObjectAttachment>();
+        conservDescriptions         = new HashSet<>();
+        treatmentEvents             = new HashSet<>();
+        collectionObjectAttachments = new HashSet<>();
         
-        exsiccataItems              = new HashSet<ExsiccataItem>();
-        ggbnExtensionData = new HashSet<GGBNExtensionData>();
+        exsiccataItems              = new HashSet<>();
+        voucherRelationships = new HashSet<>();
         
         hasGUIDField = true;
         setGUID();
@@ -1124,12 +1119,12 @@ public void setReservedText3(String reservedText3) {
      */
     @OneToMany(mappedBy = "collectionObject")
     @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    public Set<GGBNExtensionData> getGGBNExtensionData() {
-        return this.ggbnExtensionData;
+    public Set<VoucherRelationship> getVoucherRelationships() {
+        return this.voucherRelationships;
     }
 
-    public void setGGBNExtensionData(Set<GGBNExtensionData> ggbnExtensionData) {
-        this.ggbnExtensionData = ggbnExtensionData;
+    public void setVoucherRelationships(Set<VoucherRelationship> voucherRelationships) {
+        this.voucherRelationships = voucherRelationships;
     }
 
     /**

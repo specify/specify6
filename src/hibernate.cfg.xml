@@ -70,7 +70,6 @@
 		<mapping class="edu.ku.brc.specify.datamodel.CollectingEvent"/>
 		<mapping class="edu.ku.brc.specify.datamodel.CollectingEventAttachment"/>
 		<mapping class="edu.ku.brc.specify.datamodel.CollectingEventAttr"/>
-		<mapping class="edu.ku.brc.specify.datamodel.CollectingTrip"/>
 		<mapping class="edu.ku.brc.specify.datamodel.CollectionObjectCitation"/>
 		<mapping class="edu.ku.brc.specify.datamodel.CollectionObject"/>
 		<mapping class="edu.ku.brc.specify.datamodel.CollectionObjectAttachment"/>
@@ -78,6 +77,10 @@
 		<mapping class="edu.ku.brc.specify.datamodel.CollectionObjectProperty"/>
 		<mapping class="edu.ku.brc.specify.datamodel.CollectingEventAttribute"/>
 		<mapping class="edu.ku.brc.specify.datamodel.CollectingEventAuthorization"/>
+		<mapping class="edu.ku.brc.specify.datamodel.CollectingTrip"/>
+		<mapping class="edu.ku.brc.specify.datamodel.CollectingTripAttachment"/>
+		<mapping class="edu.ku.brc.specify.datamodel.CollectingTripAttribute"/>
+		<mapping class="edu.ku.brc.specify.datamodel.CollectingTripAuthorization"/>
 		<mapping class="edu.ku.brc.specify.datamodel.CollectionRelType"/>
 		<mapping class="edu.ku.brc.specify.datamodel.CollectionRelationship"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Collector"/>
@@ -125,7 +128,6 @@
 		<mapping class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef"/>
 		<mapping class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem"/>
 		<mapping class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem"/>
-		<mapping class="edu.ku.brc.specify.datamodel.GGBNExtensionData"/>
         <mapping class="edu.ku.brc.specify.datamodel.Gift"/>
         <mapping class="edu.ku.brc.specify.datamodel.GiftAttachment"/>
 		<mapping class="edu.ku.brc.specify.datamodel.GiftAgent"/>
@@ -220,6 +222,7 @@
 		<mapping class="edu.ku.brc.specify.datamodel.TaxonTreeDefItem"/>
 		<mapping class="edu.ku.brc.specify.datamodel.TreatmentEvent"/>
 		<mapping class="edu.ku.brc.specify.datamodel.TreatmentEventAttachment"/>
+		<mapping class="edu.ku.brc.specify.datamodel.VoucherRelationship"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Workbench"/>
 		<mapping class="edu.ku.brc.specify.datamodel.WorkbenchDataItem"/>
 		<mapping class="edu.ku.brc.specify.datamodel.WorkbenchRow"/>

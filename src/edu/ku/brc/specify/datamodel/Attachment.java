@@ -120,6 +120,7 @@ public class Attachment extends DataModelObjBase implements Serializable
     protected Set<AgentAttachment>                   agentAttachments;
     protected Set<BorrowAttachment>                  borrowAttachments;
     protected Set<CollectingEventAttachment>         collectingEventAttachments;
+    protected Set<CollectingTripAttachment>          collectingTripAttachments;
     protected Set<CollectionObjectAttachment>        collectionObjectAttachments;
     protected Set<ConservDescriptionAttachment>      conservDescriptionAttachments;
     protected Set<ConservEventAttachment>            conservEventAttachments;
@@ -197,6 +198,7 @@ public class Attachment extends DataModelObjBase implements Serializable
         borrowAttachments              = new HashSet<BorrowAttachment>();
         collectionObjectAttachments    = new HashSet<CollectionObjectAttachment>();
         collectingEventAttachments     = new HashSet<CollectingEventAttachment>();
+        collectingTripAttachments = new HashSet<CollectingTripAttachment>();
         conservDescriptionAttachments  = new HashSet<ConservDescriptionAttachment>();
         conservEventAttachments        = new HashSet<ConservEventAttachment>();
         dnaSequenceAttachments         = new HashSet<DNASequenceAttachment>();
@@ -713,6 +715,18 @@ public class Attachment extends DataModelObjBase implements Serializable
     public void setCollectingEventAttachments(Set<CollectingEventAttachment> collectingEventAttachments)
     {
         this.collectingEventAttachments = collectingEventAttachments;
+    }
+
+    @OneToMany(mappedBy = "attachment")
+    @Cascade( {CascadeType.ALL} )
+    public Set<CollectingTripAttachment> getCollectingTripAttachments()
+    {
+        return collectingTripAttachments;
+    }
+
+    public void setCollectingTripAttachments(Set<CollectingTripAttachment> collectingTripAttachments)
+    {
+        this.collectingTripAttachments = collectingTripAttachments;
     }
 
     @OneToMany(mappedBy = "attachment")

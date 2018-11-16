@@ -2,34 +2,25 @@ package edu.ku.brc.specify.datamodel;
 
 import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
-import edu.ku.brc.specify.tasks.subpane.security.YesNoCellRenderer;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.annotations.Index;
 
 import javax.persistence.*;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Field;
-import java.util.Calendar;
 import java.util.Vector;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
-@Table(name = "ggbnextensiondata")
-@org.hibernate.annotations.Table(appliesTo="ggbnextensiondata", indexes =
+@Table(name = "voucherrelationship")
+@org.hibernate.annotations.Table(appliesTo="voucherrelationship", indexes =
         {
-                @Index (name="GGBNXDATColMemIDX", columnNames={"CollectionMemberID"})
+                @Index (name="VRXDATColMemIDX", columnNames={"CollectionMemberID"})
         })
-public class GGBNExtensionData extends CollectionMember implements Cloneable {
-    protected static final Logger log = Logger.getLogger(GGBNExtensionData.class);
+public class VoucherRelationship extends CollectionMember implements Cloneable {
+    protected static final Logger log = Logger.getLogger(VoucherRelationship.class);
 
-    protected Integer gGBNExtensionDataId;
+    protected Integer voucherRelationshipId;
 
     protected String institutionCode;
     protected String collectionCode;
@@ -51,15 +42,15 @@ public class GGBNExtensionData extends CollectionMember implements Cloneable {
     protected CollectionObject collectionObject;
 
     /** default constructor */
-    public GGBNExtensionData()
+    public VoucherRelationship()
     {
         // do nothing
     }
 
     /** constructor with id */
-    public GGBNExtensionData(Integer gGBNExtensionDataId)
+    public VoucherRelationship(Integer voucherRelationshipId)
     {
-        this.gGBNExtensionDataId = gGBNExtensionDataId;
+        this.voucherRelationshipId = voucherRelationshipId;
     }
 
     // Initializer
@@ -67,7 +58,7 @@ public class GGBNExtensionData extends CollectionMember implements Cloneable {
     public void initialize()
     {
         super.init();
-        gGBNExtensionDataId = null;
+        voucherRelationshipId = null;
 
         number1 = null;
         number2 = null;
@@ -87,14 +78,14 @@ public class GGBNExtensionData extends CollectionMember implements Cloneable {
 
     @Id
     @GeneratedValue
-    @Column(name = "GGBNExtensionDataID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Integer getGGBNExtensionDataId()
+    @Column(name = "VoucherRelationshipID", unique = false, nullable = false, insertable = true, updatable = true)
+    public Integer getVoucherRelationshipId()
     {
-        return gGBNExtensionDataId;
+        return voucherRelationshipId;
     }
 
-    public void setGGBNExtensionDataId(Integer gGBNExtensionDataId) {
-        this.gGBNExtensionDataId = gGBNExtensionDataId;
+    public void setVoucherRelationshipId(Integer voucherRelationshipId) {
+        this.voucherRelationshipId = voucherRelationshipId;
     }
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getId()
@@ -103,7 +94,7 @@ public class GGBNExtensionData extends CollectionMember implements Cloneable {
     @Override
     public Integer getId()
     {
-        return this.gGBNExtensionDataId;
+        return this.voucherRelationshipId;
     }
 
 
@@ -283,8 +274,8 @@ public class GGBNExtensionData extends CollectionMember implements Cloneable {
     @Override
     public Object clone() throws CloneNotSupportedException
     {
-        GGBNExtensionData obj    = (GGBNExtensionData)super.clone();
-        obj.gGBNExtensionDataId  = null;
+        VoucherRelationship obj    = (VoucherRelationship)super.clone();
+        obj.voucherRelationshipId  = null;
         obj.collectionObject = null;
 
         return obj;
@@ -343,7 +334,7 @@ public class GGBNExtensionData extends CollectionMember implements Cloneable {
     @Override
     public Class<?> getDataClass()
     {
-        return GGBNExtensionData.class;
+        return VoucherRelationship.class;
     }
 
     /* (non-Javadoc)

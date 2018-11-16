@@ -66,7 +66,7 @@
     <dialog type="display" view="FundingAgent"       name="FundingAgentDisplay"      class="edu.ku.brc.specify.datamodel.FundingAgent" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="ChronosStrat"       name="ChronosStratDisplay"      class="edu.ku.brc.specify.datamodel.GeologicTimePeriod" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="Geography"          name="GeographyDisplay"         class="edu.ku.brc.specify.datamodel.Geography" helpcontext="CBXQViewEdit"/>
-    <dialog type="display" view="GGBNExtensionData"  name="GGBNExtensionDataDisplay" class="edu.ku.brc.specify.datamodel.GGBNExtensionData" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="VoucherRelationship" name="VoucherRelationshipDisplay" class="edu.ku.brc.specify.datamodel.VoucherRelationship" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="GiftAgent"          name="GiftAgentDisplay"         class="edu.ku.brc.specify.datamodel.GiftAgent" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="GiftItems"          name="GiftItemsDisplay"         class="edu.ku.brc.specify.datamodel.GiftPreparation" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="GroupPerson"        name="GroupPersonDisplay"       class="edu.ku.brc.specify.datamodel.GroupPerson" helpcontext="CBXQViewEdit"/>
