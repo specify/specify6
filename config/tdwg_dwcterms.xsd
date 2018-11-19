@@ -115,6 +115,8 @@
     <xs:element name="recordNumber" type="xs:string" substitutionGroup="dwc:anyOccurrenceTerm"/>
     <xs:element name="recordedBy" type="xs:string" substitutionGroup="dwc:anyOccurrenceTerm"/>
     <xs:element name="individualCount" type="xs:positiveInteger" substitutionGroup="dwc:anyOccurrenceTerm"/>
+    <xs:element name="organismQuantity" type="xs:string" substitutionGroup="dwc:anyOccurrenceTerm"/>
+    <xs:element name="organismQuantityType" type="xs:string" substitutionGroup="dwc:anyOccurrenceTerm"/>
     <xs:element name="sex" type="xs:string" substitutionGroup="dwc:anyOccurrenceTerm"/>
     <xs:element name="lifeStage" type="xs:string" substitutionGroup="dwc:anyOccurrenceTerm"/>
     <xs:element name="reproductiveCondition" type="xs:string" substitutionGroup="dwc:anyOccurrenceTerm"/>
