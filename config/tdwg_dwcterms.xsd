@@ -143,6 +143,8 @@
             <xs:element ref="dwc:recordNumber" minOccurs="0"/>
             <xs:element ref="dwc:recordedBy" minOccurs="0"/>
             <xs:element ref="dwc:individualCount" minOccurs="0"/>
+            <xs:element ref="dwc:organismQuantity" minOccurs="0"/>
+            <xs:element ref="dwc:organismQuantityType" minOccurs="0"/>
             <xs:element ref="dwc:sex" minOccurs="0"/>
             <xs:element ref="dwc:lifeStage" minOccurs="0"/>
             <xs:element ref="dwc:reproductiveCondition" minOccurs="0"/>
