@@ -196,6 +196,21 @@ public class TaxonTreeDef extends BaseTreeDef<Taxon, TaxonTreeDef, TaxonTreeDefI
         return false;
     }
 
+    /**
+     *
+     * @param levelRank
+     * @return
+     */
+    public static boolean isDefaultRequiredLevel(int levelRank) {
+        return levelRank == KINGDOM
+                || levelRank == DIVISION
+                || levelRank == PHYLUM
+                || levelRank == CLASS
+                || levelRank == ORDER
+                || levelRank == FAMILY
+                || levelRank == GENUS
+                || levelRank == SPECIES;
+    }
 	/**
      * @param levelRank
      * @return localized text corresponding to levelRank.

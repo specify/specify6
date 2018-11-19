@@ -294,7 +294,7 @@ public class TreeDefSetupPanel extends BaseSetupPanel
                         boolean required = false;
                         if (classType == TaxonTreeDef.class)
                         {
-                            required = TaxonTreeDef.isStdRequiredLevel(rank) || rank == 0;
+                            required = TaxonTreeDef.isDefaultRequiredLevel(rank) || rank == 0;
                             
                         } else if (classType == GeographyTreeDef.class)
                         {
