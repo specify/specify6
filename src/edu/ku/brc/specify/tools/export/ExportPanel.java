@@ -1627,7 +1627,12 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
                     prog.setValue(0);
                 }
                 if (rowCount >= 0 && rowCount < cacheRowCount) {
-                    status.setText(String.format(UIRegistry.getResourceString("ExportPanel.UpdatingCacheChunk"), rowsExported + 1, rowsExported + rowCount, cacheRowCount));
+                	long lo = rowsExported + 1;
+                	long hi = rowsExported + rowCount;
+                	if (lo > hi) {
+						hi = cacheRowCount;
+					}
+                    status.setText(String.format(UIRegistry.getResourceString("ExportPanel.UpdatingCacheChunk"), Math.min(lo, hi), hi, cacheRowCount));
                 } else {
                     status.setText(UIRegistry.getResourceString("ExportPanel.UpdatingCache"));
                 }
