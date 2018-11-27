@@ -329,6 +329,7 @@ public class MatchHandler
             });
 
             //settingDlg.pack();
+            settingDlg.setAlwaysOnTop(true);
             UIHelper.centerAndShow(settingDlg);
             if (!settingDlg.isCancelled())
             {
