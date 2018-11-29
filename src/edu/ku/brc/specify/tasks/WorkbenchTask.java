@@ -170,7 +170,7 @@ public class WorkbenchTask extends BaseTask
     public static final String     EXPORT_FILE_PATH      = "wb.exportfilepath";
     
     public static String[]         restrictedTables      = {
-    		"dnasequence",
+    		//"dnasequence",
     		"dnasequencingrun",
     		"materialsample",
     		"preparationattribute"
