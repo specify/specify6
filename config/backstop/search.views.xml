@@ -65,7 +65,7 @@
             resourcelabels="false">
             <desc><![CDATA[The Permit Search Form]]></desc>
             <altviews>
-                <altview name="PermitSearch" viewdef="PermitSearch" mode="edit" validated="true" default="true"/>
+                <altview name="PermitSearch" viewdef="PermitSearch" mode="edit" validated="false" default="true"/>
             </altviews>
         </view>
         
