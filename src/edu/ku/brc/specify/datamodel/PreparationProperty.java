@@ -39,7 +39,7 @@ import java.util.Arrays;
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
-@Table(name = "preparationobjectproperty")
+@Table(name = "preparationproperty")
 @org.hibernate.annotations.Table(appliesTo="preparationproperty", indexes =
         {
                 @Index (name="PREPPROPColMemIDX", columnNames={"CollectionMemberID"})

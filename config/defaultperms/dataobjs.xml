@@ -840,6 +840,69 @@
     </hashtable>
   </entry>
   <entry>
+    <string>dnasequencerunattachment</string>
+    <hashtable>
+      <entry>
+        <string>Manager</string>
+        <tp name="dnasequencerunattachment" type="Manager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>LimitedAccess</string>
+        <tp name="dnasequencerunattachment" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>Guest</string>
+        <tp name="dnasequencerunattachment" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>FullAccess</string>
+        <tp name="dnasequencerunattachment" type="FullAccess" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>dnaprimer</string>
+    <hashtable>
+      <entry>
+        <string>Manager</string>
+        <tp name="dnaprimer" type="Manager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>LimitedAccess</string>
+        <tp name="dnaprimer" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>Guest</string>
+        <tp name="dnaprimer" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>FullAccess</string>
+        <tp name="dnaprimer" type="FullAccess" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>materialsample</string>
+    <hashtable>
+      <entry>
+        <string>Manager</string>
+        <tp name="materialsample" type="Manager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>LimitedAccess</string>
+        <tp name="materialsample" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>Guest</string>
+        <tp name="materialsample" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>FullAccess</string>
+        <tp name="materialsample" type="FullAccess" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
     <string>taxoncitation</string>
     <hashtable>
       <entry>
@@ -878,6 +941,69 @@
       <entry>
         <string>FullAccess</string>
         <tp name="accessionauthorization" type="FullAccess" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>fundingagent</string>
+    <hashtable>
+      <entry>
+        <string>Manager</string>
+        <tp name="fundingagent" type="Manager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>LimitedAccess</string>
+        <tp name="fundingagent" type="LimitedAccess" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>Guest</string>
+        <tp name="fundingagent" type="Guest" view="false" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>FullAccess</string>
+        <tp name="fundingagent" type="FullAccess" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>collectingeventauthorization</string>
+    <hashtable>
+      <entry>
+        <string>Manager</string>
+        <tp name="collectingeventauthorization" type="Manager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>LimitedAccess</string>
+        <tp name="collectingeventauthorization" type="LimitedAccess" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>Guest</string>
+        <tp name="collectingeventauthorization" type="Guest" view="false" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>FullAccess</string>
+        <tp name="collectingeventauthorization" type="FullAccess" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>collectingtripauthorization</string>
+    <hashtable>
+      <entry>
+        <string>Manager</string>
+        <tp name="collectingtripauthorization" type="Manager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>LimitedAccess</string>
+        <tp name="collectingtripauthorization" type="LimitedAccess" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>Guest</string>
+        <tp name="collectingtripauthorization" type="Guest" view="false" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>FullAccess</string>
+        <tp name="collectingtripauthorization" type="FullAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
     </hashtable>
   </entry>
@@ -1109,6 +1235,27 @@
       <entry>
         <string>FullAccess</string>
         <tp name="institution" type="FullAccess" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>institutionnetwork</string>
+    <hashtable>
+      <entry>
+        <string>Manager</string>
+        <tp name="institutionnetwork" type="Manager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>LimitedAccess</string>
+        <tp name="institutionnetwork" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>Guest</string>
+        <tp name="institutionnetwork" type="Guest" view="false" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>FullAccess</string>
+        <tp name="institutionnetwork" type="FullAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
     </hashtable>
   </entry>
@@ -1403,6 +1550,27 @@
       <entry>
         <string>FullAccess</string>
         <tp name="treatmentevent" type="FullAccess" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>treatmenteventattachment</string>
+    <hashtable>
+      <entry>
+        <string>Manager</string>
+        <tp name="treatmenteventattachment" type="Manager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>LimitedAccess</string>
+        <tp name="treatmenteventattachment" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>Guest</string>
+        <tp name="treatmenteventattachment" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>FullAccess</string>
+        <tp name="treatmenteventattachment" type="FullAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
     </hashtable>
   </entry>
@@ -1718,6 +1886,48 @@
       <entry>
         <string>FullAccess</string>
         <tp name="collectionobject" type="FullAccess" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>voucherrelationship</string>
+    <hashtable>
+      <entry>
+        <string>Manager</string>
+        <tp name="voucherrelationship" type="Manager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>LimitedAccess</string>
+        <tp name="voucherrelationship" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>Guest</string>
+        <tp name="voucherrelationship" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>FullAccess</string>
+        <tp name="voucherrelationship" type="FullAccess" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>collectionobjectproperty</string>
+    <hashtable>
+      <entry>
+        <string>Manager</string>
+        <tp name="collectionobjectproperty" type="Manager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>LimitedAccess</string>
+        <tp name="collectionobjectproperty" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>Guest</string>
+        <tp name="collectionobjectproperty" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>FullAccess</string>
+        <tp name="collectionobjectproperty" type="FullAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
     </hashtable>
   </entry>
@@ -2121,6 +2331,27 @@
     </hashtable>
   </entry>
   <entry>
+    <string>storageattachment</string>
+    <hashtable>
+      <entry>
+        <string>Manager</string>
+        <tp name="storageattachment" type="Manager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>LimitedAccess</string>
+        <tp name="storageattachment" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>Guest</string>
+        <tp name="storageattachment" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>FullAccess</string>
+        <tp name="storageattachment" type="FullAccess" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
     <string>collector</string>
     <hashtable>
       <entry>
@@ -2474,6 +2705,27 @@
       <entry>
         <string>FullAccess</string>
         <tp name="preparation" type="FullAccess" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>preparationproperty</string>
+    <hashtable>
+      <entry>
+        <string>Manager</string>
+        <tp name="preparationproperty" type="Manager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>LimitedAccess</string>
+        <tp name="preparationproperty" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>Guest</string>
+        <tp name="preparationproperty" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>FullAccess</string>
+        <tp name="preparationproperty" type="FullAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
     </hashtable>
   </entry>
@@ -2957,6 +3209,48 @@
       <entry>
         <string>FullAccess</string>
         <tp name="collectingtrip" type="FullAccess" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>collectingtripattachment</string>
+    <hashtable>
+      <entry>
+        <string>Manager</string>
+        <tp name="collectingtripattachment" type="Manager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>LimitedAccess</string>
+        <tp name="collectingtripattachment" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>Guest</string>
+        <tp name="collectingtripattachment" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>FullAccess</string>
+        <tp name="collectingtripattachment" type="FullAccess" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>collectingtripattribute</string>
+    <hashtable>
+      <entry>
+        <string>Manager</string>
+        <tp name="collectingtripattribute" type="Manager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>LimitedAccess</string>
+        <tp name="collectingtripattribute" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>Guest</string>
+        <tp name="collectingtripattribute" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>FullAccess</string>
+        <tp name="collectingtripattribute" type="FullAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
     </hashtable>
   </entry>
