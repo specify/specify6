@@ -106,6 +106,9 @@ public class PreparationBusRules extends AttachmentOwnerBaseBusRules
             if (exchCnt > 0) {
                 showExchanges();
             }
+            if (loanCnt + giftCnt + deaccCnt + exchCnt == 0) {
+                UIRegistry.showLocalizedMsg(JOptionPane.INFORMATION_MESSAGE, "PreparationBusRules.NoAssociatedInteractionsTitle","PreparationBusRules.NoAssociatedInteractions");
+            }
         }
     }
     /**
