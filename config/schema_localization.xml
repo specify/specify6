@@ -21102,7 +21102,7 @@ O Specify fornece uma ampla gama de utilidades para a gestão curatorial de prep
         </names>
         <descs/>
       </desc>
-      <desc name="text2" isHidden="true" isUIFormatter="false" isRequired="true">
+      <desc name="text2" isHidden="true" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
           <str language="pt" country="BR" variant="">
@@ -21140,7 +21140,7 @@ O Specify fornece uma ampla gama de utilidades para a gestão curatorial de prep
         </names>
         <descs/>
       </desc>
-      <desc name="text3" isHidden="true" isUIFormatter="false" isRequired="true">
+      <desc name="text3" isHidden="true" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
           <str language="en">
@@ -21159,7 +21159,7 @@ O Specify fornece uma ampla gama de utilidades para a gestão curatorial de prep
         </names>
         <descs/>
       </desc>
-      <desc name="text1" isHidden="true" isUIFormatter="false" isRequired="true">
+      <desc name="text1" isHidden="true" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
           <str language="pt">
@@ -21254,7 +21254,7 @@ O Specify fornece uma ampla gama de utilidades para a gestão curatorial de prep
         </names>
         <descs/>
       </desc>
-      <desc name="boldTranslationMatrix" isHidden="true" isUIFormatter="false" isRequired="true">
+      <desc name="boldTranslationMatrix" isHidden="true" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
           <str language="en">
@@ -21368,7 +21368,7 @@ O Specify fornece uma ampla gama de utilidades para a gestão curatorial de prep
         </names>
         <descs/>
       </desc>
-      <desc name="remarks" isHidden="true" isUIFormatter="false" isRequired="true">
+      <desc name="remarks" isHidden="true" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
           <str language="pt">
@@ -21575,7 +21575,7 @@ O Specify fornece uma ampla gama de utilidades para a gestão curatorial de prep
         </names>
         <descs/>
       </desc>
-      <desc name="genbankAccessionNumber" isHidden="false" isUIFormatter="false" isRequired="true">
+      <desc name="genbankAccessionNumber" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
           <str language="pt">
