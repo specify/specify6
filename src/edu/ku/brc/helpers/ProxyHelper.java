@@ -22,6 +22,7 @@ package edu.ku.brc.helpers;
 import edu.ku.brc.af.prefs.AppPreferences;
 import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
+import org.apache.log4j.Logger;
 
 /**
  * @author rods
@@ -33,6 +34,8 @@ import org.apache.commons.httpclient.HttpClient;
  */
 public class ProxyHelper
 {
+    private static final Logger log                = Logger.getLogger(ProxyHelper.class);
+
     public static final String PROXY_HOST          = "PROXY_HOST";
     public static final String PROXY_PORT          = "PROXY_PORT";
     public static final String PROXY_HOST_HTTPS    = "PROXY_HOST_HTTPS";
@@ -52,7 +55,11 @@ public class ProxyHelper
                                      final String proxyPortHttps,
                                      final boolean doPrefsAlso)
     {
-        setSysProp("http.proxyHost", proxyHost); 
+        setSysProp("proxySet", "true");
+        setSysProp("proxyHost", proxyHost);
+        setSysProp("proxyPort", proxyPort);
+
+        setSysProp("http.proxyHost", proxyHost);
         setSysProp("http.proxyPort", proxyPort);
         
         setSysProp("https.proxyHost", proxyHostHttps); 
@@ -129,7 +136,8 @@ public class ProxyHelper
                 proxyPort = Integer.valueOf(System.getProperty("http.proxyPort"));
             } catch (Exception e) {
                 //disregard stupid port
-                proxyPort = 8080;
+                log.warn("invalid proxy port. defaulting to 3128.")
+                proxyPort = 3128;
             }
             HostConfiguration hc = new HostConfiguration();
             hc.setProxy(proxyHost, proxyPort);
