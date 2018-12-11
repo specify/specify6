@@ -136,7 +136,7 @@ public class ProxyHelper
                 proxyPort = Integer.valueOf(System.getProperty("http.proxyPort"));
             } catch (Exception e) {
                 //disregard stupid port
-                log.warn("invalid proxy port. defaulting to 3128.")
+                log.warn("invalid proxy port. defaulting to 3128.");
                 proxyPort = 3128;
             }
             HostConfiguration hc = new HostConfiguration();
