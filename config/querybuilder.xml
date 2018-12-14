@@ -128,6 +128,9 @@
       			<alias name="Agent" field="modifiedByAgent" />
     		</table>
         </table>
+        <table name="CollectingEventAuthorization" field="collectingEventAuthorizations">
+            <alias name="Permit"/>
+        </table>
         <alias name="PaleoContext" field="paleoContext" />
         <alias name="CollectingTrip"/>
         <alias name="CollectionObject" field="collectionObjects"/>
@@ -137,6 +140,13 @@
     
     <table name="CollectingTrip">
         <alias name="CollectingEvent" field="collectingEvents"/>
+        <table name="CollectingTripAttachment" field="collectingTripAttachments">
+            <alias name="Attachment"/>
+        </table>
+        <table name="CollectingTripAttribute"/>
+        <table name="CollectingTripAuthorization" field="collectingTripAuthorizations">
+            <alias name="Permit"/>
+        </table>
         <alias name="Agent" field="createdByAgent" />
         <alias name="Agent" field="modifiedByAgent" />
     </table>
@@ -150,7 +160,33 @@
     	<table name="CollectionObjectCitation" field="collectionObjectCitations">
     		<alias name="ReferenceWork"/>
     	</table>
-    	
+
+        <table name="CollectionObjectProperty" field="collectionObjectProperties">
+            <alias name="Agent" field="agent1"/>
+            <alias name="Agent" field="agent2"/>
+            <alias name="Agent" field="agent3"/>
+            <alias name="Agent" field="agent4"/>
+            <alias name="Agent" field="agent5"/>
+            <alias name="Agent" field="agent6"/>
+            <alias name="Agent" field="agent7"/>
+            <alias name="Agent" field="agent8"/>
+            <alias name="Agent" field="agent9"/>
+            <alias name="Agent" field="agent10"/>
+            <alias name="Agent" field="agent11"/>
+            <alias name="Agent" field="agent12"/>
+            <alias name="Agent" field="agent13"/>
+            <alias name="Agent" field="agent14"/>
+            <alias name="Agent" field="agent15"/>
+            <alias name="Agent" field="agent16"/>
+            <alias name="Agent" field="agent17"/>
+            <alias name="Agent" field="agent18"/>
+            <alias name="Agent" field="agent19"/>
+            <alias name="Agent" field="agent20"/>
+            <alias name="Agent" field="recordedBy"/>
+            <alias name="Agent" field="measurementDeterminedBy"/>
+            <alias name="Agent" field="createdByAgent"/>
+            <alias name="Agent" field="modifiedByAgent"/>
+        </table>
     	<alias name="CollectingEvent"/>
     	
         <alias name="Determination" field="determinations"/>
@@ -203,6 +239,7 @@
       	<table name="OtherIdentifier" field="otherIdentifiers" />
       	<alias name="Project" field="projects" />
       	<table name="TreatmentEvent" field="treatmentEvents" />
+        <table name="VoucherRelationship" field="voucherRelationships" />
     </table>
     
     <table name="CollectionRelationship">
@@ -500,6 +537,32 @@
             <table name="Attachment"/>
         </table>
         <table name="PreparationAttribute"/>
+        <table name="preparationProperty" field="preparationProperties">
+            <alias name="Agent" field="agent1"/>
+            <alias name="Agent" field="agent2"/>
+            <alias name="Agent" field="agent3"/>
+            <alias name="Agent" field="agent4"/>
+            <alias name="Agent" field="agent5"/>
+            <alias name="Agent" field="agent6"/>
+            <alias name="Agent" field="agent7"/>
+            <alias name="Agent" field="agent8"/>
+            <alias name="Agent" field="agent9"/>
+            <alias name="Agent" field="agent10"/>
+            <alias name="Agent" field="agent11"/>
+            <alias name="Agent" field="agent12"/>
+            <alias name="Agent" field="agent13"/>
+            <alias name="Agent" field="agent14"/>
+            <alias name="Agent" field="agent15"/>
+            <alias name="Agent" field="agent16"/>
+            <alias name="Agent" field="agent17"/>
+            <alias name="Agent" field="agent18"/>
+            <alias name="Agent" field="agent19"/>
+            <alias name="Agent" field="agent20"/>
+            <alias name="Agent" field="recordedBy"/>
+            <alias name="Agent" field="measurementDeterminedBy"/>
+            <alias name="Agent" field="createdByAgent"/>
+            <alias name="Agent" field="modifiedByAgent"/>
+        </table>
         <alias name="MaterialSample" field="materialSamples"/>
         <alias name="CollectionObject"/>
         <alias name="LoanPreparation" field="loanPreparations"/>
