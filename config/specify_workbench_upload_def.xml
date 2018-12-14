@@ -145,8 +145,63 @@
     <field table="CollectingTrip" name="collectingTripYesNo2" actualname="YesNo2"/>
     <field table="CollectingTrip" name="collectingTripNumber1" actualname="Number1"/>
     <field table="CollectingTrip" name="collectingTripYNumber2" actualname="Number2"/>
+    <field table="CollectingTrip" name="ctPermit1" onetomanysequence="0" actualtable="collectingtripauthorization" relationshipname="permit" relatedfieldname="permitNumber"/>
+    <field table="CollectingTrip" name="ctPermit2" onetomanysequence="1" actualtable="collectingtripauthorization" relationshipname="permit" relatedfieldname="permitNumber"/>
+    <field table="CollectingTrip" name="ctPermit3" onetomanysequence="2" actualtable="collectingtripauthorization" relationshipname="permit" relatedfieldname="permitNumber"/>
+    <field table="CollectingTrip" name="ctPermit4" onetomanysequence="3" actualtable="collectingtripauthorization" relationshipname="permit" relatedfieldname="permitNumber"/>
+    <field table="CollectingTrip" name="ctPermit5" onetomanysequence="4" actualtable="collectingtripauthorization" relationshipname="permit" relatedfieldname="permitNumber"/>
 
-	<!-- collectionobject -->
+    <!-- collectingtripattribute -->
+    <field table="CollectingtripAttribute"  name="collectingtripAttributeRemarks" actualname="Remarks" />
+    <field table="CollectingtripAttribute"  name="collectingtripAttributeNumber1" actualname="Number1" />
+    <field table="CollectingtripAttribute"  name="collectingtripAttributeNumber2" actualname="Number2" />
+    <field table="CollectingtripAttribute"  name="collectingtripAttributeNumber3" actualname="Number3" />
+    <field table="CollectingtripAttribute"  name="collectingtripAttributeNumber4" actualname="Number4" />
+    <field table="CollectingtripAttribute"  name="collectingtripAttributeNumber5" actualname="Number5" />
+    <field table="CollectingtripAttribute"  name="collectingtripAttributeNumber6" actualname="Number6" />
+    <field table="CollectingtripAttribute"  name="collectingtripAttributeNumber7" actualname="Number7" />
+    <field table="CollectingtripAttribute"  name="collectingtripAttributeNumber8" actualname="Number8" />
+    <field table="CollectingtripAttribute"  name="collectingtripAttributeNumber9" actualname="Number9" />
+    <field table="CollectingtripAttribute"  name="collectingtripAttributeNumber10" actualname="Number10" />
+    <field table="CollectingtripAttribute"  name="collectingtripAttributeNumber11" actualname="Number11" />
+    <field table="CollectingtripAttribute"  name="collectingtripAttributeNumber12" actualname="Number12" />
+    <field table="CollectingtripAttribute"  name="collectingtripAttributeNumber13" actualname="Number13" />
+
+    <field table="CollectingtripAttribute"  name="collectingtripAttributeText1" actualname="Text1" />
+    <field table="CollectingtripAttribute"  name="collectingtripAttributeText2" actualname="Text2" />
+    <field table="CollectingtripAttribute"  name="collectingtripAttributeText3" actualname="Text3" />
+    <field table="CollectingtripAttribute"  name="collectingtripAttributeText4" actualname="Text4" />
+    <field table="CollectingtripAttribute"  name="collectingtripAttributeText5" actualname="Text5" />
+    <field table="CollectingtripAttribute"  name="collectingtripAttributeText6" actualname="Text6" />
+    <field table="CollectingtripAttribute"  name="collectingtripAttributeText7" actualname="Text7" />
+    <field table="CollectingtripAttribute"  name="collectingtripAttributeText8" actualname="Text8" />
+    <field table="CollectingtripAttribute"  name="collectingtripAttributeText9" actualname="Text9" />
+    <field table="CollectingtripAttribute"  name="collectingtripAttributeText10" actualname="Text10" />
+    <field table="CollectingtripAttribute"  name="collectingtripAttributeText11" actualname="Text11" />
+    <field table="CollectingtripAttribute"  name="collectingtripAttributeText12" actualname="Text12" />
+    <field table="CollectingtripAttribute"  name="collectingtripAttributeText13" actualname="Text13" />
+    <field table="CollectingtripAttribute"  name="collectingtripAttributeText14" actualname="Text14" />
+    <field table="CollectingtripAttribute"  name="collectingtripAttributeText15" actualname="Text15" />
+    <field table="CollectingtripAttribute"  name="collectingtripAttributeText16" actualname="Text16" />
+    <field table="CollectingtripAttribute"  name="collectingtripAttributeText17" actualname="Text17" />
+
+    <field table="CollectingtripAttribute"  name="collectingtripAttributeYesNo1" actualname="YesNo1" />
+    <field table="CollectingtripAttribute"  name="collectingtripAttributeYesNo2" actualname="YesNo2" />
+    <field table="CollectingtripAttribute"  name="collectingtripAttributeYesNo3" actualname="YesNo3" />
+    <field table="CollectingtripAttribute"  name="collectingtripAttributeYesNo4" actualname="YesNo4" />
+    <field table="CollectingtripAttribute"  name="collectingtripAttributeYesNo5" actualname="YesNo5" />
+    <field table="CollectingtripAttribute" name="collectingtripAttributeInteger1" actualname="Integer1"/>
+    <field table="CollectingtripAttribute" name="collectingtripAttributeInteger2" actualname="Integer2"/>
+    <field table="CollectingtripAttribute" name="collectingtripAttributeInteger3" actualname="Integer3"/>
+    <field table="CollectingtripAttribute" name="collectingtripAttributeInteger4" actualname="Integer4"/>
+    <field table="CollectingtripAttribute" name="collectingtripAttributeInteger5" actualname="Integer5"/>
+    <field table="CollectingtripAttribute" name="collectingtripAttributeInteger6" actualname="Integer6"/>
+    <field table="CollectingtripAttribute" name="collectingtripAttributeInteger7" actualname="Integer7"/>
+    <field table="CollectingtripAttribute" name="collectingtripAttributeInteger8" actualname="Integer8"/>
+    <field table="CollectingtripAttribute" name="collectingtripAttributeInteger9" actualname="Integer9"/>
+    <field table="CollectingtripAttribute" name="collectingtripAttributeInteger10" actualname="Integer10"/>
+
+    <!-- collectionobject -->
 	<field table="CollectionObject" name="collectionObjectText1" actualname="Text1" />
 	<field table="CollectionObject" name="collectionObjectText2" actualname="Text2" />
 	<field table="CollectionObject" name="collectionObjectText3" actualname="Text3" />
@@ -317,20 +372,20 @@
     <field table="CollectionObjectProperty" name="text11" actualname="text1" onetomanysequence="0" relationshipname="collectionObject"/>
     <field table="CollectionObjectProperty" name="yesno11" actualname="yesno1" onetomanysequence="0" relationshipname="collectionObject"/>
 
-    <field table="CollectionObjectProperty"  name="measurementType1" actualname="measurementType" onetomanysequence="1" relationshipname="collectionObject"/>
-    <field table="CollectionObjectProperty"  name="measurementUnit1" actualname="measurementUnit" onetomanysequence="1" relationshipname="collectionObject"/>
-    <field table="CollectionObjectProperty" name="measurementAccuracy1" actualname="measurementAccuracy" onetomanysequence="1" relationshipname="collectionObject"/>
-    <field table="CollectionObjectProperty" name="measurementDate1" actualname="measurementDeterminedDate" onetomanysequence="1" relationshipname="collectionObject"/>
-    <field table="CollectionObjectProperty" name="measurementByLastName1" onetomanysequence="1" relationshipname="measurementDeterminedBy" relatedfieldname="lastName"/>
-    <field table="CollectionObjectProperty" name="measurementByFirstName1" onetomanysequence="1" relationshipname="measurementDeterminedBy" relatedfieldname="firstName"/>
-    <field table="CollectionObjectProperty" name="measurementByMiddle1" onetomanysequence="1" relationshipname="measurementDeterminedBy" relatedfieldname="middleInitial"/>
-    <field table="CollectionObjectProperty" name="measurementID1" actualname="measurementID" onetomanysequence="1" relationshipname="collectionObject"/>
-    <field table="CollectionObjectProperty" name="measurementRemark1" actualname="measurementRemark" onetomanysequence="1" relationshipname="collectionObject"/>
-    <field table="CollectionObjectProperty" name="measurementDateValue1" actualname="measurementDateValue" onetomanysequence="1" relationshipname="collectionObject"/>
-    <field table="CollectionObjectProperty" name="measurementIntegerValue1" actualname="measurementIntegerValue" onetomanysequence="1" relationshipname="collectionObject"/>
-    <field table="CollectionObjectProperty" name="measurementNumberValue1" actualname="measurementNumberValue" onetomanysequence="1" relationshipname="collectionObject"/>
-    <field table="CollectionObjectProperty" name="measurementTextValue1" actualname="measurementTextValue" onetomanysequence="1" relationshipname="collectionObject"/>
-    <field table="CollectionObjectProperty" name="measurementYesNoValue1" actualname="measurementYesNoValue" onetomanysequence="1" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty"  name="measurementType2" actualname="measurementType" onetomanysequence="1" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty"  name="measurementUnit2" actualname="measurementUnit" onetomanysequence="1" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty" name="measurementAccuracy2" actualname="measurementAccuracy" onetomanysequence="1" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty" name="measurementDate2" actualname="measurementDeterminedDate" onetomanysequence="1" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty" name="measurementByLastName2" onetomanysequence="1" relationshipname="measurementDeterminedBy" relatedfieldname="lastName"/>
+    <field table="CollectionObjectProperty" name="measurementByFirstName2" onetomanysequence="1" relationshipname="measurementDeterminedBy" relatedfieldname="firstName"/>
+    <field table="CollectionObjectProperty" name="measurementByMiddle2" onetomanysequence="1" relationshipname="measurementDeterminedBy" relatedfieldname="middleInitial"/>
+    <field table="CollectionObjectProperty" name="measurementID2" actualname="measurementID" onetomanysequence="1" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty" name="measurementRemark2" actualname="measurementRemark" onetomanysequence="1" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty" name="measurementDateValue2" actualname="measurementDateValue" onetomanysequence="1" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty" name="measurementIntegerValue2" actualname="measurementIntegerValue" onetomanysequence="1" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty" name="measurementNumberValue2" actualname="measurementNumberValue" onetomanysequence="1" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty" name="measurementTextValue2" actualname="measurementTextValue" onetomanysequence="1" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty" name="measurementYesNoValue2" actualname="measurementYesNoValue" onetomanysequence="1" relationshipname="collectionObject"/>
 
     <field table="CollectionObjectProperty" name="date12" actualname="date1" onetomanysequence="1" relationshipname="collectionObject"/>
     <field table="CollectionObjectProperty" name="agent1LastName2" onetomanysequence="1" relationshipname="agent1" relatedfieldname="lastName"/>
@@ -341,20 +396,20 @@
     <field table="CollectionObjectProperty" name="text12" actualname="text1" onetomanysequence="1" relationshipname="collectionObject"/>
     <field table="CollectionObjectProperty" name="yesno12" actualname="yesno1" onetomanysequence="1" relationshipname="collectionObject"/>
 
-    <field table="CollectionObjectProperty"  name="measurementType1" actualname="measurementType" onetomanysequence="2" relationshipname="collectionObject"/>
-    <field table="CollectionObjectProperty"  name="measurementUnit1" actualname="measurementUnit" onetomanysequence="2" relationshipname="collectionObject"/>
-    <field table="CollectionObjectProperty" name="measurementAccuracy1" actualname="measurementAccuracy" onetomanysequence="2" relationshipname="collectionObject"/>
-    <field table="CollectionObjectProperty" name="measurementDate1" actualname="measurementDeterminedDate" onetomanysequence="2" relationshipname="collectionObject"/>
-    <field table="CollectionObjectProperty" name="measurementByLastName1" onetomanysequence="2" relationshipname="measurementDeterminedBy" relatedfieldname="lastName"/>
-    <field table="CollectionObjectProperty" name="measurementByFirstName1" onetomanysequence="2" relationshipname="measurementDeterminedBy" relatedfieldname="firstName"/>
-    <field table="CollectionObjectProperty" name="measurementByMiddle1" onetomanysequence="2" relationshipname="measurementDeterminedBy" relatedfieldname="middleInitial"/>
-    <field table="CollectionObjectProperty" name="measurementID1" actualname="measurementID" onetomanysequence="2" relationshipname="collectionObject"/>
-    <field table="CollectionObjectProperty" name="measurementRemark1" actualname="measurementRemark" onetomanysequence="2" relationshipname="collectionObject"/>
-    <field table="CollectionObjectProperty" name="measurementDateValue1" actualname="measurementDateValue" onetomanysequence="2" relationshipname="collectionObject"/>
-    <field table="CollectionObjectProperty" name="measurementIntegerValue1" actualname="measurementIntegerValue" onetomanysequence="2" relationshipname="collectionObject"/>
-    <field table="CollectionObjectProperty" name="measurementNumberValue1" actualname="measurementNumberValue" onetomanysequence="2" relationshipname="collectionObject"/>
-    <field table="CollectionObjectProperty" name="measurementTextValue1" actualname="measurementTextValue" onetomanysequence="2" relationshipname="collectionObject"/>
-    <field table="CollectionObjectProperty" name="measurementYesNoValue1" actualname="measurementYesNoValue" onetomanysequence="2" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty"  name="measurementType3" actualname="measurementType" onetomanysequence="2" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty"  name="measurementUnit3" actualname="measurementUnit" onetomanysequence="2" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty" name="measurementAccuracy3" actualname="measurementAccuracy" onetomanysequence="2" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty" name="measurementDate3" actualname="measurementDeterminedDate" onetomanysequence="2" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty" name="measurementByLastName3" onetomanysequence="2" relationshipname="measurementDeterminedBy" relatedfieldname="lastName"/>
+    <field table="CollectionObjectProperty" name="measurementByFirstName3" onetomanysequence="2" relationshipname="measurementDeterminedBy" relatedfieldname="firstName"/>
+    <field table="CollectionObjectProperty" name="measurementByMiddle3" onetomanysequence="2" relationshipname="measurementDeterminedBy" relatedfieldname="middleInitial"/>
+    <field table="CollectionObjectProperty" name="measurementID3" actualname="measurementID" onetomanysequence="2" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty" name="measurementRemark3" actualname="measurementRemark" onetomanysequence="2" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty" name="measurementDateValue3" actualname="measurementDateValue" onetomanysequence="2" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty" name="measurementIntegerValue3" actualname="measurementIntegerValue" onetomanysequence="2" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty" name="measurementNumberValue3" actualname="measurementNumberValue" onetomanysequence="2" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty" name="measurementTextValue3" actualname="measurementTextValue" onetomanysequence="2" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty" name="measurementYesNoValue3" actualname="measurementYesNoValue" onetomanysequence="2" relationshipname="collectionObject"/>
 
     <field table="CollectionObjectProperty" name="date13" actualname="date1" onetomanysequence="2" relationshipname="collectionObject"/>
     <field table="CollectionObjectProperty" name="agent1LastName3" onetomanysequence="2" relationshipname="agent1" relatedfieldname="lastName"/>
@@ -365,20 +420,20 @@
     <field table="CollectionObjectProperty" name="text13" actualname="text1" onetomanysequence="2" relationshipname="collectionObject"/>
     <field table="CollectionObjectProperty" name="yesno13" actualname="yesno1" onetomanysequence="2" relationshipname="collectionObject"/>
 
-    <field table="CollectionObjectProperty"  name="measurementType1" actualname="measurementType" onetomanysequence="3" relationshipname="collectionObject"/>
-    <field table="CollectionObjectProperty"  name="measurementUnit1" actualname="measurementUnit" onetomanysequence="3" relationshipname="collectionObject"/>
-    <field table="CollectionObjectProperty" name="measurementAccuracy1" actualname="measurementAccuracy" onetomanysequence="3" relationshipname="collectionObject"/>
-    <field table="CollectionObjectProperty" name="measurementDate1" actualname="measurementDeterminedDate" onetomanysequence="3" relationshipname="collectionObject"/>
-    <field table="CollectionObjectProperty" name="measurementByLastName1" onetomanysequence="3" relationshipname="measurementDeterminedBy" relatedfieldname="lastName"/>
-    <field table="CollectionObjectProperty" name="measurementByFirstName1" onetomanysequence="3" relationshipname="measurementDeterminedBy" relatedfieldname="firstName"/>
-    <field table="CollectionObjectProperty" name="measurementByMiddle1" onetomanysequence="3" relationshipname="measurementDeterminedBy" relatedfieldname="middleInitial"/>
-    <field table="CollectionObjectProperty" name="measurementID1" actualname="measurementID" onetomanysequence="3" relationshipname="collectionObject"/>
-    <field table="CollectionObjectProperty" name="measurementRemark1" actualname="measurementRemark" onetomanysequence="3" relationshipname="collectionObject"/>
-    <field table="CollectionObjectProperty" name="measurementDateValue1" actualname="measurementDateValue" onetomanysequence="3" relationshipname="collectionObject"/>
-    <field table="CollectionObjectProperty" name="measurementIntegerValue1" actualname="measurementIntegerValue" onetomanysequence="3" relationshipname="collectionObject"/>
-    <field table="CollectionObjectProperty" name="measurementNumberValue1" actualname="measurementNumberValue" onetomanysequence="3" relationshipname="collectionObject"/>
-    <field table="CollectionObjectProperty" name="measurementTextValue1" actualname="measurementTextValue" onetomanysequence="3" relationshipname="collectionObject"/>
-    <field table="CollectionObjectProperty" name="measurementYesNoValue1" actualname="measurementYesNoValue" onetomanysequence="3" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty"  name="measurementType4" actualname="measurementType" onetomanysequence="3" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty"  name="measurementUnit4" actualname="measurementUnit" onetomanysequence="3" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty" name="measurementAccuracy4" actualname="measurementAccuracy" onetomanysequence="3" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty" name="measurementDate4" actualname="measurementDeterminedDate" onetomanysequence="3" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty" name="measurementByLastName4" onetomanysequence="3" relationshipname="measurementDeterminedBy" relatedfieldname="lastName"/>
+    <field table="CollectionObjectProperty" name="measurementByFirstName4" onetomanysequence="3" relationshipname="measurementDeterminedBy" relatedfieldname="firstName"/>
+    <field table="CollectionObjectProperty" name="measurementByMiddle4" onetomanysequence="3" relationshipname="measurementDeterminedBy" relatedfieldname="middleInitial"/>
+    <field table="CollectionObjectProperty" name="measurementID4" actualname="measurementID" onetomanysequence="3" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty" name="measurementRemark4" actualname="measurementRemark" onetomanysequence="3" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty" name="measurementDateValue4" actualname="measurementDateValue" onetomanysequence="3" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty" name="measurementIntegerValue4" actualname="measurementIntegerValue" onetomanysequence="3" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty" name="measurementNumberValue4" actualname="measurementNumberValue" onetomanysequence="3" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty" name="measurementTextValue4" actualname="measurementTextValue" onetomanysequence="3" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty" name="measurementYesNoValue4" actualname="measurementYesNoValue" onetomanysequence="3" relationshipname="collectionObject"/>
 
     <field table="CollectionObjectProperty" name="date14" actualname="date1" onetomanysequence="3" relationshipname="collectionObject"/>
     <field table="CollectionObjectProperty" name="agent1LastName4" onetomanysequence="3" relationshipname="agent1" relatedfieldname="lastName"/>
@@ -389,20 +444,20 @@
     <field table="CollectionObjectProperty" name="text14" actualname="text1" onetomanysequence="3" relationshipname="collectionObject"/>
     <field table="CollectionObjectProperty" name="yesno14" actualname="yesno1" onetomanysequence="3" relationshipname="collectionObject"/>
 
-    <field table="CollectionObjectProperty"  name="measurementType1" actualname="measurementType" onetomanysequence="4" relationshipname="collectionObject"/>
-    <field table="CollectionObjectProperty"  name="measurementUnit1" actualname="measurementUnit" onetomanysequence="4" relationshipname="collectionObject"/>
-    <field table="CollectionObjectProperty" name="measurementAccuracy1" actualname="measurementAccuracy" onetomanysequence="4" relationshipname="collectionObject"/>
-    <field table="CollectionObjectProperty" name="measurementDate1" actualname="measurementDeterminedDate" onetomanysequence="4" relationshipname="collectionObject"/>
-    <field table="CollectionObjectProperty" name="measurementByLastName1" onetomanysequence="4" relationshipname="measurementDeterminedBy" relatedfieldname="lastName"/>
-    <field table="CollectionObjectProperty" name="measurementByFirstName1" onetomanysequence="4" relationshipname="measurementDeterminedBy" relatedfieldname="firstName"/>
-    <field table="CollectionObjectProperty" name="measurementByMiddle1" onetomanysequence="4" relationshipname="measurementDeterminedBy" relatedfieldname="middleInitial"/>
-    <field table="CollectionObjectProperty" name="measurementID1" actualname="measurementID" onetomanysequence="4" relationshipname="collectionObject"/>
-    <field table="CollectionObjectProperty" name="measurementRemark1" actualname="measurementRemark" onetomanysequence="4" relationshipname="collectionObject"/>
-    <field table="CollectionObjectProperty" name="measurementDateValue1" actualname="measurementDateValue" onetomanysequence="4" relationshipname="collectionObject"/>
-    <field table="CollectionObjectProperty" name="measurementIntegerValue1" actualname="measurementIntegerValue" onetomanysequence="4" relationshipname="collectionObject"/>
-    <field table="CollectionObjectProperty" name="measurementNumberValue1" actualname="measurementNumberValue" onetomanysequence="4" relationshipname="collectionObject"/>
-    <field table="CollectionObjectProperty" name="measurementTextValue1" actualname="measurementTextValue" onetomanysequence="4" relationshipname="collectionObject"/>
-    <field table="CollectionObjectProperty" name="measurementYesNoValue1" actualname="measurementYesNoValue" onetomanysequence="4" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty"  name="measurementType5" actualname="measurementType" onetomanysequence="4" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty"  name="measurementUnit5" actualname="measurementUnit" onetomanysequence="4" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty" name="measurementAccuracy5" actualname="measurementAccuracy" onetomanysequence="4" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty" name="measurementDate5" actualname="measurementDeterminedDate" onetomanysequence="4" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty" name="measurementByLastName5" onetomanysequence="4" relationshipname="measurementDeterminedBy" relatedfieldname="lastName"/>
+    <field table="CollectionObjectProperty" name="measurementByFirstName5" onetomanysequence="4" relationshipname="measurementDeterminedBy" relatedfieldname="firstName"/>
+    <field table="CollectionObjectProperty" name="measurementByMiddle5" onetomanysequence="4" relationshipname="measurementDeterminedBy" relatedfieldname="middleInitial"/>
+    <field table="CollectionObjectProperty" name="measurementID5" actualname="measurementID" onetomanysequence="4" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty" name="measurementRemark5" actualname="measurementRemark" onetomanysequence="4" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty" name="measurementDateValue5" actualname="measurementDateValue" onetomanysequence="4" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty" name="measurementIntegerValue5" actualname="measurementIntegerValue" onetomanysequence="4" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty" name="measurementNumberValue5" actualname="measurementNumberValue" onetomanysequence="4" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty" name="measurementTextValue5" actualname="measurementTextValue" onetomanysequence="4" relationshipname="collectionObject"/>
+    <field table="CollectionObjectProperty" name="measurementYesNoValue5" actualname="measurementYesNoValue" onetomanysequence="4" relationshipname="collectionObject"/>
 
     <field table="CollectionObjectProperty" name="date15" actualname="date1" onetomanysequence="4" relationshipname="collectionObject"/>
     <field table="CollectionObjectProperty" name="agent1LastName5" onetomanysequence="4" relationshipname="agent1" relatedfieldname="lastName"/>
@@ -1100,7 +1155,7 @@
     <field table="PreparationAttribute" name="preparationAttributeYesNo2" actualname="YesNo2"/>
     <field table="PreparationAttribute" name="preparedDate" actualname="AttrDate"/>
 
-	<!-- referencework -->
+    <!-- referencework -->
     <field table="ReferenceWork" name="authorFirstName1" onetomanysequence="0" sequencefield="orderNumber" actualtable="author" relationshipname="agent" relatedfieldname="firstName"/>
     <field table="ReferenceWork" name="authorLastName1" onetomanysequence="0" sequencefield="orderNumber" actualtable="author" relationshipname="agent" relatedfieldname="lastName"/>
     <field table="ReferenceWork" name="authorMiddle1" onetomanysequence="0" sequencefield="orderNumber" actualtable="author" relationshipname="agent" relatedfieldname="middleInitial"/>

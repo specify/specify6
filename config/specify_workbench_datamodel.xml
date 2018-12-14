@@ -177,9 +177,66 @@
     <field column="Text1 (Collecting Trip)" name="collectingTripText1" type="java.lang.String" length="4096"/>
     <field column="Text2 (Collecting Trip)" name="collectingTripText2" type="java.lang.String" length="4096"/>
     <field column="Number 1 (Collecting Trip)" name="collectingTripNumber1" type="java.lang.Float" length="24"/>
+      <field column="Permit 1" name="ctPermit1" type="java.lang.String" length="64"/>
+      <field column="Permit 2" name="ctPermit2" type="java.lang.String" length="64"/>
+      <field column="Permit 3" name="ctPermit3" type="java.lang.String" length="64"/>
+      <field column="Permit 4" name="ctPermit4" type="java.lang.String" length="64"/>
+      <field column="Permit 5" name="ctPermit5" type="java.lang.String" length="64"/>
   </table>
-  
-  <table classname="edu.ku.brc.specify.datamodel.CollectionObject" table="collectionobject" tableid="1" lazy="true">
+
+    <table classname="edu.ku.brc.specify.datamodel.CollectingTripAttribute" table="collectingtripattribute" tableid="157" lazy="true" query="false">
+        <field column="Remarks (CollectingTrip Attribute)" name="collectingTripAttributeRemarks" type="java.lang.String" length="4096"/>    <field column="Integer 1 (CollectingTrip Attribute)" name="collectingTripAttributeInteger1" type="java.lang.Integer" />
+        <field column="Integer 1 (CollectingTrip Attribute)" name="collectingTrip AttributeInteger1" type="java.lang.Integer" />
+        <field column="Integer 2 (CollectingTrip Attribute)" name="collectingTripAttributeInteger2" type="java.lang.Integer" />
+        <field column="Integer 3 (CollectingTrip Attribute)" name="collectingTripAttributeInteger3" type="java.lang.Integer" />
+        <field column="Integer 4 (CollectingTrip Attribute)" name="collectingTripAttributeInteger4" type="java.lang.Integer" />
+        <field column="Integer 5 (CollectingTrip Attribute)" name="collectingTripAttributeInteger5" type="java.lang.Integer" />
+        <field column="Integer 6 (CollectingTrip Attribute)" name="collectingTripAttributeInteger6" type="java.lang.Integer" />
+        <field column="Integer 7 (CollectingTrip Attribute)" name="collectingTripAttributeInteger7" type="java.lang.Integer" />
+        <field column="Integer 8 (CollectingTrip Attribute)" name="collectingTripAttributeInteger8" type="java.lang.Integer" />
+        <field column="Integer 9 (CollectingTrip Attribute)" name="collectingTripAttributeInteger9" type="java.lang.Integer" />
+        <field column="Integer 10 (CollectingTrip Attribute)" name="collectingTripAttributeInteger10" type="java.lang.Integer" />
+
+        <field column="Number 1 (CollectingTrip Attribute)" name="collectingTripAttributeNumber1" type="java.lang.Float" length="24"/>
+        <field column="Number 2 (CollectingTrip Attribute)" name="collectingTripAttributeNumber2" type="java.lang.Float" length="24"/>
+        <field column="Number 3 (CollectingTrip Attribute)" name="collectingTripAttributeNumber3" type="java.lang.Float" length="24"/>
+        <field column="Number 4 (CollectingTrip Attribute)" name="collectingTripAttributeNumber4" type="java.lang.Float" length="24"/>
+        <field column="Number 5 (CollectingTrip Attribute)" name="collectingTripAttributeNumber5" type="java.lang.Float" length="24"/>
+        <field column="Number 6 (CollectingTrip Attribute)" name="collectingTripAttributeNumber6" type="java.lang.Float" length="24"/>
+        <field column="Number 7 (CollectingTrip Attribute)" name="collectingTripAttributeNumber7" type="java.lang.Float" length="24"/>
+        <field column="Number 8 (CollectingTrip Attribute)" name="collectingTripAttributeNumber8" type="java.lang.Float" length="24"/>
+        <field column="Number 9 (CollectingTrip Attribute)" name="collectingTripAttributeNumber9" type="java.lang.Float" length="24"/>
+        <field column="Number 10 (CollectingTrip Attribute)" name="collectingTripAttributeNumber10" type="java.lang.Float" length="24"/>
+        <field column="Number 11 (CollectingTrip Attribute)" name="collectingTripAttributeNumber11" type="java.lang.Float" length="24"/>
+        <field column="Number 12 (CollectingTrip Attribute)" name="collectingTripAttributeNumber12" type="java.lang.Float" length="24"/>
+        <field column="Number 13 (CollectingTrip Attribute)" name="collectingTripAttributeNumber13" type="java.lang.Float" length="24"/>
+
+        <field column="Text 1 (CollectingTrip Attribute)" name="collectingTripAttributeText1" type="java.lang.String" length="300"/>
+        <field column="Text 2 (CollectingTrip Attribute)" name="collectingTripAttributeText2" type="java.lang.String" length="300"/>
+        <field column="Text 3 (CollectingTrip Attribute)" name="collectingTripAttributeText3" type="java.lang.String" length="300"/>
+        <field column="Text 4 (CollectingTrip Attribute)" name="collectingTripAttributeText4" type="java.lang.String" length="100"/>
+        <field column="Text 5 (CollectingTrip Attribute)" name="collectingTripAttributeText5" type="java.lang.String" length="100"/>
+        <field column="Text 6 (CollectingTrip Attribute)" name="collectingTripAttributeText6" type="java.lang.String" length="50"/>
+        <field column="Text 7 (CollectingTrip Attribute)" name="collectingTripAttributeText7" type="java.lang.String" length="50"/>
+        <field column="Text 8 (CollectingTrip Attribute)" name="collectingTripAttributeText8" type="java.lang.String" length="50"/>
+        <field column="Text 9 (CollectingTrip Attribute)" name="collectingTripAttributeText9" type="java.lang.String" length="50"/>
+        <field column="Text 10 (CollectingTrip Attribute)" name="collectingTripAttributeText10" type="java.lang.String" length="50"/>
+        <field column="Text 11 (CollectingTrip Attribute)" name="collectingTripAttributeText11" type="java.lang.String" length="50"/>
+        <field column="Text 12 (CollectingTrip Attribute)" name="collectingTripAttributeText12" type="java.lang.String" length="50"/>
+        <field column="Text 13 (CollectingTrip Attribute)" name="collectingTripAttributeText13" type="java.lang.String" length="50"/>
+        <field column="Text 14 (CollectingTrip Attribute)" name="collectingTripAttributeText14" type="java.lang.String" length="50"/>
+        <field column="Text 15 (CollectingTrip Attribute)" name="collectingTripAttributeText15" type="java.lang.String" length="50"/>
+        <field column="Text 16 (CollectingTrip Attribute)" name="collectingTripAttributeText16" type="java.lang.String" length="50"/>
+        <field column="Text 17 (CollectingTrip Attribute)" name="collectingTripAttributeText17" type="java.lang.String" length="50"/>
+
+        <field column="YesNo 1 (CollectingTrip Attribute)" name="collectingTripAttributeYesNo1" type="boolean"/>
+        <field column="YesNo 2 (CollectingTrip Attribute)" name="collectingTripAttributeYesNo2" type="boolean"/>
+        <field column="YesNo 3 (CollectingTrip Attribute)" name="collectingTripAttributeYesNo3" type="boolean"/>
+        <field column="YesNo 4 (CollectingTrip Attribute)" name="collectingTripAttributeYesNo4" type="boolean"/>
+        <field column="YesNo 5 (CollectingTrip Attribute)" name="collectingTripAttributeYesNo5" type="boolean"/>
+    </table>
+
+    <table classname="edu.ku.brc.specify.datamodel.CollectionObject" table="collectionobject" tableid="1" lazy="true">
     <display objtitle="Collection Object" view="CollectionObject" dataobjformatter="CollectionObject"/>
     <field column="Cataloged Date" name="catalogedDate" type="calendar_date"/>
     <field column="Cataloged Date Verbatim" name="catalogedDateVerbatim" type="java.lang.String" length="32"/>
@@ -306,7 +363,7 @@
   </table>
 
 
-  <table classname="edu.ku.brc.specify.datamodel.CollectionObjectProperty" table="collectionobjectproperty" tableid="53" lazy="true" >
+  <table classname="edu.ku.brc.specify.datamodel.CollectionObjectProperty" table="collectionobjectproperty" tableid="153" lazy="true" >
     <field column="Measurement Type 1" name="measurementType1" type="java.lang.String"/>
     <field column="Measurement Unit 1" name="measurementUnit1" type="java.lang.String"/>
     <field column="Measurement Accuracy 1" name="measurementAccuracy1" type="java.lang.String"/>
@@ -1202,8 +1259,8 @@
     <field column="YesNo 3 (Preparation Attribute)" name="preparationAttributeYesNo3" type="java.lang.Short" length="5"/>
     <field column="YesNo 4 (Preparation Attribute)" name="preparationAttributeYesNo4" type="java.lang.Short" length="5"/>
   </table>
-  
-  <table classname="edu.ku.brc.specify.datamodel.ReferenceWork" table="referencework" tableid="69" lazy="true" >
+
+    <table classname="edu.ku.brc.specify.datamodel.ReferenceWork" table="referencework" tableid="69" lazy="true" >
     <field column="Reference Work Type" name="referenceWorkType" type="byte" length="24"/>
     <field column="Title" name="title" type="java.lang.String" length="255"/>
     <field column="Publisher" name="publisher" type="java.lang.String" length="50"/>

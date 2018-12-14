@@ -452,7 +452,8 @@ public class UploadTable implements Comparable<UploadTable>
     public boolean isAttributeTbl() {
         return tblClass.equals(CollectionObjectAttribute.class)
                 || tblClass.equals(PreparationAttribute.class)
-                || tblClass.equals(CollectingEventAttribute.class);    	
+                || tblClass.equals(CollectingEventAttribute.class
+                || tblClass.equals(CollectingTripAttribute.class));
     }
     
     public boolean isZeroToOneMany()
@@ -2644,6 +2645,112 @@ public class UploadTable implements Comparable<UploadTable>
                 }
             }
         }
+        if (tblClass.equals(CollectingTrip.class)) {
+            for (UploadTable child : specialChildren) {
+                logDebug(child.getTable().getName());
+                else if (child.getTblClass().equals(CollectingTripAttribute.class))
+                {
+                    Pair<DataProviderSessionIFace, Boolean> sessObj = getSession();
+                    DataProviderSessionIFace matchSession = sessObj.getFirst();
+                    try
+                    {
+                        String hql = "from CollectingTripAttribute where collectingTripAttributeId ";
+                        CollectingTrip ceMatch = (CollectingTrip )match;
+                        if (ceMatch.getCollectingTripAttribute() == null)
+                        {
+                            hql += "is null";
+                        }
+                        else
+                        {
+                            hql += "= " + ((CollectingTrip )match).getCollectingTripAttribute().getId();
+                        }
+                        QueryIFace matchesQ = matchSession
+                                .createQuery(hql, false);
+                        List<?> matches = matchesQ.list();
+                        try
+                        {
+                            child.loadFromDataSet(wbCurrentRow);
+                            CollectingTripAttribute cea2 = (CollectingTripAttribute) child.getCurrentRecord(0);
+                            if (cea2 == null && matches.size() == 0)
+                            {
+                                continue;
+                            }
+                            if (cea2 == null && matches.size() != 0)
+                            {
+                                return false;
+                            }
+                            if (cea2 != null && matches.size() == 0)
+                            {
+                                return false;
+                            }
+                            CollectingTripAttribute cea1 = (CollectingTripAttribute) matches.get(0);
+                            result = cea1.matches(cea2);
+                            if (result)
+                            {
+                                //need to delete already-created "child" (due to weird hibernate 1-1 config requirements)
+                                deletes.add(child);
+                            }
+                        } finally
+                        {
+                            child.loadFromDataSet(child.wbCurrentRow);
+                        }
+                    }
+                    finally
+                    {
+                        getRidOfSession(sessObj);
+                    }
+                }
+                else if (child.getTblClass().equals(CollectingTripAuthorization.class))
+                {
+                    Pair<DataProviderSessionIFace, Boolean> sessObj = getSession();
+                    DataProviderSessionIFace matchSession = sessObj.getFirst();
+                    try
+                    {
+                        QueryIFace matchesQ = matchSession
+                                .createQuery("from CollectingTripAuthorization where collectingTripid = "
+                                        + match.getId(), false);
+                        List<?> matches = matchesQ.list();
+                        try
+                        {
+                            child.loadFromDataSet(wbCurrentRow);
+                            int childCount = 0;
+                            for (int c = 0; c < child.getUploadFields().size(); c++)
+                            {
+                                if (child.getCurrentRecord(c) != null)
+                                {
+                                    childCount++;
+                                }
+                            }
+                            if (matches.size() != childCount)
+                            {
+                                return false;
+                            }
+                            for (int rec = 0; rec < matches.size(); rec++)
+                            {
+                                CollectingTripAuthorization au1 = (CollectingTripAuthorization) matches.get(rec);
+                                CollectingTripAuthorization au2 = (CollectingTripAuthorization) child.getCurrentRecord(rec);
+                                if (!au1.getPermit().getId().equals(au2.getPermit().getId()))
+                                {
+                                    return  false;
+                                }
+                            }
+                        } finally
+                        {
+                            child.loadFromDataSet(child.wbCurrentRow);
+                        }
+                    }
+                    finally
+                    {
+                        getRidOfSession(sessObj);
+                    }
+
+                }
+                if (!result)
+                {
+                    break;
+                }
+            }
+        }
         else if (tblClass.equals(Accession.class))
         {
             for (UploadTable child : specialChildren)
@@ -3009,7 +3116,12 @@ public class UploadTable implements Comparable<UploadTable>
         		|| childClass.equals(CollectingEventAttribute.class)
                     || childClass.equals(CollectingEventAuthorization.class);
         }
-        if (tblClass.equals(CollectionObject.class)) 
+        if (tblClass.equals(CollectingTrip.class))
+        {
+            return childClass.equals(CollectingTripAttribute.class)
+                    || childClass.equals(CollectingTripAuthorization.class);
+        }
+        if (tblClass.equals(CollectionObject.class))
         { 
         	return childClass
                 .equals(Determination.class)
@@ -3018,7 +3130,8 @@ public class UploadTable implements Comparable<UploadTable>
                 || childClass.equals(CollectionObjectCitation.class)
                 || childClass.equals(DNASequence.class)
                 || childClass.equals(ConservDescription.class)
-                || childClass.equals(OtherIdentifier.class); 
+                || childClass.equals(OtherIdentifier.class)
+                    || childClass.equals(CollectionObjectProperty.class);
         }
         if (tblClass.equals(Locality.class))
         {
@@ -3502,6 +3615,7 @@ public class UploadTable implements Comparable<UploadTable>
 				} else if ((uploader.getUpdateTableId() == CollectionObject.getClassTableId() && getTable().getTableInfo().getTableId() == CollectingEvent.getClassTableId())
 						|| getTable().getTableInfo().getTableId() == CollectionObjectAttribute.getClassTableId()
 						|| getTable().getTableInfo().getTableId() == CollectingEventAttribute.getClassTableId()
+                        || getTable().getTableInfo().getTableId() == CollectingTripAttribute.getClassTableId()
 						|| getTable().getTableInfo().getTableId() == PreparationAttribute.getClassTableId()) {
 					addRestriction(critter, "id", exportedRecordId, true);
 				} else {
