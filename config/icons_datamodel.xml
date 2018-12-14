@@ -22,15 +22,19 @@
     <icon name="borrowmaterial"       file="borrow_material.png" sizes="all"/>
     <icon name="borrowreturnmaterial" file="borrow_return_material.png" sizes="all"/>
     <icon name="collectingevent"      file="collecting_event.png" sizes="all"/>
+    <icon name="collectingeventauthorization"      file="collectingeventauthorization.png" sizes="all"/>
     <icon name="ce_restore"           file="collecting_event.png" sizes="all"/>
     <icon name="collectinginformation" file="collecting_information.png" sizes="all"/>
-    <icon name="collectingtrip"       file="collection_trip.png" sizes="all"/>
+    <icon name="collectingtrip" file="collection_trip.png" sizes="all" />
+    <icon name="collectingtripauthorization"       file="collectingtripauthorization.png" sizes="all"/>
+    <icon name="collectingtripattribute"        file="collectingtripattribute.png" sizes="all"/>
     <icon name="collection"           file="collection.png" sizes="all"/>
     <icon name="collectionrelationship" file="collection_relationship.png" sizes="all"/>
     <icon name="collectionreltype"    file="collection_rel_type.png" sizes="all"/>
     <icon name="collector"            file="collector.png" sizes="all"/>
     <icon name="collectionobject"     file="collection_object.png" sizes="all"/>
     <icon name="collectionobjectcitation" file="citation.png" sizes="all"/>
+    <icon name="collectionobjectproperty" file="collectionobjectproperty.png" sizes="all"/>
     <icon name="commonnametx"         file="common_name.png" sizes="all"/>
     <icon name="commonnametxcitation" file="common_name_taxon_citation.png" sizes="all" />
     <icon name="container"            file="container.png" sizes="all"/>
@@ -73,6 +77,7 @@
     <icon name="paleocontext"         file="paleocontext.png" sizes="all"/>
     <icon name="permit"               file="permit.png" sizes="all"/>
     <icon name="preparation"          file="preparation.png" sizes="all"/>
+    <icon name="preparationproperty"          file="preparationproperty.png" sizes="all"/>
     <icon name="preptype"             file="prep_type.png" sizes="all"/>
     <icon name="picklist"             file="pick_list.png" sizes="all"/>
     <icon name="project"              file="project.png" sizes="all"/>
@@ -82,10 +87,12 @@
     <icon name="storage"              file="storage.png" sizes="all"/>
     <icon name="taxon"                file="taxon.png" sizes="all"/>
     <icon name="treatmentevent"       file="treatment_event.png" sizes="all"/>
+    <icon name="voucherrelationship"       file="voucherrelationship.png" sizes="all"/>
 
     <!--  Attribute Icons -->
     <icon name="CollectionObjectAttribute"      file="collection_object_attr.png" sizes="all"/>
     <icon name="CollectingEventAttribute"       file="collecting_event_attr.png" sizes="all"/>
+    <icon name="CollectingTripAttribute"        file="collectingtripattribute.png" sizes="all"/>
     <icon name="PreparationAttribute"           file="preparation_attr.png" sizes="all"/>
     
     <!--  Attachment Icons -->
@@ -93,6 +100,7 @@
 	<icon name="AgentAttachment"                 file="agent_attachment.png" sizes="NonStd"/>
     <icon name="BorrowAttachment"                file="borrow_attachment.png" sizes="NonStd"/>
     <icon name="CollectingEventAttachment"       file="collecting_event_attachment.png" sizes="NonStd"/>
+    <icon name="CollectingTripAttachment"        file="collectingtripattachment.png" sizes="NonStd"/>
 	<icon name="CollectionObjectAttachment"      file="collection_object_attachment.png" sizes="NonStd"/>
 	<icon name="ConservDescriptionAttachment"    file="conserv_description_attachment.png" sizes="NonStd"/>
 	<icon name="ConservEventAttachment"          file="conserv_event_attachment.png" sizes="NonStd"/>
@@ -149,6 +157,7 @@
 	<icon name="attachmentmetadata"             alias="attachment"/>
 	<icon name="attachmenttag"                  alias="attachment"/>
 	<icon name="collectingeventattachment"      alias="CollectingEventAttachment"/>
+    <icon name="collectingtripattachment"      alias="CollectingTripAttachment"/>
 	<icon name="collectionobjectattachment"     alias="CollectionObjectAttachment"/>
 	<icon name="conservdescriptionattachment"   alias="ConservDescriptionAttachment"/>
 	<icon name="conserveventattachment"         alias="ConservEventAttachment"/>
@@ -233,13 +242,16 @@
     <icon name="ColObjAttributes"       alias="attribute"/>
     <icon name="CollectionObjectCitation" alias="citation"/>
     <icon name="CollectingEvent"        alias="collectingevent"/>
+    <icon name="CollectingEventAuthorization"        alias="collectingeventauthorization"/>
     <icon name="CollectingTrip"         alias="collectingtrip"/>
-    <icon name="Collection"             alias="collection"/>
+    <icon name="CollectingTripAttribute"             alias="collectingtripattribute"/>
+    <icon name="CollectingTripAuthorization"         alias="collectingtripauthorization"/>
     <icon name="CollectionRelationship" alias="collectionrelationship"/>
     <icon name="CollectionRelType"      alias="collectionreltype"/>
     <icon name="Collector"              alias="collector"/>
     <icon name="CollectionName"         alias="collectionname"/>
     <icon name="CollectionObject"       alias="collectionobject"/>
+    <icon name="CollectionObjectProperty"       alias="collectionobjectproperty"/>
     <icon name="CommonNameTx"           alias="commonnametx"/>
     <icon name="CommonNameTxCitation"   alias="commonnametxcitation"/>
     <icon name="Conservator"            alias="conservator"/>
@@ -281,6 +293,7 @@
     <icon name="Permit"                 alias="permit"/>
     <icon name="PaleoContext"           alias="paleocontext"/>
     <icon name="Preparation"            alias="preparation"/>
+    <icon name="PreparationProperty"            alias="preparationproperty"/>
     <icon name="PickList"               alias="picklist"/>
     <icon name="PrepType"               alias="preptype"/>
     <icon name="Project"                alias="project"/>
@@ -289,7 +302,8 @@
     <icon name="Storage"                alias="storage"/>
     <icon name="Taxon"                  alias="taxon"/>
     <icon name="TreatmentEvent"         alias="treatmentevent"/>
-    
+    <icon name="VoucherRelationship"         alias="voucherrelationship"/>
+
     <icon name="taxontreedef"              alias="taxon"/>
     <icon name="geographytreedef"          alias="geography"/>
     <icon name="geologictimeperiodtreedef" alias="geologictimeperiod"/>
