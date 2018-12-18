@@ -452,8 +452,8 @@ public class UploadTable implements Comparable<UploadTable>
     public boolean isAttributeTbl() {
         return tblClass.equals(CollectionObjectAttribute.class)
                 || tblClass.equals(PreparationAttribute.class)
-                || tblClass.equals(CollectingEventAttribute.class
-                || tblClass.equals(CollectingTripAttribute.class));
+                || tblClass.equals(CollectingEventAttribute.class)
+                || tblClass.equals(CollectingTripAttribute.class);
     }
     
     public boolean isZeroToOneMany()
@@ -2648,7 +2648,7 @@ public class UploadTable implements Comparable<UploadTable>
         if (tblClass.equals(CollectingTrip.class)) {
             for (UploadTable child : specialChildren) {
                 logDebug(child.getTable().getName());
-                else if (child.getTblClass().equals(CollectingTripAttribute.class))
+                if (child.getTblClass().equals(CollectingTripAttribute.class))
                 {
                     Pair<DataProviderSessionIFace, Boolean> sessObj = getSession();
                     DataProviderSessionIFace matchSession = sessObj.getFirst();
