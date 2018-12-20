@@ -352,15 +352,7 @@ public class StatsTrackerTask extends BaseTask
                                  final Vector<NameValuePair> postParams, 
                                  final String userAgentName) throws Exception
     {
-//        System.out.println("--------------------");
-//        for (NameValuePair nvp : postParams)
-//        {
-//            System.out.println(String.format("[%s][%s]", nvp.getName(), nvp.getValue()));
-//        }
-//        System.out.println("--------------------");
-        // If the user changes collection before it gets a chance to send the stats
-        //if (!AppContextMgr.getInstance().hasContext()) return;
-        
+
         // check the website for the info about the latest version
         HttpClient httpClient = new HttpClient();
         httpClient.getParams().setParameter("http.useragent", userAgentName); //$NON-NLS-1$
@@ -375,15 +367,6 @@ public class StatsTrackerTask extends BaseTask
         try
         {
             httpClient.executeMethod(postMethod);
-            
-            // get the server response
-            //unused
-            /*String responseString = postMethod.getResponseBodyAsString();
-            
-            if (StringUtils.isNotEmpty(responseString))
-            {
-                System.err.println(responseString);
-            }*/
 
         } catch (java.net.UnknownHostException ex)
         {
@@ -391,9 +374,6 @@ public class StatsTrackerTask extends BaseTask
             
         } catch (Exception e)
         {
-            //e.printStackTrace();
-            //UsageTracker.incrHandledUsageCount();
-            //edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(StatsTrackerTask.class, e);
             throw new ConnectionException(e);
         }
     }

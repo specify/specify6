@@ -59,7 +59,7 @@ public class ProxyHelper
         setSysProp("proxyHost", proxyHost);
         setSysProp("proxyPort", proxyPort);
 
-        setSysProp("http.proxyHost", proxyHost);
+        setSysProp("http.proxyHost", proxyHost);https://s0.2mdn.net/dynamic/2/10054101/f.wishabi.net/production/gma/published/campaign/4e8dbdb8f6654b27aac9/ce340d42199f68303fe7_1544736171.jpg_1544811599709_ce340d42199f68303fe7_1544736171.jpg
         setSysProp("http.proxyPort", proxyPort);
         
         setSysProp("https.proxyHost", proxyHostHttps); 
@@ -142,6 +142,7 @@ public class ProxyHelper
             HostConfiguration hc = new HostConfiguration();
             hc.setProxy(proxyHost, proxyPort);
             httpClient.setHostConfiguration(hc);
+            log.info("applied proxy settings: " + proxyHost + ":" + proxyPort);
         }
     }
 

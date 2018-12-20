@@ -179,7 +179,8 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
                return;
            } else if (status == HttpStatus.SC_FORBIDDEN)
            {
-               throw new WebStoreAttachmentKeyException("Attachment key is invalid.");
+               log.error("Attachment key was not validated. HTTP status=" + status + ". Response: " + method.getResponseBodyAsString());
+               throw new WebStoreAttachmentKeyException("Attachment key was not validated.");
            }
        } catch (IOException e)
        {
@@ -211,9 +212,11 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
                     result = getURLSFromStr(method.getResponseBodyAsString());
                     updateServerTimeDelta(method);
                 }
+                if (!result) {
+                    log.error("Problem getting setup from URL XML. HTTP status=" + status + ". Response: " + method.getResponseBodyAsString());
+                }
             } catch (IOException e)
             {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             } finally {
                 method.releaseConnection();
@@ -385,6 +388,8 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
                 if (status == HttpStatus.SC_OK)
                 {
                     dateStr= method.getResponseBodyAsString();
+                } else {
+                    log.warn("Http status: " + status);
                 }
             } catch (IOException e)
             {
@@ -444,6 +449,8 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
                 if (status == HttpStatus.SC_OK)
                 {
                     result = method.getResponseBodyAsString();
+                } else {
+                    log.warn("Http status: " + status);
                 }
             } catch (IOException e)
             {
@@ -800,10 +807,6 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
         {
             int status = client.executeMethod(getMethod);
             updateServerTimeDelta(getMethod);
-            if (status == HttpStatus.SC_FORBIDDEN)
-            {
-                System.out.println(getMethod.getResponseBodyAsString());
-            }
             if (status == HttpStatus.SC_OK)
             {
                 InputStream inpStream = getMethod.getResponseBodyAsStream();
@@ -831,15 +834,17 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
                 
                     success = true;
                 }
-            }                                        
+            } else {
+                log.error("HTTP status: " + status + ". Response: " + getMethod.getResponseBodyAsString());
+            }
         } catch (HttpException e)
         {
-            // TODO Auto-generated catch block
             e.printStackTrace();
+            log.error(e);
         } catch (IOException e)
         {
-            // TODO Auto-generated catch block
             e.printStackTrace();
+            log.error(e);
         } finally 
         {
             getMethod.releaseConnection();
@@ -968,6 +973,8 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
             if (status == HttpStatus.SC_OK)
             {
                 return true;
+            } else {
+                log.warn("Http status: " + status + ". Response: " + filePost.getResponseBodyAsString());
             }
             
         } catch (Exception ex)
@@ -1048,13 +1055,16 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
             int status = client.executeMethod(postMethod);
             updateServerTimeDelta(postMethod);
             
-            //log.debug(getMethod.getResponseBodyAsString());
+            if (status != HttpStatus.SC_OK) {
+                log.warn("HttpStatus=" + status + ". Response: " + postMethod.getResponseBodyAsString());
+            }
+
 
             return status == HttpStatus.SC_OK || status == HttpStatus.SC_NOT_FOUND;
             
         } catch (Exception ex)
         {
-            //log.debug("Error: " + ex.getMessage());
+            log.error(ex);
             ex.printStackTrace();
         }
         return false;
