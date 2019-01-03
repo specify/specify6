@@ -29,6 +29,8 @@ import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Vector;
+import java.util.List;
+import java.util.ArrayList;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -123,8 +125,35 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
         this.isDefault       = isDefault;
         this.fields          = fields;
         this.isIncrementer   = isIncrementer;
+        //System.out.println(getRegExp());
     }
 
+    private String getRegExp() {
+        List<Pair<String, String>> fldRegExps = new ArrayList();
+        for (UIFieldFormatterField field : fields) {
+            fldRegExps.add(new Pair<String, String>(getFldRegExpGrp(field), getFldRegExp(field)));
+        }
+        String result = "";
+        for (Pair<String, String> fre : fldRegExps) {
+            result += "(?<" + fre.getFirst() + ">" + fre.getSecond() + ")";
+        }
+        return result;
+    }
+
+    private String getFldRegExp(UIFieldFormatterField fld) {
+        return "";
+    }
+
+    private String getFldRegExpGrp(UIFieldFormatterField fld) {
+        String result = fld.getType().toString();
+        if (fld.isIncrementer()) {
+            result += "+";
+        }
+        if (fld.getValue().equals("_")) {//XXXhackattack!!! need isOptional property
+            result += "?";
+        }
+        return result;
+    }
     /**
      * @return the BG text
      */
@@ -1036,7 +1065,16 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
         {
             return lengthOfData < getLength();
         }
-        return lengthOfData == getLength();
+
+        return getLength() - lengthOfData == getOptionalSuffixLen() || getLength() - lengthOfData == 0;
+    }
+
+    private int getOptionalSuffixLen() {
+        if ("world o' pain".equalsIgnoreCase(getName())) {
+            return 1;
+        } else {
+            return 0;
+        }
     }
 
     /* (non-Javadoc)

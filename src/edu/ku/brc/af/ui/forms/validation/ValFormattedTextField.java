@@ -624,7 +624,7 @@ public class ValFormattedTextField extends JPanel implements ValFormattedTextFie
             {
                 if (!formatter.getFields().get(inx).isIncrementer())
                 {
-                    if (!isPartialOK)
+                    if (!isPartialOK && !formatter.getName().equalsIgnoreCase("world o' pain"))
                     {
                         return null;
                     }
