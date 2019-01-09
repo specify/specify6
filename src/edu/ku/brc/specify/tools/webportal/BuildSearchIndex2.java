@@ -36,9 +36,9 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
-import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.*;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.analysis.util.CharArraySet;
+//import org.apache.lucene.analysis.util.CharArraySet;
 import org.apache.lucene.document.*;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
@@ -664,7 +664,7 @@ public class BuildSearchIndex2
             for (int i=0;i<analyzers.length;i++)
             {
                 files[i]     = new File(fileNames[i]);
-                analyzers[i] = new StandardAnalyzer(Version.LUCENE_47, CharArraySet.EMPTY_SET);
+                analyzers[i] = new StandardAnalyzer(CharArraySet.EMPTY_SET);
                 FileUtils.deleteDirectory(files[i]);
             }
 
@@ -690,7 +690,7 @@ public class BuildSearchIndex2
                 writers = new IndexWriter[analyzers.length];
                 for (int i=0;i<files.length;i++)
                 {
-                    writers[i] = new IndexWriter(FSDirectory.open(files[i]), new IndexWriterConfig(Version.LUCENE_47, analyzers[i]));
+                    writers[i] = new IndexWriter(FSDirectory.open(java.nio.file.Paths.get(files[i].getPath())), new IndexWriterConfig(analyzers[i]));
                 }
                 
                 System.out.println("Total Records: "+totalRecs);
@@ -760,17 +760,13 @@ public class BuildSearchIndex2
 												Field.Store.YES));
 									} else {
 										if (fldType.endsWith("int")) {
-											doc.add(new IntField(shortNames.get(c - 2), rs.getInt(c),
-													Field.Store.YES));
+											doc.add(new IntPoint(shortNames.get(c - 2), rs.getInt(c)));
 										} else if (fldType.endsWith("double")) {
-											doc.add(new DoubleField(shortNames.get(c - 2), rs.getDouble(c),
-													Field.Store.YES));
+											doc.add(new DoublePoint(shortNames.get(c - 2), rs.getDouble(c)));
 										} else if (fldType.endsWith("long")) {
-											doc.add(new LongField(shortNames.get(c - 2), rs.getLong(c),
-													Field.Store.YES));
+											doc.add(new LongPoint(shortNames.get(c - 2), rs.getLong(c)));
 										} else if (fldType.endsWith("float")) {
-											doc.add(new FloatField(shortNames.get(c - 2), rs.getFloat(c),
-													Field.Store.YES));
+											doc.add(new FloatPoint(shortNames.get(c - 2), rs.getFloat(c)));
 										}
 									}
 									contents.append(StringUtils.isNotEmpty(value) ? value : " ");
