@@ -19,11 +19,12 @@
 */
 package edu.ku.brc.specify.dbsupport;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.sql.*;
 
 import javax.swing.SwingUtilities;
+
+import java.util.List;
+import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 import org.hibernate.event.PostInsertEvent;
@@ -56,11 +57,13 @@ public class PostInsertEventListener implements org.hibernate.event.PostInsertEv
 
     private static boolean           isAuditOn = true;
     private static PreparedStatement pStmt     = null;
-    
+    private static PreparedStatement pStmtF = null;
+
     private static byte gAction    = Byte.MAX_VALUE;
     private static int  gRecordId  = Integer.MAX_VALUE;
     private static long gTSCreated = Long.MAX_VALUE;
-    
+    private static long gVersion = -1;
+
     private static CommandListener cmdListener = null;
     
     public static final String DB_CMD_TYPE       = "Database"; //$NON-NLS-1$
@@ -109,7 +112,7 @@ public class PostInsertEventListener implements org.hibernate.event.PostInsertEv
             {
                 if (((FormDataObjIFace)obj.getEntity()).isChangeNotifier())
                 {
-                    saveOnAuditTrail((byte)0, obj.getEntity());
+                    saveOnAuditTrail((byte)0, obj.getEntity(), null);
                 }
             }
         }
@@ -121,7 +124,8 @@ public class PostInsertEventListener implements org.hibernate.event.PostInsertEv
      * @param dObjArg
      */
     public static void saveOnAuditTrail(final Byte    action,
-                                        final Object  dObjArg)
+                                        final Object  dObjArg,
+                                        final List<PropertyUpdateInfo> updates)
     {
         if (dObjArg instanceof FormDataObjIFace)
         {
@@ -135,7 +139,7 @@ public class PostInsertEventListener implements org.hibernate.event.PostInsertEv
                         String sql = "INSERT INTO spauditlog (TimestampCreated, TimestampModified, Version, Action, ParentRecordId, ParentTableNum, " +
                                      "RecordId,  RecordVersion,  TableNum,  ModifiedByAgentID, CreatedByAgentID) " +
                                      " VALUES(?,?,?,?,?,?,?,?,?,?,?)";
-                        pStmt = DBConnection.getInstance().getConnection().prepareStatement(sql);
+                        pStmt = DBConnection.getInstance().getConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
                     }
                     
                     if (pStmt == null)
@@ -145,7 +149,8 @@ public class PostInsertEventListener implements org.hibernate.event.PostInsertEv
                     
                     // On Save Hibernate send both an insert and an update, skip the update if it is the same record
                     Timestamp now = new Timestamp(System.currentTimeMillis());
-                    if (gRecordId == dObj.getId() && gAction == 0 && action == 1 && (now.getTime() - gTSCreated) < 1001)
+                    if (gRecordId == dObj.getId() && gAction == 0 && action == 1 && /*(now.getTime() - gTSCreated) < 1001*/
+                            dObj.getVersion() == gVersion)
                     {
                         return;
                     }
@@ -153,7 +158,8 @@ public class PostInsertEventListener implements org.hibernate.event.PostInsertEv
                     gAction    = action;
                     gRecordId  = dObj.getId();
                     gTSCreated = now.getTime();
-                    
+                    gVersion = dObj.getVersion();
+
                     Agent createdByAgent = AppContextMgr.getInstance() == null? null : (AppContextMgr.getInstance().hasContext() ? Agent.getUserAgent() : null);
                     
                     pStmt.setTimestamp(1, now);
@@ -203,7 +209,12 @@ public class PostInsertEventListener implements org.hibernate.event.PostInsertEv
                     }
                     
                     pStmt.execute();
-                    
+
+                    ResultSet rs = pStmt.getGeneratedKeys();
+                    if (rs != null && rs.next()) {
+                        saveFieldAudits(rs.getInt(1), updates);
+                    }
+
                 } catch (Exception ex)
                 {
                     ex.printStackTrace();
@@ -215,7 +226,57 @@ public class PostInsertEventListener implements org.hibernate.event.PostInsertEv
             log.error("Can't audit data object, not instanceof FormDataObjIFace: "+(dObjArg != null ? dObjArg.getClass().getSimpleName() : "null"));
         }
     }
-    
+
+    protected static void saveFieldAudits(Integer auditLogId, List<PropertyUpdateInfo> updates) {
+        for (PropertyUpdateInfo update : updates) {
+            saveFieldAudit(auditLogId, update);
+        }
+    }
+
+    protected static void saveFieldAudit(Integer auditLogId, PropertyUpdateInfo update) {
+        try {
+            if (pStmtF == null) {
+                String sql = "INSERT INTO spauditlogfield (TimestampCreated, TimestampModified, Version, FieldName, " +
+                        "NewValue, OldValue, SpAuditLogID, ModifiedByAgentID, CreatedByAgentID) " +
+                        " VALUES(?,?,?,?,?,?,?,?,?)";
+                pStmtF = DBConnection.getInstance().getConnection().prepareStatement(sql);
+            }
+
+            if (pStmtF == null) {
+                return;
+            }
+
+            // On Save Hibernate send both an insert and an update, skip the update if it is the same record
+            Timestamp now = new Timestamp(System.currentTimeMillis());
+
+            Agent createdByAgent = AppContextMgr.getInstance() == null? null : (AppContextMgr.getInstance().hasContext() ? Agent.getUserAgent() : null);
+
+            pStmtF.setTimestamp(1, now);
+            pStmtF.setTimestamp(2, now);
+            pStmtF.setInt(3, 0);
+            pStmtF.setObject(4, update.getName());
+            //Need to modify table schema (probably) and elaborate old/new val saving...
+            String val = update.getNewValue() == null ? null : update.getNewValue().toString();
+            pStmtF.setObject(5, val == null ? "NULL" : val.substring(0, Math.min(64, val.length())));
+            val = update.getOldValue() == null ? null : update.getOldValue().toString();
+            pStmtF.setObject(6, val == null ? "NULL" : val.substring(0, Math.min(64, val.length())));
+            pStmtF.setInt(7, auditLogId);
+            if (createdByAgent != null) {
+                pStmtF.setInt(8, createdByAgent.getId());
+                pStmtF.setInt(9, createdByAgent.getId());
+            } else {
+                pStmtF.setObject(8, null);
+                pStmtF.setObject(9, null);
+            }
+
+            pStmtF.execute();
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            log.error(ex);
+        }
+    }
+
     /**
      * @return the isAuditOn
      */

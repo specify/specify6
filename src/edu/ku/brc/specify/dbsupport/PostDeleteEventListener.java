@@ -54,7 +54,7 @@ public class PostDeleteEventListener implements org.hibernate.event.PostDeleteEv
             {
                 if (((FormDataObjIFace)obj.getEntity()).isChangeNotifier())
                 {
-                    PostInsertEventListener.saveOnAuditTrail((byte)2, obj.getEntity());
+                    PostInsertEventListener.saveOnAuditTrail((byte)2, obj.getEntity(), null);
                 }
             }
         }
