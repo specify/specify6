@@ -19,15 +19,7 @@
 */
 package edu.ku.brc.specify.datamodel;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 
 /**
 
@@ -133,7 +125,8 @@ public class SpAuditLogField extends DataModelObjBase implements java.io.Seriali
     /**
      * @return the oldValue
      */
-    @Column(name = "OldValue", unique = false, nullable = false, insertable = true, updatable = true, length = 64)
+    @Lob
+    @Column(name = "OldValue", length = 65535)
     public String getOldValue()
     {
         return oldValue;
@@ -150,7 +143,8 @@ public class SpAuditLogField extends DataModelObjBase implements java.io.Seriali
     /**
      * @return the newValue
      */
-    @Column(name = "NewValue", unique = false, nullable = false, insertable = true, updatable = true, length = 64)
+    @Lob
+    @Column(name = "NewValue", length = 65535)
     public String getNewValue()
     {
         return newValue;

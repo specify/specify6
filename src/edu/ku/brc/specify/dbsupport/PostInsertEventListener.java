@@ -26,6 +26,7 @@ import javax.swing.SwingUtilities;
 import java.util.List;
 import java.util.ArrayList;
 
+import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import org.apache.log4j.Logger;
 import org.hibernate.event.PostInsertEvent;
 
@@ -229,7 +230,17 @@ public class PostInsertEventListener implements org.hibernate.event.PostInsertEv
 
     protected static void saveFieldAudits(Integer auditLogId, List<PropertyUpdateInfo> updates) {
         for (PropertyUpdateInfo update : updates) {
-            saveFieldAudit(auditLogId, update);
+            if (shouldBeAudited(update)) {
+                saveFieldAudit(auditLogId, update);
+            }
+        }
+    }
+
+    private static boolean shouldBeAudited(PropertyUpdateInfo update) {
+        if (update.getNewValue() instanceof java.util.Collection) {
+            return false;
+        } else {
+            return true;
         }
     }
 
@@ -255,11 +266,8 @@ public class PostInsertEventListener implements org.hibernate.event.PostInsertEv
             pStmtF.setTimestamp(2, now);
             pStmtF.setInt(3, 0);
             pStmtF.setObject(4, update.getName());
-            //Need to modify table schema (probably) and elaborate old/new val saving...
-            String val = update.getNewValue() == null ? null : update.getNewValue().toString();
-            pStmtF.setObject(5, val == null ? "NULL" : val.substring(0, Math.min(64, val.length())));
-            val = update.getOldValue() == null ? null : update.getOldValue().toString();
-            pStmtF.setObject(6, val == null ? "NULL" : val.substring(0, Math.min(64, val.length())));
+            pStmtF.setObject(5, getLogValue(update.getNewValue()));
+            pStmtF.setObject(6, getLogValue(update.getOldValue()));
             pStmtF.setInt(7, auditLogId);
             if (createdByAgent != null) {
                 pStmtF.setInt(8, createdByAgent.getId());
@@ -277,6 +285,16 @@ public class PostInsertEventListener implements org.hibernate.event.PostInsertEv
         }
     }
 
+    private static String getLogValue(Object val) {
+        //using one pair of text fields for all old/new values
+        if (val == null) {
+            return null;
+        } else if (val instanceof DataModelObjBase) {
+            return ((DataModelObjBase)val).getId().toString();
+        } else {
+            return val.toString();
+        }
+    }
     /**
      * @return the isAuditOn
      */
