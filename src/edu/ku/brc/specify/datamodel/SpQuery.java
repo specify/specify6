@@ -78,6 +78,7 @@ public class SpQuery extends DataModelObjBase implements Cloneable
     protected Boolean			searchSynonymy;
     protected Boolean           countOnly;
     protected Boolean 		    smushed;
+    protected Boolean           formatAuditRecIds;
     
     protected Set<SpQueryField> fields;
     protected Set<SpReport>     reports;
@@ -116,6 +117,7 @@ public class SpQuery extends DataModelObjBase implements Cloneable
         searchSynonymy   = null;
         countOnly        = null;
         smushed          = null;
+        formatAuditRecIds = null;
     }
     
     
@@ -200,7 +202,15 @@ public class SpQuery extends DataModelObjBase implements Cloneable
     {
     	this.smushed = smushed;
     }
-    
+
+    /**
+     * @param formatAuditRecIds the formatAuditRecIds to set
+     */
+    public void setFormatAuditRecIds(Boolean formatAuditRecIds)
+    {
+        this.formatAuditRecIds = formatAuditRecIds;
+    }
+
     /**
      * 
      */
@@ -272,6 +282,15 @@ public class SpQuery extends DataModelObjBase implements Cloneable
     }
 
     /**
+     * @return the formatAuditRecIds
+     */
+    @Column(name = "FormatAuditRecIds", unique = false, nullable = true, insertable = true, updatable = true)
+    public Boolean getFormatAuditRecIds()
+    {
+        return formatAuditRecIds;
+    }
+
+    /**
      * @return the smushed
      */
     @Column(name = "Smushed", unique = false, nullable = true, insertable = true, updatable = true)
@@ -279,8 +298,7 @@ public class SpQuery extends DataModelObjBase implements Cloneable
     {
         return smushed;
     }
-    
-    
+
     /**
      * @return selectDistinct if non-null else false.
      */
@@ -438,6 +456,7 @@ public class SpQuery extends DataModelObjBase implements Cloneable
         addAttr(sb, "searchSynonymy", searchSynonymy);
         addAttr(sb, "selectDistinct", selectDistinct);
         addAttr(sb, "countOnly", countOnly);
+        addAttr(sb, "formatAuditRecIds", formatAuditRecIds);
         
         sb.append(">\r\n");
         
@@ -478,6 +497,7 @@ public class SpQuery extends DataModelObjBase implements Cloneable
         searchSynonymy   = getAttr(element, "searchSynonymy", false);
         selectDistinct   = getAttr(element, "selectDistinct", false);
         countOnly   = getAttr(element, "countOnly", false);
+        formatAuditRecIds = getAttr(element, "formatAuditRecIds", false);
         
         Element sqlNode = (Element)element.selectSingleNode("sqlStr");
         sqlStr = sqlNode != null ? sqlNode.getTextTrim() : null;
