@@ -167,24 +167,6 @@ public class ERTICaptionInfoQB extends ERTICaptionInfo
             return value.toString();
     	}
 
-    	//audit logs
-    	if (value != null && fieldInfo != null && fieldInfo.getTableInfo().getName().toLowerCase().startsWith("spauditlog")) {
-    	    /*if (fieldInfo.getName().equalsIgnoreCase("TableNum")) {
-                DBTableInfo info = DBTableIdMgr.getInstance().getInfoById(Integer.valueOf(value.toString()));
-                if (info != null) {
-                    return value.toString() + " - " + info.getTitle();
-                } else {
-                    return value.toString();
-                }
-            } else if (fieldInfo.getName().equalsIgnoreCase("Action")) {
-    	        Integer actionCode = Integer.valueOf(value.toString());
-    	        String actionResKey = actionCode.intValue() == SpAuditLog.ACTION.Insert.ordinal() ? "ERTICaptionInfoQB.AuditInsert"
-                        : actionCode.intValue() == SpAuditLog.ACTION.Update.ordinal() ? "ERTICaptionInfoQB.AuditUpdate"
-                        : "ERTICaptionInfoQB.AuditRemove";
-    	        return UIRegistry.getResourceString(actionResKey);
-            }*/
-        }
-    	//else
     	return super.processValue(value);
     }
 
