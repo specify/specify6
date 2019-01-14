@@ -86,7 +86,7 @@ public class LookupsCache
      * @param key
      * @param value
      */
-    protected synchronized void addKey(final Integer key, final Object value)
+    protected synchronized Object addKey(final Integer key, final Object value)
     {
         //List<Integer> sList = Collections.synchronizedList(lookupList);
         //SortedMap<Integer, Object> sMap = Collections.synchronizedSortedMap(lookupTbl);
@@ -99,7 +99,8 @@ public class LookupsCache
 //        logDaBug(++adds + ": added: " + key);
         lookupList.add(key);
         lookupTbl.put(key, value);
-    	//sList.add(key);
+    	return value;
+        //sList.add(key);
         //sMap.put(key, value);
     }
     

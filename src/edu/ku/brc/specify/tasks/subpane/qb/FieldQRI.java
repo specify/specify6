@@ -22,8 +22,10 @@ package edu.ku.brc.specify.tasks.subpane.qb;
 import java.util.HashSet;
 import java.util.Set;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 
 /**
@@ -117,7 +119,37 @@ public class FieldQRI extends BaseQRI
     {
     	return !forWhereClause && getFieldInfo() != null && getFieldInfo().isPartialDate();
     }
-    
+
+    protected boolean addTableNumColumn(final boolean forWhereClause, final boolean forSchemaExport, boolean formatAuditIds) {
+        if (formatAuditIds) {
+            DBFieldInfo fi = getFieldInfo();
+            if (fi == null || forWhereClause) {
+                return false;
+            } else {
+                String fldName = fi.getName();
+                return fi.getTableInfo().getName().equalsIgnoreCase("SpAuditLog")
+                    && (fldName.equalsIgnoreCase("RecordId") || fldName.equalsIgnoreCase("ParentRecordId"));
+            }
+        } else {
+            return false;
+        }
+    }
+
+    protected boolean addAuditValColumns(final boolean forWhereClause, final boolean forSchemaExport, boolean formatAuditIds) {
+        if (formatAuditIds) {
+            DBFieldInfo fi = getFieldInfo();
+            if (fi == null || forWhereClause) {
+                return false;
+            } else {
+                String fldName = fi.getName();
+                return fi.getTableInfo().getName().equalsIgnoreCase("SpAuditLogField")
+                        && (fldName.equalsIgnoreCase("NewValue") || fldName.equalsIgnoreCase("OldValue"));
+            }
+        } else {
+            return false;
+        }
+    }
+
     /**
      * @param ta
      * @param forWhereClause
@@ -125,16 +157,20 @@ public class FieldQRI extends BaseQRI
      * @return sql/hql specification for this field.
      */
     public String getSQLFldSpec(final TableAbbreviator ta, final boolean forWhereClause, 
-    		final boolean forSchemaExport, final String formatName)
-    {
+    		final boolean forSchemaExport, final String formatName, boolean formatAuditIds) {
         String result = ta.getAbbreviation(table.getTableTree()) + "." + getFieldName();
-        if (addPartialDateColumn(forWhereClause, forSchemaExport))
-        {
+        if (addPartialDateColumn(forWhereClause, forSchemaExport)) {
             String precName = getFieldInfo().getDatePrecisionName();
             result += ", " + ta.getAbbreviation(table.getTableTree()) + "." + precName;
-        }
-        else if (getDataClass().equals(java.sql.Timestamp.class) && forWhereClause)
-        {
+        } else if (addTableNumColumn(forWhereClause, forSchemaExport, formatAuditIds)) {
+            String fldName = getFieldInfo().getName();
+            String tblNumFld = fldName.equalsIgnoreCase("RecordId") ? "tableNum" : "parentTableNum";
+            result += ", " + ta.getAbbreviation(table.getTableTree()) + "." + tblNumFld;
+        }  else if (addAuditValColumns(forWhereClause, forSchemaExport, formatAuditIds)) {
+           result += ", " + ta.getAbbreviation(table.getTableTree().getParent()) + ".tableNum"
+                   + ", " + ta.getAbbreviation(table.getTableTree()) + ".fieldName";
+
+        } else if (getDataClass().equals(java.sql.Timestamp.class) && forWhereClause) {
         	//XXX Portability: MySql Specific??
         	//necessary because timeStamp criteria can't currently be entered to nano-precision. 
         	result = "DATE(" + result + ")";
@@ -150,7 +186,7 @@ public class FieldQRI extends BaseQRI
      */
     public String getNullCondition(final TableAbbreviator ta, final boolean forSchemaExport, final boolean negate, final String formatName)
     {
-        return getSQLFldSpec(ta, true, forSchemaExport, formatName) + (negate ? " is not " : " is ") + "null";
+        return getSQLFldSpec(ta, true, forSchemaExport, formatName, false) + (negate ? " is not " : " is ") + "null";
     }
     
     /**

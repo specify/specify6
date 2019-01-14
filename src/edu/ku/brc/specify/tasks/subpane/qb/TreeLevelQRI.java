@@ -190,7 +190,7 @@ public class TreeLevelQRI extends FieldQRI
      */
     @Override
     public String getSQLFldSpec(final TableAbbreviator ta, final boolean forWhereClause,
-    		final boolean forSchemaExport, final String formatName)
+    		final boolean forSchemaExport, final String formatName, boolean formatAuditRecIds)
     {
         String result = getSQLFldName(ta);
         return result;

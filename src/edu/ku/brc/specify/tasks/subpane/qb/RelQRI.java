@@ -147,7 +147,7 @@ public class RelQRI extends FieldQRI
      */
     @Override
     public String getSQLFldSpec(TableAbbreviator ta, final boolean forWhereClause, 
-    		final boolean forSchemaExport, final String formatName)
+    		final boolean forSchemaExport, final String formatName, boolean formatAuditRecIds)
     {
         if (relationshipInfo.getType().equals(DBRelationshipInfo.RelationshipType.OneToMany)
                 || relationshipInfo.getType().equals(DBRelationshipInfo.RelationshipType.ZeroOrOne) /*What about ManyToMany?? And some OneToOnes???*/)
