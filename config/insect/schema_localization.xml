@@ -15,13 +15,27 @@
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="text1" isHidden="false" isUIFormatter="false" pickListName="Sex" isRequired="false">
+      <desc name="text8" isHidden="true" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <names>
+          <str language="pt">
+            <version>1</version>
+            <text>Texto8</text>
+          </str>
+          <str language="en">
+            <version>0</version>
+            <text>Text8</text>
+          </str>
+        </names>
+        <descs/>
+      </desc>
+      <desc name="text3" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
           <str language="en">
             <version>0</version>
-            <text>Sex</text>
+            <text>Length</text>
           </str>
         </names>
         <descs/>
@@ -39,33 +53,17 @@
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="text5" isHidden="true" isUIFormatter="false" isRequired="false">
+      <desc name="text1" isHidden="false" isUIFormatter="false" pickListName="Sex" isRequired="false">
         <version>0</version>
+        <isSystem>false</isSystem>
         <names>
-          <str language="pt">
-            <version>1</version>
-            <text>Texto5</text>
-          </str>
           <str language="en">
             <version>0</version>
-            <text>Text5</text>
+            <text>Sex</text>
           </str>
         </names>
         <descs/>
-      </desc>
-      <desc name="text8" isHidden="true" isUIFormatter="false" isRequired="false">
-        <version>0</version>
-        <names>
-          <str language="pt">
-            <version>1</version>
-            <text>Texto8</text>
-          </str>
-          <str language="en">
-            <version>0</version>
-            <text>Text8</text>
-          </str>
-        </names>
-        <descs/>
+        <spExportSchemaItems/>
       </desc>
       <desc name="text7" isHidden="true" isUIFormatter="false" isRequired="false">
         <version>0</version>
@@ -77,6 +75,20 @@
           <str language="pt">
             <version>1</version>
             <text>Texto7</text>
+          </str>
+        </names>
+        <descs/>
+      </desc>
+      <desc name="text5" isHidden="true" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>Text5</text>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Texto5</text>
           </str>
         </names>
         <descs/>
@@ -94,18 +106,6 @@
           </str>
         </names>
         <descs/>
-      </desc>
-      <desc name="text3" isHidden="false" isUIFormatter="false" isRequired="false">
-        <version>0</version>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en">
-            <version>0</version>
-            <text>Length</text>
-          </str>
-        </names>
-        <descs/>
-        <spExportSchemaItems/>
       </desc>
     </items>
     <names/>
