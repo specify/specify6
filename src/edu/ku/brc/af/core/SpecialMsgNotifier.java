@@ -25,6 +25,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.helpers.ProxyHelper;
 import edu.ku.brc.specify.Specify;
 import org.apache.commons.httpclient.HostConfiguration;
@@ -60,6 +61,10 @@ public class SpecialMsgNotifier
     
     public void checkForMessages()
     {
+        if (AppPreferences.getRemote().getBoolean("DisableMessageCheckAtStartUp", false)) {
+            log.info("DisableMessageCheckAtStartUp is true. Skipping nessage check.");
+            return;
+        }
         if (blockMsg.get())
         {
             return;
