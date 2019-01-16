@@ -27,12 +27,29 @@ import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import org.apache.log4j.Logger;
+import java.util.List;
+import java.util.ArrayList;
 
 public class ERTICaptionInfoAuditVal extends ERTICaptionInfoRecId {
-    protected static final Logger log = Logger.getLogger(ERTICaptionInfoRecId.class);
+    protected static final Logger log = Logger.getLogger(ERTICaptionInfoAuditVal.class);
 
     public ERTICaptionInfoAuditVal(String colName, String lbl, String stringId, DBFieldInfo fi) {
         super(colName, lbl, stringId, fi);
+        for (DBRelationshipInfo.RelationshipType t : auditableRelTypes) {
+            auditableRelTypeList.add(t);
+        }
+    }
+
+    private static DBRelationshipInfo.RelationshipType[] auditableRelTypes = {DBRelationshipInfo.RelationshipType.ManyToOne,
+        DBRelationshipInfo.RelationshipType.ZeroOrOne, DBRelationshipInfo.RelationshipType.OneToOne};
+    private List<DBRelationshipInfo.RelationshipType> auditableRelTypeList = new ArrayList<>();
+
+    private boolean isAuditableRel(DBRelationshipInfo relInfo) {
+        boolean result = false;
+        if (relInfo != null) {
+            result = auditableRelTypeList.indexOf(relInfo.getType()) != -1;
+        }
+        return result;
     }
 
     @Override
@@ -61,7 +78,7 @@ public class ERTICaptionInfoAuditVal extends ERTICaptionInfoRecId {
 
             DBRelationshipInfo relInfo = ti.getRelationshipByName(fldName);
 
-            if (relInfo == null) {
+            if (!isAuditableRel(relInfo)) {
                 result = new Object[1];
                 result[0] = val;
                 return result;

@@ -29,6 +29,7 @@ import edu.ku.brc.af.ui.forms.formatters.DataObjSwitchFormatter;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import java.util.Map;
 import java.util.TreeMap;
@@ -39,9 +40,9 @@ public class ERTICaptionInfoRecId extends ERTICaptionInfoQB {
     protected Map<Integer, LookupsCache> lookUppers = new TreeMap<>();
     boolean lookItUp = true;
     DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-    int finds = 0;
-    int looks = 0;
-    boolean showFindStats = false;
+    //int finds = 0;
+    //int looks = 0;
+    //boolean showFindStats = false;
 
     protected Object lookup(Integer tblId, Integer recId) {
         if (!lookItUp) {
@@ -140,8 +141,8 @@ public class ERTICaptionInfoRecId extends ERTICaptionInfoQB {
     }
 
     protected Object[] getLookupInfo(Object value) {
-        looks++;
-        showFindStats = showFindStats || looks % 5000 == 0;
+        //looks++;
+        //showFindStats = showFindStats || looks % 5000 == 0;
         if (value instanceof Object[] && ((Object[])value).length == 2) {
             Integer recId = (Integer) ((Object[]) value)[0];
             if (recId == null) {
@@ -159,11 +160,11 @@ public class ERTICaptionInfoRecId extends ERTICaptionInfoQB {
             }
             Object lookedUp = getValueFromKey(ti, recId);
             if (lookedUp != null) {
-                finds++;
-                if (showFindStats) {
-                    System.out.println(getColLabel() + ": " + finds + "/" + looks);
-                    showFindStats = false;
-                }
+                //finds++;
+                //if (showFindStats) {
+                //    System.out.println(getColLabel() + ": " + finds + "/" + looks);
+                //    showFindStats = false;
+                //}
                 Object[] result = new Object[1];
                 result[0] = lookedUp;
                 return result;
@@ -187,7 +188,7 @@ public class ERTICaptionInfoRecId extends ERTICaptionInfoQB {
             }
             DBTableInfo ti = (DBTableInfo)lookupInfo[0];
             Object dataObj = lookupInfo[1];
-            String formatter = ti.getDataObjFormatter();
+            String formatter = getDataObjFormatter(ti);
             if (formatter != null && dataObj != null) {
                 return cache(ti.getTableId(),(Integer)lookupInfo[2], DataObjFieldFormatMgr.getInstance().format(dataObj, formatter) + " {" + lookupInfo[2] + "}");
             } else {
@@ -195,6 +196,19 @@ public class ERTICaptionInfoRecId extends ERTICaptionInfoQB {
             }
         }
         return null;
+    }
+
+    protected String getDataObjFormatter(DBTableInfo ti) {
+        String result = ti.getDataObjFormatter();
+        //table info objects sometimes don't have dataobj formatters, till schema config is done???
+        //maybe using dataobjfieldformatmgr will do better in these cases?
+        if (result == null || "".equals(result)) {
+            DataObjSwitchFormatter f = DataObjFieldFormatMgr.getInstance().getDataFormatter(ti.getName());
+            if (f.getDataClass().equals(ti.getClassObj())) {
+                result = f.getName();
+            }
+        }
+        return "".equals(result) ? null : result;
     }
 
     protected Object getValueFromKey(DBTableInfo tblInfo, Integer key) {

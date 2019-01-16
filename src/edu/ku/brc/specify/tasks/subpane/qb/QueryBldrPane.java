@@ -19,79 +19,10 @@
 */
 package edu.ku.brc.specify.tasks.subpane.qb;
 
-import static edu.ku.brc.ui.UIHelper.createButton;
-import static edu.ku.brc.ui.UIHelper.createCheckBox;
-import static edu.ku.brc.ui.UIHelper.createIconBtn;
-import static edu.ku.brc.ui.UIHelper.createLabel;
-import static edu.ku.brc.ui.UIRegistry.getResourceString;
-
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Frame;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.text.ParseException;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.AtomicReference;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.ActionMap;
-import javax.swing.BorderFactory;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.DefaultListModel;
-import javax.swing.ImageIcon;
-import javax.swing.InputMap;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTextField;
-import javax.swing.KeyStroke;
-import javax.swing.ListModel;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.MouseInputAdapter;
-
-import edu.ku.brc.af.prefs.AppPreferences;
-import edu.ku.brc.specify.tasks.*;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-
-import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.af.core.ContextMgr;
-import edu.ku.brc.af.core.NavBoxLayoutManager;
-import edu.ku.brc.af.core.SubPaneIFace;
-import edu.ku.brc.af.core.SubPaneMgr;
-import edu.ku.brc.af.core.Taskable;
-import edu.ku.brc.af.core.UsageTracker;
+import edu.ku.brc.af.core.*;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBRelationshipInfo;
 import edu.ku.brc.af.core.db.DBRelationshipInfo.RelationshipType;
@@ -112,48 +43,41 @@ import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
-import edu.ku.brc.specify.datamodel.Agent;
-import edu.ku.brc.specify.datamodel.Attachment;
-import edu.ku.brc.specify.datamodel.CollectionObject;
-import edu.ku.brc.specify.datamodel.CollectionRelationship;
+import edu.ku.brc.specify.datamodel.*;
 import edu.ku.brc.specify.datamodel.Container;
-import edu.ku.brc.specify.datamodel.DataModelObjBase;
-import edu.ku.brc.specify.datamodel.Discipline;
-import edu.ku.brc.specify.datamodel.Division;
-import edu.ku.brc.specify.datamodel.GroupPerson;
-import edu.ku.brc.specify.datamodel.Institution;
-import edu.ku.brc.specify.datamodel.SpAuditLog;
-import edu.ku.brc.specify.datamodel.SpExportSchema;
-import edu.ku.brc.specify.datamodel.SpExportSchemaItem;
-import edu.ku.brc.specify.datamodel.SpExportSchemaItemMapping;
-import edu.ku.brc.specify.datamodel.SpExportSchemaMapping;
-import edu.ku.brc.specify.datamodel.SpQuery;
-import edu.ku.brc.specify.datamodel.SpQueryField;
-import edu.ku.brc.specify.datamodel.SpReport;
-import edu.ku.brc.specify.datamodel.SpecifyUser;
-import edu.ku.brc.specify.datamodel.TreeDefIface;
-import edu.ku.brc.specify.datamodel.Treeable;
-import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.dbsupport.RecordTypeCodeBuilder;
+import edu.ku.brc.specify.tasks.*;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
 import edu.ku.brc.specify.tasks.subpane.JasperCompilerRunnable;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchJRDataSource;
 import edu.ku.brc.specify.tools.export.ConceptMapUtils;
 import edu.ku.brc.specify.tools.export.MappedFieldInfo;
-import edu.ku.brc.ui.CommandAction;
-import edu.ku.brc.ui.CommandDispatcher;
-import edu.ku.brc.ui.CommandListener;
-import edu.ku.brc.ui.CustomDialog;
-import edu.ku.brc.ui.DropDownButton;
-import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.RolloverCommand;
-import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.*;
 import edu.ku.brc.util.Pair;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.util.JRLoader;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.MouseInputAdapter;
+import java.awt.*;
+import java.awt.event.*;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.util.*;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
+
+import static edu.ku.brc.ui.UIHelper.*;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 /**
  * @author rod
@@ -2540,23 +2464,33 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     colInfoList.add(columnInfo);
                     erti.setColInfoList(colInfoList);
                     erti.setColName(null);
-                } else if (fi != null
-                        && ti.getName().equalsIgnoreCase("SpAuditLogField")
-                        && (fi.getName().equalsIgnoreCase("NewValue") || fi.getName().equalsIgnoreCase("OldValue"))
-                        && formatAuditIds) {
-                    erti = new ERTICaptionInfoAuditVal(colName, lbl, qfp.getStringId(),fi);
-                    Vector<ColInfo> colInfoList = new Vector<>();
-                    ColInfo columnInfo = erti.new ColInfo("TableNum", "tableNum");
-                    columnInfo.setPosition(0);
-                    colInfoList.add(columnInfo);
-                    columnInfo = erti.new ColInfo("FieldName", "FieldName");
-                    columnInfo.setPosition(1);
-                    colInfoList.add(columnInfo);
-                    columnInfo = erti.new ColInfo(fi.getColumn(), fi.getName());
-                    columnInfo.setPosition(2);
-                    colInfoList.add(columnInfo);
-                    erti.setColInfoList(colInfoList);
-                    erti.setColName(null);
+                } else if (fi != null && ti.getName().equalsIgnoreCase("SpAuditLogField") && formatAuditIds) {
+                    if (fi.getName().equalsIgnoreCase("NewValue") || fi.getName().equalsIgnoreCase("OldValue")) {
+                        erti = new ERTICaptionInfoAuditVal(colName, lbl, qfp.getStringId(), fi);
+                        Vector<ColInfo> colInfoList = new Vector<>();
+                        ColInfo columnInfo = erti.new ColInfo("TableNum", "tableNum");
+                        columnInfo.setPosition(0);
+                        colInfoList.add(columnInfo);
+                        columnInfo = erti.new ColInfo("FieldName", "FieldName");
+                        columnInfo.setPosition(1);
+                        colInfoList.add(columnInfo);
+                        columnInfo = erti.new ColInfo(fi.getColumn(), fi.getName());
+                        columnInfo.setPosition(2);
+                        colInfoList.add(columnInfo);
+                        erti.setColInfoList(colInfoList);
+                        erti.setColName(null);
+                    } else if (fi.getName().equalsIgnoreCase("FieldName")) {
+                        erti = new ERTICaptionInfoFieldName(colName, lbl, qfp.getStringId(), fi);
+                        Vector<ColInfo> colInfoList = new Vector<>();
+                        ColInfo columnInfo = erti.new ColInfo("TableNum", "tableNum");
+                        columnInfo.setPosition(0);
+                        colInfoList.add(columnInfo);
+                        columnInfo = erti.new ColInfo(fi.getColumn(), fi.getName());
+                        columnInfo.setPosition(1);
+                        colInfoList.add(columnInfo);
+                        erti.setColInfoList(colInfoList);
+                        erti.setColName(null);
+                    }
                 }
 
                 else

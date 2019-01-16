@@ -108,7 +108,7 @@ public class SpAuditLogField extends DataModelObjBase implements java.io.Seriali
     /**
      * @return the fieldName
      */
-    @Column(name = "FieldName", unique = false, nullable = false, insertable = true, updatable = true, length = 32)
+    @Column(name = "FieldName", unique = false, nullable = false, insertable = true, updatable = true, length = 128)
     public String getFieldName()
     {
         return fieldName;

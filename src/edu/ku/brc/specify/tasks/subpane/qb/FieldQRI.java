@@ -121,33 +121,42 @@ public class FieldQRI extends BaseQRI
     }
 
     protected boolean addTableNumColumn(final boolean forWhereClause, final boolean forSchemaExport, boolean formatAuditIds) {
-        if (formatAuditIds) {
+        boolean result = false;
+        if (formatAuditIds && !forWhereClause) {
             DBFieldInfo fi = getFieldInfo();
-            if (fi == null || forWhereClause) {
-                return false;
-            } else {
+            if (fi != null) {
                 String fldName = fi.getName();
-                return fi.getTableInfo().getName().equalsIgnoreCase("SpAuditLog")
+                result =  fi.getTableInfo().getName().equalsIgnoreCase("SpAuditLog")
                     && (fldName.equalsIgnoreCase("RecordId") || fldName.equalsIgnoreCase("ParentRecordId"));
             }
-        } else {
-            return false;
         }
+        return result;
     }
 
     protected boolean addAuditValColumns(final boolean forWhereClause, final boolean forSchemaExport, boolean formatAuditIds) {
-        if (formatAuditIds) {
+        boolean result = false;
+        if (formatAuditIds && !forWhereClause) {
             DBFieldInfo fi = getFieldInfo();
-            if (fi == null || forWhereClause) {
-                return false;
-            } else {
+            if (fi != null) {
                 String fldName = fi.getName();
-                return fi.getTableInfo().getName().equalsIgnoreCase("SpAuditLogField")
+                result = fi.getTableInfo().getName().equalsIgnoreCase("SpAuditLogField")
                         && (fldName.equalsIgnoreCase("NewValue") || fldName.equalsIgnoreCase("OldValue"));
             }
-        } else {
-            return false;
         }
+        return result;
+    }
+
+    protected boolean addAuditFldNameColumns(final boolean forWhereClause, final boolean forSchemaExport, boolean formatAuditIds) {
+        boolean result = false;
+        if (formatAuditIds && !forWhereClause) {
+            DBFieldInfo fi = getFieldInfo();
+            if (fi != null) {
+                String fldName = fi.getName();
+                result = fi.getTableInfo().getName().equalsIgnoreCase("SpAuditLogField")
+                        && fldName.equalsIgnoreCase("FieldName");
+            }
+        }
+        return result;
     }
 
     /**
@@ -166,10 +175,11 @@ public class FieldQRI extends BaseQRI
             String fldName = getFieldInfo().getName();
             String tblNumFld = fldName.equalsIgnoreCase("RecordId") ? "tableNum" : "parentTableNum";
             result += ", " + ta.getAbbreviation(table.getTableTree()) + "." + tblNumFld;
-        }  else if (addAuditValColumns(forWhereClause, forSchemaExport, formatAuditIds)) {
+        } else if (addAuditValColumns(forWhereClause, forSchemaExport, formatAuditIds)) {
            result += ", " + ta.getAbbreviation(table.getTableTree().getParent()) + ".tableNum"
                    + ", " + ta.getAbbreviation(table.getTableTree()) + ".fieldName";
-
+        } else if (addAuditFldNameColumns(forWhereClause, forSchemaExport, formatAuditIds)) {
+            result += ", " + ta.getAbbreviation(table.getTableTree().getParent()) + ".tableNum";
         } else if (getDataClass().equals(java.sql.Timestamp.class) && forWhereClause) {
         	//XXX Portability: MySql Specific??
         	//necessary because timeStamp criteria can't currently be entered to nano-precision. 
