@@ -61,7 +61,7 @@ public class SpecialMsgNotifier
     
     public void checkForMessages()
     {
-        if (AppPreferences.getRemote().getBoolean("DisableMessageCheckAtStartUp", false)) {
+        if (AppPreferences.getLocalPrefs().getBoolean("DisableMessageCheckAtStartUp", false)) {
             log.info("DisableMessageCheckAtStartUp is true. Skipping nessage check.");
             return;
         }
