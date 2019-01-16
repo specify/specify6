@@ -204,7 +204,7 @@ public class ERTICaptionInfoRecId extends ERTICaptionInfoQB {
         //maybe using dataobjfieldformatmgr will do better in these cases?
         if (result == null || "".equals(result)) {
             DataObjSwitchFormatter f = DataObjFieldFormatMgr.getInstance().getDataFormatter(ti.getName());
-            if (f.getDataClass().equals(ti.getClassObj())) {
+            if (f!= null && f.getDataClass().equals(ti.getClassObj())) {
                 result = f.getName();
             }
         }
