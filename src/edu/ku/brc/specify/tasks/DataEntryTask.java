@@ -46,7 +46,7 @@ import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.busrules.BaseTreeBusRules;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr.SCOPE;
-import edu.ku.brc.specify.dbsupport.cleanuptools.LocalityDuplicateRemover;
+//import edu.ku.brc.specify.dbsupport.cleanuptools.LocalityDuplicateRemover;
 import edu.ku.brc.specify.prefs.FormattingPrefsPanel;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
 import edu.ku.brc.specify.ui.BatchReidentifyPanel;
@@ -1356,93 +1356,93 @@ public class DataEntryTask extends BaseTask
 
     protected List<JMenuItem> getDupRemoveMenuItems() {
         List<JMenuItem> result = new ArrayList<>();
-        for (DBTableInfo tbl : getDupRemoveTbls()) {
-            JMenuItem mi = UIHelper.createMenuItemWithAction((JMenu)null, String.format(getResourceString("DataEntryTask.RemoveDupsMenu"), tbl.getTitle()),
-                    null, null, true, null);
-            mi.addActionListener(ae -> doRemoveDuplicateRecs(tbl.getTableId()));
-            result.add(mi);
-        }
+//        for (DBTableInfo tbl : getDupRemoveTbls()) {
+//            JMenuItem mi = UIHelper.createMenuItemWithAction((JMenu)null, String.format(getResourceString("DataEntryTask.RemoveDupsMenu"), tbl.getTitle()),
+//                    null, null, true, null);
+//            mi.addActionListener(ae -> doRemoveDuplicateRecs(tbl.getTableId()));
+//            result.add(mi);
+//        }
         return result;
     }
 
-    protected void doRemoveDuplicateRecs(int tblId) {
-        try {
-            DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(tblId);
-            String sql = LocalityDuplicateRemover.getDistinctRecSql(tblInfo, false, true,
-                    AppContextMgr.getInstance().getClassObject(Discipline.class).getId());
-            List<Object[]> dupSets = BasicSQLUtils.query(sql);
-            if (dupSets.size() == 0) {
-                UIRegistry.showLocalizedMsg("NO_DUP_RECS_FOR_TABLE");
-            } else {
-                long totalDups = 0;
-                for (Object[] row : dupSets) {
-                    totalDups += (Long)row[row.length - 1] - 1L;
-                }
-                final DuplicateSetDisplay dusd = new DuplicateSetDisplay(tblInfo, dupSets);
-                dusd.createUI();
-                CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), getResourceString("DataEntryTask.DupDlgTitle"),
-                        true, CustomDialog.OKCANCELAPPLY, dusd);
-                dlg.createUI();
-                dlg.setApplyLabel(getResourceString("DataEntryTask.RemoveBtn"));
-                dlg.getOkBtn().setVisible(false);
-                dlg.getApplyBtn().addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        SwingWorker<Pair<List<Integer>,List<Integer>>, Integer> w = new SwingWorker<Pair<List<Integer>, List<Integer>>, Integer>() {
-                            @Override
-                            protected Pair<List<Integer>,List<Integer>> doInBackground() throws Exception {
-                                List<Integer> failedRowIdxs = new ArrayList<>();
-                                List<Integer> deDupedRowIdxs = new ArrayList<>();
-                                int prev = -1;
-                                for (int r: dusd.getTable().getSelectedRows()) {
-                                    publish(prev, r);
-                                    Pair<Integer, Integer> result = null;
-                                    try {
-                                        result = LocalityDuplicateRemover.removeDuplicates(null, tblInfo.getName(), dupSets.get(r));
-                                    } catch (Exception ex) {
-                                        log.error(ex);
-                                    }
-                                    if (result == null || (result.getFirst() > 1 && result.getSecond() + 1 != result.getFirst())) {
-                                        failedRowIdxs.add(r);
-                                    } else {
-                                        deDupedRowIdxs.add(r);
-                                    }
-                                    prev = r;
-                                }
-                                publish(prev, -1);
-                                return new Pair<>(failedRowIdxs, deDupedRowIdxs);
-                            }
-
-                            @Override
-                            protected void done() {
-                                super.done();
-                                try {
-                                    dusd.deDupeDone(get());
-                                    dlg.getOkBtn().setVisible(true);
-                                } catch (InterruptedException e1) {
-                                    e1.printStackTrace();
-                                } catch (ExecutionException e1) {
-                                    e1.printStackTrace();
-                                }
-                            }
-
-                            @Override
-                            protected void process(List<Integer> chunks) {
-                                super.process(chunks);
-                                dusd.processProgress(chunks);
-                            }
-                        };
-                        w.execute();
-                    }
-                });
-                dlg.setVisible(true);
-                if (dlg.getBtnPressed() == CustomDialog.OK_BTN) {
-                }
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
+//    protected void doRemoveDuplicateRecs(int tblId) {
+//        try {
+//            DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(tblId);
+//            String sql = LocalityDuplicateRemover.getDistinctRecSql(tblInfo, false, true,
+//                    AppContextMgr.getInstance().getClassObject(Discipline.class).getId());
+//            List<Object[]> dupSets = BasicSQLUtils.query(sql);
+//            if (dupSets.size() == 0) {
+//                UIRegistry.showLocalizedMsg("NO_DUP_RECS_FOR_TABLE");
+//            } else {
+//                long totalDups = 0;
+//                for (Object[] row : dupSets) {
+//                    totalDups += (Long)row[row.length - 1] - 1L;
+//                }
+//                final DuplicateSetDisplay dusd = new DuplicateSetDisplay(tblInfo, dupSets);
+//                dusd.createUI();
+//                CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), getResourceString("DataEntryTask.DupDlgTitle"),
+//                        true, CustomDialog.OKCANCELAPPLY, dusd);
+//                dlg.createUI();
+//                dlg.setApplyLabel(getResourceString("DataEntryTask.RemoveBtn"));
+//                dlg.getOkBtn().setVisible(false);
+//                dlg.getApplyBtn().addActionListener(new ActionListener() {
+//                    @Override
+//                    public void actionPerformed(ActionEvent e) {
+//                        SwingWorker<Pair<List<Integer>,List<Integer>>, Integer> w = new SwingWorker<Pair<List<Integer>, List<Integer>>, Integer>() {
+//                            @Override
+//                            protected Pair<List<Integer>,List<Integer>> doInBackground() throws Exception {
+//                                List<Integer> failedRowIdxs = new ArrayList<>();
+//                                List<Integer> deDupedRowIdxs = new ArrayList<>();
+//                                int prev = -1;
+//                                for (int r: dusd.getTable().getSelectedRows()) {
+//                                    publish(prev, r);
+//                                    Pair<Integer, Integer> result = null;
+//                                    try {
+//                                        result = LocalityDuplicateRemover.removeDuplicates(null, tblInfo.getName(), dupSets.get(r));
+//                                    } catch (Exception ex) {
+//                                        log.error(ex);
+//                                    }
+//                                    if (result == null || (result.getFirst() > 1 && result.getSecond() + 1 != result.getFirst())) {
+//                                        failedRowIdxs.add(r);
+//                                    } else {
+//                                        deDupedRowIdxs.add(r);
+//                                    }
+//                                    prev = r;
+//                                }
+//                                publish(prev, -1);
+//                                return new Pair<>(failedRowIdxs, deDupedRowIdxs);
+//                            }
+//
+//                            @Override
+//                            protected void done() {
+//                                super.done();
+//                                try {
+//                                    dusd.deDupeDone(get());
+//                                    dlg.getOkBtn().setVisible(true);
+//                                } catch (InterruptedException e1) {
+//                                    e1.printStackTrace();
+//                                } catch (ExecutionException e1) {
+//                                    e1.printStackTrace();
+//                                }
+//                            }
+//
+//                            @Override
+//                            protected void process(List<Integer> chunks) {
+//                                super.process(chunks);
+//                                dusd.processProgress(chunks);
+//                            }
+//                        };
+//                        w.execute();
+//                    }
+//                });
+//                dlg.setVisible(true);
+//                if (dlg.getBtnPressed() == CustomDialog.OK_BTN) {
+//                }
+//            }
+//        } catch (Exception ex) {
+//            ex.printStackTrace();
+//        }
+//    }
 
     protected void doRemoveUnusedRecords() {
         doRemoveUnusedLocalities();
