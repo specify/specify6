@@ -241,7 +241,8 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         {
         
             textWithQuery.addListSelectionListener(this);
-            textWithQuery.setAddAddItem(true);
+            PermissionSettings perm = AppContextMgr.isSecurityOn() ? tableInfo.getPermissions() : null;
+            textWithQuery.setAddAddItem(((btns & CREATE_NEW_BTN) != 0) && (perm == null ? true : perm.canAdd()));
             
             textWithQuery.getTextField().addFocusListener(new FocusAdapter() {
                 @Override
