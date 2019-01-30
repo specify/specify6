@@ -229,9 +229,11 @@ public class PostInsertEventListener implements org.hibernate.event.PostInsertEv
     }
 
     protected static void saveFieldAudits(Integer auditLogId, List<PropertyUpdateInfo> updates) {
-        for (PropertyUpdateInfo update : updates) {
-            if (shouldBeAudited(update)) {
-                saveFieldAudit(auditLogId, update);
+        if (updates != null) {
+            for (PropertyUpdateInfo update : updates) {
+                if (shouldBeAudited(update)) {
+                    saveFieldAudit(auditLogId, update);
+                }
             }
         }
     }
