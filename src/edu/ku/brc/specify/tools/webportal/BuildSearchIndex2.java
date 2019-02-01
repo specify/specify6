@@ -17,6 +17,7 @@
  */
 package edu.ku.brc.specify.tools.webportal;
 
+import com.csvreader.CsvWriter;
 import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.core.db.DBFieldInfo;
@@ -30,7 +31,9 @@ import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.SpExportSchemaMapping;
+import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace;
+import edu.ku.brc.specify.tasks.subpane.wb.CSVExport;
 import net.sf.json.JSONObject;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -641,6 +644,219 @@ public class BuildSearchIndex2
         }
         return value;
 	}
+
+	private List<String> createCsvHeaderRow() {
+        List<String> result = new ArrayList<>();
+        result.add("spid");
+        Map<Integer, String> shortNames = getShortNamesForFields(map);
+        List<Integer> keys = new ArrayList<>(shortNames.keySet());
+        Collections.sort(keys);
+        for (Integer i : keys) {
+            result.add(shortNames.get(i));
+        }
+        result.add("cs");
+        result.add("contents");
+        result.add("geoc");
+        result.add("img");
+        return result;
+    }
+
+	//this was snatched from DarwinCoreArchive.
+	//Follows the candidate csv standard (of several years ago)
+	//Allows saving as utf8, which seems not to be possible with very outdated csvwriter lib
+    protected String addValToLine(String line, String eoFld, String encloser, String escaper, String val, int skippedFields) {
+		if (line.length() > 0) {
+			line += eoFld;
+		}
+		for (int i = 0; i < skippedFields; i++) {
+			line += eoFld;
+		}
+		//XXX probably will need to change the way spexportschemaitem records are stored
+		//so that concepts can be matched by uri
+		if (val.indexOf(escaper) >= 0) {
+			val = val.replace(escaper, escaper + escaper);
+		}
+		if (val.indexOf(encloser) >= 0) {
+			if ("\"".equals(encloser)) {
+				val = val.replace(encloser, encloser + encloser);
+			} else {
+				val = val.replace(encloser, escaper + encloser);
+			}
+		}
+
+		boolean enclose = val.indexOf(eoFld) >= 0 || val.indexOf("\n") >= 0 || val.indexOf("\r") >= 0;
+		if (enclose) line += encloser;
+		line += val;
+		if (enclose) line += encloser;
+		return line;
+	}
+
+	private void writeTblToCsv(List<List<String>> tbl) throws IOException {
+		if (tbl.size() > 0) {
+			List<String> lines = new ArrayList<>();
+			for (List<String> row : tbl) {
+				String line = "";
+				for (String s : row) {
+					addValToLine(line, ",","\"", "\\", s, 0);
+				}
+				lines.add(line);
+			}
+			try {
+				FileUtils.writeLines(new File(writeToDir + File.separator + "PortalData.csv"), "UTF-8", lines);
+			} catch (IOException e) {
+				edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+				edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BuildSearchIndex2.class, e);
+				throw (e);
+			}
+		}
+	}
+
+	public boolean exportWebPortal(QBDataSourceListenerIFace progressListener) {
+        if (progressListener != null) {
+            progressListener.loading();
+        }
+        long startTime = System.currentTimeMillis();
+        long totalRecs = 0;
+        List<String> solrFldXml = null;
+        List<String> portalFldJson = null;
+        try {
+            System.out.println("Exporting to directory '" + INDEX_DIR + "'...");
+            ExportMappingHelper map = new ExportMappingHelper(dbConn, mapping.getId());
+            totalRecs = BasicSQLUtils.getCount(dbConn, "SELECT COUNT(*) FROM " + map.getCacheTblName());
+            if (progressListener != null) {
+                progressListener.loaded();
+                progressListener.rowCount(totalRecs);
+            }
+            long procRecs  = 0;
+            Statement stmt  = null;
+            Statement stmt2 = null;
+            Statement stmt3 = null;
+            try {
+                System.out.println("Total Records: "+totalRecs);
+                //stmt = dbConn.createStatement(ResultSet.TYPE_FORWARD_ONLY,ResultSet.CONCUR_READ_ONLY);
+                stmt = dbConn.createStatement();
+                stmt.setFetchSize(Integer.MIN_VALUE);
+                stmt2 = dbConn2.createStatement();
+                stmt3 = dbConn3.createStatement();
+                stmt3.setFetchSize(Integer.MIN_VALUE);
+                String sql = createQuery(map.getCacheTblName());
+                System.out.println(sql);
+
+                ResultSet rs = stmt.executeQuery(sql); //may consume all memory for giant caches
+                ResultSetMetaData md = rs.getMetaData();
+
+                StringBuilder indexStr = new StringBuilder();
+                StringBuilder contents = new StringBuilder();
+                StringBuilder sb       = new StringBuilder();
+                String lat1 = null, lng1 = null, lat2 = null, lng2 = null, collCode = null;
+                solrFldXml = getFldsXmlForSchema(map, shortNames);
+                portalFldJson = getModelInJson(map, shortNames);
+                List<List<String>> tbl = new ArrayList<>(); //another memory muncher
+                tbl.add(getCsvHeader(map, md.getColumnCount()));
+                while (rs.next()) {
+                    List<String> row = new ArrayList<>();
+                    indexStr.setLength(0);
+                    contents.setLength(0);
+                    sb.setLength(0);
+                    lat1 = null; lng1 = null; lat2 = null; lng2 = null; collCode = null;
+                    for (int c = 1; c <= md.getColumnCount(); c++) {
+                        String value = "";
+                        try {
+                            value = rs.getString(c);
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                        if (c == 1) {
+                            //it's the ID
+                            row.add(value);
+                        } else {
+                            if (value != null) {
+                                ExportMappingInfo info = map.getMappingByColIdx(c - 2);
+                                row.add(processValue(value, info)); //will this lead to stupid precision for floats?
+                                contents.append(StringUtils.isNotEmpty(value) ? value : " ");
+                                contents.append('\t');
+                                if ("latitude1".equalsIgnoreCase(map.getMappingByColIdx(c - 2).getSpFldName())) {
+                                    lat1 = value;
+                                } else if ("latitude2".equalsIgnoreCase(map.getMappingByColIdx(c - 2).getSpFldName())) {
+                                    lat2 = value;
+                                } else if ("longitude1".equalsIgnoreCase(map.getMappingByColIdx(c - 2).getSpFldName())) {
+                                    lng1 = value;
+                                } else if ("longitude2".equalsIgnoreCase(map.getMappingByColIdx(c - 2).getSpFldName())) {
+                                    lng2 = value;
+                                }
+                                if ("collectionCode".equalsIgnoreCase(info.getConcept())) {
+                                    collCode = value;
+                                }
+                            }
+                        }
+                    }
+                    indexStr.append(contents);
+
+                    //XXX what, exactly, are the reasons for the store/tokenize settings on these 2 in index()?
+                    //Ditto for store setting for geoc and img below?
+                    row.add(indexStr.toString()); //"cs" what is this for ? it is the same as contents no?
+                    row.add(contents.toString()); //"contents"
+
+                    String geoc = null;
+                    if (lat1 != null && lng1 != null) {
+                        geoc = lat1 + " " + lng1;
+                        if (collCode != null) {
+                            geoc += " " + collCode;
+                        }
+                    }
+                    row.add(geoc);
+
+                    String attachments = getAttachments(dbConn2, "collectionobject", rs.getInt(1), false);
+                    row.add(attachments);
+                    tbl.add(row);
+
+                    //System.out.println(procRecs+" "+rs.getString(1));
+                    procRecs++;
+                    if (procRecs % 1000 == 0) {
+                        System.out.println(procRecs);
+                        if (progressListener != null) {
+                            progressListener.currentRow(procRecs-1);
+                        }
+                    }
+                }
+                rs.close();
+
+                writePortalJsonToFile(portalFldJson);
+                writeSolrFldXmlToFile(solrFldXml);
+                writePortalInstanceJsonToFile();
+                writeTblToCsv(tbl);
+
+            } catch (Exception ex) {
+                UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(this.getClass(), ex);
+                return false;
+            } finally {
+                if (stmt != null) {
+                    try {
+                        if (stmt != null) stmt.close();
+                        if (stmt2 != null) stmt2.close();
+                        if (stmt3 != null) stmt3.close();
+                    } catch (SQLException e) {
+                        UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(this.getClass(), e);
+                        return false;
+                    }
+                }
+
+            }
+        } catch (Exception ex){
+            UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(this.getClass(), ex);
+            return false;
+        }
+        buildZipFile();
+        if (progressListener != null) {
+            progressListener.done(totalRecs);
+        }
+        long endTime = System.currentTimeMillis();
+        System.out.println("Time: "+ (endTime - startTime) / 1000);
+        return true;
+    }
     /**
      * 
      */
