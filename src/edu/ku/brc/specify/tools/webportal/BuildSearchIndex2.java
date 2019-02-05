@@ -645,10 +645,9 @@ public class BuildSearchIndex2
         return value;
 	}
 
-	private List<String> createCsvHeaderRow() {
+	private List<String> getCsvHeaderRow(Map<Integer, String> shortNames) {
         List<String> result = new ArrayList<>();
         result.add("spid");
-        Map<Integer, String> shortNames = getShortNamesForFields(map);
         List<Integer> keys = new ArrayList<>(shortNames.keySet());
         Collections.sort(keys);
         for (Integer i : keys) {
@@ -661,11 +660,12 @@ public class BuildSearchIndex2
         return result;
     }
 
-	//this was snatched from DarwinCoreArchive.
+	//this was copied (almost verbatim) from DarwinCoreArchive.addValToLine
 	//Follows the candidate csv standard (of several years ago)
 	//Allows saving as utf8, which seems not to be possible with very outdated csvwriter lib
-    protected String addValToLine(String line, String eoFld, String encloser, String escaper, String val, int skippedFields) {
-		if (line.length() > 0) {
+    protected String addValToLine(String line, String eoFld, String encloser, String escaper, String valArg, int skippedFields) {
+		String val = valArg == null ? "" : valArg;
+    	if (line.length() > 0) {
 			line += eoFld;
 		}
 		for (int i = 0; i < skippedFields; i++) {
@@ -697,9 +697,10 @@ public class BuildSearchIndex2
 			for (List<String> row : tbl) {
 				String line = "";
 				for (String s : row) {
-					addValToLine(line, ",","\"", "\\", s, 0);
+					line = addValToLine(line, ",","\"", "\\", s, 0);
 				}
 				lines.add(line);
+				System.out.println(line);
 			}
 			try {
 				FileUtils.writeLines(new File(writeToDir + File.separator + "PortalData.csv"), "UTF-8", lines);
@@ -749,10 +750,11 @@ public class BuildSearchIndex2
                 StringBuilder contents = new StringBuilder();
                 StringBuilder sb       = new StringBuilder();
                 String lat1 = null, lng1 = null, lat2 = null, lng2 = null, collCode = null;
-                solrFldXml = getFldsXmlForSchema(map, shortNames);
+				Map<Integer, String> shortNames = getShortNamesForFields(map);
+				solrFldXml = getFldsXmlForSchema(map, shortNames);
                 portalFldJson = getModelInJson(map, shortNames);
                 List<List<String>> tbl = new ArrayList<>(); //another memory muncher
-                tbl.add(getCsvHeader(map, md.getColumnCount()));
+                tbl.add(getCsvHeaderRow(shortNames));
                 while (rs.next()) {
                     List<String> row = new ArrayList<>();
                     indexStr.setLength(0);
@@ -770,10 +772,10 @@ public class BuildSearchIndex2
                             //it's the ID
                             row.add(value);
                         } else {
+                        	ExportMappingInfo info = map.getMappingByColIdx(c - 2);
+                            row.add(value == null ? null : processValue(value, info)); //will this lead to stupid precision for floats?
                             if (value != null) {
-                                ExportMappingInfo info = map.getMappingByColIdx(c - 2);
-                                row.add(processValue(value, info)); //will this lead to stupid precision for floats?
-                                contents.append(StringUtils.isNotEmpty(value) ? value : " ");
+								contents.append(StringUtils.isNotEmpty(value) ? value : " ");
                                 contents.append('\t');
                                 if ("latitude1".equalsIgnoreCase(map.getMappingByColIdx(c - 2).getSpFldName())) {
                                     lat1 = value;
@@ -787,8 +789,7 @@ public class BuildSearchIndex2
                                 if ("collectionCode".equalsIgnoreCase(info.getConcept())) {
                                     collCode = value;
                                 }
-                            }
-                        }
+                            }                        }
                     }
                     indexStr.append(contents);
 
@@ -862,268 +863,268 @@ public class BuildSearchIndex2
      */
     public boolean index(QBDataSourceListenerIFace progressListener)
     {
-        
-        if (progressListener != null)
-        {
-        	progressListener.loading();
-        }
-        
-       long startTime = System.currentTimeMillis();
-        
-        IndexWriter[] writers = null;
-        long totalRecs = 0;
-        List<String> solrFldXml = null;
-        List<String> portalFldJson = null;
-
-        try
-        {
-            for (int i=0;i<analyzers.length;i++)
-            {
-                files[i]     = new File(fileNames[i]);
-                analyzers[i] = new StandardAnalyzer(CharArraySet.EMPTY_SET);
-                FileUtils.deleteDirectory(files[i]);
-            }
-
-            System.out.println("Indexing to directory '" + INDEX_DIR + "'...");
-
-            ExportMappingHelper map = new ExportMappingHelper(dbConn, mapping.getId());
-            
-            Map<Integer, String> shortNames = getShortNamesForFields(map);
-
-            totalRecs = BasicSQLUtils.getCount(dbConn, "SELECT COUNT(*) FROM " + map.getCacheTblName());
-            if (progressListener != null)
-            {
-            	progressListener.loaded();
-            	progressListener.rowCount(totalRecs);
-            }
-            long procRecs  = 0;
-            
-            Statement stmt  = null;
-            Statement stmt2 = null;
-            Statement stmt3 = null;
-            try
-            {
-                writers = new IndexWriter[analyzers.length];
-                for (int i=0;i<files.length;i++)
-                {
-                    writers[i] = new IndexWriter(FSDirectory.open(java.nio.file.Paths.get(files[i].getPath())), new IndexWriterConfig(analyzers[i]));
-                }
-                
-                System.out.println("Total Records: "+totalRecs);
-                
-                //stmt = dbConn.createStatement(ResultSet.TYPE_FORWARD_ONLY,ResultSet.CONCUR_READ_ONLY);
-                stmt = dbConn.createStatement();
-                stmt.setFetchSize(Integer.MIN_VALUE);
-                
-                stmt2 = dbConn2.createStatement();
-                
-                stmt3 = dbConn3.createStatement();
-                stmt3.setFetchSize(Integer.MIN_VALUE);
-                
-                //pStmt = dbConn3.prepareStatement("SELECT Text1 FROM preparation WHERE CollectionObjectID = ? AND Text1 IS NOT NULL");
-                
-                String sql = createQuery(map.getCacheTblName());
-                System.out.println(sql);
-                
-                ResultSet     rs       = stmt.executeQuery(sql); //may consume all memory for giant caches
-                ResultSetMetaData md = rs.getMetaData();
-                
-                StringBuilder indexStr = new StringBuilder();
-                StringBuilder contents = new StringBuilder();
-                StringBuilder sb       = new StringBuilder();
-                String lat1 = null, lng1 = null, lat2 = null, lng2 = null, collCode = null;
-                solrFldXml = getFldsXmlForSchema(map, shortNames);
-                portalFldJson = getModelInJson(map, shortNames);
-                while (rs.next())
-                {
-                    Document doc = new Document();
-                    indexStr.setLength(0);
-                    contents.setLength(0);
-                    sb.setLength(0);
-                    lat1 = null; lng1 = null; lat2 = null; lng2 = null; collCode = null;
-                    for (int c = 1; c <= md.getColumnCount(); c++)
-                    {
-                    	if (includeColumn(c))
-                    	{
-                    		String value = "";
-                    		try
-                    		{
-                    			value = rs.getString(c);
-                    		} catch (Exception ex)
-                    		{
-                    			ex.printStackTrace();
-                    		}
-                    		if (c == 1)
-                    		{
-                    			//doc.add(new Field("spid", value, Field.Store.YES, Field.Index.ANALYZED));
-                    			doc.add(new StringField("spid", value, Field.Store.YES));
-                    		} else {
-								if (value != null) {
-									ExportMappingInfo info = map
-											.getMappingByColIdx(c - 2);
-									value = processValue(value, info);
-									String fldType = getSolrFldType(info);
-									if (fldType.equals("string")) {
-										if (info.isFullTextSearch()) {
-											doc.add(new TextField(shortNames.get(c - 2), value,
-													Field.Store.YES));
-										} else {
-											doc.add(new StringField(shortNames.get(c - 2), value,
-													Field.Store.YES));
-										}
-									} else if (fldType.equals("boolean")) {
-										doc.add(new StringField(shortNames.get(c - 2), value,
-												Field.Store.YES));
-									} else {
-										if (fldType.endsWith("int")) {
-											doc.add(new IntPoint(shortNames.get(c - 2), rs.getInt(c)));
-										} else if (fldType.endsWith("double")) {
-											doc.add(new DoublePoint(shortNames.get(c - 2), rs.getDouble(c)));
-										} else if (fldType.endsWith("long")) {
-											doc.add(new LongPoint(shortNames.get(c - 2), rs.getLong(c)));
-										} else if (fldType.endsWith("float")) {
-											doc.add(new FloatPoint(shortNames.get(c - 2), rs.getFloat(c)));
-										}
-									}
-									contents.append(StringUtils.isNotEmpty(value) ? value : " ");
-									contents.append('\t');
-									if ("latitude1".equalsIgnoreCase(map.getMappingByColIdx(c - 2).getSpFldName())) {
-										lat1 = value;
-									} else if ("latitude2".equalsIgnoreCase(map.getMappingByColIdx(c - 2).getSpFldName())) {
-										lat2 = value;
-									} else if ("longitude1".equalsIgnoreCase(map.getMappingByColIdx(c - 2).getSpFldName())) {
-										lng1 = value;
-									} else if ("longitude2".equalsIgnoreCase(map.getMappingByColIdx(c - 2).getSpFldName())) {
-										lng2 = value;
-									}
-									if ("collectionCode".equalsIgnoreCase(info.getConcept())) {
-										collCode = value;
-									}
-								}
-							}
-						}
-					}
-                    indexStr.append(contents);
-
-                    //XXX what, exactly, are the reasons for the store/tokenize settings on these 2?
-                    //Ditto for store setting for geoc and img below?
-                    doc.add(new TextField("cs", indexStr.toString(), Field.Store.NO));
-                    doc.add(new StringField("contents", contents.toString(), Field.Store.YES));
-                    
-                    if (lat1 != null && lng1 != null)
-                    {
-                    	String geoc = lat1 + " " + lng1;
-//                    	if (lat2 != null && lng2 != null)
+		return exportWebPortal(progressListener);
+//        if (progressListener != null)
+//        {
+//        	progressListener.loading();
+//        }
+//
+//       long startTime = System.currentTimeMillis();
+//
+//        IndexWriter[] writers = null;
+//        long totalRecs = 0;
+//        List<String> solrFldXml = null;
+//        List<String> portalFldJson = null;
+//
+//        try
+//        {
+//            for (int i=0;i<analyzers.length;i++)
+//            {
+//                files[i]     = new File(fileNames[i]);
+//                analyzers[i] = new StandardAnalyzer(CharArraySet.EMPTY_SET);
+//                FileUtils.deleteDirectory(files[i]);
+//            }
+//
+//            System.out.println("Indexing to directory '" + INDEX_DIR + "'...");
+//
+//            ExportMappingHelper map = new ExportMappingHelper(dbConn, mapping.getId());
+//
+//            Map<Integer, String> shortNames = getShortNamesForFields(map);
+//
+//            totalRecs = BasicSQLUtils.getCount(dbConn, "SELECT COUNT(*) FROM " + map.getCacheTblName());
+//            if (progressListener != null)
+//            {
+//            	progressListener.loaded();
+//            	progressListener.rowCount(totalRecs);
+//            }
+//            long procRecs  = 0;
+//
+//            Statement stmt  = null;
+//            Statement stmt2 = null;
+//            Statement stmt3 = null;
+//            try
+//            {
+//                writers = new IndexWriter[analyzers.length];
+//                for (int i=0;i<files.length;i++)
+//                {
+//                    writers[i] = new IndexWriter(FSDirectory.open(java.nio.file.Paths.get(files[i].getPath())), new IndexWriterConfig(analyzers[i]));
+//                }
+//
+//                System.out.println("Total Records: "+totalRecs);
+//
+//                //stmt = dbConn.createStatement(ResultSet.TYPE_FORWARD_ONLY,ResultSet.CONCUR_READ_ONLY);
+//                stmt = dbConn.createStatement();
+//                stmt.setFetchSize(Integer.MIN_VALUE);
+//
+//                stmt2 = dbConn2.createStatement();
+//
+//                stmt3 = dbConn3.createStatement();
+//                stmt3.setFetchSize(Integer.MIN_VALUE);
+//
+//                //pStmt = dbConn3.prepareStatement("SELECT Text1 FROM preparation WHERE CollectionObjectID = ? AND Text1 IS NOT NULL");
+//
+//                String sql = createQuery(map.getCacheTblName());
+//                System.out.println(sql);
+//
+//                ResultSet     rs       = stmt.executeQuery(sql); //may consume all memory for giant caches
+//                ResultSetMetaData md = rs.getMetaData();
+//
+//                StringBuilder indexStr = new StringBuilder();
+//                StringBuilder contents = new StringBuilder();
+//                StringBuilder sb       = new StringBuilder();
+//                String lat1 = null, lng1 = null, lat2 = null, lng2 = null, collCode = null;
+//                solrFldXml = getFldsXmlForSchema(map, shortNames);
+//                portalFldJson = getModelInJson(map, shortNames);
+//                while (rs.next())
+//                {
+//                    Document doc = new Document();
+//                    indexStr.setLength(0);
+//                    contents.setLength(0);
+//                    sb.setLength(0);
+//                    lat1 = null; lng1 = null; lat2 = null; lng2 = null; collCode = null;
+//                    for (int c = 1; c <= md.getColumnCount(); c++)
+//                    {
+//                    	if (includeColumn(c))
 //                    	{
-//                    		geoc += " " + lat2 + " " + lng2;
-//                    	}
-						if (collCode != null) {
-							geoc += " " + collCode;
-						}
-                        doc.add(new StringField("geoc", geoc, Field.Store.NO));
-                    }
-                    
-                    String attachments = getAttachments(dbConn2, "collectionobject", rs.getInt(1), false);
-                    if (attachments != null && attachments.length() > 0)
-                    {
-                    	doc.add(new StringField("img", attachments, Field.Store.YES));
-                    }
-                    writers[0].addDocument(doc);
-                    
-                    //System.out.println(procRecs+" "+rs.getString(1));
-                    procRecs++;
-                    if (procRecs % 1000 == 0)
-                    {
-                        System.out.println(procRecs);
-                        if (progressListener != null)
-                        {
-                        	progressListener.currentRow(procRecs-1);
-                        }
-                    }
-                    
-                    if (procRecs % 100000 == 0)
-                    {
-                        System.out.println("Optimizing...");
-                        //writers[0].optimize();
-                    }
-                }
-                rs.close();
-                
-                writePortalJsonToFile(portalFldJson);
-                writeSolrFldXmlToFile(solrFldXml);
-                writePortalInstanceJsonToFile();
-
-            } catch (Exception ex) 
-            {
-                UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(this.getClass(), ex);	
-                return false;
-            } finally
-            {
-                
-                if (stmt != null)
-                {
-                    try
-                    {
-                        if (stmt != null) stmt.close();
-                        if (stmt2 != null) stmt2.close();
-                        if (stmt3 != null) stmt3.close();
-                        
-                    } catch (SQLException e)
-                    {
-                        UsageTracker.incrHandledUsageCount();
-                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(this.getClass(), e);	
-                        return false;
-                    }
-                }
-
-            }
-            
-        } catch (Exception ex) 
-        {
-        	UsageTracker.incrHandledUsageCount();
-        	edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(this.getClass(), ex);	
-        	return false;
-            
-        } finally
-        {
-            for (Analyzer a : analyzers)
-            {
-                a.close();
-            }
-            analyzers = null;
-            
-            for (IndexWriter writer : writers)
-            {
-                try
-                {
-                    System.out.println("Optimizing...");
-                    //writer.optimize();
-                    writer.close();
-                    System.out.println("Done Optimizing.");
-                    
-                } catch (Exception ex) 
-                {
-                	UsageTracker.incrHandledUsageCount();
-                	edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(this.getClass(), ex);	
-                	return false;
-                    
-                }                 
-                writer = null;
-            }
-            
-        }
-
-        buildZipFile();
-
-        if (progressListener != null)
-        {
-        	progressListener.done(totalRecs);
-        }
-        long endTime = System.currentTimeMillis();
-        System.out.println("Time: "+ (endTime - startTime) / 1000);
-        return true;
-
+//                    		String value = "";
+//                    		try
+//                    		{
+//                    			value = rs.getString(c);
+//                    		} catch (Exception ex)
+//                    		{
+//                    			ex.printStackTrace();
+//                    		}
+//                    		if (c == 1)
+//                    		{
+//                    			//doc.add(new Field("spid", value, Field.Store.YES, Field.Index.ANALYZED));
+//                    			doc.add(new StringField("spid", value, Field.Store.YES));
+//                    		} else {
+//								if (value != null) {
+//									ExportMappingInfo info = map
+//											.getMappingByColIdx(c - 2);
+//									value = processValue(value, info);
+//									String fldType = getSolrFldType(info);
+//									if (fldType.equals("string")) {
+//										if (info.isFullTextSearch()) {
+//											doc.add(new TextField(shortNames.get(c - 2), value,
+//													Field.Store.YES));
+//										} else {
+//											doc.add(new StringField(shortNames.get(c - 2), value,
+//													Field.Store.YES));
+//										}
+//									} else if (fldType.equals("boolean")) {
+//										doc.add(new StringField(shortNames.get(c - 2), value,
+//												Field.Store.YES));
+//									} else {
+//										if (fldType.endsWith("int")) {
+//											doc.add(new IntPoint(shortNames.get(c - 2), rs.getInt(c)));
+//										} else if (fldType.endsWith("double")) {
+//											doc.add(new DoublePoint(shortNames.get(c - 2), rs.getDouble(c)));
+//										} else if (fldType.endsWith("long")) {
+//											doc.add(new LongPoint(shortNames.get(c - 2), rs.getLong(c)));
+//										} else if (fldType.endsWith("float")) {
+//											doc.add(new FloatPoint(shortNames.get(c - 2), rs.getFloat(c)));
+//										}
+//									}
+//									contents.append(StringUtils.isNotEmpty(value) ? value : " ");
+//									contents.append('\t');
+//									if ("latitude1".equalsIgnoreCase(map.getMappingByColIdx(c - 2).getSpFldName())) {
+//										lat1 = value;
+//									} else if ("latitude2".equalsIgnoreCase(map.getMappingByColIdx(c - 2).getSpFldName())) {
+//										lat2 = value;
+//									} else if ("longitude1".equalsIgnoreCase(map.getMappingByColIdx(c - 2).getSpFldName())) {
+//										lng1 = value;
+//									} else if ("longitude2".equalsIgnoreCase(map.getMappingByColIdx(c - 2).getSpFldName())) {
+//										lng2 = value;
+//									}
+//									if ("collectionCode".equalsIgnoreCase(info.getConcept())) {
+//										collCode = value;
+//									}
+//								}
+//							}
+//						}
+//					}
+//                    indexStr.append(contents);
+//
+//                    //XXX what, exactly, are the reasons for the store/tokenize settings on these 2?
+//                    //Ditto for store setting for geoc and img below?
+//                    doc.add(new TextField("cs", indexStr.toString(), Field.Store.NO));
+//                    doc.add(new StringField("contents", contents.toString(), Field.Store.YES));
+//
+//                    if (lat1 != null && lng1 != null)
+//                    {
+//                    	String geoc = lat1 + " " + lng1;
+////                    	if (lat2 != null && lng2 != null)
+////                    	{
+////                    		geoc += " " + lat2 + " " + lng2;
+////                    	}
+//						if (collCode != null) {
+//							geoc += " " + collCode;
+//						}
+//                        doc.add(new StringField("geoc", geoc, Field.Store.NO));
+//                    }
+//
+//                    String attachments = getAttachments(dbConn2, "collectionobject", rs.getInt(1), false);
+//                    if (attachments != null && attachments.length() > 0)
+//                    {
+//                    	doc.add(new StringField("img", attachments, Field.Store.YES));
+//                    }
+//                    writers[0].addDocument(doc);
+//
+//                    //System.out.println(procRecs+" "+rs.getString(1));
+//                    procRecs++;
+//                    if (procRecs % 1000 == 0)
+//                    {
+//                        System.out.println(procRecs);
+//                        if (progressListener != null)
+//                        {
+//                        	progressListener.currentRow(procRecs-1);
+//                        }
+//                    }
+//
+//                    if (procRecs % 100000 == 0)
+//                    {
+//                        System.out.println("Optimizing...");
+//                        //writers[0].optimize();
+//                    }
+//                }
+//                rs.close();
+//
+//                writePortalJsonToFile(portalFldJson);
+//                writeSolrFldXmlToFile(solrFldXml);
+//                writePortalInstanceJsonToFile();
+//
+//            } catch (Exception ex)
+//            {
+//                UsageTracker.incrHandledUsageCount();
+//                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(this.getClass(), ex);
+//                return false;
+//            } finally
+//            {
+//
+//                if (stmt != null)
+//                {
+//                    try
+//                    {
+//                        if (stmt != null) stmt.close();
+//                        if (stmt2 != null) stmt2.close();
+//                        if (stmt3 != null) stmt3.close();
+//
+//                    } catch (SQLException e)
+//                    {
+//                        UsageTracker.incrHandledUsageCount();
+//                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(this.getClass(), e);
+//                        return false;
+//                    }
+//                }
+//
+//            }
+//
+//        } catch (Exception ex)
+//        {
+//        	UsageTracker.incrHandledUsageCount();
+//        	edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(this.getClass(), ex);
+//        	return false;
+//
+//        } finally
+//        {
+//            for (Analyzer a : analyzers)
+//            {
+//                a.close();
+//            }
+//            analyzers = null;
+//
+//            for (IndexWriter writer : writers)
+//            {
+//                try
+//                {
+//                    System.out.println("Optimizing...");
+//                    //writer.optimize();
+//                    writer.close();
+//                    System.out.println("Done Optimizing.");
+//
+//                } catch (Exception ex)
+//                {
+//                	UsageTracker.incrHandledUsageCount();
+//                	edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(this.getClass(), ex);
+//                	return false;
+//
+//                }
+//                writer = null;
+//            }
+//
+//        }
+//
+//        buildZipFile();
+//
+//        if (progressListener != null)
+//        {
+//        	progressListener.done(totalRecs);
+//        }
+//        long endTime = System.currentTimeMillis();
+//        System.out.println("Time: "+ (endTime - startTime) / 1000);
+//        return true;
+//
     }
 
     private void  buildZipFile() {
