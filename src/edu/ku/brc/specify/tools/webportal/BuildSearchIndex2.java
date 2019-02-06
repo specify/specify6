@@ -228,12 +228,12 @@ public class BuildSearchIndex2
             
         }*/
         //                                             
-        String sqlStr = "SELECT * from " + tblName;
+        String sqlStr = "SELECT co.GUID, t.* from " + tblName  + " t inner join collectionobject co on co.collectionobjectid = t." + tblName + "id";
         return sqlStr;
     }
     
 
-    private String getAttachments(Connection conn, String baseTblName, Integer baseKey, boolean includeRelatedAttachments) 
+    private String getAttachments(Connection conn, String baseTblName, String baseGUID, boolean includeRelatedAttachments)
     	throws SQLException
     {
     	if (!"collectionobject".equals(baseTblName)) 
@@ -244,17 +244,18 @@ public class BuildSearchIndex2
     	{
     		throw new NotImplementedException("includeRelatedAttachments is not implemented");
     	}
-    	return getAttachments(conn, baseTblName, baseKey);
+    	return getAttachments(conn, baseTblName, baseGUID);
     }
     
-    private String getAttachments(Connection conn, String baseTblName, Integer baseKey) throws SQLException
+    private String getAttachments(Connection conn, String baseTblName, String baseGUID) throws SQLException
     {
     	String attacherTbl = baseTblName + "attachment";
     	String baseTblID = baseTblName + "ID"; //XXX dude... use DBTableMgr stuff...
     	String sql = "select att.AttachmentID, att.AttachmentLocation, att.Title, aia.Height, aia.Width from attachment att "
     			+ "left join attachmentimageattribute aia on aia.AttachmentImageAttributeID " 
-    			+ "= att.AttachmentImageAttributeID inner join " + attacherTbl + " oatt on oatt.AttachmentID "
-    			+ "= att.AttachmentID where att.IsPublic and att.MimeType like 'image/%' and oatt." +  baseTblID + " = " + baseKey;
+    			+ "= att.AttachmentImageAttributeID inner join " + attacherTbl + " oatt on oatt.AttachmentID = att.AttachmentID"
+				+ " inner join " + baseTblName + " baset on baset." + baseTblID + " = oatt." + baseTblID
+    			+  " where att.IsPublic and att.MimeType like 'image/%' and baset.GUID = '" + baseGUID + "'";
     	Statement stmt = null;
     	ResultSet rs = null;
     	String result = null;
@@ -648,15 +649,15 @@ public class BuildSearchIndex2
 	private List<String> getCsvHeaderRow(Map<Integer, String> shortNames) {
         List<String> result = new ArrayList<>();
         result.add("spid");
+		result.add("cs");
+		result.add("contents");
+		result.add("img");
+		result.add("geoc");
         List<Integer> keys = new ArrayList<>(shortNames.keySet());
         Collections.sort(keys);
         for (Integer i : keys) {
             result.add(shortNames.get(i));
         }
-        result.add("cs");
-        result.add("contents");
-        result.add("geoc");
-        result.add("img");
         return result;
     }
 
@@ -677,9 +678,10 @@ public class BuildSearchIndex2
 			val = val.replace(escaper, escaper + escaper);
 		}
 		if (val.indexOf(encloser) >= 0) {
+			/* this is strange. Is it here to conform to a symbiota requirement,
 			if ("\"".equals(encloser)) {
 				val = val.replace(encloser, encloser + encloser);
-			} else {
+			} else*/ {
 				val = val.replace(encloser, escaper + encloser);
 			}
 		}
@@ -769,21 +771,24 @@ public class BuildSearchIndex2
                             ex.printStackTrace();
                         }
                         if (c == 1) {
-                            //it's the ID
-                            row.add(value);
+							//it's the GUID
+							row.add(value);
+						} else if (c == 2) {
+                        	//its the (CO by default for now) Record ID
+							continue;
                         } else {
-                        	ExportMappingInfo info = map.getMappingByColIdx(c - 2);
+                        	ExportMappingInfo info = map.getMappingByColIdx(c - 3);
                             row.add(value == null ? null : processValue(value, info)); //will this lead to stupid precision for floats?
                             if (value != null) {
 								contents.append(StringUtils.isNotEmpty(value) ? value : " ");
                                 contents.append('\t');
-                                if ("latitude1".equalsIgnoreCase(map.getMappingByColIdx(c - 2).getSpFldName())) {
+                                if ("latitude1".equalsIgnoreCase(map.getMappingByColIdx(c - 3).getSpFldName())) {
                                     lat1 = value;
-                                } else if ("latitude2".equalsIgnoreCase(map.getMappingByColIdx(c - 2).getSpFldName())) {
+                                } else if ("latitude2".equalsIgnoreCase(map.getMappingByColIdx(c - 3).getSpFldName())) {
                                     lat2 = value;
-                                } else if ("longitude1".equalsIgnoreCase(map.getMappingByColIdx(c - 2).getSpFldName())) {
+                                } else if ("longitude1".equalsIgnoreCase(map.getMappingByColIdx(c - 3).getSpFldName())) {
                                     lng1 = value;
-                                } else if ("longitude2".equalsIgnoreCase(map.getMappingByColIdx(c - 2).getSpFldName())) {
+                                } else if ("longitude2".equalsIgnoreCase(map.getMappingByColIdx(c - 3).getSpFldName())) {
                                     lng2 = value;
                                 }
                                 if ("collectionCode".equalsIgnoreCase(info.getConcept())) {
@@ -795,8 +800,8 @@ public class BuildSearchIndex2
 
                     //XXX what, exactly, are the reasons for the store/tokenize settings on these 2 in index()?
                     //Ditto for store setting for geoc and img below?
-                    row.add(indexStr.toString()); //"cs" what is this for ? it is the same as contents no?
-                    row.add(contents.toString()); //"contents"
+                    //row.add(indexStr.toString()); //"cs" what is this for ? it is the same as contents no?
+                    //row.add(contents.toString()); //"contents"
 
                     String geoc = null;
                     if (lat1 != null && lng1 != null) {
@@ -805,13 +810,16 @@ public class BuildSearchIndex2
                             geoc += " " + collCode;
                         }
                     }
-                    row.add(geoc);
+                    //row.add(geoc);
 
-                    String attachments = getAttachments(dbConn2, "collectionobject", rs.getInt(1), false);
-                    row.add(attachments);
+                    String attachments = getAttachments(dbConn2, "collectionobject", rs.getString(1), false);
+                    //row.add(attachments);
+					row.add(1, geoc);
+					row.add(1, attachments);
+					row.add(1, contents.toString());
+					row.add(1, indexStr.toString());
                     tbl.add(row);
-
-                    //System.out.println(procRecs+" "+rs.getString(1));
+                   //System.out.println(procRecs+" "+rs.getString(1));
                     procRecs++;
                     if (procRecs % 1000 == 0) {
                         System.out.println(procRecs);
