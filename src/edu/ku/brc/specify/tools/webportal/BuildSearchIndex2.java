@@ -108,8 +108,8 @@ public class BuildSearchIndex2
     
     protected final String[][] systemFlds = {
     		{"spid", "string", "true", "true", "true"},
-    		{"cs", "string", "true", "false", "true"},
-    		{"contents", "string", "false", "true", "true"},
+    		//{"cs", "string", "true", "false", "true"},
+    		{"contents", "text_general", "true", "true", "true"},
     		{"img", "string", "true", "true", "false"},
     		{"geoc", "string", "true", "true", "false"}
     };
@@ -456,7 +456,7 @@ public class BuildSearchIndex2
             	UIFieldFormatterIFace formatter = fld.getFormatter();
             	if (formatter.isNumeric())
             	{
-            		return "int";
+            		return "pint";
             	} else
             	{
             		return "string";
@@ -471,23 +471,23 @@ public class BuildSearchIndex2
             		String fldId = info.getFldId();
             		if (fldId.endsWith("NumericDay") || fldId.endsWith("NumericMonth") || fldId.endsWith("NumericYear"))
             		{
-            			return "int";
+            			return "pint";
             		} else
             		{
             			return "string";//XXX need to ALWAYS format dates in YYYY-MM-DD (plus time?) format???
             		}
             	}
-            	else if (type.equals("java.lang.Float")) {return "tfloat";}
+            	else if (type.equals("java.lang.Float")) {return "pfloat";}
             	else if (type.equals("text")) {return "string";}
             	else if (type.equals("java.sql.Timestamp")) {return "string";}//XXX format???
-            	else if (type.equals("java.math.BigDecimal")) {return "tdouble";} //XXX maybe?  
-            	else if (type.equals("java.lang.Integer")) {return "tint";}
+            	else if (type.equals("java.math.BigDecimal")) {return "pdouble";} //XXX maybe?
+            	else if (type.equals("java.lang.Integer")) {return "pint";}
             	else if (type.equals("java.lang.Boolean")) {return /*"boolean"; there seems to be no method in lucene.Document to add boolean fields*/ "string";}
-            	else if (type.equals("java.lang.Byte")) {return "tint";}
-            	else if (type.equals("java.lang.Double")) {return "tdouble";}
-            	else if (type.equals("java.lang.Short")) {return "tint";}
+            	else if (type.equals("java.lang.Byte")) {return "pint";}
+            	else if (type.equals("java.lang.Double")) {return "pdouble";}
+            	else if (type.equals("java.lang.Short")) {return "pint";}
             	else if (type.equals("java.util.Date")) {return "string";} //XXX format???
-            	else if (type.equals("java.lang.Long")) {return "tlong";} 
+            	else if (type.equals("java.lang.Long")) {return "plong";}
             }
         }
     	//else the fld is formatted or aggregated
@@ -649,7 +649,7 @@ public class BuildSearchIndex2
 	private List<String> getCsvHeaderRow(Map<Integer, String> shortNames) {
         List<String> result = new ArrayList<>();
         result.add("spid");
-		result.add("cs");
+		//result.add("cs");
 		result.add("contents");
 		result.add("img");
 		result.add("geoc");
@@ -678,12 +678,7 @@ public class BuildSearchIndex2
 			val = val.replace(escaper, escaper + escaper);
 		}
 		if (val.indexOf(encloser) >= 0) {
-			/* this is strange. Is it here to conform to a symbiota requirement,
-			if ("\"".equals(encloser)) {
-				val = val.replace(encloser, encloser + encloser);
-			} else*/ {
-				val = val.replace(encloser, escaper + encloser);
-			}
+    		val = val.replace(encloser, escaper + encloser);
 		}
 
 		boolean enclose = val.indexOf(eoFld) >= 0 || val.indexOf("\n") >= 0 || val.indexOf("\r") >= 0;
@@ -748,7 +743,7 @@ public class BuildSearchIndex2
                 ResultSet rs = stmt.executeQuery(sql); //may consume all memory for giant caches
                 ResultSetMetaData md = rs.getMetaData();
 
-                StringBuilder indexStr = new StringBuilder();
+                //StringBuilder indexStr = new StringBuilder();
                 StringBuilder contents = new StringBuilder();
                 StringBuilder sb       = new StringBuilder();
                 String lat1 = null, lng1 = null, lat2 = null, lng2 = null, collCode = null;
@@ -759,7 +754,7 @@ public class BuildSearchIndex2
                 tbl.add(getCsvHeaderRow(shortNames));
                 while (rs.next()) {
                     List<String> row = new ArrayList<>();
-                    indexStr.setLength(0);
+                    //indexStr.setLength(0);
                     contents.setLength(0);
                     sb.setLength(0);
                     lat1 = null; lng1 = null; lat2 = null; lng2 = null; collCode = null;
@@ -796,7 +791,7 @@ public class BuildSearchIndex2
                                 }
                             }                        }
                     }
-                    indexStr.append(contents);
+                    //indexStr.append(contents);
 
                     //XXX what, exactly, are the reasons for the store/tokenize settings on these 2 in index()?
                     //Ditto for store setting for geoc and img below?
@@ -817,7 +812,7 @@ public class BuildSearchIndex2
 					row.add(1, geoc);
 					row.add(1, attachments);
 					row.add(1, contents.toString());
-					row.add(1, indexStr.toString());
+					//row.add(1, indexStr.toString());
                     tbl.add(row);
                    //System.out.println(procRecs+" "+rs.getString(1));
                     procRecs++;
