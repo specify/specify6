@@ -187,7 +187,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 {
     protected static final Logger  log = Logger.getLogger(SpecifySchemaUpdateService.class);
     
-    private final int OVERALL_TOTAL = 63; //the number of incOverall() calls (+1 or +2)
+    private final int OVERALL_TOTAL = 64; //the number of incOverall() calls (+1 or +2)
     
     private static final String TINYINT4 = "TINYINT(4)";
     private static final String INT11    = "INT(11)";
@@ -1282,89 +1282,6 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         }
                     }
                     frame.incOverall();
-
-                    
-//            		String checkSQL = "select SpExportSchemaMappingID, MappingName from spexportschemamapping "
-//            			+ "where CollectionMemberID is null";
-//            		Vector<Object[]> mappingsToFix = BasicSQLUtils.query(checkSQL);
-//                    if (mappingsToFix != null && mappingsToFix.size() > 0)
-//                    {
-//            			Vector<Object> collectionIDs = BasicSQLUtils.querySingleCol("select UserGroupScopeID from collection");
-//            			if (collectionIDs.size() == 1)
-//            			{
-//            				//easy
-//            				BasicSQLUtils.update("update spexportschemamapping set CollectionMemberID = " + collectionIDs.get(0));
-//            			}
-//            			else 
-//            			{
-//            				for (Object[] row : mappingsToFix)
-//            				{
-//            					log.info("fixing mappings in multiple collection database");
-//            					String cacheName = ExportToMySQLDB.fixTblNameForMySQL(row[1].toString());
-//            					if (BasicSQLUtils.doesTableExist(DBConnection.getInstance().getConnection(), cacheName))
-//            					{
-//            						String cacheID = cacheName + "ID";
-//            						String sql = "select distinct CollectionMemberID from collectionobject co inner join "
-//            							+ cacheName + " cn on cn." + cacheID + " = co.CollectionObjectID";
-//            						Vector<Object> collsInCache = BasicSQLUtils.querySingleCol(sql);
-//            						if (collsInCache != null && collsInCache.size() == 1)
-//            						{
-//            							//easy
-//            							String updateSQL = "update spexportschemamapping set CollectionMemberID = " + collsInCache.get(0)
-//            								+ " where SpExportSchemaMappingID = " + row[0];
-//            							log.info("Updating exportmapping with cache containing single collection: " + updateSQL);
-//            							BasicSQLUtils.update(updateSQL);
-//            					
-//            						} else if (collsInCache != null && collsInCache.size() > 1) 
-//            						{
-//            							//This should never happen, but if it does, should ask user to choose.
-//            							//Also need to update TimestampModified to force rebuild of cache...
-//            							//but...
-//            							String updateSQL = "update spexportschemamapping set CollectionMemberID = " + collsInCache.get(0)
-//            								+ " where SpExportSchemaMappingID = " + row[0];
-//            							log.info("Updating exportmapping with cache containing multiple collections: " + updateSQL);
-//            							BasicSQLUtils.update(updateSQL);
-//            						}
-//            				
-//            					} else
-//            					{
-//            						log.info("updating export mapping that has no cache: " + row[1] + " - " + row[0]);
-//            						String discSQL = "select distinct DisciplineID from spexportschema es inner join spexportschemaitem esi "
-//            							+ "on esi.SpExportSchemaID = es.SpExportSchemaID inner join spexportschemaitemmapping esim "
-//            							+ "on esim.ExportSchemaItemID = esi.SpExportSchemaItemID where esim.SpExportSchemaMappingID "
-//            							+ "= " + row[0];    	    			
-//            						Object disciplineID = BasicSQLUtils.querySingleObj(discSQL);
-//            						if (disciplineID != null)
-//            						{
-//            							String discCollSql = "select UserGroupScopeID from collection where DisciplineID = " + disciplineID;
-//            							Vector<Object> collIDsInDisc = BasicSQLUtils.querySingleCol(discCollSql);
-//            							if (collIDsInDisc != null && collIDsInDisc.size() == 1)
-//            							{
-//            								//easy
-//            								String updateSQL = "update spexportschemamapping set CollectionMemberID = " + collIDsInDisc.get(0)
-//            									+ " where SpExportSchemaMappingID = " + row[0];
-//            								log.info("Updating exportmapping that has no cache and one collection in its discipline: " + updateSQL);
-//            								BasicSQLUtils.update(updateSQL);
-//                					
-//            							} else if (collIDsInDisc != null && collIDsInDisc.size() > 1) 
-//            							{
-//            								//Picking the first collection. How likely is it to matter? Not very.
-//            								String updateSQL = "update spexportschemamapping set CollectionMemberID = " + collIDsInDisc.get(0)
-//            									+ " where SpExportSchemaMappingID = " + row[0];
-//            								log.info("Updating exportmapping that has no cache and a discipline with multiple collections: " + updateSQL);
-//            								BasicSQLUtils.update(updateSQL);
-//            							}
-//            						} else
-//            						{
-//            							throw new Exception("unable to find discipline for exportschemamapping " + row[0]);
-//            						}
-//            	    			
-//            					}
-//            				}
-//            			}
-//            	        //AppPreferences.getGlobalPrefs().putBoolean("FixExportSchemaCollectionMemberIDs", true);
-//                    }
-//                    frame.incOverall();
 
                     //---------------------------------------------------------------------------
                     //-- SpecifySchemaUpdateScopeFixer
@@ -2546,6 +2463,28 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     if (-1 == update(conn, sql)) {
                         errMsgList.add("update error: " + sql);
                         return false;
+                    }
+                    frame.incOverall();
+
+                    //-------------------------------------------------------------------------------
+                    //
+                    // Schema changes for 2.6
+                    //
+                    //-------------------------------------------------------------------------------
+                    frame.setDesc("Increasing storage size for Query Builder search values.");
+                    if (getFieldLength(conn, databaseName, "spqueryfield", "StartValue") != 1000) {
+                        sql = "alter table spqueryfield modify column StartValue varchar(1000)";
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
+                    }
+                    if (getFieldLength(conn, databaseName, "spqueryfield", "EndValue") != 1000) {
+                        sql = "alter table spqueryfield modify column EndValue varchar(1000)";
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
                     }
                     frame.incOverall();
 
