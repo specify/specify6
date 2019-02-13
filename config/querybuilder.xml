@@ -28,6 +28,7 @@
 	<table name="DNASequence">
 		<alias name="CollectionObject"/>
 		<alias name="Agent" field="sequencer"/>
+        <alias name="Agent" field="extractor"/>
 		<table name="DNASequencingRun" field="dnaSequencingRuns">
 			<table name="DNASequencingRunAttachment" field="attachments">
 				<alias name="Attachment"/>
@@ -504,7 +505,8 @@
     
     <table name="MaterialSample">
     	<alias name="Preparation" field="preparation" />
-      	<alias name="DNASequence" field="dnaSequences"/>    
+      	<alias name="DNASequence" field="dnaSequences"/>
+        <alias name="Agent" field="extractor"/>
         <alias name="Agent" field="createdByAgent" />
         <alias name="Agent" field="modifiedByAgent" />
     </table>

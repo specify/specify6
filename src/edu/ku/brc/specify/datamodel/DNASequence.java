@@ -87,7 +87,11 @@ public class DNASequence extends CollectionMember implements AttachmentOwnerIFac
 	protected Float						    number2;
 	protected Float						    number3;
 	protected Calendar						boldLastUpdateDate;
-
+	protected Calendar sequenceDate;
+	protected Byte                          sequenceDatePrecision;   // Accurate to Year, Month, Day
+	protected Calendar extractionDate;
+	protected Byte                          extractionDatePrecision;   // Accurate to Year, Month, Day
+	protected Agent	extractor;
 	protected Agent							sequencer;
 	protected CollectionObject				collectionObject;
 	protected MaterialSample				materialSample;
@@ -136,7 +140,11 @@ public class DNASequence extends CollectionMember implements AttachmentOwnerIFac
         number2 = null;
         number3 = null;
         boldLastUpdateDate = null;
-
+        sequenceDate = null;
+		sequenceDatePrecision = 1;
+		extractionDate = null;
+		extractionDatePrecision = 1;
+		extractor = null;
         sequencer = null;
         collectionObject = null;
         materialSample = null;
@@ -662,10 +670,55 @@ public class DNASequence extends CollectionMember implements AttachmentOwnerIFac
         return dnaSequenceId;
     }
 
+	@Temporal(TemporalType.DATE)
+	@Column(name = "SequenceDate", unique = false, nullable = true, insertable = true, updatable = true)
+	public Calendar getSequenceDate() {
+		return sequenceDate;
+	}
 
+	public void setSequenceDate(Calendar sequenceDate) {
+		this.sequenceDate = sequenceDate;
+	}
 
+	@Column(name = "SequenceDatePrecision", unique = false, nullable = true, insertable = true, updatable = true)
+	public Byte getSequenceDatePrecision() {
+		return sequenceDatePrecision;
+	}
 
-    /**
+	public void setSequenceDatePrecision(Byte sequenceDatePrecision) {
+		this.sequenceDatePrecision = sequenceDatePrecision;
+	}
+
+	@Temporal(TemporalType.DATE)
+	@Column(name = "ExtractionDate", unique = false, nullable = true, insertable = true, updatable = true)
+	public Calendar getExtractionDate() {
+		return extractionDate;
+	}
+
+	public void setExtractionDate(Calendar extractionDate) {
+		this.extractionDate = extractionDate;
+	}
+
+	@Column(name = "ExtractionDatePrecision", unique = false, nullable = true, insertable = true, updatable = true)
+	public Byte getExtractionDatePrecision() {
+		return extractionDatePrecision;
+	}
+
+	public void setExtractionDatePrecision(Byte extractionDatePrecision) {
+		this.extractionDatePrecision = extractionDatePrecision;
+	}
+
+	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+	@JoinColumn(name = "ExtractorID", unique = false, nullable = true, insertable = true, updatable = true)
+	public Agent getExtractor() {
+		return extractor;
+	}
+
+	public void setExtractor(Agent extractor) {
+		this.extractor = extractor;
+	}
+
+	/**
      * @return the sequencer
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
