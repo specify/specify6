@@ -504,6 +504,11 @@
       <field column="CompC 1" name="compC1" type="java.lang.Integer" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
       <field column="CompG 1" name="compG1" type="java.lang.Integer" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
       <field column="compT 1" name="compT1" type="java.lang.Integer" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="ExtractionDate 1" name="extractionDate1" type="calendar_date"/>
+      <field column="Extractor Lastname 1" name="extractorLastName1" type="java.lang.String"/>
+      <field column="Extractor Firstname 1" name="extractorFirstName1" type="java.lang.String"/>
+      <field column="Extractor Middlename 1" name="extractorMiddleName1" type="java.lang.String"/>
+      <field column="SequenceDate 1" name="sequenceDate1" type="calendar_date"/>
       <field column="GenBankAccessionNumber 1" name="genbankAccessionNumber1" type="java.lang.String" length="32" indexName="GenBankAccIDX" updatable="true" required="false" unique="false" indexed="true" partialDate="false"/>
       <field column="GeneSequence 1" name="geneSequence1" type="text" length="2048" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
       <field column="MoleculeType 1" name="moleculeType1" type="java.lang.String" length="32" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
@@ -529,6 +534,10 @@
       <field column="CompC 2" name="compC2" type="java.lang.Integer" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
       <field column="CompG 2" name="compG2" type="java.lang.Integer" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
       <field column="compT 2" name="compT2" type="java.lang.Integer" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="ExtractionDate 2" name="extractionDate2" type="calendar_date"/>
+      <field column="Extractor Lastname 2" name="extractorLastName2" type="java.lang.String"/>
+      <field column="Extractor Firstname 2" name="extractorFirstName2" type="java.lang.String"/>
+      <field column="Extractor Middlename 2" name="extractorMiddleName2" type="java.lang.String"/>
       <field column="GenBankAccessionNumber 2" name="genbankAccessionNumber2" type="java.lang.String" length="32" indexName="GenBankAccIDX" updatable="true" required="false" unique="false" indexed="true" partialDate="false"/>
       <field column="GeneSequence 2" name="geneSequence2" type="text" length="2048" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
       <field column="MoleculeType 2" name="moleculeType2" type="java.lang.String" length="32" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
@@ -536,6 +545,7 @@
       <field column="Number2 2" name="number22" type="java.lang.Float" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
       <field column="Number3 2" name="number32" type="java.lang.Float" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
       <field column="Remarks 2" name="remarks2" type="text" length="4096" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="SequenceDate 2" name="sequenceDate2" type="calendar_date"/>
       <field column="TargetMarker 2" name="targetMarker2" type="java.lang.String" length="32" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
       <field column="Text1 2" name="text12" type="java.lang.String" length="32" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
       <field column="Text2 2" name="text22" type="java.lang.String" length="32" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>

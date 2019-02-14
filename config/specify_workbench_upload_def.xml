@@ -494,7 +494,12 @@
       <field table="dnasequence" name="yesNo11" actualname="yesNo1" onetomanysequence="0" relationshipname="collectionObject"/>
       <field table="dnasequence" name="yesNo21" actualname="yesNo2" onetomanysequence="0" relationshipname="collectionObject"/>
       <field table="dnasequence" name="yesNo31" actualname="yesNo3" onetomanysequence="0" relationshipname="collectionObject"/>
-	
+      <field table="dnasequence" name="extractionDate1" actualname="extractionDate" onetomanysequence="0" relationshipname="collectionObject"/>
+      <field table="dnasequence" name="sequenceDate1" actualname="sequenceDate" onetomanysequence="0" relationshipname="collectionObject"/>
+      <field table="dnasequence" name="extractorLastName1" onetomanysequence="0" relationshipname="extractor" relatedfieldname="lastName"/>
+      <field table="dnasequence" name="extractorFirstName1" onetomanysequence="0" relationshipname="extractor" relatedfieldname="firstName"/>
+      <field table="dnasequence" name="extractorMiddleName1" onetomanysequence="0" relationshipname="extractor" relatedfieldname="middleInitial"/>
+
 	  <field table="dnasequence" name="ambiguousResidues2" actualname="ambiguousResidues" onetomanysequence="1" relationshipname="collectionObject"/>
       <field table="dnasequence" name="boldBarcodeId2" actualname="boldBarcodeId" onetomanysequence="1" relationshipname="collectionObject"/>
       <field table="dnasequence" name="boldLastUpdateDate2" actualname="boldLastUpdateDate" onetomanysequence="1" relationshipname="collectionObject"/>
@@ -520,7 +525,12 @@
       <field table="dnasequence" name="yesNo12" actualname="yesNo1" onetomanysequence="1" relationshipname="collectionObject"/>
       <field table="dnasequence" name="yesNo22" actualname="yesNo2" onetomanysequence="1" relationshipname="collectionObject"/>
       <field table="dnasequence" name="yesNo32" actualname="yesNo3" onetomanysequence="1" relationshipname="collectionObject"/>
- 
+      <field table="dnasequence" name="extractionDate2" actualname="extractionDate" onetomanysequence="1" relationshipname="collectionObject"/>
+      <field table="dnasequence" name="sequenceDate2" actualname="sequenceDate" onetomanysequence="1" relationshipname="collectionObject"/>
+      <field table="dnasequence" name="extractorLastName2" onetomanysequence="1" relationshipname="extractor" relatedfieldname="lastName"/>
+      <field table="dnasequence" name="extractorFirstName2" onetomanysequence="1" relationshipname="extractor" relatedfieldname="firstName"/>
+      <field table="dnasequence" name="extractorMiddleName2" onetomanysequence="1" relationshipname="extractor" relatedfieldname="middleInitial"/>
+
  
     <!-- determination -->
     
