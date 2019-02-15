@@ -102,6 +102,19 @@ public class ExportMappingInfo
 			return spFldName;
 		}
 
+    /**
+     *
+     * @return
+     */
+    public String getFldTitle() {
+		    DBFieldInfo info = getFldInfo();
+		    if (info != null) {
+		        return info.getTitle();
+            } else {
+		        return getSpFldName();
+            }
+        }
+
 		/**
 		 * @return the fldId
 		 */

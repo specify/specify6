@@ -107,9 +107,10 @@ public class BuildSearchIndex2
     protected String 		fieldsXml; //the "fields" block for the solr schema.xml file.
     
     protected final String[][] systemFlds = {
+    		//name, type, indexed, stored, required
     		{"spid", "string", "true", "true", "true"},
     		//{"cs", "string", "true", "false", "true"},
-    		{"contents", "text_general", "true", "true", "true"},
+    		{"contents", "text_general", "true", "false", "true"},
     		{"img", "string", "true", "true", "false"},
     		{"geoc", "string", "true", "true", "false"}
     };
@@ -349,79 +350,77 @@ public class BuildSearchIndex2
      * Result is not added to used. 
      * 
      */
-    private String getAbbreviation(String inStr, int len, List<String> used)
+    private String getAbbreviation(ExportMappingInfo mapping, int len, List<String> used)
     {
     	String[] bad = {"°", ",", "°","\\","{","}","[","]",";",":","\"","'","!","@","#","$","%","^","&","*","(",")","+","=","|","/","?","<",">","~","`","."};
-    	String str = inStr;
-    	for (String b : bad) 
-    	{
+    	String str = mapping.getFldTitle();
+    	for (String b : bad) {
     		str = str.replace(b, "_");
     	}
     	str = str.replace(" ", "");
-    	String abbr = str.substring(0, 1).toLowerCase();
-    	int c = 1;
-    	int lastUsed = 1;
-    	while (c < str.length())
-    	{
-    		String s = str.substring(c, c+1);
-    		if (s.equals(s.toUpperCase())) 
-    		{
-    			abbr += s.toLowerCase();
-    			//lastUsed = c;
-    		}
-    		c++;
-    	}
-    	if (abbr.length() < len)
-    	{
-    		c = lastUsed;
-    		while (abbr.length() < len)
-    		{
-    			if (c < str.length())
-    			{
-    				abbr += str.substring(c, c+1).toLowerCase();
-    			} else
-    			{
-    				abbr += "x";
-    			}
-    		}
-    	}
-    	String result = abbr.length() > len ? abbr.substring(0, len) : abbr;
-    	if (used.indexOf(result) != -1)
-    	{
-    		int l = result.length()+1;
-    		while (l < abbr.length())
-    		{
-    			result = abbr.substring(0, l);
-    			if (used.indexOf(result) == -1)
-    			{
-    				l = abbr.length();
-    			} else
-    			{
-    				l++;
-    			}
-    		}
-    		int numb = 1;
-    		l = result.length();
-    		while (used.indexOf(result) != -1)
-    		{
-    			result = result.substring(0, l) + numb++;
-    		}
+    	String result = str;
+    	String abbr = str;
+    	if (len > 0) {
+			abbr = str.substring(0, 1).toLowerCase();
+			int c = 1;
+			int lastUsed = 1;
+			while (c < str.length()) {
+				String s = str.substring(c, c + 1);
+				if (s.equals(s.toUpperCase())) {
+					abbr += s.toLowerCase();
+					//lastUsed = c;
+				}
+				c++;
+			}
+			if (abbr.length() < len) {
+				c = lastUsed;
+				while (abbr.length() < len) {
+					if (c < str.length()) {
+						abbr += str.substring(c, c + 1).toLowerCase();
+					} else {
+						abbr += "x";
+					}
+				}
+			}
+			result = abbr.length() > len ? abbr.substring(0, len) : abbr;
+		}
+    	if (used.indexOf(result) != -1) {
+    		if (len <= 0 && mapping.getTblInfo() != null) {
+    			result = mapping.getTblInfo().getAbbrev() + "_" + result;
+			} else {
+				int l;
+				if (len > 0) {
+					l = result.length() + 1;
+					while (l < abbr.length()) {
+						result = abbr.substring(0, l);
+						if (used.indexOf(result) == -1) {
+							l = abbr.length();
+						} else {
+							l++;
+						}
+					}
+				}
+				int numb = 1;
+				l = result.length();
+				while (used.indexOf(result) != -1) {
+					result = result.substring(0, l) + numb++;
+				}
+			}
     	}
     	return result;
     }
     
-    private Map<Integer, String> getShortNamesForFields(ExportMappingHelper map)
-    {
+    private Map<Integer, String> getShortNamesForFields(ExportMappingHelper map) {
     	Map<Integer, String> result = new HashMap<Integer, String>();
 		ArrayList<String> used = new ArrayList<String>();
-		for (String[] sys : systemFlds)
-		{
+		for (String[] sys : systemFlds) {
 			used.add(sys[0]);
 		}
-    	for (ExportMappingInfo mapping : map.getMappings())
-    	{
+    	for (ExportMappingInfo mapping : map.getMappings()) {
     		//XXX need to watch out that the QueryField.position-columnIndex relationship maintained --- is not messed up by un-mapped conditions, etc
-    		String abbr = getAbbreviation(mapping.getSpFldName(), 2, used);
+			/* NOT abbreviating no more
+			String abbr = getAbbreviation(mapping, 2, used); */
+    		String abbr = getAbbreviation(mapping, -1, used);
     		used.add(abbr);
     		result.put(mapping.getColIdx(), abbr);
     	}
@@ -596,6 +595,7 @@ public class BuildSearchIndex2
 //        System.out.println();
 
         List<String> myCopy = new ArrayList<String>(solrFldXml);
+        Collections.sort(myCopy);
         myCopy.add(0, "<!-- solr field definitions for " + mapping.getMappingName() + " web portal -->");
         myCopy.add(1, "<!-- Paste the contents of this file into the solr/conf/schema.xml file. -->");
         File f = new File(writeToDir + File.separator + "SolrFldSchema.xml");
