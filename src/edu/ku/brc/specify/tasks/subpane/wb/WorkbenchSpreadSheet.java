@@ -59,7 +59,7 @@ public class WorkbenchSpreadSheet extends SpreadSheet
      * Constructor for Spreadsheet from model
      * @param model
      */
-    public WorkbenchSpreadSheet(final SpreadSheetModel model, final WorkbenchPaneSS workbenchPaneSS)
+    public WorkbenchSpreadSheet(final SpreadSheetModel model, final WorkbenchPaneSS workbenchPaneSS) throws WBUnMappedItemException
     {
         super(model);
         this.workbenchPaneSS = workbenchPaneSS;
@@ -200,7 +200,7 @@ public class WorkbenchSpreadSheet extends SpreadSheet
 	/**
      * Builds custom comparators for columns that requre them.
      */
-    protected void buildComparators()
+    protected void buildComparators() throws WBUnMappedItemException
     {
     	comparators = new Vector<Comparator<String>>(model.getColumnCount());
     	for (int c = 0; c < model.getColumnCount(); c++)
@@ -213,7 +213,7 @@ public class WorkbenchSpreadSheet extends SpreadSheet
      * @param colIdx
      * @return a comparator suitable for the data type of the field the column at colIdx maps to.
      */
-    protected Comparator<String> getComparatorForCol(final int colIdx) {
+    protected Comparator<String> getComparatorForCol(final int colIdx) throws WBUnMappedItemException {
     	GridTableHeader mapping = ((GridTableModel )model).getColMapping(colIdx);
     	Class<?> dataClass = WorkbenchTask.getDataType((WorkbenchTemplateMappingItem) mapping, workbenchPaneSS.isUpdateDataSet());
     	if (dataClass.equals(Calendar.class)) {

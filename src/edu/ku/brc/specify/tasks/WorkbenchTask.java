@@ -115,6 +115,7 @@ import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchValidator;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMessage;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploaderException;
+import edu.ku.brc.specify.tasks.subpane.wb.WBUnMappedItemException;
 import edu.ku.brc.specify.tools.schemalocale.SchemaLocalizerXMLHelper;
 import edu.ku.brc.specify.ui.ChooseRecordSetDlg;
 import edu.ku.brc.ui.ChooseFromListDlg;
@@ -2820,9 +2821,13 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         try {
         	dlg = showColumnMapperDlg(null, wbTemplate, "WB_MAPPING_EDITOR", null);
         } catch (Exception ex) {
-        	edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-        	edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
-        	log.error(ex);
+            if (ex instanceof WBUnMappedItemException) {
+                UIRegistry.showError(ex.getMessage());
+            } else {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
+            }
+            log.error(ex);
         }
         if (dlg != null && !dlg.isCancelled()) {
         	updateGeoRefInfoAfterTemplateEdit(wbTemplate,
@@ -4267,7 +4272,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
      *
      * @return a {@link Class} object representing the DB target field of this mapping.
      */
-    public static Class<?> getDataType(final WorkbenchTemplateMappingItem wbtmi, boolean forBatchEdit)
+    public static Class<?> getDataType(final WorkbenchTemplateMappingItem wbtmi, boolean forBatchEdit) throws WBUnMappedItemException
     {
         // if this mapping item doesn't correspond to a DB field, return the java.lang.String class
         if (wbtmi ==  null || wbtmi.getSrcTableId() == null || wbtmi.getSrcTableId() == -1) {
@@ -4313,7 +4318,9 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             }
         }
 
-        //throw new RuntimeException("Could not find [" + wbtmi.getFieldName()+"]");
+        if (!forBatchEdit) {
+            throw new WBUnMappedItemException(wbtmi);
+        }
         return String.class;
     }
     

@@ -24,6 +24,7 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 
 import edu.ku.brc.af.core.Taskable;
+import edu.ku.brc.specify.tasks.subpane.wb.WBUnMappedItemException;
 import org.apache.log4j.Logger;
 
 import com.google.common.base.Function;
@@ -206,7 +207,8 @@ abstract class WorkbenchEditorCreator
                  }
              }
              
-             workbenchPane = new WorkbenchPaneSS(workbench.getName(), thisTask, workbench, 
+
+             workbenchPane = new WorkbenchPaneSS(workbench.getName(), thisTask, workbench,
                      showImageView, isReadOnly, isUpdate);
              workbenchPane.setSrcTask(srcTask);
              if (convertedAnImage)
@@ -219,10 +221,14 @@ abstract class WorkbenchEditorCreator
              }
          } catch (Exception ex)
          {
-             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
-             log.error(ex);
-             ex.printStackTrace();
+             if (ex instanceof WBUnMappedItemException) {
+                 UIRegistry.showError(ex.getMessage());
+             } else {
+                 edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                 edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
+                 log.error(ex);
+                 ex.printStackTrace();
+             }
          } 
          finally
          {
