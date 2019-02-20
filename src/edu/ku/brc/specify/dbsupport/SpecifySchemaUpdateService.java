@@ -2503,11 +2503,6 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         errMsgList.add("update error: " + sql);
                         return false;
                     }
-                    sql = "update splocalecontainer c inner join splocalecontaineritem i on i.splocalecontainerid = c.splocalecontainerid set i.ishidden = false where c.name in('spauditlog','spauditlogfield')";
-                    if (-1 == update(conn, sql)) {
-                        errMsgList.add("update error: " + sql);
-                        return false;
-                    }
                     frame.incOverall();
 
                     frame.setProcess(0, 100);
