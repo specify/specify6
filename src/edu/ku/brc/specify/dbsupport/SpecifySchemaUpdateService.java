@@ -324,7 +324,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         if (appVerFromDB == null || schemaVerFromDB == null)
                         {
                             doUpdateAppVer = true;
-                            
+
                         } else if (!appVerFromDB.equals(appVerNum))
                         {
                             if (checkVersion(appVerFromDB, appVerNum, mkKey("APP_VER_ERR"), 
@@ -335,7 +335,6 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                                 doUpdateAppVer = true;
                             } else
                             {
-                                CommandDispatcher.dispatch(new CommandAction(APP, APP_REQ_EXIT, null));
                                 return SchemaUpdateType.Error;
                             }
                         }

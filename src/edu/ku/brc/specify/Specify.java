@@ -2315,17 +2315,12 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                 if (AppContextMgr.getInstance().hasContext()) {
                     canSendStats = AppPreferences.getRemote().getBoolean(hiddenSendStatsPrefName, true); //$NON-NLS-1$
                 }
-                
-                if (canSendStats) {
-                    StatsTrackerTask statsTrackerTask = (StatsTrackerTask)TaskMgr.getTask(StatsTrackerTask.STATS_TRACKER);
-                    if (statsTrackerTask != null) {
-                        UIRegistry.getTopWindow().setVisible(false);
-                        statsTrackerTask.setSendSecondaryStatsAllowed(true);
-                        statsTrackerTask.sendStats(false, false, true); // don't exit, show progress and send done event
-                        
-                        return false;
-                    }
-                    
+                StatsTrackerTask statsTrackerTask = (StatsTrackerTask)TaskMgr.getTask(StatsTrackerTask.STATS_TRACKER);
+                if (statsTrackerTask != null && canSendStats) {
+                    UIRegistry.getTopWindow().setVisible(false);
+                    statsTrackerTask.setSendSecondaryStatsAllowed(true);
+                    statsTrackerTask.sendStats(false, false, true); // don't exit, show progress and send done event
+                    return false;
                 } else {
                     // Fake like we sent stats, needs to  to be placed into the event queue 
                     // so any other events can be processed.
