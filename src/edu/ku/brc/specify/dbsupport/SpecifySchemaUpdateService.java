@@ -2554,6 +2554,9 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     // Schema changes for 2.7
                     //
                     //-------------------------------------------------------------------------------
+                    //Be careful when merging!!
+
+                    //The field stretching is already in the develop branch (6.7.02)
                     frame.setDesc("Modifying SpAuditLogField table.");
                     sql = "alter table spauditlogfield modify column NewValue text null";
                     if (-1 == update(conn, sql)) {
@@ -2570,6 +2573,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         errMsgList.add("update error: " + sql);
                         return false;
                     }
+                    //but this still needs to be done. However, it needs to be moved to "fixDbAfterLogin" (or whatever)
                     sql = "update splocalecontainer c inner join splocalecontaineritem i on i.splocalecontainerid = c.splocalecontainerid set i.ishidden = false where c.name in('spauditlog','spauditlogfield')";
                     if (-1 == update(conn, sql)) {
                         errMsgList.add("update error: " + sql);
