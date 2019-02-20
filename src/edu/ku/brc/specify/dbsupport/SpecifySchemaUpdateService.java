@@ -187,7 +187,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 {
     protected static final Logger  log = Logger.getLogger(SpecifySchemaUpdateService.class);
     
-    private final int OVERALL_TOTAL = 64; //the number of incOverall() calls (+1 or +2)
+    private final int OVERALL_TOTAL = 65; //the number of incOverall() calls (+1 or +2)
     
     private static final String TINYINT4 = "TINYINT(4)";
     private static final String INT11    = "INT(11)";
@@ -2487,6 +2487,28 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     }
                     frame.incOverall();
 
+                    frame.setDesc("Modifying SpAuditLogField table.");
+                    sql = "alter table spauditlogfield modify column NewValue text null";
+                    if (-1 == update(conn, sql)) {
+                        errMsgList.add("update error: " + sql);
+                        return false;
+                    }
+                    sql = "alter table spauditlogfield modify column OldValue text null";
+                    if (-1 == update(conn, sql)) {
+                        errMsgList.add("update error: " + sql);
+                        return false;
+                    }
+                    sql = "alter table spauditlogfield modify column FieldName varchar(128)";
+                    if (-1 == update(conn, sql)) {
+                        errMsgList.add("update error: " + sql);
+                        return false;
+                    }
+                    sql = "update splocalecontainer c inner join splocalecontaineritem i on i.splocalecontainerid = c.splocalecontainerid set i.ishidden = false where c.name in('spauditlog','spauditlogfield')";
+                    if (-1 == update(conn, sql)) {
+                        errMsgList.add("update error: " + sql);
+                        return false;
+                    }
+                    frame.incOverall();
 
                     frame.setProcess(0, 100);
 
