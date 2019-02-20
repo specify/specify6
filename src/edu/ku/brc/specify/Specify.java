@@ -1,4 +1,4 @@
-/* Copyright (C) 2017, University of Kansas Center for Research
+/* Copyright (C) 2019, University of Kansas Center for Research
  * 
  * Specify Software Project, specify@ku.edu, Biodiversity Institute,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
@@ -2182,7 +2182,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         "<p>The Specify Software Project is "+ //$NON-NLS-1$
         "funded by the Advances in Biological Informatics Program, " + //$NON-NLS-1$
         "U.S. National Science Foundation  (Grant NSF/BIO: 1565098 and earlier awards).<br><br>" + //$NON-NLS-1$
-        "Specify 6 Copyright \u00A9 2018 University of Kansas Center for Research. " +
+        "Specify 6 Copyright \u00A9 2019 University of Kansas Center for Research. " +
         "Specify comes with ABSOLUTELY NO WARRANTY.<br><br>" + //$NON-NLS-1$
         "This is free software licensed under GNU General Public License 2 (GPL2).</P></font></html>"; //$NON-NLS-1$
 
