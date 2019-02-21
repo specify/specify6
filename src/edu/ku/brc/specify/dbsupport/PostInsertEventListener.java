@@ -293,8 +293,11 @@ public class PostInsertEventListener implements org.hibernate.event.PostInsertEv
             return null;
         } else if (val instanceof DataModelObjBase) {
             return ((DataModelObjBase)val).getId().toString();
+        } else if (val instanceof Calendar) {
+            return new SimpleDateFormat("yyyy-mm-dd").format((Calendar)
         } else {
-            return val.toString();
+                return val.toString();
+            }
         }
     }
     /**
