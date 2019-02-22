@@ -25,6 +25,8 @@ import javax.swing.SwingUtilities;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.text.SimpleDateFormat;
 
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import org.apache.log4j.Logger;
@@ -294,10 +296,9 @@ public class PostInsertEventListener implements org.hibernate.event.PostInsertEv
         } else if (val instanceof DataModelObjBase) {
             return ((DataModelObjBase)val).getId().toString();
         } else if (val instanceof Calendar) {
-            return new SimpleDateFormat("yyyy-mm-dd").format((Calendar)
+            return new SimpleDateFormat("yyyy-mm-dd").format(((Calendar)val).getTime());
         } else {
-                return val.toString();
-            }
+            return val.toString();
         }
     }
     /**
