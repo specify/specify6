@@ -296,7 +296,7 @@ public class PostInsertEventListener implements org.hibernate.event.PostInsertEv
         } else if (val instanceof DataModelObjBase) {
             return ((DataModelObjBase)val).getId().toString();
         } else if (val instanceof Calendar) {
-            return new SimpleDateFormat("yyyy-mm-dd").format(((Calendar)val).getTime());
+            return new SimpleDateFormat("yyyy-MM-dd").format(((Calendar)val).getTime());
         } else {
             return val.toString();
         }
