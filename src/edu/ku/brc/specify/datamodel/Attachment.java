@@ -86,6 +86,7 @@ public class Attachment extends DataModelObjBase implements Serializable
     protected String                  copyrightDate;
     protected String                  credit;
     protected String                  dateImaged;
+    protected String attachmentStorageConfig;
         
     protected Calendar                fileCreatedDate;
     protected String                  remarks;
@@ -171,6 +172,7 @@ public class Attachment extends DataModelObjBase implements Serializable
         credit             = null;
         copyrightDate      = null;
         dateImaged         = null;
+        attachmentStorageConfig = null;
         metadata           = new HashSet<AttachmentMetadata>();
         tags               = new HashSet<AttachmentTag>();
         
@@ -278,6 +280,20 @@ public class Attachment extends DataModelObjBase implements Serializable
     public String getOrigFilename()
     {
         return this.origFilename;
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Lob
+    @Column(name = "AttachmentStorageConfig")
+    public String getAttachmentStorageConfig() {
+        return attachmentStorageConfig;
+    }
+
+    public void setAttachmentStorageConfig(String attachmentStorageConfig) {
+        this.attachmentStorageConfig = attachmentStorageConfig;
     }
 
     /**

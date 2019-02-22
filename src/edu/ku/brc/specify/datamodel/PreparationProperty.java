@@ -100,6 +100,7 @@ public class PreparationProperty extends CollectionMember implements Cloneable
     protected String measurementRemark;
     protected String measurementUnit;
     protected String measurementID;
+    protected String measurementMethod;
     protected String text1;
     protected String text2;
     protected String text3;
@@ -248,6 +249,7 @@ public class PreparationProperty extends CollectionMember implements Cloneable
         measurementType = null;
         measurementUnit = null;
         measurementYesNoValue = null;
+        measurementMethod =  null;
 
         number1 = null;
         number2 = null;
@@ -402,6 +404,23 @@ public class PreparationProperty extends CollectionMember implements Cloneable
         preparation = null;
     }
     // End Initializer
+
+    /**
+     *
+     * @return
+     */
+    @Column(name = "MeasurementMethod", length = 128)
+    public String getMeasurementMethod() {
+        return measurementMethod;
+    }
+
+    /**
+     *
+     * @param measurementMethod
+     */
+    public void setMeasurementMethod(String measurementMethod) {
+        this.measurementMethod = measurementMethod;
+    }
 
     @Id
     @GeneratedValue
