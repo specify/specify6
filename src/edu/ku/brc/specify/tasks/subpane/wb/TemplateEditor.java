@@ -184,6 +184,13 @@ public class TemplateEditor extends CustomDialog {
         helpContext = dataFileInfo == null ? "WorkbenchNewMapping" : "WorkbenchEditMapping";
 
         buildUploadDefs();
+        databaseSchema = schemaName == null ? WorkbenchTask.getDatabaseSchema(false) : WorkbenchTask.buildDatabaseSchema(schemaName);
+
+        int disciplineeId = AppContextMgr.getInstance().getClassObject(Discipline.class).getDisciplineId();
+        SchemaI18NService.getInstance().loadWithLocale(SpLocaleContainer.WORKBENCH_SCHEMA,
+                disciplineeId,
+                databaseSchema,
+                SchemaI18NService.getCurrentLocale());
         createUI();
     }
 
