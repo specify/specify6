@@ -1,4 +1,4 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2017, University of Kansas Center for Research
  *
  * Specify Software Project, specify@ku.edu, Biodiversity Institute,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
@@ -50,57 +50,70 @@ public class CollectionObjectProperty extends CollectionMember implements Clonea
 
     protected Integer collectionObjectPropertyId;
     
-    protected Double measurementNumberValue;
-    protected Double number1;
-    protected Double number2;
-    protected Double number3;
-    protected Double number4;
-    protected Double number5;
-    protected Double number6;
-    protected Double number7;
-    protected Double number8;
-    protected Double number9;
-    protected Double number10;
-    protected Double number11;
-    protected Double number12;
-    protected Double number13;
-    protected Double number14;
-    protected Double number15;
-    protected Double number16;
-    protected Double number17;
-    protected Double number18;
-    protected Double number19;
-    protected Double number20;
+    protected Float number1;
+    protected Float number2;
+    protected Float number3;
+    protected Float number4;
+    protected Float number5;
+    protected Float number6;
+    protected Float number7;
+    protected Float number8;
+    protected Float number9;
+    protected Float number10;
+    protected Float number11;
+    protected Float number12;
+    protected Float number13;
+    protected Float number14;
+    protected Float number15;
+    protected Float number16;
+    protected Float number17;
+    protected Float number18;
+    protected Float number19;
+    protected Float number20;
 
-    protected Integer measurementIntegerValue;
-    protected Integer integer1;
-    protected Integer integer2;
-    protected Integer integer3;
-    protected Integer integer4;
-    protected Integer integer5;
-    protected Integer integer6;
-    protected Integer integer7;
-    protected Integer integer8;
-    protected Integer integer9;
-    protected Integer integer10;
-    protected Integer integer11;
-    protected Integer integer12;
-    protected Integer integer13;
-    protected Integer integer14;
-    protected Integer integer15;
-    protected Integer integer16;
-    protected Integer integer17;
-    protected Integer integer18;
-    protected Integer integer19;
-    protected Integer integer20;
+    protected Double number21;
+    protected Double number22;
+    protected Double number23;
+    protected Double number24;
+    protected Double number25;
+    protected Double number26;
+    protected Double number27;
+    protected Double number28;
+    protected Double number29;
+    protected Double number30;
 
-    protected String measurementTextValue;
-    protected String measurementAccuracy;
-    protected String measurementType;
-    protected String measurementRemark;
-    protected String measurementUnit;
-    protected String measurementID;
-    protected String measurementMethod;
+    protected Short integer1;
+    protected Short integer2;
+    protected Short integer3;
+    protected Short integer4;
+    protected Short integer5;
+    protected Short integer6;
+    protected Short integer7;
+    protected Short integer8;
+    protected Short integer9;
+    protected Short integer10;
+    protected Short integer11;
+    protected Short integer12;
+    protected Short integer13;
+    protected Short integer14;
+    protected Short integer15;
+    protected Short integer16;
+    protected Short integer17;
+    protected Short integer18;
+    protected Short integer19;
+    protected Short integer20;
+
+    protected Integer integer21;
+    protected Integer integer22;
+    protected Integer integer23;
+    protected Integer integer24;
+    protected Integer integer25;
+    protected Integer integer26;
+    protected Integer integer27;
+    protected Integer integer28;
+    protected Integer integer29;
+    protected Integer integer30;
+
     protected String text1;
     protected String text2;
     protected String text3;
@@ -142,7 +155,6 @@ public class CollectionObjectProperty extends CollectionMember implements Clonea
     protected String text39;
     protected String text40;
 
-    protected Boolean measurementYesNoValue;
     protected Boolean yesNo1;
     protected Boolean yesNo2;
     protected Boolean yesNo3;
@@ -164,8 +176,6 @@ public class CollectionObjectProperty extends CollectionMember implements Clonea
     protected Boolean yesNo19;
     protected Boolean yesNo20;
 
-    protected Calendar measurementDateValue;
-    protected Calendar measurementDeterminedDate;
     protected Calendar date1;
     protected Calendar date2;
     protected Calendar date3;
@@ -187,7 +197,6 @@ public class CollectionObjectProperty extends CollectionMember implements Clonea
     protected Calendar date19;
     protected Calendar date20;
 
-    protected Agent measurementDeterminedBy;
     protected Agent agent1;
     protected Agent agent2;
     protected Agent agent3;
@@ -211,10 +220,8 @@ public class CollectionObjectProperty extends CollectionMember implements Clonea
 
     protected CollectionObject collectionObject;
 
-    protected Agent  recordedBy;
-    protected Calendar recordedDate;
-
     protected String remarks;
+    protected String guid;
 
     // Constructors
 
@@ -237,20 +244,6 @@ public class CollectionObjectProperty extends CollectionMember implements Clonea
         super.init();
         collectionObjectPropertyId = null;
 
-        measurementAccuracy = null;
-        measurementDateValue = null;
-        measurementDeterminedBy = null;
-        measurementDeterminedDate = null;
-        measurementID = null;
-        measurementIntegerValue = null;
-        measurementNumberValue = null;
-        measurementRemark = null;
-        measurementTextValue =  null;
-        measurementType = null;
-        measurementUnit = null;
-        measurementYesNoValue = null;
-        measurementMethod =  null;
-
         number1 = null;
         number2 = null;
         number3 = null;
@@ -271,6 +264,16 @@ public class CollectionObjectProperty extends CollectionMember implements Clonea
         number18 = null;
         number19 = null;
         number20 = null;
+        number21 = null;
+        number22 = null;
+        number23 = null;
+        number24 = null;
+        number25 = null;
+        number26 = null;
+        number27 = null;
+        number28 = null;
+        number29 = null;
+        number30 = null;
 
         integer1 = null;
         integer2 = null;
@@ -292,6 +295,16 @@ public class CollectionObjectProperty extends CollectionMember implements Clonea
         integer18 = null;
         integer19 = null;
         integer20 = null;
+        integer21 = null;
+        integer22 = null;
+        integer23 = null;
+        integer24 = null;
+        integer25 = null;
+        integer26 = null;
+        integer27 = null;
+        integer28 = null;
+        integer29 = null;
+        integer30 = null;
 
         text1 = null;
         text2 = null;
@@ -397,10 +410,8 @@ public class CollectionObjectProperty extends CollectionMember implements Clonea
         agent19 = null;
         agent20 = null;
 
-        
-        recordedBy = null;
-        recordedDate = null;
         remarks = null;
+        guid = null;
         collectionObject = null;
     }
     // End Initializer
@@ -434,23 +445,6 @@ public class CollectionObjectProperty extends CollectionMember implements Clonea
 
     public void setCollectionObject(CollectionObject collectionObject) {
         this.collectionObject = collectionObject;
-    }
-
-    /**
-     *
-     * @return
-     */
-    @Column(name = "MeasurementMethod", length = 128)
-    public String getMeasurementMethod() {
-        return measurementMethod;
-    }
-
-    /**
-     *
-     * @param measurementMethod
-     */
-    public void setMeasurementMethod(String measurementMethod) {
-        this.measurementMethod = measurementMethod;
     }
 
     /**
