@@ -50,57 +50,70 @@ public class PreparationProperty extends CollectionMember implements Cloneable
 
     protected Integer preparationPropertyId;
 
-    protected Double measurementNumberValue;
-    protected String measurementAccuracy;
-    protected Double number1;
-    protected Double number2;
-    protected Double number3;
-    protected Double number4;
-    protected Double number5;
-    protected Double number6;
-    protected Double number7;
-    protected Double number8;
-    protected Double number9;
-    protected Double number10;
-    protected Double number11;
-    protected Double number12;
-    protected Double number13;
-    protected Double number14;
-    protected Double number15;
-    protected Double number16;
-    protected Double number17;
-    protected Double number18;
-    protected Double number19;
-    protected Double number20;
+    protected Float number1;
+    protected Float number2;
+    protected Float number3;
+    protected Float number4;
+    protected Float number5;
+    protected Float number6;
+    protected Float number7;
+    protected Float number8;
+    protected Float number9;
+    protected Float number10;
+    protected Float number11;
+    protected Float number12;
+    protected Float number13;
+    protected Float number14;
+    protected Float number15;
+    protected Float number16;
+    protected Float number17;
+    protected Float number18;
+    protected Float number19;
+    protected Float number20;
 
-    protected Integer measurementIntegerValue;
-    protected Integer integer1;
-    protected Integer integer2;
-    protected Integer integer3;
-    protected Integer integer4;
-    protected Integer integer5;
-    protected Integer integer6;
-    protected Integer integer7;
-    protected Integer integer8;
-    protected Integer integer9;
-    protected Integer integer10;
-    protected Integer integer11;
-    protected Integer integer12;
-    protected Integer integer13;
-    protected Integer integer14;
-    protected Integer integer15;
-    protected Integer integer16;
-    protected Integer integer17;
-    protected Integer integer18;
-    protected Integer integer19;
-    protected Integer integer20;
+    protected Double number21;
+    protected Double number22;
+    protected Double number23;
+    protected Double number24;
+    protected Double number25;
+    protected Double number26;
+    protected Double number27;
+    protected Double number28;
+    protected Double number29;
+    protected Double number30;
 
-    protected String measurementTextValue;
-    protected String measurementType;
-    protected String measurementRemark;
-    protected String measurementUnit;
-    protected String measurementID;
-    protected String measurementMethod;
+    protected Short integer1;
+    protected Short integer2;
+    protected Short integer3;
+    protected Short integer4;
+    protected Short integer5;
+    protected Short integer6;
+    protected Short integer7;
+    protected Short integer8;
+    protected Short integer9;
+    protected Short integer10;
+    protected Short integer11;
+    protected Short integer12;
+    protected Short integer13;
+    protected Short integer14;
+    protected Short integer15;
+    protected Short integer16;
+    protected Short integer17;
+    protected Short integer18;
+    protected Short integer19;
+    protected Short integer20;
+
+    protected Integer integer21;
+    protected Integer integer22;
+    protected Integer integer23;
+    protected Integer integer24;
+    protected Integer integer25;
+    protected Integer integer26;
+    protected Integer integer27;
+    protected Integer integer28;
+    protected Integer integer29;
+    protected Integer integer30;
+
     protected String text1;
     protected String text2;
     protected String text3;
@@ -142,7 +155,6 @@ public class PreparationProperty extends CollectionMember implements Cloneable
     protected String text39;
     protected String text40;
 
-    protected Boolean measurementYesNoValue;
     protected Boolean yesNo1;
     protected Boolean yesNo2;
     protected Boolean yesNo3;
@@ -164,8 +176,6 @@ public class PreparationProperty extends CollectionMember implements Cloneable
     protected Boolean yesNo19;
     protected Boolean yesNo20;
 
-    protected Calendar measurementDateValue;
-    protected Calendar measurementDeterminedDate;
     protected Calendar date1;
     protected Calendar date2;
     protected Calendar date3;
@@ -187,7 +197,6 @@ public class PreparationProperty extends CollectionMember implements Cloneable
     protected Calendar date19;
     protected Calendar date20;
 
-    protected Agent measurementDeterminedBy;
     protected Agent agent1;
     protected Agent agent2;
     protected Agent agent3;
@@ -211,10 +220,9 @@ public class PreparationProperty extends CollectionMember implements Cloneable
 
     protected Preparation preparation;
 
-    protected Agent  recordedBy;
-    protected Calendar recordedDate;
-
     protected String remarks;
+    protected String guid;
+
 
     // Constructors
 
@@ -237,20 +245,6 @@ public class PreparationProperty extends CollectionMember implements Cloneable
         super.init();
         preparationPropertyId = null;
 
-        measurementAccuracy = null;
-        measurementDateValue = null;
-        measurementDeterminedBy = null;
-        measurementDeterminedDate = null;
-        measurementID = null;
-        measurementIntegerValue = null;
-        measurementNumberValue = null;
-        measurementRemark = null;
-        measurementTextValue =  null;
-        measurementType = null;
-        measurementUnit = null;
-        measurementYesNoValue = null;
-        measurementMethod =  null;
-
         number1 = null;
         number2 = null;
         number3 = null;
@@ -271,6 +265,16 @@ public class PreparationProperty extends CollectionMember implements Cloneable
         number18 = null;
         number19 = null;
         number20 = null;
+        number21 = null;
+        number22 = null;
+        number23 = null;
+        number24 = null;
+        number25 = null;
+        number26 = null;
+        number27 = null;
+        number28 = null;
+        number29 = null;
+        number30 = null;
 
         integer1 = null;
         integer2 = null;
@@ -292,6 +296,16 @@ public class PreparationProperty extends CollectionMember implements Cloneable
         integer18 = null;
         integer19 = null;
         integer20 = null;
+        integer21 = null;
+        integer22 = null;
+        integer23 = null;
+        integer24 = null;
+        integer25 = null;
+        integer26 = null;
+        integer27 = null;
+        integer28 = null;
+        integer29 = null;
+        integer30 = null;
 
         text1 = null;
         text2 = null;
@@ -397,30 +411,12 @@ public class PreparationProperty extends CollectionMember implements Cloneable
         agent19 = null;
         agent20 = null;
 
-
-        recordedBy = null;
-        recordedDate = null;
         remarks = null;
+        guid = null;
         preparation = null;
     }
     // End Initializer
 
-    /**
-     *
-     * @return
-     */
-    @Column(name = "MeasurementMethod", length = 128)
-    public String getMeasurementMethod() {
-        return measurementMethod;
-    }
-
-    /**
-     *
-     * @param measurementMethod
-     */
-    public void setMeasurementMethod(String measurementMethod) {
-        this.measurementMethod = measurementMethod;
-    }
 
     @Id
     @GeneratedValue
@@ -440,6 +436,195 @@ public class PreparationProperty extends CollectionMember implements Cloneable
         return this.preparationPropertyId;
     }
 
+    @Column(name = "GUID", unique = false, nullable = true, insertable = true, updatable = false, length = 128)
+    public String getGuid() {
+        return guid;
+    }
+
+    public void setGuid(String guid) {
+        this.guid = guid;
+    }
+
+    @Column(name = "Integer21", unique = false, nullable = true, insertable = true, updatable = true)
+    public Integer getInteger21() {
+        return integer21;
+    }
+
+    public void setInteger21(Integer integer21) {
+        this.integer21 = integer21;
+    }
+
+    @Column(name = "Integer22", unique = false, nullable = true, insertable = true, updatable = true)
+    public Integer getInteger22() {
+        return integer22;
+    }
+
+    public void setInteger22(Integer integer22) {
+        this.integer22 = integer22;
+    }
+
+    @Column(name = "Integer23", unique = false, nullable = true, insertable = true, updatable = true)
+    public Integer getInteger23() {
+        return integer23;
+    }
+
+    public void setInteger23(Integer integer23) {
+        this.integer23 = integer23;
+    }
+
+    @Column(name = "Integer24", unique = false, nullable = true, insertable = true, updatable = true)
+    public Integer getInteger24() {
+        return integer24;
+    }
+
+    public void setInteger24(Integer integer24) {
+        this.integer24 = integer24;
+    }
+
+    @Column(name = "Integer25", unique = false, nullable = true, insertable = true, updatable = true)
+    public Integer getInteger25() {
+        return integer25;
+    }
+
+    public void setInteger25(Integer integer25) {
+        this.integer25 = integer25;
+    }
+
+    @Column(name = "Integer26", unique = false, nullable = true, insertable = true, updatable = true)
+    public Integer getInteger26() {
+        return integer26;
+    }
+
+    public void setInteger26(Integer integer26) {
+        this.integer26 = integer26;
+    }
+
+    @Column(name = "Integer27", unique = false, nullable = true, insertable = true, updatable = true)
+    public Integer getInteger27() {
+        return integer27;
+    }
+
+    public void setInteger27(Integer integer27) {
+        this.integer27 = integer27;
+    }
+
+    @Column(name = "Integer28", unique = false, nullable = true, insertable = true, updatable = true)
+    public Integer getInteger28() {
+        return integer28;
+    }
+
+    public void setInteger28(Integer integer28) {
+        this.integer28 = integer28;
+    }
+
+    @Column(name = "Integer29", unique = false, nullable = true, insertable = true, updatable = true)
+    public Integer getInteger29() {
+        return integer29;
+    }
+
+    public void setInteger29(Integer integer29) {
+        this.integer29 = integer29;
+    }
+
+    @Column(name = "Integer30", unique = false, nullable = true, insertable = true, updatable = true)
+    public Integer getInteger30() {
+        return integer30;
+    }
+
+    public void setInteger30(Integer integer30) {
+        this.integer30 = integer30;
+    }
+
+
+    @Column(name = "Number21", unique = false, nullable = true, insertable = true, updatable = true)
+    public Double getNumber21() {
+        return number21;
+    }
+
+    public void setNumber21(Double number21) {
+        this.number21 = number21;
+    }
+
+    @Column(name = "Number22", unique = false, nullable = true, insertable = true, updatable = true)
+    public Double getNumber22() {
+        return number22;
+    }
+
+    public void setNumber22(Double number22) {
+        this.number22 = number22;
+    }
+
+    @Column(name = "Number23", unique = false, nullable = true, insertable = true, updatable = true)
+    public Double getNumber23() {
+        return number23;
+    }
+
+    public void setNumber23(Double number23) {
+        this.number23 = number23;
+    }
+
+    @Column(name = "Number24", unique = false, nullable = true, insertable = true, updatable = true)
+    public Double getNumber24() {
+        return number24;
+    }
+
+    public void setNumber24(Double number24) {
+        this.number24 = number24;
+    }
+
+    @Column(name = "Number25", unique = false, nullable = true, insertable = true, updatable = true)
+    public Double getNumber25() {
+        return number25;
+    }
+
+    public void setNumber25(Double number25) {
+        this.number25 = number25;
+    }
+
+    @Column(name = "Number26", unique = false, nullable = true, insertable = true, updatable = true)
+    public Double getNumber26() {
+        return number26;
+    }
+
+    public void setNumber26(Double number26) {
+        this.number26 = number26;
+    }
+
+    @Column(name = "Number27", unique = false, nullable = true, insertable = true, updatable = true)
+    public Double getNumber27() {
+        return number27;
+    }
+
+    public void setNumber27(Double number27) {
+        this.number27 = number27;
+    }
+
+    @Column(name = "Number28", unique = false, nullable = true, insertable = true, updatable = true)
+    public Double getNumber28() {
+        return number28;
+    }
+
+    public void setNumber28(Double number28) {
+        this.number28 = number28;
+    }
+
+    @Column(name = "Number29", unique = false, nullable = true, insertable = true, updatable = true)
+    public Double getNumber29() {
+        return number29;
+    }
+
+    public void setNumber29(Double number29) {
+        this.number29 = number29;
+    }
+
+    @Column(name = "Number30", unique = false, nullable = true, insertable = true, updatable = true)
+    public Double getNumber30() {
+        return number30;
+    }
+
+    public void setNumber30(Double number30) {
+        this.number30 = number30;
+    }
     /**
      *
      */
@@ -453,236 +638,6 @@ public class PreparationProperty extends CollectionMember implements Cloneable
         this.preparation = preparation;
     }
 
-    /**
-     *
-     * @return
-     */
-    @Column(name = "MeasurementNumberValue", unique = false, nullable = true, insertable = true, updatable = true)
-    public Double getMeasurementNumberValue() {
-        return measurementNumberValue;
-    }
-
-    /**
-     *
-     * @param measurementNumberValue
-     */
-    public void setMeasurementNumberValue(Double measurementNumberValue) {
-        this.measurementNumberValue = measurementNumberValue;
-    }
-
-    /**
-     *
-     * @return
-     */
-    @Column(name = "MeasurementAccuracy", length = 256)
-    public String getMeasurementAccuracy() {
-        return measurementAccuracy;
-    }
-
-    /**
-     *
-     * @param measurementAccuracy
-     */
-    public void setMeasurementAccuracy(String measurementAccuracy) {
-        this.measurementAccuracy = measurementAccuracy;
-    }
-
-    /**
-     *
-     * @return
-     */
-    @Column(name = "MeasurementIntegerValue", unique = false, nullable = true, insertable = true, updatable = true)
-    public Integer getMeasurementIntegerValue() {
-        return measurementIntegerValue;
-    }
-
-    /**
-     *
-     * @param measurementIntegerValue
-     */
-    public void setMeasurementIntegerValue(Integer measurementIntegerValue) {
-        this.measurementIntegerValue = measurementIntegerValue;
-    }
-
-    /**
-     *
-     * @return
-     */
-    @Lob
-    @Column(name = "MeasurementTextValue", length = 65535)
-    public String getMeasurementTextValue() {
-        return measurementTextValue;
-    }
-
-    /**
-     *
-     * @param measurementTextValue
-     */
-    public void setMeasurementTextValue(String measurementTextValue) {
-        this.measurementTextValue = measurementTextValue;
-    }
-
-    /**
-     *
-     * @return
-     */
-    @Column(name = "MeasurementType", length = 256)
-    public String getMeasurementType() {
-        return measurementType;
-    }
-
-    /**
-     *
-     * @param measurementType
-     */
-    public void setMeasurementType(String measurementType) {
-        this.measurementType = measurementType;
-    }
-
-    /**
-     *
-     * @return
-     */
-    @Lob
-    @Column(name = "MeasurementRemark", length = 65535)
-    public String getMeasurementRemark() {
-        return measurementRemark;
-    }
-
-    /**
-     *
-     * @param measurementRemark
-     */
-    public void setMeasurementRemark(String measurementRemark) {
-        this.measurementRemark = measurementRemark;
-    }
-
-    /**
-     *
-     * @return
-     */
-    @Column(name = "MeasurementUnit", length = 128)
-    public String getMeasurementUnit() {
-        return measurementUnit;
-    }
-
-    /**
-     *
-     * @param measurementUnit
-     */
-    public void setMeasurementUnit(String measurementUnit) {
-        this.measurementUnit = measurementUnit;
-    }
-
-    /**
-     *
-     * @return
-     */
-    @Column(name = "MeasurementID", length = 128)
-    public String getMeasurementID() {
-        return measurementID;
-    }
-
-    /**
-     *
-     * @param measurementID
-     */
-    public void setMeasurementID(String measurementID) {
-        this.measurementID = measurementID;
-    }
-
-    /**
-     *
-     * @return
-     */
-    @Column(name = "MeasurementYesNoValue", unique = false, nullable = true, insertable = true, updatable = true)
-    public Boolean getMeasurementYesNoValue() {
-        return measurementYesNoValue;
-    }
-
-    /**
-     *
-     * @param measurementYesNoValue
-     */
-    public void setMeasurementYesNoValue(Boolean measurementYesNoValue) {
-        this.measurementYesNoValue = measurementYesNoValue;
-    }
-
-    /**
-     *
-     * @return
-     */
-    @Temporal(TemporalType.DATE)
-    @Column(name = "MeasurementDateValue", unique = false, nullable = true, insertable = true, updatable = true)
-    public Calendar getMeasurementDateValue() {
-        return measurementDateValue;
-    }
-
-    /**
-     *
-     * @param measurementDateValue
-     */
-    public void setMeasurementDateValue(Calendar measurementDateValue) {
-        this.measurementDateValue = measurementDateValue;
-    }
-
-    /**
-     *
-     * @return
-     */
-    @Temporal(TemporalType.DATE)
-    @Column(name = "MeasurementDeterminedDate", unique = false, nullable = true, insertable = true, updatable = true)
-    public Calendar getMeasurementDeterminedDate() {
-        return measurementDeterminedDate;
-    }
-
-    /**
-     *
-     * @param measurementDeterminedDate
-     */
-    public void setMeasurementDeterminedDate(Calendar measurementDeterminedDate) {
-        this.measurementDeterminedDate = measurementDeterminedDate;
-    }
-
-    /**
-     *
-     * @return
-     */
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "MeasurementDeterminedByID", unique = false, nullable = true, insertable = true, updatable = true)
-    public Agent getMeasurementDeterminedBy() {
-        return measurementDeterminedBy;
-    }
-
-    /**
-     *
-     * @param measurementDeterminedBy
-     */
-    public void setMeasurementDeterminedBy(Agent measurementDeterminedBy) {
-        this.measurementDeterminedBy = measurementDeterminedBy;
-    }
-
-    /**
-     *
-     */
-    @Temporal(TemporalType.DATE)
-    @Column(name = "RecordedDate", unique = false, nullable = true, insertable = true, updatable = true)
-    public Calendar getRecordedDate() {
-        return this.recordedDate;
-    }
-
-    public void setRecordedDate(Calendar recordedDate) {
-        this.recordedDate = recordedDate;
-    }
-
-    /**
-     *
-     */
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "RecordedByID", unique = false, nullable = true, insertable = true, updatable = true)
-    public Agent getRecordedBy() {
-        return this.recordedBy;
-    }
 
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "Agent1ID", unique = false, nullable = true, insertable = true, updatable = true)
@@ -882,14 +837,6 @@ public class PreparationProperty extends CollectionMember implements Cloneable
 
     public void setAgent20(Agent agent20) {
         this.agent20 = agent20;
-    }
-
-    /**
-     *
-     * @param recordedBy
-     */
-    public void setRecordedBy(Agent recordedBy) {
-        this.recordedBy = recordedBy;
     }
 
 
@@ -1196,14 +1143,14 @@ public class PreparationProperty extends CollectionMember implements Cloneable
      * @return the integer1
      */
     @Column(name = "Integer1", unique = false, nullable = true, insertable = true, updatable = true)
-    public Integer getInteger1() {
+    public Short getInteger1() {
         return integer1;
     }
 
     /**
      * @param integer1 the integer1 to set
      */
-    public void setInteger1(Integer integer1) {
+    public void setInteger1(Short integer1) {
         this.integer1 = integer1;
     }
 
@@ -1211,14 +1158,14 @@ public class PreparationProperty extends CollectionMember implements Cloneable
      * @return the integer2
      */
     @Column(name = "Integer2", unique = false, nullable = true, insertable = true, updatable = true)
-    public Integer getInteger2() {
+    public Short getInteger2() {
         return integer2;
     }
 
     /**
      * @param integer2 the integer2 to set
      */
-    public void setInteger2(Integer integer2) {
+    public void setInteger2(Short integer2) {
         this.integer2 = integer2;
     }
 
@@ -1226,14 +1173,14 @@ public class PreparationProperty extends CollectionMember implements Cloneable
      * @return the integer3
      */
     @Column(name = "Integer3", unique = false, nullable = true, insertable = true, updatable = true)
-    public Integer getInteger3() {
+    public Short getInteger3() {
         return integer3;
     }
 
     /**
      * @param integer3 the integer3 to set
      */
-    public void setInteger3(Integer integer3) {
+    public void setInteger3(Short integer3) {
         this.integer3 = integer3;
     }
 
@@ -1241,14 +1188,14 @@ public class PreparationProperty extends CollectionMember implements Cloneable
      * @return the integer4
      */
     @Column(name = "Integer4", unique = false, nullable = true, insertable = true, updatable = true)
-    public Integer getInteger4() {
+    public Short getInteger4() {
         return integer4;
     }
 
     /**
      * @param integer4 the integer4 to set
      */
-    public void setInteger4(Integer integer4) {
+    public void setInteger4(Short integer4) {
         this.integer4 = integer4;
     }
 
@@ -1256,14 +1203,14 @@ public class PreparationProperty extends CollectionMember implements Cloneable
      * @return the integer5
      */
     @Column(name = "Integer5", unique = false, nullable = true, insertable = true, updatable = true)
-    public Integer getInteger5() {
+    public Short getInteger5() {
         return integer5;
     }
 
     /**
      * @param integer5 the integer5 to set
      */
-    public void setInteger5(Integer integer5) {
+    public void setInteger5(Short integer5) {
         this.integer5 = integer5;
     }
 
@@ -1271,14 +1218,14 @@ public class PreparationProperty extends CollectionMember implements Cloneable
      * @return the integer6
      */
     @Column(name = "Integer6", unique = false, nullable = true, insertable = true, updatable = true)
-    public Integer getInteger6() {
+    public Short getInteger6() {
         return integer6;
     }
 
     /**
      * @param integer6 the integer6 to set
      */
-    public void setInteger6(Integer integer6) {
+    public void setInteger6(Short integer6) {
         this.integer6 = integer6;
     }
 
@@ -1286,14 +1233,14 @@ public class PreparationProperty extends CollectionMember implements Cloneable
      * @return the integer7
      */
     @Column(name = "Integer7", unique = false, nullable = true, insertable = true, updatable = true)
-    public Integer getInteger7() {
+    public Short getInteger7() {
         return integer7;
     }
 
     /**
      * @param integer7 the integer7 to set
      */
-    public void setInteger7(Integer integer7) {
+    public void setInteger7(Short integer7) {
         this.integer7 = integer7;
     }
 
@@ -1301,14 +1248,14 @@ public class PreparationProperty extends CollectionMember implements Cloneable
      * @return the integer8
      */
     @Column(name = "Integer8", unique = false, nullable = true, insertable = true, updatable = true)
-    public Integer getInteger8() {
+    public Short getInteger8() {
         return integer8;
     }
 
     /**
      * @param integer8 the integer8 to set
      */
-    public void setInteger8(Integer integer8) {
+    public void setInteger8(Short integer8) {
         this.integer8 = integer8;
     }
 
@@ -1316,14 +1263,14 @@ public class PreparationProperty extends CollectionMember implements Cloneable
      * @return the integer9
      */
     @Column(name = "Integer9", unique = false, nullable = true, insertable = true, updatable = true)
-    public Integer getInteger9() {
+    public Short getInteger9() {
         return integer9;
     }
 
     /**
      * @param integer9 the integer9 to set
      */
-    public void setInteger9(Integer integer9) {
+    public void setInteger9(Short integer9) {
         this.integer9 = integer9;
     }
 
@@ -1331,104 +1278,104 @@ public class PreparationProperty extends CollectionMember implements Cloneable
      * @return the integer10
      */
     @Column(name = "Integer10", unique = false, nullable = true, insertable = true, updatable = true)
-    public Integer getInteger10() {
+    public Short getInteger10() {
         return integer10;
     }
 
     /**
      * @param integer10 the integer10 to set
      */
-    public void setInteger10(Integer integer10) {
+    public void setInteger10(Short integer10) {
         this.integer10 = integer10;
     }
 
     @Column(name = "Integer11", unique = false, nullable = true, insertable = true, updatable = true)
-    public Integer getInteger11() {
+    public Short getInteger11() {
         return integer11;
     }
 
-    public void setInteger11(Integer integer11) {
+    public void setInteger11(Short integer11) {
         this.integer11 = integer11;
     }
 
     @Column(name = "Integer12", unique = false, nullable = true, insertable = true, updatable = true)
-    public Integer getInteger12() {
+    public Short getInteger12() {
         return integer12;
     }
 
-    public void setInteger12(Integer integer12) {
+    public void setInteger12(Short integer12) {
         this.integer12 = integer12;
     }
 
     @Column(name = "Integer13", unique = false, nullable = true, insertable = true, updatable = true)
-    public Integer getInteger13() {
+    public Short getInteger13() {
         return integer13;
     }
 
-    public void setInteger13(Integer integer13) {
+    public void setInteger13(Short integer13) {
         this.integer13 = integer13;
     }
 
     @Column(name = "Integer14", unique = false, nullable = true, insertable = true, updatable = true)
-    public Integer getInteger14() {
+    public Short getInteger14() {
         return integer14;
     }
 
-    public void setInteger14(Integer integer14) {
+    public void setInteger14(Short integer14) {
         this.integer14 = integer14;
     }
 
     @Column(name = "Integer15", unique = false, nullable = true, insertable = true, updatable = true)
-    public Integer getInteger15() {
+    public Short getInteger15() {
         return integer15;
     }
 
-    public void setInteger15(Integer integer15) {
+    public void setInteger15(Short integer15) {
         this.integer15 = integer15;
     }
 
     @Column(name = "Integer16", unique = false, nullable = true, insertable = true, updatable = true)
-    public Integer getInteger16() {
+    public Short getInteger16() {
         return integer16;
     }
 
-    public void setInteger16(Integer integer16) {
+    public void setInteger16(Short integer16) {
         this.integer16 = integer16;
     }
 
     @Column(name = "Integer17", unique = false, nullable = true, insertable = true, updatable = true)
-    public Integer getInteger17() {
+    public Short getInteger17() {
         return integer17;
     }
 
-    public void setInteger17(Integer integer17) {
+    public void setInteger17(Short integer17) {
         this.integer17 = integer17;
     }
 
     @Column(name = "Integer18", unique = false, nullable = true, insertable = true, updatable = true)
-    public Integer getInteger18() {
+    public Short getInteger18() {
         return integer18;
     }
 
-    public void setInteger18(Integer integer18) {
+    public void setInteger18(Short integer18) {
         this.integer18 = integer18;
     }
 
     @Column(name = "Integer19", unique = false, nullable = true, insertable = true, updatable = true)
-    public Integer getInteger19() {
+    public Short getInteger19() {
         return integer19;
     }
 
-    public void setInteger19(Integer integer19) {
+    public void setInteger19(Short integer19) {
         this.integer19 = integer19;
     }
 
     @Column(name = "Integer20", unique = false, nullable = true, insertable = true, updatable = true)
-    public Integer getInteger20() {
+    public Short getInteger20() {
         return integer20;
     }
 
-    public void setInteger20(Integer integer20) {
+    public void setInteger20(Short integer20) {
         this.integer20 = integer20;
     }
 
@@ -1634,121 +1581,121 @@ public class PreparationProperty extends CollectionMember implements Cloneable
 
 
     @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true)
-    public Double getNumber1()
+    public Float getNumber1()
     {
         return number1;
     }
 
     @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true)
-    public Double getNumber2()
+    public Float getNumber2()
     {
         return number2;
     }
 
     @Column(name = "Number3", unique = false, nullable = true, insertable = true, updatable = true)
-    public Double getNumber3()
+    public Float getNumber3()
     {
         return number3;
     }
 
     @Column(name = "Number4", unique = false, nullable = true, insertable = true, updatable = true)
-    public Double getNumber4()
+    public Float getNumber4()
     {
         return number4;
     }
 
     @Column(name = "Number5", unique = false, nullable = true, insertable = true, updatable = true)
-    public Double getNumber5()
+    public Float getNumber5()
     {
         return number5;
     }
 
     @Column(name = "Number6", unique = false, nullable = true, insertable = true, updatable = true)
-    public Double getNumber6()
+    public Float getNumber6()
     {
         return number6;
     }
 
     @Column(name = "Number7", unique = false, nullable = true, insertable = true, updatable = true)
-    public Double getNumber7()
+    public Float getNumber7()
     {
         return number7;
     }
 
     @Column(name = "Number8", unique = false, nullable = true, insertable = true, updatable = true)
-    public Double getNumber8()
+    public Float getNumber8()
     {
         return number8;
     }
 
     @Column(name = "Number9", unique = false, nullable = true, insertable = true, updatable = true)
-    public Double getNumber9()
+    public Float getNumber9()
     {
         return number9;
     }
 
     @Column(name = "Number10", unique = false, nullable = true, insertable = true, updatable = true)
-    public Double getNumber10()
+    public Float getNumber10()
     {
         return number10;
     }
 
     @Column(name = "Number11", unique = false, nullable = true, insertable = true, updatable = true)
-    public Double getNumber11()
+    public Float getNumber11()
     {
         return number11;
     }
 
     @Column(name = "Number12", unique = false, nullable = true, insertable = true, updatable = true)
-    public Double getNumber12()
+    public Float getNumber12()
     {
         return number12;
     }
 
     @Column(name = "Number13", unique = false, nullable = true, insertable = true, updatable = true)
-    public Double getNumber13()
+    public Float getNumber13()
     {
         return number13;
     }
 
     @Column(name = "Number14", unique = false, nullable = true, insertable = true, updatable = true)
-    public Double getNumber14()
+    public Float getNumber14()
     {
         return number14;
     }
 
     @Column(name = "Number15", unique = false, nullable = true, insertable = true, updatable = true)
-    public Double getNumber15()
+    public Float getNumber15()
     {
         return number15;
     }
 
     @Column(name = "Number16", unique = false, nullable = true, insertable = true, updatable = true)
-    public Double getNumber16()
+    public Float getNumber16()
     {
         return number16;
     }
 
     @Column(name = "Number17", unique = false, nullable = true, insertable = true, updatable = true)
-    public Double getNumber17()
+    public Float getNumber17()
     {
         return number17;
     }
 
     @Column(name = "Number18", unique = false, nullable = true, insertable = true, updatable = true)
-    public Double getNumber18()
+    public Float getNumber18()
     {
         return number18;
     }
 
     @Column(name = "Number19", unique = false, nullable = true, insertable = true, updatable = true)
-    public Double getNumber19()
+    public Float getNumber19()
     {
         return number19;
     }
 
     @Column(name = "Number20", unique = false, nullable = true, insertable = true, updatable = true)
-    public Double getNumber20()
+    public Float getNumber20()
     {
         return number20;
     }
@@ -1757,7 +1704,7 @@ public class PreparationProperty extends CollectionMember implements Cloneable
      *
      * @param number1
      */
-    public void setNumber1(Double number1)
+    public void setNumber1(Float number1)
     {
         this.number1 = number1;
     }
@@ -1766,7 +1713,7 @@ public class PreparationProperty extends CollectionMember implements Cloneable
      *
      * @param number2
      */
-    public void setNumber2(Double number2)
+    public void setNumber2(Float number2)
     {
         this.number2 = number2;
     }
@@ -1775,7 +1722,7 @@ public class PreparationProperty extends CollectionMember implements Cloneable
      *
      * @param number3
      */
-    public void setNumber3(Double number3)
+    public void setNumber3(Float number3)
     {
         this.number3 = number3;
     }
@@ -1784,7 +1731,7 @@ public class PreparationProperty extends CollectionMember implements Cloneable
      *
      * @param number4
      */
-    public void setNumber4(Double number4)
+    public void setNumber4(Float number4)
     {
         this.number4 = number4;
     }
@@ -1793,7 +1740,7 @@ public class PreparationProperty extends CollectionMember implements Cloneable
      *
      * @param number5
      */
-    public void setNumber5(Double number5)
+    public void setNumber5(Float number5)
     {
         this.number5 = number5;
     }
@@ -1802,7 +1749,7 @@ public class PreparationProperty extends CollectionMember implements Cloneable
      *
      * @param number6
      */
-    public void setNumber6(Double number6)
+    public void setNumber6(Float number6)
     {
         this.number6 = number6;
     }
@@ -1811,7 +1758,7 @@ public class PreparationProperty extends CollectionMember implements Cloneable
      *
      * @param number7
      */
-    public void setNumber7(Double number7)
+    public void setNumber7(Float number7)
     {
         this.number7 = number7;
     }
@@ -1820,7 +1767,7 @@ public class PreparationProperty extends CollectionMember implements Cloneable
      *
      * @param number8
      */
-    public void setNumber8(Double number8)
+    public void setNumber8(Float number8)
     {
         this.number8 = number8;
     }
@@ -1829,7 +1776,7 @@ public class PreparationProperty extends CollectionMember implements Cloneable
      *
      * @param number9
      */
-    public void setNumber9(Double number9)
+    public void setNumber9(Float number9)
     {
         this.number9 = number9;
     }
@@ -1838,7 +1785,7 @@ public class PreparationProperty extends CollectionMember implements Cloneable
      *
      * @param number10
      */
-    public void setNumber10(Double number10)
+    public void setNumber10(Float number10)
     {
         this.number10 = number10;
     }
@@ -1847,7 +1794,7 @@ public class PreparationProperty extends CollectionMember implements Cloneable
      *
      * @param number11
      */
-    public void setNumber11(Double number11)
+    public void setNumber11(Float number11)
     {
         this.number11 = number11;
     }
@@ -1856,7 +1803,7 @@ public class PreparationProperty extends CollectionMember implements Cloneable
      *
      * @param number12
      */
-    public void setNumber12(Double number12)
+    public void setNumber12(Float number12)
     {
         this.number12 = number12;
     }
@@ -1865,7 +1812,7 @@ public class PreparationProperty extends CollectionMember implements Cloneable
      *
      * @param number13
      */
-    public void setNumber13(Double number13)
+    public void setNumber13(Float number13)
     {
         this.number13 = number13;
     }
@@ -1874,7 +1821,7 @@ public class PreparationProperty extends CollectionMember implements Cloneable
      *
      * @param number14
      */
-    public void setNumber14(Double number14)
+    public void setNumber14(Float number14)
     {
         this.number14 = number14;
     }
@@ -1883,7 +1830,7 @@ public class PreparationProperty extends CollectionMember implements Cloneable
      *
      * @param number15
      */
-    public void setNumber15(Double number15)
+    public void setNumber15(Float number15)
     {
         this.number15 = number15;
     }
@@ -1892,7 +1839,7 @@ public class PreparationProperty extends CollectionMember implements Cloneable
      *
      * @param number16
      */
-    public void setNumber16(Double number16)
+    public void setNumber16(Float number16)
     {
         this.number16 = number16;
     }
@@ -1901,7 +1848,7 @@ public class PreparationProperty extends CollectionMember implements Cloneable
      *
      * @param number17
      */
-    public void setNumber17(Double number17)
+    public void setNumber17(Float number17)
     {
         this.number17 = number17;
     }
@@ -1910,7 +1857,7 @@ public class PreparationProperty extends CollectionMember implements Cloneable
      *
      * @param number18
      */
-    public void setNumber18(Double number18)
+    public void setNumber18(Float number18)
     {
         this.number18 = number18;
     }
@@ -1919,7 +1866,7 @@ public class PreparationProperty extends CollectionMember implements Cloneable
      *
      * @param number19
      */
-    public void setNumber19(Double number19)
+    public void setNumber19(Float number19)
     {
         this.number19 = number19;
 
@@ -1929,14 +1876,13 @@ public class PreparationProperty extends CollectionMember implements Cloneable
      *
      * @param number20
      */
-    public void setNumber20(Double number20)
+    public void setNumber20(Float number20)
     {
         this.number20 = number20;
     }
 
 
-    @Lob
-    @Column(name = "Text1", length = 65535)
+    @Column(name = "Text1", length = 50)
     public String getText1() {
         return text1;
     }
@@ -1945,8 +1891,7 @@ public class PreparationProperty extends CollectionMember implements Cloneable
         this.text1 = text1;
     }
 
-    @Lob
-    @Column(name = "Text2", length = 65535)
+    @Column(name = "Text2", length = 50)
     public String getText2() {
         return text2;
     }
@@ -1955,8 +1900,7 @@ public class PreparationProperty extends CollectionMember implements Cloneable
         this.text2 = text2;
     }
 
-    @Lob
-    @Column(name = "Text3", length = 65535)
+    @Column(name = "Text3", length = 50)
     public String getText3() {
         return text3;
     }
@@ -1965,8 +1909,7 @@ public class PreparationProperty extends CollectionMember implements Cloneable
         this.text3 = text3;
     }
 
-    @Lob
-    @Column(name = "Text4", length = 65535)
+    @Column(name = "Text4", length = 50)
     public String getText4() {
         return text4;
     }
@@ -1975,8 +1918,7 @@ public class PreparationProperty extends CollectionMember implements Cloneable
         this.text4 = text4;
     }
 
-    @Lob
-    @Column(name = "Text5", length = 65535)
+    @Column(name = "Text5", length = 50)
     public String getText5() {
         return text5;
     }
@@ -1985,8 +1927,7 @@ public class PreparationProperty extends CollectionMember implements Cloneable
         this.text5 = text5;
     }
 
-    @Lob
-    @Column(name = "Text6", length = 65535)
+    @Column(name = "Text6", length = 50)
     public String getText6() {
         return text6;
     }
@@ -1995,8 +1936,7 @@ public class PreparationProperty extends CollectionMember implements Cloneable
         this.text6 = text6;
     }
 
-    @Lob
-    @Column(name = "Text7", length = 65535)
+    @Column(name = "Text7", length = 50)
     public String getText7() {
         return text7;
     }
@@ -2005,8 +1945,8 @@ public class PreparationProperty extends CollectionMember implements Cloneable
         this.text7 = text7;
     }
 
-    @Lob
-    @Column(name = "Text8", length = 65535)
+
+    @Column(name = "Text8", length = 50)
     public String getText8() {
         return text8;
     }
@@ -2015,8 +1955,8 @@ public class PreparationProperty extends CollectionMember implements Cloneable
         this.text8 = text8;
     }
 
-    @Lob
-    @Column(name = "Text9", length = 65535)
+
+    @Column(name = "Text9", length = 50)
     public String getText9() {
         return text9;
     }
@@ -2025,8 +1965,8 @@ public class PreparationProperty extends CollectionMember implements Cloneable
         this.text9 = text9;
     }
 
-    @Lob
-    @Column(name = "Text10", length = 65535)
+
+    @Column(name = "Text10", length = 50)
     public String getText10() {
         return text10;
     }
@@ -2035,8 +1975,8 @@ public class PreparationProperty extends CollectionMember implements Cloneable
         this.text10 = text10;
     }
 
-    @Lob
-    @Column(name = "Text11", length = 65535)
+
+    @Column(name = "Text11", length = 50)
     public String getText11() {
         return text11;
     }
@@ -2045,8 +1985,8 @@ public class PreparationProperty extends CollectionMember implements Cloneable
         this.text11 = text11;
     }
 
-    @Lob
-    @Column(name = "Text12", length = 65535)
+
+    @Column(name = "Text12", length = 50)
     public String getText12() {
         return text12;
     }
@@ -2055,8 +1995,8 @@ public class PreparationProperty extends CollectionMember implements Cloneable
         this.text12 = text12;
     }
 
-    @Lob
-    @Column(name = "Text13", length = 65535)
+
+    @Column(name = "Text13", length = 50)
     public String getText13() {
         return text13;
     }
@@ -2065,8 +2005,8 @@ public class PreparationProperty extends CollectionMember implements Cloneable
         this.text13 = text13;
     }
 
-    @Lob
-    @Column(name = "Text14", length = 65535)
+
+    @Column(name = "Text14", length = 50)
     public String getText14() {
         return text14;
     }
@@ -2075,8 +2015,8 @@ public class PreparationProperty extends CollectionMember implements Cloneable
         this.text14 = text14;
     }
 
-    @Lob
-    @Column(name = "Text15", length = 65535)
+
+    @Column(name = "Text15", length = 50)
     public String getText15() {
         return text15;
     }
@@ -2085,8 +2025,8 @@ public class PreparationProperty extends CollectionMember implements Cloneable
         this.text15 = text15;
     }
 
-    @Lob
-    @Column(name = "Text16", length = 65535)
+
+    @Column(name = "Text16", length = 100)
     public String getText16() {
         return text16;
     }
@@ -2095,8 +2035,8 @@ public class PreparationProperty extends CollectionMember implements Cloneable
         this.text16 = text16;
     }
 
-    @Lob
-    @Column(name = "Text17", length = 65535)
+
+    @Column(name = "Text17", length = 100)
     public String getText17() {
         return text17;
     }
@@ -2105,8 +2045,8 @@ public class PreparationProperty extends CollectionMember implements Cloneable
         this.text17 = text17;
     }
 
-    @Lob
-    @Column(name = "Text18", length = 65535)
+
+    @Column(name = "Text18", length = 100)
     public String getText18() {
         return text18;
     }
@@ -2115,8 +2055,8 @@ public class PreparationProperty extends CollectionMember implements Cloneable
         this.text18 = text18;
     }
 
-    @Lob
-    @Column(name = "Text19", length = 65535)
+
+    @Column(name = "Text19", length = 100)
     public String getText19() {
         return text19;
     }
@@ -2125,8 +2065,8 @@ public class PreparationProperty extends CollectionMember implements Cloneable
         this.text19 = text19;
     }
 
-    @Lob
-    @Column(name = "Text20", length = 65535)
+
+    @Column(name = "Text20", length = 100)
     public String getText20() {
         return text20;
     }
@@ -2135,8 +2075,8 @@ public class PreparationProperty extends CollectionMember implements Cloneable
         this.text20 = text20;
     }
 
-    @Lob
-    @Column(name = "Text21", length = 65535)
+
+    @Column(name = "Text21", length = 100)
     public String getText21() {
         return text21;
     }
@@ -2145,8 +2085,8 @@ public class PreparationProperty extends CollectionMember implements Cloneable
         this.text21 = text21;
     }
 
-    @Lob
-    @Column(name = "Text22", length = 65535)
+
+    @Column(name = "Text22", length = 100)
     public String getText22() {
         return text22;
     }
@@ -2155,8 +2095,8 @@ public class PreparationProperty extends CollectionMember implements Cloneable
         this.text22 = text22;
     }
 
-    @Lob
-    @Column(name = "Text23", length = 65535)
+
+    @Column(name = "Text23", length = 100)
     public String getText23() {
         return text23;
     }
@@ -2165,8 +2105,8 @@ public class PreparationProperty extends CollectionMember implements Cloneable
         this.text23 = text23;
     }
 
-    @Lob
-    @Column(name = "Text24", length = 65535)
+
+    @Column(name = "Text24", length = 100)
     public String getText24() {
         return text24;
     }
@@ -2175,8 +2115,8 @@ public class PreparationProperty extends CollectionMember implements Cloneable
         this.text24 = text24;
     }
 
-    @Lob
-    @Column(name = "Text25", length = 65535)
+
+    @Column(name = "Text25", length = 100)
     public String getText25() {
         return text25;
     }
@@ -2185,8 +2125,8 @@ public class PreparationProperty extends CollectionMember implements Cloneable
         this.text25 = text25;
     }
 
-    @Lob
-    @Column(name = "Text26", length = 65535)
+
+    @Column(name = "Text26", length = 100)
     public String getText26() {
         return text26;
     }
@@ -2195,8 +2135,8 @@ public class PreparationProperty extends CollectionMember implements Cloneable
         this.text26 = text26;
     }
 
-    @Lob
-    @Column(name = "Text27", length = 65535)
+
+    @Column(name = "Text27", length = 100)
     public String getText27() {
         return text27;
     }
@@ -2205,8 +2145,8 @@ public class PreparationProperty extends CollectionMember implements Cloneable
         this.text27 = text27;
     }
 
-    @Lob
-    @Column(name = "Text28", length = 65535)
+
+    @Column(name = "Text28", length = 100)
     public String getText28() {
         return text28;
     }
@@ -2215,8 +2155,8 @@ public class PreparationProperty extends CollectionMember implements Cloneable
         this.text28 = text28;
     }
 
-    @Lob
-    @Column(name = "Text29", length = 65535)
+
+    @Column(name = "Text29", length = 100)
     public String getText29() {
         return text29;
     }
@@ -2225,8 +2165,8 @@ public class PreparationProperty extends CollectionMember implements Cloneable
         this.text29 = text29;
     }
 
-    @Lob
-    @Column(name = "Text30", length = 65535)
+
+    @Column(name = "Text30", length = 100)
     public String getText30() {
         return text30;
     }

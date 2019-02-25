@@ -1559,6 +1559,7 @@ public void setReservedText3(String reservedText3) {
     public void forceLoad()
     {
         determinations.size();
+        collectionObjectProperties.size();
         preparations.size();
         for (Preparation prep : preparations)
         {
