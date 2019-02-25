@@ -84,6 +84,8 @@
     <icon name="referencework"        file="reference_work.png" sizes="all"/>
     <icon name="repositoryagreement"  file="repository_agreement.png" sizes="all"/>
     <icon name="shipment"             file="shipment.png" sizes="all"/>
+    <icon name="spauditlog"           file="audit_log_32.png" sizes="all"/>
+    <icon name="spauditlogfield"      file="audit_log_field_32.png" sizes="all"/>
     <icon name="storage"              file="storage.png" sizes="all"/>
     <icon name="taxon"                file="taxon.png" sizes="all"/>
     <icon name="treatmentevent"       file="treatment_event.png" sizes="all"/>
@@ -299,6 +301,8 @@
     <icon name="Project"                alias="project"/>
     <icon name="ReferenceWork"          alias="referencework"/>
     <icon name="Shipment"               alias="shipment"/>
+    <icon name="SpAuditLog"             alias="spauditlog"/>
+    <icon name="SpAuditLogField"        alias="spauditlogfield"/>
     <icon name="Storage"                alias="storage"/>
     <icon name="Taxon"                  alias="taxon"/>
     <icon name="TreatmentEvent"         alias="treatmentevent"/>
