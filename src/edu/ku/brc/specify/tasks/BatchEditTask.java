@@ -154,7 +154,56 @@ public class BatchEditTask extends QueryTask {
 
         StringBuilder htmlDesc = new StringBuilder();
 
+        htmlDesc.append("<!doctype html>");
+        htmlDesc.append("<html>");
         htmlDesc.append("<head>");
+        htmlDesc.append("<meta charset=\"utf-8\">");
+        //htmlDesc.append("<title>Untitled Document</title>");
+        htmlDesc.append("</head>");
+        htmlDesc.append("");
+        htmlDesc.append("<body>");
+        htmlDesc.append("<h2><strong>Batch Editing</strong></u><strong> &nbsp;&nbsp;&nbsp;</strong>");
+        htmlDesc.append("<img src='" + imgsrc + "' alt=\"Batch Edit Pencils\" width=\"32\" height=\"32\"></h2>");
+        htmlDesc.append("  <br>");
+        htmlDesc.append("</p>");
+        htmlDesc.append("<p> Batch Editing is a powerful data management tool for improving data  quality and consistency; it can modify thousands of data records with a few clicks  of the mouse. </p>");
+        htmlDesc.append("<p><strong>Changes  made with Batch Editing are permanent and irreversible</strong>. </p>");
+        htmlDesc.append("<p>It is critically important to have a recent backup  of your database in case massive, unintended changes are made to your database,  and reloading original data from a backup copy is needed to recover. <br>");
+        htmlDesc.append("  Batch Editing is intended  for experienced Specify users who understand the logical relationships among  Specify's data tables.&nbsp; Batch Editing  works by starting with one of five Specify data tables: Collection Object,  Collecting Event, Locality, Preparation, and Agent.<br>");
+        htmlDesc.append("</p>");
+        htmlDesc.append("<p> Changes made to records  in one table can have cascading effects to records in linked tables. For  example, in databases that use shared Collecting Events, a change to a data  field in the Locality table will be applied to all Collecting Event records  linked to that Locality.&nbsp; That change, in  turn, will apply to all Collection Objects linked to those Collecting Events.   <br>");
+        htmlDesc.append("</p>");
+        htmlDesc.append("<p> In the above  example, it is important to understand before using the Batch Editor, whether  to make a change to the Locality for all Collection Objects in your database  associated with it, or whether to make a smaller change to a particular  Collecting Event—only for its subset of associated Collection Object  records.&nbsp; Or you might want to update the  Locality record linked to that particular Collecting Event, but not for other  Collecting Events associated with that Locality. Batch Editing can  change thousands of records permanently in seconds, be sure to understand the  potential impact of batch changes.&nbsp; For  guidance on how to use Batch Editing, see the demonstration video on the  Consortium's web site.<br></p>");
+        htmlDesc.append("<p> Batch Editing  begins with formulating and running a query on one of the five base tables to  retrieve records for possible editing.&nbsp;  You can add fields from other tables by building out the query  specification in the Query Builder.</p>");
+        htmlDesc.append("<ol start=\"1\" type=\"1\">");
+        htmlDesc.append("  <li>Select       records for Batch Editing choosing one of these options from the Side Bar: </li>");
+        htmlDesc.append("  <ol start=\"1\" type=\"1\">");
+        htmlDesc.append("    <li>Create Query </li>");
+        htmlDesc.append("    <li>Saved Queries,        or </li>");
+        htmlDesc.append("    <li>Record Sets--drag        and drop a Record Set onto a Saved Query to retrieve its contents</li>");
+        htmlDesc.append("  </ol>");
+        htmlDesc.append("</ol>");
+        htmlDesc.append("<ol start=\"2\" type=\"1\">");
+        htmlDesc.append("  <li>In the Query       Builder, add any needed tables, fields, and parameters, then click <em>Search</em> to execute the query. If you would like to use those query customizations       again, save and name the Query template, otherwise just run it.</li>");
+        htmlDesc.append("</ol>");
+        htmlDesc.append("<ol start=\"3\" type=\"1\">");
+        htmlDesc.append("  <li>In the Query       Results window, click the Batch Editing pencils icon in the upper right of       the title bar to begin an editing session. If you want to Batch Edit a       subset of the records resulting from your Query, first highlight those       records in the Query Results window and then click on the Batch Editing       pencils icon at the top right of that screen, the highlighted records will then be put into the       Batch Editing window.  If specific       records are not chosen, a maximum of 7,000 records returned from a query       will be brought into the Batch Editor. </li>");
+        htmlDesc.append("</ol>");
+        htmlDesc.append("<ol start=\"4\" type=\"1\">");
+        htmlDesc.append("  <li>Once edits       are complete, click the <em>Apply</em> button at the lower right of the       workspace, check for errors reported in the Batch Edit process log window,       if no errors are reported, click <em>Save</em> to complete the edit. Or click <em>Cancel</em> to continue editing. </li>");
+        htmlDesc.append("</ol>");
+        htmlDesc.append("<p>Batch Editing Notes:</p>");
+        htmlDesc.append("<ol>");
+        htmlDesc.append("  <li>Closing  a Batch Edit tab or shutting down Specify with a Batch Edit session open before  changes are applied and saved will cancel the changes; edits will not be  applied to the records.  </li>");
+        htmlDesc.append("  <li>Batch  Editing does not lock out other users from independently viewing and modifying  records that are included within a Batch. Changes made to records included  within an open Batch Edit session will overwrite any changes made independently  by other users.  For that reason, it is  best to complete a Batch Edit session before leaving Specify unattended for an  extended period, and not to bring a large number of unneeded records into a  Batch Edit session. </li>");
+        htmlDesc.append("  <li>To  protect data integrity, Batch Edit sessions will cancel and changes will not be  applied, if the <em>Save</em> or <em>Cancel</em> button are not clicked three  minutes after pressing <em>Apply</em>. </li>");
+        htmlDesc.append("  <li>Data  fields with text shown in gray are not editable in Batch Editing mode, and are  displayed for viewing only.  For example,  GUID field values are automatically permanently assigned to records and are not  changeable.</li>");
+        htmlDesc.append("</ol>");
+        htmlDesc.append("<p>&nbsp;</p>");
+        htmlDesc.append("</body>");
+        htmlDesc.append("</html>");
+
+    /*    htmlDesc.append("<head>");
         htmlDesc.append("<meta charset=\"utf-8\">");
         htmlDesc.append("<title>Batch Editing</title>");
         htmlDesc.append("</head>");
@@ -189,7 +238,7 @@ public class BatchEditTask extends QueryTask {
         htmlDesc.append("Closing the Batch Editing Tab or shutting down Specify while Batch Editing before changes are committed and saved will cancel a batch and edits will not be applied. It is important not to leave a Batch Edit session open and unfinished if other users might independently edit records contained within the batch. And it is a best practice to complete a batch before leaving Specify for an extended period. Lastly, Batch Edit sessions will be cancelled three minutes after pressing the <em>Apply</em> button, if <em>Save</em> or <em>Cancel</em> is not clicked.");
         htmlDesc.append("</p></div>");
         htmlDesc.append("</body>");
-
+*/
 
         /*
         htmlDesc.append("<img src='" + imgsrc + "'/>");
