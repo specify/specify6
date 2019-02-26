@@ -48,9 +48,6 @@ public class PostUpdateEventListener implements org.hibernate.event.PostUpdateEv
 {
     private static final Logger log = Logger.getLogger(PostUpdateEventListener.class);
 
-    private int calls = 0;
-    private int updateCnt = 0;
-
     private List<PropertyUpdateInfo> getPropertyUpdates(final PostUpdateEvent obj) {
         List<PropertyUpdateInfo> result = new ArrayList<>();
         Method dirtyPropGetter = null;
@@ -77,21 +74,17 @@ public class PostUpdateEventListener implements org.hibernate.event.PostUpdateEv
         } else {
             //System.out.println("DIY dirty props");
             if (obj.getOldState() != null) {
-                for (int colIdx = 0; colIdx < obj.getState().length; colIdx++) {
+                int[] dirtyColIdxs = obj.getPersister().findDirty(obj.getOldState(), obj.getState(), obj.getEntity(), obj.getSession());
+                for (int colIdx = 0; colIdx < dirtyColIdxs.length; colIdx++) {
                     try {
-                        Object vPrev = obj.getOldState()[colIdx], vCurr = obj.getState()[colIdx];
-                        boolean vPrevNull = vPrev == null, vCurrNull = vCurr == null;
-                        if (!vPrevNull || !vCurrNull) {
-                            if ((vPrevNull ^ vCurrNull) || !vPrev.equals(vCurr)) {
-                                PropertyUpdateInfo info = getUpdateInfo(colIdx, obj);
-                                if (info != null) {
-                                    result.add(info);
-                                }
-                            }
+                        Object vPrev = obj.getOldState()[dirtyColIdxs[colIdx]], vCurr = obj.getState()[dirtyColIdxs[colIdx]];
+                        PropertyUpdateInfo info = getUpdateInfo(dirtyColIdxs[colIdx], obj);
+                        if (info != null) {
+                            result.add(info);
                         }
                     } catch (org.hibernate.LazyInitializationException ex) {
                         //move along
-                        log.warn("skipping field log audit due to lazy load exception.");
+                        log.warn("Lazy load exception getting dirty properties.");
                     }
                 }
             }
@@ -134,18 +127,15 @@ public class PostUpdateEventListener implements org.hibernate.event.PostUpdateEv
             
             if (PostInsertEventListener.isAuditOn())
             {
-                calls++;
                 if (((FormDataObjIFace)obj.getEntity()).isChangeNotifier())
                 {
                     List<PropertyUpdateInfo> updates = getPropertyUpdates(obj);
                     if (updates.size() > 0) {
-                        updateCnt++;
                         PostInsertEventListener.saveOnAuditTrail((byte) 1, obj.getEntity(), updates);
                     }
                 }
             }
         }
-        System.out.println(calls + " " + updateCnt);
     }
 
 }
