@@ -2537,6 +2537,7 @@ public class FormViewObj implements Viewable,
             if (saveObject() && saveAndNewArg)
             {
                createNewDataObject(true);
+               //createNewObjectByAdding();
             }
             
         }/* else

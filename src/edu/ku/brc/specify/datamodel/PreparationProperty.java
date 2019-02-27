@@ -628,7 +628,7 @@ public class PreparationProperty extends CollectionMember implements Cloneable
     /**
      *
      */
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = {})
     @JoinColumn(name = "PreparationID", unique = false, nullable = false, insertable = true, updatable = true)
     public Preparation getPreparation() {
         return this.preparation;
