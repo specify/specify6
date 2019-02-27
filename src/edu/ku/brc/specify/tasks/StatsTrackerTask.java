@@ -333,41 +333,49 @@ public class StatsTrackerTask extends edu.ku.brc.af.tasks.StatsTrackerTask
         	String sql = "SELECT EstimatedSize, RegNumber, WebSiteURI, WebPortalURI, CollectionName,  c.GUID, "
         			+ "case when a.agentid is null then null else concat(ifnull(a.LastName, ''),', ',ifnull(a.FirstName,''),' ',ifnull(a.MiddleInitial,'')) end, a.email "
         			+ "FROM collection c left join agent a on a.agentid = c.admincontactid WHERE CollectionID = " + collectionId;
-            Object[] row = BasicSQLUtils.getRow(sql);
-            Integer estSize = (Integer)row[0];
-            String  estSizeStr = estSize != null ? Integer.toString(estSize) : "";
-            
-            stats.add(new NameValuePair("Collection_estsize",  estSizeStr)); //$NON-NLS-1$
-            stats.add(new NameValuePair("Collection_number",  fixParam(row[1]))); //$NON-NLS-1$
-            stats.add(new NameValuePair("Collection_website", fixParam(row[2]))); //$NON-NLS-1$
-            stats.add(new NameValuePair("Collection_portal",  fixParam(row[3]))); //$NON-NLS-1$
-            stats.add(new NameValuePair("Collection_name",    fixParam(row[4]))); //$NON-NLS-1$
-            stats.add(new NameValuePair("Collection_guid",    fixParam(row[5]))); //$NON-NLS-1$
-            stats.add(new NameValuePair("Collection_admin_name",    fixParam(row[6]))); //$NON-NLS-1$
-            stats.add(new NameValuePair("Collection_admin_email",    fixParam(row[7]))); //$NON-NLS-1$
+        	Object[] row = BasicSQLUtils.getRow(sql);
+        	if (row != null) {
+                Integer estSize = (Integer) row[0];
+                String estSizeStr = estSize != null ? Integer.toString(estSize) : "";
+
+                stats.add(new NameValuePair("Collection_estsize", estSizeStr)); //$NON-NLS-1$
+                stats.add(new NameValuePair("Collection_number", fixParam(row[1]))); //$NON-NLS-1$
+                stats.add(new NameValuePair("Collection_website", fixParam(row[2]))); //$NON-NLS-1$
+                stats.add(new NameValuePair("Collection_portal", fixParam(row[3]))); //$NON-NLS-1$
+                stats.add(new NameValuePair("Collection_name", fixParam(row[4]))); //$NON-NLS-1$
+                stats.add(new NameValuePair("Collection_guid", fixParam(row[5]))); //$NON-NLS-1$
+                stats.add(new NameValuePair("Collection_admin_name", fixParam(row[6]))); //$NON-NLS-1$
+                stats.add(new NameValuePair("Collection_admin_email", fixParam(row[7]))); //$NON-NLS-1$}//
+            }
         }
 
         String fmt = "SELECT RegNumber, Name FROM %s WHERE %s = %d";
         if (disciplineId != null)
         {
             Object[] row = BasicSQLUtils.getRow(String.format(fmt, "discipline", "DisciplineID", disciplineId));
-            stats.add(new NameValuePair("Discipline_number",  fixParam(row[0]))); //$NON-NLS-1$
-            stats.add(new NameValuePair("Discipline_name",    fixParam(row[1]))); //$NON-NLS-1$
+            if (row != null) {
+                stats.add(new NameValuePair("Discipline_number", fixParam(row[0]))); //$NON-NLS-1$
+                stats.add(new NameValuePair("Discipline_name", fixParam(row[1]))); //$NON-NLS-1$
+            }
         }
 
         if (divisionId != null)
         {
             Object[] row = BasicSQLUtils.getRow(String.format(fmt, "division", "DivisionID", divisionId));
-            stats.add(new NameValuePair("Division_number",  fixParam(row[0]))); //$NON-NLS-1$
-            stats.add(new NameValuePair("Division_name",    fixParam(row[1]))); //$NON-NLS-1$
+            if (row != null) {
+                stats.add(new NameValuePair("Division_number", fixParam(row[0]))); //$NON-NLS-1$
+                stats.add(new NameValuePair("Division_name", fixParam(row[1]))); //$NON-NLS-1$
+            }
         }
         if (institutionId != null)
         {
         	fmt = fmt.replace("Name FROM", "Name, GUID FROM");
             Object[] row = BasicSQLUtils.getRow(String.format(fmt, "institution", "InstitutionID", institutionId));
-            stats.add(new NameValuePair("Institution_number",  fixParam(row[0]))); //$NON-NLS-1$
-            stats.add(new NameValuePair("Institution_name",    fixParam(row[1]))); //$NON-NLS-1$
-            stats.add(new NameValuePair("Institution_guid",    fixParam(row[2]))); //$NON-NLS-1$
+            if (row != null) {
+                stats.add(new NameValuePair("Institution_number", fixParam(row[0]))); //$NON-NLS-1$
+                stats.add(new NameValuePair("Institution_name", fixParam(row[1]))); //$NON-NLS-1$
+                stats.add(new NameValuePair("Institution_guid", fixParam(row[2]))); //$NON-NLS-1$
+            }
         }
     	
     }
