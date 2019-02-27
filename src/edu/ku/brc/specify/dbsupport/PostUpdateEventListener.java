@@ -48,6 +48,16 @@ public class PostUpdateEventListener implements org.hibernate.event.PostUpdateEv
 {
     private static final Logger log = Logger.getLogger(PostUpdateEventListener.class);
 
+    private static boolean logFieldValues = true;
+
+    public static void setLogFieldValues(boolean val) {
+        logFieldValues = val;
+    }
+
+    public static boolean getLogFieldValues() {
+        return logFieldValues;
+    }
+
     private List<PropertyUpdateInfo> getPropertyUpdates(final PostUpdateEvent obj) {
         List<PropertyUpdateInfo> result = new ArrayList<>();
         Method dirtyPropGetter = null;
@@ -129,10 +139,8 @@ public class PostUpdateEventListener implements org.hibernate.event.PostUpdateEv
             {
                 if (((FormDataObjIFace)obj.getEntity()).isChangeNotifier())
                 {
-                    List<PropertyUpdateInfo> updates = getPropertyUpdates(obj);
-                    if (updates.size() > 0) {
-                        PostInsertEventListener.saveOnAuditTrail((byte) 1, obj.getEntity(), updates);
-                    }
+                    List<PropertyUpdateInfo> updates = logFieldValues ? getPropertyUpdates(obj) : null;
+                    PostInsertEventListener.saveOnAuditTrail((byte) 1, obj.getEntity(), updates);
                 }
             }
         }
