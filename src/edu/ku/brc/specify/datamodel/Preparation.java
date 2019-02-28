@@ -1270,6 +1270,7 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
         obj.deaccessionPreparations = new HashSet<DeaccessionPreparation>();
         obj.preparationAttachments  = new HashSet<PreparationAttachment>();
         obj.conservDescriptions = new HashSet<ConservDescription>();
+        obj.preparationProperties = new HashSet<PreparationProperty>();
        
         // Clone Attributes
         obj.preparationAttribute    = preparationAttribute != null ? (PreparationAttribute)preparationAttribute.clone() : null;
@@ -1279,6 +1280,11 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
             PreparationAttr newPA = (PreparationAttr)pa.clone();
             obj.preparationAttrs.add(newPA);
             newPA.setPreparation(obj);
+        }
+        for (PreparationProperty pp : preparationProperties) {
+            PreparationProperty newPP = (PreparationProperty)pp.clone();
+            obj.preparationProperties.add(newPP);
+            newPP.setPreparation(obj);
         }
         obj.setGUID();
         return obj;
