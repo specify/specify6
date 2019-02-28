@@ -167,7 +167,7 @@ public class BatchEditTask extends QueryTask {
         htmlDesc.append("<img src='" + imgsrc + "' alt=\"Batch Edit Pencils\" width=\"32\" height=\"32\"></h3>");
         //htmlDesc.append("<h3>Batch  Editing</h3>");
         //htmlDesc.append("<img src='" + imgsrc + "' alt=\"Batch Edit Pencils\" width=\"32\" height=\"32\">");
-        htmlDesc.append("<p>Batch Editing is a powerful data  management tool for improving data quality and consistency; it can modify  thousands of data records with a few clicks of the mouse.<br></strong></p>");
+        htmlDesc.append("<p>Batch Editing is a powerful data  management tool for improving data quality and consistency, it can modify  thousands of data records with a few clicks of the mouse.<br></strong></p>");
         htmlDesc.append("<p><strong>Changes made with Batch Editing are irreversible</strong><strong>; there is  no roll-back function.</strong> <br></p>");
         htmlDesc.append("<p> It is critically important to have a  recent backup of your database available in case massive, unintended changes  are made to it, and you need to restore your database from a backup copy. Batch  Editing is intended for experienced Specify users who understand the logical  relationships among Specify's data tables. Changes made to records in one table  can have cascading effects on records in linked tables. For example, in  databases that use shared Collecting Events, a change to a data field in the  Locality table will be applied to all Collecting Event records linked to that  Locality.&nbsp;That change, in turn, will apply to all Collection Object  records linked to those Collecting Events.&nbsp; </p>");
         htmlDesc.append("<p>");
