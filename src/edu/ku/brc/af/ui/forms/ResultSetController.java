@@ -71,6 +71,7 @@ import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper.CommandType;
+import org.apache.log4j.Logger;
 
 /*
  * Creates a ResultSetController with First, Last, Previous, Next, New and Delete buttons.
@@ -84,6 +85,8 @@ import edu.ku.brc.ui.UIHelper.CommandType;
  */
 public class ResultSetController implements ValidationListener
 {
+    private static final Logger log = Logger.getLogger(ResultSetController.class);
+
     protected static Border enabledBorder  = BorderFactory.createLineBorder(new Color(64,64,64));
     protected static Border disabledBorder = BorderFactory.createLineBorder(Color.GRAY.brighter());
     
@@ -693,6 +696,13 @@ public class ResultSetController implements ValidationListener
             //log.debug("updateUI - RS - formValidator.isTopLevel() "+formValidator.isTopLevel()+" isEnabled() "+formValidator.isEnabled());
             boolean enable = formValidator == null ? false : (formValidator.isTopLevel() || 
                     (formValidator.getParent() != null ? formValidator.getParent().isEnabled() : formValidator.isEnabled()));
+            if (formValidator.getName().equals("PreparationProperty")) {
+                if (!enable && newRecBtn.isEnabled()) {
+                    log.debug("!!!!!!!!!!!!!!!!!!!!!!!!!DISABLING PP + !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                    new Exception().printStackTrace();
+                    log.debug("------------------------- END DISABLING PP + STACK ---------------------------------------------------------");
+                }
+            }
             newRecBtn.setEnabled(enable);
         }
                 
@@ -835,6 +845,13 @@ public class ResultSetController implements ValidationListener
             
             if (newRecBtn != null)
             {
+                if (formValidator.getName().equals("PreparationProperty")) {
+                    if (!enabled && newRecBtn.isEnabled()) {
+                        log.debug("!!!!!!!!!!!!!!!!!!!!!!!!!DISABLING PP + !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                        new Exception().printStackTrace();
+                        log.debug("------------------------- END DISABLING PP + STACK ---------------------------------------------------------");
+                    }
+                }
                 newRecBtn.setEnabled(false);
             }
             if (delRecBtn != null)

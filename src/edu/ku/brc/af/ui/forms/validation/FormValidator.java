@@ -446,6 +446,11 @@ public class FormValidator implements ValidationListener, DataChangeListener
         {
             if (!enabled)
             {
+                if (getName().equals("PreparationProperty")) {
+                        log.debug("!!!!!!!!!!!!!!!!!!!!!!!!!DISABLING PP Validator !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                        new Exception().printStackTrace();
+                        log.debug("------------------------- END DISABLING PP Validator Stack ---------------------------------------------------------");
+                    }
                 hasChanged          = false;
                 formValidationState = UIValidatable.ErrorType.Valid;
                 kidsValState        = UIValidatable.ErrorType.Valid;
