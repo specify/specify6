@@ -161,8 +161,7 @@ public class BatchEditTask extends QueryTask {
         htmlDesc.append("<meta charset=\"utf-8\">");
         htmlDesc.append("<title>Untitled Document</title>");
         htmlDesc.append("</head>");
-        htmlDesc.append("");
-        htmlDesc.append("<body>");
+        htmlDesc.append("<body style=\"margin-left:18\">");
         htmlDesc.append("<h3><strong>Batch Editing</strong>&nbsp;&nbsp;&nbsp;");
         htmlDesc.append("<img src='" + imgsrc + "' alt=\"Batch Edit Pencils\" width=\"32\" height=\"32\"></h3>");
         //htmlDesc.append("<h3>Batch  Editing</h3>");
