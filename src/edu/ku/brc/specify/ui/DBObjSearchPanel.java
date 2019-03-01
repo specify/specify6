@@ -409,6 +409,8 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
      */
     protected void doStartQuery(final JComponent comp)
     {
+        dataMap.clear();
+
         getDataFromUI();
         
         QueryForIdResultsIFace resultsInfo = null;
