@@ -90,7 +90,7 @@ public class PreparationBusRules extends AttachmentOwnerBaseBusRules
     private void showInteractions() {
         if (formViewObj != null) {
             Preparation prep = (Preparation)formViewObj.getDataObj();
-            int loanCnt = BasicSQLUtils.getCountAsInt("select count(distinct l.loanid) from loan l inner join loanpreparation lp on lp.loanid = l.loanid where not lp.isresolved and lp.preparationid = " + prep.getId());
+            int loanCnt = BasicSQLUtils.getCountAsInt("select count(distinct l.loanid) from loan l inner join loanpreparation lp on lp.loanid = l.loanid where lp.preparationid = " + prep.getId());
             int giftCnt = BasicSQLUtils.getCountAsInt("select count(distinct l.giftid) from gift l inner join giftpreparation lp on lp.giftid = l.giftid where lp.preparationid = " + prep.getId());
             int deaccCnt = BasicSQLUtils.getCountAsInt("select count(distinct l.deaccessionid) from deaccession l inner join deaccessionpreparation lp on lp.deaccessionid = l.deaccessionid where lp.preparationid = " + prep.getId());
             int exchCnt = BasicSQLUtils.getCountAsInt("select count(distinct l.exchangeoutid) from exchangeout l inner join exchangeoutprep lp on lp.exchangeoutid = l.exchangeoutid where lp.preparationid = " + prep.getId());
@@ -156,9 +156,9 @@ public class PreparationBusRules extends AttachmentOwnerBaseBusRules
                     String sql = " SELECT DISTINCT " + tbl.getName() + "." + tbl.getIdColumnName() + " FROM "
                     + tbl.getName() +  " Inner Join " + prepTblName + " AS lp ON " + tbl.getName() + "."
                     + tbl.getIdColumnName() + " = lp." + tbl.getIdColumnName() + " WHERE ";
-                    if (tbl.getFieldByName("IsClosed") != null) {
-                        sql += "not " + tbl.getName() + ".IsClosed AND ";
-                    }
+                    //if (tbl.getFieldByName("IsClosed") != null) {
+                    //    sql += "not " + tbl.getName() + ".IsClosed AND ";
+                    //}
                     sql += "lp.PreparationID =" +prep.getId();
                     for (Integer id : BasicSQLUtils.queryForInts(sql)) {
                         Object iAction = session.get(tbl.getClassObj(), id);
