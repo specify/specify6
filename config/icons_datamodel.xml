@@ -246,6 +246,7 @@
     <icon name="CollectingTrip"         alias="collectingtrip"/>
     <icon name="CollectingTripAttribute"             alias="collectingtripattribute"/>
     <icon name="CollectingTripAuthorization"         alias="collectingtripauthorization"/>
+    <icon name="Collection"             alias="collection"/>
     <icon name="CollectionRelationship" alias="collectionrelationship"/>
     <icon name="CollectionRelType"      alias="collectionreltype"/>
     <icon name="Collector"              alias="collector"/>
