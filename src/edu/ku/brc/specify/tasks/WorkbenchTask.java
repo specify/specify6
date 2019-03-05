@@ -2837,7 +2837,61 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         	dlg.dispose();
         }
     }
-    
+
+    /**
+     * Show the dialog to allow the user to edit a template and then updates the data rows and columns..
+     * @param workbenchTemplate the template to be edited
+     */
+    protected void changeUser(final Workbench wb)
+    {
+         String sql = "select distinct s.specifyuserid, s.name from specifyuser s inner join specifyuser_spprincipal ss "
+            + "on ss.specifyuserid = s.specifyuserid inner join spprincipal sp on sp.spprincipalid = ss.spprincipalid "
+            + "inner join spprincipal_sppermission ssp on ssp.spprincipalid = sp.spprincipalid inner join sppermission "
+            + "pr on pr.sppermissionid = ssp.sppermissionid where sp.usergroupscopeid = "
+            + AppContextMgr.getInstance().getClassObject(edu.ku.brc.specify.datamodel.Collection.class).getId()
+            + " and pr.name = 'Task.Workbench' and pr.actions like '%view%' and s.specifyuserid != "
+            + Agent.getUserAgent().getSpecifyUser().getId() + " order by 2";
+         List<Object[]> users = BasicSQLUtils.query(sql);
+         if (users.size() > 0) {
+             List<String> choices = new ArrayList<>(users.size());
+             for (Object[] user: users) {
+                 choices.add(user[1].toString());
+             }
+             ChooseFromListDlg<String> wbtdlg = new ChooseFromListDlg<>((Frame )UIRegistry.getTopWindow(),
+                     UIRegistry.getResourceString("WB_CHOOSE_HANDOFF_USER_TITLE"),
+                     ChooseFromListDlg.OK_BTN | ChooseFromListDlg.CANCEL_BTN /*| ChooseFromListDlg.HELP_BTN */,
+                     choices);
+             //No help for now.
+             //wbtdlg.setHelpContext("Workbench");
+             wbtdlg.setVisible(true);
+             if (!wbtdlg.isCancelled()) {
+                 if (wbtdlg.getSelectedIndices()[0] != 0) {
+                    Object[] newUser = users.get(wbtdlg.getSelectedIndices()[0]);
+                    if (UIRegistry.displayConfirm(getResourceString("WB_USER_HANDOFF_CONFIRM_TITLE"),
+                            String.format(getResourceString("WB_USER_HANDOFF_CONFIRM_MSG"), wb.getName(), newUser[1].toString()),
+                            "OK", "Cancel", JOptionPane.QUESTION_MESSAGE)) {
+                        String remark = String.format(getResourceString("WB_USER_HANDOFF_REMARK"), wb.getName(),
+                                Agent.getUserAgent().getSpecifyUser().getName(), newUser[1].toString(), Calendar.getInstance().getTime().toString());
+                        remark = BasicSQLUtils.escapeStringLiterals(remark);
+                        sql = "update workbenchtemplate t inner join workbench w on w.workbenchtemplateid = t.workbenchtemplateid "
+                            + "set t.SpecifyUserID = " + newUser[0] + ", w.SpecifyUserID = " + newUser[0] + ", "
+                            + "case when w.remarks is null then '" + remark + "' else concat(w.remarks,'\r\n', '" + remark + "')"
+                            + " where w.workbenchid = " + wb.getId();
+                        int r = BasicSQLUtils.update(sql);
+                        if (r != 2) {
+                            UIRegistry.showError("WB_USER_HANDOFF_FAILED");
+                        } else {
+                            datasetNavBoxMgr.removeWorkbench(wb);
+                            UIRegistry.displayInfoMsgDlg(String.format(getResourceString("WB_USER_HANDOFF_SUCCESS"), newUser[1].toString()));
+                        }
+                    }
+                 }
+             }
+         } else {
+             UIRegistry.showLocalizedMsg("WB_NO_USERS_FOUND_FOR_DATASET_SHARE");
+         }
+    }
+
     /**
      * @param wbTemplate
      * @param deletedItems

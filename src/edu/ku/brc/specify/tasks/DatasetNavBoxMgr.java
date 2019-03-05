@@ -225,6 +225,20 @@ public class DatasetNavBoxMgr
                 }
             }
         });
+        menuTitle = "WB_HANDOFF";
+        mneu = "WB_PASS_IT_ON";
+        UIHelper.createLocalizedMenuItem(popupMenu, menuTitle, mneu, null, true, new ActionListener() {
+            @SuppressWarnings("synthetic-access")
+            public void actionPerformed(ActionEvent e)
+            {
+                Workbench wb = workbenchTask.getWorkbenchFromCmd(roc.getData(), "WorkbenchEditMapping");
+                if (wb != null)
+                {
+                    UsageTracker.incrUsageCount("WB.DataSetHandoff");
+                    workbenchTask.changeUser(wb);
+                }
+            }
+        });
 
         //if (!AppContextMgr.isSecurityOn() || getPermissions().canDelete())
         if (workbenchTask.isPermitted())
