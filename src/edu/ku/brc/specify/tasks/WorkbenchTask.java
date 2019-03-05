@@ -2870,19 +2870,20 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                     if (UIRegistry.displayConfirm(getResourceString("WB_USER_HANDOFF_CONFIRM_TITLE"),
                             String.format(getResourceString("WB_USER_HANDOFF_CONFIRM_MSG"), wb.getName(), newUser[1].toString()),
                             "OK", "Cancel", JOptionPane.QUESTION_MESSAGE)) {
-                        String remark = String.format(getResourceString("WB_USER_HANDOFF_REMARK"), wb.getName(),
-                                Agent.getUserAgent().getSpecifyUser().getName(), newUser[1].toString(), Calendar.getInstance().getTime().toString());
+                        String timeStr = new SimpleDateFormat("yyyy-MM-dd hh:mm").format(Calendar.getInstance().getTime());
+                        String remark = String.format(getResourceString("WB_USER_HANDOFF_REMARK"),
+                                Agent.getUserAgent().getSpecifyUser().getName(), newUser[1].toString(), timeStr);
                         remark = BasicSQLUtils.escapeStringLiterals(remark);
                         sql = "update workbenchtemplate t inner join workbench w on w.workbenchtemplateid = t.workbenchtemplateid "
-                            + "set t.SpecifyUserID = " + newUser[0] + ", w.SpecifyUserID = " + newUser[0] + ", "
-                            + "case when w.remarks is null then '" + remark + "' else concat(w.remarks,'\r\n', '" + remark + "')"
+                            + "set w.version = w.version + 1, t.version = t.version + 1, t.SpecifyUserID = " + newUser[0] + ", w.SpecifyUserID = " + newUser[0] + ", "
+                            + "w.remarks = case when w.remarks is null then '" + remark + "' else concat(w.remarks,'\r\n', '" + remark + "') end"
                             + " where w.workbenchid = " + wb.getId();
                         int r = BasicSQLUtils.update(sql);
                         if (r != 2) {
-                            UIRegistry.showError("WB_USER_HANDOFF_FAILED");
+                            UIRegistry.showError(getResourceString("WB_USER_HANDOFF_FAILED"));
                         } else {
                             datasetNavBoxMgr.removeWorkbench(wb);
-                            UIRegistry.displayInfoMsgDlg(String.format(getResourceString("WB_USER_HANDOFF_SUCCESS"), newUser[1].toString()));
+                            UIRegistry.displayInfoMsgDlg(String.format(getResourceString("WB_USER_HANDOFF_SUCCESS"), wb.getName(), newUser[1].toString()));
                         }
                     }
                  }
