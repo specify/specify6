@@ -861,6 +861,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
      */
     public void initialize() {
         if (!isInitialized) {
+            permissions = null;
             isInitialized = true;
 
             // IMportant for reinitializing
