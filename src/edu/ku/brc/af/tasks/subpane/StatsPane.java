@@ -215,7 +215,11 @@ public class StatsPane extends BaseSubPane
         }
         return cmdAction;
     }
-    
+
+    public void refresh() {
+        init();
+    }
+
     /**
      * @param boxElement
      * @param title

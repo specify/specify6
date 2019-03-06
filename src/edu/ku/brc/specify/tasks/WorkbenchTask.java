@@ -116,6 +116,7 @@ import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMessage;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploaderException;
 import edu.ku.brc.specify.tasks.subpane.wb.WBUnMappedItemException;
+import edu.ku.brc.af.tasks.subpane.StatsPane;
 import edu.ku.brc.specify.tools.schemalocale.SchemaLocalizerXMLHelper;
 import edu.ku.brc.specify.ui.ChooseRecordSetDlg;
 import edu.ku.brc.ui.ChooseFromListDlg;
@@ -2249,7 +2250,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                     session.flush();
                     
                     UIRegistry.getStatusBar().incrementValue(workbench.getName());
-                    datasetNavBoxMgr.removeWorkbench(workbench);
+                    removeWorkbenchFromUI(workbench);
                     updateNavBoxUI(null);
                     if (ContextMgr.getTaskByClass(SGRTask.class) != null) {
                     	((SGRTask)ContextMgr.getTaskByClass(SGRTask.class)).deleteResultsForWorkbench(workbench);
@@ -2883,7 +2884,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                             if (r != 2) {
                                 UIRegistry.showError(getResourceString("WB_USER_HANDOFF_FAILED"));
                             } else {
-                                datasetNavBoxMgr.removeWorkbench(wb);
+                                removeWorkbenchFromUI(wb);
                                 UIRegistry.displayInfoMsgDlg(String.format(getResourceString("WB_USER_HANDOFF_SUCCESS"), wb.getName(), newUser[1].toString()));
                             }
                         }
@@ -2897,6 +2898,14 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
             log.error(ex);
             ex.printStackTrace();
+        }
+    }
+
+    protected void removeWorkbenchFromUI(Workbench wb) {
+        datasetNavBoxMgr.removeWorkbench(wb);
+        final StatsPane welcomePane = (StatsPane)SubPaneMgr.getInstance().getSubPaneByName("Welcome");
+        if (welcomePane != null) {
+            SwingUtilities.invokeLater(() -> {welcomePane.refresh();});
         }
     }
 
