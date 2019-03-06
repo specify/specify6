@@ -4162,12 +4162,12 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         } else if (cmdData instanceof RecordSetIFace)
         {
             Workbench workbench = loadWorkbench((RecordSetIFace)cmdData);
-            if (workbench != null)
+            if (workbench != null && workbench.getSpecifyUser().getId().equals(Agent.getUserAgent().getSpecifyUser().getId()))
             {
                 createEditorForWorkbench(workbench, null, false, true);
             } else
             {
-                log.error("Workbench was null!");
+                log.error("Workbench was null or no longer belongs to current user.");
             }
             
         } else
