@@ -3700,7 +3700,7 @@ public class Uploader implements ActionListener, KeyListener
             result = false;
             boolean isUpdate = isUpdateUpload();
             int rv = force ? JOptionPane.YES_OPTION : showShutDownDlg(isUpdate, action);
-            if (rv == JOptionPane.YES_OPTION) {
+            if (rv == JOptionPane.YES_OPTION && (!isUpdate || (wasCommitted && !wasRolledBack))) {
                 saveRecordSets();
                 result = true;
                 wbSS.saveObject();
