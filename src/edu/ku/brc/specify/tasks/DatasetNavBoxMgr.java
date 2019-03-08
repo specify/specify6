@@ -17,8 +17,20 @@
  */
 package edu.ku.brc.specify.tasks;
 
-import static edu.ku.brc.ui.UIRegistry.getResourceString;
+import edu.ku.brc.af.core.NavBox;
+import edu.ku.brc.af.core.NavBoxItemIFace;
+import edu.ku.brc.af.core.NavBoxMgr;
+import edu.ku.brc.af.core.UsageTracker;
+import edu.ku.brc.dbsupport.RecordSetIFace;
+import edu.ku.brc.specify.datamodel.RecordSet;
+import edu.ku.brc.specify.datamodel.Workbench;
+import edu.ku.brc.ui.*;
+import edu.ku.brc.ui.dnd.GhostActionable;
+import edu.ku.brc.ui.dnd.Trash;
+import org.apache.log4j.Logger;
 
+import javax.swing.*;
+import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -26,27 +38,7 @@ import java.lang.ref.WeakReference;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.swing.JPopupMenu;
-
-import org.apache.log4j.Logger;
-
-import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.af.core.NavBox;
-import edu.ku.brc.af.core.NavBoxItemIFace;
-import edu.ku.brc.af.core.NavBoxMgr;
-import edu.ku.brc.af.core.UsageTracker;
-import edu.ku.brc.dbsupport.DataProviderFactory;
-import edu.ku.brc.dbsupport.DataProviderSessionIFace;
-import edu.ku.brc.dbsupport.RecordSetIFace;
-import edu.ku.brc.specify.datamodel.RecordSet;
-import edu.ku.brc.specify.datamodel.SpecifyUser;
-import edu.ku.brc.specify.datamodel.Workbench;
-import edu.ku.brc.ui.CommandAction;
-import edu.ku.brc.ui.RolloverCommand;
-import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.dnd.GhostActionable;
-import edu.ku.brc.ui.dnd.Trash;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 /**
  * @author ben
@@ -60,7 +52,7 @@ public class DatasetNavBoxMgr
 {
     private static final Logger log = Logger.getLogger(DatasetNavBoxMgr.class);
     
-    private final List<WeakReference<DataSetNavBox>> navBoxes = 
+    private final List<WeakReference<DataSetNavBox>> navBoxes =
         new LinkedList<WeakReference<DataSetNavBox>>();
 
     private final WorkbenchTask workbenchTask;
@@ -78,48 +70,34 @@ public class DatasetNavBoxMgr
     	String srcName = obj.getWorkbenchTemplate().getSrcFilePath();
     	return srcName == null || !srcName.startsWith("<<#spatch#>>");
     }
-    
-    public NavBox createWorkbenchNavBox(String actionType)
-    {
+
+    //used by defunct SGR Task
+    public NavBox createWorkbenchNavBox(String actionType) {
+        return createWorkbenchNavBox(actionType, null, null);
+    }
+
+    public NavBox createWorkbenchNavBox(String actionType, List<?> list, ActionListener refresher) {
         DataSetNavBox navBox = null;
         
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        try
-        {
-            navBox = new DataSetNavBox(getResourceString("WB_DATASETS"),false,true, actionType);
-            List<?> list    = session.getDataList("From Workbench where SpecifyUserID = " + 
-                    AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getSpecifyUserId() + 
-                    " order by name");
-            for (Object obj : list)
-            {
-                if (shouldAddToNavBox((Workbench)obj)) {
-                	addWorkbenchToNavBox(navBox, (Workbench)obj);
-                }
+        navBox = new DataSetNavBox(getResourceString("WB_DATASETS"),false,true, actionType);
+        navBox.insert(NavBox.createBtnWithTT(getResourceString("WB_RefreshDatasets"), "Reload",
+                getResourceString("WB_REFRESH_DATASETS_TT"), IconManager.STD_ICON_SIZE,
+                refresher), false, false, 0);
+        for (Object obj : list) {
+            if (shouldAddToNavBox((Workbench)obj)) {
+                addWorkbenchToNavBox(navBox, (Workbench)obj);
             }
-            
-        } catch (Exception ex)
-        {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DatasetNavBoxMgr.class, ex);
-            log.error(ex);
-            ex.printStackTrace();
-            
-        } finally
-        {
-            session.close();    
         }
-        
-        if (navBox != null)
-        {
+
+        if (navBox != null) {
             navBoxes.add(new WeakReference<DataSetNavBox>(navBox));
         }
-        
+
         return navBox;
     }
     
 
-    public void addWorkbench(Workbench workbench)
-    {
+    public void addWorkbench(Workbench workbench) {
         if (shouldAddToNavBox(workbench)) {
         	for (WeakReference<DataSetNavBox> boxRef : navBoxes) if (boxRef.get() != null) {
         		addWorkbenchToNavBox(boxRef.get(), workbench);
@@ -283,5 +261,17 @@ public class DatasetNavBoxMgr
             super(name, collapsable, scrollable);
             this.actionType = actionType;
         }
+
+        @Override
+        public Component insertSorted(NavBoxItemIFace item) {
+            int insertionInx = 0;
+            if (items.size() > 0) {
+                do {
+                    insertionInx++;
+                } while (insertionInx < items.size() && item.compareTo(items.get(insertionInx)) >= 0);
+            }
+            return insert(item, true, false, insertionInx);
+        }
+
     }
 }

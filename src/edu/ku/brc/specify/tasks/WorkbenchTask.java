@@ -19,13 +19,55 @@
 */
 package edu.ku.brc.specify.tasks;
 
-import static edu.ku.brc.ui.UIHelper.createLabel;
-import static edu.ku.brc.ui.UIRegistry.getResourceString;
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+import edu.ku.brc.af.auth.BasicPermisionPanel;
+import edu.ku.brc.af.auth.PermissionEditorIFace;
+import edu.ku.brc.af.core.*;
+import edu.ku.brc.af.core.db.DBFieldInfo;
+import edu.ku.brc.af.core.db.DBRelationshipInfo;
+import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.af.tasks.subpane.BarChartPane;
+import edu.ku.brc.af.tasks.subpane.ChartPane;
+import edu.ku.brc.af.tasks.subpane.PieChartPane;
+import edu.ku.brc.af.tasks.subpane.StatsPane;
+import edu.ku.brc.af.ui.db.ViewBasedDisplayDialog;
+import edu.ku.brc.af.ui.forms.MultiView;
+import edu.ku.brc.dbsupport.*;
+import edu.ku.brc.helpers.ImageFilter;
+import edu.ku.brc.helpers.SwingWorker;
+import edu.ku.brc.helpers.UIFileFilter;
+import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.datamodel.*;
+import edu.ku.brc.specify.rstools.ExportFileConfigurationFactory;
+import edu.ku.brc.specify.rstools.ExportToFile;
+import edu.ku.brc.specify.tasks.subpane.qb.QBResultsSubPane;
+import edu.ku.brc.specify.tasks.subpane.wb.*;
+import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
+import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploaderException;
+import edu.ku.brc.specify.tools.schemalocale.SchemaLocalizerXMLHelper;
+import edu.ku.brc.specify.ui.ChooseRecordSetDlg;
+import edu.ku.brc.ui.*;
+import edu.ku.brc.ui.dnd.SimpleGlassPane;
+import edu.ku.brc.util.Pair;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.dom4j.Element;
+import org.hibernate.Session;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Frame;
+import javax.swing.*;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.SoftBevelBorder;
+import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.lang.ref.SoftReference;
 import java.sql.Connection;
@@ -33,106 +75,13 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
+import java.util.*;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.Vector;
 import java.util.concurrent.atomic.AtomicReference;
 
-import javax.swing.ImageIcon;
-import javax.swing.JComponent;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.SoftBevelBorder;
-
-import edu.ku.brc.af.core.*;
-import edu.ku.brc.af.core.db.DBRelationshipInfo;
-import edu.ku.brc.specify.datamodel.*;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.dom4j.Element;
-import org.hibernate.Session;
-
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
-
-import edu.ku.brc.af.auth.BasicPermisionPanel;
-import edu.ku.brc.af.auth.PermissionEditorIFace;
-import edu.ku.brc.af.core.db.DBFieldInfo;
-import edu.ku.brc.af.core.db.DBTableIdMgr;
-import edu.ku.brc.af.core.db.DBTableInfo;
-import edu.ku.brc.af.prefs.AppPreferences;
-import edu.ku.brc.af.tasks.subpane.BarChartPane;
-import edu.ku.brc.af.tasks.subpane.ChartPane;
-import edu.ku.brc.af.tasks.subpane.PieChartPane;
-import edu.ku.brc.af.ui.db.ViewBasedDisplayDialog;
-import edu.ku.brc.af.ui.forms.MultiView;
-import edu.ku.brc.dbsupport.DBConnection;
-import edu.ku.brc.dbsupport.DataProviderFactory;
-import edu.ku.brc.dbsupport.DataProviderSessionIFace;
-import edu.ku.brc.dbsupport.HibernateUtil;
-import edu.ku.brc.dbsupport.QueryResultsContainerIFace;
-import edu.ku.brc.dbsupport.QueryResultsHandlerIFace;
-import edu.ku.brc.dbsupport.QueryResultsListener;
-import edu.ku.brc.dbsupport.RecordSetIFace;
-import edu.ku.brc.dbsupport.RecordSetItemIFace;
-import edu.ku.brc.helpers.ImageFilter;
-import edu.ku.brc.helpers.SwingWorker;
-import edu.ku.brc.helpers.UIFileFilter;
-import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.specify.conversion.BasicSQLUtils;
-import edu.ku.brc.specify.rstools.ExportFileConfigurationFactory;
-import edu.ku.brc.specify.rstools.ExportToFile;
-import edu.ku.brc.specify.tasks.subpane.qb.QBResultsSubPane;
-import edu.ku.brc.specify.tasks.subpane.wb.ConfigureExternalDataIFace;
-import edu.ku.brc.specify.tasks.subpane.wb.DataImportIFace;
-import edu.ku.brc.specify.tasks.subpane.wb.ImageFrame;
-import edu.ku.brc.specify.tasks.subpane.wb.ImportColumnInfo;
-import edu.ku.brc.specify.tasks.subpane.wb.ImportDataFileInfo;
-import edu.ku.brc.specify.tasks.subpane.wb.SelectNewOrExistingDlg;
-import edu.ku.brc.specify.tasks.subpane.wb.TemplateEditor;
-import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchBackupMgr;
-import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchJRDataSource;
-import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS;
-import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchValidator;
-import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMessage;
-import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
-import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploaderException;
-import edu.ku.brc.specify.tasks.subpane.wb.WBUnMappedItemException;
-import edu.ku.brc.af.tasks.subpane.StatsPane;
-import edu.ku.brc.specify.tools.schemalocale.SchemaLocalizerXMLHelper;
-import edu.ku.brc.specify.ui.ChooseRecordSetDlg;
-import edu.ku.brc.ui.ChooseFromListDlg;
-import edu.ku.brc.ui.CommandAction;
-import edu.ku.brc.ui.CommandDispatcher;
-import edu.ku.brc.ui.CustomDialog;
-import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.JStatusBar;
-import edu.ku.brc.ui.RolloverCommand;
-import edu.ku.brc.ui.ToggleButtonChooserDlg;
-import edu.ku.brc.ui.ToggleButtonChooserPanel;
-import edu.ku.brc.ui.ToolBarDropDownBtn;
-import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.dnd.SimpleGlassPane;
-import edu.ku.brc.util.Pair;
+import static edu.ku.brc.ui.UIHelper.createLabel;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 /**
  * Placeholder for additional work.
@@ -252,6 +201,70 @@ public class WorkbenchTask extends BaseTask
         getDatabaseSchema(false);
 	}
 
+	protected Integer getWbId(NavBoxItemIFace nb) {
+        Integer result = null;
+	    if (nb.getData() instanceof CommandAction) {
+            CommandAction data = (CommandAction)nb.getData();
+            if (data.getType().equalsIgnoreCase("Workbench")) {
+                RecordSetIFace rs = (RecordSetIFace)data.getProperty("workbench");
+                if (rs != null) {
+                    result = rs.getOnlyItem().getRecordId();
+                }
+            }
+        }
+        return result;
+    }
+
+    protected void refreshDatasets()
+    {
+        List<Workbench> wbs = getWorkbenches();
+        List<Workbench> oldWbs = new ArrayList<>();
+        for (Workbench wb : wbs) {
+            for (NavBoxItemIFace nb : workbenchNavBox.getItems()) {
+                Integer nbWbId = getWbId(nb);
+                if (wb.getId().equals(getWbId(nb))) {
+                    oldWbs.add(wb);
+                    break;
+                }
+            }
+        }
+        for (Workbench wb : oldWbs) {
+            wbs.remove(wb);
+        }
+        if (wbs.size() > 0) {
+            for (Workbench wb: wbs) {
+                datasetNavBoxMgr.addWorkbench(wb);
+            }
+        }
+    }
+
+    private List<Workbench> getWorkbenches() {
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        List<Workbench> wbs = new ArrayList<>();
+        try {
+            List<?> list  = session.getDataList("From Workbench where SpecifyUserID = " +
+                    AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getSpecifyUserId() +
+                    " order by name");
+            for (Object obj : list) {
+                wbs.add((Workbench)obj);
+            }
+        } catch (Exception ex) {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DatasetNavBoxMgr.class, ex);
+            log.error(ex);
+            ex.printStackTrace();
+        } finally {
+            session.close();
+        }
+        return wbs;
+    }
+
+    private void buildWorkBenchNavBox() {
+        List<Workbench> wbs = getWorkbenches();
+        workbenchNavBox = datasetNavBoxMgr.createWorkbenchNavBox(WORKBENCH, wbs,
+                new ActionListener() { public void actionPerformed(ActionEvent e) { refreshDatasets(); }});
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.core.Taskable#initialize()
      */
@@ -295,9 +308,8 @@ public class WorkbenchTask extends BaseTask
             }  
             
             navBoxes.add(navBox);
-            
-            workbenchNavBox = datasetNavBoxMgr.createWorkbenchNavBox(WORKBENCH);
 
+            buildWorkBenchNavBox();
             
             // Then add
             if (commands != null && (!AppContextMgr.isSecurityOn() || canViewReports()))
