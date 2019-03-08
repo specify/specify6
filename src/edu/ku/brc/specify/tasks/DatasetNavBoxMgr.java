@@ -80,9 +80,11 @@ public class DatasetNavBoxMgr
         DataSetNavBox navBox = null;
         
         navBox = new DataSetNavBox(getResourceString("WB_DATASETS"),false,true, actionType);
-        navBox.insert(NavBox.createBtnWithTT(getResourceString("WB_RefreshDatasets"), "Reload",
-                getResourceString("WB_REFRESH_DATASETS_TT"), IconManager.STD_ICON_SIZE,
-                refresher), false, false, 0);
+        if (refresher != null) {
+            navBox.insert(NavBox.createBtnWithTT(getResourceString("WB_RefreshDatasets"), "Reload",
+                    getResourceString("WB_REFRESH_DATASETS_TT"), IconManager.STD_ICON_SIZE,
+                    refresher), false, false, 0);
+        }
         for (Object obj : list) {
             if (shouldAddToNavBox((Workbench)obj)) {
                 addWorkbenchToNavBox(navBox, (Workbench)obj);
@@ -266,6 +268,9 @@ public class DatasetNavBoxMgr
         public Component insertSorted(NavBoxItemIFace item) {
             int insertionInx = 0;
             if (items.size() > 0) {
+                if (items.get(0).getData() instanceof CommandAction && !((CommandAction)items.get(0).getData()).getType().equalsIgnoreCase("workbench")) {
+                    insertionInx = -1;
+                }
                 do {
                     insertionInx++;
                 } while (insertionInx < items.size() && item.compareTo(items.get(insertionInx)) >= 0);

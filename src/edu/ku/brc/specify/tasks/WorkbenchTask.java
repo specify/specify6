@@ -261,8 +261,7 @@ public class WorkbenchTask extends BaseTask
 
     private void buildWorkBenchNavBox() {
         List<Workbench> wbs = getWorkbenches();
-        workbenchNavBox = datasetNavBoxMgr.createWorkbenchNavBox(WORKBENCH, wbs,
-                new ActionListener() { public void actionPerformed(ActionEvent e) { refreshDatasets(); }});
+        workbenchNavBox = datasetNavBoxMgr.createWorkbenchNavBox(WORKBENCH, wbs, null /*e -> refreshDatasets()*/);
     }
 
     /* (non-Javadoc)
@@ -305,7 +304,10 @@ public class WorkbenchTask extends BaseTask
                 enableNavBoxList.add((NavBoxItemIFace)roc);
                 
                 makeDnDNavBtn(navBox, getResourceString("WB_EXPORTFROMDBTOWB"), "Export16", getResourceString("WB_EXPORTFROMDBTOWB_TT"), new CommandAction(WORKBENCH, EXPORT_RS_TO_WB, wbTblId), null, false, false);// true means make it draggable
-            }  
+
+                navBox.add(NavBox.createBtnWithTT(getResourceString("WB_RefreshDatasets"), "Reload",
+                        getResourceString("WB_REFRESH_DATASETS_TT"), IconManager.STD_ICON_SIZE,e  -> refreshDatasets()));
+            }
             
             navBoxes.add(navBox);
 
