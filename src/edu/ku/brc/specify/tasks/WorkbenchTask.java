@@ -1758,7 +1758,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             workbenchTemplate.getWorkbenches().add(workbench);
             if (fillInWorkbenchNameAndAttrs(workbench, wbName, false, alwaysAskForName)) {
                 workbenchTemplate.setName(workbench.getName());
-                if (workbenchTemplate.getSrcFilePath().contains("<<#spatch#>>")) {
+                if (workbenchTemplate.getSrcFilePath() !=  null && workbenchTemplate.getSrcFilePath().contains("<<#spatch#>>")) {
                     //stash queryname
                     workbench.setSrcFilePath(workbenchTemplate.getRemarks());
                     workbenchTemplate.setRemarks(null);
