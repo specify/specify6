@@ -219,11 +219,6 @@
       		</table>	
       	</table>
       	<alias name="ConservDescription" field="conservDescriptions" /> 
-      	<!-- table name="Container" field="container" /-->
-      	<!-- table name="Container" field="containerOwner" /-->
-      	<!--table name="DNASequence" field="dnaSequences">
-      			<alias name="Agent" field="sequencer" /> 
-      	</table-->
       	<alias name="DNASequence" field="dnaSequences"/>
  
       	<alias name="Container" field="container"/>
@@ -276,7 +271,7 @@
     </table>
     
     <table name="Container" >
-    	<alias name="Container" field="parent" />    	
+    	<alias name="Container" field="parent" />
     	<alias name="Container" field="children" />
     	<alias name="CollectionObject" field="collectionObjectKids"/>
     	<alias name="CollectionObject" field="collectionObjects"/>
@@ -391,7 +386,7 @@
       	<!-- alias name="Geography" field="acceptedChildren" /-->
       	<!-- alias name="Geography" field="children" /-->
       	<alias name="Geography" field="acceptedGeography" />
-      	<!-- <alias name="Geography" field="parent" /-->
+      	<alias name="Geography" field="parent" />
       	<alias name="Locality" field="localities" />
       	<alias name="Agent" field="modifiedByAgent" />    	
         <table name="GeographyTreeDefItem" field="definitionItem"/>
@@ -641,10 +636,10 @@
     </table>
     
     <table name="Taxon">
-    	<!--alias name="Taxon" field="parent"/-->
+    	<alias name="Taxon" field="parent"/>
     	<alias name="Taxon" field="acceptedTaxon" />
-    	<!--alias name="Taxon" field="hybridParent1" /-->
-    	<!--alias name="Taxon" field="hybridParent2" /-->
+    	<alias name="Taxon" field="hybridParent1" />
+    	<alias name="Taxon" field="hybridParent2" />
         <table name="TaxonAttachment" field="taxonAttachments">
            	<alias name="Attachment"/>
         </table>

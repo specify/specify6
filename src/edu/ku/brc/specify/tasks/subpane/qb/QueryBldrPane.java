@@ -3937,7 +3937,10 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 while (parent != null) {
                     if (parent.getTableInfo() != null) {
                         if (GroupPerson.class.isAssignableFrom(parent.getTableInfo().getClassObj())) {
-                            return gp++ < 2;
+                            gp++;
+                            if (gp > 1) {
+                                return false;
+                            }
                         }
                     } else {
                         break;

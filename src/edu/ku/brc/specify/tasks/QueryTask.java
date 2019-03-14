@@ -2416,11 +2416,11 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
             for (int t = 0; t < treeRoot.getKids(); t++)
             {
                 TableTree tt = treeRoot.getKid(t);
-                /* use this to fix #113, and allow taxon.parent, and possibly improve other things...
+                /* use this to fix #113, and allow taxon.parent, and possibly improve other things...*/
                 result.put(tt.getName(), (TableTree)tt.clone());
-                */
+                /**/
                 //use this for now...
-                result.put(tt.getName(), tt);
+                //result.put(tt.getName(), tt);
                 log.debug("Adding[" + tt.getName() + "] to hash");
             }
         }
