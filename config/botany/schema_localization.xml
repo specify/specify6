@@ -45,22 +45,19 @@
     <version>0</version>
     <isSystem>false</isSystem>
     <items>
-      <desc name="description" type="java.lang.String" isHidden="false" isUIFormatter="false" isRequired="false">
+      <desc name="exsiccataItems" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
-        <isSystem>false</isSystem>
         <names>
-          <str language="en" country="" variant="">
+          <str language="en">
             <version>0</version>
-            <text>Specimen\nDescription</text>
+            <text>Exsiccata Items</text>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Itens Exsiccata</text>
           </str>
         </names>
-        <descs>
-          <str language="en" country="" variant="">
-            <version>0</version>
-            <text>Image, Sound, Preparation, Container(Container Label?).</text>
-          </str>
-        </descs>
-        <spExportSchemaItems/>
+        <descs/>
       </desc>
       <desc name="text1" type="java.lang.String" isHidden="false" isUIFormatter="false" pickListName="Phenology" isRequired="false">
         <version>0</version>
@@ -93,19 +90,22 @@
         </names>
         <descs/>
       </desc>
-      <desc name="exsiccataItems" isHidden="false" isUIFormatter="false" isRequired="false">
+      <desc name="description" type="java.lang.String" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
+        <isSystem>false</isSystem>
         <names>
-          <str language="en">
+          <str language="en" country="" variant="">
             <version>0</version>
-            <text>Exsiccata Items</text>
-          </str>
-          <str language="pt">
-            <version>1</version>
-            <text>Itens Exsiccata</text>
+            <text>Specimen\nDescription</text>
           </str>
         </names>
-        <descs/>
+        <descs>
+          <str language="en" country="" variant="">
+            <version>0</version>
+            <text>Image, Sound, Preparation, Container(Container Label?).</text>
+          </str>
+        </descs>
+        <spExportSchemaItems/>
       </desc>
     </items>
     <names/>
