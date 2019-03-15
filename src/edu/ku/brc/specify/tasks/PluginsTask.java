@@ -123,9 +123,9 @@ public class PluginsTask extends BaseTask
      */
     protected Vector<NavBoxItemIFace> toolsNavBoxList    = new Vector<NavBoxItemIFace>();
 
-    protected List<Class<? extends RecordSetToolsIFace>> toolsRegistryList = new Vector<Class<? extends RecordSetToolsIFace>>();
+    protected List<Pair<Class<? extends RecordSetToolsIFace>, Boolean>> toolsRegistryList = new Vector<>();
     
-    protected List<RecordSetToolsIFace> loadedToolsList = new Vector<RecordSetToolsIFace>();
+    protected List<Pair<RecordSetToolsIFace, Boolean>> loadedToolsList = new Vector<>();
     
     /**
      * Constructor.
@@ -207,12 +207,14 @@ public class PluginsTask extends BaseTask
 
             // create an instance of each registered exporter
             toolsNavBoxList.clear();
-            for (Class<? extends RecordSetToolsIFace> exporterClass: toolsRegistryList)
+            for (Pair<Class<? extends RecordSetToolsIFace>, Boolean> exporterClass: toolsRegistryList)
             {
                 try
                 {
-                    RecordSetToolsIFace exporter = exporterClass.newInstance();
-                    loadedToolsList.add(exporter);
+                    if (exporterClass.getSecond()) {
+                        RecordSetToolsIFace exporter = exporterClass.getFirst().newInstance();
+                        loadedToolsList.add(new Pair<RecordSetToolsIFace, Boolean>(exporter, exporterClass.getSecond()));
+                    }
                 }
                 catch (Exception e)
                 {
@@ -230,9 +232,11 @@ public class PluginsTask extends BaseTask
                 NavBox navBox = new NavBox(getResourceString("Plugins"));
                 
                 // for each registered exporter, create a TaskCommandDef for it
-                for (RecordSetToolsIFace tool : loadedToolsList)
+                for (Pair<RecordSetToolsIFace, Boolean> toolPair : loadedToolsList)
                 {
-                    if (tool.isVisible())
+                    RecordSetToolsIFace tool = toolPair.getFirst();
+                    Boolean addToUI = toolPair.getSecond();
+                    if (tool.isVisible() && addToUI)
                     {
                         cmdAction = new CommandAction(PLUGINS, EXPORT_RS);
                         cmdAction.setProperty("tool", tool);
@@ -268,13 +272,6 @@ public class PluginsTask extends BaseTask
     protected void readToolRegistry()
     {
         toolsRegistryList.clear();
-        
-        //exportersRegistry.add(GoogleEarthExporter.class);
-        //exportersRegistry.add(DiGIRExporter.class);
-        //exportersRegistry.add(WebPageExporter.class);
-        //exportersRegistry.add(ExportToFile.class);
-        //exportersRegistry.add(BGMRecordSetProcessor.class);
-        
         String fileName = "rstools_registry.xml";
         
         HashMap<String, Pair<String, Boolean>> rsPlugins = new HashMap<String, Pair<String, Boolean>>();
@@ -288,12 +285,12 @@ public class PluginsTask extends BaseTask
         for (String rspName : rsPlugins.keySet())
         {
             Pair<String, Boolean> p = rsPlugins.get(rspName);
-            if (p != null && p.getSecond())
+            if (p != null)
             {
                 try
                 {
                     Class<? extends RecordSetToolsIFace> cls = Class.forName(p.first).asSubclass(RecordSetToolsIFace.class);
-                    toolsRegistryList.add(cls);
+                    toolsRegistryList.add(new Pair<>(cls, p.getSecond()));
                     
                 } catch (Exception ex)
                 {
@@ -385,9 +382,11 @@ public class PluginsTask extends BaseTask
     {
         StringBuilder htmlDesc = new StringBuilder("<h3>Welcome to the Specify Plugins</h3>"); //I18N
         htmlDesc.append("<p>Tools installed:<ul>");
-        for (RecordSetToolsIFace tool: loadedToolsList)
+        for (Pair<RecordSetToolsIFace, Boolean> toolPair: loadedToolsList)
         {
-            if (tool.isVisible())
+            RecordSetToolsIFace tool = toolPair.getFirst();
+            Boolean addToUI = toolPair.getSecond();
+            if (tool.isVisible() && addToUI)
             {
                 htmlDesc.append("<li><b>" + tool.getName() + "</b><p>" + tool.getDescription());
             }
@@ -654,8 +653,9 @@ public class PluginsTask extends BaseTask
         
         if (propValue instanceof Class<?>)
         {
-            for (RecordSetToolsIFace exp: loadedToolsList)
+            for (Pair<RecordSetToolsIFace, Boolean> expPair: loadedToolsList)
             {
+                RecordSetToolsIFace exp = expPair.getFirst();
                 if (exp.getClass().equals(propValue))
                 {
                     return exp;
@@ -665,8 +665,9 @@ public class PluginsTask extends BaseTask
         
         if (propValue instanceof String)
         {
-            for (RecordSetToolsIFace exp: loadedToolsList)
+            for (Pair<RecordSetToolsIFace, Boolean> expPair: loadedToolsList)
             {
+                RecordSetToolsIFace exp = expPair.getFirst();
                 if (exp.getClass().getName().equals(propValue))
                 {
                     return exp;
