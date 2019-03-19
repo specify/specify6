@@ -211,10 +211,8 @@ public class PluginsTask extends BaseTask
             {
                 try
                 {
-                    if (exporterClass.getSecond()) {
-                        RecordSetToolsIFace exporter = exporterClass.getFirst().newInstance();
-                        loadedToolsList.add(new Pair<RecordSetToolsIFace, Boolean>(exporter, exporterClass.getSecond()));
-                    }
+                    RecordSetToolsIFace exporter = exporterClass.getFirst().newInstance();
+                    loadedToolsList.add(new Pair<>(exporter, exporterClass.getSecond()));
                 }
                 catch (Exception e)
                 {
