@@ -364,21 +364,7 @@
 
 
   <table classname="edu.ku.brc.specify.datamodel.CollectionObjectProperty" table="collectionobjectproperty" tableid="153" lazy="true" >
-    <field column="Measurement Type 1" name="measurementType1" type="java.lang.String"/>
-    <field column="Measurement Unit 1" name="measurementUnit1" type="java.lang.String"/>
-    <field column="Measurement Accuracy 1" name="measurementAccuracy1" type="java.lang.String"/>
-    <field column="Measurement Determined Date 1" name="measurementDate1" type="calendar_date"/>
-    <field column="Measurement Determined By Lastname 1" name="measurementByLastName1" type="java.lang.String"/>
-    <field column="Measurement Determined By Firstname 1" name="measurementByFirstName1" type="java.lang.String"/>
-    <field column="Measurement Determined By Middle 1" name="measurementByMiddle1" type="java.lang.String"/>
-    <field column="Measurement ID 1" name="measurementID1" type="java.lang.String"/>
-    <field column="Measurement Remark 1" name="measurementRemark1" type="java.lang.String"/>
-    <field column="Measurement Date Value 1" name="measurementDateValue1" type="calendar_date"/>
-    <field column="Measurement Integer Value 1" name="measurementIntegerValue1" type="java.lang.Integer"/>
-    <field column="Measurement Number Value 1" name="measurementNumberValue1" type="java.lang.Double"/>
-    <field column="Measurement Text Value 1" name="measurementTextValue1" type="java.lang.String"/>
-    <field column="Measurement YesNo Value 1" name="measurementYesNoValue1" type="boolean"/>
-    
+
     <field column="Date 1 1" name="date11" type="calendar_date"/>
     <field column="Agent 1 Lastname 1" name="agent1LastName1" type="java.lang.String"/>
     <field column="Agent 1 Firstname 1" name="agent1FirstName1" type="java.lang.String"/>
@@ -388,20 +374,6 @@
     <field column="Text 1 1" name="text11" type="java.lang.String"/>
     <field column="YesNo 1 1" name="yesno11" type="boolean"/>
 
-    <field column="Measurement Type 2" name="measurementType2" type="java.lang.String"/>
-    <field column="Measurement Unit 2" name="measurementUnit2" type="java.lang.String"/>
-    <field column="Measurement Accuracy 2" name="measurementAccuracy2" type="java.lang.String"/>
-    <field column="Measurement Determined Date 2" name="measurementDate2" type="calendar_date"/>
-    <field column="Measurement Determined By Lastname 2" name="measurementByLastName2" type="java.lang.String"/>
-    <field column="Measurement Determined By Firstname 2" name="measurementByFirstName2" type="java.lang.String"/>
-    <field column="Measurement Determined By Middle 2" name="measurementByMiddle2" type="java.lang.String"/>
-    <field column="Measurement ID 2" name="measurementID2" type="java.lang.String"/>
-    <field column="Measurement Remark 2" name="measurementRemark2" type="java.lang.String"/>
-    <field column="Measurement Date Value 2" name="measurementDateValue2" type="calendar_date"/>
-    <field column="Measurement Integer Value 2" name="measurementIntegerValue2" type="java.lang.String"/>
-    <field column="Measurement Number Value 2" name="measurementNumberValue2" type="java.lang.String"/>
-    <field column="Measurement Text Value 2" name="measurementTextValue2" type="java.lang.String"/>
-    <field column="Measurement YesNo Value 2" name="measurementYesNoValue2" type="java.lang.String"/>
 
     <field column="Date 1 2" name="date12" type="calendar_date"/>
     <field column="Agent 1 Lastname 2" name="agent1LastName2" type="java.lang.String"/>
@@ -412,20 +384,6 @@
     <field column="Text 1 2" name="text12" type="java.lang.String"/>
     <field column="YesNo 1 2" name="yesno12" type="boolean"/>
 
-    <field column="Measurement Type 3" name="measurementType3" type="java.lang.String"/>
-    <field column="Measurement Unit 3" name="measurementUnit3" type="java.lang.String"/>
-    <field column="Measurement Accuracy 3" name="measurementAccuracy3" type="java.lang.String"/>
-    <field column="Measurement Determined Date 3" name="measurementDate3" type="calendar_date"/>
-    <field column="Measurement Determined By Lastname 3" name="measurementByLastName3" type="java.lang.String"/>
-    <field column="Measurement Determined By Firstname 3" name="measurementByFirstName3" type="java.lang.String"/>
-    <field column="Measurement Determined By Middle 3" name="measurementByMiddle3" type="java.lang.String"/>
-    <field column="Measurement ID 3" name="measurementID3" type="java.lang.String"/>
-    <field column="Measurement Remark 3" name="measurementRemark3" type="java.lang.String"/>
-    <field column="Measurement Date Value 3" name="measurementDateValue3" type="calendar_date"/>
-    <field column="Measurement Integer Value 3" name="measurementIntegerValue3" type="java.lang.String"/>
-    <field column="Measurement Number Value 3" name="measurementNumberValue3" type="java.lang.String"/>
-    <field column="Measurement Text Value 3" name="measurementTextValue3" type="java.lang.String"/>
-    <field column="Measurement YesNo Value 3" name="measurementYesNoValue3" type="java.lang.String"/>
 
     <field column="Date 1 3" name="date13" type="calendar_date"/>
     <field column="Agent 1 Lastname 3" name="agent1LastName3" type="java.lang.String"/>
@@ -436,20 +394,6 @@
     <field column="Text 1 3" name="text13" type="java.lang.String"/>
     <field column="YesNo 1 3" name="yesno13" type="boolean"/>
 
-    <field column="Measurement Type 4" name="measurementType4" type="java.lang.String"/>
-    <field column="Measurement Unit 4" name="measurementUnit4" type="java.lang.String"/>
-    <field column="Measurement Accuracy 4" name="measurementAccuracy4" type="java.lang.String"/>
-    <field column="Measurement Determined Date 4" name="measurementDate4" type="calendar_date"/>
-    <field column="Measurement Determined By Lastname 4" name="measurementByLastName4" type="java.lang.String"/>
-    <field column="Measurement Determined By Firstname 4" name="measurementByFirstName4" type="java.lang.String"/>
-    <field column="Measurement Determined By Middle 4" name="measurementByMiddle4" type="java.lang.String"/>
-    <field column="Measurement ID 4" name="measurementID4" type="java.lang.String"/>
-    <field column="Measurement Remark 4" name="measurementRemark4" type="java.lang.String"/>
-    <field column="Measurement Date Value 4" name="measurementDateValue4" type="calendar_date"/>
-    <field column="Measurement Integer Value 4" name="measurementIntegerValue4" type="java.lang.String"/>
-    <field column="Measurement Number Value 4" name="measurementNumberValue4" type="java.lang.String"/>
-    <field column="Measurement Text Value 4" name="measurementTextValue4" type="java.lang.String"/>
-    <field column="Measurement YesNo Value 4" name="measurementYesNoValue4" type="java.lang.String"/>
 
     <field column="Date 1 4" name="date14" type="calendar_date"/>
     <field column="Agent 1 Lastname 4" name="agent1LastName4" type="java.lang.String"/>
@@ -460,20 +404,6 @@
     <field column="Text 1 4" name="text14" type="java.lang.String"/>
     <field column="YesNo 1 4" name="yesno14" type="boolean"/>
 
-    <field column="Measurement Type 5" name="measurementType5" type="java.lang.String"/>
-    <field column="Measurement Unit 5" name="measurementUnit5" type="java.lang.String"/>
-    <field column="Measurement Accuracy 5" name="measurementAccuracy5" type="java.lang.String"/>
-    <field column="Measurement Determined Date 5" name="measurementDate5" type="calendar_date"/>
-    <field column="Measurement Determined By Lastname 5" name="measurementByLastName5" type="java.lang.String"/>
-    <field column="Measurement Determined By Firstname 5" name="measurementByFirstName5" type="java.lang.String"/>
-    <field column="Measurement Determined By Middle 5" name="measurementByMiddle5" type="java.lang.String"/>
-    <field column="Measurement ID 5" name="measurementID5" type="java.lang.String"/>
-    <field column="Measurement Remark 5" name="measurementRemark5" type="java.lang.String"/>
-    <field column="Measurement Date Value 5" name="measurementDateValue5" type="calendar_date"/>
-    <field column="Measurement Integer Value 5" name="measurementIntegerValue5" type="java.lang.String"/>
-    <field column="Measurement Number Value 5" name="measurementNumberValue5" type="java.lang.String"/>
-    <field column="Measurement Text Value 5" name="measurementTextValue5" type="java.lang.String"/>
-    <field column="Measurement YesNo Value 5" name="measurementYesNoValue5" type="java.lang.String"/>
 
     <field column="Date 1 5" name="date15" type="calendar_date"/>
     <field column="Agent 1 Lastname 5" name="agent1LastName5" type="java.lang.String"/>
