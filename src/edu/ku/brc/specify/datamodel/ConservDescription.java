@@ -1,4 +1,4 @@
-/* Copyright (C) 2017, University of Kansas Center for Research
+/* Copyright (C) 2019, University of Kansas Center for Research
  * 
  * Specify Software Project, specify@ku.edu, Biodiversity Institute,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
@@ -19,21 +19,11 @@
 */
 package edu.ku.brc.specify.datamodel;
 
+import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 
 import org.hibernate.annotations.Index;
 
@@ -70,12 +60,15 @@ public class ConservDescription extends DataModelObjBase implements AttachmentOw
     protected String             composition;
     protected String             remarks;
     protected String             source;
-    
+    protected Calendar           determinedDate;
+    protected Byte               determinedDatePrecision;
+
     protected String             lightRecommendations;
     protected String             displayRecommendations;
     protected String             otherRecommendations;
     
     protected CollectionObject   collectionObject;
+    protected Preparation        preparation;
     protected Division           division;
     
     protected Set<ConservEvent>  events;
@@ -111,10 +104,12 @@ public class ConservDescription extends DataModelObjBase implements AttachmentOw
         composition          = null;
         remarks              = null;
         source               = null;
+        determinedDate       = null;
         lightRecommendations   = null;
         displayRecommendations = null;
         otherRecommendations   = null;
         collectionObject     = null;
+        preparation = null;
         division             = AppContextMgr.getInstance().getClassObject(Division.class);
         events               = new HashSet<ConservEvent>();
         conservDescriptionAttachments = new HashSet<ConservDescriptionAttachment>();
@@ -344,6 +339,21 @@ public class ConservDescription extends DataModelObjBase implements AttachmentOw
      *
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "PreparationID", unique = false, nullable = true, insertable = true, updatable = true)
+    public Preparation getPreparation()
+    {
+        return this.preparation;
+    }
+
+    public void setPreparation(final Preparation preparation)
+    {
+        this.preparation = preparation;
+    }
+
+    /**
+     *
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "CollectionObjectID", unique = false, nullable = true, insertable = true, updatable = true)
     public CollectionObject getCollectionObject()
     {
@@ -398,7 +408,25 @@ public class ConservDescription extends DataModelObjBase implements AttachmentOw
     {
         this.conservDescriptionAttachments = conservDescriptionAttachments;
     }
-    
+
+    @Temporal(TemporalType.DATE)
+    @Column(name = "CatalogedDate", unique = false, nullable = true, insertable = true, updatable = true)
+    public Calendar getDeterminedDate() {
+        return determinedDate;
+    }
+
+    public void setDeterminedDate(Calendar determinedDate) {
+        this.determinedDate = determinedDate;
+    }
+
+    public Byte getDeterminedDatePrecision() {
+        return determinedDatePrecision;
+    }
+
+    public void setDeterminedDatePrecision(Byte determinedDatePrecision) {
+        this.determinedDatePrecision = determinedDatePrecision;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentTableId()
      */

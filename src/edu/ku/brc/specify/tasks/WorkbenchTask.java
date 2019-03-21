@@ -1,4 +1,4 @@
-/* Copyright (C) 2017, University of Kansas Center for Research
+/* Copyright (C) 2019, University of Kansas Center for Research
  * 
  * Specify Software Project, specify@ku.edu, Biodiversity Institute,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
@@ -19,13 +19,55 @@
 */
 package edu.ku.brc.specify.tasks;
 
-import static edu.ku.brc.ui.UIHelper.createLabel;
-import static edu.ku.brc.ui.UIRegistry.getResourceString;
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+import edu.ku.brc.af.auth.BasicPermisionPanel;
+import edu.ku.brc.af.auth.PermissionEditorIFace;
+import edu.ku.brc.af.core.*;
+import edu.ku.brc.af.core.db.DBFieldInfo;
+import edu.ku.brc.af.core.db.DBRelationshipInfo;
+import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.af.tasks.subpane.BarChartPane;
+import edu.ku.brc.af.tasks.subpane.ChartPane;
+import edu.ku.brc.af.tasks.subpane.PieChartPane;
+import edu.ku.brc.af.tasks.subpane.StatsPane;
+import edu.ku.brc.af.ui.db.ViewBasedDisplayDialog;
+import edu.ku.brc.af.ui.forms.MultiView;
+import edu.ku.brc.dbsupport.*;
+import edu.ku.brc.helpers.ImageFilter;
+import edu.ku.brc.helpers.SwingWorker;
+import edu.ku.brc.helpers.UIFileFilter;
+import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.datamodel.*;
+import edu.ku.brc.specify.rstools.ExportFileConfigurationFactory;
+import edu.ku.brc.specify.rstools.ExportToFile;
+import edu.ku.brc.specify.tasks.subpane.qb.QBResultsSubPane;
+import edu.ku.brc.specify.tasks.subpane.wb.*;
+import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
+import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploaderException;
+import edu.ku.brc.specify.tools.schemalocale.SchemaLocalizerXMLHelper;
+import edu.ku.brc.specify.ui.ChooseRecordSetDlg;
+import edu.ku.brc.ui.*;
+import edu.ku.brc.ui.dnd.SimpleGlassPane;
+import edu.ku.brc.util.Pair;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.dom4j.Element;
+import org.hibernate.Session;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Frame;
+import javax.swing.*;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.SoftBevelBorder;
+import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.lang.ref.SoftReference;
 import java.sql.Connection;
@@ -33,104 +75,13 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
+import java.util.*;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.Vector;
 import java.util.concurrent.atomic.AtomicReference;
 
-import javax.swing.ImageIcon;
-import javax.swing.JComponent;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.SoftBevelBorder;
-
-import edu.ku.brc.af.core.*;
-import edu.ku.brc.af.core.db.DBRelationshipInfo;
-import edu.ku.brc.specify.datamodel.*;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.dom4j.Element;
-import org.hibernate.Session;
-
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
-
-import edu.ku.brc.af.auth.BasicPermisionPanel;
-import edu.ku.brc.af.auth.PermissionEditorIFace;
-import edu.ku.brc.af.core.db.DBFieldInfo;
-import edu.ku.brc.af.core.db.DBTableIdMgr;
-import edu.ku.brc.af.core.db.DBTableInfo;
-import edu.ku.brc.af.prefs.AppPreferences;
-import edu.ku.brc.af.tasks.subpane.BarChartPane;
-import edu.ku.brc.af.tasks.subpane.ChartPane;
-import edu.ku.brc.af.tasks.subpane.PieChartPane;
-import edu.ku.brc.af.ui.db.ViewBasedDisplayDialog;
-import edu.ku.brc.af.ui.forms.MultiView;
-import edu.ku.brc.dbsupport.DBConnection;
-import edu.ku.brc.dbsupport.DataProviderFactory;
-import edu.ku.brc.dbsupport.DataProviderSessionIFace;
-import edu.ku.brc.dbsupport.HibernateUtil;
-import edu.ku.brc.dbsupport.QueryResultsContainerIFace;
-import edu.ku.brc.dbsupport.QueryResultsHandlerIFace;
-import edu.ku.brc.dbsupport.QueryResultsListener;
-import edu.ku.brc.dbsupport.RecordSetIFace;
-import edu.ku.brc.dbsupport.RecordSetItemIFace;
-import edu.ku.brc.helpers.ImageFilter;
-import edu.ku.brc.helpers.SwingWorker;
-import edu.ku.brc.helpers.UIFileFilter;
-import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.specify.conversion.BasicSQLUtils;
-import edu.ku.brc.specify.rstools.ExportFileConfigurationFactory;
-import edu.ku.brc.specify.rstools.ExportToFile;
-import edu.ku.brc.specify.tasks.subpane.qb.QBResultsSubPane;
-import edu.ku.brc.specify.tasks.subpane.wb.ConfigureExternalDataIFace;
-import edu.ku.brc.specify.tasks.subpane.wb.DataImportIFace;
-import edu.ku.brc.specify.tasks.subpane.wb.ImageFrame;
-import edu.ku.brc.specify.tasks.subpane.wb.ImportColumnInfo;
-import edu.ku.brc.specify.tasks.subpane.wb.ImportDataFileInfo;
-import edu.ku.brc.specify.tasks.subpane.wb.SelectNewOrExistingDlg;
-import edu.ku.brc.specify.tasks.subpane.wb.TemplateEditor;
-import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchBackupMgr;
-import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchJRDataSource;
-import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS;
-import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchValidator;
-import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMessage;
-import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
-import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploaderException;
-import edu.ku.brc.specify.tools.schemalocale.SchemaLocalizerXMLHelper;
-import edu.ku.brc.specify.ui.ChooseRecordSetDlg;
-import edu.ku.brc.ui.ChooseFromListDlg;
-import edu.ku.brc.ui.CommandAction;
-import edu.ku.brc.ui.CommandDispatcher;
-import edu.ku.brc.ui.CustomDialog;
-import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.JStatusBar;
-import edu.ku.brc.ui.RolloverCommand;
-import edu.ku.brc.ui.ToggleButtonChooserDlg;
-import edu.ku.brc.ui.ToggleButtonChooserPanel;
-import edu.ku.brc.ui.ToolBarDropDownBtn;
-import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.dnd.SimpleGlassPane;
-import edu.ku.brc.util.Pair;
+import static edu.ku.brc.ui.UIHelper.createLabel;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 /**
  * Placeholder for additional work.
@@ -170,7 +121,7 @@ public class WorkbenchTask extends BaseTask
     public static final String     EXPORT_FILE_PATH      = "wb.exportfilepath";
     
     public static String[]         restrictedTables      = {
-    		"dnasequence",
+    		//"dnasequence",
     		"dnasequencingrun",
     		"materialsample",
     		"preparationattribute"
@@ -250,6 +201,69 @@ public class WorkbenchTask extends BaseTask
         getDatabaseSchema(false);
 	}
 
+	protected Integer getWbId(NavBoxItemIFace nb) {
+        Integer result = null;
+	    if (nb.getData() instanceof CommandAction) {
+            CommandAction data = (CommandAction)nb.getData();
+            if (data.getType().equalsIgnoreCase("Workbench")) {
+                RecordSetIFace rs = (RecordSetIFace)data.getProperty("workbench");
+                if (rs != null) {
+                    result = rs.getOnlyItem().getRecordId();
+                }
+            }
+        }
+        return result;
+    }
+
+    protected void refreshDatasets()
+    {
+        List<Workbench> wbs = getWorkbenches();
+        List<Workbench> oldWbs = new ArrayList<>();
+        for (Workbench wb : wbs) {
+            for (NavBoxItemIFace nb : workbenchNavBox.getItems()) {
+                Integer nbWbId = getWbId(nb);
+                if (wb.getId().equals(getWbId(nb))) {
+                    oldWbs.add(wb);
+                    break;
+                }
+            }
+        }
+        for (Workbench wb : oldWbs) {
+            wbs.remove(wb);
+        }
+        if (wbs.size() > 0) {
+            for (Workbench wb: wbs) {
+                datasetNavBoxMgr.addWorkbench(wb);
+            }
+        }
+    }
+
+    private List<Workbench> getWorkbenches() {
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        List<Workbench> wbs = new ArrayList<>();
+        try {
+            List<?> list  = session.getDataList("From Workbench where SpecifyUserID = " +
+                    AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getSpecifyUserId() +
+                    " order by name");
+            for (Object obj : list) {
+                wbs.add((Workbench)obj);
+            }
+        } catch (Exception ex) {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DatasetNavBoxMgr.class, ex);
+            log.error(ex);
+            ex.printStackTrace();
+        } finally {
+            session.close();
+        }
+        return wbs;
+    }
+
+    private void buildWorkBenchNavBox() {
+        List<Workbench> wbs = getWorkbenches();
+        workbenchNavBox = datasetNavBoxMgr.createWorkbenchNavBox(WORKBENCH, wbs, null /*e -> refreshDatasets()*/);
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.core.Taskable#initialize()
      */
@@ -290,12 +304,14 @@ public class WorkbenchTask extends BaseTask
                 enableNavBoxList.add((NavBoxItemIFace)roc);
                 
                 makeDnDNavBtn(navBox, getResourceString("WB_EXPORTFROMDBTOWB"), "Export16", getResourceString("WB_EXPORTFROMDBTOWB_TT"), new CommandAction(WORKBENCH, EXPORT_RS_TO_WB, wbTblId), null, false, false);// true means make it draggable
-            }  
+
+                navBox.add(NavBox.createBtnWithTT(getResourceString("WB_RefreshDatasets"), "Reload",
+                        getResourceString("WB_REFRESH_DATASETS_TT"), IconManager.STD_ICON_SIZE,e  -> refreshDatasets()));
+            }
             
             navBoxes.add(navBox);
-            
-            workbenchNavBox = datasetNavBoxMgr.createWorkbenchNavBox(WORKBENCH);
 
+            buildWorkBenchNavBox();
             
             // Then add
             if (commands != null && (!AppContextMgr.isSecurityOn() || canViewReports()))
@@ -1742,7 +1758,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             workbenchTemplate.getWorkbenches().add(workbench);
             if (fillInWorkbenchNameAndAttrs(workbench, wbName, false, alwaysAskForName)) {
                 workbenchTemplate.setName(workbench.getName());
-                if (workbenchTemplate.getSrcFilePath().contains("<<#spatch#>>")) {
+                if (workbenchTemplate.getSrcFilePath() !=  null && workbenchTemplate.getSrcFilePath().contains("<<#spatch#>>")) {
                     //stash queryname
                     workbench.setSrcFilePath(workbenchTemplate.getRemarks());
                     workbenchTemplate.setRemarks(null);
@@ -2248,7 +2264,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                     session.flush();
                     
                     UIRegistry.getStatusBar().incrementValue(workbench.getName());
-                    datasetNavBoxMgr.removeWorkbench(workbench);
+                    removeWorkbenchFromUI(workbench);
                     updateNavBoxUI(null);
                     if (ContextMgr.getTaskByClass(SGRTask.class) != null) {
                     	((SGRTask)ContextMgr.getTaskByClass(SGRTask.class)).deleteResultsForWorkbench(workbench);
@@ -2820,9 +2836,13 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         try {
         	dlg = showColumnMapperDlg(null, wbTemplate, "WB_MAPPING_EDITOR", null);
         } catch (Exception ex) {
-        	edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-        	edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
-        	log.error(ex);
+            if (ex instanceof WBUnMappedItemException) {
+                UIRegistry.showError(ex.getMessage());
+            } else {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
+            }
+            log.error(ex);
         }
         if (dlg != null && !dlg.isCancelled()) {
         	updateGeoRefInfoAfterTemplateEdit(wbTemplate,
@@ -2832,7 +2852,77 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         	dlg.dispose();
         }
     }
-    
+
+    /**
+     * Show the dialog to allow the user to edit a template and then updates the data rows and columns..
+     * @param workbenchTemplate the template to be edited
+     */
+    protected void changeUser(final Workbench wb)
+    {
+        try {
+            String sql = "select distinct s.specifyuserid, s.name from specifyuser s inner join specifyuser_spprincipal ss "
+                    + "on ss.specifyuserid = s.specifyuserid inner join spprincipal sp on sp.spprincipalid = ss.spprincipalid "
+                    + "inner join spprincipal_sppermission ssp on ssp.spprincipalid = sp.spprincipalid inner join sppermission "
+                    + "pr on pr.sppermissionid = ssp.sppermissionid where sp.usergroupscopeid = "
+                    + AppContextMgr.getInstance().getClassObject(edu.ku.brc.specify.datamodel.Collection.class).getId()
+                    + " and pr.name = 'Task.Workbench' and pr.actions like '%view%' and s.specifyuserid != "
+                    + Agent.getUserAgent().getSpecifyUser().getId() + " order by 2";
+            List<Object[]> users = BasicSQLUtils.query(sql);
+            if (users.size() > 0) {
+                List<String> choices = new ArrayList<>(users.size());
+                for (Object[] user : users) {
+                    choices.add(user[1].toString());
+                }
+                ChooseFromListDlg<String> wbtdlg = new ChooseFromListDlg<>((Frame) UIRegistry.getTopWindow(),
+                        UIRegistry.getResourceString("WB_CHOOSE_HANDOFF_USER_TITLE"),
+                        ChooseFromListDlg.OK_BTN | ChooseFromListDlg.CANCEL_BTN /*| ChooseFromListDlg.HELP_BTN */,
+                        choices);
+                //No help for now.
+                //wbtdlg.setHelpContext("Workbench");
+                wbtdlg.setVisible(true);
+                if (!wbtdlg.isCancelled()) {
+                    if (wbtdlg.getSelectedObject() != null) {
+                        Object[] newUser = users.get(wbtdlg.getSelectedIndices()[0]);
+                        if (UIRegistry.displayConfirm(getResourceString("WB_USER_HANDOFF_CONFIRM_TITLE"),
+                                String.format(getResourceString("WB_USER_HANDOFF_CONFIRM_MSG"), wb.getName(), newUser[1].toString()),
+                                "OK", "Cancel", JOptionPane.QUESTION_MESSAGE)) {
+                            String timeStr = new SimpleDateFormat("yyyy-MM-dd hh:mm").format(Calendar.getInstance().getTime());
+                            String remark = String.format(getResourceString("WB_USER_HANDOFF_REMARK"),
+                                    Agent.getUserAgent().getSpecifyUser().getName(), newUser[1].toString(), timeStr);
+                            remark = BasicSQLUtils.escapeStringLiterals(remark);
+                            sql = "update workbenchtemplate t inner join workbench w on w.workbenchtemplateid = t.workbenchtemplateid "
+                                    + "set w.version = w.version + 1, t.version = t.version + 1, t.SpecifyUserID = " + newUser[0] + ", w.SpecifyUserID = " + newUser[0] + ", "
+                                    + "w.remarks = case when w.remarks is null then '" + remark + "' else concat(w.remarks,'\r\n', '" + remark + "') end"
+                                    + " where w.workbenchid = " + wb.getId();
+                            int r = BasicSQLUtils.update(sql);
+                            if (r != 2) {
+                                UIRegistry.showError(getResourceString("WB_USER_HANDOFF_FAILED"));
+                            } else {
+                                removeWorkbenchFromUI(wb);
+                                UIRegistry.displayInfoMsgDlg(String.format(getResourceString("WB_USER_HANDOFF_SUCCESS"), wb.getName(), newUser[1].toString()));
+                            }
+                        }
+                    }
+                }
+            } else {
+                UIRegistry.showLocalizedMsg("WB_NO_USERS_FOUND_FOR_DATASET_SHARE");
+            }
+        } catch (Exception ex) {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
+            log.error(ex);
+            ex.printStackTrace();
+        }
+    }
+
+    protected void removeWorkbenchFromUI(Workbench wb) {
+        datasetNavBoxMgr.removeWorkbench(wb);
+        final StatsPane welcomePane = (StatsPane)SubPaneMgr.getInstance().getSubPaneByName("Welcome");
+        if (welcomePane != null) {
+            SwingUtilities.invokeLater(() -> {welcomePane.refresh();});
+        }
+    }
+
     /**
      * @param wbTemplate
      * @param deletedItems
@@ -4095,12 +4185,12 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         } else if (cmdData instanceof RecordSetIFace)
         {
             Workbench workbench = loadWorkbench((RecordSetIFace)cmdData);
-            if (workbench != null)
+            if (workbench != null && workbench.getSpecifyUser().getId().equals(Agent.getUserAgent().getSpecifyUser().getId()))
             {
                 createEditorForWorkbench(workbench, null, false, true);
             } else
             {
-                log.error("Workbench was null!");
+                log.error("Workbench was null or no longer belongs to current user.");
             }
             
         } else
@@ -4267,7 +4357,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
      *
      * @return a {@link Class} object representing the DB target field of this mapping.
      */
-    public static Class<?> getDataType(final WorkbenchTemplateMappingItem wbtmi, boolean forBatchEdit)
+    public static Class<?> getDataType(final WorkbenchTemplateMappingItem wbtmi, boolean forBatchEdit) throws WBUnMappedItemException
     {
         // if this mapping item doesn't correspond to a DB field, return the java.lang.String class
         if (wbtmi ==  null || wbtmi.getSrcTableId() == null || wbtmi.getSrcTableId() == -1) {
@@ -4313,7 +4403,9 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             }
         }
 
-        //throw new RuntimeException("Could not find [" + wbtmi.getFieldName()+"]");
+        if (!forBatchEdit) {
+            throw new WBUnMappedItemException(wbtmi);
+        }
         return String.class;
     }
     

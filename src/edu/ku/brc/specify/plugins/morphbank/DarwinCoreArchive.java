@@ -459,6 +459,11 @@ public class DarwinCoreArchive
 		if (val.indexOf(encloser) >= 0)
 		{
 			if ("\"".equals(encloser)) {
+				/*this is strange. Is it here to conform to a symbiota requirement?
+				A modified copy of this method is being used in BuildSearchIndex2.java and
+				there the replacement in the else clause needs to be used in all cases or
+				csv import to solr fails.
+				 */
 				val = val.replace(encloser, encloser + encloser);
 			} else {
 				val = val.replace(encloser, escaper + encloser);

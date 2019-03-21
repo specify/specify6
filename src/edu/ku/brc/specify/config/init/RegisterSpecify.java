@@ -1,4 +1,4 @@
-/* Copyright (C) 2017, University of Kansas Center for Research
+/* Copyright (C) 2019, University of Kansas Center for Research
  * 
  * Specify Software Project, specify@ku.edu, Biodiversity Institute,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
@@ -31,6 +31,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 
+import edu.ku.brc.helpers.ProxyHelper;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.PostMethod;
@@ -386,7 +387,7 @@ public class RegisterSpecify
     {
         HttpClient httpClient = new HttpClient();
         httpClient.getParams().setParameter("http.useragent", RegisterSpecify.class.getName()); //$NON-NLS-1$
-        
+        ProxyHelper.applyProxySettings(httpClient);
         // get the URL of the website to check, with usage info appended, if allowed
         String versionCheckURL = getRegisterURL();
         

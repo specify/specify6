@@ -1,4 +1,4 @@
-/* Copyright (C) 2017, University of Kansas Center for Research
+/* Copyright (C) 2019, University of Kansas Center for Research
  * 
  * Specify Software Project, specify@ku.edu, Biodiversity Institute,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
@@ -187,7 +187,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 {
     protected static final Logger  log = Logger.getLogger(SpecifySchemaUpdateService.class);
     
-    private final int OVERALL_TOTAL = 63; //the number of incOverall() calls (+1 or +2)
+    private final int OVERALL_TOTAL = 65; //the number of incOverall() calls (+1 or +2)
     
     private static final String TINYINT4 = "TINYINT(4)";
     private static final String INT11    = "INT(11)";
@@ -324,7 +324,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         if (appVerFromDB == null || schemaVerFromDB == null)
                         {
                             doUpdateAppVer = true;
-                            
+
                         } else if (!appVerFromDB.equals(appVerNum))
                         {
                             if (checkVersion(appVerFromDB, appVerNum, mkKey("APP_VER_ERR"), 
@@ -335,7 +335,6 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                                 doUpdateAppVer = true;
                             } else
                             {
-                                CommandDispatcher.dispatch(new CommandAction(APP, APP_REQ_EXIT, null));
                                 return SchemaUpdateType.Error;
                             }
                         }
@@ -763,7 +762,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
      * @return
      */
     private boolean fixTypeSearchDefResourcesAfterDNAModelUpdate() {
-    	String sql = "SELECT SpAppResourceID FROM spappresource where `Name`='TypeSearches'";
+    	String sql = "SELECT a.SpAppResourceID FROM spappresource a inner join spappresourcedata ad on ad.spappresourceid = a.spappresourceid where a.`Name`='TypeSearches' and ad.data not like '%<typesearch tableid=\"150\"%'";
     	List<Object> resources = BasicSQLUtils.querySingleCol(sql);
     	if (resources != null && resources.size() > 0) {
     		String dnapSearch = "<typesearch tableid=\"150\" name=\"DNAPrimer\" searchfield=\"primerDesignator\" displaycols=\"primerDesignator\" format=\"%s\" dataobjformatter=\"\"/>";
@@ -778,7 +777,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     }
 
     private boolean fixDnaPrimerFormatterAfterDNAModelUpdate() {
-    	String sql = "SELECT SpAppResourceID FROM spappresource where `Name`='DataObjFormatters'";
+    	String sql = "SELECT a.SpAppResourceID FROM spappresource a inner join spappresourcedata ad on ad.spappresourceid = a.spappresourceid where a.`Name`='DataObjFormatters' and ad.data not like '%name=\"DNAPrimer\"%'";
     	List<Object> resources = BasicSQLUtils.querySingleCol(sql);
     	if (resources != null && resources.size() > 0) {
     		String dnaFmt =     "<format \n"
@@ -849,13 +848,42 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         			}
         		}
         		addGeoCleanupTables();
+        		//add collectingeventauthorization if necessary
+                if (!doesTableExist(databaseName, "collectingeventauthorization")) {
+                    addCollectingEventAuth(conn);
+                    result = doesTableExist(databaseName, "collectingeventauthorization");
+                }
         	}
         	return result;
         } finally {
             if (dbConn != null) dbConn.close();
         }
     }
-    
+
+    private void addCollectingEventAuth(Connection conn) {
+        String sql = "CREATE TABLE `collectingeventauthorization` ("
+                + "  `CollectingEventAuthorizationID` int(11) NOT NULL AUTO_INCREMENT,"
+                + "  `TimestampCreated` datetime NOT NULL,"
+                + "  `TimestampModified` datetime DEFAULT NULL,"
+                + "  `Version` int(11) DEFAULT NULL,"
+                + "  `Remarks` text,"
+                + "  `PermitID` int(11) NOT NULL,"
+                + "  `CreatedByAgentID` int(11) DEFAULT NULL,"
+                + "`CollectingEventID` int(11) DEFAULT NULL,"
+                + "`ModifiedByAgentID` int(11) DEFAULT NULL,"
+                + "PRIMARY KEY (`CollectingEventAuthorizationID`),"
+                + "KEY `FK67DBF8977699B003` (`CreatedByAgentID`),"
+                + "KEY `FK67DBF897AD1F31F4` (`PermitID`),"
+                + "KEY `FK67DBF897B237E2BC` (`CollectingEventID`),"
+                + "KEY `FK67DBF8975327F942` (`ModifiedByAgentID`),"
+                + "CONSTRAINT `FK67DBF8975327F942` FOREIGN KEY (`ModifiedByAgentID`) REFERENCES `agent` (`agentid`),"
+                + "CONSTRAINT `FK67DBF8977699B003` FOREIGN KEY (`CreatedByAgentID`) REFERENCES `agent` (`agentid`),"
+                + "CONSTRAINT `FK67DBF897AD1F31F4` FOREIGN KEY (`PermitID`) REFERENCES `permit` (`permitid`),"
+                + "CONSTRAINT `FK67DBF897B237E2BC` FOREIGN KEY (`CollectingEventID`) REFERENCES `collectingevent` (`collectingeventid`) "
+                + ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+
+        BasicSQLUtils.update(conn, sql);
+    }
     /**
      * @return
      */
@@ -1253,89 +1281,6 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         }
                     }
                     frame.incOverall();
-
-                    
-//            		String checkSQL = "select SpExportSchemaMappingID, MappingName from spexportschemamapping "
-//            			+ "where CollectionMemberID is null";
-//            		Vector<Object[]> mappingsToFix = BasicSQLUtils.query(checkSQL);
-//                    if (mappingsToFix != null && mappingsToFix.size() > 0)
-//                    {
-//            			Vector<Object> collectionIDs = BasicSQLUtils.querySingleCol("select UserGroupScopeID from collection");
-//            			if (collectionIDs.size() == 1)
-//            			{
-//            				//easy
-//            				BasicSQLUtils.update("update spexportschemamapping set CollectionMemberID = " + collectionIDs.get(0));
-//            			}
-//            			else 
-//            			{
-//            				for (Object[] row : mappingsToFix)
-//            				{
-//            					log.info("fixing mappings in multiple collection database");
-//            					String cacheName = ExportToMySQLDB.fixTblNameForMySQL(row[1].toString());
-//            					if (BasicSQLUtils.doesTableExist(DBConnection.getInstance().getConnection(), cacheName))
-//            					{
-//            						String cacheID = cacheName + "ID";
-//            						String sql = "select distinct CollectionMemberID from collectionobject co inner join "
-//            							+ cacheName + " cn on cn." + cacheID + " = co.CollectionObjectID";
-//            						Vector<Object> collsInCache = BasicSQLUtils.querySingleCol(sql);
-//            						if (collsInCache != null && collsInCache.size() == 1)
-//            						{
-//            							//easy
-//            							String updateSQL = "update spexportschemamapping set CollectionMemberID = " + collsInCache.get(0)
-//            								+ " where SpExportSchemaMappingID = " + row[0];
-//            							log.info("Updating exportmapping with cache containing single collection: " + updateSQL);
-//            							BasicSQLUtils.update(updateSQL);
-//            					
-//            						} else if (collsInCache != null && collsInCache.size() > 1) 
-//            						{
-//            							//This should never happen, but if it does, should ask user to choose.
-//            							//Also need to update TimestampModified to force rebuild of cache...
-//            							//but...
-//            							String updateSQL = "update spexportschemamapping set CollectionMemberID = " + collsInCache.get(0)
-//            								+ " where SpExportSchemaMappingID = " + row[0];
-//            							log.info("Updating exportmapping with cache containing multiple collections: " + updateSQL);
-//            							BasicSQLUtils.update(updateSQL);
-//            						}
-//            				
-//            					} else
-//            					{
-//            						log.info("updating export mapping that has no cache: " + row[1] + " - " + row[0]);
-//            						String discSQL = "select distinct DisciplineID from spexportschema es inner join spexportschemaitem esi "
-//            							+ "on esi.SpExportSchemaID = es.SpExportSchemaID inner join spexportschemaitemmapping esim "
-//            							+ "on esim.ExportSchemaItemID = esi.SpExportSchemaItemID where esim.SpExportSchemaMappingID "
-//            							+ "= " + row[0];    	    			
-//            						Object disciplineID = BasicSQLUtils.querySingleObj(discSQL);
-//            						if (disciplineID != null)
-//            						{
-//            							String discCollSql = "select UserGroupScopeID from collection where DisciplineID = " + disciplineID;
-//            							Vector<Object> collIDsInDisc = BasicSQLUtils.querySingleCol(discCollSql);
-//            							if (collIDsInDisc != null && collIDsInDisc.size() == 1)
-//            							{
-//            								//easy
-//            								String updateSQL = "update spexportschemamapping set CollectionMemberID = " + collIDsInDisc.get(0)
-//            									+ " where SpExportSchemaMappingID = " + row[0];
-//            								log.info("Updating exportmapping that has no cache and one collection in its discipline: " + updateSQL);
-//            								BasicSQLUtils.update(updateSQL);
-//                					
-//            							} else if (collIDsInDisc != null && collIDsInDisc.size() > 1) 
-//            							{
-//            								//Picking the first collection. How likely is it to matter? Not very.
-//            								String updateSQL = "update spexportschemamapping set CollectionMemberID = " + collIDsInDisc.get(0)
-//            									+ " where SpExportSchemaMappingID = " + row[0];
-//            								log.info("Updating exportmapping that has no cache and a discipline with multiple collections: " + updateSQL);
-//            								BasicSQLUtils.update(updateSQL);
-//            							}
-//            						} else
-//            						{
-//            							throw new Exception("unable to find discipline for exportschemamapping " + row[0]);
-//            						}
-//            	    			
-//            					}
-//            				}
-//            			}
-//            	        //AppPreferences.getGlobalPrefs().putBoolean("FixExportSchemaCollectionMemberIDs", true);
-//                    }
-//                    frame.incOverall();
 
                     //---------------------------------------------------------------------------
                     //-- SpecifySchemaUpdateScopeFixer
@@ -2520,6 +2465,45 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     }
                     frame.incOverall();
 
+                    //-------------------------------------------------------------------------------
+                    //
+                    // Schema changes for 2.6
+                    //
+                    //-------------------------------------------------------------------------------
+                    frame.setDesc("Increasing storage size for Query Builder search values.");
+                    if (getFieldLength(conn, databaseName, "spqueryfield", "StartValue") != 1000) {
+                        sql = "alter table spqueryfield modify column StartValue varchar(1000)";
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
+                    }
+                    if (getFieldLength(conn, databaseName, "spqueryfield", "EndValue") != 1000) {
+                        sql = "alter table spqueryfield modify column EndValue varchar(1000)";
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
+                    }
+                    frame.incOverall();
+
+                    frame.setDesc("Modifying SpAuditLogField table.");
+                    sql = "alter table spauditlogfield modify column NewValue text null";
+                    if (-1 == update(conn, sql)) {
+                        errMsgList.add("update error: " + sql);
+                        return false;
+                    }
+                    sql = "alter table spauditlogfield modify column OldValue text null";
+                    if (-1 == update(conn, sql)) {
+                        errMsgList.add("update error: " + sql);
+                        return false;
+                    }
+                    sql = "alter table spauditlogfield modify column FieldName varchar(128)";
+                    if (-1 == update(conn, sql)) {
+                        errMsgList.add("update error: " + sql);
+                        return false;
+                    }
+                    frame.incOverall();
 
                     frame.setProcess(0, 100);
 

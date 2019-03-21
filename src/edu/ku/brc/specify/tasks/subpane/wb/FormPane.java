@@ -1,4 +1,4 @@
-/* Copyright (C) 2017, University of Kansas Center for Research
+/* Copyright (C) 2019, University of Kansas Center for Research
  * 
  * Specify Software Project, specify@ku.edu, Biodiversity Institute,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
@@ -507,7 +507,13 @@ public class FormPane extends JPanel implements FormPaneWrapper
      */
     protected JComponent createUIComp(final WorkbenchTemplateMappingItem wbtmi)
     {
-        return createUIComp(WorkbenchTask.getDataType(wbtmi, this.workbenchPane.isUpdateDataSet()),
+        Class<?> dataType = String.class;
+        try {
+            dataType = WorkbenchTask.getDataType(wbtmi, this.workbenchPane.isUpdateDataSet());
+        } catch (WBUnMappedItemException item) {
+            //we tried.
+        }
+        return createUIComp(dataType,
                             wbtmi.getCaption(), 
                             wbtmi.getFieldName(), 
                             wbtmi.getFieldType(),
@@ -810,15 +816,27 @@ public class FormPane extends JPanel implements FormPaneWrapper
         }
         
         WorkbenchTemplateMappingItem wbtmi = inputPanel.getWbtmi();
-        inputPanel.setComp(createUIComp(WorkbenchTask.getDataType(wbtmi, false),
-                                        wbtmi.getCaption(), 
-                                        wbtmi.getFieldName(), 
-                                        fieldType, 
-                                        wbtmi.getDataFieldLength(), 
-                                        fieldLen,
-                                        rows,
-                                        wbtmi));
-        
+
+        try {
+            inputPanel.setComp(createUIComp(WorkbenchTask.getDataType(wbtmi, false),
+                    wbtmi.getCaption(),
+                    wbtmi.getFieldName(),
+                    fieldType,
+                    wbtmi.getDataFieldLength(),
+                    fieldLen,
+                    rows,
+                    wbtmi));
+        } catch (WBUnMappedItemException ex) {
+            inputPanel.setComp(createUIComp(String.class,
+                    wbtmi.getCaption(),
+                    wbtmi.getFieldName(),
+                    fieldType,
+                    wbtmi.getDataFieldLength(),
+                    fieldLen,
+                    rows,
+                    wbtmi));
+
+        }
         ignoreChanges = true;
         ((JTextComponent)inputPanel.getComp()).setText(oldComp.getText());
         ignoreChanges = false;

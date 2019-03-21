@@ -1,4 +1,4 @@
-/* Copyright (C) 2017, University of Kansas Center for Research
+/* Copyright (C) 2019, University of Kansas Center for Research
  * 
  * Specify Software Project, specify@ku.edu, Biodiversity Institute,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
@@ -19,27 +19,6 @@
 */
 package edu.ku.brc.specify.tasks.subpane.images;
 
-import java.io.File;
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.dom4j.Element;
-
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
@@ -55,61 +34,24 @@ import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.config.SpecifyWebLinkMgr;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
-import edu.ku.brc.specify.datamodel.Accession;
-import edu.ku.brc.specify.datamodel.AccessionAttachment;
-import edu.ku.brc.specify.datamodel.Agent;
-import edu.ku.brc.specify.datamodel.AgentAttachment;
-import edu.ku.brc.specify.datamodel.Attachment;
-import edu.ku.brc.specify.datamodel.Borrow;
-import edu.ku.brc.specify.datamodel.BorrowAttachment;
-import edu.ku.brc.specify.datamodel.CollectingEvent;
-import edu.ku.brc.specify.datamodel.CollectingEventAttachment;
+import edu.ku.brc.specify.datamodel.*;
 import edu.ku.brc.specify.datamodel.Collection;
-import edu.ku.brc.specify.datamodel.CollectionObject;
-import edu.ku.brc.specify.datamodel.CollectionObjectAttachment;
-import edu.ku.brc.specify.datamodel.ConservDescription;
-import edu.ku.brc.specify.datamodel.ConservDescriptionAttachment;
-import edu.ku.brc.specify.datamodel.ConservEvent;
-import edu.ku.brc.specify.datamodel.ConservEventAttachment;
-import edu.ku.brc.specify.datamodel.DNASequence;
-import edu.ku.brc.specify.datamodel.DNASequenceAttachment;
-import edu.ku.brc.specify.datamodel.DNASequencingRun;
-import edu.ku.brc.specify.datamodel.DNASequencingRunAttachment;
-import edu.ku.brc.specify.datamodel.Discipline;
-import edu.ku.brc.specify.datamodel.FieldNotebook;
-import edu.ku.brc.specify.datamodel.FieldNotebookAttachment;
-import edu.ku.brc.specify.datamodel.FieldNotebookPage;
-import edu.ku.brc.specify.datamodel.FieldNotebookPageAttachment;
-import edu.ku.brc.specify.datamodel.FieldNotebookPageSet;
-import edu.ku.brc.specify.datamodel.FieldNotebookPageSetAttachment;
-import edu.ku.brc.specify.datamodel.Geography;
-import edu.ku.brc.specify.datamodel.Gift;
-import edu.ku.brc.specify.datamodel.GiftAttachment;
-import edu.ku.brc.specify.datamodel.Loan;
-import edu.ku.brc.specify.datamodel.LoanAttachment;
-import edu.ku.brc.specify.datamodel.Locality;
-import edu.ku.brc.specify.datamodel.LocalityAttachment;
-import edu.ku.brc.specify.datamodel.Permit;
-import edu.ku.brc.specify.datamodel.PermitAttachment;
-import edu.ku.brc.specify.datamodel.Preparation;
-import edu.ku.brc.specify.datamodel.PreparationAttachment;
-import edu.ku.brc.specify.datamodel.ReferenceWork;
-import edu.ku.brc.specify.datamodel.ReferenceWorkAttachment;
-import edu.ku.brc.specify.datamodel.RepositoryAgreement;
-import edu.ku.brc.specify.datamodel.RepositoryAgreementAttachment;
-import edu.ku.brc.specify.datamodel.SpAppResource;
-import edu.ku.brc.specify.datamodel.SpAppResourceDir;
-import edu.ku.brc.specify.datamodel.SpecifyUser;
-import edu.ku.brc.specify.datamodel.Storage;
-import edu.ku.brc.specify.datamodel.StorageAttachment;
-import edu.ku.brc.specify.datamodel.Taxon;
-import edu.ku.brc.specify.datamodel.TaxonAttachment;
-import edu.ku.brc.specify.datamodel.TreatmentEvent;
-import edu.ku.brc.specify.datamodel.TreatmentEventAttachment;
 import edu.ku.brc.specify.datamodel.busrules.AgentBusRules;
 import edu.ku.brc.specify.ui.SpecifyUIFieldFormatterMgr;
 import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.util.Triple;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.dom4j.Element;
+
+import java.io.File;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.sql.*;
+import java.util.*;
+import java.util.Date;
 
 /**
  * @author rods
@@ -146,6 +88,7 @@ public class CollectionDataFetcher
                 Agent.class,              AgentAttachment.class,
                 Borrow.class,             BorrowAttachment.class,
                 CollectingEvent.class,    CollectingEventAttachment.class,
+                CollectingTrip.class,     CollectingTripAttachment.class,
                 CollectionObject.class,   CollectionObjectAttachment.class,
                 ConservDescription.class, ConservDescriptionAttachment.class,
                 ConservEvent.class,       ConservEventAttachment.class,

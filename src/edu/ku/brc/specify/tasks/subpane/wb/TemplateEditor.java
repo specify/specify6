@@ -1,4 +1,4 @@
-/* Copyright (C) 2017, University of Kansas Center for Research
+/* Copyright (C) 2019, University of Kansas Center for Research
  * 
  * Specify Software Project, specify@ku.edu, Biodiversity Institute,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
@@ -119,117 +119,136 @@ import edu.ku.brc.util.Pair;
  *
  */
 @SuppressWarnings("serial")
-public class TemplateEditor extends CustomDialog
-{
+public class TemplateEditor extends CustomDialog {
     private static final Logger log = Logger.getLogger(TemplateEditor.class);
 
     private static int taxId = 4;
     private static int taxOnlyId = 4000;
 
-    protected JButton                        mapToBtn;
-    protected JButton                        unmapBtn;
-    protected JButton                        upBtn;
-    protected JButton                        downBtn;
-    protected JLabel						 descriptionLbl;
-    protected JList                          mapList;
+    protected JButton mapToBtn;
+    protected JButton unmapBtn;
+    protected JButton upBtn;
+    protected JButton downBtn;
+    protected JLabel descriptionLbl;
+    protected JList mapList;
     protected DefaultModifiableListModel<FieldMappingPanel> mapModel;
-    protected JScrollPane                    mapScrollPane;
-    
-    protected JList                          tableList;
+    protected JScrollPane mapScrollPane;
+
+    protected JList tableList;
     protected DefaultModifiableListModel<TableInfo> tableModel;
-    
-    protected JList                          fieldList;
+
+    protected JList fieldList;
     protected DefaultModifiableListModel<FieldInfo> fieldModel;
-    
-    protected Vector<WorkbenchTemplateMappingItem>			deletedItems		= new Vector<WorkbenchTemplateMappingItem>();
 
-	protected boolean										hasChanged			= false;
-	protected boolean										doingFill			= false;
-	protected Color											btnPanelColor;
-	protected JPanel										btnPanel;
+    protected Vector<WorkbenchTemplateMappingItem> deletedItems = new Vector<WorkbenchTemplateMappingItem>();
 
-	protected ImportDataFileInfo							dataFileInfo		= null;
-	protected WorkbenchTemplate								workbenchTemplate	= null;
-	protected String                                        schemaName          = null;
-	protected DBTableIdMgr									databaseSchema;
-	protected List<TreeDefItemStandardEntry>				taxRanks			= null;
+    protected boolean hasChanged = false;
+    protected boolean doingFill = false;
+    protected Color btnPanelColor;
+    protected JPanel btnPanel;
 
-	protected boolean										isMappedToAFile;
-	protected boolean										isEditMode;
-	protected boolean										isReadOnly			= false;
-	protected boolean										ignoreMapListUpdate	= false;
+    protected ImportDataFileInfo dataFileInfo = null;
+    protected WorkbenchTemplate workbenchTemplate = null;
+    protected String schemaName = null;
+    protected DBTableIdMgr databaseSchema;
+    protected List<TreeDefItemStandardEntry> taxRanks = null;
 
-	protected ImageIcon										blankIcon			= IconManager
-																						.getIcon(
-																								"BlankIcon",
-																								IconManager.STD_ICON_SIZE);
+    protected boolean isMappedToAFile;
+    protected boolean isEditMode;
+    protected boolean isReadOnly = false;
+    protected boolean ignoreMapListUpdate = false;
 
-	protected TableInfoListRenderer							tableInfoListRenderer;
-	
-	protected List<String>									tablesWithAttachments = null;
-    
+    protected ImageIcon blankIcon = IconManager
+            .getIcon(
+                    "BlankIcon",
+                    IconManager.STD_ICON_SIZE);
+
+    protected TableInfoListRenderer tableInfoListRenderer;
+
+    protected List<String> tablesWithAttachments = null;
+
     /**
      * Constructor.
-     * @param dlg the dialog this will be housed into
+     *
+     * @param dlg          the dialog this will be housed into
      * @param dataFileInfo the information about the data file.
      */
-    public TemplateEditor(final Frame frame, final String title, final ImportDataFileInfo dataFileInfo, final String schemaName) throws Exception
-    {
+    public TemplateEditor(final Frame frame, final String title, final ImportDataFileInfo dataFileInfo, final String schemaName) throws Exception {
         super(frame, title, true, OKCANCELHELP, null);
-        
-        this.dataFileInfo    = dataFileInfo;
+
+        this.dataFileInfo = dataFileInfo;
         this.isMappedToAFile = dataFileInfo != null;
-        this.isEditMode      = false;
-        this.schemaName      = schemaName;
-        
+        this.isEditMode = false;
+        this.schemaName = schemaName;
+
         helpContext = dataFileInfo == null ? "WorkbenchNewMapping" : "WorkbenchEditMapping";
-        
+
         buildUploadDefs();
+        databaseSchema = schemaName == null ? WorkbenchTask.getDatabaseSchema(false) : WorkbenchTask.buildDatabaseSchema(schemaName);
+
+        int disciplineeId = AppContextMgr.getInstance().getClassObject(Discipline.class).getDisciplineId();
+        SchemaI18NService.getInstance().loadWithLocale(SpLocaleContainer.WORKBENCH_SCHEMA,
+                disciplineeId,
+                databaseSchema,
+                SchemaI18NService.getCurrentLocale());
         createUI();
     }
-    
+
     /**
      * Constructor.
-     * @param dlg the dialog this will be housed into
+     *
+     * @param dlg          the dialog this will be housed into
      * @param dataFileInfo the information about the data file.
      */
-    public TemplateEditor(final Frame frame, final String title, final WorkbenchTemplate wbTemplate, final String schemaName) throws Exception
-    {
+    public TemplateEditor(final Frame frame, final String title, final WorkbenchTemplate wbTemplate, final String schemaName) throws Exception {
         super(frame, title, true, OKCANCELHELP, null);
-        
+
         this.workbenchTemplate = wbTemplate;
-        this.isMappedToAFile   = StringUtils.isNotEmpty(wbTemplate.getSrcFilePath());
-        this.isEditMode        = this.workbenchTemplate != null;
-        this.schemaName        = schemaName;
-        
+        this.isMappedToAFile = StringUtils.isNotEmpty(wbTemplate.getSrcFilePath());
+        this.isEditMode = this.workbenchTemplate != null;
+        this.schemaName = schemaName;
+
         helpContext = "WorkbenchEditMapping";
-        
+
         buildUploadDefs();
+        databaseSchema = schemaName == null ? WorkbenchTask.getDatabaseSchema(false) : WorkbenchTask.buildDatabaseSchema(schemaName);
+
+        int disciplineeId = AppContextMgr.getInstance().getClassObject(Discipline.class).getDisciplineId();
+        SchemaI18NService.getInstance().loadWithLocale(SpLocaleContainer.WORKBENCH_SCHEMA,
+                disciplineeId,
+                databaseSchema,
+                SchemaI18NService.getCurrentLocale());
+        checkMappings();
         createUI();
     }
-    
-    
-    
-	/* (non-Javadoc)
+
+    private void checkMappings() throws WBUnMappedItemException {
+        if (workbenchTemplate != null) {
+            for (WorkbenchTemplateMappingItem wbtmi : workbenchTemplate.getWorkbenchTemplateMappingItems()) {
+                boolean mappedTheField = false;
+                DBTableInfo ti = databaseSchema.getInfoById(wbtmi.getSrcTableId());
+                if (ti != null) {
+                    for (DBFieldInfo fi : ti.getFields()) {
+                        if (wbtmi.getFieldName().equals(fi.getName())) {
+                            mappedTheField = true;
+                            break;
+                        }
+                    }
+                }
+                if (!mappedTheField) {
+                    throw new WBUnMappedItemException(wbtmi);
+                }
+            }
+        }
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.ui.CustomDialog#createUI()
      */
     @Override
     public void createUI()
     {
         super.createUI();
-                
-        //databaseSchema = WorkbenchTask.getDatabaseSchema();
-        //databaseSchema = WorkbenchTask.buildDatabaseSchema("locality_update_wb_datamodel");
-        databaseSchema = schemaName == null ? WorkbenchTask.getDatabaseSchema(false) : WorkbenchTask.buildDatabaseSchema(schemaName);
-        
-        int disciplineeId = AppContextMgr.getInstance().getClassObject(Discipline.class).getDisciplineId();
-        SchemaI18NService.getInstance().loadWithLocale(SpLocaleContainer.WORKBENCH_SCHEMA, 
-                                                       disciplineeId, 
-                                                       databaseSchema, 
-                                                       SchemaI18NService.getCurrentLocale());
-
-        
-        
         // Create the Table List
         Vector<TableInfo> tableInfoList = new Vector<TableInfo>();
         for (DBTableInfo ti : databaseSchema.getTables())
@@ -2079,7 +2098,7 @@ public class TemplateEditor extends CustomDialog
         {
             int       inx = tblIdToListIndex.get(wbtmi.getSrcTableId());
             TableInfo ti  = tableModel.getElementAt(inx);
-            
+
             for (FieldInfo fi : ti.getFieldItems())
             {
                 if (wbtmi.getFieldName().equals(fi.getFieldInfo().getName()))

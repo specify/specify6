@@ -1,4 +1,4 @@
-/* Copyright (C) 2017, University of Kansas Center for Research
+/* Copyright (C) 2019, University of Kansas Center for Research
  * 
  * Specify Software Project, specify@ku.edu, Biodiversity Institute,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
@@ -25,6 +25,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 
+import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.helpers.ProxyHelper;
+import edu.ku.brc.specify.Specify;
+import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.PostMethod;
@@ -57,6 +61,10 @@ public class SpecialMsgNotifier
     
     public void checkForMessages()
     {
+        if (AppPreferences.getLocalPrefs().getBoolean("DisableMessageCheckAtStartUp", false)) {
+            log.info("DisableMessageCheckAtStartUp is true. Skipping message check.");
+            return;
+        }
         if (blockMsg.get())
         {
             return;
@@ -129,6 +137,7 @@ public class SpecialMsgNotifier
         // check the website for the info about the latest version
         HttpClient httpClient = new HttpClient();
         httpClient.getParams().setParameter("http.useragent", getClass().getName()); //$NON-NLS-1$
+        ProxyHelper.applyProxySettings(httpClient);
         httpClient.getHttpConnectionManager().getParams().setConnectionTimeout(15000);
 
         PostMethod postMethod = new PostMethod(url);

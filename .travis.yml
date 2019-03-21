@@ -1,31 +1,26 @@
 language: java
 
-addons:
-  ssh_known_hosts: demo.specifycloud.org
+env:
+  global:
+    secure: Qjz4NvuWa+YqhXgHPHXjkNOU7CHsrZM2j6JaLoCeU8iJlg+vq4OhRoceZKAwTRGTKB6bCRhoMlMN11U5KCVOYHzKFtPgmEuC0yrqSRtmFOtASQsi3b5ShK/bOtZhDhba9gF9dNHoLgPZQbOWweMzkXr84HbGMmlV3CIib4Enl3SMzDOZvZh9D3p4u5CSbutpTDHze6UfPDNmW9BmnZYHZIixdZa9z7C3E97yEYoBjmRQi+kKPfJgBnSq6dokdEpLvgZCZ0/59VG7b+gVt7yXAKzQCYG7oWutIZWEyizfAFggmESLDW8k6PYF6xckivsvSl3jovzdlCnyQuOYGDgiJDJWt4aL9i2coDnxjMVheA9olTAPwYWAvgJyk21Mb3qEStqa7j16BQffwPFcqVopbp1gOl1wD8x3ZX89CY0GafbVoML54uEvTOtNW2XBU9cL160SzfUJUlEe/K/t9XSmEynt+p8sNhFxrNiSIIwcT42nwaVlQk4migVTaU4O9qi7UJbmZxDOHrmnxmReWkgf0CprahCvTxGrWQQSmIQiIj6bRzPGOr0UifhxbGNbFbfK0VVoFsdAjOrXvOk0N1twrwtjtDjiF6xFvGPmfVLwaI88obLDpr97LgK0+DZjy1qKOxlXOTjkI9qfy+fHqsDzTyYq/wf77qXFDCXDMBEfOlg=
 
 cache:
   directories:
-    - install4j5
+  - install4j7.0.7
 
 install:
-  - |
-    if [ ! -d install4j5/bin ];
-    then
-      wget https://download-keycdn.ej-technologies.com/install4j/install4j_unix_5_1_15.tar.gz;
-      tar -zxvf install4j_unix_5_1_15.tar.gz;
-    fi
+- |
+  if [ ! -d install4j7.0.7/bin ];
+  then
+    wget https://download-keycdn.ej-technologies.com/install4j/install4j_unix_7_0_7.tar.gz
+    tar -zxvf install4j_unix_7_0_7.tar.gz;
+  fi
 
 before_script:
-- openssl aes-256-cbc -K $encrypted_aa8174fba226_key -iv $encrypted_aa8174fba226_iv
-  -in travis-ci_rsa.enc -out /tmp/travis-ci_rsa -d
-- eval "$(ssh-agent -s)"
-- chmod 600 /tmp/travis-ci_rsa
-- ssh-add /tmp/travis-ci_rsa
-- ssh -L11862:localhost:11862 -N install4jtunnel@demo.specifycloud.org &
-- install4j5/bin/install4jc --license=FLOAT:localhost
+- install4j7.0.7/bin/install4jc --license=$INSTALL4J_LICENSE
 
 script:
-- ant package-all -Dinstall4j.dir=./install4j5
+- ant package-all -Dinstall4j.dir=./install4j7.0.7
 
 deploy:
   provider: releases
@@ -34,9 +29,9 @@ deploy:
     secure: jnxl2c9Az/DPHS8ghxPfdEH/fsgexvhEW4NHBjJILNptWSfx72+23bsUhp7SRxKgJgq3MXaB6e7hpiDJxah18yI7Og6WNBblWzkQJMeJrHvLn6vsLIAGCaUhy1gy3seZwvzCwFm/GKuZyTOUwP3TYMfda464uvc9zZLpthTJQ1Q54b8i/25eivhyuBdGm9vE4lT9jE5Xk09xrRzlOcznZMXTIDwdAtxj6UcRtxzLcT2WuIWyL+y+PVEKWy8Po6eyJT1rX0ST5y6GA25ZN3HfZXCVgDVWpNCYdcDpYKy63+pwFE397ielXh7QY3XI/0gftpSonXvrDNEsj0G8BSUNvBVcAKTzMemOpbTgqdvdpSeDeKm0+c1+07jRGcP84n5typBcrvP6nUzZRDzdxqjWHthnDpl0fHZaFSQhCrG2qYytUW2q78V5WrPA403uBwENFLalIheGPXvPB5VLGMRiv4zFIUgqpFKT5zLZ0dIL0L1bAQ0kqJ1RAvSUa74nUwgymaPwMlcD+4aB0heaPnOGvakJzhxCkv4HoHdYG7FIP9wTrJCA5aKaMFrRhlx3ZbEX4UjT3NP/ppdI0nd+pZcRcOYCbvcItaQ7DtwR53Ksq8WfVbaUsm9cqDZuaMBv/OskCUESpA0yNlXVdvF0U+hMNnKO5I4mHpGruM4rImPVhAk=
   file_glob: true
   file:
-    - packages/internal/Specify*
-    - packages/external/Specify*
-    - packages/external/updates.xml
+  - packages/internal/Specify*
+  - packages/external/Specify*
+  - packages/external/updates.xml
   skip_cleanup: true
   on:
     repo: specify/specify6

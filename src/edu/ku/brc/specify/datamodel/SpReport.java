@@ -1,4 +1,4 @@
-/* Copyright (C) 2017, University of Kansas Center for Research
+/* Copyright (C) 2019, University of Kansas Center for Research
  * 
  * Specify Software Project, specify@ku.edu, Biodiversity Institute,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
@@ -538,7 +538,8 @@ public class SpReport extends DataModelObjBase
     		Integer tries = 1;
     		while (!done)
     		{
-    			List<?> matches = session.getDataList("from SpQuery where name = '" + result.replace("'", "''") + "'");
+    			List<?> matches = session.getDataList("from SpQuery where name = '" + result.replace("'", "''")
+                        + "' and specifyUserId = " +  AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getId());
     			if (matches.size() == 0)
     			{
     				done = true;

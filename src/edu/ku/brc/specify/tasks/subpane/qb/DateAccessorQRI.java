@@ -6,6 +6,7 @@ package edu.ku.brc.specify.tasks.subpane.qb;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace.PartialDateEnum;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.util.Pair;
 
 /**
  * @author timo
@@ -51,37 +52,57 @@ public class DateAccessorQRI extends FieldQRI
 	public String getSQLFldSpec(TableAbbreviator ta, boolean forWhereClause,
 			boolean forSchemaExport, String formatName) {
         String fldExpr = ta.getAbbreviation(table.getTableTree()) + "." + getFieldName();
-        
-        String validPartialDates = null;
-        String sqlFunction = null;
-        switch (datePart) {
-        	case NumericDay: 
-        		sqlFunction = "DAY"; 
-        		validPartialDates = "(" + String.valueOf(PartialDateEnum.Full.ordinal()) + ")";
-        		break;
-        	case NumericMonth: 
-        		sqlFunction = "MONTH"; 
-        		validPartialDates = "(" + String.valueOf(PartialDateEnum.Full.ordinal()) + ", " +
-        			String.valueOf(PartialDateEnum.Month.ordinal()) + ")";
-        		break;
-        	case NumericYear: 
-        		sqlFunction = "YEAR"; 
-        		validPartialDates = "(" + String.valueOf(PartialDateEnum.Full.ordinal()) + ", " +
-    				String.valueOf(PartialDateEnum.Month.ordinal()) + ", " +
-    				String.valueOf(PartialDateEnum.Year.ordinal())+ ")";
-        		break;
-        }
-        if (!forWhereClause)
-        {
-        	if (getFieldInfo().getDatePrecisionName() != null)
-        	{
+        Pair<String, String> specs = getSpecInfo();
+        if (!forWhereClause) {
+        	if (getFieldInfo().getDatePrecisionName() != null) {
         		String partialDateExpr = ta.getAbbreviation(table.getTableTree()) + "." + getFieldInfo().getDatePrecisionName();
-        		return "CASE WHEN " + partialDateExpr + " IN" + validPartialDates + " THEN " + sqlFunction + "(" + fldExpr
+        		return "CASE WHEN " + partialDateExpr + " IN" + specs.getSecond() + " THEN " + specs.getFirst() + "(" + fldExpr
         			+ ") ELSE null END";
         	}
         }
-        return sqlFunction + "(" + fldExpr + ")";
-        
+        return specs.getFirst() + "(" + fldExpr + ")";
+	}
+
+	private Pair<String, String> getSpecInfo() {
+		Pair<String, String> result = new Pair<>(null, null);
+		switch (datePart) {
+			case NumericDay:
+				result.setFirst("DAY");
+				result.setSecond("(" + String.valueOf(PartialDateEnum.Full.ordinal()) + ")");
+				break;
+			case NumericMonth:
+				result.setFirst("MONTH");
+				result.setSecond("(" + String.valueOf(PartialDateEnum.Full.ordinal()) + ", " +
+						String.valueOf(PartialDateEnum.Month.ordinal()) + ")");
+				break;
+			case NumericYear:
+				result.setFirst("YEAR");
+				result.setSecond("(" + String.valueOf(PartialDateEnum.Full.ordinal()) + ", " +
+						String.valueOf(PartialDateEnum.Month.ordinal()) + ", " +
+						String.valueOf(PartialDateEnum.Year.ordinal())+ ")");
+				break;
+		}
+		return result;
+	}
+
+	@Override
+	public String getNullCondition(TableAbbreviator ta, boolean forSchemaExport, boolean negate, String formatName) {
+		Pair<String, String> specs = getSpecInfo();
+		String fldExpr = specs.getFirst() + "(" + ta.getAbbreviation(table.getTableTree()) + "." + getFieldName() + ")";
+		String partialDateExpr = ta.getAbbreviation(table.getTableTree()) + "." + getFieldInfo().getDatePrecisionName();
+		if (negate) {
+			return "(" + fldExpr + " is not null and not (" + fldExpr + "=1 and " + partialDateExpr + " not in" + specs.getSecond() + "))";
+		} else {
+			return "(" + fldExpr + " is null or (" + fldExpr + "=1 and " + partialDateExpr + " not in" + specs.getSecond() + "))";
+		}
+	}
+
+	public String refineCriteria(TableAbbreviator ta, Boolean isNegated, String baseCriteria) {
+		if (isNegated) {
+			return "(" + baseCriteria + " or " + getNullCondition(ta, false, false, null) + ")";
+		} else {
+			return "(" + baseCriteria + " and " + getSQLFldSpec(ta, false, false, null) + " is not null)";
+		}
 	}
 
 	/* (non-Javadoc)

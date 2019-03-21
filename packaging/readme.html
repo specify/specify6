@@ -1,38 +1,109 @@
 <!doctype html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <title>
-      Specify 6.7.01 Release Notes
-    </title>
-  </head>
-  <body>
-    <p>
-      <h3>Specify Collections Consortium</h3>
-    </p>
-    <strong> <br>
-Release Notes <br>
-Specify 6.7.01 "Wolverine"<br>
-7 May 2018 <br>
-    </strong><br>
-    <p> Specify 6.7.01 is a minor maintenance update; it does not modify the database schema. </p>
-    <ol>
-      <li> Specify 6.7.01 adds the option to grant Batch Editing (BE) privileges to users in classes other than Managers and Administrators. BE is now available on the "Tools" page of the Specify Security Configuration tool. BE privileges may now be assigned to individual Full Access and Limited Access users.  By default, BE is turned on for Managers, and turned off for all other users.  When granting BE privileges, Workbench Upload and Query Builder access privileges must also be granted or else BE will not be visible or available to the user. &nbsp;John Torgerson (Michigan) championed this improved flexibility. </li>
-      <br>
-      <li>The GeoLocate Project is moving to a new institution and to new servers. We updated the links in Specify to the new GeoLocate addresses to maintain Specify's integration. &nbsp;Thanks to Nelson Rios (Yale) for his technical assistance. </li>
-      <br>
-      <li>We fixed a 'regression' to an earlier change that had affected GUIDs on Preparation records. The original fix mostly filled in GUIDs for records that contained NULL values; it was applied during the schema update process for release 6.7.00. &nbsp;For a subset of databases using Preparations, the schema update would fail at the step: "Creating Index for Preparation GUID". For installations that updated to 6.7.00 and did not experience that update issue, this fix is not needed and it will have no effect.&nbsp;Thanks to the Univ. Florida and the Santa Barbara MNH for helping to solve the problem.</li>
-      <br>
-      <li>We clarified the use of the text: "Save Changes" and "Discard Changes" in the dialog window buttons that appear after data are entered into a Specify data form and when a user then attempts to close the tab or the program without saving the edits. </li>
-      <br>
-      <li>We fixed a rare problem involving series data entry that occurred when two series were created with ranges in inverse order, for example, a series with catalog numbers "600-620" was followed by a series with catalog numbers "500-550". &nbsp;When the user tried to save the new series entries Specify would create more than the desired number of records. </li>
-      <br>
-      <li>We fixed an issue with the Specify Data Exporter tool which would cause Specify to hang if more than 100,000 records had been updated and needed to be exported for an IPT cache or web portal update, and where records had been deleted in the database since the last export.  The Exporter now works correctly in this scenario.</li>
-      <br>
-      <li>A bug with the Symbiota connector that caused Specify to ingloriously crash with a stack trace window has been squashed. &nbsp;Thanks to Herrick Brown (SERNEC Project) for bringing it to our attention.</li>
-      <br>
-     
-      
-  </ol>
-  </body>
+<head>
+<meta charset="utf-8">
+<title>Specify 6.7.02 Release Notes</title>
+</head>
+
+<body>
+<p align="center"><strong>Specify 6.7.02 Changes (readme.txt) </strong><br>
+  <strong>21 March 2019</strong></p>
+<br>
+
+<p><strong><u>General Release Notes</u></strong></p>
+<ol>
+  <li>With  the release of Specify 6.7.02 we are recommending that Specify 6 sites change their  installed Java software package from Oracle Java SE 8, to Amazon Corretto  8. Oracle has changed its licensing policy  for Java SE 8 as of January 31, 2019; it is no longer available for free for  non-personal use. Specify 6 is  compatible with the new Amazon Corretto implementation of the Java runtime  environment. Amazon has committed to provide long-term support of Corretto including security patches at no cost. A guidance document is available on the Consortium's web site about this change.  Specify users are encouraged to first contact institutional systems support department to determine if there is an organizational plan to respond to the change in Oracle's Java license  terms.</li>
+  <li>We  recommend that Specify 6 Windows installations use a 64-bit  Specify version for better performance, if workstations are running a 64-bit  version of Windows. Oracle Java 8 SE, and its replacement Corretto 8, must also  be a 64-bit version to operate with 64-bit Specify. We have noticed that 32-bit versions of Specify 6 for Windows occasionally stutter on startup. No other 32-bit specific bugs of Specify 6 are  known.</li>
+</ol>
+<p><strong><u>Tables Added to  Database Schema</u></strong> (name, relationship, purpose/requestor)</p>
+<ol>
+  <li><strong>Collecting Trip  Attachment</strong>,  linked M:1 to Collecting Trip. This was added to allow association of one or more  files to a Collecting Trip record. Requested by SAIAB.</li>
+  <li><strong>Collecting Trip  Attribute</strong>,  linked 1:1 to Collecting Trip. This was added to provide fields for more detail  about Collecting Trip(s). Requested by SAIAB for marine video sampling.</li>
+  <li><strong>Collecting Trip  Authorization. </strong>This is a join table  between the Collecting Trip (CT) and Permit tables, enabling a M:M relationship  between CT and Permit.  One CT record can  have more than one Permit record, and one Permit may have more than one associated CT. </li>
+  <li><strong>Collecting Event  Authorization</strong>,  This is a join table between Collecting Event and Permit, creating a M:M relationship  between those two tables. One CE may have more than one Permit, and one Permit record may have more than one associated CE. (In the Specify data model, CT is 1:M with CE.) Requested by Barcelona and South  Africa.</li>
+  <li><strong>Collection Object  Property (COP)</strong>,  M:1 relationship to Collection Object. COP has fields for describing custom  properties of Collection Objects such as measurements. Note: Specify will continue to use the Collection Object Attribute table in a 1:1  relationship with Collection Object to provide additional customizable fields  for describing Collection Objects. COP adds an additional mechanism for custom attributes for Collection Objects, but in a M:1 relationship to  Collection Object--similarly for Preparation and the new Preparation Property  table noted below. These new tables are intended for uses not supported by the  existing Collection Object Attribute and Preparation Attribute tables and their  1:1 relationships. The two Property tables will support the Darwin Core <em>Measurement or Fact</em> extension. See the field list below. The Consortium will publish usage guidance  on the new COP and Preparation Property tables on its web site in early 2019. Requested  by the Florida MNH and Barcelona NHM.</li>
+  <li><strong>Preparation Property</strong>, M:1 to Preparation. This  table was added to enable custom fields for description detail about Preparations  in a M:1 relationship. Similar data support functions as for #5 but for  Preparation attributes.</li>
+ <li><strong>Voucher Relationship</strong>, 1:M to Collection  Object. This new table contains fields to facilitate the export of tissue and  DNA sample identifiers to GGBN to comply with the GGBN standard format. See: <a href="https://wiki.ggbn.org/ggbn/Mandatory_and_recommended_fields_for_sharing_data_with_GGBN#The_voucher_identifiers_2">https://wiki.ggbn.org/ggbn/Mandatory_and_recommended_fields_for_sharing_data_with_GGBN#The_voucher_identifiers_2</a>.  Requested by the University of Kansas.</li>
+</ol>
+<p><strong><u>New Relationships  Between Tables</u></strong>&nbsp;(Trailing numbers refer to Specify GitHub issues (https://github.com/specify/specify6/issues/###)</p>
+<ol>
+  <li>Conservation  Description table now has a M:1 relationship to Preparation table, allowing the  documentation of Conservation details for particular preparations. Requested by  Barcelona, KU Paleo and Nebraska Paleo. 178</li>
+  <li>A  second link between Preparation and Storage Tree for 'Permanent Location'  enables documenting permanent and current locations of a Preparation. Requested by Barcelona. 177</li>
+  <li>Permit  now has M:1 relationships with both Collecting Event Authorization and  Collecting Trip Authorization. Requested by South Africa. 210</li>
+</ol>
+<p><strong><u>Data Fields Added</u></strong><br>
+</p>
+<ol>
+  <li><strong>Collection Object</strong> table fields added: Agent1,  Date1, and Inventory Date Precision.  </li>
+  <li><strong>Preparation</strong> table  fields added: AlternateStorage (link to Storage Tree), ConservDescription, Date1,  Date1Precision, Date2, Date2Precision, Date3, Date3Precision, Date4,  Date4Precision, PreparationProperties (link to new table, see above), Text6,  Text7, Text8, and Text9.</li>
+  <li><strong>Collection Object  Attribute</strong> table fields added: Date1, Date1Precision, and Agent1.</li>
+  <li><strong>Collecting Trip</strong> table fields added:  Agent1, Agent2, CollectingTripAttachments (link to Attachment),  CollectingTripAttribute (link to new table, see above),  CollectingTripAuthorizations (link to new table, see above), Date1,  Date1Precision, Date2Precision, Text5, Text6, Text7, Text8, and Text9.   209</li>
+  <li><strong>Reference Work</strong> table fields added: DOI  and URI. 207</li>
+  <li><strong>Exsiccata</strong> table fields added: Remarks  and Schedae. Univ. of Michigan request. 205</li>
+  <li><strong>DNA Sequence</strong> table fields added: SequenceDate,  ExtractionDate, Extractor (link to Agent). 231</li>
+  <li><strong>Material Sample</strong> table field added: Extractor  (link to Agent). 231</li>
+  <li><strong>Collection Object  Property (new table) fields: </strong></li><ul>
+  <li><strong>Customizable fields: </strong>Agent1–10 (int11, Specify Agent IDs), Date1–10,  Integer1–20 (smallint), Integer21-30 (int), Text1-15 (Varchar50), Text16-30 (varchar100), Text31-40 (text), Yes/no1-20 (boolean), Number1-20 (float), Number21-30 (double), Remarks (memo4096).</li>
+  <li><strong>Fields used by Specify:</strong> CollectionMemberID, CreatedByAgent,  ModifiedByAgent, TimestampCreated, TimestampModified, Version, GUID</li>
+  </ul>
+    <li><strong>Preparation Property  (new table) fields:</strong> same as for table Collection Object Property above.</li>
+	<li><strong>Attachment</strong> table field: AttachmentStorageConfig to support the use of more than one attachment or asset server. Requested by Denmark developer.</li>
+</ol>
+<p><strong><u>User Interface Schema  Changes</u></strong></p>
+<ol>
+  <li>The  Inventory Date field in the Collection Object Table can now be configured as a  partial date field to accommodate incomplete dates. 196</li>
+  <li>Specify  plug-ins can now be displayed or hidden using &quot;true/false&quot; commands  in the UI schema xml file. 184</li>
+  <li>Specify  user interface schema files with non-ASCII characters exported from Specify now  display correctly upon re-import due to the use of UTF-8 encoding. 183</li>
+</ol>
+<p><strong><u>Darwin Core Exporter  Schema Changes</u></strong></p>
+<ol>
+  <li>Organism  Quantity and Organism Quantity Type fields have been added to Darwin Core export  schema XSD file. 202</li>
+</ol>
+<p><strong><u>WorkBench (Upload)  Schema Changes</u></strong></p>
+<ol>
+  <li>DNA  sequence data can now be uploaded to the DNA Sequence Table via the WorkBench. 175,  217</li>
+  <li>The  WorkBench can now be configured to upload Locality Name Alias data to the  Locality table. 180</li>
+</ol>
+<p><strong><u>Bugs Fixed</u></strong></p>
+<ol>
+  <li>Until now, users  without permission to add data could still do so through drop down pick lists.  Now only users with &quot;add&quot; permission can add new records in that way.  Rancho Santa Ana BG reported this bug. 228</li>
+  <li>Upon  startup, when using a proxy server, Specify slowed dramatically when it checked  for special messages. We created a preference to allow disabling of the special  message check. Brisbane reported this bug. 226</li>
+  <li>Permits  can now be searched by Permit Type, Issued By Last Name, and various Permit date  fields, in addition to Permit Number. 215</li>
+  <li>Delay  in the Query Builder resulting from clicking on 'Members' in the Agent table  has been fixed. 193 </li>
+  <li>When  creating new queries, repeated switching back and forth between two or more  base table choices in the upper left window no longer results in a pattern of  increasing performance delays. 191</li>
+  <li>An  error stemming from using the ampersand &quot;&amp;&quot; character in table formatters has been fixed. The ampersand characters are required to conform  with GGBN voucher identifier standards. Previously if an ampersand was used, an error occurred  when the Specify Schema Configuration tool was opened. 185</li>
+  <li>Preparation  table fields that have been formatted in the UI schema configuration tool can now  be auto-incremented when multiple preparations are added or in grid view. 157,  179 </li>
+  <li>If  &quot;Save and New&quot; is checked, it will continue to be in effect until  unchecked regardless of whether Collection Object records have been closed and  reopened.  169</li>
+  <li>The  Apache <em>httpclient</em> library now works correctly. Resolving a proxy server issue  for Brisbane. 159 </li>
+  <li>Fields with partial dates can now be queried by day, month, or year. 156</li>
+  <li>Data  can be exported to Symbiota when fields are included in Specify export mappings as criteria for record selection, but which are marked not to be displayed or  exported. 147 </li>
+  <li>When  sending records to Symbiota databases, the timestamp indicating the last time the  export cache was updated is now evaluated correctly to avoid unnecessary record  updates to the cache. Reported by Rancho Santa Ana. 146</li>
+  <li>When  uploading Collection Object records via the WorkBench, catalog numbers are now correctly  highlighted as invalid if they already exist in the database. 142</li>
+  <li>Paleo  Context Name can be used to find Paleo Context records using the query combo box  or the magnifying glass search even if there is no Chronostratigraphy  associated.  154, 155, 149 </li>
+  <li>WorkBench  Upload Settings window no longer pops up behind the Match Existing Records  window in the WorkBench. 141</li>
+  <li>Accurate  counts of update progress are now displayed in the Data Exporter when more than  100,000 records need to be updated and some records have been deleted. 140 </li>
+  <li>Series  data entry no longer creates catalog number offset errors in certain situations  when a previously entered series does not reach its maximum value of 500  records. 139</li>
+  <li>Queries  that return counts no longer display the message: &quot;Query returned no  results.&quot; after the Count window is closed. 130</li>
+  <li>When  saved queries with 'Series' or 'Distinct' checkboxes checked are opened and run  in the Batch Editor, the checked parameters are ignored, and the BE queries run  as if they are not checked.&nbsp; Queries like  this in BE no longer fail silently because 'Series' and 'Distinct' are not  allowed. 128, 129 </li>
+  <li>WorkBench DataSets cannot be opened if fields from the original mapping are not in the current machine's WorkBench configuration files. Previously Specify would throw unuseful errors. 236</li>
+	<li>When a new Specify 6 software and schema update is available and the software is updated by the user but not the schema, thus making the software and database schema versions incompatible, Specify will shutdown at startup. 237</li>
+	<li>In field searches using the magnifying glass icon, when a specified search term is used but finds no hits, that term is now correctly removed from subsequent searches in that field. 251</li>
+	<li>The Batch Edit system no longer creates a needless RecordSet when edits are not saved. 262</li>
+	<li>Importing Images into a WorkBench now correctly creates a row for each attachment with an existing mapping or with a newly created mapping. 267</li>
+	<li>Adding a Container to a Query no longer causes Specify's performance to degrade. 269</li></ol>
+<p><strong><u>New Features</u></strong></p>
+<ol>
+  <li>All  ranks of a Taxon Tree can now be 'un-enforced&quot; except for 'Life'. This is  to accommodate collections where higher level taxonomy may not be completely  defined, commonly with paleo collections. 201</li>
+  <li>Specify  is now compatible with Amazon Corretto 8 and Oracle Java SE 11. Most current installations of Specify 6 use Oracle Java SE 8 but this version of the Java runtime environment as of January 2019 is no longer available at no cost from Oracle. Existing Specify 6 installations should  move to Amazon's version of Java, Corretto 8. See the general note above, and for more detail the Amazon Corretto announcement on the Consortium web site. 165</li>
+  <li>The  names of exported queries remain the same when re-imported across users within  the same database. Numbers are no longer appended to query names when queries  are shared in this way. 152</li>
+  <li>Weblinks  are now exported as URLs to the Specify Web Portal where they can be used to connect  to targets. They will be active links in the next release, but can be  right-clicked to open in 6.7.02. 144</li>
+  <li>Batch  Edit permissions can now be set for all user levels. Users must also have WorkBench  Upload and Query Builder permissions to work with the Batch Editor. 137</li>
+  <li>Default  permissions for different user levels have been updated to account for added data  tables and preferences. 127</li>
+  <li>The  logic of the 'Show Loans' button on the Preparations form has expanded to include  associated gifts or exchange transactions for a Preparation, in addition to  displaying its loans. The existing 'Show Loans' button can be manually edited to  read 'Show Interactions', contact Consortium staff if you would like assistance.  Also a message now appears when there are no interactions (loans, exchanges, or  gifts) associated with a Preparation.   203, 218</li>
+  <li>Query Builder fields were lengthened to allow for more text in Query fields. 229</li>
+	<li>The new 'Show Interactions' button shows all associated loans, not just open, unresolved loans. 254</li>
+	<li>WorkBench DataSets can now be transferred to other users within a Collection, if they have WorkBench access permissions. Requested by U. Michigan.</li>
+  	
+</ol>
+</body>
 </html>

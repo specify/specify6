@@ -1,4 +1,4 @@
-/* Copyright (C) 2017, University of Kansas Center for Research
+/* Copyright (C) 2019, University of Kansas Center for Research
  * 
  * Specify Software Project, specify@ku.edu, Biodiversity Institute,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
@@ -1438,18 +1438,26 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
 	    Statement stmt = null;
 		try
 		{
-			if (connection != null)
-			{
-				StringBuilder sb = new StringBuilder("GRANT ");
-				appendPerms(sb, permissions);
-                sb.append(String.format(" ON %s.* TO '%s'@'%s' IDENTIFIED BY '%s'",dbName, username, hostName, password));
-				
-                stmt = connection.createStatement();
-                //log.debug(sb.toString());
-                
+			if (connection != null) {
+                boolean isMySql8 = connection.getMetaData().getDatabaseProductVersion().startsWith("8.");
+                if (isMySql8) {
+                    String sql = String.format("CREATE USER '%s'@'%s' IDENTIFIED BY '%s'", username, hostName, password);
+                    stmt = connection.createStatement();
+                    int rv = stmt.executeUpdate(sql);
+                    if (rv != 0) {
+                        return false;
+                    }
+                }
+                StringBuilder sb = new StringBuilder("GRANT ");
+                appendPerms(sb, permissions);
+                if (!isMySql8) {
+                    sb.append(String.format(" ON %s.* TO '%s'@'%s' IDENTIFIED BY '%s'", dbName, username, hostName, password));
+                    stmt = connection.createStatement();
+                } else {
+                    sb.append(String.format(" ON %s.* TO '%s'@'%s'", dbName, username, hostName));
+                }
                 int rv = stmt.executeUpdate(sb.toString());
-
-				return rv == 0;
+                return rv == 0;
 			}
 			
 		} catch (Exception ex)

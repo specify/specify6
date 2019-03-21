@@ -1,4 +1,4 @@
-/* Copyright (C) 2017, University of Kansas Center for Research
+/* Copyright (C) 2019, University of Kansas Center for Research
  * 
  * Specify Software Project, specify@ku.edu, Biodiversity Institute,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
@@ -19,19 +19,19 @@
 */
 package edu.ku.brc.ui;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.Properties;
-import java.util.Vector;
-
+import edu.ku.brc.af.core.UsageTracker;
+import edu.ku.brc.helpers.SwingWorker;
+import edu.ku.brc.helpers.ProxyHelper;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.af.core.UsageTracker;
-import edu.ku.brc.helpers.SwingWorker;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.Properties;
+import java.util.Vector;
 
 
 /**
@@ -137,7 +137,8 @@ public abstract class FeedBackSender
             // check the website for the info about the latest version
             HttpClient httpClient = new HttpClient();
             httpClient.getParams().setParameter("http.useragent", getClass().getName()); //$NON-NLS-1$
-            
+            ProxyHelper.applyProxySettings(httpClient);
+
             PostMethod postMethod = new PostMethod(getSenderURL());
             
             // get the POST parameters (which includes usage stats, if we're allowed to send them)

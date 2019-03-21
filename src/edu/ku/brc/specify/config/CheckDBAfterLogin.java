@@ -1,4 +1,4 @@
-/* Copyright (C) 2017, University of Kansas Center for Research
+/* Copyright (C) 2019, University of Kansas Center for Research
  * 
  * Specify Software Project, specify@ku.edu, Biodiversity Institute,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
@@ -357,6 +357,40 @@ public class CheckDBAfterLogin
             //System.out.println("CHECKED!!!!!!!!!!!!!!!!!!!" + (nulls == updated));
         }
     }
+
+    public static boolean fixPaleoContextTypeSearch() {
+        String sql = "update spappresourcedata d inner join spappresource a on a.spappresourceid = d.spappresourceid set data = "
+            + "replace(data, ' pc.chronosStrat cs JOIN cs.definition ', ' pc.chronosStrat cs LEFT JOIN cs.definition ') where a.name = 'TypeSearches'";
+        String countSql =  "select count(*) from spappresourcedata d inner join spappresource a on a.spappresourceid = d.spappresourceid "
+            + "where data like '%  pc.chronosStrat cs JOIN cs.definition %'";
+        Connection conn = DBConnection.getInstance().getConnection();
+        int toFix = BasicSQLUtils.getCountAsInt(countSql);
+        int updated = 0;
+        if (toFix > 0) {
+            updated = BasicSQLUtils.update(conn, sql);
+        }
+        return updated == toFix;
+    }
+
+    public static boolean fixPaleoContextSearchView() {
+        String sql = "update spappresourcedata set `data` = replace(replace(`data`,'<cell type=\"label\" labelfor=\"pcn\"/>'," +
+                "'<cell type=\"label\" label=\"Paleo Context Name\"/>'), '<cell type=\"field\" id=\"pcn\" name=\"PaleoContextName\"" +
+                "isrequired=\"false\" uitype=\"text\"/>','<cell type=\"field\" id=\"pcn\" name=\"pc.PaleoContextName\" isrequired=\"false\" uitype=\"text\"/>') " +
+                "where spviewsetobjid is not null and `data` like '%<viewset name=\"Search\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+                "%<cell type=\"label\" labelfor=\"pcn\"/>%<cell type=\"field\" id=\"pcn\" name=\"PaleoContextName\" isrequired=\"false\" uitype=\"text\"/>%'";
+        String countSql = "select count(*) from spappresourcedata where spviewsetobjid is not null and `data` like " +
+                "'%<viewset name=\"Search\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">%<cell type=\"label\" " +
+                "labelfor=\"pcn\"/>%<cell type=\"field\" id=\"pcn\" name=\"PaleoContextName\" isrequired=\"false\" uitype=\"text\"/>%'";
+        Connection conn = DBConnection.getInstance().getConnection();
+        int toFix = BasicSQLUtils.getCountAsInt(countSql);
+        int updated = 0;
+        if (toFix > 0) {
+            updated = BasicSQLUtils.update(conn, sql);
+        }
+        return updated == toFix;
+    }
+
+
     /**
      * 
      */
@@ -1092,7 +1126,7 @@ public class CheckDBAfterLogin
     		return false;
     	}
     }
-    
+
     /**
      * @param sql
      * @throws SQLException

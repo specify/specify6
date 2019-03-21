@@ -34,6 +34,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
+import edu.ku.brc.helpers.ProxyHelper;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.RequestEntity;
@@ -394,7 +395,8 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 			@Override
 			protected MappingUpdateStatus doInBackground() throws Exception {
 				if (symTask.getSchemaMapping() != null) {
-					return ExportPanel.retrieveMappingStatus(symTask.getSchemaMapping(), getOverrideTimestamp());
+					return ExportPanel.retrieveMappingStatus(symTask.getSchemaMapping(),
+							sendAfterArchiveBuild.get() ? null : getOverrideTimestamp());
 				} else {
 					return null;
 				}
@@ -628,7 +630,7 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 	protected Timestamp getOverrideTimestamp() {
 		Timestamp overrideTimestamp = null;
 		Timestamp cacheExported = symTask.getSchemaMapping().getTimestampExported();
-		Timestamp symSent = symTask.getTheInstance().getLastPush() != null 
+		Timestamp symSent = symTask.getTheInstance().getLastPush() != null
 				? new Timestamp(symTask.getTheInstance().getLastPush().getTimeInMillis())
 				: null;
 		if (symSent != null && symSent.before(cacheExported)) {
@@ -659,7 +661,7 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 				newOrChangedRecsForCurrentUpdate.clear();
 		        return ExportPanel.updateInBackground(includeRecordIds, useBulkLoad, bulkFileDir, 
 		        		symTask.getSchemaMapping(), listener, conn, 
-		        		cacheRowCount, getOverrideTimestamp());
+		        		cacheRowCount, null);
 			}
 
 			/* (non-Javadoc)
@@ -1156,6 +1158,7 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 			@Override
 			protected Pair<Boolean, String> doInBackground() throws Exception {
 				HttpClient httpClient = new HttpClient();
+				ProxyHelper.applyProxySettings(httpClient);
 				PostMethod post = new PostMethod(symTask.getSymbiotaPostUrlForCurrentInstance());
 				Pair<Boolean, String> result = new Pair<Boolean, String>(false, null);
 								

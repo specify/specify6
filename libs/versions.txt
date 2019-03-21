@@ -9,7 +9,8 @@ Libraries:
 
 Name                                    Version Info                   License Info
 -----------------------------------------------------------------------------------------------
-hibernate								3.2.1 GA                       LGPL v2.1
+hibernate/libs
+   hibernate3								3.2.1 GA                       LGPL v2.1
    antlr								dist w/ hibernate  (2.7.6)     public domain
    asm-attrs							dist w/ hibernate            
    asm									dist w/ hibernate
@@ -21,8 +22,8 @@ hibernate								3.2.1 GA                       LGPL v2.1
    ehcache								dist w/ hibernate  (1.2.3)
    jdbc2_0-stdext						dist w/ hibernate              Sun Binary Code License
    jta									dist w/ hibernate              Sun Binary Code License
-   
-hibernate-annotations                   3.2.1 GA                       LGPL v2.1
+   hibernate-annotations                   3.2.1 GA                       LGPL v2.1
+   hibernate-commons-annotations
    ejb3-persistence.jar					dist w/ hibernate-annotations
    
 ant										1.7.0

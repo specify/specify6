@@ -1,4 +1,4 @@
-/* Copyright (C) 2017, University of Kansas Center for Research
+/* Copyright (C) 2019, University of Kansas Center for Research
  * 
  * Specify Software Project, specify@ku.edu, Biodiversity Institute,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
@@ -861,6 +861,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
      */
     public void initialize() {
         if (!isInitialized) {
+            permissions = null;
             isInitialized = true;
 
             // IMportant for reinitializing

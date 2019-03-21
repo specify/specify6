@@ -124,7 +124,7 @@ public class DwcMapper
 			+ "left join spexportschemaitem esi on esi.SpExportSchemaItemID = esim.ExportSchemaItemID inner join " 
 			+ "spexportschema es on es.SpExportSchemaID = esi.SpExportSchemaID inner join spqueryfield qf on "
 			+ "qf.SpQueryFieldID = esim.SpQueryFieldID inner join spquery q on q.SpQueryID = qf.SpQueryID where "
-			+ "esm.SpExportSchemaMappingID = " + mappingId;
+			+ "qf.IsDisplay and esm.SpExportSchemaMappingID = " + mappingId;
 	}
 	
 	/**
@@ -174,7 +174,7 @@ public class DwcMapper
 	{
 		return "select esi.FieldName, esi.DataType, qf.StringId, qf.IsRelFld, es.description from spexportschemaitemmapping esim inner join spexportschemaitem esi on "
 			+ "esi.SpExportSchemaItemID = esim.ExportSchemaItemID inner join spexportschema es on es.spexportschemaid = esi.spexportschemaid "
-			+ "inner join spqueryfield qf on qf.SpQueryFieldID = esim.SpQueryFieldID where esim.SpExportSchemaMappingID = "
+			+ "inner join spqueryfield qf on qf.SpQueryFieldID = esim.SpQueryFieldID where qf.IsDisplay and esim.SpExportSchemaMappingID = "
 			+ mappingId;
 	}
 	

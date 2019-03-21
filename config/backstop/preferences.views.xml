@@ -541,19 +541,6 @@
                     </cell>
                 </row>
                 <row>
-                    <cell type="separator" label="USAGE_STATS" colspan="4"/>
-                </row>
-                <row>
-                    <cell type="panel" id="stats" name="stats" coldef="p,10px,p" rowdef="p" colspan="4">
-                        <rows>
-                            <row>
-                                <cell type="field" id="3" name="usage_tracking.send_stats" uitype="checkbox" label="SEND_USAGE"/>
-                                <cell type="field" id="9" name="usage_tracking.send_isa_stats" uitype="checkbox" label="ISA_SEND_STATS"/>
-                            </row>
-                        </rows>
-                    </cell>
-                </row>
-                <row>
                     <cell type="separator" label="OPENGL_WW" colspan="4"/>
                 </row>
                 <row>

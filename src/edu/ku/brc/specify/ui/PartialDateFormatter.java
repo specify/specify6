@@ -1,4 +1,4 @@
-/* Copyright (C) 2017, University of Kansas Center for Research
+/* Copyright (C) 2019, University of Kansas Center for Research
  * 
  * Specify Software Project, specify@ku.edu, Biodiversity Institute,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
@@ -95,7 +95,7 @@ public class PartialDateFormatter extends UIFieldFormatter
             date = ((Calendar)datas[0]).getTime();
         }
         
-        Integer dType = datas[1] instanceof Number ? ((Number)datas[1]).intValue() : 1;
+        Integer dType = datas.length > 1 && datas[1] instanceof Number ? ((Number)datas[1]).intValue() : 1;
         
         if (datas.length == 2 && date != null)
         {

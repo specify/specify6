@@ -1,4 +1,4 @@
-/* Copyright (C) 2017, University of Kansas Center for Research
+/* Copyright (C) 2019, University of Kansas Center for Research
  * 
  * Specify Software Project, specify@ku.edu, Biodiversity Institute,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
@@ -19,45 +19,9 @@
 */
 package edu.ku.brc.specify.tools.schemalocale;
 
-import static edu.ku.brc.ui.UIHelper.*;
-import static edu.ku.brc.ui.UIRegistry.getResourceString;
-
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dialog;
-import java.awt.FileDialog;
-import java.awt.Frame;
-import java.awt.HeadlessException;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.io.File;
-import java.io.FileWriter;
-import java.util.List;
-import java.util.Locale;
-import java.util.Vector;
-
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
-import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-
-import org.apache.commons.betwixt.XMLIntrospector;
-import org.apache.commons.betwixt.io.BeanWriter;
-import org.apache.commons.lang.StringUtils;
-
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.SchemaI18NService;
@@ -67,13 +31,31 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.utilapps.BuildSampleDatabase;
-import static edu.ku.brc.specify.utilapps.BuildSampleDatabase.UpdateType;
-import edu.ku.brc.ui.CommandAction;
-import edu.ku.brc.ui.CommandDispatcher;
-import edu.ku.brc.ui.CustomDialog;
-import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.*;
 import edu.ku.brc.ui.dnd.SimpleGlassPane;
+import org.apache.commons.betwixt.XMLIntrospector;
+import org.apache.commons.betwixt.io.BeanWriter;
+import org.apache.commons.lang.StringUtils;
+
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.util.List;
+import java.util.Locale;
+import java.util.Vector;
+
+import static edu.ku.brc.specify.utilapps.BuildSampleDatabase.UpdateType;
+import static edu.ku.brc.ui.UIHelper.createI18NButton;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 /**
  * @author rod
@@ -426,12 +408,14 @@ public class SchemaToolsDlg extends CustomDialog
                         List<SpLocaleContainer> spContainers = (List<SpLocaleContainer>)session.getDataList(sql);
                         try
                         {
-                            FileWriter fw   = new FileWriter(outFile);
+                            //FileWriter fw   = new FileWriter(outFile);
+                            FileOutputStream fw   = new FileOutputStream(outFile);
 
                             //fw.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<vector>\n");
-                            fw.write("<vector>\n");
+                            fw.write("<vector>\n".getBytes("utf-8"));
 
-                            BeanWriter      beanWriter = new BeanWriter(fw);
+                            //BeanWriter      beanWriter = new BeanWriter(fw);
+                            BeanWriter      beanWriter = new BeanWriter(fw, "UTF-8");
                             XMLIntrospector introspector = beanWriter.getXMLIntrospector();
                             introspector.getConfiguration().setWrapCollectionsInElement(true);
                             beanWriter.getBindingConfiguration().setMapIDs(false);
@@ -460,7 +444,7 @@ public class SchemaToolsDlg extends CustomDialog
                                 firePropertyChange("progress", 0, (int)total);
                             }
                             
-                            fw.write("</vector>\n");
+                            fw.write("</vector>\n".getBytes("utf-8"));
                             fw.close();
 
                         } catch(Exception ex)

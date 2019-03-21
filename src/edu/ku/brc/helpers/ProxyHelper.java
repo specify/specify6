@@ -1,4 +1,4 @@
-/* Copyright (C) 2017, University of Kansas Center for Research
+/* Copyright (C) 2019, University of Kansas Center for Research
  * 
  * Specify Software Project, specify@ku.edu, Biodiversity Institute,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
@@ -20,6 +20,9 @@
 package edu.ku.brc.helpers;
 
 import edu.ku.brc.af.prefs.AppPreferences;
+import org.apache.commons.httpclient.HostConfiguration;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.log4j.Logger;
 
 /**
  * @author rods
@@ -31,6 +34,8 @@ import edu.ku.brc.af.prefs.AppPreferences;
  */
 public class ProxyHelper
 {
+    private static final Logger log                = Logger.getLogger(ProxyHelper.class);
+
     public static final String PROXY_HOST          = "PROXY_HOST";
     public static final String PROXY_PORT          = "PROXY_PORT";
     public static final String PROXY_HOST_HTTPS    = "PROXY_HOST_HTTPS";
@@ -50,7 +55,11 @@ public class ProxyHelper
                                      final String proxyPortHttps,
                                      final boolean doPrefsAlso)
     {
-        setSysProp("http.proxyHost", proxyHost); 
+        setSysProp("proxySet", "true");
+        setSysProp("proxyHost", proxyHost);
+        setSysProp("proxyPort", proxyPort);
+
+        setSysProp("http.proxyHost", proxyHost);https://s0.2mdn.net/dynamic/2/10054101/f.wishabi.net/production/gma/published/campaign/4e8dbdb8f6654b27aac9/ce340d42199f68303fe7_1544736171.jpg_1544811599709_ce340d42199f68303fe7_1544736171.jpg
         setSysProp("http.proxyPort", proxyPort);
         
         setSysProp("https.proxyHost", proxyHostHttps); 
@@ -118,4 +127,23 @@ public class ProxyHelper
                       localPrefs.get(PROXY_PORT_HTTPS, null), 
                       false);
     }
+
+    public static void applyProxySettings(HttpClient httpClient) {
+        String proxyHost = System.getProperty("http.proxyHost");
+        if (proxyHost != null) {
+            Integer proxyPort = null;
+            try {
+                proxyPort = Integer.valueOf(System.getProperty("http.proxyPort"));
+            } catch (Exception e) {
+                //disregard stupid port
+                log.warn("invalid proxy port. defaulting to 3128.");
+                proxyPort = 3128;
+            }
+            HostConfiguration hc = new HostConfiguration();
+            hc.setProxy(proxyHost, proxyPort);
+            httpClient.setHostConfiguration(hc);
+            log.info("applied proxy settings: " + proxyHost + ":" + proxyPort);
+        }
+    }
+
 }

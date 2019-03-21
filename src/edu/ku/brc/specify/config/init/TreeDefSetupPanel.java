@@ -1,4 +1,4 @@
-/* Copyright (C) 2017, University of Kansas Center for Research
+/* Copyright (C) 2019, University of Kansas Center for Research
  * 
  * Specify Software Project, specify@ku.edu, Biodiversity Institute,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
@@ -294,7 +294,7 @@ public class TreeDefSetupPanel extends BaseSetupPanel
                         boolean required = false;
                         if (classType == TaxonTreeDef.class)
                         {
-                            required = TaxonTreeDef.isStdRequiredLevel(rank) || rank == 0;
+                            required = TaxonTreeDef.isDefaultRequiredLevel(rank) || rank == 0;
                             
                         } else if (classType == GeographyTreeDef.class)
                         {

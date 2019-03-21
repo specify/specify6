@@ -1,4 +1,4 @@
-/* Copyright (C) 2017, University of Kansas Center for Research
+/* Copyright (C) 2019, University of Kansas Center for Research
  * 
  * Specify Software Project, specify@ku.edu, Biodiversity Institute,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
@@ -22,16 +22,7 @@ package edu.ku.brc.specify.datamodel;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -58,6 +49,8 @@ public class Exsiccata extends DataModelObjBase implements java.io.Serializable
 
      protected Integer exsiccataId;
      protected String  title;
+     protected String remarks;
+     protected String schedae;
 
      protected ReferenceWork referenceWork;
      
@@ -83,6 +76,8 @@ public class Exsiccata extends DataModelObjBase implements java.io.Serializable
         exsiccataId    = null;
         title          = null;
         referenceWork  = null;
+        remarks = null;
+        schedae = null;
         exsiccataItems = new HashSet<ExsiccataItem>();
     }
     // End Initializer
@@ -102,7 +97,42 @@ public class Exsiccata extends DataModelObjBase implements java.io.Serializable
     public void setExsiccataId(Integer exsiccataId) {
         this.exsiccataId = exsiccataId;
     }
-    
+
+    /**
+     *
+     * @return
+     */
+    @Lob
+    @Column(name = "Remarks", length = 65535)
+    public String getRemarks() {
+        return remarks;
+    }
+
+    /**
+     *
+     * @param remarks
+     */
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Column(name = "Schedae", unique = false, nullable = false, insertable = true, updatable = true, length = 255)
+    public String getSchedae() {
+        return schedae;
+    }
+
+    /**
+     *
+     * @param schedae
+     */
+    public void setSchedae(String schedae) {
+        this.schedae = schedae;
+    }
+
     /**
      * @return the Title
      */

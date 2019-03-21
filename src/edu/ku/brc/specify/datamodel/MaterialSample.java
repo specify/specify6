@@ -80,7 +80,7 @@ public class MaterialSample extends CollectionMember {
 	protected Float reservedNumber4;
 
     protected Preparation preparation;
-    
+    protected Agent extractor;
     protected Set<DNASequence> dnaSequences;
 
 	/**
@@ -139,11 +139,22 @@ public class MaterialSample extends CollectionMember {
 		reservedInteger3 = null;
 		reservedInteger4 = null;
 
-        preparation = null;
+        extractor = null;
+		preparation = null;
         dnaSequences = new HashSet<DNASequence>();
 	}
 
-	
+
+	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+	@JoinColumn(name = "ExtractorID", unique = false, nullable = true, insertable = true, updatable = true)
+	public Agent getExtractor() {
+		return extractor;
+	}
+
+	public void setExtractor(Agent extractor) {
+		this.extractor = extractor;
+	}
+
 	/**
 	 * @return the sraSampleID
 	 */

@@ -1,4 +1,4 @@
-/* Copyright (C) 2017, University of Kansas Center for Research
+/* Copyright (C) 2019, University of Kansas Center for Research
  * 
  * Specify Software Project, specify@ku.edu, Biodiversity Institute,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
@@ -68,12 +68,12 @@ public class AttachmentBusRules extends BaseBusRules
     protected Logger log = Logger.getLogger(AttachmentBusRules.class);
 
 	String[] tableNames = {"accessionattachment",          "agentattachment",               "borrowattachment",
-	                       "collectingeventattachment",    "collectionobjectattachment",    "conservdescriptionattachment",
-	                       "conserveventattachment",       "dnasequenceattachment",         "dnasequencerunattachment",         
-	                       "fieldnotebookattachment",      "fieldnotebookpageattachment",   "fieldnotebookpagesetattachment", 
-	                       "giftattachment",               "loanattachment",                "localityattachment",             
-	                       "permitattachment",             "preparationattachment",         "referenceworkattachment",        
-	                       "repositoryagreementattachment", "taxonattachment"};
+            "collectingeventattachment",    "collectingtripattachment", "collectionobjectattachment",
+            "conservdescriptionattachment",  "conserveventattachment",       "dnasequenceattachment",
+            "dnasequencerunattachment", "fieldnotebookattachment",      "fieldnotebookpageattachment",
+            "fieldnotebookpagesetattachment", "giftattachment", "loanattachment", "localityattachment",
+            "permitattachment", "preparationattachment", "referenceworkattachment",
+            "repositoryagreementattachment", "taxonattachment"};
     
     static private String BROWSE_DIR_PREF = "AttachmentBrowseDir";
     private ValBrowseBtnPanel browser = null;

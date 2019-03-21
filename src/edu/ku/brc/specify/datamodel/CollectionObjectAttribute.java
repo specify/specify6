@@ -1,4 +1,4 @@
-/* Copyright (C) 2017, University of Kansas Center for Research
+/* Copyright (C) 2019, University of Kansas Center for Research
  * 
  * Specify Software Project, specify@ku.edu, Biodiversity Institute,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
@@ -19,19 +19,12 @@
 */
 package edu.ku.brc.specify.datamodel;
 
+import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Vector;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Index;
@@ -58,6 +51,11 @@ import edu.ku.brc.specify.conversion.BasicSQLUtils;
 public class CollectionObjectAttribute extends CollectionMember implements Cloneable
 {
     protected Integer collectionObjectAttributeId;
+
+    protected Agent agent1;
+    protected Calendar date1;
+    protected Byte date1Precision;
+
     protected Float number1;
     protected Float number2;
     protected Float number3;
@@ -194,6 +192,9 @@ public class CollectionObjectAttribute extends CollectionMember implements Clone
     {
         super.init();
         collectionObjectAttributeId = null;
+        agent1 = null;
+        date1 = null;
+        date1Precision = 1;
         text10   = null;
         text11   = null;
         text12   = null;
@@ -334,8 +335,59 @@ public class CollectionObjectAttribute extends CollectionMember implements Clone
     {
         return collectionObjects;
     }
-    
-    
+
+    /**
+     *
+     * @return
+     */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "Date1", unique = false, nullable = true, insertable = true, updatable = true)
+    public Calendar getDate1() {
+        return date1;
+    }
+
+    /**
+     *
+     * @param date1
+     */
+    public void setDate1(Calendar date1) {
+        this.date1 = date1;
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Column(name = "Date1Precision", unique = false, nullable = true, insertable = true, updatable = true)
+    public Byte getDate1Precision() {
+        return date1Precision;
+    }
+
+    /**
+     *
+     * @param date1Precision
+     */
+    public void setDate1Precision(Byte date1Precision) {
+        this.date1Precision = date1Precision;
+    }
+
+    /**
+     *
+     * @return
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "Agent1ID", unique = false, nullable = true, insertable = true, updatable = true)
+    public Agent getAgent1() {
+        return agent1;
+    }
+
+    /**
+     *
+     * @param agent1
+     */
+    public void setAgent1(Agent agent1) {
+        this.agent1 = agent1;
+    }
 
     /**
 	 * @return the text25

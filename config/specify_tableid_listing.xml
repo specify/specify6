@@ -2,7 +2,7 @@
 
 <!-- 
 
-    Last used ID is 151 or 533
+    Last used ID is 155 or 533
     
     [0] are available
     
@@ -95,8 +95,21 @@
         <table name="edu.ku.brc.specify.datamodel.CollectingEventAttribute" abbrev="cea" id="92" searchable="true">
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.CollectingEventAttributeBusRules</businessrule>
         </table>
+        <table name="edu.ku.brc.specify.datamodel.CollectingEventAuthorization" abbrev="ceau" id="152" searchable="true">
+            <display dataobjformatter="CollectingEventAuthorization"/>
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.CollectingEventAuthorizationBusRules</businessrule>
+        </table>
         <table name="edu.ku.brc.specify.datamodel.CollectingTrip" abbrev="clt" id="87" workbench="true" searchable="true">
             <display view="CollectingTripForm" searchdlg="CollectingTripSearch" newobjdlg="CollectingTripDisplay"/>
+        </table>
+        <table name="edu.ku.brc.specify.datamodel.CollectingTripAttachment" abbrev="ctat" id="156" searchable="true">
+            <display view="ObjectAttachment" newobjdlg="CollectingTripAttachmentDisplay"/>
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentReferenceBaseBusRules</businessrule>
+        </table>
+        <table name="edu.ku.brc.specify.datamodel.CollectingTripAttribute" abbrev="cta" id="157" searchable="true" />
+        <table name="edu.ku.brc.specify.datamodel.CollectingTripAuthorization" abbrev="ctau" id="158" searchable="true">
+            <display dataobjformatter="CollectingTripAuthorization"/>
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.CollectingTripAuthorizationBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.CollectionObject" abbrev="co" id="1" workbench="true" searchable="true">
             <display view="CollectionObject" dataobjformatter="CollectionObject" searchdlg="CollectionObjectSearch" newobjdlg="CollectionObject"/>
@@ -109,6 +122,9 @@
         <table name="edu.ku.brc.specify.datamodel.CollectionObjectAttr" abbrev="coa" id="28" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.CollectionObjectAttribute" abbrev="coas" id="93" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.CollectionObjectCitation" abbrev="coc" id="29" searchable="true"/>
+        <table name="edu.ku.brc.specify.datamodel.CollectionObjectProperty" abbrev="cop" id="153" workbench="true" searchable="true">
+            <display view="CollectionObjectProperty" newobjdlg="CollectionObjectPropertyDisplay"/>
+        </table>
         <table name="edu.ku.brc.specify.datamodel.CollectionRelType" abbrev="crt" id="98" >
         	<display searchdlg="CollectionRelTypeSearch" newobjdlg="CollectionRelType"/>
         </table>
@@ -211,6 +227,9 @@
         </table>
         <table name="edu.ku.brc.specify.datamodel.GeoCoordDetail" abbrev="gcd" id="123" searchable="true">
             <businessrule>edu.ku.brc.specify.datamodel.busrules.GeoCoordDetailBusRules</businessrule>
+        </table>
+        <table name="edu.ku.brc.specify.datamodel.VoucherRelationship" abbrev="vr" id="155" workbench="true" searchable="true">
+            <display view="VoucherRelationship" newobjdlg="VoucherRelationshipDisplay"/>
         </table>
         <table name="edu.ku.brc.specify.datamodel.FundingAgent" abbrev="fa" id="146" searchable="true">
             <display view="FundingAgent" dataobjformatter="" newobjdlg="FundingAgentDisplay"/>
@@ -347,7 +366,10 @@
         </table>
         <table name="edu.ku.brc.specify.datamodel.PreparationAttr" abbrev="ppa" id="64" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.PreparationAttribute" abbrev="ppas" id="91" searchable="true"/>
-        
+        <table name="edu.ku.brc.specify.datamodel.PreparationProperty" abbrev="ppp" id="154" workbench="true" searchable="true">
+            <display view="PreparationProperty" newobjdlg="PreparationPropertyDisplay"/>
+        </table>
+
         <table name="edu.ku.brc.specify.datamodel.PrepType" abbrev="ppt" id="65" searchable="true">
             <display view="PrepType" searchdlg="PrepTypeSearch" newobjdlg="PrepTypeDisplay"/>
             <businessrule>edu.ku.brc.specify.datamodel.busrules.PrepTypeBusRules</businessrule>                        
@@ -376,7 +398,10 @@
         <table name="edu.ku.brc.specify.datamodel.Shipment" abbrev="sh" id="71" searchable="true">
             <businessrule>edu.ku.brc.specify.datamodel.busrules.ShipmentBusRules</businessrule>                                    
         </table>
-        
+        <table name="edu.ku.brc.specify.datamodel.VoucherRelationship" abbrev="vrel" id="155" workbench="true" searchable="true">
+            <display view="VoucherRelationship" newobjdlg="VoucherRelationshipDisplay"/>
+        </table>
+
         <!--  Internal Specify Tables -->
         <table name="edu.ku.brc.specify.datamodel.SpAppResource" abbrev="spar" id="514"/>
         <table name="edu.ku.brc.specify.datamodel.SpAppResourceData" abbrev="sparda" id="515"/>

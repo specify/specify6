@@ -1,4 +1,4 @@
-/* Copyright (C) 2017, University of Kansas Center for Research
+/* Copyright (C) 2019, University of Kansas Center for Research
  * 
  * Specify Software Project, specify@ku.edu, Biodiversity Institute,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
@@ -505,7 +505,7 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
     /**
      * @return the startValue
      */
-    @Column(name = "StartValue", unique = false, nullable = false, insertable = true, updatable = true, length = 255)
+    @Column(name = "StartValue", unique = false, nullable = false, insertable = true, updatable = true, length = 1000)
     public String getStartValue()
     {
         return startValue;
@@ -514,7 +514,7 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
     /**
      * @return the endValue
      */
-    @Column(name = "EndValue", unique = false, nullable = true, insertable = true, updatable = true, length = 255)
+    @Column(name = "EndValue", unique = false, nullable = true, insertable = true, updatable = true, length = 1000)
     public String getEndValue()
     {
         return endValue;

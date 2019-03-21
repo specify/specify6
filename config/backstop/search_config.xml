@@ -1724,13 +1724,13 @@ SELECT cn.ContainerID,
  agent.FirstName, 
  agent.LastName, 
  agent.EMail, 
- address.Address, 
- address.City, 
- address.State, 
- address.Postalcode, 
- address.Country
+ addresses.Address,
+ addresses.City,
+ addresses.State,
+ addresses.Postalcode,
+ addresses.Country
  FROM agent 
- LEFT JOIN address ON agent.AgentID = address.AgentID
+ LEFT JOIN address addresses ON agent.AgentID = addresses.AgentID
  WHERE (agent.DivisionID = DIVID) AND (%s) GROUP BY agent.AgentID]]>
                 </sql>
                 <captions>
@@ -1738,11 +1738,11 @@ SELECT cn.ContainerID,
                     <caption tableid="5" col="FirstName"/>
                     <caption tableid="5" col="LastName"/>
                     <caption tableid="5" col="EMail"/>
-                    <caption tableid="8" col="Address"/>
-                    <caption tableid="8" col="City"/>
-                    <caption tableid="8" col="State"/>
-                    <caption tableid="8" col="Postalcode"/>
-                    <caption tableid="8" col="Country"/>
+                    <caption tableid="8" col="addresses.Address"/>
+                    <caption tableid="8" col="addresses.City"/>
+                    <caption tableid="8" col="addresses.State"/>
+                    <caption tableid="8" col="addresses.Postalcode"/>
+                    <caption tableid="8" col="addresses.Country"/>
                 </captions>
             </detailView>
         </table>

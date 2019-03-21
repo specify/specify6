@@ -1,4 +1,4 @@
-/* Copyright (C) 2017, University of Kansas Center for Research
+/* Copyright (C) 2019, University of Kansas Center for Research
  * 
  * Specify Software Project, specify@ku.edu, Biodiversity Institute,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
@@ -193,16 +193,24 @@ public class TaxonTreeDef extends BaseTreeDef<Taxon, TaxonTreeDef, TaxonTreeDefI
      */
     public static boolean isStdRequiredLevel(int levelRank)
     {
-        return levelRank == KINGDOM
-            || levelRank == DIVISION
-            || levelRank == PHYLUM
-            || levelRank == CLASS
-            || levelRank == ORDER
-            || levelRank == FAMILY
-            || levelRank == GENUS
-            || levelRank == SPECIES;
+        return false;
     }
 
+    /**
+     *
+     * @param levelRank
+     * @return
+     */
+    public static boolean isDefaultRequiredLevel(int levelRank) {
+        return levelRank == KINGDOM
+                || levelRank == DIVISION
+                || levelRank == PHYLUM
+                || levelRank == CLASS
+                || levelRank == ORDER
+                || levelRank == FAMILY
+                || levelRank == GENUS
+                || levelRank == SPECIES;
+    }
 	/**
      * @param levelRank
      * @return localized text corresponding to levelRank.

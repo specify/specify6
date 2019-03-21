@@ -1,4 +1,4 @@
-/* Copyright (C) 2017, University of Kansas Center for Research
+/* Copyright (C) 2019, University of Kansas Center for Research
  * 
  * Specify Software Project, specify@ku.edu, Biodiversity Institute,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
@@ -86,6 +86,7 @@ public class Attachment extends DataModelObjBase implements Serializable
     protected String                  copyrightDate;
     protected String                  credit;
     protected String                  dateImaged;
+    protected String attachmentStorageConfig;
         
     protected Calendar                fileCreatedDate;
     protected String                  remarks;
@@ -120,6 +121,7 @@ public class Attachment extends DataModelObjBase implements Serializable
     protected Set<AgentAttachment>                   agentAttachments;
     protected Set<BorrowAttachment>                  borrowAttachments;
     protected Set<CollectingEventAttachment>         collectingEventAttachments;
+    protected Set<CollectingTripAttachment>          collectingTripAttachments;
     protected Set<CollectionObjectAttachment>        collectionObjectAttachments;
     protected Set<ConservDescriptionAttachment>      conservDescriptionAttachments;
     protected Set<ConservEventAttachment>            conservEventAttachments;
@@ -170,6 +172,7 @@ public class Attachment extends DataModelObjBase implements Serializable
         credit             = null;
         copyrightDate      = null;
         dateImaged         = null;
+        attachmentStorageConfig = null;
         metadata           = new HashSet<AttachmentMetadata>();
         tags               = new HashSet<AttachmentTag>();
         
@@ -197,6 +200,7 @@ public class Attachment extends DataModelObjBase implements Serializable
         borrowAttachments              = new HashSet<BorrowAttachment>();
         collectionObjectAttachments    = new HashSet<CollectionObjectAttachment>();
         collectingEventAttachments     = new HashSet<CollectingEventAttachment>();
+        collectingTripAttachments = new HashSet<CollectingTripAttachment>();
         conservDescriptionAttachments  = new HashSet<ConservDescriptionAttachment>();
         conservEventAttachments        = new HashSet<ConservEventAttachment>();
         dnaSequenceAttachments         = new HashSet<DNASequenceAttachment>();
@@ -276,6 +280,20 @@ public class Attachment extends DataModelObjBase implements Serializable
     public String getOrigFilename()
     {
         return this.origFilename;
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Lob
+    @Column(name = "AttachmentStorageConfig")
+    public String getAttachmentStorageConfig() {
+        return attachmentStorageConfig;
+    }
+
+    public void setAttachmentStorageConfig(String attachmentStorageConfig) {
+        this.attachmentStorageConfig = attachmentStorageConfig;
     }
 
     /**
@@ -713,6 +731,18 @@ public class Attachment extends DataModelObjBase implements Serializable
     public void setCollectingEventAttachments(Set<CollectingEventAttachment> collectingEventAttachments)
     {
         this.collectingEventAttachments = collectingEventAttachments;
+    }
+
+    @OneToMany(mappedBy = "attachment")
+    @Cascade( {CascadeType.ALL} )
+    public Set<CollectingTripAttachment> getCollectingTripAttachments()
+    {
+        return collectingTripAttachments;
+    }
+
+    public void setCollectingTripAttachments(Set<CollectingTripAttachment> collectingTripAttachments)
+    {
+        this.collectingTripAttachments = collectingTripAttachments;
     }
 
     @OneToMany(mappedBy = "attachment")

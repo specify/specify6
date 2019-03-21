@@ -1,4 +1,4 @@
-/* Copyright (C) 2017, University of Kansas Center for Research
+/* Copyright (C) 2019, University of Kansas Center for Research
  * 
  * Specify Software Project, specify@ku.edu, Biodiversity Institute,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
@@ -543,15 +543,24 @@ public class ValFormattedTextFieldSingle extends JTextField implements ValFormat
     //--------------------------------------------------
     //-- AutoNumberableIFace Interface
     //--------------------------------------------------
-    
+
+    public boolean needsUpdating() {
+        return needsUpdating;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.validation.AutoNumberableIFace#updateAutoNumbers()
      */
-    public void updateAutoNumbers()
+    public String updateAutoNumbers()
+    {
+        return updateAutoNumbers(getText());
+    }
+
+    public String updateAutoNumbers(final String val)
     {
         if (isAutoFmtOn && needsUpdating && formatter.getAutoNumber() != null && !isViewOnly)
         {
-            String nextNum = formatter.getNextNumber(getText());
+            String nextNum = formatter.getNextNumber(val);
             if (StringUtils.isNotEmpty(nextNum))
             {
                 try
@@ -559,7 +568,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements ValFormat
                     setValue(nextNum, nextNum);
                     bgStr = "";
                     needsUpdating = false;
-                    
+                    return nextNum;
                 } catch (Exception ex)
                 {
                     edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
@@ -568,6 +577,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements ValFormat
                 }
             }
         }
+        return null;
     }
     
 

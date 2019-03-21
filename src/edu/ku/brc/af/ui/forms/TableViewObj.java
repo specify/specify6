@@ -1,4 +1,4 @@
-/* Copyright (C) 2017, University of Kansas Center for Research
+/* Copyright (C) 2019, University of Kansas Center for Research
  * 
  * Specify Software Project, specify@ku.edu, Biodiversity Institute,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
@@ -64,6 +64,7 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
+import edu.ku.brc.af.ui.forms.validation.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -105,10 +106,6 @@ import edu.ku.brc.af.ui.forms.persist.TableViewDef;
 import edu.ku.brc.af.ui.forms.persist.ViewDef;
 import edu.ku.brc.af.ui.forms.persist.ViewDefIFace;
 import edu.ku.brc.af.ui.forms.persist.ViewIFace;
-import edu.ku.brc.af.ui.forms.validation.FormValidator;
-import edu.ku.brc.af.ui.forms.validation.UIValidatable;
-import edu.ku.brc.af.ui.forms.validation.UIValidator;
-import edu.ku.brc.af.ui.forms.validation.ValidationListener;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
@@ -2045,6 +2042,56 @@ public class TableViewObj implements Viewable,
             className = view.getClassName();
         }
         return className;
+    }
+
+    /**
+     * Increments to the next number in the series.
+     */
+    public void updateAutoNumbers() {
+        if (true) {
+            List<TableViewObj.ColumnInfo> autos = new ArrayList<>();
+            for (TableViewObj.ColumnInfo fieldInfo : controlsById.values()) {
+                Component comp = fieldInfo.getComp();
+                if (comp instanceof AutoNumberableIFace && comp.isEnabled() && ((AutoNumberableIFace)comp).isFormatterAutoNumber()) {
+                    autos.add(fieldInfo);
+                }
+            }
+
+            for (TableViewObj.ColumnInfo auto : autos) {
+                if (dataObjList != null && dataObjList.size() > 0) {
+                    String prevValue = null;
+                    DataObjectSettable dataSetter = formViewDef.getDataSettable();
+                    Component comp = auto.getComp();
+                    for (Object dobj : dataObjList) {
+                        String objVal = dataGetter.getFieldValue(dobj, auto.getFieldNames()[0]).toString();
+                        ((GetSetValueIFace) comp).setValue(objVal, null);
+                        if (((AutoNumberableIFace) comp).needsUpdating()) {
+                            String newValue = ((AutoNumberableIFace) comp).updateAutoNumbers(prevValue == null ?
+                                    objVal : updateIncrementableChunks(objVal, prevValue));
+                            prevValue = newValue == null ? prevValue : newValue;
+                            FormHelper.setFieldValue(auto.getFormCell().getName(), dobj, newValue, dataGetter, dataSetter);
+                        } else {
+                            prevValue = null;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private String updateIncrementableChunks(String val, String update) {
+        if (val.length() != update.length()) {
+            return val; //nope
+        }
+        String result = "";
+        for (int i = 0; i < val.length(); i++) {
+            if (val.charAt(i) == '#') {
+                result += update.charAt(i);
+            } else {
+                result += val.charAt(i);
+            }
+        }
+        return result;
     }
 
     /**

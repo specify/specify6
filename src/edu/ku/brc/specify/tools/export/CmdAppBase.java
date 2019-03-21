@@ -286,7 +286,11 @@ public class CmdAppBase {
 	protected void setSuccess(boolean success) {
 		this.success = success;
 	}
-	
+
+	public boolean isSuccess() {
+		return success;
+	}
+
 	protected DatabaseDriverInfo buildDefaultDriverInfo() {
 		DatabaseDriverInfo result = new DatabaseDriverInfo("MySQL", "com.mysql.jdbc.Driver", "org.hibernate.dialect.MySQL5InnoDBDialect", false, "3306");
 		result.addFormat(DatabaseDriverInfo.ConnectionType.Opensys, "jdbc:mysql://SERVER:PORT/");

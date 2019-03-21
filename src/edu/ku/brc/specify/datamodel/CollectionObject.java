@@ -1,4 +1,4 @@
-/* Copyright (C) 2017, University of Kansas Center for Research
+/* Copyright (C) 2019, University of Kansas Center for Research
  * 
  * Specify Software Project, specify@ku.edu, Biodiversity Institute,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
@@ -24,8 +24,6 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -53,14 +51,11 @@ import org.hibernate.annotations.Index;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
-import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
-import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.dbsupport.AttributeIFace;
 import edu.ku.brc.dbsupport.AttributeProviderIFace;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
-import edu.ku.brc.specify.tasks.InteractionsTask;
 
 /**
 
@@ -137,6 +132,9 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
     protected Boolean                       deaccessioned;
     protected String                        catalogNumber;
     protected Calendar                      inventoryDate;
+    protected Byte                          inventoryDatePrecision;   // Accurate to Year, Month, Day
+    protected Calendar date1;
+    protected Byte date1Precision;
     protected String                        objectCondition;
     protected String                        availability;
     protected String                        restrictions;
@@ -153,6 +151,7 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
     protected CollectingEvent               collectingEvent;
     protected Set<CollectionObjectCitation> collectionObjectCitations;
     protected Set<Preparation>              preparations;
+    protected Set<CollectionObjectProperty> collectionObjectProperties;
     protected Set<Determination>            determinations;
     protected Set<Project>                  projects;
     // protected Set<DeaccessionPreparation> deaccessionPreparations;
@@ -161,6 +160,7 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
     protected Accession                     accession;
     protected Agent                         cataloger;
     protected Agent                         inventorizedBy;
+    protected Agent agent1;
     protected Container                     container;        // The container it belongs to   (Associated with)
     protected Container                     containerOwner;   // The container it is a part of (Parent Container)
     protected Appraisal                     appraisal;
@@ -177,6 +177,7 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
     protected Set<CollectionObjectAttachment> collectionObjectAttachments;
 
     protected Set<ExsiccataItem>              exsiccataItems;
+    protected Set<VoucherRelationship> voucherRelationships;
     
     // Constructors
 
@@ -224,6 +225,8 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
         modifier              = null;
         catalogedDate         = null;
         catalogedDateVerbatim = null;
+        date1 = null;
+        date1Precision = 1;
         guid                  = null;
         altCatalogNumber      = null;
         deaccessioned         = null;
@@ -239,31 +242,34 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
         
         collectingEvent       = null;
         appraisal             = null;
-        collectionObjectCitations = new HashSet<CollectionObjectCitation>();
-        collectionObjectAttrs = new HashSet<CollectionObjectAttr>();
-        preparations          = new HashSet<Preparation>();
-        determinations        = new HashSet<Determination>();
-        projects              = new HashSet<Project>();
+        collectionObjectCitations = new HashSet<>();
+        collectionObjectAttrs = new HashSet<>();
+        preparations          = new HashSet<>();
+        collectionObjectProperties = new HashSet<>();
+        determinations        = new HashSet<>();
+        projects              = new HashSet<>();
         //deaccessionPreparations = new HashSet<DeaccessionPreparation>();
-        otherIdentifiers      = new HashSet<OtherIdentifier>();
+        otherIdentifiers      = new HashSet<>();
         collection            = null;
         accession             = null;
         cataloger             = null;
         inventorizedBy        = null;
+        agent1 = null;
         container             = null;
         containerOwner        = null;
         paleoContext          = null;
-        dnaSequences          = new HashSet<DNASequence>();
+        dnaSequences          = new HashSet<>();
         fieldNotebookPage     = null;
         
-        leftSideRels          = new HashSet<CollectionRelationship>();
-        rightSideRels         = new HashSet<CollectionRelationship>();
+        leftSideRels          = new HashSet<>();
+        rightSideRels         = new HashSet<>();
         
-        conservDescriptions         = new HashSet<ConservDescription>();
-        treatmentEvents             = new HashSet<TreatmentEvent>();
-        collectionObjectAttachments = new HashSet<CollectionObjectAttachment>();
+        conservDescriptions         = new HashSet<>();
+        treatmentEvents             = new HashSet<>();
+        collectionObjectAttachments = new HashSet<>();
         
-        exsiccataItems              = new HashSet<ExsiccataItem>();
+        exsiccataItems              = new HashSet<>();
+        voucherRelationships = new HashSet<>();
         
         hasGUIDField = true;
         setGUID();
@@ -670,6 +676,24 @@ public void setReservedText3(String reservedText3) {
 
     /**
      *
+     * @return
+     */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "Date1", unique = false, nullable = true, insertable = true, updatable = true)
+    public Calendar getDate1() {
+        return date1;
+    }
+
+    /**
+     *
+     * @param date1
+     */
+    public void setDate1(Calendar date1) {
+        this.date1 = date1;
+    }
+
+    /**
+     *
      */
     @Column(name = "CatalogedDateVerbatim", length = 32, unique = false, nullable = true, insertable = true, updatable = true)
     public String getCatalogedDateVerbatim() {
@@ -748,6 +772,23 @@ public void setReservedText3(String reservedText3) {
     }
 
     /**
+     *
+     * @return
+     */
+    @Column(name = "Date1Precision", unique = false, nullable = true, insertable = true, updatable = true)
+    public Byte getDate1Precision() {
+        return date1Precision;
+    }
+
+    /**
+     *
+     * @param date1Precision
+     */
+    public void setDate1Precision(Byte date1Precision) {
+        this.date1Precision = date1Precision;
+    }
+
+    /**
      * @return the inventoryDate
      */
     @Temporal(TemporalType.DATE)
@@ -763,6 +804,22 @@ public void setReservedText3(String reservedText3) {
     public void setInventoryDate(Calendar inventoryDate)
     {
         this.inventoryDate = inventoryDate;
+    }
+    /**
+     * @return the InventoryDatePrecision
+     */
+    @Column(name = "InventoryDatePrecision", unique = false, nullable = true, insertable = true, updatable = true)
+    public Byte getInventoryDatePrecision()
+    {
+        return inventoryDatePrecision != null ? this.inventoryDatePrecision : (byte)UIFieldFormatterIFace.PartialDateEnum.Full.ordinal();
+    }
+
+    /**
+     * @param inventoryDatePrecision the inventoryDatePrecision to set
+     */
+    public void setInventoryDatePrecision(Byte inventoryDatePrecision)
+    {
+        this.inventoryDatePrecision = inventoryDatePrecision;
     }
 
     /**
@@ -1050,6 +1107,31 @@ public void setReservedText3(String reservedText3) {
      */
     @OneToMany(mappedBy = "collectionObject")
     @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    public Set<CollectionObjectProperty> getCollectionObjectProperties() {
+        return this.collectionObjectProperties;
+    }
+
+    public void setCollectionObjectProperties(Set<CollectionObjectProperty> collectionObjectProperties) {
+        this.collectionObjectProperties = collectionObjectProperties;
+    }
+    /**
+     *
+     */
+    @OneToMany(mappedBy = "collectionObject")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    public Set<VoucherRelationship> getVoucherRelationships() {
+        return this.voucherRelationships;
+    }
+
+    public void setVoucherRelationships(Set<VoucherRelationship> voucherRelationships) {
+        this.voucherRelationships = voucherRelationships;
+    }
+
+    /**
+     *
+     */
+    @OneToMany(mappedBy = "collectionObject")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<Determination> getDeterminations() 
     {
         return this.determinations;
@@ -1211,6 +1293,24 @@ public void setReservedText3(String reservedText3) {
 
     public void setCataloger(Agent cataloger) {
         this.cataloger = cataloger;
+    }
+
+    /**
+     *
+     * @return
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "Agent1ID", unique = false, nullable = true, insertable = true, updatable = true)
+    public Agent getAgent1() {
+        return agent1;
+    }
+
+    /**
+     *
+     * @param agent1
+     */
+    public void setAgent1(Agent agent1) {
+        this.agent1 = agent1;
     }
 
     /**
@@ -1459,6 +1559,7 @@ public void setReservedText3(String reservedText3) {
     public void forceLoad()
     {
         determinations.size();
+        collectionObjectProperties.size();
         preparations.size();
         for (Preparation prep : preparations)
         {

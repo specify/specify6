@@ -1,4 +1,4 @@
-/* Copyright (C) 2017, University of Kansas Center for Research
+/* Copyright (C) 2019, University of Kansas Center for Research
  * 
  * Specify Software Project, specify@ku.edu, Biodiversity Institute,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
@@ -1502,7 +1502,9 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                 ESResultsSubPane qResults = getQResultsPane(results);
                 if (qResults == null && esrto != null && !esrto.hasResults()) {
                     results.complete();
-                    displayNoResults("QB_NO_RESULTS");
+                    if (!(results instanceof QBQueryForIdResultsHQL && results.isCount())) {
+                        displayNoResults("QB_NO_RESULTS");
+                    }
                     return;
                 }
 

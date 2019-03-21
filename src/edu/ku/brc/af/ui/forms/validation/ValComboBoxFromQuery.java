@@ -1,4 +1,4 @@
-/* Copyright (C) 2017, University of Kansas Center for Research
+/* Copyright (C) 2019, University of Kansas Center for Research
  * 
  * Specify Software Project, specify@ku.edu, Biodiversity Institute,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
@@ -241,7 +241,8 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         {
         
             textWithQuery.addListSelectionListener(this);
-            textWithQuery.setAddAddItem(true);
+            PermissionSettings perm = AppContextMgr.isSecurityOn() ? tableInfo.getPermissions() : null;
+            textWithQuery.setAddAddItem(((btns & CREATE_NEW_BTN) != 0) && (perm == null ? true : perm.canAdd()));
             
             textWithQuery.getTextField().addFocusListener(new FocusAdapter() {
                 @Override

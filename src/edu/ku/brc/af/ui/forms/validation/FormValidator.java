@@ -1,4 +1,4 @@
-/* Copyright (C) 2017, University of Kansas Center for Research
+/* Copyright (C) 2019, University of Kansas Center for Research
  * 
  * Specify Software Project, specify@ku.edu, Biodiversity Institute,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
@@ -446,6 +446,11 @@ public class FormValidator implements ValidationListener, DataChangeListener
         {
             if (!enabled)
             {
+                if (getName().equals("PreparationProperty")) {
+                        log.debug("!!!!!!!!!!!!!!!!!!!!!!!!!DISABLING PP Validator !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                        new Exception().printStackTrace();
+                        log.debug("------------------------- END DISABLING PP Validator Stack ---------------------------------------------------------");
+                    }
                 hasChanged          = false;
                 formValidationState = UIValidatable.ErrorType.Valid;
                 kidsValState        = UIValidatable.ErrorType.Valid;

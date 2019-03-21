@@ -1,4 +1,4 @@
-/* Copyright (C) 2017, University of Kansas Center for Research
+/* Copyright (C) 2019, University of Kansas Center for Research
  * 
  * Specify Software Project, specify@ku.edu, Biodiversity Institute,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
@@ -49,12 +49,7 @@ import javax.crypto.spec.SecretKeySpec;
 import javax.swing.SwingUtilities;
 
 import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.HttpMethodBase;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.NameValuePair;
+import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.multipart.FilePart;
@@ -70,6 +65,7 @@ import org.dom4j.Element;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.helpers.ProxyHelper;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.specify.datamodel.Collection;
@@ -172,6 +168,7 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
        
        HttpClient client = new HttpClient();
        client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
+       ProxyHelper.applyProxySettings(client);
 
        try
        {
@@ -182,7 +179,8 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
                return;
            } else if (status == HttpStatus.SC_FORBIDDEN)
            {
-               throw new WebStoreAttachmentKeyException("Attachment key is invalid.");
+               log.error("Attachment key was not validated. HTTP status=" + status + ". Response: " + method.getResponseBodyAsString());
+               throw new WebStoreAttachmentKeyException("Attachment key was not validated.");
            }
        } catch (IOException e)
        {
@@ -204,7 +202,8 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
             HttpClient client = new HttpClient();
             client.getHttpConnectionManager().getParams().setConnectionTimeout(timeoutMilliseconds);
             client.getHttpConnectionManager().getParams().setSoTimeout(timeoutMilliseconds);
-        
+            ProxyHelper.applyProxySettings(client);
+
             try
             {
                 int status = client.executeMethod(method);
@@ -213,9 +212,11 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
                     result = getURLSFromStr(method.getResponseBodyAsString());
                     updateServerTimeDelta(method);
                 }
+                if (!result) {
+                    log.error("Problem getting setup from URL XML. HTTP status=" + status + ". Response: " + method.getResponseBodyAsString());
+                }
             } catch (IOException e)
             {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             } finally {
                 method.releaseConnection();
@@ -378,7 +379,8 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
     
             HttpClient client = new HttpClient();
             client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
-        
+            ProxyHelper.applyProxySettings(client);
+
             try
             {
                 int status = client.executeMethod(method);
@@ -386,6 +388,8 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
                 if (status == HttpStatus.SC_OK)
                 {
                     dateStr= method.getResponseBodyAsString();
+                } else {
+                    log.warn("Http status: " + status);
                 }
             } catch (IOException e)
             {
@@ -436,7 +440,8 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
     
             HttpClient client = new HttpClient();
             client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
-        
+            ProxyHelper.applyProxySettings(client);
+
             try
             {
                 int status = client.executeMethod(method);
@@ -444,6 +449,8 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
                 if (status == HttpStatus.SC_OK)
                 {
                     result = method.getResponseBodyAsString();
+                } else {
+                    log.warn("Http status: " + status);
                 }
             } catch (IOException e)
             {
@@ -794,15 +801,12 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
                 
         HttpClient client = new HttpClient();
         client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
-        
+        ProxyHelper.applyProxySettings(client);
+
         try
         {
             int status = client.executeMethod(getMethod);
             updateServerTimeDelta(getMethod);
-            if (status == HttpStatus.SC_FORBIDDEN)
-            {
-                System.out.println(getMethod.getResponseBodyAsString());
-            }
             if (status == HttpStatus.SC_OK)
             {
                 InputStream inpStream = getMethod.getResponseBodyAsStream();
@@ -830,15 +834,17 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
                 
                     success = true;
                 }
-            }                                        
+            } else {
+                log.error("HTTP status: " + status + ". Response: " + getMethod.getResponseBodyAsString());
+            }
         } catch (HttpException e)
         {
-            // TODO Auto-generated catch block
             e.printStackTrace();
+            log.error(e);
         } catch (IOException e)
         {
-            // TODO Auto-generated catch block
             e.printStackTrace();
+            log.error(e);
         } finally 
         {
             getMethod.releaseConnection();
@@ -955,6 +961,7 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
             filePost.setRequestEntity(new MultipartRequestEntity(parts, filePost.getParams()));
             HttpClient client = new HttpClient();
             client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
+            ProxyHelper.applyProxySettings(client);
 
             int status = client.executeMethod(filePost);
             updateServerTimeDelta(filePost);
@@ -966,6 +973,8 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
             if (status == HttpStatus.SC_OK)
             {
                 return true;
+            } else {
+                log.warn("Http status: " + status + ". Response: " + filePost.getResponseBodyAsString());
             }
             
         } catch (Exception ex)
@@ -1041,17 +1050,21 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
 
             HttpClient client = new HttpClient();
             client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
+            ProxyHelper.applyProxySettings(client);
 
             int status = client.executeMethod(postMethod);
             updateServerTimeDelta(postMethod);
             
-            //log.debug(getMethod.getResponseBodyAsString());
+            if (status != HttpStatus.SC_OK) {
+                log.warn("HttpStatus=" + status + ". Response: " + postMethod.getResponseBodyAsString());
+            }
+
 
             return status == HttpStatus.SC_OK || status == HttpStatus.SC_NOT_FOUND;
             
         } catch (Exception ex)
         {
-            //log.debug("Error: " + ex.getMessage());
+            log.error(ex);
             ex.printStackTrace();
         }
         return false;

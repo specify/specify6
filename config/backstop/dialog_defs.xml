@@ -50,6 +50,7 @@
     <dialog type="display" view="Collection"         name="Collection"               class="edu.ku.brc.specify.datamodel.Collection" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="Collector"          name="CollectorDisplay"         class="edu.ku.brc.specify.datamodel.Collector" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="CollectionObject"   name="CollectionObject"         class="edu.ku.brc.specify.datamodel.CollectionObject" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="CollectionObjectProperty"        name="CollectionObjectPropertyDisplay"       class="edu.ku.brc.specify.datamodel.CollectionObjectProperty" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="CollectionRelationship"  name="CollectionRelationshipLeft"        class="edu.ku.brc.specify.datamodel.CollectionRelationship" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="CollectionRelType"  name="CollectionRelType"        class="edu.ku.brc.specify.datamodel.CollectionRelType" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="CollectingEvent"    name="CollectingEvent"          class="edu.ku.brc.specify.datamodel.CollectingEvent" helpcontext="CBXQViewEdit"/>
@@ -65,6 +66,7 @@
     <dialog type="display" view="FundingAgent"       name="FundingAgentDisplay"      class="edu.ku.brc.specify.datamodel.FundingAgent" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="ChronosStrat"       name="ChronosStratDisplay"      class="edu.ku.brc.specify.datamodel.GeologicTimePeriod" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="Geography"          name="GeographyDisplay"         class="edu.ku.brc.specify.datamodel.Geography" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="VoucherRelationship" name="VoucherRelationshipDisplay" class="edu.ku.brc.specify.datamodel.VoucherRelationship" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="GiftAgent"          name="GiftAgentDisplay"         class="edu.ku.brc.specify.datamodel.GiftAgent" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="GiftItems"          name="GiftItemsDisplay"         class="edu.ku.brc.specify.datamodel.GiftPreparation" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="GroupPerson"        name="GroupPersonDisplay"       class="edu.ku.brc.specify.datamodel.GroupPerson" helpcontext="CBXQViewEdit"/>
@@ -78,6 +80,7 @@
     <dialog type="display" view="PaleoContext"       name="PaleoContextDisplay"      class="edu.ku.brc.specify.datamodel.PaleoContext" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="Permit"             name="PermitDisplay"            class="edu.ku.brc.specify.datamodel.Permit"  helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="Preparation"        name="PreparationDisplay"       class="edu.ku.brc.specify.datamodel.Preparation" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="PreparationProperty" name="PreparationPropertyDisplay"       class="edu.ku.brc.specify.datamodel.PreparationProperty" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="ProjectSub"         name="ProjectSubDisplay"        class="edu.ku.brc.specify.datamodel.Project" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="ReferenceWork"      name="ReferenceWorkDisplay"     class="edu.ku.brc.specify.datamodel.ReferenceWork" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="RepositoryAgreement" name="RepositoryAgreementDisplay" class="edu.ku.brc.specify.datamodel.RepositoryAgreement" helpcontext="CBXQViewEdit"/>

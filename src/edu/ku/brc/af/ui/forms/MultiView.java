@@ -1,4 +1,4 @@
-/* Copyright (C) 2017, University of Kansas Center for Research
+/* Copyright (C) 2019, University of Kansas Center for Research
  * 
  * Specify Software Project, specify@ku.edu, Biodiversity Institute,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
@@ -1596,15 +1596,12 @@ public class MultiView extends JPanel
      */
     public void updateAutoNumbers()
     {
-        FormViewObj formViewObj = getCurrentViewAsFormViewObj();
-        if (formViewObj != null)
-        {
-            //if (formViewObj.getValidator() != null && formViewObj.getValidator().hasChanged())
-            //{
-                formViewObj.updateAutoNumbers();
-            //}
+        if (currentViewable instanceof FormViewObj) {
+            ((FormViewObj)currentViewable).updateAutoNumbers();
+        } else if (currentViewable instanceof TableViewObj) {
+            ((TableViewObj)currentViewable).updateAutoNumbers();
         }
-        
+
         for (MultiView mv : kids)
         {
             mv.updateAutoNumbers();

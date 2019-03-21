@@ -1,4 +1,4 @@
-/* Copyright (C) 2017, University of Kansas Center for Research
+/* Copyright (C) 2019, University of Kansas Center for Research
  * 
  * Specify Software Project, specify@ku.edu, Biodiversity Institute,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
@@ -19,90 +19,6 @@
 */
 package edu.ku.brc.specify;
 
-import static edu.ku.brc.ui.UIHelper.createIconBtn;
-import static edu.ku.brc.ui.UIHelper.createLabel;
-import static edu.ku.brc.ui.UIRegistry.getAction;
-import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
-import static edu.ku.brc.ui.UIRegistry.getResourceString;
-
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Frame;
-import java.awt.GraphicsConfiguration;
-import java.awt.GraphicsEnvironment;
-import java.awt.Rectangle;
-import java.awt.Toolkit;
-import java.awt.Window;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Locale;
-import java.util.MissingResourceException;
-import java.util.NoSuchElementException;
-import java.util.Properties;
-import java.util.ResourceBundle;
-import java.util.Set;
-import java.util.Vector;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import java.util.prefs.BackingStoreException;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JEditorPane;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JToolBar;
-import javax.swing.KeyStroke;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.WindowConstants;
-import javax.swing.event.HyperlinkEvent;
-import javax.swing.event.HyperlinkListener;
-import javax.swing.event.MenuEvent;
-import javax.swing.event.MenuListener;
-
-import edu.ku.brc.specify.tasks.WorkbenchTask;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 import com.install4j.api.launcher.ApplicationLauncher;
 import com.install4j.api.update.ApplicationDisplayMode;
 import com.install4j.api.update.UpdateChecker;
@@ -113,22 +29,9 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.ExperienceBlue;
-
 import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.auth.UserAndMasterPasswordMgr;
-import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.af.core.FrameworkAppIFace;
-import edu.ku.brc.af.core.GenericGUIDGeneratorFactory;
-import edu.ku.brc.af.core.MacOSAppHandler;
-import edu.ku.brc.af.core.MainPanel;
-import edu.ku.brc.af.core.RecordSetFactory;
-import edu.ku.brc.af.core.SchemaI18NService;
-import edu.ku.brc.af.core.SpecialMsgNotifier;
-import edu.ku.brc.af.core.SubPaneIFace;
-import edu.ku.brc.af.core.SubPaneMgr;
-import edu.ku.brc.af.core.TaskMgr;
-import edu.ku.brc.af.core.Taskable;
-import edu.ku.brc.af.core.UsageTracker;
+import edu.ku.brc.af.core.*;
 import edu.ku.brc.af.core.db.BackupServiceFactory;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
@@ -146,106 +49,65 @@ import edu.ku.brc.af.ui.ProcessListUtil.PROC_STATUS;
 import edu.ku.brc.af.ui.ProcessListUtil.ProcessListener;
 import edu.ku.brc.af.ui.db.DatabaseLoginListener;
 import edu.ku.brc.af.ui.db.DatabaseLoginPanel;
-import edu.ku.brc.af.ui.forms.FormHelper;
-import edu.ku.brc.af.ui.forms.FormViewObj;
-import edu.ku.brc.af.ui.forms.MultiView;
-import edu.ku.brc.af.ui.forms.ResultSetController;
-import edu.ku.brc.af.ui.forms.ViewFactory;
+import edu.ku.brc.af.ui.forms.*;
 import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.af.ui.forms.validation.TypeSearchForQueryFactory;
 import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
 import edu.ku.brc.af.ui.weblink.WebLinkMgr;
-import edu.ku.brc.dbsupport.CustomQueryFactory;
-import edu.ku.brc.dbsupport.DBConnection;
-import edu.ku.brc.dbsupport.DBMSUserMgr;
-import edu.ku.brc.dbsupport.DataProviderFactory;
-import edu.ku.brc.dbsupport.DataProviderSessionIFace;
-import edu.ku.brc.dbsupport.HibernateUtil;
-import edu.ku.brc.dbsupport.QueryExecutor;
-import edu.ku.brc.dbsupport.SchemaUpdateService;
+import edu.ku.brc.dbsupport.*;
 import edu.ku.brc.exceptions.ExceptionTracker;
 import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.helpers.ProxyHelper;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.services.gpx.GPXPanel;
-import edu.ku.brc.specify.config.CheckDBAfterLogin;
-import edu.ku.brc.specify.config.CollectingEventsAndAttrsMaint;
-import edu.ku.brc.specify.config.DebugLoggerDialog;
-import edu.ku.brc.specify.config.DisciplineType;
-import edu.ku.brc.specify.config.FeedBackDlg;
-import edu.ku.brc.specify.config.LoggerDialog;
-import edu.ku.brc.specify.config.SpecifyAppContextMgr;
-import edu.ku.brc.specify.config.SpecifyAppPrefs;
+import edu.ku.brc.specify.config.*;
 import edu.ku.brc.specify.config.init.DataBuilder;
 import edu.ku.brc.specify.config.init.RegisterSpecify;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
-import edu.ku.brc.specify.datamodel.AccessionAttachment;
-import edu.ku.brc.specify.datamodel.AgentAttachment;
-import edu.ku.brc.specify.datamodel.Attachment;
-import edu.ku.brc.specify.datamodel.BorrowAttachment;
-import edu.ku.brc.specify.datamodel.CollectingEventAttachment;
+import edu.ku.brc.specify.datamodel.*;
 import edu.ku.brc.specify.datamodel.Collection;
-import edu.ku.brc.specify.datamodel.CollectionObject;
-import edu.ku.brc.specify.datamodel.CollectionObjectAttachment;
-import edu.ku.brc.specify.datamodel.ConservDescriptionAttachment;
-import edu.ku.brc.specify.datamodel.ConservEventAttachment;
-import edu.ku.brc.specify.datamodel.DNASequenceAttachment;
-import edu.ku.brc.specify.datamodel.DNASequencingRunAttachment;
-import edu.ku.brc.specify.datamodel.Determination;
-import edu.ku.brc.specify.datamodel.Discipline;
-import edu.ku.brc.specify.datamodel.Division;
-import edu.ku.brc.specify.datamodel.FieldNotebookAttachment;
-import edu.ku.brc.specify.datamodel.FieldNotebookPageAttachment;
-import edu.ku.brc.specify.datamodel.FieldNotebookPageSetAttachment;
-import edu.ku.brc.specify.datamodel.GiftAttachment;
-import edu.ku.brc.specify.datamodel.Institution;
-import edu.ku.brc.specify.datamodel.LoanAttachment;
-import edu.ku.brc.specify.datamodel.LocalityAttachment;
-import edu.ku.brc.specify.datamodel.PermitAttachment;
-import edu.ku.brc.specify.datamodel.Preparation;
-import edu.ku.brc.specify.datamodel.PreparationAttachment;
-import edu.ku.brc.specify.datamodel.ReferenceWorkAttachment;
-import edu.ku.brc.specify.datamodel.RepositoryAgreementAttachment;
-import edu.ku.brc.specify.datamodel.SpecifyUser;
-import edu.ku.brc.specify.datamodel.Storage;
-import edu.ku.brc.specify.datamodel.StorageAttachment;
-import edu.ku.brc.specify.datamodel.Taxon;
-import edu.ku.brc.specify.datamodel.TaxonAttachment;
-import edu.ku.brc.specify.datamodel.TreatmentEventAttachment;
 import edu.ku.brc.specify.prefs.SystemPrefs;
 import edu.ku.brc.specify.tasks.SecurityAdminTask;
+import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.specify.tasks.subpane.JasperReportsCache;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
 import edu.ku.brc.specify.ui.AppBase;
 import edu.ku.brc.specify.ui.HelpMgr;
-import edu.ku.brc.ui.CommandAction;
-import edu.ku.brc.ui.CommandDispatcher;
-import edu.ku.brc.ui.CommandListener;
-import edu.ku.brc.ui.CustomDialog;
-import edu.ku.brc.ui.CustomFrame;
-import edu.ku.brc.ui.DefaultClassActionHandler;
-import edu.ku.brc.ui.GraphicsUtils;
-import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.*;
 import edu.ku.brc.ui.IconManager.IconSize;
-import edu.ku.brc.ui.JStatusBar;
-import edu.ku.brc.ui.JTiledToolbar;
-import edu.ku.brc.ui.ProgressFrame;
-import edu.ku.brc.ui.RolloverCommand;
-import edu.ku.brc.ui.ToolbarLayoutManager;
-import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.VerticalSeparator;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
 import edu.ku.brc.ui.skin.SkinItem;
 import edu.ku.brc.ui.skin.SkinsMgr;
-import edu.ku.brc.util.AttachmentUtils;
-import edu.ku.brc.util.CacheManager;
-import edu.ku.brc.util.FileCache;
-import edu.ku.brc.util.MemoryWarningSystem;
-import edu.ku.brc.util.Pair;
+import edu.ku.brc.util.*;
 import edu.ku.brc.util.thumbnails.Thumbnailer;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import javax.swing.*;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
+import javax.swing.event.MenuEvent;
+import javax.swing.event.MenuListener;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.sql.*;
+import java.time.Duration;
+import java.util.*;
+import java.util.List;
+import java.util.concurrent.*;
+import java.util.prefs.BackingStoreException;
+
+import static edu.ku.brc.ui.UIHelper.createIconBtn;
+import static edu.ku.brc.ui.UIHelper.createLabel;
+import static edu.ku.brc.ui.UIRegistry.*;
 
 /**
  * Specify Main Application Class
@@ -263,8 +125,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
     public static final boolean IS_DEVELOPMENT       = true;
     public static final int HIBERNATE_BATCH_SIZE     = 25; //should match the hibernate.jdbc.batch_size setting in hibernate.cfg.xml
 
-    private static final String sendStatsPrefName    = "usage_tracking.send_stats";
-    private static final String sendISAStatsPrefName = "usage_tracking.send_isa_stats";
+    public static final String hiddenSendStatsPrefName    = "usage_tracking.do_send_stats";
     private static final String UPDATE_CHK_ERROR     = "Specify.UPDATE_CHK_ERROR";
     private static final String ERRMSG               = "ERRMSG";
     private static final String STATS_SEND_DONE      = "STATS_SEND_DONE";
@@ -487,6 +348,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             AgentAttachment.class,
             BorrowAttachment.class,
             CollectingEventAttachment.class,
+            CollectingTripAttachment.class,
             CollectionObjectAttachment.class,
             ConservDescriptionAttachment.class,
             ConservEventAttachment.class,
@@ -1055,19 +917,13 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
 
     private void changeCollection() {
         AppPreferences appPrefs             = AppPreferences.getRemote();
-        Boolean        canSendStats         = appPrefs.getBoolean(sendStatsPrefName, null); //$NON-NLS-1$
-        Boolean        canSendISAStats      = appPrefs.getBoolean(sendISAStatsPrefName, null); //$NON-NLS-1$
-
-        if (canSendStats == null) {
-            canSendStats = true;
-            appPrefs.putBoolean(sendStatsPrefName, canSendStats); //$NON-NLS-1$
-        }
+        Boolean        canSendStats         = appPrefs.getBoolean(hiddenSendStatsPrefName, true); //$NON-NLS-1$
 
         if (canSendStats) {
             StatsTrackerTask statsTrackerTask = (StatsTrackerTask) TaskMgr.getTask("StatsTracker");
             if (statsTrackerTask != null) {
                 statsTrackerTask.initialize(); //sets domain ids from current appcontext, which will change as stats send runs in background.
-                statsTrackerTask.setSendSecondaryStatsAllowed(canSendISAStats);
+                statsTrackerTask.setSendSecondaryStatsAllowed(true);
                 class StatsWorker extends javax.swing.SwingWorker<Object, Object> {
                     @Override
                     public String doInBackground() {
@@ -1094,6 +950,8 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                 }
                 (new StatsWorker()).execute();
             }
+        } else {
+            restartApp(null, databaseName, userName, true, false);
         }
     }
     /**
@@ -1671,7 +1529,6 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         return proxySettings;
     }
 
-    
     /**
      * 
      */
@@ -2325,7 +2182,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         "<p>The Specify Software Project is "+ //$NON-NLS-1$
         "funded by the Advances in Biological Informatics Program, " + //$NON-NLS-1$
         "U.S. National Science Foundation  (Grant NSF/BIO: 1565098 and earlier awards).<br><br>" + //$NON-NLS-1$
-        "Specify 6 Copyright \u00A9 2018 University of Kansas Center for Research. " +
+        "Specify 6 Copyright \u00A9 2019 University of Kansas Center for Research. " +
         "Specify comes with ABSOLUTELY NO WARRANTY.<br><br>" + //$NON-NLS-1$
         "This is free software licensed under GNU General Public License 2 (GPL2).</P></font></html>"; //$NON-NLS-1$
 
@@ -2452,40 +2309,25 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         {
             ex.printStackTrace();
             
-        } finally
-        {
-            if (okToShutdown && doAppExit)
-            {
-                Boolean canSendStats = false;
-                if (AppContextMgr.getInstance().hasContext())
-                {
-                    canSendStats = AppPreferences.getRemote().getBoolean(sendStatsPrefName, true); //$NON-NLS-1$
+        } finally {
+            if (okToShutdown && doAppExit) {
+                Boolean canSendStats = true;
+                if (AppContextMgr.getInstance().hasContext()) {
+                    canSendStats = AppPreferences.getRemote().getBoolean(hiddenSendStatsPrefName, true); //$NON-NLS-1$
                 }
-                
-                if (canSendStats)
-                {
-                    Boolean          canSendISAStats  = AppPreferences.getRemote().getBoolean(sendISAStatsPrefName, true); //$NON-NLS-1$
-                    StatsTrackerTask statsTrackerTask = (StatsTrackerTask)TaskMgr.getTask(StatsTrackerTask.STATS_TRACKER);
-                    if (statsTrackerTask != null)
-                    {
-                        UIRegistry.getTopWindow().setVisible(false);
-                        statsTrackerTask.setSendSecondaryStatsAllowed(canSendISAStats);
-                        statsTrackerTask.sendStats(false, false, true); // don't exit, show progress and send done event
-                        
-                        return false;
-                    }
-                    
-                } else
-                {
+                StatsTrackerTask statsTrackerTask = (StatsTrackerTask)TaskMgr.getTask(StatsTrackerTask.STATS_TRACKER);
+                if (statsTrackerTask != null && canSendStats) {
+                    UIRegistry.getTopWindow().setVisible(false);
+                    statsTrackerTask.setSendSecondaryStatsAllowed(true);
+                    statsTrackerTask.sendStats(false, false, true); // don't exit, show progress and send done event
+                    return false;
+                } else {
                     // Fake like we sent stats, needs to  to be placed into the event queue 
                     // so any other events can be processed.
-                    SwingUtilities.invokeLater(new Runnable()
-                    {
+                    SwingUtilities.invokeLater(new Runnable() {
                         @Override
-                        public void run()
-                        {
-                            try
-                            {
+                        public void run() {
+                            try {
                                 Thread.sleep(500); // wait half second before sending 'faked' done event.
                             } catch (Exception ex) {}
                             CommandDispatcher.dispatch(new CommandAction(BaseTask.APP_CMD_TYPE, STATS_SEND_DONE, null));
@@ -2612,25 +2454,15 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
     /**
      * This is called when switching Collections and NOT logging off.
      */
-    protected void checkAndSendStats()
-    {
+    protected void checkAndSendStats() {
         AppPreferences appPrefs             = AppPreferences.getRemote();
-        Boolean        canSendStats         = appPrefs.getBoolean(sendStatsPrefName, null); //$NON-NLS-1$
-        Boolean        canSendISAStats      = appPrefs.getBoolean(sendISAStatsPrefName, null); //$NON-NLS-1$
-        
-        if (canSendStats == null)
-        {
-            canSendStats = true;
-            appPrefs.putBoolean(sendStatsPrefName, canSendStats); //$NON-NLS-1$
-        }
-        
-        if (canSendStats)
-        {
+        Boolean        canSendStats         = appPrefs.getBoolean(hiddenSendStatsPrefName, true); //$NON-NLS-1$
+
+        if (canSendStats) {
             StatsTrackerTask statsTrackerTask = (StatsTrackerTask)TaskMgr.getTask("StatsTracker");
-            if (statsTrackerTask != null)
-            {
+            if (statsTrackerTask != null) {
                 statsTrackerTask.initialize(); //sets domain ids from current appcontext, which will change as stats send runs in background.
-                statsTrackerTask.setSendSecondaryStatsAllowed(canSendISAStats);
+                statsTrackerTask.setSendSecondaryStatsAllowed(true);
                 statsTrackerTask.sendStats(false, true, false);
             }
         }
@@ -2721,42 +2553,24 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         
         // Check Stats (this is mostly for the first time in.
         AppPreferences appPrefs             = AppPreferences.getRemote();
-        Boolean        canSendStats         = appPrefs.getBoolean(sendStatsPrefName, null); //$NON-NLS-1$
-        Boolean        canSendISAStats      = appPrefs.getBoolean(sendISAStatsPrefName, null); //$NON-NLS-1$
-        
-        // Make sure we have the proper defaults
-        if (canSendStats == null)
-        {
-            canSendStats = true;
-            appPrefs.putBoolean("usage_tracking.send_stats", canSendStats); //$NON-NLS-1$
-        }
-        
-        if (canSendISAStats == null)
-        {
-            canSendISAStats = true;
-            appPrefs.putBoolean(sendISAStatsPrefName, canSendISAStats); //$NON-NLS-1$
-        }
-        
-        if (status == AppContextMgr.CONTEXT_STATUS.OK)
-        {
+        Boolean        canSendStats         = appPrefs.getBoolean(hiddenSendStatsPrefName, true); //$NON-NLS-1$
+
+        if (status == AppContextMgr.CONTEXT_STATUS.OK) {
              // XXX Get the current locale from prefs PREF
             
-            if (AppContextMgr.getInstance().getClassObject(Discipline.class) == null)
-            {
+            if (AppContextMgr.getInstance().getClassObject(Discipline.class) == null) {
                 return;
             }
             
             // "false" means that it should use any cached values it can find to automatically initialize itself
-            if (firstTime)
-            {
+            if (firstTime) {
                 GraphicsConfiguration gc = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
                 
                 initialize(gc);
     
                 topFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
                 UIRegistry.register(UIRegistry.FRAME, topFrame);
-            } else
-            {
+            } else {
                 SubPaneMgr.getInstance().closeAll();
             }
             
@@ -2767,8 +2581,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             AppPrefsCache.addChangeListener("ui.formatting.scrdateformat", UIFieldFormatterMgr.getInstance());
 
             
-            if (changeCollectionMenuItem != null)
-            {
+            if (changeCollectionMenuItem != null) {
                 changeCollectionMenuItem.setEnabled(((SpecifyAppContextMgr)AppContextMgr.getInstance()).getNumOfCollectionsForUser() > 1);
             }
             
@@ -2869,7 +2682,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         final String[]  prefNames = {"FixUploaderRecordsets", "FixNullEmbeddedCollectingEvents", "FixedUnMatchedWBSpecifyUserIDs", 
                                      "FixedSpQueryOperators", "FixedUnmappedSchemaConditions", "FixedGTPTreeDefParents",
                                      "FixNullTreeableFields", "FixNullDatePrecisions", 
-                                     "fixSymbiotaExportSchema"};
+                                     "fixSymbiotaExportSchema", "FixPaleoContextTypeSearch", "FixPaleoContextSearchView"};
         final boolean[] isFixed   = new boolean[prefNames.length];
 
 
@@ -3003,6 +2816,21 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                     }
                     inx++;
 
+                    if (!isFixed[inx])
+                    {
+                        if (CheckDBAfterLogin.fixPaleoContextTypeSearch()) {
+                            globalPrefs.putBoolean(prefNames[inx], true);
+                        }
+                    }
+                    inx++;
+
+                    if (!isFixed[inx])
+                    {
+                        if (CheckDBAfterLogin.fixPaleoContextSearchView()) {
+                            globalPrefs.putBoolean(prefNames[inx], true);
+                        }
+                    }
+                    inx++;
 
                     CheckDBAfterLogin fixer = new CheckDBAfterLogin();
                     fixer.fillPrepGuids();

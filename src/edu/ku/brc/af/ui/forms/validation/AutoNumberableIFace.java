@@ -1,4 +1,4 @@
-/* Copyright (C) 2017, University of Kansas Center for Research
+/* Copyright (C) 2019, University of Kansas Center for Research
  * 
  * Specify Software Project, specify@ku.edu, Biodiversity Institute,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
@@ -41,8 +41,15 @@ public interface AutoNumberableIFace
     /**
      * Increments to the next number in the series.
      */
-    public abstract void updateAutoNumbers();
-    
+    public abstract String updateAutoNumbers();
+    public abstract String updateAutoNumbers(String val);
+
+   /**
+     *
+     * @return whether the formatter needs to be incremented in current context
+     */
+    public abstract boolean needsUpdating();
+
     /**
      * Tells the control to turn on or off the auto-numbering.
      * @param turnOn true turns it on

@@ -1,4 +1,4 @@
-/* Copyright (C) 2017, University of Kansas Center for Research
+/* Copyright (C) 2019, University of Kansas Center for Research
  * 
  * Specify Software Project, specify@ku.edu, Biodiversity Institute,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
@@ -115,7 +115,7 @@ public class XLSExport implements DataExport
      * @param row
      * @return HSSFCellTypes for each column in workbench.
      */
-    protected int[] bldColTypes(final WorkbenchTemplate wbt)
+    protected int[] bldColTypes(final WorkbenchTemplate wbt) throws WBUnMappedItemException
     {
         int[] result = new int[wbt.getWorkbenchTemplateMappingItems().size()];
         for (WorkbenchTemplateMappingItem mapItem : wbt.getWorkbenchTemplateMappingItems())
@@ -128,7 +128,7 @@ public class XLSExport implements DataExport
      * @param colNum - index of a workbench column.
      * @return the excel cell type appropriate for the database field the workbench column maps to.
      */
-    protected int getColType(final WorkbenchTemplateMappingItem mapItem)
+    protected int getColType(final WorkbenchTemplateMappingItem mapItem) throws WBUnMappedItemException
     {
         Class<?> dataType = WorkbenchTask.getDataType(mapItem, false);
         // These are the classes currently returned by getDataType():

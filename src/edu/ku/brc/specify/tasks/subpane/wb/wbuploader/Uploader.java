@@ -1,4 +1,4 @@
-/* Copyright (C) 2017, University of Kansas Center for Research
+/* Copyright (C) 2019, University of Kansas Center for Research
  * 
  * Specify Software Project, specify@ku.edu, Biodiversity Institute,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
@@ -3701,7 +3701,9 @@ public class Uploader implements ActionListener, KeyListener
             boolean isUpdate = isUpdateUpload();
             int rv = force ? JOptionPane.YES_OPTION : showShutDownDlg(isUpdate, action);
             if (rv == JOptionPane.YES_OPTION) {
-                saveRecordSets();
+                if (!isUpdate || (wasCommitted && !wasRolledBack)) {
+                    saveRecordSets();
+                }
                 result = true;
                 wbSS.saveObject();
             } else if (rv == JOptionPane.NO_OPTION) {
@@ -3748,7 +3750,7 @@ public class Uploader implements ActionListener, KeyListener
                     getResourceString("WB_UPLOAD_SETTINGS"), true, CustomDialog.OK_BTN, usp,
                     CustomDialog.OK_BTN);
         }
-
+        cwin.setAlwaysOnTop(true); //ALWAYS
         cwin.setModal(true);
         UIHelper.centerAndShow(cwin);
         if (!cwin.isCancelled())
@@ -6278,27 +6280,8 @@ public class Uploader implements ActionListener, KeyListener
     	row.setRecordId(rec.getId());
     	for (UploadTable ut : uploadTables){
     		int seq = 0;
-    		//XXX!!! cheap trick. needs to check relationship type (don't forget zero-to-many) 
-    		boolean isOneToMany = ut.getUploadFields().size() > 1 || ut.getTable().getName().equalsIgnoreCase("address") 
-    				|| ut.getTable().getName().equalsIgnoreCase("localitydetail")
-    				|| ut.getTable().getName().equalsIgnoreCase("geocoorddetail")
-    				|| ut.getTable().getName().equalsIgnoreCase("preparation")
-    				|| ut.getTable().getName().equalsIgnoreCase("otheridentifier")
-    				|| ut.getTable().getName().equalsIgnoreCase("dnasequence")
-    				|| ut.getTable().getName().equalsIgnoreCase("determination");
     		for (Vector<UploadField> flds : ut.getUploadFields()){
 				if (ut.getCurrentRecord(seq) != null){
-//					if (isOneToMany){
-//						WorkbenchRowExportedRelationship wber = new WorkbenchRowExportedRelationship();
-//						wber.initialize();
-//						wber.setWorkbenchRow(row);
-//						row.getWorkbenchRowExportedRelationships().add(wber);
-//						wber.setTableName(ut.getTblClass().getSimpleName());
-//						wber.setSequence(seq);
-//						//wber.setIsDeleted(false);
-//						wber.setRecordId(ut.getCurrentRecord(seq).getId());
-//					}
-					//wber.setRelationshipName() ??? - skipping it: assuming that for uploader a table is only one-to-many'ed once from a parent.
 					for (UploadField fld : flds){
 						if (fld.getIndex() != -1){
     						Object value = fld.getGetter().invoke(ut.getCurrentRecord(seq));

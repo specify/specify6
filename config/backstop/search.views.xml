@@ -65,7 +65,7 @@
             resourcelabels="false">
             <desc><![CDATA[The Permit Search Form]]></desc>
             <altviews>
-                <altview name="PermitSearch" viewdef="PermitSearch" mode="edit" validated="true" default="true"/>
+                <altview name="PermitSearch" viewdef="PermitSearch" mode="edit" validated="false" default="true"/>
             </altviews>
         </view>
         
@@ -476,7 +476,7 @@ Good: <cell type="field" name="FieldNum" ...>
                 </row>
                 <row>
                     <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="appraisalDate" uitype="formattedtext" isrequired="true" uifieldformatter="Date" default="today"/>
+                    <cell type="field" id="1" name="appraisalDate" uitype="formattedtext" isrequired="true" uifieldformatter="SearchDate" default="today"/>
                     <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="appraisalNumber" uitype="text"/>
                 </row>
@@ -672,7 +672,7 @@ Good: <cell type="field" name="FieldNum" ...>
                 </row>
                 <row>
                     <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="ScanDate" uitype="formattedtext" uifieldformatter="Date" initialize="ispartial=true;"/>
+                    <cell type="field" id="3" name="ScanDate" uitype="formattedtext" uifieldformatter="SearchDate" initialize="ispartial=true;"/>
                 </row>
             </rows>
         </viewdef>
@@ -723,33 +723,35 @@ Good: <cell type="field" name="FieldNum" ...>
             <rows>
                 <row>
                     <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="PermitNumber" uitype="text" isrequired="true"/>
+                    <cell type="field" id="1" name="PermitNumber" uitype="text" isrequired="false"/>
                     
                     <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="Type" uitype="combobox"/>
                 </row>
                 <row>
                     <cell type="label" label="Issued By Last Name"/>
-                    <cell type="field" id="3" name="issuedBy.LastName" uitype="text"/>
+                    <cell type="field" id="3" name="LastName" uitype="text"/>
                     
+                    <!-- this field is currently not searched in the search_config.xml permit query >
                     <cell type="label" label="Issued To Last Name"/>
                     <cell type="field" id="4" name="issuedTo.LastName" uitype="text"/>
+                    -->
                 </row>
                 
                 <row>
                     <cell type="label" labelfor="5"/>
-                    <cell type="field" id="5" name="issuedDate" uitype="formattedtext" uifieldformatter="Date"/>
-                    
+                    <cell type="field" id="5" name="IssuedDate" uitype="formattedtext" uifieldformatter="SearchDate"/>
+
                     <cell type="label" labelfor="6"/>
-                    <cell type="field" id="6" name="renewalDate" uitype="formattedtext" uifieldformatter="Date"/>
+                    <cell type="field" id="6" name="RenewalDate" uitype="formattedtext" uifieldformatter="SearchDate"/>
                 </row>
                 
                 <row>
                     <cell type="label" labelfor="7"/>
-                    <cell type="field" id="7" name="startDate" uitype="formattedtext" uifieldformatter="Date"/>
+                    <cell type="field" id="7" name="StartDate" uitype="formattedtext" uifieldformatter="SearchDate"/>
                     
                     <cell type="label" labelfor="8"/>
-                    <cell type="field" id="8" name="endDate" uitype="formattedtext" uifieldformatter="Date"/>
+                    <cell type="field" id="8" name="EndDate" uitype="formattedtext" uifieldformatter="SearchDate"/>
                 </row>
                
             </rows>
@@ -954,7 +956,7 @@ Good: <cell type="field" name="FieldNum" ...>
                 </row>
                 <row>
                     <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="StartDate" isrequired="false" uitype="formattedtext" uifieldformatter="Date"/>
+                    <cell type="field" id="2" name="StartDate" isrequired="false" uitype="formattedtext" uifieldformatter="SearchDate"/>
                 </row>
             </rows>
         </viewdef>
@@ -1097,8 +1099,8 @@ Good: <cell type="field" name="FieldNum" ...>
             
             <rows>
                 <row>
-                    <cell type="label" labelfor="pcn"/>
-                    <cell type="field" id="pcn" name="PaleoContextName" isrequired="false" uitype="text"/>
+                    <cell type="label" label="Paleo Context Name"/>
+                    <cell type="field" id="pcn" name="pc.PaleoContextName" isrequired="false" uitype="text"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="cs"/>
