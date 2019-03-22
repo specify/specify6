@@ -2645,7 +2645,7 @@ public class UploadTable implements Comparable<UploadTable>
                 }
             }
         }
-        if (tblClass.equals(CollectingTrip.class)) {
+        else if (tblClass.equals(CollectingTrip.class)) {
             for (UploadTable child : specialChildren) {
                 logDebug(child.getTable().getName());
                 if (child.getTblClass().equals(CollectingTripAttribute.class))
