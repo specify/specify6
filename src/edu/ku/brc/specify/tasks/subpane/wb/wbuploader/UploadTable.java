@@ -3085,7 +3085,8 @@ public class UploadTable implements Comparable<UploadTable>
         // temporary fix. Really should determine based on cascade rules and the fields in the
         // dataset.
         return (buildingUploader || !skipChildrenMatching.get()) &&
-        	(tblClass.equals(CollectingEvent.class) 
+        	(tblClass.equals(CollectingEvent.class)
+                || tblClass.equals(CollectingTrip.class)
         		|| tblClass.equals(Accession.class)
                 || tblClass.equals(Agent.class)
         		|| tblClass.equals(CollectionObject.class) 
