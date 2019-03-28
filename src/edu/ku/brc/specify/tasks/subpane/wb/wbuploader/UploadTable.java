@@ -1136,7 +1136,7 @@ public class UploadTable implements Comparable<UploadTable>
                 {
                     pte.getImportTable().addChild(this);
                 }
-                else if (needToMatchChildren() && pte.getImportTable().isOneToOneChild())
+                else if (needToMatchChildren(true) && pte.getImportTable().isOneToOneChild())
                 {
                 	addChild(pte.getImportTable());
                 }
@@ -2645,7 +2645,7 @@ public class UploadTable implements Comparable<UploadTable>
                 }
             }
         }
-        if (tblClass.equals(CollectingTrip.class)) {
+        else if (tblClass.equals(CollectingTrip.class)) {
             for (UploadTable child : specialChildren) {
                 logDebug(child.getTable().getName());
                 if (child.getTblClass().equals(CollectingTripAttribute.class))
@@ -3069,20 +3069,24 @@ public class UploadTable implements Comparable<UploadTable>
         return result;
     }
 
+    protected boolean needToMatchChildren() {
+        return needToMatchChildren(false);
+    }
     /**
      *
      * @return
      */
-    protected boolean needToMatchChildren()
+    protected boolean needToMatchChildren(boolean buildingUploader)
     {
-        if (updateMatches) {
+        if (!buildingUploader && uploader.isUpdateUpload()) {
             return !matchUsingExportedRecord();
         }
 
         // temporary fix. Really should determine based on cascade rules and the fields in the
         // dataset.
-        return !skipChildrenMatching.get() &&
-        	(tblClass.equals(CollectingEvent.class) 
+        return (buildingUploader || !skipChildrenMatching.get()) &&
+        	(tblClass.equals(CollectingEvent.class)
+                || tblClass.equals(CollectingTrip.class)
         		|| tblClass.equals(Accession.class)
                 || tblClass.equals(Agent.class)
         		|| tblClass.equals(CollectionObject.class) 
