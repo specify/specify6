@@ -19,78 +19,10 @@
 */
 package edu.ku.brc.specify.tasks.subpane.qb;
 
-import static edu.ku.brc.ui.UIHelper.createButton;
-import static edu.ku.brc.ui.UIHelper.createCheckBox;
-import static edu.ku.brc.ui.UIHelper.createIconBtn;
-import static edu.ku.brc.ui.UIHelper.createLabel;
-import static edu.ku.brc.ui.UIRegistry.getResourceString;
-
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Frame;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.text.ParseException;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.AtomicReference;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.ActionMap;
-import javax.swing.BorderFactory;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.DefaultListModel;
-import javax.swing.ImageIcon;
-import javax.swing.InputMap;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTextField;
-import javax.swing.KeyStroke;
-import javax.swing.ListModel;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.MouseInputAdapter;
-
-import edu.ku.brc.specify.tasks.*;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-
-import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.af.core.ContextMgr;
-import edu.ku.brc.af.core.NavBoxLayoutManager;
-import edu.ku.brc.af.core.SubPaneIFace;
-import edu.ku.brc.af.core.SubPaneMgr;
-import edu.ku.brc.af.core.Taskable;
-import edu.ku.brc.af.core.UsageTracker;
+import edu.ku.brc.af.core.*;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBRelationshipInfo;
 import edu.ku.brc.af.core.db.DBRelationshipInfo.RelationshipType;
@@ -111,47 +43,41 @@ import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
-import edu.ku.brc.specify.datamodel.Agent;
-import edu.ku.brc.specify.datamodel.Attachment;
-import edu.ku.brc.specify.datamodel.CollectionObject;
-import edu.ku.brc.specify.datamodel.CollectionRelationship;
+import edu.ku.brc.specify.datamodel.*;
 import edu.ku.brc.specify.datamodel.Container;
-import edu.ku.brc.specify.datamodel.DataModelObjBase;
-import edu.ku.brc.specify.datamodel.Discipline;
-import edu.ku.brc.specify.datamodel.Division;
-import edu.ku.brc.specify.datamodel.GroupPerson;
-import edu.ku.brc.specify.datamodel.Institution;
-import edu.ku.brc.specify.datamodel.SpExportSchema;
-import edu.ku.brc.specify.datamodel.SpExportSchemaItem;
-import edu.ku.brc.specify.datamodel.SpExportSchemaItemMapping;
-import edu.ku.brc.specify.datamodel.SpExportSchemaMapping;
-import edu.ku.brc.specify.datamodel.SpQuery;
-import edu.ku.brc.specify.datamodel.SpQueryField;
-import edu.ku.brc.specify.datamodel.SpReport;
-import edu.ku.brc.specify.datamodel.SpecifyUser;
-import edu.ku.brc.specify.datamodel.TreeDefIface;
-import edu.ku.brc.specify.datamodel.Treeable;
-import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.dbsupport.RecordTypeCodeBuilder;
+import edu.ku.brc.specify.tasks.*;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
 import edu.ku.brc.specify.tasks.subpane.JasperCompilerRunnable;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchJRDataSource;
 import edu.ku.brc.specify.tools.export.ConceptMapUtils;
 import edu.ku.brc.specify.tools.export.MappedFieldInfo;
-import edu.ku.brc.ui.CommandAction;
-import edu.ku.brc.ui.CommandDispatcher;
-import edu.ku.brc.ui.CommandListener;
-import edu.ku.brc.ui.CustomDialog;
-import edu.ku.brc.ui.DropDownButton;
-import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.RolloverCommand;
-import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.*;
 import edu.ku.brc.util.Pair;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.util.JRLoader;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.MouseInputAdapter;
+import java.awt.*;
+import java.awt.event.*;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.util.*;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
+
+import static edu.ku.brc.ui.UIHelper.*;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 /**
  * @author rod
@@ -202,7 +128,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     protected boolean                                 		 searchSynonymy     = false;
     protected JCheckBox                                      smushedChk;
     protected boolean										 smushed = false;
-    
+    protected JCheckBox                                      formatAuditRecIdsChk;
+    protected boolean                                        formatAuditRecIds = false;
+
     /**
      * When countOnly is true, count of matching records is displayed, but the records are not displayed.
      */
@@ -283,6 +211,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 
         this.query      = query;
         this.isHeadless = isHeadless;
+        if (query != null) {
+            formatAuditRecIds = query.getFormatAuditRecIds() != null ? query.getFormatAuditRecIds() : false;
+        }
         this.isExportMapping = exportSchema != null || schemaMapping != null;
         this.exportSchema = exportSchema != null ? exportSchema : 
         	schemaMapping != null ? schemaMapping.getSpExportSchema() : null;
@@ -896,15 +827,48 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 		}
 		smushedChk.setVisible(!(task instanceof BatchEditTask));
 
-        PanelBuilder outer = new PanelBuilder(new FormLayout("p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 6dlu, p", "p"));
+        formatAuditRecIdsChk = createCheckBox(UIRegistry.getResourceString("QB_FORMAT_AUDIT_RECIDS"));
+        formatAuditRecIdsChk.setVisible(query != null && !isForSchemaExport() &&
+                Integer.valueOf(SpAuditLog.getClassTableId()).equals(Integer.valueOf(query.getContextTableId())));
+        if (formatAuditRecIdsChk.isVisible()) {
+            formatAuditRecIdsChk.setSelected(formatAuditRecIds);
+            formatAuditRecIdsChk.setToolTipText(UIRegistry.getResourceString("QB_FORMAT_AUDIT_RECIDS_HINT"));
+            formatAuditRecIdsChk.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent ae) {
+                    new SwingWorker() {
+
+                        /*
+                         * (non-Javadoc)
+                         *
+                         * @see edu.ku.brc.helpers.SwingWorker#construct()
+                         */
+                        @Override
+                        public Object construct() {
+                            formatAuditRecIds = !formatAuditRecIds;
+                            if (!formatAuditRecIds) {
+                                UsageTracker.incrUsageCount("QB.FormatAuditRecIdsOff");
+                            } else {
+                                UsageTracker.incrUsageCount("QB.FormatAuditRecIdsOn");
+                            }
+                            query.setFormatAuditRecIds(formatAuditRecIds);
+                            setSaveBtnEnabled(thereAreItems());
+                            return null;
+                        }
+                    }.start();
+                }
+            });
+        }
+
+        PanelBuilder outer = new PanelBuilder(new FormLayout("p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 6dlu, p", "p"));
  
         CellConstraints cc = new CellConstraints();
-        outer.add(smushedChk, cc.xy(1, 1));
-        outer.add(searchSynonymyChk, cc.xy(3, 1));
-        outer.add(distinctChk, cc.xy(5, 1));
-        outer.add(countOnlyChk, cc.xy(7, 1));
-        outer.add(searchBtn, cc.xy(9, 1));
-        outer.add(saveBtn, cc.xy(11, 1));
+        outer.add(formatAuditRecIdsChk, cc.xy(1, 1));
+        outer.add(smushedChk, cc.xy(3, 1));
+        outer.add(searchSynonymyChk, cc.xy(5, 1));
+        outer.add(distinctChk, cc.xy(7, 1));
+        outer.add(countOnlyChk, cc.xy(9, 1));
+        outer.add(searchBtn, cc.xy(11, 1));
+        outer.add(saveBtn, cc.xy(13, 1));
         
         JPanel bottom = new JPanel(new BorderLayout());
         bottom.add(outer.getPanel(), BorderLayout.EAST);
@@ -1371,9 +1335,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             final RecordSetIFace keysToRetrieve,
             final boolean searchSynonymy,
             final boolean isSchemaExport,
-            final Timestamp lastExportTime) throws ParseException
+            final Timestamp lastExportTime, boolean formatAuditRecIds) throws ParseException
     {
-    	return buildHQL(rootTable, distinct, qfps, tblTree, keysToRetrieve, searchSynonymy, isSchemaExport, lastExportTime, false);
+    	return buildHQL(rootTable, distinct, qfps, tblTree, keysToRetrieve, searchSynonymy, isSchemaExport, lastExportTime, false, formatAuditRecIds);
     }
 
     
@@ -1393,7 +1357,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                                        final boolean searchSynonymy,
                                        final boolean isSchemaExport,
                                        final Timestamp lastExportTime,
-                                       final boolean disjunct) throws ParseException
+                                       final boolean disjunct, final boolean formatAuditRecIds) throws ParseException
     {
         if (qfps.size() == 0)
             return null;
@@ -1601,7 +1565,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         	if (qfi.isForDisplay())
             {
                 visibleFldExists = true;
-        		String fldSpec = qfi.getFieldQRI().getSQLFldSpec(tableAbbreviator, false, isSchemaExport, qfi.getFormatName());
+        		String fldSpec = qfi.getFieldQRI().getSQLFldSpec(tableAbbreviator, false, isSchemaExport, qfi.getFormatName(), formatAuditRecIds);
                 if (StringUtils.isNotEmpty(fldSpec))
                 {
                     if (fieldsStr.length() > 0)
@@ -2062,7 +2026,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     protected void doSearch(final TableQRI rootTable, boolean distinct, boolean disjunct, final RecordSetIFace rs) {
         try {
             //XXX need to determine exportQuery params (probably)
-        	HQLSpecs hql = buildHQL(rootTable, distinct, queryFieldItems, tableTree, rs, searchSynonymy, false, null, disjunct);  
+        	HQLSpecs hql = buildHQL(rootTable, distinct, queryFieldItems, tableTree, rs, searchSynonymy, false, null, disjunct, formatAuditRecIds);
             processSQL(queryFieldItems, hql, rootTable.getTableInfo(), distinct);
         } catch (Exception ex) {
             String msg = StringUtils.isBlank(ex.getLocalizedMessage()) ? getResourceString("QB_RUN_ERROR") : ex.getLocalizedMessage();
@@ -2389,7 +2353,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      * @return ERTICaptionInfo for the visible columns returned by a query.
      */
     public static List<ERTICaptionInfoQB> getColumnInfo(final Vector<QueryFieldPanel> queryFieldItemsArg, final boolean fixLabels,
-            final DBTableInfo rootTbl, boolean forSchemaExport)
+            final DBTableInfo rootTbl, boolean forSchemaExport, boolean formatAuditIds)
     {
         List<ERTICaptionInfoQB> result = new Vector<ERTICaptionInfoQB>();
         Vector<ERTICaptionInfoTreeLevelGrp> treeGrps = new Vector<ERTICaptionInfoTreeLevelGrp>(5);
@@ -2485,7 +2449,50 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                         erti = newTg.addRank(tqri, colName, lbl, qfp.getStringId(), tqri.getRealFieldName());
                         treeGrps.add(newTg);
                     }
+                } else if (fi != null
+                        && ti.getName().equalsIgnoreCase("SpAuditLog")
+                        && (fi.getName().equalsIgnoreCase("RecordId") || fi.getName().equalsIgnoreCase("ParentRecordId"))
+                        && formatAuditIds) {
+                    erti = new ERTICaptionInfoRecId(colName, lbl, qfp.getStringId(),fi);
+                    String tblNumFld = fi.getName().equalsIgnoreCase("ParentRecordId") ? "parentTableNum" : "tableNum";
+                    Vector<ColInfo> colInfoList = new Vector<>();
+                    ColInfo columnInfo = erti.new ColInfo(StringUtils.capitalize(tblNumFld), tblNumFld);
+                    columnInfo.setPosition(0);
+                    colInfoList.add(columnInfo);
+                    columnInfo = erti.new ColInfo(fi.getColumn(), fi.getName());
+                    columnInfo.setPosition(1);
+                    colInfoList.add(columnInfo);
+                    erti.setColInfoList(colInfoList);
+                    erti.setColName(null);
+                } else if (fi != null && ti.getName().equalsIgnoreCase("SpAuditLogField") && formatAuditIds) {
+                    if (fi.getName().equalsIgnoreCase("NewValue") || fi.getName().equalsIgnoreCase("OldValue")) {
+                        erti = new ERTICaptionInfoAuditVal(colName, lbl, qfp.getStringId(), fi);
+                        Vector<ColInfo> colInfoList = new Vector<>();
+                        ColInfo columnInfo = erti.new ColInfo("TableNum", "tableNum");
+                        columnInfo.setPosition(0);
+                        colInfoList.add(columnInfo);
+                        columnInfo = erti.new ColInfo("FieldName", "FieldName");
+                        columnInfo.setPosition(1);
+                        colInfoList.add(columnInfo);
+                        columnInfo = erti.new ColInfo(fi.getColumn(), fi.getName());
+                        columnInfo.setPosition(2);
+                        colInfoList.add(columnInfo);
+                        erti.setColInfoList(colInfoList);
+                        erti.setColName(null);
+                    } else if (fi.getName().equalsIgnoreCase("FieldName")) {
+                        erti = new ERTICaptionInfoFieldName(colName, lbl, qfp.getStringId(), fi);
+                        Vector<ColInfo> colInfoList = new Vector<>();
+                        ColInfo columnInfo = erti.new ColInfo("TableNum", "tableNum");
+                        columnInfo.setPosition(0);
+                        colInfoList.add(columnInfo);
+                        columnInfo = erti.new ColInfo(fi.getColumn(), fi.getName());
+                        columnInfo.setPosition(1);
+                        colInfoList.add(columnInfo);
+                        erti.setColInfoList(colInfoList);
+                        erti.setColName(null);
+                    }
                 }
+
                 else
                 {
                 	erti = new ERTICaptionInfoQB(colName, lbl, true, getColumnFormatter(qfp, forSchemaExport), 0, qfp.getStringId(), qfp.getPickList(), fi);
@@ -2696,12 +2703,12 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             //XXX Is it safe to assume that query is not an export query?
             sql = QueryBldrPane.buildHQL(rootQRI, q.isSelectDistinct(), qfps, tblTree, recordSet,
                     q.getSearchSynonymy() == null ? false : q.getSearchSynonymy(),
-                    false, null);
+                    false, null, q.getFormatAuditRecIds());
             Properties props = new Properties();
             props.put("is_qb_rs_view", Boolean.valueOf(true));
             props.put("tab_text", recordSet.getName());
             props.put("is_batch_edit", Boolean.valueOf(false));
-            processSQLStatic(qfps, sql, rootQRI.getTableInfo(), q.isSelectDistinct(), null, props);
+            processSQLStatic(qfps, sql, rootQRI.getTableInfo(), q.isSelectDistinct(), null, props, q.getFormatAuditRecIds());
         } catch (Exception ex) {
             String msg = StringUtils.isBlank(ex.getLocalizedMessage()) ? getResourceString("QB_RUN_ERROR") : ex.getLocalizedMessage();
             UIRegistry.getStatusBar().setErrorMessage(msg, ex);
@@ -2835,7 +2842,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 		//XXX Is it safe to assume that query is not an export query? 
                 		sql = QueryBldrPane.buildHQL(rootQRI, !includeRecordIds, qfps, tblTree, rs, 
                     		report.getQuery().getSearchSynonymy() == null ? false : report.getQuery().getSearchSynonymy(),
-                    				false, null);
+                    				false, null, report.getQuery().getFormatAuditRecIds());
                 	}
                 	catch (Exception ex)
                 	{
@@ -2846,7 +2853,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 	}
                     int smushedCol = (report.getQuery().getSmushed() != null && report.getQuery().getSmushed()) ? getSmushedCol(qfps)+1 : -1;
                 	src = new QBDataSource(sql.getHql(), sql.getArgs(), sql
-                        .getSortElements(), getColumnInfo(qfps, true, rootQRI.getTableInfo(), false),
+                        .getSortElements(), getColumnInfo(qfps, true, rootQRI.getTableInfo(), false, report.getQuery().getFormatAuditRecIds()),
                         includeRecordIds, report.getRepeats(), smushedCol,
                         /*getRecordIdCol(qfps)*/0);
                 	((QBDataSource )src).startDataAcquisition();
@@ -3139,7 +3146,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 
     protected void processSQL(final Vector<QueryFieldPanel> queryFieldItemsArg, final HQLSpecs hqlSpecs,
                               final DBTableInfo rootTable, final boolean distinct) {
-        processSQLStatic(queryFieldItemsArg, hqlSpecs, rootTable, distinct, this, null);
+        processSQLStatic(queryFieldItemsArg, hqlSpecs, rootTable, distinct, this, null, formatAuditRecIds);
     }
 
     /**
@@ -3149,8 +3156,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      */
     @SuppressWarnings("unchecked")
     public static void processSQLStatic(final Vector<QueryFieldPanel> queryFieldItemsArg, final HQLSpecs hqlSpecs,
-                                   final DBTableInfo rootTable, final boolean distinct, final QueryBldrPane qbPane, final Properties props) {
-        List<? extends ERTICaptionInfo> captions = getColumnInfo(queryFieldItemsArg, false, rootTable, false);
+                                   final DBTableInfo rootTable, final boolean distinct, final QueryBldrPane qbPane, final Properties props, boolean formatAuditRecIds) {
+        List<? extends ERTICaptionInfo> captions = getColumnInfo(queryFieldItemsArg, false, rootTable, false, formatAuditRecIds);
 
         String iconName = distinct ? "BlankIcon" : rootTable.getClassObj().getSimpleName();
         int tblId = distinct ? -1 : rootTable.getTableId();

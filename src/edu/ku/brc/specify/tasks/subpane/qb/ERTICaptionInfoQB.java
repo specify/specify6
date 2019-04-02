@@ -22,12 +22,16 @@ package edu.ku.brc.specify.tasks.subpane.qb;
 import java.util.Calendar;
 
 import edu.ku.brc.af.core.db.DBFieldInfo;
+import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.ui.db.ERTICaptionInfo;
 import edu.ku.brc.af.ui.db.PickListDBAdapterIFace;
 import edu.ku.brc.af.ui.db.PickListItemIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
+import edu.ku.brc.specify.datamodel.SpAuditLog;
 import edu.ku.brc.specify.dbsupport.TypeCode;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * @author timbo
@@ -162,7 +166,7 @@ public class ERTICaptionInfoQB extends ERTICaptionInfo
             }
             return value.toString();
     	}
-    	//else
+
     	return super.processValue(value);
     }
 

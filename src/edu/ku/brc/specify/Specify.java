@@ -126,6 +126,8 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
     public static final int HIBERNATE_BATCH_SIZE     = 25; //should match the hibernate.jdbc.batch_size setting in hibernate.cfg.xml
 
     public static final String hiddenSendStatsPrefName    = "usage_tracking.do_send_stats";
+    public static final String hiddenDoAuditPrefName = "auditing.do_audits";
+    public static final String hiddenAuditFldUpdatePrefName = "auditing.audit_field_updates";
     private static final String UPDATE_CHK_ERROR     = "Specify.UPDATE_CHK_ERROR";
     private static final String ERRMSG               = "ERRMSG";
     private static final String STATS_SEND_DONE      = "STATS_SEND_DONE";
@@ -426,6 +428,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             HibernateUtil.setListener("post-commit-delete", new edu.ku.brc.specify.dbsupport.PostDeleteEventListener()); //$NON-NLS-1$
             //HibernateUtil.setListener("delete", new edu.ku.brc.specify.dbsupport.DeleteEventListener());
         }
+
         adjustLocaleFromPrefs();
         
         CommandDispatcher.register(BaseTask.APP_CMD_TYPE, this);
@@ -2554,6 +2557,8 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         // Check Stats (this is mostly for the first time in.
         AppPreferences appPrefs             = AppPreferences.getRemote();
         Boolean        canSendStats         = appPrefs.getBoolean(hiddenSendStatsPrefName, true); //$NON-NLS-1$
+        edu.ku.brc.specify.dbsupport.PostInsertEventListener.setAuditOn(appPrefs.getBoolean(hiddenDoAuditPrefName, true));
+        edu.ku.brc.specify.dbsupport.PostUpdateEventListener.setLogFieldValues(appPrefs.getBoolean(hiddenAuditFldUpdatePrefName, true));
 
         if (status == AppContextMgr.CONTEXT_STATUS.OK) {
              // XXX Get the current locale from prefs PREF

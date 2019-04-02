@@ -50,7 +50,7 @@ public class DateAccessorQRI extends FieldQRI
 
 	@Override
 	public String getSQLFldSpec(TableAbbreviator ta, boolean forWhereClause,
-			boolean forSchemaExport, String formatName) {
+			boolean forSchemaExport, String formatName, boolean formatAuditRecIds) {
         String fldExpr = ta.getAbbreviation(table.getTableTree()) + "." + getFieldName();
         Pair<String, String> specs = getSpecInfo();
         if (!forWhereClause) {
@@ -101,7 +101,7 @@ public class DateAccessorQRI extends FieldQRI
 		if (isNegated) {
 			return "(" + baseCriteria + " or " + getNullCondition(ta, false, false, null) + ")";
 		} else {
-			return "(" + baseCriteria + " and " + getSQLFldSpec(ta, false, false, null) + " is not null)";
+			return "(" + baseCriteria + " and " + getSQLFldSpec(ta, false, false, null, false) + " is not null)";
 		}
 	}
 

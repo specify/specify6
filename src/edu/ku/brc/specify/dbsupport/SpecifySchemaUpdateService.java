@@ -188,7 +188,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     protected static final Logger  log = Logger.getLogger(SpecifySchemaUpdateService.class);
     
     private final int OVERALL_TOTAL = 65; //the number of incOverall() calls (+1 or +2)
-    
+
     private static final String TINYINT4 = "TINYINT(4)";
     private static final String INT11    = "INT(11)";
     
@@ -2504,7 +2504,14 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         return false;
                     }
                     frame.incOverall();
-
+                    //but this still needs to be done. However, it needs to be moved to "fixDbAfterLogin" (or whatever)
+                    sql = "update splocalecontainer c inner join splocalecontaineritem i on i.splocalecontainerid = c.splocalecontainerid set i.ishidden = false where c.name in('spauditlog','spauditlogfield')";
+                    if (-1 == update(conn, sql)) {
+                        errMsgList.add("update error: " + sql);
+                        return false;
+                    }
+                    frame.incOverall();
+                    
                     frame.setProcess(0, 100);
 
                     return true;

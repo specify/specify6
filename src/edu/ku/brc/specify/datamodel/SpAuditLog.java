@@ -19,17 +19,20 @@
 */
 package edu.ku.brc.specify.datamodel;
 
-import java.util.HashSet;
-import java.util.Set;
+import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.ui.db.PickListDBAdapterIFace;
+import edu.ku.brc.af.ui.db.PickListItemIFace;
+import edu.ku.brc.specify.dbsupport.TypeCode;
+import edu.ku.brc.specify.dbsupport.TypeCodeItem;
+import edu.ku.brc.ui.UIRegistry;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Set;
+import java.util.Vector;
 
 /**
 
@@ -41,6 +44,10 @@ import javax.persistence.Transient;
 public class SpAuditLog extends DataModelObjBase implements java.io.Serializable 
 {
     public enum ACTION {Insert, Update, Remove};
+    private static final byte INSERT = 0;
+    private static final byte UPDATE = 1;
+    private static final byte REMOVE = 2;
+
     // Fields
 
     protected Integer           spAuditLogId;
@@ -283,6 +290,48 @@ public class SpAuditLog extends DataModelObjBase implements java.io.Serializable
     public boolean isChangeNotifier()
     {
         return false;
+    }
+
+    /**
+     * @return List of pick lists for predefined system type codes.
+     *
+     * The QueryBuilder function is used to generate picklist criteria controls for querying,
+     * and to generate text values for the typed fields in query results and reports.
+     *
+     * The WB uploader will also need this function.
+     *
+     */
+    @Transient
+    public static List<PickListDBAdapterIFace> getSpSystemTypeCodes()
+    {
+        List<PickListDBAdapterIFace> result = new ArrayList<>(2);
+        Vector<PickListItemIFace> stats = new Vector<PickListItemIFace>(3);
+        stats.add(new TypeCodeItem(UIRegistry.getResourceString("SpAuditLog_Insert"), INSERT));
+        stats.add(new TypeCodeItem(UIRegistry.getResourceString("SpAuditLog_Update"), UPDATE));
+        stats.add(new TypeCodeItem(UIRegistry.getResourceString("SpAuditLog_Remove"), REMOVE));
+        result.add(new TypeCode(stats, "action"));
+
+        List<DBTableInfo> tbls = DBTableIdMgr.getInstance().getTables();
+        stats = new Vector<PickListItemIFace>(tbls.size());
+        for (DBTableInfo tbl : tbls) {
+            if (tbl.isSearchable()) {
+                stats.add(new TypeCodeItem(tbl.getTitle() + " {" + tbl.getTableId() + "}", Integer.valueOf(tbl.getTableId()).shortValue()));
+            }
+        }
+        result.add(new TypeCode(stats, "tableNum"));
+        result.add(new TypeCode(stats, "parentTableNum"));
+        return result;
+    }
+
+    /**
+     * @return a list (probably never containing more than one element) of fields
+     * with predefined system type codes.
+     */
+    @Transient
+    public static String[] getSpSystemTypeCodeFlds()
+    {
+        String[] result = {"action", "tableNum", "parentTableNum"};
+        return result;
     }
 
 }

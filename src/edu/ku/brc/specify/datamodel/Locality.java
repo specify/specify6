@@ -1065,6 +1065,10 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
     {
         if (localityDetails != null) localityDetails.size();
         if (geoCoordDetails != null) geoCoordDetails.size();
+        if (latLonpolygons != null) latLonpolygons.size();
+        if (localityCitations != null) localityCitations.size();
+        if (localityNameAliass != null) localityNameAliass.size();
+        //if (localityAttachments != null) localityAttachments.size();
     }
 
     /**

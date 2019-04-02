@@ -19,13 +19,18 @@
 */
 package edu.ku.brc.specify.dbsupport;
 
-import javax.swing.SwingUtilities;
-
-import org.hibernate.event.PostUpdateEvent;
-
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
+import org.apache.log4j.Logger;
+import org.hibernate.event.PostUpdateEvent;
+
+import javax.swing.*;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.lang.reflect.Method;
+
 
 /**
  * THis class listens for Update events from Hibernate so it can update the Lucene index.<br>
@@ -41,6 +46,78 @@ import edu.ku.brc.ui.CommandDispatcher;
  */
 public class PostUpdateEventListener implements org.hibernate.event.PostUpdateEventListener
 {
+    private static final Logger log = Logger.getLogger(PostUpdateEventListener.class);
+
+    private static boolean logFieldValues = true;
+
+    public static void setLogFieldValues(boolean val) {
+        logFieldValues = val;
+    }
+
+    public static boolean getLogFieldValues() {
+        return logFieldValues;
+    }
+
+    private List<PropertyUpdateInfo> getPropertyUpdates(final PostUpdateEvent obj) {
+        List<PropertyUpdateInfo> result = new ArrayList<>();
+        Method dirtyPropGetter = null;
+        try {
+            dirtyPropGetter = obj.getClass().getMethod("getDirtyProperties");
+        } catch (Exception ex) {
+            //tried and failed
+        }
+        if (dirtyPropGetter != null) {
+            try {
+                int[] dirties = (int[]) dirtyPropGetter.invoke(obj);
+                if (dirties != null && dirties.length > 0) {
+                    for (int colIdx : dirties) {
+                        PropertyUpdateInfo info = getUpdateInfo(colIdx, obj);
+                        if (info != null) {
+                            result.add(info);
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                log.error(e);
+                e.printStackTrace();
+            }
+        } else {
+            //System.out.println("DIY dirty props");
+            if (obj.getOldState() != null) {
+                int[] dirtyColIdxs = obj.getPersister().findDirty(obj.getOldState(), obj.getState(), obj.getEntity(), obj.getSession());
+                for (int colIdx = 0; colIdx < dirtyColIdxs.length; colIdx++) {
+                    try {
+                        Object vPrev = obj.getOldState()[dirtyColIdxs[colIdx]], vCurr = obj.getState()[dirtyColIdxs[colIdx]];
+                        PropertyUpdateInfo info = getUpdateInfo(dirtyColIdxs[colIdx], obj);
+                        if (info != null) {
+                            result.add(info);
+                        }
+                    } catch (org.hibernate.LazyInitializationException ex) {
+                        //move along
+                        log.warn("Lazy load exception getting dirty properties.");
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    protected static String[] inAuditables = {"createdbyagent", "modifiedbyagent","timestampcreated", "timestampmodified", "version"};
+    protected static boolean shouldAuditProperty(String name) {
+        return Arrays.binarySearch(inAuditables, name.toLowerCase()) < 0;
+    }
+
+    private PropertyUpdateInfo getUpdateInfo(int colIdx, PostUpdateEvent obj) {
+        String name = obj.getPersister().getPropertyNames()[colIdx];
+        PropertyUpdateInfo result = null;
+        if (shouldAuditProperty(name)) {
+            Object oldVal = obj.getOldState()[colIdx];
+            Object newVal = obj.getState()[colIdx];
+            result = new PropertyUpdateInfo(name, oldVal, newVal);
+        }
+        return result;
+    }
+
 
     /* (non-Javadoc)
      * @see org.hibernate.event.PostUpdateEventListener#onPostUpdate(org.hibernate.event.PostUpdateEvent)
@@ -62,7 +139,8 @@ public class PostUpdateEventListener implements org.hibernate.event.PostUpdateEv
             {
                 if (((FormDataObjIFace)obj.getEntity()).isChangeNotifier())
                 {
-                    PostInsertEventListener.saveOnAuditTrail((byte)1, obj.getEntity());
+                    List<PropertyUpdateInfo> updates = logFieldValues ? getPropertyUpdates(obj) : null;
+                    PostInsertEventListener.saveOnAuditTrail((byte) 1, obj.getEntity(), updates);
                 }
             }
         }

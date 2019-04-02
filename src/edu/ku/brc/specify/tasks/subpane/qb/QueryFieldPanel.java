@@ -1292,13 +1292,13 @@ public class QueryFieldPanel extends JPanel implements ActionListener
             	}
             }
             if (!"".equals(result) && !(fieldQRI instanceof TreeLevelQRI)) {
-            	result = fieldQRI.getSQLFldSpec(ta, true, schemaItem != null, getFormatName()) + " " + operatorStr + "(" + result + ")";
+            	result = fieldQRI.getSQLFldSpec(ta, true, schemaItem != null, getFormatName(), false) + " " + operatorStr + "(" + result + ")";
             }
             for (Pair<String, String> ser : sers) {
             	if (!"".equals(result)) {
             		result += " OR ";
             	}
-            	result += fieldQRI.getSQLFldSpec(ta, true, schemaItem != null, getFormatName()) + " BETWEEN " + ser.getFirst() + " AND " + ser.getSecond();
+            	result += fieldQRI.getSQLFldSpec(ta, true, schemaItem != null, getFormatName(), false) + " BETWEEN " + ser.getFirst() + " AND " + ser.getSecond();
             }
             result = "(" + result + ")";
         }
@@ -1357,7 +1357,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
             boolean isNot = isNotCheckbox.isSelected();
             String nullCond = fieldQRI.getNullCondition(ta, schemaItem != null, isNot, getFormatName());
             if (fieldQRI.getDataClass().equals(String.class)) {
-                String fieldSpec = fieldQRI.getSQLFldSpec(ta, true, schemaItem != null, getFormatName()); 
+                String fieldSpec = fieldQRI.getSQLFldSpec(ta, true, schemaItem != null, getFormatName(), false);
                 return "(" + nullCond + (isNot ? " and " : " or ") + fieldSpec + (isNot ? " <> " : " = ") + "'')";
             }
         	return nullCond;
@@ -1534,7 +1534,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                 str.append(isNotCheckbox.isSelected() ? "(NOT " : "");
                 if (!operStr.equals(SpQueryField.OperatorType
                         .getOp(SpQueryField.OperatorType.IN.getOrdinal()))) {
-                	str.append(fieldQRI.getSQLFldSpec(ta, true, schemaItem != null, getFormatName()) + " ");
+                	str.append(fieldQRI.getSQLFldSpec(ta, true, schemaItem != null, getFormatName(), false) + " ");
                 }
                 if (nullPick && "=".equals(operStr)) {
                 	str.append(" is null ");
@@ -1549,7 +1549,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                 if (isNotCheckbox.isSelected()) {
                     if (!operStr.equals(SpQueryField.OperatorType
                             .getOp(SpQueryField.OperatorType.EMPTY.getOrdinal()))) {
-                        str.append(" or " + fieldQRI.getSQLFldSpec(ta, true, schemaItem != null, getFormatName()) + " is null");
+                        str.append(" or " + fieldQRI.getSQLFldSpec(ta, true, schemaItem != null, getFormatName(), false) + " is null");
                     }
                     str.append(")");
                 }
@@ -1561,7 +1561,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                 	//Currently, when the null value is picked with the IN condition, a '' entry is included in the IN list
                 	//This is not technically correct, but probably will never matter, and possibly produce more desirable 
                 	//results then the technically correct criteria 
-                	result = "(" + result + " or " + fieldQRI.getSQLFldSpec(ta, true, schemaItem != null, getFormatName()) + " is null)";
+                	result = "(" + result + " or " + fieldQRI.getSQLFldSpec(ta, true, schemaItem != null, getFormatName(), false) + " is null)";
                 }
                 if (fieldQRI instanceof DateAccessorQRI) {
                     result = ((DateAccessorQRI)fieldQRI).refineCriteria(ta, isNotCheckbox.isSelected(), result);

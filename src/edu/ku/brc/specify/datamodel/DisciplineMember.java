@@ -66,7 +66,7 @@ public abstract class DisciplineMember extends DataModelObjBase
    /**
      * 
      */
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = {})
     @JoinColumn(name = "DisciplineID", unique = false, nullable = false, insertable = true, updatable = true)
     public Discipline getDiscipline()
     {
