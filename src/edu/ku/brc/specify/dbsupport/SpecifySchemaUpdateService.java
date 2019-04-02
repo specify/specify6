@@ -2511,7 +2511,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         return false;
                     }
                     frame.incOverall();
-                    
+
                     frame.setProcess(0, 100);
 
                     return true;
