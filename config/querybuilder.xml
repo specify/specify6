@@ -624,7 +624,13 @@
       	<alias name="Gift"/>
       	<alias name="Loan" />
     </table>
-    
+
+    <table name="SpAuditLog">
+            <table name="SpAuditLogField" field="fields"/>
+            <alias name="Agent" field="createdByAgent" />
+            <alias name="Agent" field="modifiedByAgent" />
+    </table>
+
     <table name="Storage" >
       	<alias name="Agent" field="createdByAgent" />
       	<alias name="Agent" field="modifiedByAgent" />
