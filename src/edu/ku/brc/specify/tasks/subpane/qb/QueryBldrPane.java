@@ -2703,12 +2703,12 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             //XXX Is it safe to assume that query is not an export query?
             sql = QueryBldrPane.buildHQL(rootQRI, q.isSelectDistinct(), qfps, tblTree, recordSet,
                     q.getSearchSynonymy() == null ? false : q.getSearchSynonymy(),
-                    false, null, q.getFormatAuditRecIds());
+                    false, null, q.getFormatAuditRecIds() == null ? false : q.getFormatAuditRecIds());
             Properties props = new Properties();
             props.put("is_qb_rs_view", Boolean.valueOf(true));
             props.put("tab_text", recordSet.getName());
             props.put("is_batch_edit", Boolean.valueOf(false));
-            processSQLStatic(qfps, sql, rootQRI.getTableInfo(), q.isSelectDistinct(), null, props, q.getFormatAuditRecIds());
+            processSQLStatic(qfps, sql, rootQRI.getTableInfo(), q.isSelectDistinct(), null, props, q.getFormatAuditRecIds() == null ? false : q.getFormatAuditRecIds());
         } catch (Exception ex) {
             String msg = StringUtils.isBlank(ex.getLocalizedMessage()) ? getResourceString("QB_RUN_ERROR") : ex.getLocalizedMessage();
             UIRegistry.getStatusBar().setErrorMessage(msg, ex);
@@ -2842,7 +2842,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 		//XXX Is it safe to assume that query is not an export query? 
                 		sql = QueryBldrPane.buildHQL(rootQRI, !includeRecordIds, qfps, tblTree, rs, 
                     		report.getQuery().getSearchSynonymy() == null ? false : report.getQuery().getSearchSynonymy(),
-                    				false, null, report.getQuery().getFormatAuditRecIds());
+                    				false, null, report.getQuery().getFormatAuditRecIds() == null ? false : report.getQuery().getFormatAuditRecIds());
                 	}
                 	catch (Exception ex)
                 	{
@@ -2853,7 +2853,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 	}
                     int smushedCol = (report.getQuery().getSmushed() != null && report.getQuery().getSmushed()) ? getSmushedCol(qfps)+1 : -1;
                 	src = new QBDataSource(sql.getHql(), sql.getArgs(), sql
-                        .getSortElements(), getColumnInfo(qfps, true, rootQRI.getTableInfo(), false, report.getQuery().getFormatAuditRecIds()),
+                        .getSortElements(), getColumnInfo(qfps, true, rootQRI.getTableInfo(), false, report.getQuery().getFormatAuditRecIds() == null ? false : report.getQuery().getFormatAuditRecIds()),
                         includeRecordIds, report.getRepeats(), smushedCol,
                         /*getRecordIdCol(qfps)*/0);
                 	((QBDataSource )src).startDataAcquisition();
