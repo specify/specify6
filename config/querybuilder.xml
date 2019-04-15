@@ -156,7 +156,11 @@
     
     <table name="CollectionObject">
 		<alias name="Accession"/>    	
-    	<table name="CollectionObjectAttribute"/>
+    	<table name="CollectionObjectAttribute"
+            <alias name="Agent" field="agent1" />
+            <alias name="Agent" field="createdByAgent" />
+            <alias name="Agent" field="modifiedByAgent" />
+        </table>
         <table name="CollectionObjectAttachment" field="collectionObjectAttachments">
             <alias name="Attachment"/>
         </table>
@@ -198,6 +202,7 @@
    		
         <alias name="Preparation" field="preparations"/>
       	<alias name="Appraisal" field="appraisal" />
+        <alias name="Agent" field="agent1" />
       	<alias name="Agent" field="cataloger" />
       	<alias name="Agent" field="inventorizedBy" />
     	<table name="Collection" field="collection" >
