@@ -1308,7 +1308,7 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
      */
     public void setLat1Text(String lat1Text)
     {
-        this.lat1Text = lat1Text;
+        this.lat1Text = removeSpuriousSpace(lat1Text);
     }
 
     /**
@@ -1325,7 +1325,7 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
      */
     public void setLat2Text(String lat2Text)
     {
-        this.lat2Text = lat2Text;
+        this.lat2Text = removeSpuriousSpace(lat2Text);
     }
 
     /**
@@ -1342,7 +1342,7 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
      */
     public void setLong1Text(String long1Text)
     {
-        this.long1Text = long1Text;
+        this.long1Text = removeSpuriousSpace(long1Text);
     }
 
     /**
@@ -1359,7 +1359,14 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
      */
     public void setLong2Text(String long2Text)
     {
-        this.long2Text = long2Text;
+        this.long2Text = removeSpuriousSpace(long2Text);
     }
 
+    private String removeSpuriousSpace(String str) {
+        String result = str;
+        if (str != null) {
+            result = result.trim().replace("  ", " ").replace("  ", " ");
+        }
+        return result;
+    }
 }

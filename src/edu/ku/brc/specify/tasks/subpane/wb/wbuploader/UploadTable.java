@@ -3104,7 +3104,7 @@ public class UploadTable implements Comparable<UploadTable>
     {
         //XXX temporary fix. REALLY should determine based on cascade rules and the fields in the
         // dataset.
-        logDebug("need to add more child classes");
+        //logDebug("need to add more child classes");
         if (tblClass.equals(Agent.class))
         {
         	return childClass.equals(Address.class);
