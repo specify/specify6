@@ -185,8 +185,6 @@
             <alias name="Agent" field="agent18"/>
             <alias name="Agent" field="agent19"/>
             <alias name="Agent" field="agent20"/>
-            <alias name="Agent" field="recordedBy"/>
-            <alias name="Agent" field="measurementDeterminedBy"/>
             <alias name="Agent" field="createdByAgent"/>
             <alias name="Agent" field="modifiedByAgent"/>
         </table>
@@ -557,8 +555,6 @@
             <alias name="Agent" field="agent18"/>
             <alias name="Agent" field="agent19"/>
             <alias name="Agent" field="agent20"/>
-            <alias name="Agent" field="recordedBy"/>
-            <alias name="Agent" field="measurementDeterminedBy"/>
             <alias name="Agent" field="createdByAgent"/>
             <alias name="Agent" field="modifiedByAgent"/>
         </table>
