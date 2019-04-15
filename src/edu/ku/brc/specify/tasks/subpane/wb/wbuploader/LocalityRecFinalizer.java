@@ -90,8 +90,8 @@ public class LocalityRecFinalizer implements UploadedRecFinalizerIFace
                 fmt = GeoRefConverter.getLeastCommonFmt(geoRefConverter.getLatLonFormat(StringUtils.stripToNull(loc.getLat1text())),
                         geoRefConverter.getLatLonFormat(StringUtils.stripToNull(loc.getLong1text())));
                 if (loc.getLat2text() != null) {
-                    fmt = GeoRefConverter.getLeastCommonFmt(fmt, GeoRefConverter.getLeastCommonFmt(geoRefConverter.getLatLonFormat(StringUtils.stripToNull(loc.getLat1text())),
-                            geoRefConverter.getLatLonFormat(StringUtils.stripToNull(loc.getLong1text()))));
+                    fmt = GeoRefConverter.getLeastCommonFmt(fmt, GeoRefConverter.getLeastCommonFmt(geoRefConverter.getLatLonFormat(StringUtils.stripToNull(loc.getLat2text())),
+                            geoRefConverter.getLatLonFormat(StringUtils.stripToNull(loc.getLong2text()))));
                 }
             }
             if (fmt == null) {

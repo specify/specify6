@@ -314,10 +314,11 @@ public class GeoRefConverter implements StringConverter
     }
 
     public static LatLonConverter.FORMAT getLeastCommonFmt(LatLonConverter.FORMAT fmt1, LatLonConverter.FORMAT fmt2) {
+
         if (fmt1.equals(fmt2)) {
             return fmt1;
         } else if (fmt1.equals(LatLonConverter.FORMAT.None) || fmt2.equals(LatLonConverter.FORMAT.None)){
-            return null;
+            return LatLonConverter.FORMAT.None;
         } else {
             int f1 = intimakeFORMAT(fmt1);
             int f2 = intimakeFORMAT(fmt2);
