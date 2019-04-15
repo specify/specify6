@@ -150,6 +150,8 @@
         </table>
         <alias name="Agent" field="createdByAgent" />
         <alias name="Agent" field="modifiedByAgent" />
+        <alias name="Agent" field="agent1"/>
+        <alias name="Agent" field="agent2"/>
     </table>
     
     <table name="CollectionObject">
