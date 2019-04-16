@@ -156,7 +156,7 @@
     
     <table name="CollectionObject">
 		<alias name="Accession"/>    	
-    	<table name="CollectionObjectAttribute"
+    	<table name="CollectionObjectAttribute" >
             <alias name="Agent" field="agent1" />
             <alias name="Agent" field="createdByAgent" />
             <alias name="Agent" field="modifiedByAgent" />
