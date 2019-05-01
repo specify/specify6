@@ -1731,7 +1731,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                     } else
                     {
                         currentStatus = CONTEXT_STATUS.Error;
-                        String msg = "Specify was unable to a Locale in the Schema Config for this discipline.\nPlease contact Specify support immediately.";
+                        String msg = "Specify was unable to find a Locale for this discipline in the Schema Config.\nPlease contact Specify support immediately.";
                         UIRegistry.showError(msg);
                         AppPreferences.shutdownAllPrefs();
                         DataProviderFactory.getInstance().shutdown();
