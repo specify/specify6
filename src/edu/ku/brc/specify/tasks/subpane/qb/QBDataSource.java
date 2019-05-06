@@ -457,7 +457,7 @@ public class QBDataSource extends QBDataSourceBase implements CustomQueryListene
             }
             this.setUpColNamesPostProcess();
             if (needToSort()) {
-            	Collections.sort(cache, new ResultRowComparator(sort, true, columnInfo));
+            	Collections.sort(cache, new ResultRowComparator(sort, recordIdsIncluded, columnInfo));
             }
             if (needToSmush()) {
         		Smusher s = new Smusher(cache, smusherColIdx, smusherRecIdIdx);
