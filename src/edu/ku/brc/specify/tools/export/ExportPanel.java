@@ -1030,7 +1030,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
         		uniquenessHQL = sql.getHql();
         	}
         	List<ERTICaptionInfoQB> cols = getColInfo ?
-        			QueryBldrPane.getColumnInfo(qfps, false, rootQRI.getTableInfo(), true, exportQuery.getFormatAuditRecIds()) : null;
+        			QueryBldrPane.getColumnInfo(qfps, false, rootQRI.getTableInfo(), true, exportQuery.getFormatAuditRecIds() == null ? false : exportQuery.getFormatAuditRecIds()) : null;
         
         			List<Specs> result = new ArrayList<Specs>();
         			result.add(new Specs(sql, cols, uniquenessHQL, uniquenessSql));
