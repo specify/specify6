@@ -2083,9 +2083,11 @@ public class Uploader implements ActionListener, KeyListener
         	} catch (ExecutionException ex)
         	{
         		//hopefully it will be clear to caller that something went wrong?
+                ex.printStackTrace();
         	} catch (InterruptedException ex)
         	{
         		//hopefully it will be clear to caller that something went wrong?
+                ex.printStackTrace();
         	}
         	//validateTask.finished();
         	//validateTask.

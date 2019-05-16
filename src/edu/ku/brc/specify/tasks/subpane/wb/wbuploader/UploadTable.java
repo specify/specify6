@@ -5269,7 +5269,16 @@ public class UploadTable implements Comparable<UploadTable>
 								}
 							}
 							if (fld.getValue() != null && !"".equals(fld.getValue()) && fld.isAutoAssignForUpload()/* && fld == autoAssignedField*/) {
-								throw new Exception(UIRegistry.getResourceString("WB_UPLOAD_AutoAssMustBeBlankErrMsg"));
+								boolean throwUp = !isUpdateMatches();
+								if (!throwUp) {
+								    //this should be 99.8% OK
+							        DBFieldInfo fi = fld.getField() != null ? fld.getField().getFieldInfo() : null;
+							        boolean catnum = fi != null && fi.getTableInfo().getTableId() == CollectionObject.getClassTableId() && "catalognumber".equals(fi.getName().toLowerCase());
+                                    throwUp = !catnum;
+                                }
+							    if (throwUp) {
+							        throw new Exception(UIRegistry.getResourceString("WB_UPLOAD_AutoAssMustBeBlankErrMsg"));
+                                }
 							}
 							if (!pickListCheck(fld)) {
 								if (!fld.isReadOnlyValidValues()) {
