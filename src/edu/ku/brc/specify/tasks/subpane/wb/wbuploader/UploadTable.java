@@ -5265,12 +5265,15 @@ public class UploadTable implements Comparable<UploadTable>
 							}
 							if (fld.getValue() != null && !"".equals(fld.getValue()) && fld.isAutoAssignForUpload()/* && fld == autoAssignedField*/) {
 								boolean throwUp = !isUpdateMatches();
+								/* assume any autoincrementer being batch edited is ok, though complications may arise for
+								 * fields other than catalognumber
 								if (!throwUp) {
 								    //this should be 99.8% OK
 							        DBFieldInfo fi = fld.getField() != null ? fld.getField().getFieldInfo() : null;
 							        boolean catnum = fi != null && fi.getTableInfo().getTableId() == CollectionObject.getClassTableId() && "catalognumber".equals(fi.getName().toLowerCase());
                                     throwUp = !catnum;
                                 }
+                                */
 							    if (throwUp) {
 							        throw new Exception(UIRegistry.getResourceString("WB_UPLOAD_AutoAssMustBeBlankErrMsg"));
                                 }
