@@ -1057,6 +1057,7 @@ public class Uploader implements ActionListener, KeyListener
                     det.addField(fld);
                 }
                 det.init();
+                det.hiddenMissingLink = true;
                 uploadTables.add(det);
             }
         }
@@ -1065,6 +1066,7 @@ public class Uploader implements ActionListener, KeyListener
                 && clss.contains(CollectionObject.class)) {
             UploadTable ce = new UploadTable(this, db.getSchema().getTable("CollectingEvent"), null);
             ce.init();
+            ce.hiddenMissingLink = true;
             ce.addField(new UploadField(db.getSchema().getField("collectingevent",
                     "stationfieldnumber"), -1, null, null));
             uploadTables.add(ce);
@@ -1081,6 +1083,7 @@ public class Uploader implements ActionListener, KeyListener
             if (paleoTreePresent) {
                 UploadTable pc = new UploadTable(this, db.getSchema().getTable("PaleoContext"), null);
                 pc.init();
+                pc.hiddenMissingLink = true;
                 pc.addField(new UploadField(db.getSchema().getField("paleocontext", "paleocontextname"), -1, null, null));
                 uploadTables.add(pc);
             }
