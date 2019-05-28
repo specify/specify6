@@ -22,9 +22,7 @@ package edu.ku.brc.af.core;
 
 import java.lang.ref.WeakReference;
 
-import com.apple.eawt.Application;
-import com.apple.eawt.ApplicationAdapter;
-import com.apple.eawt.ApplicationEvent;
+import com.apple.eawt.*;
 
 
 /**
@@ -37,43 +35,31 @@ import com.apple.eawt.ApplicationEvent;
  */
 public class MacOSAppHandler extends Application
 {
+    protected Application application;
     protected WeakReference<FrameworkAppIFace> app;
 
-    public MacOSAppHandler(final FrameworkAppIFace app)
-    {
+    public MacOSAppHandler(final FrameworkAppIFace app) {
         this.app = new WeakReference<FrameworkAppIFace>(app);
 
-        addApplicationListener(new AppHandler());
+        application = Application.getApplication();
+        application.setAboutHandler(new AboutHandler() {
+            @Override
+            public void handleAbout(AppEvent.AboutEvent aboutEvent) {
+                app.doAbout();
+            }
+        });
+        application.setPreferencesHandler(new PreferencesHandler() {
+            @Override
+            public void handlePreferences(AppEvent.PreferencesEvent preferencesEvent) {
+                app.doPreferences();
+            }
+        });
+        application.setQuitHandler(new QuitHandler() {
+            @Override
+            public void handleQuitRequestWith(AppEvent.QuitEvent quitEvent, QuitResponse quitResponse) {
+                app.doExit(true);
+            }
+        });
 
-        setEnabledPreferencesMenu(true);
     }
-
-    class AppHandler extends ApplicationAdapter
-    {
-        public void handleAbout(ApplicationEvent event)
-        {
-            app.get().doAbout();
-            event.setHandled(true);
-        }
-
-        public void handleAppPrefsMgr(ApplicationEvent event)
-        {
-            app.get().doPreferences();
-            event.setHandled(true);
-        }
-        
-        public void handlePreferences(ApplicationEvent event) 
-        {
-            app.get().doPreferences();
-            event.setHandled(true);
-        }
-
-        public void handleQuit(ApplicationEvent event)
-        {
-            app.get().doExit(true);
-            event.setHandled(false);  // This is so bizarre that this needs to be set to false
-                                      // It seems to work backwards compared to the other calls
-         }
-    }
-
 }
