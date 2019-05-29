@@ -59,7 +59,8 @@
         <plugin name="iPadExporterTask" class="edu.ku.brc.specify.plugins.ipadexporter.iPadDBExporterPlugin" addui="true"/>
 
         <plugin name="WorkbenchRecordSetCleanupTask" class="edu.ku.brc.specify.tasks.WorkbenchRecordSetCleanupTask" addui="false"/>
-           
+
+		<plugin name="AuditLogCleanupTask" class="edu.ku.brc.specify.tasks.AuditLogCleanupTask" addui="false"/>
 	</core>
 	
 	<mobilecore>

@@ -180,7 +180,15 @@ public class JStatusBar extends JPanel
         statusLabel.setIcon(null);
         statusLabel.repaint();
     }
-    
+
+    /**
+     *
+     * @return currently displayed text
+     */
+    public String getText() {
+        return statusLabel.getText();
+    }
+
     /**
      * @param sectionInx
      * @return
