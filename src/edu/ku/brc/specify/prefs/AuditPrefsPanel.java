@@ -23,7 +23,7 @@ import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.GenericPrefsPanel;
 import edu.ku.brc.af.prefs.PrefsPanelIFace;
 import edu.ku.brc.af.prefs.PrefsSavable;
-import edu.ku.brc.af.ui.forms.validation.ValTextField;
+import edu.ku.brc.af.ui.forms.validation.ValSpinner;
 import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.tasks.AuditLogCleanupTask;
 import edu.ku.brc.ui.UIRegistry;
@@ -41,8 +41,7 @@ import javax.swing.*;
 public class AuditPrefsPanel extends GenericPrefsPanel implements PrefsSavable, PrefsPanelIFace {
     protected JCheckBox         doAuditsChk;
     protected JCheckBox         doAuditFieldValsChk;
-    protected JLabel            lifeSpanLbl;
-    protected ValTextField      lifeSpanTxt;
+    protected ValSpinner lifeSpanSpin;
     protected boolean isInitialized = false;
 
     /**
@@ -55,9 +54,9 @@ public class AuditPrefsPanel extends GenericPrefsPanel implements PrefsSavable, 
 
         doAuditsChk = form.getCompById(Specify.hiddenDoAuditPrefName);
         doAuditFieldValsChk = form.getCompById(Specify.hiddenAuditFldUpdatePrefName);
-        lifeSpanTxt    = form.getCompById(AuditLogCleanupTask.AUDIT_LIFESPAN_MONTHS_PREF);
+        lifeSpanSpin = form.getCompById(AuditLogCleanupTask.AUDIT_LIFESPAN_MONTHS_PREF);
 
-        isInitialized = doAuditsChk != null && doAuditFieldValsChk != null && lifeSpanTxt != null;
+        isInitialized = doAuditsChk != null && doAuditFieldValsChk != null && lifeSpanSpin != null;
         if (!isInitialized) {
             UIRegistry.showError("The form is not setup correctly.");
             return;
@@ -74,7 +73,7 @@ public class AuditPrefsPanel extends GenericPrefsPanel implements PrefsSavable, 
         boolean isUsingPath = true;
         doAuditsChk.setSelected(prefs.getBoolean(Specify.hiddenDoAuditPrefName, true));
         doAuditFieldValsChk.setSelected(prefs.getBoolean(Specify.hiddenAuditFldUpdatePrefName, true));
-        lifeSpanTxt.setText(prefs.get(AuditLogCleanupTask.AUDIT_LIFESPAN_MONTHS_PREF, "0"));
+        lifeSpanSpin.setValue(prefs.getInt(AuditLogCleanupTask.AUDIT_LIFESPAN_MONTHS_PREF,0));
         return true;
     }
 
@@ -98,7 +97,7 @@ public class AuditPrefsPanel extends GenericPrefsPanel implements PrefsSavable, 
         super.savePrefs(); // Gets data from form
         prefs.putBoolean(Specify.hiddenDoAuditPrefName, doAuditsChk.isSelected());
         prefs.putBoolean(Specify.hiddenAuditFldUpdatePrefName, doAuditFieldValsChk.isSelected());
-        prefs.put(AuditLogCleanupTask.AUDIT_LIFESPAN_MONTHS_PREF, lifeSpanTxt.getText());
+        prefs.putInt(AuditLogCleanupTask.AUDIT_LIFESPAN_MONTHS_PREF, (Integer)lifeSpanSpin.getValue());
     }
 
     /* (non-Javadoc)

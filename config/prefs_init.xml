@@ -22,6 +22,12 @@
             <defperm name="LimitedAccess" perm="false,false,false,false"/>
             <defperm name="Guest"         perm="false,false,false,false"/>
         </pref>
+        <pref name="AUDITS" title="AUDITS" icon="AuditPrefs"  panelClass="edu.ku.brc.specify.prefs.AuditPrefsPanel">
+            <defperm name="Manager"       perm="true,true,true,true"/>
+            <defperm name="FullAccess"    perm="false,false,false,false"/>
+            <defperm name="LimitedAccess" perm="false,false,false,false"/>
+            <defperm name="Guest"         perm="false,false,false,false"/>
+        </pref>
         <pref name="TREE" title="TREE" icon="TreePref"  panelClass="edu.ku.brc.specify.prefs.TreePrefs">
             <defperm name="Manager"       perm="true,true,true,true"/>
             <defperm name="FullAccess"    perm="true,true,true,true"/>

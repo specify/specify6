@@ -475,7 +475,8 @@
                     <cell type="field" id="auditing.audit_field_updates" name="auditing.audit_field_updates" uitype="checkbox" label="DO_AUDIT_FIELDS" colspan="4"/>
                 </row>
                 <row>
-                    <cell type="field" id="AUDIT_LIFESPAN_MONTHS" name="AUDIT_LIFESPAN_MONTHS" uitype="text" cols="3" colspan="2"/>
+                    <cell type="label" id="audit_lifespan_lbl" labelfor="AUDIT_LIFESPAN_MONTHS" label="AUDIT_LIFESPAN_MONTHS"/>
+                    <cell type="field" id="AUDIT_LIFESPAN_MONTHS" name="AUDIT_LIFESPAN_MONTHS" uitype="spinner" ignore="true" initialize="max=60;min=0"/>
                 </row>
             </rows>
 
