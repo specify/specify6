@@ -10,6 +10,14 @@
                 <altview name="Attachments" viewdef="Attachments" label="V_Attachments" mode="edit" validated="true"/>
             </altviews>
         </view>
+        <view
+                name="Audits"
+                class="java.util.prefs.Preferences">
+            <desc><![CDATA[Audits Preference Form.]]></desc>
+            <altviews>
+                <altview name="Audits" viewdef="Audits" label="V_Audits" mode="edit" validated="true"/>
+            </altviews>
+        </view>
 
         <view
             name="EMail"
@@ -445,6 +453,32 @@
                     </cell>
                 </row>
              </rows>
+        </viewdef>
+
+        <viewdef
+                type="form"
+                name="Audits"
+                class="java.util.prefs.Preferences"
+                gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
+                settable="edu.ku.brc.af.prefs.PrefsSettableImpl"
+                useresourcelabels="true">
+
+            <desc><![CDATA[Audits Pref Form.]]></desc>
+
+            <columnDef>p,2dlu,p,f:p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+            <rows>
+                <row>
+                    <cell type="field" id="auditing.do_audits" name="auditing.do_audits" uitype="checkbox" label="DO_AUDITS" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="field" id="auditing.audit_field_updates" name="auditing.audit_field_updates" uitype="checkbox" label="DO_AUDIT_FIELDS" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="field" id="AUDIT_LIFESPAN_MONTHS" name="AUDIT_LIFESPAN_MONTHS" uitype="text" cols="3" colspan="2"/>
+                </row>
+            </rows>
+
         </viewdef>
 
         <viewdef

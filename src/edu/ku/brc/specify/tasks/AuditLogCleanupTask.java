@@ -27,6 +27,7 @@ public class AuditLogCleanupTask extends BaseTask
 {
     private static final Logger log = Logger.getLogger(AuditLogCleanupTask.class);
 
+    public static final String AUDIT_LIFESPAN_MONTHS_PREF = "AUDIT_LIFESPAN_MONTHS";
     public static final String     AuditLogCLEANUP             = "AuditLogCleanup";
     public static int			   AUDIT_LIFESPAN_MONTHS = 0;
 
@@ -64,7 +65,7 @@ public class AuditLogCleanupTask extends BaseTask
     @Override
     public void initialize() {
         super.initialize();
-        AUDIT_LIFESPAN_MONTHS = AppPreferences.getRemote().getInt("AUDIT_LIFESPAN_MONTHS", AUDIT_LIFESPAN_MONTHS);
+        AUDIT_LIFESPAN_MONTHS = AppPreferences.getRemote().getInt(AUDIT_LIFESPAN_MONTHS_PREF, AUDIT_LIFESPAN_MONTHS);
         if (AUDIT_LIFESPAN_MONTHS > 0) {
             //UIRegistry.displayStatusBarText(UIRegistry.getResourceString("AuditLogCleanupTask.RemovingExpiredAuditItems"));
             Thread t = new Thread(new Runnable() {
