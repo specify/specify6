@@ -69,11 +69,12 @@ public class AuditPrefsPanel extends GenericPrefsPanel implements PrefsSavable, 
      * @return
      */
     private boolean setDataIntoUI() {
-        AppPreferences prefs = AppPreferences.getRemote();
+        AppPreferences gPrefs = AppPreferences.getGlobalPrefs();
+        AppPreferences rPrefs = AppPreferences.getRemote();
         boolean isUsingPath = true;
-        doAuditsChk.setSelected(prefs.getBoolean(Specify.hiddenDoAuditPrefName, true));
-        doAuditFieldValsChk.setSelected(prefs.getBoolean(Specify.hiddenAuditFldUpdatePrefName, true));
-        lifeSpanSpin.setValue(prefs.getInt(AuditLogCleanupTask.AUDIT_LIFESPAN_MONTHS_PREF,0));
+        doAuditsChk.setSelected(rPrefs.getBoolean(Specify.hiddenDoAuditPrefName, true));
+        doAuditFieldValsChk.setSelected(rPrefs.getBoolean(Specify.hiddenAuditFldUpdatePrefName, true));
+        lifeSpanSpin.setValue(gPrefs.getInt(AuditLogCleanupTask.AUDIT_LIFESPAN_MONTHS_PREF,0));
         return true;
     }
 
@@ -93,11 +94,12 @@ public class AuditPrefsPanel extends GenericPrefsPanel implements PrefsSavable, 
     public void savePrefs() {
         if (!isInitialized) return;
 
-        AppPreferences prefs = AppPreferences.getRemote();
+        AppPreferences gPrefs = AppPreferences.getGlobalPrefs();
+        AppPreferences rPrefs = AppPreferences.getRemote();
         super.savePrefs(); // Gets data from form
-        prefs.putBoolean(Specify.hiddenDoAuditPrefName, doAuditsChk.isSelected());
-        prefs.putBoolean(Specify.hiddenAuditFldUpdatePrefName, doAuditFieldValsChk.isSelected());
-        prefs.putInt(AuditLogCleanupTask.AUDIT_LIFESPAN_MONTHS_PREF, (Integer)lifeSpanSpin.getValue());
+        rPrefs.putBoolean(Specify.hiddenDoAuditPrefName, doAuditsChk.isSelected());
+        rPrefs.putBoolean(Specify.hiddenAuditFldUpdatePrefName, doAuditFieldValsChk.isSelected());
+        gPrefs.putInt(AuditLogCleanupTask.AUDIT_LIFESPAN_MONTHS_PREF, (Integer)lifeSpanSpin.getValue());
     }
 
     /* (non-Javadoc)
