@@ -187,7 +187,7 @@ public class TreeViewerListModel extends AbstractListModel<TreeNode>
         for (int i = nodeIndex+1; i < nodes.size(); ++i)
         {
             TreeNode n = nodes.get(i);
-            if (parent.getId() == n.getParentId())
+            if (parent.getId() == n.getParentNodeId())
             {
                 return true;
             }
@@ -205,7 +205,7 @@ public class TreeViewerListModel extends AbstractListModel<TreeNode>
     	for (int i = nodeIndex+1; i < nodes.size(); ++i)
     	{
             TreeNode n = nodes.get(i);
-            if (parent.getId() == n.getParentId())
+            if (parent.getId() == n.getParentNodeId())
             {
                 return n;
             }
@@ -246,14 +246,14 @@ public class TreeViewerListModel extends AbstractListModel<TreeNode>
         TreeNode n = node;
         
         // go until we get to the root node
-        while (n.getParentId() != n.getId())
+        while (n.getParentNodeId() != n.getId())
         {
-            if (n.getParentId() == ancestor.getId())
+            if (n.getParentNodeId() == ancestor.getId())
             {
                 //log.debug("isDescendantOfNode( " + node + ", " + ancestor + " ) = true");
                 return true;
             }
-            n = getNodeById(n.getParentId());
+            n = getNodeById(n.getParentNodeId());
         }
         //log.debug("isDescendantOfNode( " + node + ", " + ancestor + " ) = false");
         return false;
@@ -385,7 +385,7 @@ public class TreeViewerListModel extends AbstractListModel<TreeNode>
         {
             TreeNode nextNode = nodes.get(parentIndex+1);
             
-            if (nextNode.getParentId() != parentId)
+            if (nextNode.getParentNodeId() != parentId)
             {
                 break;
                 // we've moved past the children of the given parent

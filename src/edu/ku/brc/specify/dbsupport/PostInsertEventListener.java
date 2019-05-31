@@ -65,7 +65,7 @@ public class PostInsertEventListener implements org.hibernate.event.PostInsertEv
     private static byte gAction    = Byte.MAX_VALUE;
     private static int  gRecordId  = Integer.MAX_VALUE;
     private static long gTSCreated = Long.MAX_VALUE;
-    private static long gVersion = -1;
+    private static Integer gVersion = -1;
 
     private static CommandListener cmdListener = null;
     

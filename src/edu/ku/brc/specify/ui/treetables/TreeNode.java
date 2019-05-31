@@ -19,10 +19,18 @@
 */
 package edu.ku.brc.specify.ui.treetables;
 
+import java.beans.PropertyChangeListener;
+import java.lang.reflect.Method;
+import java.sql.Timestamp;
 import java.util.Iterator;
 import java.util.Set;
 
+import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.ui.forms.FormDataObjIFace;
+import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Taxon;
+import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.DB;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -34,7 +42,7 @@ import edu.ku.brc.util.Pair;
  * Jan 23, 2008
  *
  */
-public class TreeNode
+public class TreeNode implements FormDataObjIFace
 {
     protected String   name;
     protected String   fullName;
@@ -138,7 +146,7 @@ public class TreeNode
     /**
      * @return
      */
-    public int getId()
+    public Integer getId()
     {
         return id;
     }
@@ -190,7 +198,7 @@ public class TreeNode
     /**
      * @return the parent node's ID, or, if this node has no parent, this node's ID
      */
-    public int getParentId()
+    public int getParentNodeId()
     {
         return parentId;
     }
@@ -474,5 +482,164 @@ public class TreeNode
             }
         }
         return result;
+    }
+
+    @Override
+    public void initialize() {
+
+    }
+
+    @Override
+    public String getIdentityTitle() {
+        return null;
+    }
+
+    @Override
+    public Timestamp getTimestampCreated() {
+        return null;
+    }
+
+    @Override
+    public void setTimestampCreated(Timestamp timestampCreated) {
+
+    }
+
+    @Override
+    public Timestamp getTimestampModified() {
+        return null;
+    }
+
+    @Override
+    public void setTimestampModified(Timestamp timestampModified) {
+
+    }
+
+    @Override
+    public Agent getModifiedByAgent() {
+        return null;
+    }
+
+    @Override
+    public void setModifiedByAgent(Agent modifiedByAgent) {
+
+    }
+
+    @Override
+    public void setCreatedByAgent(Agent createdByAgent) {
+
+    }
+
+    @Override
+    public void addReference(FormDataObjIFace ref, String fieldName) {
+
+    }
+
+    @Override
+    public void addReference(FormDataObjIFace ref, String fieldName, boolean doOtherSide) {
+
+    }
+
+    @Override
+    public void removeReference(FormDataObjIFace ref, String fieldName) {
+
+    }
+
+    @Override
+    public void removeReference(FormDataObjIFace ref, String fieldName, boolean doOtherSide) {
+
+    }
+
+    @Override
+    public Object getReferenceValue(String ref) {
+        return null;
+    }
+
+    @Override
+    public void onSave() {
+
+    }
+
+    @Override
+    public void onDelete() {
+
+    }
+
+    @Override
+    public void onUpdate() {
+
+    }
+
+    @Override
+    public int getTableId() {
+        DBTableInfo info = DBTableIdMgr.getInstance().getByShortClassName(dataObjClass.getSimpleName());
+        if (info != null) {
+            return info.getTableId();
+        }
+        return 0;
+    }
+
+    @Override
+    public Integer getParentId() {
+        return null;
+    }
+
+    @Override
+    public Integer getVersion() {
+        return null;
+    }
+
+    @Override
+    public boolean isRestrictable() {
+        return false;
+    }
+
+    @Override
+    public Class<?> getDataClass() {
+        return null;
+    }
+
+    @Override
+    public boolean isChangeNotifier() {
+        return false;
+    }
+
+    @Override
+    public void forceLoad() {
+
+    }
+
+    @Override
+    public int shouldForceLoadChildSet(Method getter) {
+        return 0;
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return null;
+    }
+
+    @Override
+    public Integer getParentTableId() {
+        return null;
+    }
+
+    @Override
+    public void addPropertyChangeListener(PropertyChangeListener l) {
+
+    }
+
+    @Override
+    public void addPropertyChangeListener(String propertyName, PropertyChangeListener l) {
+
+    }
+
+    @Override
+    public void removePropertyChangeListener(PropertyChangeListener l) {
+
+    }
+
+    @Override
+    public void removePropertyChangeListener(String propertyName, PropertyChangeListener l) {
+
     }
 }

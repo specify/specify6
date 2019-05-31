@@ -707,7 +707,7 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
         private void drawNodeAnchors(final Graphics g)
         {
             TreeNode node   = treeNode;
-            TreeNode parent = model.getNodeById(treeNode.getParentId());
+            TreeNode parent = model.getNodeById(treeNode.getParentNodeId());
             
             // setup the color and stroke
             Graphics2D g2d        = (Graphics2D)g;
@@ -765,7 +765,7 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
             // if so, draw a T-shape
 
             TreeNode node   = treeNode;
-            TreeNode parent = model.getNodeById(treeNode.getParentId());
+            TreeNode parent = model.getNodeById(treeNode.getParentNodeId());
             int cellHeight  = list.getFixedCellHeight();
 
             while (node != model.getVisibleRoot() && parent != null)
@@ -782,7 +782,7 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
                 }
                 
                 node = parent;
-                parent = model.getNodeById(node.getParentId());
+                parent = model.getNodeById(node.getParentNodeId());
             }
             
             // reset the color and stroke to original values
@@ -920,7 +920,7 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
             int cellHeight = list.getFixedCellHeight();
             int baselineAdj = (int)(1.0/2.0*fm.getAscent() + 1.0/2.0*cellHeight);
             
-            int parentId = node.getParentId();
+            int parentId = node.getParentNodeId();
             TreeNode parent = model.getNodeById(parentId);
             while (parent != null && node != parent)
             {
@@ -937,7 +937,7 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
                 }
                 
                 node = parent;
-                parentId = node.getParentId();
+                parentId = node.getParentNodeId();
                 parent = model.getNodeById(parentId);
             }
         }

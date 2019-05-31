@@ -48,14 +48,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionAdapter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -83,6 +76,9 @@ import javax.swing.Timer;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import edu.ku.brc.specify.datamodel.*;
+import edu.ku.brc.specify.dbsupport.PostInsertEventListener;
+import edu.ku.brc.specify.dbsupport.PropertyUpdateInfo;
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.record.formula.functions.T;
 
@@ -104,14 +100,6 @@ import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.af.ui.forms.validation.UIValidator;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
-import edu.ku.brc.specify.datamodel.Geography;
-import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
-import edu.ku.brc.specify.datamodel.LithoStrat;
-import edu.ku.brc.specify.datamodel.Storage;
-import edu.ku.brc.specify.datamodel.Taxon;
-import edu.ku.brc.specify.datamodel.TreeDefIface;
-import edu.ku.brc.specify.datamodel.TreeDefItemIface;
-import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.datamodel.busrules.BaseTreeBusRules;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
 import edu.ku.brc.specify.dbsupport.TreeDefStatusMgr;
@@ -1108,11 +1096,11 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         
         log.debug("Node selected for Un-synonymize: " + node);
 
-        TreeNode nodeParent = listModel.getNodeById(node.getParentId());
+        TreeNode nodeParent = listModel.getNodeById(node.getParentNodeId());
         TreeNode acceptedNodeParent = null;
         if (acceptedNode != null)
         {
-        	acceptedNodeParent = listModel.getNodeById(acceptedNode.getParentId());
+        	acceptedNodeParent = listModel.getNodeById(acceptedNode.getParentNodeId());
         }
         hideChildren(nodeParent);
         if (acceptedNodeParent != null && acceptedNodeParent != nodeParent)
@@ -1186,7 +1174,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             writeGlassPaneMsg(getResourceString("TTV_Deleting"), 24);
             
             
-            TreeNode parent = listModel.getNodeById(node.getParentId());
+            TreeNode parent = listModel.getNodeById(node.getParentNodeId());
             
             // hide the children of the parent node (which will hide the node we're going to delete)
             hideChildren(parent);
@@ -1282,7 +1270,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         	}
         	else
         	{
-        		if (selectedNode.getParentId() == visibleRoot.getId())
+        		if (selectedNode.getParentNodeId() == visibleRoot.getId())
         		{
         			childNode = selectedNode;
         		}
@@ -1291,11 +1279,11 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         			//find Ancestor of selected node at new top rank for zoom,
         			//and make it the new root.
         			TreeNode child = selectedNode;
-        			TreeNode parent = listModel.getNodeById(selectedNode.getParentId());
+        			TreeNode parent = listModel.getNodeById(selectedNode.getParentNodeId());
         			while (parent != null && parent.getRank() > visibleRoot.getRank())
         			{
         				child = parent;
-        				parent = listModel.getNodeById(parent.getParentId());
+        				parent = listModel.getNodeById(parent.getParentNodeId());
         			}
         			if (parent != null)
         			{
@@ -1335,7 +1323,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 
         TreeNode visibleRoot = listModel.getVisibleRoot();
         
-        TreeNode parentNode = listModel.getNodeById(visibleRoot.getParentId());
+        TreeNode parentNode = listModel.getNodeById(visibleRoot.getParentNodeId());
         
         listModel.setVisibleRoot(parentNode);
         
@@ -1384,7 +1372,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		}
 		
         TreeNode node = (TreeNode)selection;
-        int parentId = node.getParentId();
+        int parentId = node.getParentNodeId();
         if (parentId != node.getId())
         {
             TreeNode parentNode = listModel.getNodeById(parentId);
@@ -2592,8 +2580,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 							}
 						});
 						
-						final TreeNode draggedNodeParent = listModel.getNodeById(draggedNode.getParentId());
-						final TreeNode droppedNodeParent = listModel.getNodeById(droppedOnNode.getParentId());
+						final TreeNode draggedNodeParent = listModel.getNodeById(draggedNode.getParentNodeId());
+						final TreeNode droppedNodeParent = listModel.getNodeById(droppedOnNode.getParentNodeId());
 						
 						SwingUtilities.invokeLater(new Runnable() {
 							@Override
@@ -2740,7 +2728,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		{
 			final T        child         = draggedRecord;
 			final T        newParent     = droppedRecord;
-            final TreeNode oldParentNode = listModel.getNodeById(draggedNode.getParentId());
+            final TreeNode oldParentNode = listModel.getNodeById(draggedNode.getParentNodeId());
             final TreeNode newParentNode = droppedOnNode;
 
             log.info("move requested: " + child.getFullName() + " to " + newParent.getFullName());
@@ -2875,7 +2863,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		else if (nodeDropAction == NODE_DROPTYPE.MERGE_NODE)
 		{
 	        UsageTracker.incrUsageCount("WB.ShowWorkbenchProps");
-	        final TreeNode oldParentNode = listModel.getNodeById(draggedNode.getParentId());
+	        final TreeNode oldParentNode = listModel.getNodeById(draggedNode.getParentNodeId());
 	        final TreeNode newParentNode = droppedOnNode;
 	        log.info("merging " + oldParentNode.fullName + "(" + oldParentNode.id + ") into "
 	                + newParentNode.fullName + "(" + newParentNode.id + ")");
@@ -3077,7 +3065,12 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                         showChildren(newParentNode);
                     }
                 });
-                
+                if (result && PostInsertEventListener.isAuditOn()) {
+                    List<PropertyUpdateInfo> props = new ArrayList<>();
+                    DBTableInfo info = DBTableIdMgr.getInstance().getByShortClassName(oldParentNode.getDataObjClass().getSimpleName());
+                    props.add(new PropertyUpdateInfo(info.getIdColumnName(), draggedNode.getId(), droppedOnNode.getId()));
+                    PostInsertEventListener.saveOnAuditTrail(SpAuditLog.TREE_MERGE, draggedNode, props);
+                }
                 if (!result && killer != null)
                 {
                     if (killer instanceof TreeMergeException)
@@ -3286,7 +3279,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	{
 	    return 
 	        TreeHelper.canChildBeReparentedToNode(draggedNode.getRank(), droppedOnNode.getRank(), treeDef)
-	        && draggedNode.getParentId() != droppedOnNode.getId()
+	        && draggedNode.getParentNodeId() != droppedOnNode.getId()
 	        && droppedOnNode.getAcceptedParentId() == null;
 	}
 	

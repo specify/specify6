@@ -102,10 +102,9 @@ public class PostUpdateEventListener implements org.hibernate.event.PostUpdateEv
         return result;
     }
 
-    protected static String[] inAuditables = {"createdbyagent", "modifiedbyagent","timestampcreated", "timestampmodified",
-            "version", "nodenumber", "highestchildnodenumber"};
+    protected static String inAuditables = " version, nodenumber, highestchildnodenumber, createdbyagent, modifiedbyagent, timestampcreated, timestampmodified,";
     protected static boolean shouldAuditProperty(String name) {
-        return Arrays.binarySearch(inAuditables, name.toLowerCase()) < 0;
+        return !inAuditables.contains(" " + name.toLowerCase() + ",");
     }
 
     private PropertyUpdateInfo getUpdateInfo(int colIdx, PostUpdateEvent obj) {
