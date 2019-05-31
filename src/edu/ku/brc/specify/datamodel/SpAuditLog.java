@@ -43,13 +43,14 @@ import java.util.Vector;
 @Table(name = "spauditlog")
 public class SpAuditLog extends DataModelObjBase implements java.io.Serializable 
 {
-    public enum ACTION {Insert, Update, Remove, TreeMerge, TreeMove, TreeSynonymize};
+    public enum ACTION {Insert, Update, Remove, TreeMerge, TreeMove, TreeSynonymize, TreeUnSynonymize};
     public static final byte INSERT = 0;
     public static final byte UPDATE = 1;
     public static final byte REMOVE = 2;
     public static final byte TREE_MERGE = 3;
     public static final byte TREE_MOVE = 4;
     public static final byte TREE_SYNONYMIZE = 5;
+    public static final byte TREE_UNSYNONYMIZE = 6;
 
     // Fields
 
@@ -315,6 +316,7 @@ public class SpAuditLog extends DataModelObjBase implements java.io.Serializable
         stats.add(new TypeCodeItem(UIRegistry.getResourceString("SpAuditLog_TreeMerge"), TREE_MERGE));
         stats.add(new TypeCodeItem(UIRegistry.getResourceString("SpAuditLog_TreeMove"), TREE_MOVE));
         stats.add(new TypeCodeItem(UIRegistry.getResourceString("SpAuditLog_TreeSynonymize"), TREE_SYNONYMIZE));
+        stats.add(new TypeCodeItem(UIRegistry.getResourceString("SpAuditLog_TreeUnSynonymize"), TREE_UNSYNONYMIZE));
         result.add(new TypeCode(stats, "action"));
 
         List<DBTableInfo> tbls = DBTableIdMgr.getInstance().getTables();
