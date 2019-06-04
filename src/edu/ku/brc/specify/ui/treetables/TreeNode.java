@@ -28,6 +28,7 @@ import java.util.Set;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.DB;
@@ -580,12 +581,17 @@ public class TreeNode implements FormDataObjIFace
 
     @Override
     public Integer getParentId() {
-        return null;
+        return getParentNodeId();
     }
 
     @Override
     public Integer getVersion() {
-        return null;
+        DBTableInfo info = DBTableIdMgr.getInstance().getByShortClassName(dataObjClass.getSimpleName());
+        if (info != null) {
+            return BasicSQLUtils.querySingleObj("select version from " + info.getName().toLowerCase() + " where "
+                    + info.getIdColumnName() + " = " + getId());
+        }
+        return -1;
     }
 
     @Override
@@ -620,7 +626,7 @@ public class TreeNode implements FormDataObjIFace
 
     @Override
     public Integer getParentTableId() {
-        return null;
+        return getTableId();
     }
 
     @Override

@@ -196,7 +196,7 @@ public class PostInsertEventListener implements org.hibernate.event.PostInsertEv
                         pStmt.setInt(8, dObj.getVersion());
                     } else
                     {
-                        pStmt.setObject(8, null);
+                        pStmt.setObject(8, -1);
                     }
                     
                     pStmt.setInt(9, dObj.getTableId());
