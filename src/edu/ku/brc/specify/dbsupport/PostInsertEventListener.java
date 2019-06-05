@@ -29,6 +29,8 @@ import java.util.Calendar;
 import java.text.SimpleDateFormat;
 
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
+import edu.ku.brc.specify.datamodel.SpAuditLog;
+import edu.ku.brc.specify.ui.treetables.TreeNode;
 import org.apache.log4j.Logger;
 import org.hibernate.event.PostInsertEvent;
 
@@ -120,7 +122,24 @@ public class PostInsertEventListener implements org.hibernate.event.PostInsertEv
             }
         }
     }
-    
+
+    public static Byte convertActionIfNecessary(final Byte action, final Object dObjArg, final List<PropertyUpdateInfo> updates) {
+        if (dObjArg instanceof edu.ku.brc.specify.datamodel.Treeable && action == SpAuditLog.ACTION.Update.ordinal()) {
+            //Assumes changes are results tree actions from tree viewer
+            for (PropertyUpdateInfo update : updates) {
+                if (update.getName().equalsIgnoreCase("acceptedid")) {
+                    if (update.getNewValue() == null) {
+                        return Integer.valueOf(SpAuditLog.ACTION.TreeUnSynonymize.ordinal()).byteValue();
+                    } else {
+                        return Integer.valueOf(SpAuditLog.ACTION.TreeSynonymize.ordinal()).byteValue();
+                    }
+                } else if (update.getName().equalsIgnoreCase("parentid")) {
+                    return Integer.valueOf(SpAuditLog.ACTION.TreeMove.ordinal()).byteValue();
+                }
+            }
+        }
+        return action;
+    }
     /**
      * @param action
      * @param description
@@ -157,8 +176,14 @@ public class PostInsertEventListener implements org.hibernate.event.PostInsertEv
                     {
                         return;
                     }
-                    
-                    gAction    = action;
+
+                    Byte convertedAction = convertActionIfNecessary(action, dObjArg, updates);
+                    if (dObjArg instanceof edu.ku.brc.specify.datamodel.Treeable
+                            && action == SpAuditLog.ACTION.Update.ordinal()
+                            && (updates == null || updates.size() == 0)) {
+                        return;
+                    }
+                    gAction    = convertedAction;
                     gRecordId  = dObj.getId();
                     gTSCreated = now.getTime();
                     gVersion = dObj.getVersion();
@@ -168,7 +193,7 @@ public class PostInsertEventListener implements org.hibernate.event.PostInsertEv
                     pStmt.setTimestamp(1, now);
                     pStmt.setTimestamp(2, now);
                     pStmt.setInt(3, 0);
-                    pStmt.setInt(4, action);
+                    pStmt.setInt(4, convertedAction);
                         
                     Integer pId  = dObj.getParentId();
                     if (pId != null)

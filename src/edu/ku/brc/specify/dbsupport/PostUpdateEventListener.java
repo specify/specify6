@@ -107,8 +107,20 @@ public class PostUpdateEventListener implements org.hibernate.event.PostUpdateEv
         return !inAuditables.contains(" " + name.toLowerCase() + ",");
     }
 
-    private PropertyUpdateInfo getUpdateInfo(int colIdx, PostUpdateEvent obj) {
+    private String getPropertyName(int colIdx, PostUpdateEvent obj) {
         String name = obj.getPersister().getPropertyNames()[colIdx];
+        if (obj.getEntity() instanceof edu.ku.brc.specify.datamodel.Treeable) {
+            if (name.toLowerCase().startsWith("accepted")) {
+                name = "acceptedid";
+            } else if (name.toLowerCase().startsWith("parent")) {
+                name = "parentid";
+            }
+        }
+        return name;
+    }
+
+    private PropertyUpdateInfo getUpdateInfo(int colIdx, PostUpdateEvent obj) {
+        String name = getPropertyName(colIdx, obj);
         PropertyUpdateInfo result = null;
         if (shouldAuditProperty(name)) {
             Object oldVal = obj.getOldState()[colIdx];
