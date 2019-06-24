@@ -616,7 +616,7 @@ public class BuildSearchIndex2
         FileUtils.writeLines(f, "utf8", myCopy);
     }
     
-    protected void writePortalInstanceJsonToFile() throws IOException
+    protected void writePortalInstanceJsonToFile(ExportMappingHelper map, Map<Integer, String> shortNames) throws IOException
     {
     	String portalInstance = UUID.randomUUID().toString();
     	File f = new File(writeToDir + File.separator + "PortalInstanceSetting.json");
@@ -836,7 +836,7 @@ public class BuildSearchIndex2
 
                 writePortalJsonToFile(portalFldJson);
                 writeSolrFldXmlToFile(solrFldXml);
-                writePortalInstanceJsonToFile();
+                writePortalInstanceJsonToFile(map, shortNames);
                 writeTblToCsv(tbl);
 
             } catch (Exception ex) {
