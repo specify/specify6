@@ -624,6 +624,15 @@ public class BuildSearchIndex2
         json.accumulate("portalInstance", portalInstance);
         json.accumulate("collectionName", collectionName);
         json.accumulate("imageBaseUrl", StringUtils.replace(attachmentURL, "/web_asset_store.xml", ""));
+		String imageInfoFlds = "";
+        for (ExportMappingInfo info : map.getMappings()) {
+			if (info.spFldName.equalsIgnoreCase("catalognumber")
+			|| info.spFldName.equalsIgnoreCase("fieldnumber")
+			|| info.spFldName.equalsIgnoreCase("stationfieldnumber")){
+				imageInfoFlds += " " + shortNames.get(info.getColIdx());
+			}
+		}
+        json.accumulate("imageInfoFlds", imageInfoFlds);
         FileUtils.writeStringToFile(f,  json.toString(2), "utf8");
     }
 
