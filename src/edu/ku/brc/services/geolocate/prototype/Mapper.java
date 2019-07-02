@@ -27,18 +27,19 @@ import java.util.Set;
 import javax.swing.event.EventListenerList;
 import javax.swing.event.MouseInputAdapter;
 
+import edu.ku.brc.af.prefs.AppPreferences;
 import org.jdesktop.swingx.JXMapKit;
 import org.jdesktop.swingx.JXMapViewer;
-import org.jdesktop.swingx.mapviewer.GeoPosition;
-import org.jdesktop.swingx.mapviewer.Waypoint;
-import org.jdesktop.swingx.mapviewer.WaypointPainter;
-import org.jdesktop.swingx.mapviewer.WaypointRenderer;
+import org.jdesktop.swingx.mapviewer.*;
 import org.jdesktop.swingx.painter.CompoundPainter;
 import org.jdesktop.swingx.painter.Painter;
 
 @SuppressWarnings("serial")
 public class Mapper extends JXMapKit {
-	
+
+	private static final String tileFactoryURLPrefName = "GEOLOCATE_TILE_FACTORY_URL";
+	private static final String defaultTileFactoryURL = "https://a.tile.opentopomap.org";
+
 	private static final int ptStrokeOffsetX = -6;
 	private static final int ptStrokeOffsetY = -6;
 	private static final int ptStrokeWidth = 12;
@@ -768,6 +769,16 @@ public class Mapper extends JXMapKit {
                 }
             }
         });
+		String tileFactoryUrl = AppPreferences.getRemote().get(tileFactoryURLPrefName, defaultTileFactoryURL);
+		TileFactoryInfo info = new TileFactoryInfo(1, 15, 17, 256, true, true, tileFactoryUrl, "x", "y", "z") {
+			public String getTileUrl(int x, int y, int zoom) {
+				zoom = 17 - zoom;
+				//assuming the tile factory uses this pattern
+				String url = this.baseURL + "/" + zoom + "/" + x + "/" + y + ".png";
+				return url;
+			}
+		};
+		setTileFactory(new DefaultTileFactory(info));
 	}
 	
 	public void snapMostAccuratePointTo(String localityID)
