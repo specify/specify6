@@ -687,10 +687,10 @@ public class BuildSearchIndex2
 			val = val.replace(escaper, escaper + escaper);
 		}
 		if (val.indexOf(encloser) >= 0) {
-    		val = val.replace(encloser, escaper + encloser);
+    		val = val.replace(encloser, encloser + encloser);
 		}
 
-		boolean enclose = val.indexOf(eoFld) >= 0 || val.indexOf("\n") >= 0 || val.indexOf("\r") >= 0;
+		boolean enclose = val.indexOf(eoFld) >= 0 || val.indexOf("\n") >= 0 || val.indexOf("\r") >= 0 || val.indexOf(encloser) >= 0;
 		if (enclose) line += encloser;
 		line += val;
 		if (enclose) line += encloser;
