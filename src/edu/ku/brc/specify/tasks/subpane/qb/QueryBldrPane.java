@@ -2758,7 +2758,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             qpp = new QueryParameterPanel();
             qpp.setQuery(report.getQuery(), tblTree, ttHash);
         }
-        boolean go = true;
+        boolean goGo = true;
         try
         {
             JasperCompilerRunnable jcr = new JasperCompilerRunnable(null, report.getName(), null);
@@ -2808,10 +2808,10 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 ps.setSize(ps.getWidth()*1.3, ps.getHeight());
                 cd.setSize(ps);
                 UIHelper.centerAndShow(cd);
-                go = !cd.isCancelled();
+                goGo = !cd.isCancelled();
                 cd.dispose();
             }
-            if (go)
+            if (goGo)
             {
                 if (isQueryBuilderRep)
                 {

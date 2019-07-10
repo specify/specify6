@@ -6043,7 +6043,9 @@ public class UploadTable implements Comparable<UploadTable>
                     if (updateMatches) {
                         updateExportedRecInfo(recNum);
                     }
-                    if (probablyNeedToWrite(recNum, tblAndAncestorsUnchanged)) {
+                    if (updateMatches && hiddenMissingLink) {
+                        setCurrentRecord(getExportedRecord(), recNum);
+                    } else if (probablyNeedToWrite(recNum, tblAndAncestorsUnchanged)) {
                         if (findMatch(doSkipMatch, tblAndAncestorsUnchanged, recNum)) {
                             if (isSecurityOn && !getWriteTable().getTableInfo().getPermissions().canAdd()) {
                                 throw new UploaderException(String.format(UIRegistry.getResourceString("WB_UPLOAD_NO_ADD_PERMISSION"), getWriteTable().getTableInfo().getTitle()),
