@@ -9,6 +9,9 @@ cache:
   directories:
   - install4j7.0.7
 
+before_install:
+  - sudo apt-get install -y ant
+
 install:
 - |
   if [ ! -d install4j7.0.7/bin ];
