@@ -90,7 +90,7 @@
 
   <path id="compile.classpath.mac">
     <path refid="compile.classpath"/>
-    <pathelement location="${system.dep.libs.dir}/AppleJavaExtensions-1.4.jar"/>
+    <pathelement location="${system.dep.libs.dir}/AppleJavaExtensions-1.6.jar"/>
   </path>
 
   <path id="compile.classpath.nonmac">
