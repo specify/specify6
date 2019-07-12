@@ -38,7 +38,7 @@ import org.jdesktop.swingx.painter.Painter;
 public class Mapper extends JXMapKit {
 
 	private static final String tileFactoryURLPrefName = "GEOLOCATE_TILE_FACTORY_URL";
-	private static final String defaultTileFactoryURL = "https://a.tile.opentopomap.org";
+	private static final String defaultTileFactoryURL = "http://a.tile.openstreetmap.org";
 
 	private static final int ptStrokeOffsetX = -6;
 	private static final int ptStrokeOffsetY = -6;
