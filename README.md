@@ -2,14 +2,15 @@
 
 [![Build Status](https://travis-ci.org/specify/specify6.svg?branch=master)](https://travis-ci.org/specify/specify6)
 
-The Specify Software Project is funded by the Advances in
-Biological Informatics Program, U.S. National Science Foundation
-(NSF/BIO: 1565098).
-
-Specify 6 Copyright © 2018 University of Kansas Center for
+The Specify Collections Consortium is funded by
+its member institutions and by an award from the US NSF
+(BIO/DBI: 1565098).
+    
+Specify 6 Copyright © 2019 University of Kansas Center for
 Research. Specify comes with ABSOLUTELY NO WARRANTY.  This is
 free software licensed under GNU General Public License 2
 (GPL2).
+
 
 
     Specify Software Project
