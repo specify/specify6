@@ -68,6 +68,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.text.JTextComponent;
 
+import com.install4j.api.launcher.SplashScreen;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -1345,8 +1346,14 @@ public class DatabaseLoginPanel extends JTiledPanel
                         boolean localChk4VersionUpdate = localPrefs.getBoolean(VERSION_CHECK, true);
                         //UIRegistry.displayInfoMsgDlg("doLoginContinuing(): isReleasedManagedGlobally=" + isReleaseManagedGlobally + ", local update pref=" + localChk4VersionUpdate);
                         if ((isReleaseManagedGlobally == null || !isReleaseManagedGlobally) && localChk4VersionUpdate) {
-                        	try {
-                        		com.install4j.api.launcher.SplashScreen.hide();
+                            try {
+                                com.install4j.api.launcher.SplashScreen.hide();
+                            }  catch (SplashScreen.ConnectionException e) {
+                                log.error(e);
+                            }
+
+                            try {
+
                         		ApplicationLauncher.Callback callback = new ApplicationLauncher.Callback() {
                         			@Override
                         			public void exited(int exitValue) {
