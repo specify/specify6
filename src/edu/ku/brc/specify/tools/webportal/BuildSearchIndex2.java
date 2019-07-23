@@ -17,6 +17,7 @@
  */
 package edu.ku.brc.specify.tools.webportal;
 
+import com.csvreader.CsvWriter;
 import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.core.db.DBFieldInfo;
@@ -30,15 +31,17 @@ import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.SpExportSchemaMapping;
+import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace;
+import edu.ku.brc.specify.tasks.subpane.wb.CSVExport;
 import net.sf.json.JSONObject;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
-import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.*;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.analysis.util.CharArraySet;
+//import org.apache.lucene.analysis.util.CharArraySet;
 import org.apache.lucene.document.*;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
@@ -104,9 +107,10 @@ public class BuildSearchIndex2
     protected String 		fieldsXml; //the "fields" block for the solr schema.xml file.
     
     protected final String[][] systemFlds = {
+    		//name, type, indexed, stored, required
     		{"spid", "string", "true", "true", "true"},
-    		{"cs", "string", "true", "false", "true"},
-    		{"contents", "string", "false", "true", "true"},
+    		//{"cs", "string", "true", "false", "true"},
+    		{"contents", "text_general", "true", "false", "true"},
     		{"img", "string", "true", "true", "false"},
     		{"geoc", "string", "true", "true", "false"}
     };
@@ -225,12 +229,12 @@ public class BuildSearchIndex2
             
         }*/
         //                                             
-        String sqlStr = "SELECT * from " + tblName;
+        String sqlStr = "SELECT co.GUID, t.* from " + tblName  + " t inner join collectionobject co on co.collectionobjectid = t." + tblName + "id";
         return sqlStr;
     }
     
 
-    private String getAttachments(Connection conn, String baseTblName, Integer baseKey, boolean includeRelatedAttachments) 
+    private String getAttachments(Connection conn, String baseTblName, String baseGUID, boolean includeRelatedAttachments)
     	throws SQLException
     {
     	if (!"collectionobject".equals(baseTblName)) 
@@ -241,17 +245,18 @@ public class BuildSearchIndex2
     	{
     		throw new NotImplementedException("includeRelatedAttachments is not implemented");
     	}
-    	return getAttachments(conn, baseTblName, baseKey);
+    	return getAttachments(conn, baseTblName, baseGUID);
     }
     
-    private String getAttachments(Connection conn, String baseTblName, Integer baseKey) throws SQLException
+    private String getAttachments(Connection conn, String baseTblName, String baseGUID) throws SQLException
     {
     	String attacherTbl = baseTblName + "attachment";
     	String baseTblID = baseTblName + "ID"; //XXX dude... use DBTableMgr stuff...
     	String sql = "select att.AttachmentID, att.AttachmentLocation, att.Title, aia.Height, aia.Width from attachment att "
     			+ "left join attachmentimageattribute aia on aia.AttachmentImageAttributeID " 
-    			+ "= att.AttachmentImageAttributeID inner join " + attacherTbl + " oatt on oatt.AttachmentID "
-    			+ "= att.AttachmentID where att.IsPublic and att.MimeType like 'image/%' and oatt." +  baseTblID + " = " + baseKey;
+    			+ "= att.AttachmentImageAttributeID inner join " + attacherTbl + " oatt on oatt.AttachmentID = att.AttachmentID"
+				+ " inner join " + baseTblName + " baset on baset." + baseTblID + " = oatt." + baseTblID
+    			+  " where att.IsPublic and att.MimeType like 'image/%' and baset.GUID = '" + baseGUID + "'";
     	Statement stmt = null;
     	ResultSet rs = null;
     	String result = null;
@@ -345,79 +350,77 @@ public class BuildSearchIndex2
      * Result is not added to used. 
      * 
      */
-    private String getAbbreviation(String inStr, int len, List<String> used)
+    private String getAbbreviation(ExportMappingInfo mapping, int len, List<String> used)
     {
     	String[] bad = {"°", ",", "°","\\","{","}","[","]",";",":","\"","'","!","@","#","$","%","^","&","*","(",")","+","=","|","/","?","<",">","~","`","."};
-    	String str = inStr;
-    	for (String b : bad) 
-    	{
+    	String str = mapping.getFldTitle();
+    	for (String b : bad) {
     		str = str.replace(b, "_");
     	}
     	str = str.replace(" ", "");
-    	String abbr = str.substring(0, 1).toLowerCase();
-    	int c = 1;
-    	int lastUsed = 1;
-    	while (c < str.length())
-    	{
-    		String s = str.substring(c, c+1);
-    		if (s.equals(s.toUpperCase())) 
-    		{
-    			abbr += s.toLowerCase();
-    			//lastUsed = c;
-    		}
-    		c++;
-    	}
-    	if (abbr.length() < len)
-    	{
-    		c = lastUsed;
-    		while (abbr.length() < len)
-    		{
-    			if (c < str.length())
-    			{
-    				abbr += str.substring(c, c+1).toLowerCase();
-    			} else
-    			{
-    				abbr += "x";
-    			}
-    		}
-    	}
-    	String result = abbr.length() > len ? abbr.substring(0, len) : abbr;
-    	if (used.indexOf(result) != -1)
-    	{
-    		int l = result.length()+1;
-    		while (l < abbr.length())
-    		{
-    			result = abbr.substring(0, l);
-    			if (used.indexOf(result) == -1)
-    			{
-    				l = abbr.length();
-    			} else
-    			{
-    				l++;
-    			}
-    		}
-    		int numb = 1;
-    		l = result.length();
-    		while (used.indexOf(result) != -1)
-    		{
-    			result = result.substring(0, l) + numb++;
-    		}
+    	String result = str;
+    	String abbr = str;
+    	if (len > 0) {
+			abbr = str.substring(0, 1).toLowerCase();
+			int c = 1;
+			int lastUsed = 1;
+			while (c < str.length()) {
+				String s = str.substring(c, c + 1);
+				if (s.equals(s.toUpperCase())) {
+					abbr += s.toLowerCase();
+					//lastUsed = c;
+				}
+				c++;
+			}
+			if (abbr.length() < len) {
+				c = lastUsed;
+				while (abbr.length() < len) {
+					if (c < str.length()) {
+						abbr += str.substring(c, c + 1).toLowerCase();
+					} else {
+						abbr += "x";
+					}
+				}
+			}
+			result = abbr.length() > len ? abbr.substring(0, len) : abbr;
+		}
+    	if (used.indexOf(result) != -1) {
+    		if (len <= 0 && mapping.getTblInfo() != null) {
+    			result = mapping.getTblInfo().getAbbrev() + "_" + result;
+			} else {
+				int l;
+				if (len > 0) {
+					l = result.length() + 1;
+					while (l < abbr.length()) {
+						result = abbr.substring(0, l);
+						if (used.indexOf(result) == -1) {
+							l = abbr.length();
+						} else {
+							l++;
+						}
+					}
+				}
+				int numb = 1;
+				l = result.length();
+				while (used.indexOf(result) != -1) {
+					result = result.substring(0, l) + numb++;
+				}
+			}
     	}
     	return result;
     }
     
-    private Map<Integer, String> getShortNamesForFields(ExportMappingHelper map)
-    {
+    private Map<Integer, String> getShortNamesForFields(ExportMappingHelper map) {
     	Map<Integer, String> result = new HashMap<Integer, String>();
 		ArrayList<String> used = new ArrayList<String>();
-		for (String[] sys : systemFlds)
-		{
+		for (String[] sys : systemFlds) {
 			used.add(sys[0]);
 		}
-    	for (ExportMappingInfo mapping : map.getMappings())
-    	{
+    	for (ExportMappingInfo mapping : map.getMappings()) {
     		//XXX need to watch out that the QueryField.position-columnIndex relationship maintained --- is not messed up by un-mapped conditions, etc
-    		String abbr = getAbbreviation(mapping.getSpFldName(), 2, used);
+			/* NOT abbreviating no more
+			String abbr = getAbbreviation(mapping, 2, used); */
+    		String abbr = getAbbreviation(mapping, -1, used);
     		used.add(abbr);
     		result.put(mapping.getColIdx(), abbr);
     	}
@@ -452,7 +455,7 @@ public class BuildSearchIndex2
             	UIFieldFormatterIFace formatter = fld.getFormatter();
             	if (formatter.isNumeric())
             	{
-            		return "int";
+            		return "pint";
             	} else
             	{
             		return "string";
@@ -467,23 +470,23 @@ public class BuildSearchIndex2
             		String fldId = info.getFldId();
             		if (fldId.endsWith("NumericDay") || fldId.endsWith("NumericMonth") || fldId.endsWith("NumericYear"))
             		{
-            			return "int";
+            			return "pint";
             		} else
             		{
             			return "string";//XXX need to ALWAYS format dates in YYYY-MM-DD (plus time?) format???
             		}
             	}
-            	else if (type.equals("java.lang.Float")) {return "tfloat";}
+            	else if (type.equals("java.lang.Float")) {return "pfloat";}
             	else if (type.equals("text")) {return "string";}
             	else if (type.equals("java.sql.Timestamp")) {return "string";}//XXX format???
-            	else if (type.equals("java.math.BigDecimal")) {return "tdouble";} //XXX maybe?  
-            	else if (type.equals("java.lang.Integer")) {return "tint";}
+            	else if (type.equals("java.math.BigDecimal")) {return "pdouble";} //XXX maybe?
+            	else if (type.equals("java.lang.Integer")) {return "pint";}
             	else if (type.equals("java.lang.Boolean")) {return /*"boolean"; there seems to be no method in lucene.Document to add boolean fields*/ "string";}
-            	else if (type.equals("java.lang.Byte")) {return "tint";}
-            	else if (type.equals("java.lang.Double")) {return "tdouble";}
-            	else if (type.equals("java.lang.Short")) {return "tint";}
+            	else if (type.equals("java.lang.Byte")) {return "pint";}
+            	else if (type.equals("java.lang.Double")) {return "pdouble";}
+            	else if (type.equals("java.lang.Short")) {return "pint";}
             	else if (type.equals("java.util.Date")) {return "string";} //XXX format???
-            	else if (type.equals("java.lang.Long")) {return "tlong";} 
+            	else if (type.equals("java.lang.Long")) {return "plong";}
             }
         }
     	//else the fld is formatted or aggregated
@@ -592,6 +595,7 @@ public class BuildSearchIndex2
 //        System.out.println();
 
         List<String> myCopy = new ArrayList<String>(solrFldXml);
+        Collections.sort(myCopy);
         myCopy.add(0, "<!-- solr field definitions for " + mapping.getMappingName() + " web portal -->");
         myCopy.add(1, "<!-- Paste the contents of this file into the solr/conf/schema.xml file. -->");
         File f = new File(writeToDir + File.separator + "SolrFldSchema.xml");
@@ -612,7 +616,7 @@ public class BuildSearchIndex2
         FileUtils.writeLines(f, "utf8", myCopy);
     }
     
-    protected void writePortalInstanceJsonToFile() throws IOException
+    protected void writePortalInstanceJsonToFile(ExportMappingHelper map, Map<Integer, String> shortNames) throws IOException
     {
     	String portalInstance = UUID.randomUUID().toString();
     	File f = new File(writeToDir + File.separator + "PortalInstanceSetting.json");
@@ -620,6 +624,15 @@ public class BuildSearchIndex2
         json.accumulate("portalInstance", portalInstance);
         json.accumulate("collectionName", collectionName);
         json.accumulate("imageBaseUrl", StringUtils.replace(attachmentURL, "/web_asset_store.xml", ""));
+		String imageInfoFlds = "";
+        for (ExportMappingInfo info : map.getMappings()) {
+			if (info.spFldName.equalsIgnoreCase("catalognumber")
+			|| info.spFldName.equalsIgnoreCase("fieldnumber")
+			|| info.spFldName.equalsIgnoreCase("stationfieldnumber")){
+				imageInfoFlds += " " + shortNames.get(info.getColIdx());
+			}
+		}
+        json.accumulate("imageInfoFlds", imageInfoFlds);
         FileUtils.writeStringToFile(f,  json.toString(2), "utf8");
     }
 
@@ -641,277 +654,489 @@ public class BuildSearchIndex2
         }
         return value;
 	}
-    /**
-     * 
-     */
-    public boolean index(QBDataSourceListenerIFace progressListener)
-    {
-        
-        if (progressListener != null)
-        {
-        	progressListener.loading();
+
+	private List<String> getCsvHeaderRow(Map<Integer, String> shortNames) {
+        List<String> result = new ArrayList<>();
+        result.add("spid");
+		//result.add("cs");
+		result.add("contents");
+		result.add("img");
+		result.add("geoc");
+        List<Integer> keys = new ArrayList<>(shortNames.keySet());
+        Collections.sort(keys);
+        for (Integer i : keys) {
+            result.add(shortNames.get(i));
         }
-        
-       long startTime = System.currentTimeMillis();
-        
-        IndexWriter[] writers = null;
+        return result;
+    }
+
+	//this was copied (almost verbatim) from DarwinCoreArchive.addValToLine
+	//Follows the candidate csv standard (of several years ago)
+	//Allows saving as utf8, which seems not to be possible with very outdated csvwriter lib
+    protected String addValToLine(String line, String eoFld, String encloser, String escaper, String valArg, int skippedFields) {
+		String val = valArg == null ? "" : valArg;
+    	if (line.length() > 0) {
+			line += eoFld;
+		}
+		for (int i = 0; i < skippedFields; i++) {
+			line += eoFld;
+		}
+		//XXX probably will need to change the way spexportschemaitem records are stored
+		//so that concepts can be matched by uri
+		if (val.indexOf(escaper) >= 0) {
+			val = val.replace(escaper, escaper + escaper);
+		}
+		if (val.indexOf(encloser) >= 0) {
+    		val = val.replace(encloser, encloser + encloser);
+		}
+
+		boolean enclose = val.indexOf(eoFld) >= 0 || val.indexOf("\n") >= 0 || val.indexOf("\r") >= 0 || val.indexOf(encloser) >= 0;
+		if (enclose) line += encloser;
+		line += val;
+		if (enclose) line += encloser;
+		return line;
+	}
+
+	private void writeTblToCsv(List<List<String>> tbl) throws IOException {
+		if (tbl.size() > 0) {
+			List<String> lines = new ArrayList<>();
+			for (List<String> row : tbl) {
+				String line = "";
+				for (String s : row) {
+					line = addValToLine(line, ",","\"", "\\", s, 0);
+				}
+				lines.add(line);
+				System.out.println(line);
+			}
+			try {
+				FileUtils.writeLines(new File(writeToDir + File.separator + "PortalData.csv"), "UTF-8", lines);
+			} catch (IOException e) {
+				edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+				edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BuildSearchIndex2.class, e);
+				throw (e);
+			}
+		}
+	}
+
+	public boolean exportWebPortal(QBDataSourceListenerIFace progressListener) {
+        if (progressListener != null) {
+            progressListener.loading();
+        }
+        long startTime = System.currentTimeMillis();
         long totalRecs = 0;
         List<String> solrFldXml = null;
         List<String> portalFldJson = null;
-
-        try
-        {
-            for (int i=0;i<analyzers.length;i++)
-            {
-                files[i]     = new File(fileNames[i]);
-                analyzers[i] = new StandardAnalyzer(Version.LUCENE_47, CharArraySet.EMPTY_SET);
-                FileUtils.deleteDirectory(files[i]);
-            }
-
-            System.out.println("Indexing to directory '" + INDEX_DIR + "'...");
-
+        try {
+            System.out.println("Exporting to directory '" + INDEX_DIR + "'...");
             ExportMappingHelper map = new ExportMappingHelper(dbConn, mapping.getId());
-            
-            Map<Integer, String> shortNames = getShortNamesForFields(map);
-
             totalRecs = BasicSQLUtils.getCount(dbConn, "SELECT COUNT(*) FROM " + map.getCacheTblName());
-            if (progressListener != null)
-            {
-            	progressListener.loaded();
-            	progressListener.rowCount(totalRecs);
+            if (progressListener != null) {
+                progressListener.loaded();
+                progressListener.rowCount(totalRecs);
             }
             long procRecs  = 0;
-            
             Statement stmt  = null;
             Statement stmt2 = null;
             Statement stmt3 = null;
-            try
-            {
-                writers = new IndexWriter[analyzers.length];
-                for (int i=0;i<files.length;i++)
-                {
-                    writers[i] = new IndexWriter(FSDirectory.open(files[i]), new IndexWriterConfig(Version.LUCENE_47, analyzers[i]));
-                }
-                
+            try {
                 System.out.println("Total Records: "+totalRecs);
-                
                 //stmt = dbConn.createStatement(ResultSet.TYPE_FORWARD_ONLY,ResultSet.CONCUR_READ_ONLY);
                 stmt = dbConn.createStatement();
                 stmt.setFetchSize(Integer.MIN_VALUE);
-                
                 stmt2 = dbConn2.createStatement();
-                
                 stmt3 = dbConn3.createStatement();
                 stmt3.setFetchSize(Integer.MIN_VALUE);
-                
-                //pStmt = dbConn3.prepareStatement("SELECT Text1 FROM preparation WHERE CollectionObjectID = ? AND Text1 IS NOT NULL");
-                
                 String sql = createQuery(map.getCacheTblName());
                 System.out.println(sql);
-                
-                ResultSet     rs       = stmt.executeQuery(sql); //may consume all memory for giant caches
+
+                ResultSet rs = stmt.executeQuery(sql); //may consume all memory for giant caches
                 ResultSetMetaData md = rs.getMetaData();
-                
-                StringBuilder indexStr = new StringBuilder();
+
+                //StringBuilder indexStr = new StringBuilder();
                 StringBuilder contents = new StringBuilder();
                 StringBuilder sb       = new StringBuilder();
                 String lat1 = null, lng1 = null, lat2 = null, lng2 = null, collCode = null;
-                solrFldXml = getFldsXmlForSchema(map, shortNames);
+				Map<Integer, String> shortNames = getShortNamesForFields(map);
+				solrFldXml = getFldsXmlForSchema(map, shortNames);
                 portalFldJson = getModelInJson(map, shortNames);
-                while (rs.next())
-                {
-                    Document doc = new Document();
-                    indexStr.setLength(0);
+                List<List<String>> tbl = new ArrayList<>(); //another memory muncher
+                tbl.add(getCsvHeaderRow(shortNames));
+                while (rs.next()) {
+                    List<String> row = new ArrayList<>();
+                    //indexStr.setLength(0);
                     contents.setLength(0);
                     sb.setLength(0);
                     lat1 = null; lng1 = null; lat2 = null; lng2 = null; collCode = null;
-                    for (int c = 1; c <= md.getColumnCount(); c++)
-                    {
-                    	if (includeColumn(c))
-                    	{
-                    		String value = "";
-                    		try
-                    		{
-                    			value = rs.getString(c);
-                    		} catch (Exception ex)
-                    		{
-                    			ex.printStackTrace();
-                    		}
-                    		if (c == 1)
-                    		{
-                    			//doc.add(new Field("spid", value, Field.Store.YES, Field.Index.ANALYZED));
-                    			doc.add(new StringField("spid", value, Field.Store.YES));
-                    		} else {
-								if (value != null) {
-									ExportMappingInfo info = map
-											.getMappingByColIdx(c - 2);
-									value = processValue(value, info);
-									String fldType = getSolrFldType(info);
-									if (fldType.equals("string")) {
-										if (info.isFullTextSearch()) {
-											doc.add(new TextField(shortNames.get(c - 2), value,
-													Field.Store.YES));
-										} else {
-											doc.add(new StringField(shortNames.get(c - 2), value,
-													Field.Store.YES));
-										}
-									} else if (fldType.equals("boolean")) {
-										doc.add(new StringField(shortNames.get(c - 2), value,
-												Field.Store.YES));
-									} else {
-										if (fldType.endsWith("int")) {
-											doc.add(new IntField(shortNames.get(c - 2), rs.getInt(c),
-													Field.Store.YES));
-										} else if (fldType.endsWith("double")) {
-											doc.add(new DoubleField(shortNames.get(c - 2), rs.getDouble(c),
-													Field.Store.YES));
-										} else if (fldType.endsWith("long")) {
-											doc.add(new LongField(shortNames.get(c - 2), rs.getLong(c),
-													Field.Store.YES));
-										} else if (fldType.endsWith("float")) {
-											doc.add(new FloatField(shortNames.get(c - 2), rs.getFloat(c),
-													Field.Store.YES));
-										}
-									}
-									contents.append(StringUtils.isNotEmpty(value) ? value : " ");
-									contents.append('\t');
-									if ("latitude1".equalsIgnoreCase(map.getMappingByColIdx(c - 2).getSpFldName())) {
-										lat1 = value;
-									} else if ("latitude2".equalsIgnoreCase(map.getMappingByColIdx(c - 2).getSpFldName())) {
-										lat2 = value;
-									} else if ("longitude1".equalsIgnoreCase(map.getMappingByColIdx(c - 2).getSpFldName())) {
-										lng1 = value;
-									} else if ("longitude2".equalsIgnoreCase(map.getMappingByColIdx(c - 2).getSpFldName())) {
-										lng2 = value;
-									}
-									if ("collectionCode".equalsIgnoreCase(info.getConcept())) {
-										collCode = value;
-									}
-								}
-							}
-						}
-					}
-                    indexStr.append(contents);
+                    for (int c = 1; c <= md.getColumnCount(); c++) {
+                        String value = "";
+                        try {
+                            value = rs.getString(c);
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                        if (c == 1) {
+							//it's the GUID
+							row.add(value);
+						} else if (c == 2) {
+                        	//its the (CO by default for now) Record ID
+							continue;
+                        } else {
+                        	ExportMappingInfo info = map.getMappingByColIdx(c - 3);
+                            row.add(value == null ? null : processValue(value, info)); //will this lead to stupid precision for floats?
+                            if (value != null) {
+								contents.append(StringUtils.isNotEmpty(value) ? value : " ");
+                                contents.append('\t');
+                                if ("latitude1".equalsIgnoreCase(map.getMappingByColIdx(c - 3).getSpFldName())) {
+                                    lat1 = value;
+                                } else if ("latitude2".equalsIgnoreCase(map.getMappingByColIdx(c - 3).getSpFldName())) {
+                                    lat2 = value;
+                                } else if ("longitude1".equalsIgnoreCase(map.getMappingByColIdx(c - 3).getSpFldName())) {
+                                    lng1 = value;
+                                } else if ("longitude2".equalsIgnoreCase(map.getMappingByColIdx(c - 3).getSpFldName())) {
+                                    lng2 = value;
+                                }
+                                if ("collectionCode".equalsIgnoreCase(info.getConcept())) {
+                                    collCode = value;
+                                }
+                            }                        }
+                    }
+                    //indexStr.append(contents);
 
-                    //XXX what, exactly, are the reasons for the store/tokenize settings on these 2?
+                    //XXX what, exactly, are the reasons for the store/tokenize settings on these 2 in index()?
                     //Ditto for store setting for geoc and img below?
-                    doc.add(new TextField("cs", indexStr.toString(), Field.Store.NO));
-                    doc.add(new StringField("contents", contents.toString(), Field.Store.YES));
-                    
-                    if (lat1 != null && lng1 != null)
-                    {
-                    	String geoc = lat1 + " " + lng1;
-//                    	if (lat2 != null && lng2 != null)
-//                    	{
-//                    		geoc += " " + lat2 + " " + lng2;
-//                    	}
-						if (collCode != null) {
-							geoc += " " + collCode;
-						}
-                        doc.add(new StringField("geoc", geoc, Field.Store.NO));
-                    }
-                    
-                    String attachments = getAttachments(dbConn2, "collectionobject", rs.getInt(1), false);
-                    if (attachments != null && attachments.length() > 0)
-                    {
-                    	doc.add(new StringField("img", attachments, Field.Store.YES));
-                    }
-                    writers[0].addDocument(doc);
-                    
-                    //System.out.println(procRecs+" "+rs.getString(1));
-                    procRecs++;
-                    if (procRecs % 1000 == 0)
-                    {
-                        System.out.println(procRecs);
-                        if (progressListener != null)
-                        {
-                        	progressListener.currentRow(procRecs-1);
+                    //row.add(indexStr.toString()); //"cs" what is this for ? it is the same as contents no?
+                    //row.add(contents.toString()); //"contents"
+
+                    String geoc = null;
+                    if (lat1 != null && lng1 != null) {
+                        geoc = lat1 + " " + lng1;
+                        if (collCode != null) {
+                            geoc += " " + collCode;
                         }
                     }
-                    
-                    if (procRecs % 100000 == 0)
-                    {
-                        System.out.println("Optimizing...");
-                        //writers[0].optimize();
+                    //row.add(geoc);
+
+                    String attachments = getAttachments(dbConn2, "collectionobject", rs.getString(1), false);
+                    //row.add(attachments);
+					row.add(1, geoc);
+					row.add(1, attachments);
+					row.add(1, contents.toString());
+					//row.add(1, indexStr.toString());
+                    tbl.add(row);
+                   //System.out.println(procRecs+" "+rs.getString(1));
+                    procRecs++;
+                    if (procRecs % 1000 == 0) {
+                        System.out.println(procRecs);
+                        if (progressListener != null) {
+                            progressListener.currentRow(procRecs-1);
+                        }
                     }
                 }
                 rs.close();
-                
+
                 writePortalJsonToFile(portalFldJson);
                 writeSolrFldXmlToFile(solrFldXml);
-                writePortalInstanceJsonToFile();
+                writePortalInstanceJsonToFile(map, shortNames);
+                writeTblToCsv(tbl);
 
-            } catch (Exception ex) 
-            {
+            } catch (Exception ex) {
                 UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(this.getClass(), ex);	
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(this.getClass(), ex);
                 return false;
-            } finally
-            {
-                
-                if (stmt != null)
-                {
-                    try
-                    {
+            } finally {
+                if (stmt != null) {
+                    try {
                         if (stmt != null) stmt.close();
                         if (stmt2 != null) stmt2.close();
                         if (stmt3 != null) stmt3.close();
-                        
-                    } catch (SQLException e)
-                    {
+                    } catch (SQLException e) {
                         UsageTracker.incrHandledUsageCount();
-                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(this.getClass(), e);	
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(this.getClass(), e);
                         return false;
                     }
                 }
 
             }
-            
-        } catch (Exception ex) 
-        {
-        	UsageTracker.incrHandledUsageCount();
-        	edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(this.getClass(), ex);	
-        	return false;
-            
-        } finally
-        {
-            for (Analyzer a : analyzers)
-            {
-                a.close();
-            }
-            analyzers = null;
-            
-            for (IndexWriter writer : writers)
-            {
-                try
-                {
-                    System.out.println("Optimizing...");
-                    //writer.optimize();
-                    writer.close();
-                    System.out.println("Done Optimizing.");
-                    
-                } catch (Exception ex) 
-                {
-                	UsageTracker.incrHandledUsageCount();
-                	edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(this.getClass(), ex);	
-                	return false;
-                    
-                }                 
-                writer = null;
-            }
-            
+        } catch (Exception ex){
+            UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(this.getClass(), ex);
+            return false;
         }
-
         buildZipFile();
-
-        if (progressListener != null)
-        {
-        	progressListener.done(totalRecs);
+        if (progressListener != null) {
+            progressListener.done(totalRecs);
         }
         long endTime = System.currentTimeMillis();
         System.out.println("Time: "+ (endTime - startTime) / 1000);
         return true;
-
+    }
+    /**
+     * 
+     */
+    public boolean index(QBDataSourceListenerIFace progressListener)
+    {
+		return exportWebPortal(progressListener);
+//        if (progressListener != null)
+//        {
+//        	progressListener.loading();
+//        }
+//
+//       long startTime = System.currentTimeMillis();
+//
+//        IndexWriter[] writers = null;
+//        long totalRecs = 0;
+//        List<String> solrFldXml = null;
+//        List<String> portalFldJson = null;
+//
+//        try
+//        {
+//            for (int i=0;i<analyzers.length;i++)
+//            {
+//                files[i]     = new File(fileNames[i]);
+//                analyzers[i] = new StandardAnalyzer(CharArraySet.EMPTY_SET);
+//                FileUtils.deleteDirectory(files[i]);
+//            }
+//
+//            System.out.println("Indexing to directory '" + INDEX_DIR + "'...");
+//
+//            ExportMappingHelper map = new ExportMappingHelper(dbConn, mapping.getId());
+//
+//            Map<Integer, String> shortNames = getShortNamesForFields(map);
+//
+//            totalRecs = BasicSQLUtils.getCount(dbConn, "SELECT COUNT(*) FROM " + map.getCacheTblName());
+//            if (progressListener != null)
+//            {
+//            	progressListener.loaded();
+//            	progressListener.rowCount(totalRecs);
+//            }
+//            long procRecs  = 0;
+//
+//            Statement stmt  = null;
+//            Statement stmt2 = null;
+//            Statement stmt3 = null;
+//            try
+//            {
+//                writers = new IndexWriter[analyzers.length];
+//                for (int i=0;i<files.length;i++)
+//                {
+//                    writers[i] = new IndexWriter(FSDirectory.open(java.nio.file.Paths.get(files[i].getPath())), new IndexWriterConfig(analyzers[i]));
+//                }
+//
+//                System.out.println("Total Records: "+totalRecs);
+//
+//                //stmt = dbConn.createStatement(ResultSet.TYPE_FORWARD_ONLY,ResultSet.CONCUR_READ_ONLY);
+//                stmt = dbConn.createStatement();
+//                stmt.setFetchSize(Integer.MIN_VALUE);
+//
+//                stmt2 = dbConn2.createStatement();
+//
+//                stmt3 = dbConn3.createStatement();
+//                stmt3.setFetchSize(Integer.MIN_VALUE);
+//
+//                //pStmt = dbConn3.prepareStatement("SELECT Text1 FROM preparation WHERE CollectionObjectID = ? AND Text1 IS NOT NULL");
+//
+//                String sql = createQuery(map.getCacheTblName());
+//                System.out.println(sql);
+//
+//                ResultSet     rs       = stmt.executeQuery(sql); //may consume all memory for giant caches
+//                ResultSetMetaData md = rs.getMetaData();
+//
+//                StringBuilder indexStr = new StringBuilder();
+//                StringBuilder contents = new StringBuilder();
+//                StringBuilder sb       = new StringBuilder();
+//                String lat1 = null, lng1 = null, lat2 = null, lng2 = null, collCode = null;
+//                solrFldXml = getFldsXmlForSchema(map, shortNames);
+//                portalFldJson = getModelInJson(map, shortNames);
+//                while (rs.next())
+//                {
+//                    Document doc = new Document();
+//                    indexStr.setLength(0);
+//                    contents.setLength(0);
+//                    sb.setLength(0);
+//                    lat1 = null; lng1 = null; lat2 = null; lng2 = null; collCode = null;
+//                    for (int c = 1; c <= md.getColumnCount(); c++)
+//                    {
+//                    	if (includeColumn(c))
+//                    	{
+//                    		String value = "";
+//                    		try
+//                    		{
+//                    			value = rs.getString(c);
+//                    		} catch (Exception ex)
+//                    		{
+//                    			ex.printStackTrace();
+//                    		}
+//                    		if (c == 1)
+//                    		{
+//                    			//doc.add(new Field("spid", value, Field.Store.YES, Field.Index.ANALYZED));
+//                    			doc.add(new StringField("spid", value, Field.Store.YES));
+//                    		} else {
+//								if (value != null) {
+//									ExportMappingInfo info = map
+//											.getMappingByColIdx(c - 2);
+//									value = processValue(value, info);
+//									String fldType = getSolrFldType(info);
+//									if (fldType.equals("string")) {
+//										if (info.isFullTextSearch()) {
+//											doc.add(new TextField(shortNames.get(c - 2), value,
+//													Field.Store.YES));
+//										} else {
+//											doc.add(new StringField(shortNames.get(c - 2), value,
+//													Field.Store.YES));
+//										}
+//									} else if (fldType.equals("boolean")) {
+//										doc.add(new StringField(shortNames.get(c - 2), value,
+//												Field.Store.YES));
+//									} else {
+//										if (fldType.endsWith("int")) {
+//											doc.add(new IntPoint(shortNames.get(c - 2), rs.getInt(c)));
+//										} else if (fldType.endsWith("double")) {
+//											doc.add(new DoublePoint(shortNames.get(c - 2), rs.getDouble(c)));
+//										} else if (fldType.endsWith("long")) {
+//											doc.add(new LongPoint(shortNames.get(c - 2), rs.getLong(c)));
+//										} else if (fldType.endsWith("float")) {
+//											doc.add(new FloatPoint(shortNames.get(c - 2), rs.getFloat(c)));
+//										}
+//									}
+//									contents.append(StringUtils.isNotEmpty(value) ? value : " ");
+//									contents.append('\t');
+//									if ("latitude1".equalsIgnoreCase(map.getMappingByColIdx(c - 2).getSpFldName())) {
+//										lat1 = value;
+//									} else if ("latitude2".equalsIgnoreCase(map.getMappingByColIdx(c - 2).getSpFldName())) {
+//										lat2 = value;
+//									} else if ("longitude1".equalsIgnoreCase(map.getMappingByColIdx(c - 2).getSpFldName())) {
+//										lng1 = value;
+//									} else if ("longitude2".equalsIgnoreCase(map.getMappingByColIdx(c - 2).getSpFldName())) {
+//										lng2 = value;
+//									}
+//									if ("collectionCode".equalsIgnoreCase(info.getConcept())) {
+//										collCode = value;
+//									}
+//								}
+//							}
+//						}
+//					}
+//                    indexStr.append(contents);
+//
+//                    //XXX what, exactly, are the reasons for the store/tokenize settings on these 2?
+//                    //Ditto for store setting for geoc and img below?
+//                    doc.add(new TextField("cs", indexStr.toString(), Field.Store.NO));
+//                    doc.add(new StringField("contents", contents.toString(), Field.Store.YES));
+//
+//                    if (lat1 != null && lng1 != null)
+//                    {
+//                    	String geoc = lat1 + " " + lng1;
+////                    	if (lat2 != null && lng2 != null)
+////                    	{
+////                    		geoc += " " + lat2 + " " + lng2;
+////                    	}
+//						if (collCode != null) {
+//							geoc += " " + collCode;
+//						}
+//                        doc.add(new StringField("geoc", geoc, Field.Store.NO));
+//                    }
+//
+//                    String attachments = getAttachments(dbConn2, "collectionobject", rs.getInt(1), false);
+//                    if (attachments != null && attachments.length() > 0)
+//                    {
+//                    	doc.add(new StringField("img", attachments, Field.Store.YES));
+//                    }
+//                    writers[0].addDocument(doc);
+//
+//                    //System.out.println(procRecs+" "+rs.getString(1));
+//                    procRecs++;
+//                    if (procRecs % 1000 == 0)
+//                    {
+//                        System.out.println(procRecs);
+//                        if (progressListener != null)
+//                        {
+//                        	progressListener.currentRow(procRecs-1);
+//                        }
+//                    }
+//
+//                    if (procRecs % 100000 == 0)
+//                    {
+//                        System.out.println("Optimizing...");
+//                        //writers[0].optimize();
+//                    }
+//                }
+//                rs.close();
+//
+//                writePortalJsonToFile(portalFldJson);
+//                writeSolrFldXmlToFile(solrFldXml);
+//                writePortalInstanceJsonToFile();
+//
+//            } catch (Exception ex)
+//            {
+//                UsageTracker.incrHandledUsageCount();
+//                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(this.getClass(), ex);
+//                return false;
+//            } finally
+//            {
+//
+//                if (stmt != null)
+//                {
+//                    try
+//                    {
+//                        if (stmt != null) stmt.close();
+//                        if (stmt2 != null) stmt2.close();
+//                        if (stmt3 != null) stmt3.close();
+//
+//                    } catch (SQLException e)
+//                    {
+//                        UsageTracker.incrHandledUsageCount();
+//                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(this.getClass(), e);
+//                        return false;
+//                    }
+//                }
+//
+//            }
+//
+//        } catch (Exception ex)
+//        {
+//        	UsageTracker.incrHandledUsageCount();
+//        	edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(this.getClass(), ex);
+//        	return false;
+//
+//        } finally
+//        {
+//            for (Analyzer a : analyzers)
+//            {
+//                a.close();
+//            }
+//            analyzers = null;
+//
+//            for (IndexWriter writer : writers)
+//            {
+//                try
+//                {
+//                    System.out.println("Optimizing...");
+//                    //writer.optimize();
+//                    writer.close();
+//                    System.out.println("Done Optimizing.");
+//
+//                } catch (Exception ex)
+//                {
+//                	UsageTracker.incrHandledUsageCount();
+//                	edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(this.getClass(), ex);
+//                	return false;
+//
+//                }
+//                writer = null;
+//            }
+//
+//        }
+//
+//        buildZipFile();
+//
+//        if (progressListener != null)
+//        {
+//        	progressListener.done(totalRecs);
+//        }
+//        long endTime = System.currentTimeMillis();
+//        System.out.println("Time: "+ (endTime - startTime) / 1000);
+//        return true;
+//
     }
 
     private void  buildZipFile() {
