@@ -404,7 +404,7 @@ public class SGRMatcherUI extends CustomDialog
             } catch (QueryNodeException e) { throw new RuntimeException(e); }
 
             Set<Term> terms = new HashSet<Term>();
-            /*breaks with solr 7.5*///q.extractTerms(terms);
+            q.extractTerms(terms);
             for (Term t : terms)
             if (t.field().equals(field))
             {

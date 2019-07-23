@@ -6,7 +6,7 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
-//import edu.ku.brc.specify.dbsupport.cleanuptools.LocalityDuplicateRemover;
+import edu.ku.brc.specify.dbsupport.cleanuptools.LocalityDuplicateRemover;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.tmanfe.RHCellMouseAdapter;
@@ -74,48 +74,48 @@ public class DuplicateSetDisplay extends JPanel implements RHCellOwner {
     }
 
     protected void getFormats() {
-//        SwingWorker formatter = new SwingWorker() {
-//
-//            DataProviderSessionIFace session;
-//
-//            @Override
-//            public Object doInBackground() {
-//                session = DataProviderFactory.getInstance().createSession();
-//                int row = 0;
-//                for (Object[] set : dups) {
-//                    DataModelObjBase obj = null;
-//                    Integer id = null;
-//                    try {
-//                        String sql = LocalityDuplicateRemover.getSqlForIdsInSetOfDups(tblInfo.getName(), set);
-//                        sets.set(row, BasicSQLUtils.querySingleCol(sql));
-//                        id = (Integer) sets.get(row).get(0);
-//                        obj = id != null ? (DataModelObjBase) session.get(tblInfo.getClassObj(), id) : null;
-//                    } catch (Exception ex) {
-//                        log.error(ex);
-//                    }
-//                    final int r = row++;
-//                    if (obj != null) {
-//                        obj.forceLoad();
-//                    }
-//                    String format = obj != null ?
-//                            DataObjFieldFormatMgr.getInstance().format(obj, tblInfo.getDataObjFormatter()) : null;
-//                    final String text = format != null ? format : tblInfo.getTitle() + ": " + id;
-//                    //System.out.println(text);
-//                    SwingUtilities.invokeLater(() -> tbl.getModel().setValueAt(text, r, DESC_COL_IDX));
-//                }
-//                return null;
-//            }
-//
-//            @Override
-//            protected void done() {
-//                super.done();
-//                session.close();
-//                resizeColumnWidth(tbl, 0);
-//                resizeColumnWidth(tbl, 1);
-//                resizeColumnWidth(tbl, 2);
-//            }
-//        };
-//        formatter.execute();
+        SwingWorker formatter = new SwingWorker() {
+
+            DataProviderSessionIFace session;
+
+            @Override
+            public Object doInBackground() {
+                session = DataProviderFactory.getInstance().createSession();
+                int row = 0;
+                for (Object[] set : dups) {
+                    DataModelObjBase obj = null;
+                    Integer id = null;
+                    try {
+                        String sql = LocalityDuplicateRemover.getSqlForIdsInSetOfDups(tblInfo.getName(), set);
+                        sets.set(row, BasicSQLUtils.querySingleCol(sql));
+                        id = (Integer) sets.get(row).get(0);
+                        obj = id != null ? (DataModelObjBase) session.get(tblInfo.getClassObj(), id) : null;
+                    } catch (Exception ex) {
+                        log.error(ex);
+                    }
+                    final int r = row++;
+                    if (obj != null) {
+                        obj.forceLoad();
+                    }
+                    String format = obj != null ?
+                            DataObjFieldFormatMgr.getInstance().format(obj, tblInfo.getDataObjFormatter()) : null;
+                    final String text = format != null ? format : tblInfo.getTitle() + ": " + id;
+                    //System.out.println(text);
+                    SwingUtilities.invokeLater(() -> tbl.getModel().setValueAt(text, r, DESC_COL_IDX));
+                }
+                return null;
+            }
+
+            @Override
+            protected void done() {
+                super.done();
+                session.close();
+                resizeColumnWidth(tbl, 0);
+                resizeColumnWidth(tbl, 1);
+                resizeColumnWidth(tbl, 2);
+            }
+        };
+        formatter.execute();
     }
 
     private void resizeColumnWidth(JTable table, int col) {
