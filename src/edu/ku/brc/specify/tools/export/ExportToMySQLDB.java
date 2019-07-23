@@ -330,23 +330,6 @@ public class ExportToMySQLDB
 	    
 		try 
 		{
-			String sqlMode = BasicSQLUtils.querySingleObj(toConnection, "select @@sql_mode");
-			String oldSqlMode = sqlMode;
-			if (sqlMode != null) {
-				sqlMode = sqlMode.replace("NO_ZERO_IN_DATE","");
-				sqlMode = sqlMode.replace("NO_ZERO_DATE", "");
-				sqlMode = sqlMode.replaceAll(",,",",");
-				if (sqlMode.startsWith(",")) {
-					sqlMode = sqlMode.substring(1);
-				}
-				if (sqlMode.endsWith(",")) {
-					sqlMode = sqlMode.substring(0,sqlMode.length() - 1);
-				}
-				sqlMode = sqlMode.trim();
-			}
-			if (sqlMode != null && !sqlMode.equalsIgnoreCase(oldSqlMode)) {
-				BasicSQLUtils.update(toConnection, "set sql_mode = '" + sqlMode + "'");
-			}
 			boolean newTable = false;
 			String tblName = fixTblNameForMySQL(originalTblName);
 			if (firstPass && (overwrite || !tableExists(toConnection, tblName)))
