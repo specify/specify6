@@ -23,6 +23,7 @@ import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.weblink.WebLinkButton;
 import edu.ku.brc.af.ui.weblink.WebLinkMgr;
@@ -73,6 +74,9 @@ import java.util.zip.ZipOutputStream;
  */
 public class BuildSearchIndex2
 {
+
+	public final static String PROCESS_WEBLINKS_PREF_NAME = "webportal.PROCESS_WEBLINKS";
+	public final static boolean PROCESS_WEBLINKS_PREF_DEFAULT = false;
 
     private final String collectionName;
     private final String attachmentURL;
@@ -640,17 +644,20 @@ public class BuildSearchIndex2
 		//check for weblink
         DBFieldInfo fld = info.getFldInfo();
         if (fld != null) {
-            String wl = fld.getWebLinkName();
-            if (wl != null) {
-                WebLinkDef webLinkDef = WebLinkMgr.getInstance().get(wl);
-                if (webLinkDef != null) {
-                    if (webLinkDef.getArgs().size() == 1 && "this".equals(webLinkDef.getArgs().get(0).getName())) {
-                        Hashtable<String, String> valHash = new Hashtable<>();
-                        valHash.put("this", value);
-                        return WebLinkButton.buildUrl(webLinkDef, valHash);
-                    }
-                }
-            }
+			AppPreferences rPrefs = AppPreferences.getRemote();
+        	if (rPrefs.getBoolean(PROCESS_WEBLINKS_PREF_NAME, PROCESS_WEBLINKS_PREF_DEFAULT)) {
+				String wl = fld.getWebLinkName();
+				if (wl != null) {
+					WebLinkDef webLinkDef = WebLinkMgr.getInstance().get(wl);
+					if (webLinkDef != null) {
+						if (webLinkDef.getArgs().size() == 1 && "this".equals(webLinkDef.getArgs().get(0).getName())) {
+							Hashtable<String, String> valHash = new Hashtable<>();
+							valHash.put("this", value);
+							return WebLinkButton.buildUrl(webLinkDef, valHash);
+						}
+					}
+				}
+			}
         }
         return value;
 	}
