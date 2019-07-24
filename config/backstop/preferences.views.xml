@@ -135,7 +135,13 @@
                 <altview name="NetworkProxy" viewdef="NetworkProxy" label="NETWORK_PROXY" mode="edit" validated="true"/>
             </altviews>
         </view>
-        
+        <view name="WebPortal" class="java.util.prefs.Preferences">
+            <desc><![CDATA[WebPortal Preference Form.]]></desc>
+            <altviews>
+                <altview name="WebPortal" viewdef="WebPortal" label="V_WebPortal" mode="edit" validated="true"/>
+            </altviews>
+        </view>
+
     </views>
 
     <!-- ***************************************************************************************** -->
@@ -1084,6 +1090,26 @@
                 </row>  -->
             </rows>
         </viewdef>
-        
+
+        <viewdef
+                type="form"
+                name="WebPortal"
+                class="java.util.prefs.Preferences"
+                gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
+                settable="edu.ku.brc.af.prefs.PrefsSettableImpl"
+                useresourcelabels="true">
+
+            <desc><![CDATA[WebPortal Pref Form.]]></desc>
+
+            <columnDef>p,2dlu,p,f:p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+            <rows>
+                <row>
+                    <cell type="field" id="webportal.PROCESS_WEBLINKS" name="webportal.PROCESS_WEBLINKS" uitype="checkbox" label="PROCESS_WEBLINKS" colspan="4"/>
+                </row>
+            </rows>
+
+        </viewdef>
+
     </viewdefs>
 </viewset>
