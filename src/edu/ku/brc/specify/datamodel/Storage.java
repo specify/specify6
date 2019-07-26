@@ -463,7 +463,7 @@ public class Storage extends DataModelObjBase implements AttachmentOwnerIFace<St
         this.parent = parent;
     }
 
-    @OneToMany(mappedBy = "storage")
+    @OneToMany(mappedBy = "alternateStorage")
     @Cascade( {CascadeType.MERGE, CascadeType.LOCK} )
     public Set<Preparation> getAlternateStoragePreparations()
     {
