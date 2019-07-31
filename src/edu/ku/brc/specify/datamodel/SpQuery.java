@@ -278,7 +278,7 @@ public class SpQuery extends DataModelObjBase implements Cloneable
     @Column(name = "IsFavorite", unique = false, nullable = true, insertable = true, updatable = true)
     public Boolean getIsFavorite()
     {
-        return isFavorite;
+        return isFavorite == null ? false : isFavorite;
     }
 
     /**
@@ -287,7 +287,7 @@ public class SpQuery extends DataModelObjBase implements Cloneable
     @Column(name = "FormatAuditRecIds", unique = false, nullable = true, insertable = true, updatable = true)
     public Boolean getFormatAuditRecIds()
     {
-        return formatAuditRecIds;
+        return formatAuditRecIds == null ? false : formatAuditRecIds;
     }
 
     /**
@@ -296,7 +296,7 @@ public class SpQuery extends DataModelObjBase implements Cloneable
     @Column(name = "Smushed", unique = false, nullable = true, insertable = true, updatable = true)
     public Boolean getSmushed()
     {
-        return smushed;
+        return smushed == null ? false : smushed;
     }
 
     /**
@@ -314,7 +314,7 @@ public class SpQuery extends DataModelObjBase implements Cloneable
     @Column(name = "SelectDistinct", unique = false, nullable = true, insertable = true, updatable = true)
 	public Boolean getSelectDistinct() 
 	{
-		return selectDistinct;
+		return selectDistinct == null ? false : selectDistinct;
 	}
 
 	/**
@@ -331,7 +331,7 @@ public class SpQuery extends DataModelObjBase implements Cloneable
     @Column(name = "SearchSynonymy", unique = false, nullable = true, insertable = true, updatable = true)
 	public Boolean getSearchSynonymy() 
 	{
-		return searchSynonymy;
+		return searchSynonymy == null ? false : searchSynonymy;
 	}
 
 	/**
@@ -358,7 +358,7 @@ public class SpQuery extends DataModelObjBase implements Cloneable
 	@Column(name = "CountOnly", unique = false, nullable = true, insertable = true, updatable = true)
 	public Boolean getCountOnly()
 	{
-		return countOnly;
+		return countOnly == null ? false : countOnly;
 	}
 
 	/**

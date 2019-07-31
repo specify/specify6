@@ -436,7 +436,7 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
     @Column(name = "IsNot", unique = false, nullable = false, insertable = true, updatable = true)
     public Boolean getIsNot()
     {
-        return isNot;
+        return isNot == null ? false : isNot;
     }
 
     /**
@@ -445,7 +445,7 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
     @Column(name = "IsDisplay", unique = false, nullable = false, insertable = true, updatable = true)
     public Boolean getIsDisplay()
     {
-        return isDisplay;
+        return isDisplay == null ? false : isDisplay;
     }
 
     /**
@@ -454,7 +454,7 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
     @Column(name = "IsPrompt", unique = false, nullable = true, insertable = true, updatable = true)
     public Boolean getIsPrompt()
     {
-        return isPrompt;
+        return isPrompt == null ? false : isPrompt;
     }
 
     /**
@@ -463,7 +463,7 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
     @Column(name = "IsRelFld", unique = false, nullable = true, insertable = true, updatable = true)
     public Boolean getIsRelFld()
     {
-        return isRelFld;
+        return isRelFld == null ? false : isRelFld;
     }
 
     /**
@@ -472,7 +472,7 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
     @Column(name = "AlwaysFilter", unique = false, nullable = true, insertable = true, updatable = true)
     public Boolean getAlwaysFilter()
     {
-        return alwaysFilter;
+        return alwaysFilter == null ? false : alwaysFilter;
     }
 
     /**
@@ -481,7 +481,7 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
     @Column(name = "AllowNulls", unique = false, nullable = true, insertable = true, updatable = true)
     public Boolean getAllowNulls()
     {
-        return allowNulls;
+        return allowNulls == null ? false : allowNulls;
     }
 
     /**
