@@ -1740,7 +1740,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 					DataProviderSessionIFace theSession = DataProviderFactory.getInstance().createSession();
 					try {
 						//QueryIFace query = theSession.createQuery(hql.getHql(), false);
-						QueryIFace query = theSession.createQuery(QueryBldrPane.getCountDistinctHql(hql.getHql()), false);
+						QueryIFace query = theSession.createQuery(QueryBldrPane.getCountDistinctIdHql(hql.getHql()), false);
 						if (hql.getArgs() != null) {
 							for (Pair<String, Object> param : hql.getArgs()) {
 								query.setParameter(param.getFirst(), param.getSecond());

@@ -1542,7 +1542,18 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 
         StringBuilder sqlStr = new StringBuilder();
         sqlStr.append("select ");
-        //if (distinct /*|| hqlHasSynJoins*/)
+        boolean forceDistinct = isSchemaExport;
+        if (!forceDistinct) {
+            boolean isSchemaPreview = false;
+            for (int q = 0; q < qfps.size(); q++) {
+                if (qfps.get(q).getSchemaItemCBX() != null) {
+                    isSchemaPreview = true;
+                    break;
+                }
+            }
+            forceDistinct = isSchemaPreview;
+        }
+        if (distinct || forceDistinct /*|| hqlHasSynJoins*/)
         {
             sqlStr.append("distinct ");
         }
@@ -1772,10 +1783,10 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     	
     	int fromStart = hql.toLowerCase().indexOf(" from ");
     	int orderStart = hql.toLowerCase().indexOf(" order by ");
-    	
+
     	return "select count(*) " + (orderStart > fromStart ? hql.substring(fromStart, orderStart) : hql.substring(fromStart));
-    	
-//    	int idEnd = hql.indexOf(',', 0); 
+
+//    	int idEnd = hql.indexOf(',', 0);
 //        String fldPart = hql.substring(0, idEnd);
 //        if (fldPart.indexOf("distinct") != -1)
 //        {
@@ -1790,7 +1801,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      * @param hql
      * @return
      */
-    public static String getCountDistinctHql(final String hql)
+    public static String getCountDistinctIdHql(final String hql)
     {
         //Assumes the ID field is selected by hql -
     	//Assumes that  'select', is lower case.
@@ -1816,23 +1827,22 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      */
     public static Pair<Boolean, Long> checkUniqueRecIds(final String hql, final List<Pair<String, Object>> params)
     {
-    	String countHql = getCountHql(hql);
-    	String distinctHql = getCountDistinctHql(hql);
+    	String distinctHql = getCountDistinctIdHql(hql);
     	
     	DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         try
         {
         	try
         	{
-            	QueryIFace q1 = session.createQuery(countHql, false);
+            	QueryIFace q1 = session.createQuery(hql, false);
         		QueryIFace q2 = session.createQuery(distinctHql, false);
         		for (Pair<String, Object> param : params)
         		{
         			q1.setParameter(param.getFirst(), param.getSecond());
         			q2.setParameter(param.getFirst(), param.getSecond());
         		}
-        		Long q1Size = Long.valueOf(q1.list().get(0).toString());
-        		Long q2Size = Long.valueOf(q2.list().get(0).toString());
+        		Long q1Size = Long.valueOf(q1.list().size());
+                Long q2Size = Long.valueOf(q2.list().get(0).toString());
         		return new Pair<Boolean, Long>(q1Size.equals(q2Size), q1Size);
         	} catch (Exception ex) 
         	{
@@ -3214,7 +3224,13 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             public Object construct()
             {
                 if (qbPane != null) {
-                    if (qbPane.schemaMapping != null && !qbPane.countOnly /*this means the duplicate msg won't appear when counts are done */) {
+                        if (qbPane.schemaMapping != null && !qbPane.countOnly /*this means the duplicate msg won't appear when counts are done */) {
+                            SwingUtilities.invokeLater(() -> {
+                                if (qbPane.runningResults.get() != null && !qbPane.runningResults.get().getCancelled()) {
+                                    UIRegistry.getStatusBar().setText(UIRegistry.getResourceString("QB_CHECKING_UNIQUE_REC_IDS"));
+                                }
+                            });
+
                         if (!checkUniqueRecIds(hqlSpecs.getHql(), hqlSpecs.getArgs()).getFirst()) {
                             SwingUtilities.invokeLater(() -> UIRegistry.displayErrorDlg(UIRegistry.getResourceString("ExportPanel.DUPLICATE_KEYS_EXPORT")));
                             qbPane.runningResults.set(null);
