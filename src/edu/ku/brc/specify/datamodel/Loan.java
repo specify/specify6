@@ -38,6 +38,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
@@ -702,6 +703,40 @@ public class Loan extends DisciplineMember implements AttachmentOwnerIFace<LoanA
 //        return set;
 //    }
     
+    @Transient
+    public Integer getTotalItems() {
+        return countContents(false, false);
+    }
+
+    @Transient
+    public Integer getTotalQuantities() {
+        return countContents(true, false);
+    }
+
+    @Transient
+    public Integer getUnresolvedItems() {
+        return countContents(false, true);
+    }
+
+    @Transient
+    public Integer getUnresolvedQuantities() {
+        return countContents(true, true);
+    }
+
+    protected Integer countContents(Boolean countQuantity, Boolean countUnresolved) {
+        String select = countQuantity ? " sum(quantity" + (countUnresolved ? "-ifnull(quantityresolved,0)" : "") + ")"
+                : " count(*) ";
+        String sql = "select " + select + " from loanpreparation where loanid = " + getId();
+        if (countUnresolved) {
+            sql += " and (not isresolved";
+            if (countQuantity) {
+                sql += " or ifnull(quantity,0) - ifnull(quantityresolved,0) > 0";
+            }
+            sql += ")";
+        }
+        return BasicSQLUtils.getCountAsInt(sql);
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentTableId()
      */
