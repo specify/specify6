@@ -1,4 +1,46 @@
 <hashtable>
+  <!--entry>
+    <string>ATTACHMENTS</string>
+    <hashtable>
+      <entry>
+        <string>Manager</string>
+        <tp name="ATTACHMENTS" type="Manager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>LimitedAccess</string>
+        <tp name="ATTACHMENTS" type="LimitedAccess" view="false" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>Guest</string>
+        <tp name="ATTACHMENTS" type="Guest" view="false" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>FullAccess</string>
+        <tp name="ATTACHMENTS" type="FullAccess" view="false" modify="false" del="false" add="false"/>
+      </entry>
+    </hashtable>
+  </entry-->
+  <entry>
+    <string>AUDITS</string>
+    <hashtable>
+      <entry>
+        <string>Manager</string>
+        <tp name="AUDITS" type="Manager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>LimitedAccess</string>
+        <tp name="AUDITS" type="LimitedAccess" view="false" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>Guest</string>
+        <tp name="AUDITS" type="Guest" view="false" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>FullAccess</string>
+        <tp name="AUDITS" type="FullAccess" view="false" modify="false" del="false" add="false"/>
+      </entry>
+    </hashtable>
+  </entry>
   <entry>
     <string>LOGIN</string>
     <hashtable>
@@ -185,6 +227,27 @@
       <entry>
         <string>FullAccess</string>
         <tp name="TREE" type="FullAccess" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>WEBPORTAL</string>
+    <hashtable>
+      <entry>
+        <string>Manager</string>
+        <tp name="WEBPORTAL" type="Manager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>LimitedAccess</string>
+        <tp name="WEBPORTAL" type="LimitedAccess" view="false" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>Guest</string>
+        <tp name="WEBPORTAL" type="Guest" view="false" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>FullAccess</string>
+        <tp name="WEBPORTAL" type="FullAccess" view="false" modify="false" del="false" add="false"/>
       </entry>
     </hashtable>
   </entry>
