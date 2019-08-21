@@ -261,6 +261,7 @@ public class BuildSearchIndex2
     			+ "= att.AttachmentImageAttributeID inner join " + attacherTbl + " oatt on oatt.AttachmentID = att.AttachmentID"
 				+ " inner join " + baseTblName + " baset on baset." + baseTblID + " = oatt." + baseTblID
     			+  " where att.IsPublic and att.MimeType like 'image/%' and baset.GUID = '" + baseGUID + "'";
+    			//+  " where att.IsPublic and baset.GUID = '" + baseGUID + "'";
     	Statement stmt = null;
     	ResultSet rs = null;
     	String result = null;
@@ -706,6 +707,7 @@ public class BuildSearchIndex2
 
 	private void writeTblToCsv(List<List<String>> tbl) throws IOException {
 		if (tbl.size() > 0) {
+			File f = new File(writeToDir + File.separator + "PortalData.csv");
 			List<String> lines = new ArrayList<>();
 			for (List<String> row : tbl) {
 				String line = "";
@@ -713,14 +715,15 @@ public class BuildSearchIndex2
 					line = addValToLine(line, ",","\"", "\\", s, 0);
 				}
 				lines.add(line);
-				System.out.println(line);
 			}
-			try {
-				FileUtils.writeLines(new File(writeToDir + File.separator + "PortalData.csv"), "UTF-8", lines);
-			} catch (IOException e) {
-				edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-				edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BuildSearchIndex2.class, e);
-				throw (e);
+			if (lines.size() > 0) {
+				try {
+					FileUtils.writeLines(f, "UTF-8", lines, true);
+				} catch (IOException e) {
+					edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+					edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BuildSearchIndex2.class, e);
+					throw (e);
+				}
 			}
 		}
 	}
@@ -830,6 +833,10 @@ public class BuildSearchIndex2
 					row.add(1, contents.toString());
 					//row.add(1, indexStr.toString());
                     tbl.add(row);
+                    if (tbl.size() == 250000) {
+						writeTblToCsv(tbl);
+						tbl.clear();
+					}
                    //System.out.println(procRecs+" "+rs.getString(1));
                     procRecs++;
                     if (procRecs % 1000 == 0) {
