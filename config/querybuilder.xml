@@ -567,7 +567,8 @@
         <alias name="CollectionObject"/>
         <alias name="LoanPreparation" field="loanPreparations"/>
         <alias name="GiftPreparation" field="giftPreparations"/>
-        <alias name="Storage"/>
+        <alias name="Storage" field="storage"/>
+        <alias name="Storage" field="alternateStorage"/>
         <alias name="Agent" field="preparedByAgent" />
       	<alias name="Agent" field="createdByAgent" />
       	<alias name="Agent" field="modifiedByAgent" />
