@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dialog resourcelabels="">
+    <dialog type="gbif" view="GBIFCollection" name="GBIFCollection" />
+
     <dialog type="search" viewset="Search" view="AccessionSearch"          name="AccessionSearch"          class="edu.ku.brc.specify.datamodel.Accession"      idfield="accessionId" helpcontext="CBXQSearch"/>
     <dialog type="search" viewset="Search" view="AgentSearch"              name="AgentSearch"              class="edu.ku.brc.specify.datamodel.Agent"          idfield="agentId" helpcontext="CBXQSearch"/>
     <dialog type="search" viewset="Search" view="AppraisalSearch"          name="AppraisalSearch"          class="edu.ku.brc.specify.datamodel.Appraisal"      idfield="appraisalId" helpcontext="CBXQSearch"/>

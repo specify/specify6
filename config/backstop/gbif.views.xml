@@ -3,18 +3,19 @@
 <viewset name="gbif" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <views>
         <view
-            name="Collection"
+            name="GBIFCollection"
             usedefbusrule="false"
             resourcelabels="false">
             <desc><![CDATA[GBIF Collection Registration Form]]></desc>
             <altviews>
-                <altview name="Collection" viewdef="Collection" mode="edit" validated="true" default="true"/>
+                <altview name="GBIFCollection View" viewdef="GBIFCollection" mode="edit" validated="true" default="true"/>
+                <altview name="GBIFCollection Edit" viewdef="GBIFCollection" mode="edit"/>
             </altviews>
         </view>
     </views>
     <viewdefs>
         <viewdef type="form"
-            name="Collection"
+            name="GBIFCollection"
             gettable="edu.ku.brc.af.ui.forms.DataGetterForHashMap"
             settable="edu.ku.brc.af.ui.forms.DataSetterForHashMap">
 
