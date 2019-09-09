@@ -1854,6 +1854,11 @@ public class ViewFactory
                             if (fld != null)
                             {
                                 isACollection = Collection.class.isAssignableFrom(fld.getType());
+                            } else if (cls.equals(java.util.Hashtable.class))
+                            {
+                                isACollection =  cell.getProperties() != null ?
+                                        Boolean.valueOf(cell.getProperties().getProperty("many", "false")) :
+                                        false;
                             } else
                             {
                                 log.error("Couldn't find field ["+cellSubView.getName()+"] in class ["+parentView.getClassName()+"]");
@@ -2325,16 +2330,17 @@ public class ViewFactory
                     //edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                     //edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ViewFactory.class, ex);
                     
-                    UIRegistry.showError(String.format("There is no field named '%s' for class %s", fieldNames[i], parentCls));
-                    
-                    String parentTitle = parentCls.getSimpleName();
-                    DBTableInfo ti = DBTableIdMgr.getInstance().getByClassName(parentCls.getName());
-                    if (ti != null)
-                    {
-                        parentTitle = ti.getTitle();
+                    if (!dataClass.equals(java.util.Hashtable.class)) {
+                        UIRegistry.showError(String.format("There is no field named '%s' for class %s", fieldNames[i], parentCls));
+
+                        String parentTitle = parentCls.getSimpleName();
+                        DBTableInfo ti = DBTableIdMgr.getInstance().getByClassName(parentCls.getName());
+                        if (ti != null) {
+                            parentTitle = ti.getTitle();
+                        }
+
+                        UIRegistry.showError(String.format(UIRegistry.getResourceString("INVALID_FIELD_NAME"), fieldNames[i], parentTitle));
                     }
-                    
-                    UIRegistry.showError(String.format(UIRegistry.getResourceString("INVALID_FIELD_NAME"), fieldNames[i], parentTitle));
                 }
                 if (fld != null)
                 {

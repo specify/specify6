@@ -77,6 +77,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import net.sf.json.JSONObject;
+import net.sf.json.JSONArray;
 
 import static edu.ku.brc.helpers.XMLHelper.getAttr;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
@@ -191,19 +192,35 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
         return null;
     }
 
+    private Set<Object> fromJSONArray(JSONArray jArray) {
+        Set<Object> result = new HashSet<>();
+        for (Object aObj : (JSONArray) jArray) {
+            if (aObj instanceof JSONArray) {
+                result.add(fromJSONArray((JSONArray)aObj));
+            } else if (aObj instanceof JSONObject) {
+                result.add(hashMapFromJSON((JSONObject) aObj));
+            } else {
+                result.add(aObj);
+            }
+        }
+        return result;
+    }
+
+    private void hashMapFromJSON2(Object obj, Object key, HashMap<Object, Object> map) {
+        if (obj instanceof JSONArray) {
+            map.put(key, fromJSONArray((JSONArray)obj));
+        } else if (obj instanceof JSONObject) {
+            map.put(key, hashMapFromJSON((JSONObject) obj));
+        } else {
+            map.put(key, obj);
+        }
+    }
+
     private HashMap<Object, Object> hashMapFromJSON(JSONObject o) {
         HashMap<Object, Object> result = new HashMap<>();
         for (Object key : o.keySet()) {
             System.out.println(key);
-            Object obj = o.get(key);
-            if (obj instanceof JSONObject) {
-                HashMap<Object, Object> childObj = hashMapFromJSON((JSONObject)obj);
-                for (Object childKey : childObj.keySet()) {
-                    result.put(key + "." + childKey, childObj.get(childKey));
-                }
-            } else {
-                result.put(key, obj);
-            }
+            hashMapFromJSON2(o.get(key), key, result);
         }
         return result;
     }
