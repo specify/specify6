@@ -346,7 +346,6 @@ public class BuildSearchIndex2
     }
     
     /**
-     * @param inStr
      * @param len
      * @param used
      * @return an un-used abbreviation for str, hopefully of length <= len. 
@@ -358,7 +357,7 @@ public class BuildSearchIndex2
     private String getAbbreviation(ExportMappingInfo mapping, int len, List<String> used)
     {
     	String[] bad = {"°", ",", "°","\\","{","}","[","]",";",":","\"","'","!","@","#","$","%","^","&","*","(",")","+","=","|","/","?","<",">","~","`","."};
-    	String str = mapping.getFldTitle();
+    	String str = mapping.getSpFldName();
     	for (String b : bad) {
     		str = str.replace(b, "_");
     	}
