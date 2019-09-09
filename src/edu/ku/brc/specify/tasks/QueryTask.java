@@ -195,7 +195,15 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
         HashMap<Object, Object> result = new HashMap<>();
         for (Object key : o.keySet()) {
             System.out.println(key);
-            result.put(key, o.get(key));
+            Object obj = o.get(key);
+            if (obj instanceof JSONObject) {
+                HashMap<Object, Object> childObj = hashMapFromJSON((JSONObject)obj);
+                for (Object childKey : childObj.keySet()) {
+                    result.put(key + "." + childKey, childObj.get(childKey));
+                }
+            } else {
+                result.put(key, obj);
+            }
         }
         return result;
     }
