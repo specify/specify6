@@ -166,13 +166,14 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
         "GBIFCollection",
         "GEE! BIFF",
         "GO",
-        false,
+        true,
         0,
         null,
         ViewBasedDialogFactoryIFace.FRAME_TYPE.DIALOG);
         HashMap<Object, Object> co = hashMapFromJSON(getACollectionFromGBIF());
         dlg2.setData(co);
         dlg2.showDisplay(true);
+        System.out.println(co);
     }
     private JSONObject getACollectionFromGBIF() {
         HttpClient httpClient = new HttpClient();
