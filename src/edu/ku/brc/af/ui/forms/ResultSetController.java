@@ -696,7 +696,8 @@ public class ResultSetController implements ValidationListener
             //log.debug("updateUI - RS - formValidator.isTopLevel() "+formValidator.isTopLevel()+" isEnabled() "+formValidator.isEnabled());
             boolean enable = formValidator == null ? false : (formValidator.isTopLevel() || 
                     (formValidator.getParent() != null ? formValidator.getParent().isEnabled() : formValidator.isEnabled()));
-            if (formValidator.getName().equals("PreparationProperty")) {
+            //this is a debugging aid for still open bug #247
+            if (formValidator != null && formValidator.getName().equals("PreparationProperty")) {
                 if (!enable && newRecBtn.isEnabled()) {
                     log.debug("!!!!!!!!!!!!!!!!!!!!!!!!!DISABLING PP + !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                     new Exception().printStackTrace();
