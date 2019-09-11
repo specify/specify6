@@ -2839,7 +2839,22 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 	// XXX need to allow modification of SelectDistinct(etc) ???
                 	//boolean includeRecordIds = true;
                 	boolean includeRecordIds = !report.getQuery().isSelectDistinct();
-
+                	boolean filterDups = false;
+                	if (!includeRecordIds) {
+                        for (QueryFieldPanel panel : qfps) {
+                            FieldQRI qri = panel.getFieldQRI();
+                            if (qri instanceof TreeLevelQRI) {
+                                filterDups = true;
+                                break;
+                            } else if (qri instanceof RelQRI) {
+                                RelationshipType relType = ((RelQRI) qri).getRelationshipInfo().getType();
+                                if (relType.equals(RelationshipType.OneToMany) || relType.equals(RelationshipType.ManyToMany)) {
+                                    filterDups = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
                 	try
                 	{
                 		//XXX Is it safe to assume that query is not an export query? 
@@ -2858,7 +2873,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 	src = new QBDataSource(sql.getHql(), sql.getArgs(), sql
                         .getSortElements(), getColumnInfo(qfps, true, rootQRI.getTableInfo(), false),
                         includeRecordIds, report.getRepeats(), smushedCol,
-                        /*getRecordIdCol(qfps)*/0);
+                        /*getRecordIdCol(qfps)*/0, filterDups);
                 	((QBDataSource )src).startDataAcquisition();
                 }
                 else 
@@ -5401,6 +5416,38 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     public boolean isPromptMode()
     {
         return false;
+    }
+
+    protected static void removeDuplicatesFromCache(Vector<Vector<Object>> cache) {
+        List<SortElement> dupSorts = new LinkedList<SortElement>();
+        for (int c = 0; c < cache.get(0).size(); c++) {
+            dupSorts.add(new SortElement(c, SortElement.ASCENDING));
+        }
+        //Sort the rows by all columns, then iterate list and remove identical rows.
+        ResultRowComparator comparator = new ResultRowComparator(dupSorts);
+        Collections.sort(cache, comparator);
+        int r = 0;
+        LinkedList<Vector<Object>> rowsToDelete = new LinkedList<Vector<Object>>();
+        while (r < cache.size()) {
+            Vector<Object> row = cache.get(r);
+            r++;
+            boolean go = true;
+            while (r < cache.size() && go) {
+                Vector<Object> nextRow = cache.get(r);
+                if (comparator.compare(row, nextRow) == 0) {
+                    rowsToDelete.add(nextRow);
+                    r++;
+                } else {
+                    go = false;
+                }
+            }
+        }
+        //It is probably possible (and probably more efficient)
+        //to eliminate this step by using an iterator  and deleting
+        //in the loop above (if the iterator supports deletion).
+        for (Vector<Object> toDelete : rowsToDelete) {
+            cache.remove(toDelete);
+        }
     }
 
     /**

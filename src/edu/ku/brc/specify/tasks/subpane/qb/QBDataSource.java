@@ -19,11 +19,7 @@
 */
 package edu.ku.brc.specify.tasks.subpane.qb;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -77,6 +73,7 @@ public class QBDataSource extends QBDataSourceBase implements CustomQueryListene
     
     protected final int smusherColIdx;
     protected final int smusherRecIdIdx;
+    protected final boolean needToFilterDups;
     
     /**
      * true if data has been pre-processed (i.e. sorted).
@@ -375,7 +372,7 @@ public class QBDataSource extends QBDataSourceBase implements CustomQueryListene
      */
     protected boolean needToPreProcess()
     {
-    	return needToSort() || needToSmush();
+    	return needToSort() || needToSmush() || needToFilterDups();
     }
     
     /**
@@ -384,14 +381,17 @@ public class QBDataSource extends QBDataSourceBase implements CustomQueryListene
     protected boolean needToSort() {
     	return sort != null && sort.size() > 0;
     }
-    
+
+    protected boolean needToFilterDups() {
+        return this.needToFilterDups;
+    }
     /**
      * @return
      */
     protected boolean needToSmush() {
     	return smusherColIdx != -1;
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.CustomQueryListener#exectionDone(edu.ku.brc.dbsupport.CustomQueryIFace)
      */
@@ -456,6 +456,9 @@ public class QBDataSource extends QBDataSourceBase implements CustomQueryListene
                 cache.add(row);
             }
             this.setUpColNamesPostProcess();
+            if (needToFilterDups()) {
+                QueryBldrPane.removeDuplicatesFromCache(cache);
+            }
             if (needToSort()) {
             	Collections.sort(cache, new ResultRowComparator(sort, recordIdsIncluded, columnInfo));
             }
@@ -505,6 +508,7 @@ public class QBDataSource extends QBDataSourceBase implements CustomQueryListene
         //XXX assuming no smushing for exports, easy enough to add with some work in tools.export.ExportPanel.java
         this.smusherColIdx = -1;
         this.smusherRecIdIdx = -1;
+        this.needToFilterDups = false;
     }
     
     /**
@@ -517,7 +521,7 @@ public class QBDataSource extends QBDataSourceBase implements CustomQueryListene
     public QBDataSource(final String hql, final List<Pair<String, Object>> params, final List<SortElement> sort,
                           final List<ERTICaptionInfoQB> columnInfo,
                           final boolean recordIdsIncluded, final Object repeats,
-                          final int smusherColIdx, final int smusherRecIdIdx)
+                          final int smusherColIdx, final int smusherRecIdIdx, final boolean needToFilterDups)
     {
         super(columnInfo, recordIdsIncluded, repeats);
         this.hql = hql;
@@ -525,6 +529,7 @@ public class QBDataSource extends QBDataSourceBase implements CustomQueryListene
         this.sort = sort;
         this.smusherColIdx = smusherColIdx;
         this.smusherRecIdIdx = smusherRecIdIdx;
+        this.needToFilterDups = needToFilterDups;
     }    
     
     /**
