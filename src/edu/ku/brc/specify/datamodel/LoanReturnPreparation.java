@@ -20,20 +20,13 @@
 package edu.ku.brc.specify.datamodel;
 
 import java.util.Calendar;
+import java.util.HashSet;
+import java.util.Set;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
+import javax.persistence.*;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
 /**
@@ -57,7 +50,7 @@ public class LoanReturnPreparation extends DisciplineMember implements java.io.S
     protected Integer                quantityReturned;
     protected String                 remarks;
     protected LoanPreparation        loanPreparation;
-    protected DeaccessionPreparation deaccessionPreparation;
+    protected Set<DeaccessionPreparation> deaccessionPreparations;
     protected Agent                  receivedBy;
 
 
@@ -85,7 +78,7 @@ public class LoanReturnPreparation extends DisciplineMember implements java.io.S
         quantityReturned        = null;
         remarks                 = null;
         loanPreparation         = null;
-        deaccessionPreparation  = null;
+        deaccessionPreparations  = new HashSet<>();
         receivedBy              = null;
     }
     // End Initializer
@@ -197,14 +190,14 @@ public class LoanReturnPreparation extends DisciplineMember implements java.io.S
     /**
      *      * ID of associated (if present) DeaccessionPreparation record
      */
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "DeaccessionPreparationID", unique = false, nullable = true, insertable = true, updatable = true)
-    public DeaccessionPreparation getDeaccessionPreparation() {
-        return this.deaccessionPreparation;
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "loanReturnPreparation")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    public Set<DeaccessionPreparation> getDeaccessionPreparations() {
+        return this.deaccessionPreparations;
     }
     
-    public void setDeaccessionPreparation(DeaccessionPreparation deaccessionPreparation) {
-        this.deaccessionPreparation = deaccessionPreparation;
+    public void setDeaccessionPreparations(Set<DeaccessionPreparation> deaccessionPreparations) {
+        this.deaccessionPreparations = deaccessionPreparations;
     }
 
     /**

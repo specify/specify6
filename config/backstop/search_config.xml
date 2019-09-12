@@ -2,7 +2,7 @@
 <!-- 
 
   Last Id for ExpressSearch 59
-  Last Id for Other Search  133
+  Last Id for Other Search  135
 
  -->
 <searches>
@@ -1746,7 +1746,41 @@ SELECT cn.ContainerID,
                 </captions>
             </detailView>
         </table>
-    
+
+        <table id="134" tableid="34" name="DeaccessionSearch" priority="1" color="30, 144, 255">
+            <detailView icon="">
+                <sql>
+                    <![CDATA[SELECT deaccession.DeaccessionID,
+ Deaccession.DeaccessionNumber,
+ Deaccession.DeaccessionDate,
+ FROM deaccession
+ WHERE %s GROUP BY agent.AgentID]]>
+                </sql>
+                <captions>
+                    <caption tableid="34" col="DeaccessionID" visible="false"/>
+                    <caption tableid="34" col="DeaccessionNumber"/>
+                    <caption tableid="34" col="DeaccessionDate"/>
+                </captions>
+            </detailView>
+        </table>
+
+        <table id="135" tableid="63" name="PreparationSearch" priority="1" color="30, 144, 255">
+            <detailView icon="">
+                <sql>
+                    <![CDATA[SELECT preparation.PreparationID,
+ co.CatalogNumber,
+ pt.Name,
+ FROM preparation INNER JOIN collectionobject co on co.CollectionObjectID = preparation.CollectionObjectID INNER JOIN preptype pt on pt.PrepTypeID = p.PrepTypeID
+ WHERE %s GROUP BY agent.AgentID]]>
+                </sql>
+                <captions>
+                    <caption tableid="63" col="PreparationID" visible="false"/>
+                    <caption tableid="1" col="CatalogNumber"/>
+                    <caption tableid="65" col="Name"/>
+                </captions>
+            </detailView>
+        </table>
+
         <table id="101" tableid="6" name="PermitSearch" priority="1" color="30, 144, 255">
             <detailView icon="">
                 <sql>

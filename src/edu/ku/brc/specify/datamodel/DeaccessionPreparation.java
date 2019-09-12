@@ -49,7 +49,7 @@ public class DeaccessionPreparation extends DataModelObjBase implements java.io.
      protected Short quantity;
      protected String remarks;
      protected Deaccession deaccession;
-     protected Set<LoanReturnPreparation> loanReturnPreparations;
+     protected LoanReturnPreparation loanReturnPreparation;
      protected Preparation preparation;
 
 
@@ -77,7 +77,7 @@ public class DeaccessionPreparation extends DataModelObjBase implements java.io.
         quantity = null;
         remarks = null;
         deaccession = null;
-        loanReturnPreparations = new HashSet<LoanReturnPreparation>();
+        loanReturnPreparation = null;
         preparation = null;
     }
     // End Initializer
@@ -160,14 +160,14 @@ public class DeaccessionPreparation extends DataModelObjBase implements java.io.
     /**
      * 
      */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "deaccessionPreparation")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    public Set<LoanReturnPreparation> getLoanReturnPreparations() {
-        return this.loanReturnPreparations;
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "LoanReturnPreparationID", unique = false, nullable = true, insertable = true, updatable = true)
+    public LoanReturnPreparation getLoanReturnPreparation() {
+        return this.loanReturnPreparation;
     }
     
-    public void setLoanReturnPreparations(Set<LoanReturnPreparation> loanReturnPreparations) {
-        this.loanReturnPreparations = loanReturnPreparations;
+    public void setLoanReturnPreparation(LoanReturnPreparation loanReturnPreparation) {
+        this.loanReturnPreparation = loanReturnPreparation;
     }
 
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
@@ -184,21 +184,21 @@ public class DeaccessionPreparation extends DataModelObjBase implements java.io.
 
     // Add Methods
 
-    public void addLoanReturnPreparations(final LoanReturnPreparation loanReturnPreparation)
+    /*public void addLoanReturnPreparations(final LoanReturnPreparation loanReturnPreparation)
     {
         this.loanReturnPreparations.add(loanReturnPreparation);
         loanReturnPreparation.setDeaccessionPreparation(this);
-    }
+    }*/
 
     // Done Add Methods
 
     // Delete Methods
 
-    public void removeLoanReturnPreparations(final LoanReturnPreparation loanReturnPreparation)
+    /*public void removeLoanReturnPreparations(final LoanReturnPreparation loanReturnPreparation)
     {
         this.loanReturnPreparations.remove(loanReturnPreparation);
         loanReturnPreparation.setDeaccessionPreparation(null);
-    }
+    }*/
     
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentTableId()

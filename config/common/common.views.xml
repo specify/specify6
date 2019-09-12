@@ -373,7 +373,7 @@
             </altviews>
         </view>
         
-        <view name="Deaccession Agent"
+        <view name="DeaccessionAgent"
               objtitle="Deaccession Agent"
               class="edu.ku.brc.specify.datamodel.DeaccessionAgent"
               >
@@ -383,7 +383,18 @@
                 <altview name="DeaccessionAgent Edit" viewdef="DeaccessionAgent" mode="edit" default="true"/>
             </altviews>
         </view>
-        
+
+        <view name="DeaccessionPreparation"
+              objtitle="DeaccessionPreparation"
+              class="edu.ku.brc.specify.datamodel.DeaccessionPreparation"
+        >
+            <desc><![CDATA[Subform within the Deaccession form.]]></desc>
+            <altviews>
+                <altview name="DeaccessionPreparation View" viewdef="DeaccessionPreparation" mode="view"/>
+                <altview name="DeaccessionPreparation Edit" viewdef="DeaccessionPreparation" mode="edit" default="true"/>
+            </altviews>
+        </view>
+
         <view name="Determination"
               class="edu.ku.brc.specify.datamodel.Determination"
               busrules="edu.ku.brc.specify.datamodel.busrules.DeterminationBusRules" 
@@ -2643,7 +2654,7 @@
             <rows>
                 <row>
                     <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="deaccessionNumber" uitype="formattedtext" uifieldformatter="DeaccessionNumber"/>                                  
+                    <cell type="field" id="1" name="deaccessionNumber" uitype="formattedtext" />
                     <cell type="label" labelfor="5"/>
                     <cell type="field" id="5" name="deaccessionDate" uitype="formattedtext" uifieldformatter="Date" default="today"/>
                 </row>
@@ -2656,9 +2667,9 @@
                 <row>
                     <cell type="iconview" viewname="DeaccessionAgent" id="8" name="deaccessionAgents" desc="Agents" colspan="12"/>
                 </row> 
-                <!--   <row>
+                <row>
                     <cell type="subview" viewname="DeaccessionPreparation" id="4" name="deaccessionPreparations" colspan="12"/>
-                    </row> --> 
+                </row>
                 <row>
                     <cell type="separator" label="" colspan="12"/>
                 </row>
@@ -2690,6 +2701,36 @@
                     <cell type="field" id="1" name="agent" uitype="querycbx" initialize="name=Agent"/>
                     <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="role" uitype="combobox"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="3"/>
+                    <cell type="field" id="3" name="remarks" uitype="textareabrief" rows="2" colspan="6"/>
+                </row>
+            </rows>
+        </viewdef>
+
+        <viewdef
+                type="form"
+                name="DeaccessionPreparation"
+                class="edu.ku.brc.specify.datamodel.DeaccessionPreparation"
+                gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+                settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The DeaccessionPreparation subform for Deaccession form.]]></desc>
+            <enableRules/>
+
+            <columnDef>60px,2px,p,2px,35px,2px,p,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="preparation" uitype="querycbx" initialize="name=Preparation"/>
+                    <cell type="label" labelfor="2"/>
+                    <cell type="field" id="2" name="deaccession" uitype="querycbx" initialize="name=Deaccession"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="q"/>
+                    <cell type="field" id="q" name="quantity" uitype="text" />
                 </row>
                 <row>
                     <cell type="label" labelfor="3"/>
@@ -4412,6 +4453,9 @@
                     <cell type="label" labelfor="4"/>
                     <cell type="field" id="4" name="remarks" uitype="textareabrief" colspan="6" rows="2"/>
                 </row>
+                <row>
+                    <cell type="subview" viewname="DeaccessionPreparation" id="deaccPrep" name="deaccessionPreparations" colspan="9"/>
+                </row>
                 <!--<row>
                     <cell type="label" labelfor="9"/>
                     <cell type="field" id="9" name="createdByAgent" uitype="label" readonly="true" uifieldformatter="Agent"/>
@@ -5198,6 +5242,9 @@
                     <cell type="field" id="2" name="preparedByAgent" uitype="querycbx" initialize="name=Agent"/>
                     <cell type="label" labelfor="4"/>
                     <cell type="field" id="4" name="storage" uitype="querycbx" initialize="name=Storage" colspan="3"/>
+                </row>
+                <row>
+                    <cell type="subview" viewname="DeaccessionPreparation" id="4" name="deaccessionPreparations" colspan="12"/>
                 </row>
             </rows>
         </viewdef>

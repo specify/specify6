@@ -33,6 +33,7 @@
         SELECT %s1 FROM Container con WHERE %s2 AND con.collectionObjects.size = 0 ORDER BY name
     </typesearch>
     <typesearch tableid="87"  name="CollectingTrip"         searchfield="collectingTripName" displaycols="collectingTripName" format="%s"  dataobjformatter=""/>
+    <typesearch tableid="34"  name="Deaccession" searchfield="deaccessionNumber"      displaycols="deaccessionNumber"         format="%s"     dataobjformatter="Deaccession"/>
     <typesearch tableid="26"  name="Discipline"             searchfield="name"            displaycols="name"               format="%s"     dataobjformatter=""/>
     <typesearch tableid="96"  name="Division"               searchfield="name"            displaycols="name"               format="%s"     dataobjformatter=""/>
     <typesearch tableid="150" name="DNAPrimer"        	    searchfield="primerDesignator" displaycols="primerDesignator"  format="%s"     dataobjformatter=""/>
@@ -56,6 +57,9 @@
     	SELECT %s1 FROM PaleoContext pc LEFT JOIN pc.chronosStrat cs LEFT JOIN cs.definition csd LEFT JOIN pc.chronosStratEnd cse LEFT JOIN cse.definition csed LEFT JOIN pc.lithoStrat ls LEFT JOIN ls.definition lsd WHERE pc.discipline.disciplineId = DSPLNID AND (pc.chronosStrat IS NULL OR csd.geologicTimePeriodTreeDefId=GTPTREEDEFID) AND (pc.chronosStratEnd IS NULL OR csed.geologicTimePeriodTreeDefId=GTPTREEDEFID) AND (pc.lithoStrat IS NULL OR lsd.lithoStratTreeDefId=LITHOTREEDEFID) AND %s2 ORDER BY pc.paleoContextName,cs.fullName,cse.fullName,ls.fullName
     </typesearch>
     <typesearch tableid="6"   name="Permit"                 searchfield="permitNumber"    displaycols="permitNumber"       format="%s"     dataobjformatter=""/>
+    <typesearch tableid="63"   name="Preparation"            searchfield="co.catalogNumber" displaycols="co.catalogNumber, pt.name"    format="%s, %s"     dataobjformatter="Preparation">
+    SELECT %s1 FROM Preparation pp JOIN pp.collectionObject co JOIN pp.prepType pt WHERE %s2 ORDER BY co.catalogNumber, pt.name
+    </typesearch>
     <typesearch tableid="65"  name="PrepType"               searchfield="name"            displaycols="name"               format="%s"     dataobjformatter=""/>
     <typesearch tableid="4"   name="Taxon"                  searchfield="fullName"        displaycols="fullName"           format="%s"     dataobjformatter="Taxon"/>
     <typesearch tableid="77"  name="TaxonTreeDefItem"       searchfield="name"            displaycols="name"               format="%s"     dataobjformatter=""/>
