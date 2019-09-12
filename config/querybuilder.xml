@@ -299,7 +299,7 @@
 		<alias name="Deaccession"/>
       	<alias name="Agent" field="createdByAgent" />
       	<alias name="Agent" field="modifiedByAgent" />
-      	<alias name="LoanReturnPreparation" field="loanReturnPreparations"/>
+      	<alias name="LoanReturnPreparation" field="loanReturnPreparation"/>
 	</table>
 	
     <table name="Determination" field="determinations" title="Determinations">
@@ -471,7 +471,7 @@
       	<alias name="Agent" field="createdByAgent" />
       	<alias name="Agent" field="modifiedByAgent" />
        	<alias name="Agent" field="receivedBy" />
-      	<alias name="DeaccessionPreparation" />
+      	<alias name="DeaccessionPreparation" field="deaccessionPreparations"/>
       	<alias name="LoanPreparation" />
     </table>
     
