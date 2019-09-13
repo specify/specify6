@@ -589,9 +589,14 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
     public int getLoanAvailable()
     {
         int cnt = this.countAmt != null ? this.countAmt : 0;
-        return cnt - getLoanQuantityOut();
+        return cnt - getLoanQuantityOut() - getDeaccessionedQuantity();
     }
 
+    @Transient
+    public int getActualCountAmt() {
+        int cnt = this.countAmt != null ? this.countAmt : 0;
+        return cnt - getDeaccessionedQuantity();
+    }
     /**
      * calculates the number of preparations already loaned out.
      * @return the (calculated) number of preps out on loan.
@@ -609,7 +614,28 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
         }
         return stillOut;
     }
-    
+
+    private boolean countGiftsAsDeaccessions = true;
+    private boolean countExchangesAsDeaccessions = true;
+    @Transient
+    int getDeaccessionedQuantity() {
+        int deacced = 0;
+        for (DeaccessionPreparation dp : getDeaccessionPreparations()) {
+            deacced += dp.quantity != null ? dp.getQuantity() : 0;
+        }
+        if (countGiftsAsDeaccessions) {
+            for (GiftPreparation gp : getGiftPreparations()) {
+                deacced += gp.quantity != null ? gp.getQuantity() : 0;
+            }
+        }
+        if (countExchangesAsDeaccessions) {
+            for (ExchangeOutPrep ep : getExchangeOutPreps()) {
+                deacced += ep.quantity != null ? ep.getQuantity() : 0;
+            }
+        }
+        return deacced;
+    }
+
     @OneToMany(mappedBy = "preparation")
     @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<MaterialSample> getMaterialSamples() {
