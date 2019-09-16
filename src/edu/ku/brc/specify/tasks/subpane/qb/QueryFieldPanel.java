@@ -847,9 +847,9 @@ public class QueryFieldPanel extends JPanel implements ActionListener
 				isPromptCkbx.setVisible(false);
 		} else if (!ownerQuery.isPromptMode())
 		{
-				isDisplayedCkbx.setVisible(fieldQRI != null && !isRel);
-				isPromptCkbx.setVisible(fieldQRI != null && !isRel);
-				isEnforcedCkbx.setVisible(fieldQRI != null && !isRel);
+            isDisplayedCkbx.setVisible(fieldQRI != null && (!isRel || getPickList() != null));
+            isPromptCkbx.setVisible(fieldQRI != null && (!isRel || getPickList() != null));
+            isEnforcedCkbx.setVisible(fieldQRI != null && (!isRel || getPickList() != null));
 		}
     	setQueryField(qf);
     }
@@ -2060,9 +2060,9 @@ public class QueryFieldPanel extends JPanel implements ActionListener
 			
 			if (!ownerQuery.isPromptMode())
 			{
-				isDisplayedCkbx.setVisible(!isRel);
-				isPromptCkbx.setVisible(!isRel);
-				isEnforcedCkbx.setVisible(!isRel);
+				isDisplayedCkbx.setVisible(!isRel || getPickList() != null);
+				isPromptCkbx.setVisible(!isRel || getPickList() != null);
+				isEnforcedCkbx.setVisible(!isRel || getPickList() != null);
 			}
 		}
         validate();
