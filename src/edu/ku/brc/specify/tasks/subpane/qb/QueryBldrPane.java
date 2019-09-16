@@ -2999,7 +2999,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     }
     
     
-    protected void launchPartialResultDisplayMsg(final String hql)
+    protected void launchPartialResultDisplayMsg(final String hql, final List<Pair<String, Object>> params)
     {
     	new SwingWorker()
     	{
@@ -3011,10 +3011,15 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 			public Object construct() 
 			{
 				String countHql = QueryBldrPane.getCountHql(hql);
-                DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+				DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
             	try
             	{
             		QueryIFace q = session.createQuery(countHql, false);
+            		if (params != null) {
+            		    for (Pair<String, Object> param : params) {
+            		        q.setParameter(param.getFirst(), param.getSecond());
+                        }
+                    }
             		count = (Integer )q.list().get(0);
             	} finally
             	{
@@ -3057,7 +3062,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 
                 if (results == ExpressSearchTask.RESULTS_THRESHOLD)
                 {
-                	launchPartialResultDisplayMsg(runningResults.get().getHQL());
+                	launchPartialResultDisplayMsg(runningResults.get().getHQL(), runningResults.get().getParams());
                 }
                 
                 String msg = "";
