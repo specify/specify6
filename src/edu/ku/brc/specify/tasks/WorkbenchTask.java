@@ -2246,6 +2246,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                     UIRegistry.getStatusBar().incrementValue(workbench.getName());
                 }
                 
+
                 backupName = WorkbenchBackupMgr.backupWorkbench(workbench);
                 UIRegistry.getStatusBar().incrementValue(workbench.getName());
                 SwingUtilities.invokeLater(new Runnable() {
@@ -2298,10 +2299,11 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             public void finished()
             {
                 UIRegistry.clearSimpleGlassPaneMsg();
-               if (StringUtils.isNotEmpty(backupName))
-                {
+               if (StringUtils.isNotEmpty(backupName)) {
                     UIRegistry.getStatusBar().setText(String.format(getResourceString("WB_DEL_BACKED_UP"), new Object[] { workbench.getName(), backupName }));
-                }
+               } else {
+                    UIRegistry.getStatusBar().setText(String.format(getResourceString("WB_DEL_NOT_BACKED_UP"), new Object[] { workbench.getName(), backupName }));
+               }
                AppPreferences.getLocalPrefs().remove(WorkbenchPaneSS.wbAutoValidatePrefName + "." + workbench.getId());
                AppPreferences.getLocalPrefs().remove(WorkbenchPaneSS.wbAutoMatchPrefName + "." + workbench.getId());
                

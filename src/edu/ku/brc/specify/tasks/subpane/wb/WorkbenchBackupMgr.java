@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
 
+import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -149,6 +150,7 @@ public class WorkbenchBackupMgr
         return result;
     }
 
+
     /**
      * loads workbench from the database and backs it up (exports to an xls file) in a subdir in the
      * default working Path, and deletes old backups if necessary.
@@ -199,15 +201,30 @@ public class WorkbenchBackupMgr
             // XXX the command has to be sent synchronously so the backup happens before the save,
             // so when dispatchCommand goes asynchronous
             // more work will have to done here...
-            WorkbenchTask.sendExportCommand(props, workbench.getWorkbenchTemplate()
-                    .getWorkbenchTemplateMappingItems(), command);
+            boolean allColsMapped = true;
+            for (WorkbenchTemplateMappingItem mapItem : workbench.getWorkbenchTemplate()
+                    .getWorkbenchTemplateMappingItems())
+            {
+                try {
+                    WorkbenchTask.getDataType(mapItem, false);
+                } catch (WBUnMappedItemException ex) {
+                    allColsMapped = false;
+                    backupName = null;
+                    break;
+                }
+            }
 
-            // XXX again assuming command was dispatched synchronously...
-            // Clear the status bar message about successful 'export'? - but what if error during
-            // backup?,
-            // and remove old backups if necessary.
-            UIRegistry.getStatusBar().setText("");
-            cleanupBackups(workbench);
+            if (allColsMapped) {
+                WorkbenchTask.sendExportCommand(props, workbench.getWorkbenchTemplate()
+                        .getWorkbenchTemplateMappingItems(), command);
+
+                // XXX again assuming command was dispatched synchronously...
+                // Clear the status bar message about successful 'export'? - but what if error during
+                // backup?,
+                // and remove old backups if necessary.
+                UIRegistry.getStatusBar().setText("");
+                cleanupBackups(workbench);
+            }
         }
         catch (Exception ex)
         {
