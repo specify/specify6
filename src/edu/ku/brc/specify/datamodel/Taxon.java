@@ -84,6 +84,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
     // scientific identifiers
 	protected String               taxonomicSerialNumber;
 	protected String               guid;
+	protected String               lsid;
 	
 	// ITIS fields
 	protected String               unitInd1;
@@ -482,6 +483,18 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
 	{
 		this.guid = guid;
 	}
+
+    @Lob
+	@Column(name = "LSID")
+    public String getLsid()
+    {
+        return this.lsid;
+    }
+
+    public void setLsid(String lsid)
+    {
+        this.lsid = lsid;
+    }
 
     @Lob
     @Column(name = "Remarks", length = 4096)
