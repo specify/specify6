@@ -95,7 +95,7 @@ public class StorageTreeTask extends BaseTreeTask<Storage, StorageTreeDef, Stora
         // it only initializes the immediate links, not objects that are multiple hops away
         ttv.initializeNodeAssociations(storage);
         
-        if (storage.getPreparations().size() == 0)
+        if (storage.getPreparations().size() == 0 && storage.getAlternateStoragePreparations().size() == 0)
         {
             UIRegistry.getStatusBar().setText(getResourceString("TTV_TAXON_NO_COS_FOR_NODE"));
             return;
@@ -107,8 +107,8 @@ public class StorageTreeTask extends BaseTreeTask<Storage, StorageTreeDef, Stora
 
         Hashtable<Integer, Boolean> duplicateHash = new Hashtable<Integer, Boolean>();
         
-        String sql = "SELECT p.CollectionObjectID FROM storage as st INNER JOIN preparation as p ON st.StorageID = p.StorageID " +
-                     "WHERE st.StorageID = "+storage.getStorageId()+" AND p.CollectionMemberID = COLMEMID";
+        String sql = "SELECT p.CollectionObjectID FROM preparation as p " +
+                     "WHERE (p.StorageID = "+storage.getStorageId()+" OR p.alternateStorageID = "+storage.getStorageId()+") AND p.CollectionMemberID = COLMEMID";
         
         Vector<Integer> idList = new Vector<Integer>();
         
