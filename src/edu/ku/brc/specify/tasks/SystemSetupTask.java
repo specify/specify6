@@ -65,6 +65,7 @@ import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
+import edu.ku.brc.specify.tools.gbifregistration.GbifSandbox;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -244,8 +245,21 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                     dlg.setSize(400,500);
                     dlg.setVisible(true);
                 }
-            })); 
-            
+            }));
+
+            collNavBox.add(NavBox.createBtnWithTT(getResourceString("GBIF_REGISTRATION_TT"), PICKLIST, "", IconManager.STD_ICON_SIZE, new ActionListener() {
+                public void actionPerformed(ActionEvent e)
+                {
+                    /*PickListEditorDlg dlg = new PickListEditorDlg(null, false, false);
+                    dlg.createUI();
+                    dlg.setSize(400,500);
+                    dlg.setVisible(true);*/
+                    UIRegistry.displayInfoMsgDlg("Insert GBIF registry stuff here.");
+                    GbifSandbox sandbox = new GbifSandbox();
+                    sandbox.makeADlg();
+                }
+            }));
+
             String btnTitle = getResourceString(getI18n("PL_EXPORT"));
             collNavBox.add(NavBox.createBtnWithTT(btnTitle, PICKLIST, "", IconManager.STD_ICON_SIZE, new ActionListener() {
                 public void actionPerformed(ActionEvent e)
