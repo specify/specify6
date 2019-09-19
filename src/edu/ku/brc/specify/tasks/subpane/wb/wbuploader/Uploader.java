@@ -1544,8 +1544,13 @@ public class Uploader implements ActionListener, KeyListener
     		if (r.getRelatedField().getName().equalsIgnoreCase("ContainerID")) {
     			result = false;
     		}
-    	}
-    	if (!result)
+    	} else if (t.getName().equalsIgnoreCase("preparation")) {
+            if (r.getRelatedField().getName().equalsIgnoreCase("AlternateStorageID")) {
+                result = false;
+            }
+        }
+
+        if (!result)
     	{
 			log.debug("Ignoring relationship: " + r.getField().getName() + ":" + r.getRelatedField().getName());
     	}
