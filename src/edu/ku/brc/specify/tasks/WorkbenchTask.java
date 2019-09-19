@@ -3506,6 +3506,8 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     protected boolean relationshipSupportedForQBtoWBTransform(final String tblName, final String relName) {
         if ("geologictimeperiod".equals(tblName)) {
             return "chronosstrat".equalsIgnoreCase(relName);
+        } else if ("storage".equals(tblName)) {
+            return "".equalsIgnoreCase(relName);
         } else {
             return true;
         }
@@ -3616,6 +3618,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         }
         return result;
     }
+
     /**
      * @param query
      * @param tblMgr
