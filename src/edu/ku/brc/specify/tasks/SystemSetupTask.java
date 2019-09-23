@@ -257,7 +257,8 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                     UIRegistry.displayInfoMsgDlg("Insert GBIF registry stuff here.");
                     GbifSandbox sandbox = new GbifSandbox();
                     //sandbox.makeADlg();
-                    sandbox.registerADataset();
+                    //sandbox.registerADataset();
+                    sandbox.deleteADataset();
                 }
             }));
 
