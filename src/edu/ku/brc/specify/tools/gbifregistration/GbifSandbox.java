@@ -32,9 +32,11 @@ import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.DeleteMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.auth.CredentialsProvider;
+import org.apache.log4j.Logger;
 
 
 import java.util.HashMap;
@@ -42,6 +44,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class GbifSandbox {
+    private static final Logger log = Logger.getLogger(GbifSandbox.class);
 
     private static String api = "api.gbif-uat.org";
     private static String apiUrl = "http://" + api + "/v1/";
@@ -84,8 +87,31 @@ public class GbifSandbox {
             return r;
         } catch (Exception e) {
             System.out.println(e.getMessage());
+            log.error(e);
         }
         return null;
+    }
+
+    public boolean deleteADataset() {
+        String toDelete = "2b98cb17-5694-4f8e-a991-f71c143c86bc";
+        try {
+            DeleteMethod method  = new DeleteMethod(apiUrl + "dataset/" + toDelete);
+            HttpClient client = new HttpClient();
+            Credentials credentials =  new UsernamePasswordCredentials("timoatku", "Zne$L0ngO");
+            client.getState().setCredentials(AuthScope.ANY, credentials);
+            client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
+            client.getParams().setAuthenticationPreemptive(true);
+            ProxyHelper.applyProxySettings(client);
+            int status = client.executeMethod(method);
+            if (status == 204) {
+                return true;
+            } else {
+                log.error(method.getResponseBodyAsString());
+            }
+        } catch (java.io.IOException x) {
+            x.printStackTrace();
+        }
+        return false;
     }
 
     public String registerADataset() {
