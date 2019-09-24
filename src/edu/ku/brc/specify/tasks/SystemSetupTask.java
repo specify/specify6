@@ -258,7 +258,9 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                     GbifSandbox sandbox = new GbifSandbox();
                     //sandbox.makeADlg();
                     //sandbox.registerADataset();
-                    sandbox.deleteADataset();
+                    //sandbox.deleteADataset();
+                    //sandbox.registerAnOrganization();
+                    sandbox.registerAGrSciCollCollection();
                 }
             }));
 

@@ -24,6 +24,7 @@ import edu.ku.brc.af.ui.ViewBasedDialogFactoryIFace;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.helpers.ProxyHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.util.Pair;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.httpclient.HttpClient;
@@ -36,6 +37,8 @@ import org.apache.commons.httpclient.methods.DeleteMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.auth.CredentialsProvider;
+import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 
@@ -92,8 +95,93 @@ public class GbifSandbox {
         return null;
     }
 
-    public boolean deleteADataset() {
-        String toDelete = "2b98cb17-5694-4f8e-a991-f71c143c86bc";
+
+
+    private Pair<String, String> getGbifRegCredentials() {
+        return new Pair<String, String>("timoatku", "Zne$L0ngO");
+    }
+
+    public Pair<Boolean, String> postToGbifRegistry(final JSONObject data, final String apiFn) {
+        PostMethod postMethod  = new PostMethod(apiUrl + apiFn);
+        try {
+            StringRequestEntity se = new StringRequestEntity(data.toString(), "application/json", "utf-8");
+            postMethod.setRequestEntity(se);
+            return executeMethod(postMethod, HttpStatus.SC_CREATED);
+        } catch (java.io.UnsupportedEncodingException x) {
+            log.error(x);
+            return new Pair<>(false, x.getMessage());
+        }
+    }
+
+    public Pair<Boolean, String> executeMethod(HttpMethod method, int successCode) {
+        try {
+            HttpClient client = new HttpClient();
+            Pair<String, String> gbifUser = getGbifRegCredentials();
+            Credentials credentials =  new UsernamePasswordCredentials(gbifUser.getFirst(), gbifUser.getSecond());
+            client.getState().setCredentials(AuthScope.ANY, credentials);
+            client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
+            client.getParams().setAuthenticationPreemptive(true);
+            ProxyHelper.applyProxySettings(client);
+            int status = client.executeMethod(method);
+            String response = method.getResponseBodyAsString();
+            boolean success = status == successCode;
+            return new Pair<>(success, StringUtils.isEmpty(response) ? "httpstatus: " + status : response);
+        } catch (java.io.IOException x) {
+            x.printStackTrace();
+            return new Pair<>(false, x.getMessage());
+        }
+    }
+
+
+    public Pair<Boolean, String> registerOrganization(final JSONObject org) {
+        return postToGbifRegistry(org, "organization");
+    }
+    public Pair<Boolean, String> registerAnOrganization() {
+        JSONObject data = new JSONObject();
+        data.put("title", "Spawn of Specify 6");
+        data.put("description", "what happens when specify6 developers registers an organization");
+        data.put("endorsingNode", "8618c64a-93e0-4300-b546-7249e5148ed2");
+        data.put("city", "Lawrence");
+        data.put("country", "US");
+        data.put("postalCode", "66066");
+        data.put("province", "Kansas");
+        data.put("language", "eng");
+        return registerOrganization(data);
+    }
+
+    public Pair<Boolean, String> registerGrSciCollCollection(final JSONObject coll) {
+        return postToGbifRegistry(coll, "grscicoll/collection");
+    }
+
+    public Pair<Boolean, String> registerAGrSciCollCollection() {
+        JSONObject data = new JSONObject();
+        data.put("code", "SoS6");
+        data.put("name", "Spawn of Specify 6");
+        return postToGbifRegistry(data, "grscicoll/collection");
+    }
+
+    public Pair<Boolean, String> registerDataset(final JSONObject dataset) {
+        return postToGbifRegistry(dataset, "dataset");
+    }
+
+    public Pair<Boolean, String> registerADataset() {
+        JSONObject data = new JSONObject();
+        data.put("installationKey", "5b8e7001-516d-4880-bd68-826948bbffec");
+        data.put("publishingOrganizationKey", "6a078fc1-c9d9-416d-98e6-a3a3c33183e6");
+        data.put("type", "OCCURRENCE");
+        data.put("title", "eve of deletion");
+        return registerDataset(data);
+    }
+
+    public Pair<Boolean, String> deleteADataset() {
+        return deleteDataset("e15b1cb0-33e5-40aa-887f-aaa13a29e3c3"); //eve of destruction
+    }
+
+    public Pair<Boolean, String> deleteDataset(final String toDelete) {
+        //String toDelete = "2b98cb17-5694-4f8e-a991-f71c143c86bc";
+        DeleteMethod method  = new DeleteMethod(apiUrl + "dataset/" + toDelete);
+        return executeMethod(method, HttpStatus.SC_NO_CONTENT);
+        /*
         try {
             DeleteMethod method  = new DeleteMethod(apiUrl + "dataset/" + toDelete);
             HttpClient client = new HttpClient();
@@ -111,57 +199,7 @@ public class GbifSandbox {
         } catch (java.io.IOException x) {
             x.printStackTrace();
         }
-        return false;
-    }
-
-    public String registerADataset() {
-        JSONObject data = new JSONObject();
-        data.put("installationKey", "5b8e7001-516d-4880-bd68-826948bbffec");
-        data.put("publishingOrganizationKey", "6a078fc1-c9d9-416d-98e6-a3a3c33183e6");
-        data.put("type", "OCCURRENCE");
-        data.put("title", "java test test");
-
-        //postMethod.addParameter("installationKey", "5b8e7001-516d-4880-bd68-826948bbffec");
-        //postMethod.addParameter("publishingOrganizationKey", "6a078fc1-c9d9-416d-98e6-a3a3c33183e6");
-        //postMethod.addParameter("type", "OCCURRENCE");
-        //postMethod.addParameter("title", "java test");
-
-        //postMethod.addParameter("data", data.toString());
-       /*CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-        credentialsProvider.setCredentials(
-                new AuthScope(api.org, 80),
-                new UsernamePasswordCredentials(timoatku, Zne$L0ngO));
-        HttpClient client = HttpClients.custom().setDefaultCredentialsProvider(credentialsProvider).build();
-        */
-
-        /*Credentials credentials = new UsernamePasswordCredentials("timoatku","Zne$L0ngO");
-        HttpClient client = new HttpClient();
-        client.setCr*/
-
-        /*CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-        credentialsProvider.setCredentials(AuthScope.ANY,
-                new UsernamePasswordCredentials("username", "password"));
-        CloseableHttpClient httpClient =
-                HttpClientBuilder.create().setDefaultCredentialsProvider(credentialsProvider).build();
-        */
-
-        try {
-            PostMethod postMethod  = new PostMethod(apiUrl + "dataset");
-            StringRequestEntity se = new StringRequestEntity(data.toString(), "application/json", "utf-8");
-            postMethod.setRequestEntity(se);
-            HttpClient client = new HttpClient();
-            Credentials credentials =  new UsernamePasswordCredentials("timoatku", "Zne$L0ngO");
-            client.getState().setCredentials(AuthScope.ANY, credentials);
-            client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
-            client.getParams().setAuthenticationPreemptive(true);
-            ProxyHelper.applyProxySettings(client);
-            int status = client.executeMethod(postMethod);
-
-            System.out.println(postMethod.getResponseBodyAsString());
-        } catch (java.io.IOException x) {
-            x.printStackTrace();
-        }
-        return "";
+        return false;*/
     }
 
     private Set<Object> fromJSONArray(JSONArray jArray) {
