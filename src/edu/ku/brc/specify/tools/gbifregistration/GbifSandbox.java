@@ -101,6 +101,12 @@ public class GbifSandbox {
         return new Pair<String, String>("timoatku", "Zne$L0ngO");
     }
 
+    /**
+     *
+     * @param data
+     * @param apiFn
+     * @return
+     */
     public Pair<Boolean, String> postToGbifRegistry(final JSONObject data, final String apiFn) {
         PostMethod postMethod  = new PostMethod(apiUrl + apiFn);
         try {
@@ -109,10 +115,18 @@ public class GbifSandbox {
             return executeMethod(postMethod, HttpStatus.SC_CREATED);
         } catch (java.io.UnsupportedEncodingException x) {
             log.error(x);
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(GbifSandbox.class, x);
             return new Pair<>(false, x.getMessage());
         }
     }
 
+    /**
+     *
+     * @param method
+     * @param successCode
+     * @return
+     */
     public Pair<Boolean, String> executeMethod(HttpMethod method, int successCode) {
         try {
             HttpClient client = new HttpClient();
@@ -127,12 +141,18 @@ public class GbifSandbox {
             boolean success = status == successCode;
             return new Pair<>(success, StringUtils.isEmpty(response) ? "httpstatus: " + status : response);
         } catch (java.io.IOException x) {
-            x.printStackTrace();
+            log.error(x);
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(GbifSandbox.class, x);
             return new Pair<>(false, x.getMessage());
         }
     }
 
-
+    /**
+     *
+     * @param org
+     * @return
+     */
     public Pair<Boolean, String> registerOrganization(final JSONObject org) {
         return postToGbifRegistry(org, "organization");
     }
@@ -149,6 +169,11 @@ public class GbifSandbox {
         return registerOrganization(data);
     }
 
+    /**
+     *
+     * @param coll
+     * @return
+     */
     public Pair<Boolean, String> registerGrSciCollCollection(final JSONObject coll) {
         return postToGbifRegistry(coll, "grscicoll/collection");
     }
@@ -160,6 +185,11 @@ public class GbifSandbox {
         return postToGbifRegistry(data, "grscicoll/collection");
     }
 
+    /**
+     *
+     * @param dataset
+     * @return
+     */
     public Pair<Boolean, String> registerDataset(final JSONObject dataset) {
         return postToGbifRegistry(dataset, "dataset");
     }
@@ -177,31 +207,22 @@ public class GbifSandbox {
         return deleteDataset("e15b1cb0-33e5-40aa-887f-aaa13a29e3c3"); //eve of destruction
     }
 
+    /**
+     *
+     * @param toDelete
+     * @return
+     */
     public Pair<Boolean, String> deleteDataset(final String toDelete) {
         //String toDelete = "2b98cb17-5694-4f8e-a991-f71c143c86bc";
         DeleteMethod method  = new DeleteMethod(apiUrl + "dataset/" + toDelete);
         return executeMethod(method, HttpStatus.SC_NO_CONTENT);
-        /*
-        try {
-            DeleteMethod method  = new DeleteMethod(apiUrl + "dataset/" + toDelete);
-            HttpClient client = new HttpClient();
-            Credentials credentials =  new UsernamePasswordCredentials("timoatku", "Zne$L0ngO");
-            client.getState().setCredentials(AuthScope.ANY, credentials);
-            client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
-            client.getParams().setAuthenticationPreemptive(true);
-            ProxyHelper.applyProxySettings(client);
-            int status = client.executeMethod(method);
-            if (status == 204) {
-                return true;
-            } else {
-                log.error(method.getResponseBodyAsString());
-            }
-        } catch (java.io.IOException x) {
-            x.printStackTrace();
-        }
-        return false;*/
     }
 
+    /**
+     *
+     * @param jArray
+     * @return
+     */
     private Set<Object> fromJSONArray(JSONArray jArray) {
         Set<Object> result = new HashSet<>();
         for (Object aObj : (JSONArray) jArray) {
@@ -216,6 +237,12 @@ public class GbifSandbox {
         return result;
     }
 
+    /**
+     *
+     * @param obj
+     * @param key
+     * @param map
+     */
     private void hashMapFromJSON2(Object obj, Object key, HashMap<Object, Object> map) {
         if (obj instanceof JSONArray) {
             map.put(key, fromJSONArray((JSONArray)obj));
@@ -226,6 +253,11 @@ public class GbifSandbox {
         }
     }
 
+    /**
+     * 
+     * @param o
+     * @return
+     */
     private HashMap<Object, Object> hashMapFromJSON(JSONObject o) {
         HashMap<Object, Object> result = new HashMap<>();
         for (Object key : o.keySet()) {
