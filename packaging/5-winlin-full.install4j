@@ -1279,7 +1279,7 @@ if (condit.equals("SpWizard")) {
                         <boolean>false</boolean>
                       </void>
                       <void property="updateDescriptorUrl">
-                        <string>http://www.update-test.specifysoftware.org/updates.xml</string>
+                        <string>http://specify6-prod.nhm.ku.edu/spinternal/trunk/updates.xml</string>
                       </void>
                       <void property="variable">
                         <string>updateDescriptor</string>
