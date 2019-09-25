@@ -254,7 +254,7 @@ public class GbifSandbox {
     }
 
     /**
-     * 
+     *
      * @param o
      * @return
      */
