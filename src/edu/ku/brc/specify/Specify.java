@@ -1622,12 +1622,16 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
 			errKey = UPDATE_CHK_ERROR;
 			ex.printStackTrace();
 			log.error(ex);
-		}        
-        
+		}
+
         if (errKey != null)
         {
-            log.error(String.format("Update Error: %s - %s", errKey, updatePath));
-            UIRegistry.showLocalizedError(errKey);
+            if ("Specify.NO_UPDATE_AVAIL".equals(errKey)) {
+                UIRegistry.displayInfoMsgDlg(getResourceString(errKey));
+            } else {
+                log.error(String.format("Update Error: %s - %s", errKey, updatePath));
+                UIRegistry.showLocalizedError(errKey);
+            }
             return;
         }
         
