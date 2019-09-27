@@ -1439,7 +1439,8 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
 		try
 		{
 			if (connection != null) {
-                boolean isMySql8 = connection.getMetaData().getDatabaseProductVersion().startsWith("8.");
+                //boolean isMySql8 = connection.getMetaData().getDatabaseProductVersion().startsWith("8.");
+                boolean isMySql8 = true;
                 if (isMySql8) {
                     String sql = String.format("CREATE USER '%s'@'%s' IDENTIFIED BY '%s'", username, hostName, password);
                     stmt = connection.createStatement();
