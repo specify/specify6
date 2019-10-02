@@ -293,6 +293,11 @@ public class DwcMapper
 				if (mi.getName().equals("dateIdentified")) {
 					System.out.println("stop");
 				}
+				if ("1,9-determinations,4.taxon.Species Author".equals(mi.getMapping())) {
+					System.out.println("breakpoint here now please");
+					spec.set(mi.getTerm(), null);
+					return;
+				}
 			}
 			spec.set(mi.getTerm(), getMappedValue(mi, spec.getCollectionObject()));
 		}

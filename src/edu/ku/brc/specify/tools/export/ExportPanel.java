@@ -15,22 +15,19 @@ import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Locale;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
-import java.util.Vector;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -50,6 +47,10 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
+import edu.ku.brc.specify.datamodel.*;
+import edu.ku.brc.specify.datamodel.Collection;
+import edu.ku.brc.specify.plugins.morphbank.DarwinCoreArchive;
+import edu.ku.brc.specify.tasks.subpane.SymbiotaPane;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.tools.ant.util.FileUtils;
@@ -80,13 +81,6 @@ import edu.ku.brc.helpers.UIFileFilter;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
-import edu.ku.brc.specify.datamodel.Collection;
-import edu.ku.brc.specify.datamodel.SpExportSchemaItemMapping;
-import edu.ku.brc.specify.datamodel.SpExportSchemaMapping;
-import edu.ku.brc.specify.datamodel.SpQuery;
-import edu.ku.brc.specify.datamodel.SpQueryField;
-import edu.ku.brc.specify.datamodel.SpSymbiotaInstance;
-import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.tasks.ExportMappingTask;
 import edu.ku.brc.specify.tasks.QueryTask;
 import edu.ku.brc.specify.tasks.StartUpTask;
@@ -230,6 +224,110 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 		this.exportToDbTblBtn.setEnabled(notUpdating && !isCheckingStatus);
 		
 	}
+
+
+	protected void buildDwCArchive(final SpExportSchemaMapping schemaMapping) {
+
+		javax.swing.SwingWorker<Boolean, Object> worker =
+				/**
+		 * @author timo
+		 *
+		 */
+				new javax.swing.SwingWorker<Boolean, Object>() {
+
+					String outputFileName = "/home/timo/exporterDwc.zip";
+
+					/**
+					 * @return
+					 */
+					private Pair<Integer, Iterator<?>> getSizeAndIterator() {
+						String sql = "select " + getCacheTableName(schemaMapping.getMappingName()) +
+								"id from " + getCacheTableName(schemaMapping.getMappingName());
+						List<?> ids = BasicSQLUtils.querySingleCol(sql);
+						return new Pair<Integer, Iterator<?>>(ids.size(), ids.iterator());
+					}
+
+					/**
+					 * @param archiveName
+					 * @param metaFild
+					 * @param csvs
+					 * @throws Exception
+					 */
+					protected void writeToArchiveFile(String archiveName, File metaFile, List<Pair<String, List<String>>> csvs) throws Exception {
+						ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(new File(archiveName)));
+
+						Charset utf8 = Charset.forName("utf8");
+
+						zout.putNextEntry(new ZipEntry("meta.xml"));
+						zout.write(org.apache.commons.io.FileUtils.readFileToString(metaFile, utf8).getBytes(utf8));
+						zout.closeEntry();
+						int size = 0;
+						for (Pair<String, List<String>> csv : csvs) {
+							size += csv.getSecond().size();
+						}
+						//initProgRange(size);
+						size = 0;
+						for (Pair<String, List<String>> csv : csvs) {
+							zout.putNextEntry(new ZipEntry(csv.getFirst()));
+							for (String line : csv.getSecond()) {
+								//System.out.println("    " + line);
+								zout.write(line.getBytes(utf8));
+								zout.write("\n".getBytes(utf8));
+								//setProgValue(++size);
+							}
+							zout.closeEntry();
+						}
+						zout.close();
+					}
+
+					/* (non-Javadoc)
+					 * @see javax.swing.SwingWorker#doInBackground()
+					 */
+					@Override
+					protected Boolean doInBackground() throws Exception {
+						try {
+							//File archiveMetaFile = new File("/home/timo/meta.xml");
+							File archiveMetaFile = XMLHelper.getConfigDir("SymbiotaDwcMeta.xml");
+							DarwinCoreArchive dwc = new DarwinCoreArchive(archiveMetaFile, schemaMapping.getId(), false);
+							RecordSet rs = new RecordSet();
+							rs.initialize();
+							rs.setDbTableId(CollectionObject.getClassTableId());
+							Pair<Integer, Iterator<?>> ids = getSizeAndIterator();
+							Iterator<?> its = ids.getSecond();
+							//initProgRange(ids.getFirst());
+							int rec = 0;
+							while (its.hasNext()) {
+								Integer id = (Integer)its.next();
+								RecordSetItem rsi = new RecordSetItem();
+								rsi.initialize();
+								rsi.setRecordId(id);
+								rs.getRecordSetItems().add(rsi);
+								//setProgValue(++rec);
+							}
+							//setProgValue(0);
+							List<Pair<String, List<String>>> csvs = dwc.getExportText(rs, null);
+							writeToArchiveFile(outputFileName, archiveMetaFile, csvs);
+						} catch (Exception e) {
+							UsageTracker.incrHandledUsageCount();
+							edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SymbiotaPane.class, e);
+							e.printStackTrace();
+						}
+						return true;
+					}
+
+					/* (non-Javadoc)
+					 * @see edu.ku.brc.specify.tasks.subpane.SymbiotaPane.SymWorker#doDone()
+					 */
+					@Override
+					protected void done() {
+						super.done();
+						ExportPanel.this.showIPTSQLBtn.setEnabled(true);
+					}
+
+				};
+		worker.execute();
+	}
+
 	/**
 	 * 
 	 */
@@ -492,49 +590,55 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 			}
     	});
 
-    	showIPTSQLBtn = UIHelper.createButton(UIRegistry.getResourceString("ExportPanel.ShowSQLBtn"));
-    	showIPTSQLBtn.setToolTipText(UIRegistry.getResourceString("ExportPanel.ShowSQLBtnTT"));
-    	showIPTSQLBtn.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0)
-			{
-				int row = mapsDisplay.getSelectedRow();
-				if (row != -1)
-				{
-					if (!isBuiltForRow(row))
-					{
-						UIRegistry.displayInfoMsgDlgLocalized("ExportPanel.NoSQLForRebuild");
-					}
-					else
-					{
-					    JPanel panel = new JPanel(new BorderLayout());
-					    
-						SpExportSchemaMapping map = maps.get(row);
-						String iptSQL = ExportToMySQLDB
-								.getSelectForIPTDBSrc(getCacheTableName(map.getMappingName()));
-						JTextArea ta = new JTextArea(iptSQL);
-						ta.setLineWrap(true);
-						ta.setColumns(60);
-						ta.setRows(10);
-						ta.selectAll();
-						JScrollPane scrp = new JScrollPane(ta);
-						panel.add(scrp, BorderLayout.CENTER);
-						panel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
-						CustomDialog cd = new CustomDialog((Frame) UIRegistry
-								.getTopWindow(), UIRegistry
-								.getResourceString("ExportPanel.SQLTitle"),
-								true, CustomDialog.OK_BTN, panel);
-						cd.setOkLabel(UIRegistry.getResourceString("CLOSE"));
-						UIHelper.centerAndShow(cd);
+    	if (false) {
+			showIPTSQLBtn = UIHelper.createButton(UIRegistry.getResourceString("ExportPanel.ShowSQLBtn"));
+			showIPTSQLBtn.setToolTipText(UIRegistry.getResourceString("ExportPanel.ShowSQLBtnTT"));
+			showIPTSQLBtn.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					int row = mapsDisplay.getSelectedRow();
+					if (row != -1) {
+						if (!isBuiltForRow(row)) {
+							UIRegistry.displayInfoMsgDlgLocalized("ExportPanel.NoSQLForRebuild");
+						} else {
+							JPanel panel = new JPanel(new BorderLayout());
+
+							SpExportSchemaMapping map = maps.get(row);
+							String iptSQL = ExportToMySQLDB
+									.getSelectForIPTDBSrc(getCacheTableName(map.getMappingName()));
+							JTextArea ta = new JTextArea(iptSQL);
+							ta.setLineWrap(true);
+							ta.setColumns(60);
+							ta.setRows(10);
+							ta.selectAll();
+							JScrollPane scrp = new JScrollPane(ta);
+							panel.add(scrp, BorderLayout.CENTER);
+							panel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+							CustomDialog cd = new CustomDialog((Frame) UIRegistry
+									.getTopWindow(), UIRegistry
+									.getResourceString("ExportPanel.SQLTitle"),
+									true, CustomDialog.OK_BTN, panel);
+							cd.setOkLabel(UIRegistry.getResourceString("CLOSE"));
+							UIHelper.centerAndShow(cd);
+						}
+					} else {
+						UIRegistry.showLocalizedMsg("ExportPanel.PleaseMakeASelection");
 					}
 				}
-				else 
-				{
-					UIRegistry.showLocalizedMsg("ExportPanel.PleaseMakeASelection");
+			});
+		} else {
+			showIPTSQLBtn = UIHelper.createButton(UIRegistry.getResourceString("ExportPanel.ToDwc"));
+			showIPTSQLBtn.setToolTipText(UIRegistry.getResourceString("ExportPanel.export_to_dwc_archive"));
+			showIPTSQLBtn.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					int row = mapsDisplay.getSelectedRow();
+					SpExportSchemaMapping map = maps.get(row);
+					showIPTSQLBtn.setEnabled(false);
+					buildDwCArchive(map);
 				}
-			}
-    	});
-    	
+			});
+		}
         helpBtn = createButton(getResourceString("HELP"));
         HelpMgr.registerComponent(helpBtn, "schema_tool");
     	
