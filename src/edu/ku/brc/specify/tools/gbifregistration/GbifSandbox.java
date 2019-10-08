@@ -31,13 +31,13 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.DeleteMethod;
-import org.apache.commons.httpclient.methods.StringRequestEntity;
-import org.apache.commons.httpclient.Credentials;
-import org.apache.commons.httpclient.auth.CredentialsProvider;
+import org.apache.commons.httpclient.methods.multipart.StringPart;
+import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
+import org.apache.commons.httpclient.methods.multipart.FilePart;
+import org.apache.commons.httpclient.methods.multipart.Part;
+import org.apache.commons.httpclient.methods.*;
 import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -45,12 +45,17 @@ import org.apache.log4j.Logger;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.List;
+import java.util.ArrayList;
+import java.io.File;
 
 public class GbifSandbox {
     private static final Logger log = Logger.getLogger(GbifSandbox.class);
 
     private static String api = "api.gbif-uat.org";
-    private static String apiUrl = "http://" + api + "/v1/";
+    private static String gbifApiUri = "http://" + api + "/v1/";
+    private static String zenodoApi = "sandbox.zenodo.org/api";
+    private static String zenodoApiUrl = "https://" + zenodoApi + "/";
 
     private void makeAJsonObject() {
         //JSONObject o = JSONObject.fromObject("{\"name\": \"BoB\"}");
@@ -100,19 +105,28 @@ public class GbifSandbox {
     private Pair<String, String> getGbifRegCredentials() {
         return new Pair<String, String>("timoatku", "Zne$L0ngO");
     }
+    private String getGbifPublishingOrganization() {
+        return "6a078fc1-c9d9-416d-98e6-a3a3c33183e6";
+    }
+    private String getGbifInstallation() {
+        return "5b8e7001-516d-4880-bd68-826948bbffec";
+    }
+    private String getZenodoUploadToken() {
+        //return "9qG2PLQcUoivakxFaSRJPXCAR6opz4gQiRrNljVd8r0C9uese3PeHQLjmZ11";
+        //Sandbox token:
+        return "Cp0n4hs4Ev4XYrNJZ9DXyuPrZHy5QhKqYNSLEjVgV4FCMnHiMYxbyuFkliRI";
+    }
 
     /**
      *
-     * @param data
+      * @param data
      * @param apiFn
      * @return
      */
-    public Pair<Boolean, String> postToGbifRegistry(final JSONObject data, final String apiFn) {
-        PostMethod postMethod  = new PostMethod(apiUrl + apiFn);
+    public Pair<Boolean, String> postToGbif(final JSONObject data, final String apiFn) {
         try {
             StringRequestEntity se = new StringRequestEntity(data.toString(), "application/json", "utf-8");
-            postMethod.setRequestEntity(se);
-            return executeMethod(postMethod, HttpStatus.SC_CREATED);
+            return postToApi(gbifApiUri + apiFn, se, getGbifRegCredentials(), null, null, null);
         } catch (java.io.UnsupportedEncodingException x) {
             log.error(x);
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
@@ -123,18 +137,48 @@ public class GbifSandbox {
 
     /**
      *
+      * @param uri
+     * @param re
+     * @return
+     */
+    public Pair<Boolean, String> postToApi(final String uri, final RequestEntity re, final Pair<String, String> credentials, final List<Pair<String, String>> params, final List<Pair<String, String>> headers, final Part[] parts) {
+        PostMethod postMethod  = new PostMethod(uri);
+        if (re != null) {
+            postMethod.setRequestEntity(re);
+        }
+        if (headers != null) {
+            for (Pair<String, String> h : headers) {
+                postMethod.addRequestHeader(h.getFirst(), h.getSecond());
+            }
+        }
+        if (params != null) {
+            for (Pair<String, String> p : params) {
+                postMethod.addParameter(p.getFirst(), p.getSecond());
+            }
+        }
+        if (parts != null) {
+            postMethod.setRequestEntity(new MultipartRequestEntity(parts, postMethod.getParams()));
+        }
+        return executeMethod(postMethod, credentials, HttpStatus.SC_CREATED);
+    }
+
+
+
+    /**
+     *
      * @param method
      * @param successCode
      * @return
      */
-    public Pair<Boolean, String> executeMethod(HttpMethod method, int successCode) {
+    public Pair<Boolean, String> executeMethod(HttpMethod method, final Pair<String, String> credentials, int successCode) {
         try {
             HttpClient client = new HttpClient();
-            Pair<String, String> gbifUser = getGbifRegCredentials();
-            Credentials credentials =  new UsernamePasswordCredentials(gbifUser.getFirst(), gbifUser.getSecond());
-            client.getState().setCredentials(AuthScope.ANY, credentials);
+            if (credentials != null) {
+                Credentials creds = new UsernamePasswordCredentials(credentials.getFirst(), credentials.getSecond());
+                client.getState().setCredentials(AuthScope.ANY, creds);
+                client.getParams().setAuthenticationPreemptive(true);
+            }
             client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
-            client.getParams().setAuthenticationPreemptive(true);
             ProxyHelper.applyProxySettings(client);
             int status = client.executeMethod(method);
             String response = method.getResponseBodyAsString();
@@ -148,13 +192,106 @@ public class GbifSandbox {
         }
     }
 
+
+    /**
+     *
+     * @param dataset
+     * @return
+     */
+    public Pair<Boolean, String> registerDataset(final JSONObject dataset) {
+        return postToGbif(dataset, "dataset");
+    }
+
+    public Pair<Boolean, String> registerADataset() {
+        JSONObject data = new JSONObject();
+        data.put("installationKey", getGbifInstallation());
+        data.put("publishingOrganizationKey", getGbifPublishingOrganization());
+        data.put("type", "OCCURRENCE");
+        data.put("title", "eve of deletion");
+        return registerDataset(data);
+    }
+
+    public Pair<Boolean, String>  uploadToZenodo(File file) {
+        //List<Pair<String, String>> params = new ArrayList<>();
+        List<Pair<String, String>> headers = new ArrayList<>();
+        headers.add(new Pair<>("Content-Type", "application/json"));
+        //params.add(new Pair<>("access_token", getZenodoUploadToken()));
+        try {
+            StringRequestEntity se = new StringRequestEntity("{}", "application/json", "utf-8");
+            Pair<Boolean, String> result1 = postToApi(zenodoApiUrl + "deposit/depositions?access_token=" + getZenodoUploadToken(), se, null, null, headers, null);
+            //Pair<Boolean, String> result1 = postToApi(zenodoApiUrl + "deposit/depositions", se, null, params, headers);
+            if (!result1.getFirst()) {
+                return result1;
+            }
+
+            JSONObject response = JSONObject.fromObject(result1.getSecond());
+            String depositId = response.getString("id");
+
+
+            Part[] parts = {
+                    new StringPart("data", "{'filename': '" + file.getName()+ "'}", "utf-8"),
+                    new FilePart("file", file.getName(), file)
+            };
+            ((StringPart)parts[0]).setContentType("application/json");
+
+            //
+            // FileRequestEntity fe = new FileRequestEntity(file, "text/csv");
+
+            return postToApi(zenodoApiUrl + "deposit/depositions/" + depositId + "/files?access_token=" + getZenodoUploadToken(), null, null, null, headers, parts);
+
+        } catch (java.io.FileNotFoundException | java.io.UnsupportedEncodingException x) {
+            return new Pair<>(false, x.getMessage());
+        }
+        //return postToApi(zenodoApiUrl + "deposit/depositions/" + )
+
+//        try {
+//
+//            post.setRequestEntity(entity);
+//
+//            //System.out.println("SKIPPING the POST!!!");
+//            int postStatus = /*200;*/ httpClient.executeMethod(post);
+//            //System.out.println("Status from Symbiota Post: " + postStatus);
+//            if (postStatus == 200) {
+//                byte[] responseBytes = post.getResponseBody();
+//                String response = responseBytes == null ? "" : new String(responseBytes);
+//                System.out.println("ResponseBody: " + response);
+//                if (!response.startsWith("FAILED") && !response.startsWith("ERROR")) {
+//                    result.setFirst(true);
+//                }
+//                result.setSecond(response);
+//            } else {
+//                result.setSecond(String.format(UIRegistry.getResourceString("SymbiotaPane.BadPostStatus"), postStatus));
+//            }
+//
+//        } catch (Exception ex) {
+//            //ex.printStackTrace();
+//            result.setSecond(ex.getLocalizedMessage());
+//        }
+//        return result;
+    }
+
+    public Pair<Boolean, String> deleteADataset() {
+        return deleteDataset("e15b1cb0-33e5-40aa-887f-aaa13a29e3c3"); //eve of destruction
+    }
+
+    /**
+     *
+     * @param toDelete
+     * @return
+     */
+    public Pair<Boolean, String> deleteDataset(final String toDelete) {
+        //String toDelete = "2b98cb17-5694-4f8e-a991-f71c143c86bc";
+        DeleteMethod method  = new DeleteMethod(gbifApiUri + "dataset/" + toDelete);
+        return executeMethod(method, getGbifRegCredentials(), HttpStatus.SC_NO_CONTENT);
+    }
+
     /**
      *
      * @param org
      * @return
      */
     public Pair<Boolean, String> registerOrganization(final JSONObject org) {
-        return postToGbifRegistry(org, "organization");
+        return postToGbif(org, "organization");
     }
     public Pair<Boolean, String> registerAnOrganization() {
         JSONObject data = new JSONObject();
@@ -175,47 +312,14 @@ public class GbifSandbox {
      * @return
      */
     public Pair<Boolean, String> registerGrSciCollCollection(final JSONObject coll) {
-        return postToGbifRegistry(coll, "grscicoll/collection");
+        return postToGbif(coll, "grscicoll/collection");
     }
 
     public Pair<Boolean, String> registerAGrSciCollCollection() {
         JSONObject data = new JSONObject();
         data.put("code", "SoS6");
         data.put("name", "Spawn of Specify 6");
-        return postToGbifRegistry(data, "grscicoll/collection");
-    }
-
-    /**
-     *
-     * @param dataset
-     * @return
-     */
-    public Pair<Boolean, String> registerDataset(final JSONObject dataset) {
-        return postToGbifRegistry(dataset, "dataset");
-    }
-
-    public Pair<Boolean, String> registerADataset() {
-        JSONObject data = new JSONObject();
-        data.put("installationKey", "5b8e7001-516d-4880-bd68-826948bbffec");
-        data.put("publishingOrganizationKey", "6a078fc1-c9d9-416d-98e6-a3a3c33183e6");
-        data.put("type", "OCCURRENCE");
-        data.put("title", "eve of deletion");
-        return registerDataset(data);
-    }
-
-    public Pair<Boolean, String> deleteADataset() {
-        return deleteDataset("e15b1cb0-33e5-40aa-887f-aaa13a29e3c3"); //eve of destruction
-    }
-
-    /**
-     *
-     * @param toDelete
-     * @return
-     */
-    public Pair<Boolean, String> deleteDataset(final String toDelete) {
-        //String toDelete = "2b98cb17-5694-4f8e-a991-f71c143c86bc";
-        DeleteMethod method  = new DeleteMethod(apiUrl + "dataset/" + toDelete);
-        return executeMethod(method, HttpStatus.SC_NO_CONTENT);
+        return postToGbif(data, "grscicoll/collection");
     }
 
     /**

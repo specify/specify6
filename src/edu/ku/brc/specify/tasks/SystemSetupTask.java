@@ -260,7 +260,8 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                     //sandbox.registerADataset();
                     //sandbox.deleteADataset();
                     //sandbox.registerAnOrganization();
-                    sandbox.registerAGrSciCollCollection();
+                    //sandbox.registerAGrSciCollCollection();
+                    sandbox.uploadToZenodo(new File("/home/timo/NotHalfFull.txt"));
                 }
             }));
 
