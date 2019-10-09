@@ -173,6 +173,7 @@
 	<icon name="permitattachment"               alias="PermitAttachment"/>
 	<icon name="preparationattachment"          alias="PreparationAttachment"/>
 	<icon name="repositoryagreementattachment"  alias="RepositoryAgreementAttachment"/>
+    <icon name="storageattachment"              alias="StorageAttachment"/>
 	<icon name="taxonattachment"                alias="TaxonAttachment"/>
 
     <icon name="loanpreparation"        alias="preparation"/>
