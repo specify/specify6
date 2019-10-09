@@ -35,7 +35,8 @@ import javax.swing.JComboBox;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-import org.apache.commons.httpclient.NameValuePair;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -166,10 +167,10 @@ public class FeedBackDlg extends FeedBackSender
             Division    division    = AppContextMgr.getInstance().getClassObject(Division.class);
             Institution institution = AppContextMgr.getInstance().getClassObject(Institution.class);
             
-            stats.add(new NameValuePair("collection",  collection != null  ? collection.getCollectionName() : "No Collection")); //$NON-NLS-1$
-            stats.add(new NameValuePair("discipline",  discipline != null  ? discipline.getName() :           "No Discipline")); //$NON-NLS-1$
-            stats.add(new NameValuePair("division",    division != null    ? division.getName() :             "No Division")); //$NON-NLS-1$
-            stats.add(new NameValuePair("institution", institution != null ? institution.getName() :          "No Institution")); //$NON-NLS-1$
+            stats.add(new BasicNameValuePair("collection",  collection != null  ? collection.getCollectionName() : "No Collection")); //$NON-NLS-1$
+            stats.add(new BasicNameValuePair("discipline",  discipline != null  ? discipline.getName() :           "No Discipline")); //$NON-NLS-1$
+            stats.add(new BasicNameValuePair("division",    division != null    ? division.getName() :             "No Division")); //$NON-NLS-1$
+            stats.add(new BasicNameValuePair("institution", institution != null ? institution.getName() :          "No Institution")); //$NON-NLS-1$
         }
         return stats;
     }

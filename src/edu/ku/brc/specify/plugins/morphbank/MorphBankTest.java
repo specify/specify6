@@ -16,12 +16,12 @@ import net.morphbank.mbsvc3.xml.XmlBaseObject;
 import net.morphbank.mbsvc3.xml.XmlId;
 import net.morphbank.mbsvc3.xml.XmlUtils;
 
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.RequestEntity;
-import org.apache.commons.httpclient.methods.multipart.FilePart;
-import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
-import org.apache.commons.httpclient.methods.multipart.Part;
-import org.apache.commons.httpclient.methods.multipart.StringPart;
+import org.apache.http.client.methods.HttpPost;
+//import org.apache.commons.httpclient.methods.RequestEntity;
+//import org.apache.commons.httpclient.methods.multipart.FilePart;
+//import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
+//import org.apache.commons.httpclient.methods.multipart.Part;
+//import org.apache.commons.httpclient.methods.multipart.StringPart;
 import org.apache.commons.lang.NotImplementedException;
 
 import edu.ku.brc.specify.datamodel.CollectionObject;
@@ -171,7 +171,7 @@ public class MorphBankTest
 	 * @return
 	 * @throws Exception
 	 */
-	public static PostMethod getImagePostRequest(String id, String imageFileName) throws Exception 
+	public static HttpPost getImagePostRequest(String id, String imageFileName) throws Exception
 	{
 		return getImagePostRequest(MORPHBANK_IM_POST_URL, id, "dummy", imageFileName);
 	}
@@ -184,18 +184,21 @@ public class MorphBankTest
 	 * @return
 	 * @throws Exception
 	 */
-	public static PostMethod getImagePostRequest(String strURL, String id, String originalFileName, String imageFileName) throws Exception 
+	public static HttpPost getImagePostRequest(String strURL, String id, String originalFileName, String imageFileName) throws Exception
 	{
-		File input = new File(imageFileName);
+		throw new NotImplementedException("getImagePostRequest() is not implemented.");
+		return null;
+		//NOT migrating this method to apache http 4.x
+		/*File input = new File(imageFileName);
 		// Prepare HTTP post
-		PostMethod post = new PostMethod(strURL);
+		HttpPost post = new HttpPost(strURL);
 
 		Part[] parts = {new StringPart("id",id), new StringPart("fileName",originalFileName),
 				new FilePart("image", originalFileName, input)
 		};
 		RequestEntity entity = new MultipartRequestEntity(parts, post.getParams());
 		post.setRequestEntity(entity);
-		return post;
+		return post;*/
 	}
 	
 	/**

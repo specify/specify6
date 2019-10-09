@@ -27,9 +27,9 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.http.client.HttpClient;
+import org.apache.http.HttpException;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.ui.UIRegistry;
@@ -90,7 +90,7 @@ public class MapGrabber
 	 */
 	public MapGrabber()
 	{
-		httpClient = new HttpClient();
+		httpClient = HttpClients.createDefault();
 	}
 
 	/**
@@ -411,7 +411,7 @@ public class MapGrabber
 		else
 		{
 			log.info("No image cache available.  Grabbing map internally.");
-			GetMethod get = new GetMethod(urlStr);
+			HttpGet get = new HttpGet(urlStr);
 			get.setFollowRedirects(true);
 			int resultCode = httpClient.executeMethod(get);
 			log.info("GET " + urlStr + " returned " + resultCode );

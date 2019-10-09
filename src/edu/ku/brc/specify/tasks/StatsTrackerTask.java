@@ -36,7 +36,7 @@ import javax.swing.JProgressBar;
 import javax.swing.SwingConstants;
 
 import edu.ku.brc.specify.Specify;
-import org.apache.commons.httpclient.NameValuePair;
+import org.apache.http.NameValuePair;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;

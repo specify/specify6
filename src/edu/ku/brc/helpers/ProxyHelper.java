@@ -20,8 +20,8 @@
 package edu.ku.brc.helpers;
 
 import edu.ku.brc.af.prefs.AppPreferences;
-import org.apache.commons.httpclient.HostConfiguration;
-import org.apache.commons.httpclient.HttpClient;
+import org.apache.http.HttpHost;
+import org.apache.http.client.HttpClient;
 import org.apache.log4j.Logger;
 
 /**

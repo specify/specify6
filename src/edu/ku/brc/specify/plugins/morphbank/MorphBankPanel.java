@@ -34,8 +34,8 @@ import net.morphbank.mbsvc3.xml.Credentials;
 import net.morphbank.mbsvc3.xml.Request;
 import net.morphbank.mbsvc3.xml.XmlUtils;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.commons.lang.NotImplementedException;
 import org.dom4j.Element;
 import org.dom4j.Node;
@@ -724,8 +724,8 @@ public class MorphBankPanel extends UIPluginBase
 				boolean result = false;
 				try
 				{
-					PostMethod post = MorphBankTest.getImagePostRequest(morphBankImageId.toString(), getImageFileName());
-					HttpClient httpclient = new HttpClient();
+					HttpPost post = MorphBankTest.getImagePostRequest(morphBankImageId.toString(), getImageFileName());
+					HttpClient httpclient = HttpClients.createDefault();
 					int postStatus = httpclient.executeMethod(post);
 					//System.out.println(post.getResponseBodyAsString());
 					if (postStatus == 200)

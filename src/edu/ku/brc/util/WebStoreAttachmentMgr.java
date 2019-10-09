@@ -49,16 +49,16 @@ import javax.crypto.spec.SecretKeySpec;
 import javax.swing.SwingUtilities;
 
 import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.httpclient.*;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.multipart.FilePart;
-import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
-import org.apache.commons.httpclient.methods.multipart.Part;
-import org.apache.commons.httpclient.methods.multipart.StringPart;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.message.BasicNameValuePair;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
@@ -159,14 +159,14 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
     {
        if (testKeyURLStr == null) return; // skip test if there is not test url.
        
-       GetMethod method = new GetMethod(testKeyURLStr);
+       HttpGet method = new HttpGet(testKeyURLStr);
        String r = "" + (new Random()).nextInt();
-       method.setQueryString(new NameValuePair[] {
-               new NameValuePair("random", r),
-               new NameValuePair("token", generateToken(r))
+       method.setQueryString(new BasicNameValuePair[] {
+               new BasicNameValuePair("random", r),
+               new BasicNameValuePair("token", generateToken(r))
        });
        
-       HttpClient client = new HttpClient();
+       CloseableHttpClient client = HttpClients.createDefault();
        client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
        ProxyHelper.applyProxySettings(client);
 
@@ -198,8 +198,8 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
         if (StringUtils.isNotEmpty(urlStr))
         {
             final int timeoutMilliseconds = 5000;
-            GetMethod method = new GetMethod(urlStr);
-            HttpClient client = new HttpClient();
+            HttpGet method = new HttpGet(urlStr);
+            CloseableHttpClient client = HttpClients.createDefault();
             client.getHttpConnectionManager().getParams().setConnectionTimeout(timeoutMilliseconds);
             client.getHttpConnectionManager().getParams().setSoTimeout(timeoutMilliseconds);
             ProxyHelper.applyProxySettings(client);
@@ -365,19 +365,19 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
         String fileName = BasicSQLUtils.querySingleObj(ATTACHMENT_URL + attachmentID);
         if (StringUtils.isNotEmpty(fileName) && StringUtils.isNotEmpty(fileGetMetaDataURLStr))
         {
-            GetMethod method = new GetMethod(fileGetMetaDataURLStr);
+            HttpGet method = new HttpGet(fileGetMetaDataURLStr);
             fillValuesArray();
-            method.setQueryString(new NameValuePair[] {
-                    new NameValuePair("dt", "json"),
-                    new NameValuePair("filename", fileName),
-                    new NameValuePair("token", generateToken(fileName)),
-                    new NameValuePair("coll", values[0]),
-                    new NameValuePair("disp", values[1]),
-                    new NameValuePair("div",  values[2]),
-                    new NameValuePair("inst", values[3])
+            method.setQueryString(new BasicNameValuePair[] {
+                    new BasicNameValuePair("dt", "json"),
+                    new BasicNameValuePair("filename", fileName),
+                    new BasicNameValuePair("token", generateToken(fileName)),
+                    new BasicNameValuePair("coll", values[0]),
+                    new BasicNameValuePair("disp", values[1]),
+                    new BasicNameValuePair("div",  values[2]),
+                    new BasicNameValuePair("inst", values[3])
             });
     
-            HttpClient client = new HttpClient();
+            CloseableHttpClient client = HttpClients.createDefault();
             client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
             ProxyHelper.applyProxySettings(client);
 
@@ -426,19 +426,19 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
       String fileName = BasicSQLUtils.querySingleObj(ATTACHMENT_URL + attachmentID);
       if (StringUtils.isNotEmpty(fileName) && StringUtils.isNotEmpty(fileGetMetaDataURLStr))
       {
-            GetMethod method = new GetMethod(fileGetMetaDataURLStr);
+            HttpGet method = new HttpGet(fileGetMetaDataURLStr);
             fillValuesArray();
-            method.setQueryString(new NameValuePair[] {
-                    new NameValuePair("dt", "json"),
-                    new NameValuePair("filename", fileName),
-                    new NameValuePair("token", generateToken(fileName)),
-                    new NameValuePair("coll", values[0]),
-                    new NameValuePair("disp", values[1]),
-                    new NameValuePair("div",  values[2]),
-                    new NameValuePair("inst", values[3])
+            method.setQueryString(new BasicNameValuePair[] {
+                    new BasicNameValuePair("dt", "json"),
+                    new BasicNameValuePair("filename", fileName),
+                    new BasicNameValuePair("token", generateToken(fileName)),
+                    new BasicNameValuePair("coll", values[0]),
+                    new BasicNameValuePair("disp", values[1]),
+                    new BasicNameValuePair("div",  values[2]),
+                    new BasicNameValuePair("inst", values[3])
             });
     
-            HttpClient client = new HttpClient();
+            CloseableHttpClient client = HttpClients.createDefault();
             client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
             ProxyHelper.applyProxySettings(client);
 
@@ -784,22 +784,22 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
         }
         notifyListeners(1);
 
-        GetMethod getMethod = new GetMethod(readURLStr);
+        HttpGet getMethod = new HttpGet(readURLStr);
         // type=<type>&filename=<fname>&coll=<coll>&disp=<disp>&div=<div>&inst=<inst>
         fillValuesArray();
-        getMethod.setQueryString(new NameValuePair[] {
-                new NameValuePair("type", (scale != null) ? "T" : "O"),
-                new NameValuePair("scale", "" + scale),
-                new NameValuePair("filename", attachLocation),
-                new NameValuePair("token", generateToken(attachLocation)),
-                new NameValuePair("coll", values[0]),
-                new NameValuePair("disp", values[1]),
-                new NameValuePair("div",  values[2]),
-                new NameValuePair("inst", values[3])
+        getMethod.setQueryString(new BasicNameValuePair[] {
+                new BasicNameValuePair("type", (scale != null) ? "T" : "O"),
+                new BasicNameValuePair("scale", "" + scale),
+                new BasicNameValuePair("filename", attachLocation),
+                new BasicNameValuePair("token", generateToken(attachLocation)),
+                new BasicNameValuePair("coll", values[0]),
+                new BasicNameValuePair("disp", values[1]),
+                new BasicNameValuePair("div",  values[2]),
+                new BasicNameValuePair("inst", values[3])
         });
                          
                 
-        HttpClient client = new HttpClient();
+        CloseableHttpClient client = HttpClients.createDefault();
         client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
         ProxyHelper.applyProxySettings(client);
 
@@ -939,7 +939,7 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
                                           final boolean saveInCache)*/
     {
         String targetURL = writeURLStr;
-        PostMethod filePost = new PostMethod(targetURL);
+        HttpPost filePost = new HttpPost(targetURL);
 
         fillValuesArray();
         
@@ -959,7 +959,7 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
                 };
 
             filePost.setRequestEntity(new MultipartRequestEntity(parts, filePost.getParams()));
-            HttpClient client = new HttpClient();
+            CloseableHttpClient client = HttpClients.createDefault();
             client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
             ProxyHelper.applyProxySettings(client);
 
@@ -1039,7 +1039,7 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
             //String     targetURL  = String.format("http://localhost/cgi-bin/filedelete.php?filename=%s;disp=%s", targetName, discipline.getName());
             //String     targetURL  = subAllExtraData(delURLStr, fileName, isThumb, null, null);
             fillValuesArray();
-            PostMethod  postMethod  = new PostMethod(delURLStr);
+            HttpPost  postMethod  = new HttpPost(delURLStr);
             postMethod.addParameter("filename", fileName);
             postMethod.addParameter("token", generateToken(fileName));
             postMethod.addParameter("coll", values[0]);
@@ -1048,7 +1048,7 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
             postMethod.addParameter("inst", values[3]);            
             //log.debug("Deleting " + fileName + " from " + targetURL );
 
-            HttpClient client = new HttpClient();
+            CloseableHttpClient client = HttpClients.createDefault();
             client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
             ProxyHelper.applyProxySettings(client);
 

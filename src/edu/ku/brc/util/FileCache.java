@@ -35,10 +35,12 @@ import java.util.HashMap;
 import java.util.Properties;
 import java.util.UUID;
 
-import org.apache.commons.httpclient.HostConfiguration;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.http.HttpHost;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.HttpException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
@@ -707,8 +709,8 @@ public class FileCache implements DataCacheIFace
 	 */
 	public String cacheWebResource(final String url) throws HttpException, IOException
 	{
-        HttpClient httpClient = new HttpClient();
-		GetMethod get = new GetMethod(url);
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+		HttpGet get = new HttpGet(url);
 		get.setFollowRedirects(true);
 		ProxyHelper.applyProxySettings(httpClient);
 		int result = httpClient.executeMethod(get);

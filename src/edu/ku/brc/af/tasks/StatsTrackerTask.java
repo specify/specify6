@@ -35,8 +35,9 @@ import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
-import org.apache.commons.httpclient.*;
-import org.apache.commons.httpclient.methods.*;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.NameValuePair;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -302,10 +303,10 @@ public class StatsTrackerTask extends BaseTask
     
     /*public static void sendDNAStats(final String url, final String userAgentName) throws Exception {
         // check the website for the info about the latest version
-        HttpClient httpClient = new HttpClient();
+        CloseableHttpClient httpClient = HttpClients.createDefault();
         httpClient.getParams().setParameter("http.useragent", userAgentName); //$NON-NLS-1$
         
-        PostMethod postMethod = new PostMethod(url);
+        HttpPost postMethod = new HttpPost(url);
         
         Vector<NameValuePair> postParams = new Vector<NameValuePair>();
         postParam
@@ -354,11 +355,11 @@ public class StatsTrackerTask extends BaseTask
     {
 
         // check the website for the info about the latest version
-        HttpClient httpClient = new HttpClient();
+        CloseableHttpClient httpClient = HttpClients.createDefault();
         httpClient.getParams().setParameter("http.useragent", userAgentName); //$NON-NLS-1$
 
         ProxyHelper.applyProxySettings(httpClient);
-        PostMethod postMethod = new PostMethod(url);
+        HttpPost postMethod = new HttpPost(url);
         
         // get the POST parameters (which includes usage stats, if we're allowed to send them)
         postMethod.setRequestBody(buildNamePairArray(postParams));
@@ -424,7 +425,7 @@ public class StatsTrackerTask extends BaseTask
             count = BasicSQLUtils.getCount(sql);
             if (count != null)
             {
-                statsList.add(new NameValuePair(statName, Integer.toString(count)));
+                statsList.add(new BasicNameValuePair(statName, Integer.toString(count)));
             } else
             {
                 return 0;
@@ -450,7 +451,7 @@ public class StatsTrackerTask extends BaseTask
     public static NameValuePair[] buildNamePairArray(final Vector<NameValuePair> postParams)
     {
         // create an array from the params
-        NameValuePair[] paramArray = new NameValuePair[postParams.size()];
+        NameValuePair[] paramArray = new BasicNameValuePair[postParams.size()];
         for (int i = 0; i < paramArray.length; ++i)
         {
             paramArray[i] = postParams.get(i);
@@ -467,7 +468,7 @@ public class StatsTrackerTask extends BaseTask
         {
             // get the install ID
             String installID = UsageTracker.getInstallId();
-            postParams.add(new NameValuePair("id", installID)); //$NON-NLS-1$
+            postParams.add(new BasicNameValuePair("id", installID)); //$NON-NLS-1$
     
             //get ISA number
             Collection collection = null;
@@ -482,32 +483,32 @@ public class StatsTrackerTask extends BaseTask
             String isaNumber = collection == null ? "N/A" : collection.getIsaNumber();
             try 
             {
-            	postParams.add(new NameValuePair("ISA_number",   isaNumber)); //$NON-NLS-1$
+            	postParams.add(new BasicNameValuePair("ISA_number",   isaNumber)); //$NON-NLS-1$
             } catch (NullPointerException e) {}
             
             // get the OS name and version
-            postParams.add(new NameValuePair("os_name",      System.getProperty("os.name"))); //$NON-NLS-1$
-            postParams.add(new NameValuePair("os_version",   System.getProperty("os.version"))); //$NON-NLS-1$
-            postParams.add(new NameValuePair("java_version", System.getProperty("java.version"))); //$NON-NLS-1$
-            postParams.add(new NameValuePair("java_vendor",  System.getProperty("java.vendor"))); //$NON-NLS-1$
+            postParams.add(new BasicNameValuePair("os_name",      System.getProperty("os.name"))); //$NON-NLS-1$
+            postParams.add(new BasicNameValuePair("os_version",   System.getProperty("os.version"))); //$NON-NLS-1$
+            postParams.add(new BasicNameValuePair("java_version", System.getProperty("java.version"))); //$NON-NLS-1$
+            postParams.add(new BasicNameValuePair("java_vendor",  System.getProperty("java.vendor"))); //$NON-NLS-1$
             
             //if (!UIRegistry.isRelease()) // For Testing Only
             {
-                postParams.add(new NameValuePair("user_name", System.getProperty("user.name"))); //$NON-NLS-1$
+                postParams.add(new BasicNameValuePair("user_name", System.getProperty("user.name"))); //$NON-NLS-1$
                 try 
                 {
-                    postParams.add(new NameValuePair("ip", InetAddress.getLocalHost().getHostAddress())); //$NON-NLS-1$
+                    postParams.add(new BasicNameValuePair("ip", InetAddress.getLocalHost().getHostAddress())); //$NON-NLS-1$
                 } catch (UnknownHostException e) {}
             }
             
-            postParams.add(new NameValuePair("tester", AppPreferences.getLocalPrefs().getBoolean("tester", false) ? "true" : "false")); //$NON-NLS-1$
+            postParams.add(new BasicNameValuePair("tester", AppPreferences.getLocalPrefs().getBoolean("tester", false) ? "true" : "false")); //$NON-NLS-1$
             
             String resAppVersion = UIRegistry.getAppVersion();
             if (StringUtils.isEmpty(resAppVersion))
             {
                 resAppVersion = "Unknown"; 
             }
-            postParams.add(new NameValuePair("app_version", resAppVersion)); //$NON-NLS-1$
+            postParams.add(new BasicNameValuePair("app_version", resAppVersion)); //$NON-NLS-1$
             return postParams;
             
         } catch (Exception ex)
@@ -541,7 +542,7 @@ public class StatsTrackerTask extends BaseTask
             List<Pair<String, Integer>> statistics = UsageTracker.getUsageStats();
             for (Pair<String, Integer> stat : statistics)
             {
-                postParams.add(new NameValuePair(stat.first, Integer.toString(stat.second)));
+                postParams.add(new BasicNameValuePair(stat.first, Integer.toString(stat.second)));
             }
                         
             return postParams;

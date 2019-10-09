@@ -35,8 +35,8 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
 import edu.ku.brc.helpers.ProxyHelper;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.commons.httpclient.methods.RequestEntity;
 import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
@@ -1157,9 +1157,9 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 			 */
 			@Override
 			protected Pair<Boolean, String> doInBackground() throws Exception {
-				HttpClient httpClient = new HttpClient();
+				CloseableHttpClient httpClient = HttpClients.createDefault();
 				ProxyHelper.applyProxySettings(httpClient);
-				PostMethod post = new PostMethod(symTask.getSymbiotaPostUrlForCurrentInstance());
+				HttpPost post = new HttpPost(symTask.getSymbiotaPostUrlForCurrentInstance());
 				Pair<Boolean, String> result = new Pair<Boolean, String>(false, null);
 								
 				try {

@@ -27,17 +27,14 @@ import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpStatus;
+import org.apache.http.client.HttpClient;
+import org.apache.http.HttpStatus;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
-import org.apache.commons.httpclient.methods.multipart.StringPart;
-import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
-import org.apache.commons.httpclient.methods.multipart.FilePart;
-import org.apache.commons.httpclient.methods.multipart.Part;
-import org.apache.commons.httpclient.methods.*;
-import org.apache.commons.httpclient.HttpMethod;
+import org.apache.http.client.methods.*;
+import org.apache.httpclient.HttpMethod;
 import org.apache.commons.httpclient.Credentials;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -82,12 +79,12 @@ public class GbifSandbox {
         System.out.println(co);
     }
     public JSONObject getACollectionFromGBIF() {
-        HttpClient httpClient = new HttpClient();
+        CloseableHttpClient httpClient = HttpClients.createDefault();
         httpClient.getParams().setParameter("http.useragent", getClass().getName()); //$NON-NLS-1$
         httpClient.getParams().setParameter("http.socket.timeout", 15000);
 
         String url = "http://api.gbif.org/v1/grscicoll/collection/04672bb4-5621-4b5b-949d-63ceea77ae24";
-        GetMethod getMethod = new GetMethod(url);
+        HttpGet getMethod = new HttpGet(url);
         try {
             httpClient.executeMethod(getMethod);
             String jsonResponse = getMethod.getResponseBodyAsString();
@@ -142,7 +139,7 @@ public class GbifSandbox {
      * @return
      */
     public Pair<Boolean, String> postToApi(final String uri, final RequestEntity re, final Pair<String, String> credentials, final List<Pair<String, String>> params, final List<Pair<String, String>> headers, final Part[] parts) {
-        PostMethod postMethod  = new PostMethod(uri);
+        HttpPost postMethod  = new HttpPost(uri);
         if (re != null) {
             postMethod.setRequestEntity(re);
         }
@@ -172,7 +169,7 @@ public class GbifSandbox {
      */
     public Pair<Boolean, String> executeMethod(HttpMethod method, final Pair<String, String> credentials, int successCode) {
         try {
-            HttpClient client = new HttpClient();
+            CloseableHttpClient client = HttpClients.createDefault();
             if (credentials != null) {
                 Credentials creds = new UsernamePasswordCredentials(credentials.getFirst(), credentials.getSecond());
                 client.getState().setCredentials(AuthScope.ANY, creds);

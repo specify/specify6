@@ -29,12 +29,9 @@ import java.util.Vector;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
-import org.apache.commons.httpclient.methods.multipart.Part;
-import org.apache.commons.httpclient.methods.multipart.StringPart;
+import org.apache.http.client.HttpClient;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.util.Pair;
@@ -497,7 +494,7 @@ public class IPadCloudJSONImpl implements IPadCloudIFace
 //        System.out.println("------------------------\n"+writeURLStr);
         //UIRegistry.showError("Cloud URL: "+writeURLStr); // Visual Debugging
         
-        PostMethod post   = new PostMethod(writeURLStr);
+        HttpPost post   = new HttpPost(writeURLStr);
         try
         {
             Part[] parts = new Part[valuesMap.size()];
@@ -511,7 +508,7 @@ public class IPadCloudJSONImpl implements IPadCloudIFace
 
             post.setRequestEntity(new MultipartRequestEntity(parts, post.getParams()));
             
-            HttpClient client = new HttpClient();
+            CloseableHttpClient client = HttpClients.createDefault();
             client.getHttpConnectionManager().getParams().setConnectionTimeout(15000);
             client.getParams().setParameter("http.protocol.content-charset", "UTF-8");
             

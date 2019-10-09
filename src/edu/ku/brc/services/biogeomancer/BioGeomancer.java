@@ -27,9 +27,9 @@ import java.io.InputStream;
 import java.util.List;
 
 import edu.ku.brc.helpers.ProxyHelper;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.NameValuePair;
-import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.http.client.HttpClient;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
@@ -81,9 +81,9 @@ public class BioGeomancer
                                                  final String adm2,
                                                  final String localityArg) throws IOException
     {
-        HttpClient httpClient = new HttpClient();
+        CloseableHttpClient httpClient = HttpClients.createDefault();
         ProxyHelper.applyProxySettings(httpClient);
-        PostMethod postMethod = new PostMethod("http://130.132.27.130/cgi-bin/bgm-0.2/batch_test.pl"); //$NON-NLS-1$
+        HttpPost postMethod = new HttpPost("http://130.132.27.130/cgi-bin/bgm-0.2/batch_test.pl"); //$NON-NLS-1$
         StringBuilder strBuf = new StringBuilder(128);
         strBuf.append("\""+ id + "\","); //$NON-NLS-1$ //$NON-NLS-2$
         strBuf.append("\""+ country + "\","); //$NON-NLS-1$ //$NON-NLS-2$
@@ -97,7 +97,7 @@ public class BioGeomancer
                 new NameValuePair("format", "xml") }; //$NON-NLS-1$ //$NON-NLS-2$
 
         // the 2.0 beta1 version has a
-        // PostMethod.setRequestBody(NameValuePair[])
+        // HttpPost.setRequestBody(NameValuePair[])
         // method, as addParameters is deprecated
         postMethod.addParameters(postData);
 

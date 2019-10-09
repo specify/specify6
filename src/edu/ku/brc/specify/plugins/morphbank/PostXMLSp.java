@@ -5,12 +5,12 @@ package edu.ku.brc.specify.plugins.morphbank;
 
 import java.io.File;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.RequestEntity;
-import org.apache.commons.httpclient.methods.multipart.FilePart;
-import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
-import org.apache.commons.httpclient.methods.multipart.Part;
+//import org.apache.http.client.HttpClient;
+//import org.apache.http.client.methods.HttpPost;
+//import org.apache.commons.httpclient.methods.RequestEntity;
+//import org.apache.commons.httpclient.methods.multipart.FilePart;
+//import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
+//import org.apache.commons.httpclient.methods.multipart.Part;
 
 import edu.ku.brc.af.prefs.AppPreferences;
 
@@ -64,10 +64,14 @@ public class PostXMLSp
 	public PostResponse post(String strXMLFilename)
 			throws Exception
 	{
-		File input = new File(strXMLFilename);
+		throw new Exception("post() is not implemented.");
+	    return null;
+        //NOT migrating to apache http 4.x
+	    /*
+        File input = new File(strXMLFilename);
 		
 		// Prepare HTTP post
-		PostMethod post = new PostMethod(morphBankServiceURL);
+		HttpPost post = new HttpPost(morphBankServiceURL);
 		// Request content will be retrieved directly
 		// from the input stream Part[] parts = {
 		Part[] parts = { new FilePart("uploadFile", strXMLFilename, input) };
@@ -77,7 +81,7 @@ public class PostXMLSp
 		// "text/xml;charset=utf-8");
 		post.setRequestEntity(entity);
 		// Get HTTP client
-		HttpClient httpclient = new HttpClient();
+		HttpClient httpclient = HttpClients.createDefault();
 		// Execute request
 		try
 		{
@@ -89,7 +93,7 @@ public class PostXMLSp
 			// Release current connection to the connection pool once you are
 			// done
 			post.releaseConnection();
-		}
+		}*/
 	}
 
 	public class PostResponse

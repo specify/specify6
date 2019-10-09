@@ -32,7 +32,7 @@ import java.util.Vector;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
-import org.apache.commons.httpclient.HttpException;
+import org.apache.http.HttpException;
 import org.apache.log4j.Logger;
 import org.jdesktop.animation.timing.Animator;
 import org.jdesktop.animation.timing.TimingTarget;

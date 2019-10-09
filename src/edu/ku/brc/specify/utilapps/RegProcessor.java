@@ -39,8 +39,11 @@ import java.util.Properties;
 import java.util.Vector;
 
 import edu.ku.brc.helpers.ProxyHelper;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.dbsupport.DBConnection;
@@ -49,6 +52,7 @@ import edu.ku.brc.specify.config.init.RegisterSpecify.ConnectionException;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
+import org.apache.http.util.EntityUtils;
 
 /**
  * @author rod
@@ -376,25 +380,25 @@ public class RegProcessor
     {
         try
         {
-            HttpClient httpClient = new HttpClient();
+            CloseableHttpClient httpClient = HttpClients.createDefault();
             httpClient.getParams().setParameter("http.useragent", RegisterSpecify.class.getName()); //$NON-NLS-1$
             ProxyHelper.applyProxySettings(httpClient);
             String urlStr = UIRegistry.getResourceString(urlKey);
             
-            PostMethod postMethod = new PostMethod(urlStr + (inclDmp ? "?dmp=1&" : ""));
+            HttpPost postMethod = new HttpPost(urlStr + (inclDmp ? "?dmp=1&" : ""));
             
             // connect to the server
             try
             {
-                httpClient.executeMethod(postMethod);
-                
-                InputStream iStream = postMethod.getResponseBodyAsStream();
+                CloseableHttpResponse response = httpClient.execute(postMethod);
+                String responseString = EntityUtils.toString(response.getEntity());
                 
                 File   tempFile = File.createTempFile("web", "data");
-                byte[] bytes    = new byte[8196];
+                //byte[] bytes    = new byte[8196];
                 
                 PrintWriter pw = new PrintWriter(tempFile);
-                int numBytes = 0;
+                pw.write(responseString);
+                /*int numBytes = 0;
                 do 
                 {
                     numBytes = iStream.read(bytes);
@@ -404,7 +408,7 @@ public class RegProcessor
                     }
                     
                 } while (numBytes > 0);
-                
+                */
                 pw.close();
                 
                 return tempFile;

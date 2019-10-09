@@ -60,7 +60,7 @@ import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
-import org.apache.commons.httpclient.NameValuePair;
+import org.apache.http.NameValuePair;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -903,8 +903,8 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 //    				}
 //    			}
 //    			edu.ku.brc.specify.tasks.StatsTrackerTask.appendBasicCollStatsStat((Integer)coll[0], null, (Integer)coll[2], (Integer)coll[3], (Integer)coll[4], postparams);
-//    			postparams.add(new NameValuePair("num_co_dna", Integer.toString(codna)));
-//    			postparams.add(new NameValuePair("num_ms_dna", Integer.toString(msdna)));
+//    			postparams.add(new BasicNameValuePair("num_co_dna", Integer.toString(codna)));
+//    			postparams.add(new BasicNameValuePair("num_ms_dna", Integer.toString(msdna)));
 //    			StatsTrackerTask.sendStats(StatsTrackerTask.getVersionCheckURL(), postparams, "StatsTrackerTask");
 //    		} catch (Exception ex) {
 //    			ex.printStackTrace();

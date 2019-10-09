@@ -38,13 +38,10 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.Vector;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.multipart.FilePart;
-import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
-import org.apache.commons.httpclient.methods.multipart.Part;
-import org.apache.commons.httpclient.methods.multipart.StringPart;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.core.AppContextMgr;
@@ -394,7 +391,7 @@ public class iPadRepositoryHelper
                                          final String dirName)
     {
         String     targetURL = getWriteURL();
-        PostMethod filePost  = new PostMethod(targetURL);
+        HttpPost filePost  = new HttpPost(targetURL);
 
         try
         {
@@ -413,7 +410,7 @@ public class iPadRepositoryHelper
                 };
 
             filePost.setRequestEntity(new MultipartRequestEntity(parts, filePost.getParams()));
-            HttpClient client = new HttpClient();
+            CloseableHttpClient client = HttpClients.createDefault();
             client.getHttpConnectionManager().getParams().setConnectionTimeout(15000);
 
             int status = client.executeMethod(filePost);
