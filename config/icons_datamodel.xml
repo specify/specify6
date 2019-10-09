@@ -116,7 +116,7 @@
 	<icon name="PreparationAttachment"           file="preparation_attachment.png" sizes="NonStd"/>
     <icon name="ReferenceWorkAttachment"         file="refwork_attachment.png" sizes="NonStd"/>
 	<icon name="RepositoryAgreementAttachment"   file="repository_agreement_attachment.png" sizes="NonStd"/>
-	<icon name="StorageAttachment"               file="storage_attachment.png" sizes="NonStd"/> 
+	<icon name="StorageAttachment"               file="storage_attachment.png" sizes="NonStd"/>
 	<icon name="TaxonAttachment"                 file="taxon_attachment.png" sizes="NonStd"/> 
     <icon name="TreatmentEventAttachment"        file="TreatmentEventAttachment.png" sizes="NonStd"/>
 	
@@ -171,6 +171,7 @@
 	<icon name="permitattachment"               alias="PermitAttachment"/>
 	<icon name="preparationattachment"          alias="PreparationAttachment"/>
 	<icon name="repositoryagreementattachment"  alias="RepositoryAgreementAttachment"/>
+    <icon name="storageattachment"              alias="StorageAttachment"/>
 	<icon name="taxonattachment"                alias="TaxonAttachment"/>
 
     <icon name="loanpreparation"        alias="preparation"/>
