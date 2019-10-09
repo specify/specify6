@@ -23,12 +23,14 @@ import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.ProxyHelper;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 
 import java.net.InetAddress;
@@ -145,17 +147,19 @@ public abstract class FeedBackSender
             HttpPost postMethod = new HttpPost(getSenderURL());
             
             // get the POST parameters (which includes usage stats, if we're allowed to send them)
+            //https://stackoverflow.com/questions/9362427/adding-parameter-to-httppost-on-apaches-httpclient
             NameValuePair[] postParams = createPostParameters(item);
-            postMethod.setRequestBody(postParams);
-            
+            postMethod.setEntity(new UrlEncodedFormEntity(new ArrayList<NameValuePair>(postParams), HTTP.UTF_8));
+            //postMethod.setRequestBody(postParams);
+
             // connect to the server
             try
             {
-                httpClient.executeMethod(postMethod);
-                
+                CloseableHttpResponse response = httpClient.execute(getMethod);
+
                 // get the server response
-                String responseString = postMethod.getResponseBodyAsString();
-                
+                String responseString = EntityUtils.toString(response.getEntity());
+
                 if (StringUtils.isNotEmpty(responseString))
                 {
                     System.err.println(responseString);
