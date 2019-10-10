@@ -19,15 +19,9 @@
 */
 package edu.ku.brc.util;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.DigestInputStream;
@@ -36,12 +30,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Formatter;
-import java.util.Iterator;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.crypto.Mac;
@@ -50,8 +39,16 @@ import javax.swing.SwingUtilities;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.http.client.HttpClient;
+import org.apache.http.Header;
+import org.apache.http.HttpException;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.message.BasicNameValuePair;
 
 import org.apache.commons.io.FileUtils;
@@ -59,6 +56,8 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
@@ -76,6 +75,7 @@ import edu.ku.brc.ui.IconEntry;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.thumbnails.Thumbnailer;
+import org.dom4j.Entity;
 
 /**
  * @author rods
@@ -157,29 +157,31 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
     
     private void testKey() throws WebStoreAttachmentKeyException
     {
-       if (testKeyURLStr == null) return; // skip test if there is not test url.
-       
-       HttpGet method = new HttpGet(testKeyURLStr);
-       String r = "" + (new Random()).nextInt();
-       method.setQueryString(new BasicNameValuePair[] {
-               new BasicNameValuePair("random", r),
-               new BasicNameValuePair("token", generateToken(r))
-       });
-       
-       CloseableHttpClient client = HttpClients.createDefault();
-       client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
-       ProxyHelper.applyProxySettings(client);
+        if (testKeyURLStr == null) return; // skip test if there is not test url.
+
+        URIBuilder builder = new URIBuilder(testKeyURLStr);
+        String r = "" + (new Random()).nextInt();
+        builder.setParameter("random", r)
+                .setParameter("token", generateToken(r));
+        HttpGet method = new HttpGet(builder.build());
+
+        CloseableHttpClient client = HttpClients.createDefault();
+        RequestConfig.Builder requestConfig = RequestConfig.custom();
+        requestConfig.setConnectTimeout(5000);
+        ProxyHelper.applyProxySettings(method, requestConfig);
+        method.setConfig(requestConfig.build());
 
        try
        {
-           int status = client.executeMethod(method);
-           updateServerTimeDelta(method);
+           CloseableHttpResponse response = client.execute(method);
+           int status = response.getStatusLine().getStatusCode();
+           updateServerTimeDelta(response);
            if (status == HttpStatus.SC_OK)
            {
                return;
            } else if (status == HttpStatus.SC_FORBIDDEN)
            {
-               log.error("Attachment key was not validated. HTTP status=" + status + ". Response: " + method.getResponseBodyAsString());
+               log.error("Attachment key was not validated. HTTP status=" + status + ". Response: " + EntityUtils.toString(response.getEntity()));
                throw new WebStoreAttachmentKeyException("Attachment key was not validated.");
            }
        } catch (IOException e)
@@ -200,20 +202,29 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
             final int timeoutMilliseconds = 5000;
             HttpGet method = new HttpGet(urlStr);
             CloseableHttpClient client = HttpClients.createDefault();
-            client.getHttpConnectionManager().getParams().setConnectionTimeout(timeoutMilliseconds);
-            client.getHttpConnectionManager().getParams().setSoTimeout(timeoutMilliseconds);
-            ProxyHelper.applyProxySettings(client);
+
+            //client.getHttpConnectionManager().getParams().setConnectionTimeout(timeoutMilliseconds);
+            //client.getHttpConnectionManager().getParams().setSoTimeout(timeoutMilliseconds);
+
+            RequestConfig.Builder requestConfig = RequestConfig.custom();
+            requestConfig.setConnectTimeout(timeoutMilliseconds);
+            requestConfig.setSocketTimeout(timeoutMilliseconds);
+
+            //ProxyHelper.applyProxySettings(client);
+            ProxyHelper.applyProxySettings(method, requestConfig);
+            method.setConfig(requestConfig.build());
 
             try
             {
-                int status = client.executeMethod(method);
+                CloseableHttpResponse response = client.execute(method);
+                int status = response.getStatusLine().getStatusCode();
                 if (status == HttpStatus.SC_OK)
                 {
-                    result = getURLSFromStr(method.getResponseBodyAsString());
-                    updateServerTimeDelta(method);
+                    result = getURLSFromStr(EntityUtils.toString(response.getEntity()));
+                    updateServerTimeDelta(response);
                 }
                 if (!result) {
-                    log.error("Problem getting setup from URL XML. HTTP status=" + status + ". Response: " + method.getResponseBodyAsString());
+                    log.error("Problem getting setup from URL XML. HTTP status=" + status + ". Response: " + EntityUtils.toString(response.getEntity()));
                 }
             } catch (IOException e)
             {
@@ -227,11 +238,12 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
         }
     }
     
-    private void updateServerTimeDelta(HttpMethodBase method)
+    private void updateServerTimeDelta(/*HttpRequestBase method*/ CloseableHttpResponse response)
     {
         try
         {
-            Header timestamp = method.getResponseHeader("X-Timestamp");
+            //Header timestamp = method.getResponseHeader("X-Timestamp");
+            Header timestamp = response.getLastHeader("X-Timestamp");
             if (timestamp == null) return;
             long serverTime = Long.parseLong(timestamp.getValue());
             serverTimeDelta = serverTime - getSystemTime();
@@ -365,8 +377,16 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
         String fileName = BasicSQLUtils.querySingleObj(ATTACHMENT_URL + attachmentID);
         if (StringUtils.isNotEmpty(fileName) && StringUtils.isNotEmpty(fileGetMetaDataURLStr))
         {
-            HttpGet method = new HttpGet(fileGetMetaDataURLStr);
             fillValuesArray();
+            URIBuilder builder = new URIBuilder(fileGetMetaDataURLStr);
+            builder.setParameter("dt", "json")
+                    .setParameter("filename", fileName)
+                    .setParameter("token", generateToken(fileName))
+                    .setParameter("coll", values[0])
+                    .setParameter("disp", values[1])
+                    .setParameter("div",  values[2])
+                    .setParameter("inst", values[3]);
+/*
             method.setQueryString(new BasicNameValuePair[] {
                     new BasicNameValuePair("dt", "json"),
                     new BasicNameValuePair("filename", fileName),
@@ -376,18 +396,24 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
                     new BasicNameValuePair("div",  values[2]),
                     new BasicNameValuePair("inst", values[3])
             });
-    
+*/
+            HttpGet method = new HttpGet(builder.build());
+
             CloseableHttpClient client = HttpClients.createDefault();
-            client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
-            ProxyHelper.applyProxySettings(client);
+            //client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
+            RequestConfig.Builder requestConfig = RequestConfig.custom();
+            requestConfig.setConnectTimeout(5000);
+            ProxyHelper.applyProxySettings(method, requestConfig);
+            method.setConfig(requestConfig.build());
 
             try
             {
-                int status = client.executeMethod(method);
-                updateServerTimeDelta(method);
+                CloseableHttpResponse response = client.execute(method);
+                int status = response.getStatusLine().getStatusCode();
+                updateServerTimeDelta(response);
                 if (status == HttpStatus.SC_OK)
                 {
-                    dateStr= method.getResponseBodyAsString();
+                    dateStr = EntityUtils.toString(response.getEntity());
                 } else {
                     log.warn("Http status: " + status);
                 }
@@ -426,29 +452,40 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
       String fileName = BasicSQLUtils.querySingleObj(ATTACHMENT_URL + attachmentID);
       if (StringUtils.isNotEmpty(fileName) && StringUtils.isNotEmpty(fileGetMetaDataURLStr))
       {
-            HttpGet method = new HttpGet(fileGetMetaDataURLStr);
-            fillValuesArray();
-            method.setQueryString(new BasicNameValuePair[] {
-                    new BasicNameValuePair("dt", "json"),
-                    new BasicNameValuePair("filename", fileName),
-                    new BasicNameValuePair("token", generateToken(fileName)),
-                    new BasicNameValuePair("coll", values[0]),
-                    new BasicNameValuePair("disp", values[1]),
-                    new BasicNameValuePair("div",  values[2]),
-                    new BasicNameValuePair("inst", values[3])
-            });
-    
-            CloseableHttpClient client = HttpClients.createDefault();
-            client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
-            ProxyHelper.applyProxySettings(client);
+          fillValuesArray();
+          URIBuilder builder = new URIBuilder(fileGetMetaDataURLStr);
+          builder.setParameter("dt", "json")
+                    .setParameter("filename", fileName)
+                    .setParameter("token", generateToken(fileName))
+                    .setParameter("coll", values[0])
+                    .setParameter("disp", values[1])
+                    .setParameter("div",  values[2])
+                    .setParameter("inst", values[3]);
+
+          HttpGet method = new HttpGet(builder.build());
+//          method.setQueryString(new BasicNameValuePair[] {
+//                    new BasicNameValuePair("dt", "json"),
+//                    new BasicNameValuePair("filename", fileName),
+//                    new BasicNameValuePair("token", generateToken(fileName)),
+//                    new BasicNameValuePair("coll", values[0]),
+//                    new BasicNameValuePair("disp", values[1]),
+//                    new BasicNameValuePair("div",  values[2]),
+//                    new BasicNameValuePair("inst", values[3])
+//          });
+          CloseableHttpClient client = HttpClients.createDefault();
+          RequestConfig.Builder requestConfig = RequestConfig.custom();
+          requestConfig.setConnectTimeout(5000);
+          ProxyHelper.applyProxySettings(method, requestConfig);
+          method.setConfig(requestConfig.build());
 
             try
             {
-                int status = client.executeMethod(method);
-                updateServerTimeDelta(method);
+                CloseableHttpResponse response = client.execute(method);
+                int status = response.getStatusLine().getStatusCode();
+                updateServerTimeDelta(response);
                 if (status == HttpStatus.SC_OK)
                 {
-                    result = method.getResponseBodyAsString();
+                    result = EntityUtils.toString(response.getEntity());
                 } else {
                     log.warn("Http status: " + status);
                 }
@@ -784,32 +821,44 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
         }
         notifyListeners(1);
 
-        HttpGet getMethod = new HttpGet(readURLStr);
         // type=<type>&filename=<fname>&coll=<coll>&disp=<disp>&div=<div>&inst=<inst>
         fillValuesArray();
-        getMethod.setQueryString(new BasicNameValuePair[] {
-                new BasicNameValuePair("type", (scale != null) ? "T" : "O"),
-                new BasicNameValuePair("scale", "" + scale),
-                new BasicNameValuePair("filename", attachLocation),
-                new BasicNameValuePair("token", generateToken(attachLocation)),
-                new BasicNameValuePair("coll", values[0]),
-                new BasicNameValuePair("disp", values[1]),
-                new BasicNameValuePair("div",  values[2]),
-                new BasicNameValuePair("inst", values[3])
-        });
+        URIBuilder builder = new URIBuilder(readURLStr);
+        builder.setParameter("type", (scale != null) ? "T" : "O")
+                .setParameter("scale", "" + scale)
+                .setParameter("filename", attachLocation)
+                .setParameter("token", generateToken(attachLocation))
+                .setParameter("coll", values[0])
+                .setParameter("disp", values[1])
+                .setParameter("div",  values[2])
+                .setParameter("inst", values[3]);
+//        getMethod.setQueryString(new BasicNameValuePair[] {
+//                new BasicNameValuePair("type", (scale != null) ? "T" : "O"),
+//                new BasicNameValuePair("scale", "" + scale),
+//                new BasicNameValuePair("filename", attachLocation),
+//                new BasicNameValuePair("token", generateToken(attachLocation)),
+//                new BasicNameValuePair("coll", values[0]),
+//                new BasicNameValuePair("disp", values[1]),
+//                new BasicNameValuePair("div",  values[2]),
+//                new BasicNameValuePair("inst", values[3])
+//        });
+        HttpGet getMethod = new HttpGet(builder.build());
                          
                 
         CloseableHttpClient client = HttpClients.createDefault();
-        client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
-        ProxyHelper.applyProxySettings(client);
+        RequestConfig.Builder requestConfig = RequestConfig.custom();
+        requestConfig.setConnectTimeout(5000);
+        ProxyHelper.applyProxySettings(getMethod, requestConfig);
+        getMethod.setConfig(requestConfig.build());
 
         try
         {
-            int status = client.executeMethod(getMethod);
-            updateServerTimeDelta(getMethod);
+            CloseableHttpResponse response = client.execute(getMethod);
+            int status = response.getStatusLine().getStatusCode();
+            updateServerTimeDelta(response);
             if (status == HttpStatus.SC_OK)
             {
-                InputStream inpStream = getMethod.getResponseBodyAsStream();
+                InputStream inpStream = new ByteArrayInputStream(EntityUtils.toByteArray(response.getEntity()));
                 if (inpStream != null)
                 {
                     BufferedInputStream  in  = new BufferedInputStream(inpStream);
@@ -835,25 +884,19 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
                     success = true;
                 }
             } else {
-                log.error("HTTP status: " + status + ". Response: " + getMethod.getResponseBodyAsString());
+                log.error("HTTP status: " + status + ". Response: " + EntityUtils.toString(response.getEntity()));
             }
-        } catch (HttpException e)
-        {
+        } catch (HttpException | IOException e) {
             e.printStackTrace();
             log.error(e);
-        } catch (IOException e)
-        {
-            e.printStackTrace();
-            log.error(e);
-        } finally 
-        {
+        } finally {
             getMethod.releaseConnection();
             notifyListeners(-1);
         }
     
         if (success) {
             return dlFile;
-        } else{
+        } else {
             dlFile.delete();
             return null;
         }
@@ -947,34 +990,38 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
         {
             log.debug("Uploading " + targetFile.getName() + " to " + targetURL);
 
-            Part[] parts = {
-                    new FilePart(targetFile.getName(), targetFile),
-                    new StringPart("type", isThumb ? "T" : "O"),
-                    new StringPart("store", fileName),
-                    new StringPart("token", generateToken(fileName)),
-                    new StringPart("coll", values[0]),
-                    new StringPart("disp", values[1]),
-                    new StringPart("div",  values[2]),
-                    new StringPart("inst", values[3]),
-                };
+            MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+            builder.setCharset(StandardCharsets.UTF_8);
+            builder.addTextBody("type", isThumb ? "T" : "O");
+            builder.addTextBody("store", fileName);
+            builder.addTextBody("token", generateToken(fileName));
+            builder.addTextBody("coll", values[0]);
+            builder.addTextBody("disp", values[1]);
+            builder.addTextBody("div",  values[2]);
+            builder.addTextBody("inst", values[3]);
+            builder.addBinaryBody(targetFile.getName(), targetFile);
+            filePost.setEntity(builder.build());
 
-            filePost.setRequestEntity(new MultipartRequestEntity(parts, filePost.getParams()));
+
             CloseableHttpClient client = HttpClients.createDefault();
-            client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
-            ProxyHelper.applyProxySettings(client);
+            RequestConfig.Builder requestConfig = RequestConfig.custom();
+            requestConfig.setConnectTimeout(5000);
+            ProxyHelper.applyProxySettings(filePost, requestConfig);
+            filePost.setConfig(requestConfig.build());
 
-            int status = client.executeMethod(filePost);
-            updateServerTimeDelta(filePost);
+            CloseableHttpResponse response = client.execute(filePost);
+            int status = response.getStatusLine().getStatusCode();
+            updateServerTimeDelta(response);
             
             //log.debug("---------------------------------------------------");
-            log.debug(filePost.getResponseBodyAsString());
+            log.debug(EntityUtils.toString(response.getEntity()));
             //log.debug("---------------------------------------------------");
 
             if (status == HttpStatus.SC_OK)
             {
                 return true;
             } else {
-                log.warn("Http status: " + status + ". Response: " + filePost.getResponseBodyAsString());
+                log.warn("Http status: " + status + ". Response: " + EntityUtils.toString(response.getEntity()));
             }
             
         } catch (Exception ex)
@@ -1040,23 +1087,28 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
             //String     targetURL  = subAllExtraData(delURLStr, fileName, isThumb, null, null);
             fillValuesArray();
             HttpPost  postMethod  = new HttpPost(delURLStr);
-            postMethod.addParameter("filename", fileName);
-            postMethod.addParameter("token", generateToken(fileName));
-            postMethod.addParameter("coll", values[0]);
-            postMethod.addParameter("disp", values[1]);
-            postMethod.addParameter("div",  values[2]);
-            postMethod.addParameter("inst", values[3]);            
+            List<BasicNameValuePair> postParams = new ArrayList<>();
+            postParams.add(new BasicNameValuePair("filename", fileName));
+            postParams.add(new BasicNameValuePair("token", generateToken(fileName)));
+            postParams.add(new BasicNameValuePair("coll", values[0]));
+            postParams.add(new BasicNameValuePair("disp", values[1]));
+            postParams.add(new BasicNameValuePair("div",  values[2]));
+            postParams.add(new BasicNameValuePair("inst", values[3]));
             //log.debug("Deleting " + fileName + " from " + targetURL );
+            postMethod.setEntity(new UrlEncodedFormEntity(postParams, StandardCharsets.UTF_8));
 
             CloseableHttpClient client = HttpClients.createDefault();
-            client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
-            ProxyHelper.applyProxySettings(client);
+            RequestConfig.Builder requestConfig = RequestConfig.custom();
+            requestConfig.setConnectTimeout(5000);
+            ProxyHelper.applyProxySettings(postMethod, requestConfig);
+            postMethod.setConfig(requestConfig.build());
 
-            int status = client.executeMethod(postMethod);
-            updateServerTimeDelta(postMethod);
+            CloseableHttpResponse response = client.execute(postMethod);
+            int status = response.getStatusLine().getStatusCode();
+            updateServerTimeDelta(response);
             
             if (status != HttpStatus.SC_OK) {
-                log.warn("HttpStatus=" + status + ". Response: " + postMethod.getResponseBodyAsString());
+                log.warn("HttpStatus=" + status + ". Response: " + EntityUtils.toString(response.getEntity()));
             }
 
 
