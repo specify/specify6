@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
+import edu.ku.brc.helpers.ProxyHelper;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
@@ -515,6 +516,7 @@ public class IPadCloudJSONImpl implements IPadCloudIFace
             post.setEntity(builder.build());
             RequestConfig.Builder requestConfig = RequestConfig.custom();
             requestConfig.setConnectTimeout(15000);
+            ProxyHelper.applyProxySettings(post, requestConfig);
             post.setConfig(requestConfig.build());
 
             CloseableHttpClient client = HttpClients.createDefault();

@@ -39,6 +39,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.Vector;
 
+import edu.ku.brc.helpers.ProxyHelper;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -418,6 +419,7 @@ public class iPadRepositoryHelper
             filePost.setEntity(builder.build());
             RequestConfig.Builder requestConfig = RequestConfig.custom();
             requestConfig.setConnectTimeout(15000);
+            ProxyHelper.applyProxySettings(filePost, requestConfig);
             filePost.setConfig(requestConfig.build());
 
 

@@ -130,6 +130,15 @@ public class ProxyHelper
                       false);
     }
 
+    /**
+     * Sets proxy if proxy settings are configured.
+     * For methods that use a request configuration, the request configuration should be created before
+     * calling this method, and built and set after calling.
+     *
+     * @param method
+     * @param requestConfigArg
+     * @return true if proxy settings were applied
+     */
     public static boolean applyProxySettings(HttpRequestBase method, RequestConfig.Builder requestConfigArg) {
         String proxyHost = System.getProperty("http.proxyHost");
         if (proxyHost != null) {
