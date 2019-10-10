@@ -29,7 +29,11 @@ import javax.swing.ImageIcon;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.HttpException;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.ui.UIRegistry;
@@ -47,7 +51,7 @@ public class MapGrabber
 	private static final Logger log = Logger.getLogger(MapGrabber.class);
 
 	/** HttpClient used for grabbing maps using HTTP. */
-	protected HttpClient httpClient;
+	protected CloseableHttpClient httpClient;
 
 	// setup some default values
 	// TODO: remove these from any final versions
@@ -412,11 +416,11 @@ public class MapGrabber
 		{
 			log.info("No image cache available.  Grabbing map internally.");
 			HttpGet get = new HttpGet(urlStr);
-			get.setFollowRedirects(true);
-			int resultCode = httpClient.executeMethod(get);
+			CloseableHttpResponse response = httpClient.execute(get);
+			int resultCode = response.getStatusLine().getStatusCode();
 			log.info("GET " + urlStr + " returned " + resultCode );
 			log.info("Exiting MapGrabber.getMap()");
-			byte[] data = get.getResponseBody();
+			byte[] data = EntityUtils.toByteArray(response.getEntity());
 			image = Toolkit.getDefaultToolkit().createImage(data);
             ImageIcon mapIcon = new ImageIcon(image);
             if (mapIcon.getIconHeight() < 0 || mapIcon.getIconWidth() < 0)

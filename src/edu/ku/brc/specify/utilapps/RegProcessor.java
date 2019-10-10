@@ -382,11 +382,11 @@ public class RegProcessor
         {
             CloseableHttpClient httpClient = HttpClients.createDefault();
             httpClient.getParams().setParameter("http.useragent", RegisterSpecify.class.getName()); //$NON-NLS-1$
-            ProxyHelper.applyProxySettings(httpClient);
             String urlStr = UIRegistry.getResourceString(urlKey);
             
             HttpPost postMethod = new HttpPost(urlStr + (inclDmp ? "?dmp=1&" : ""));
-            
+            ProxyHelper.applyProxySettings(postMethod, null);
+
             // connect to the server
             try
             {

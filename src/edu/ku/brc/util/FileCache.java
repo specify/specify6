@@ -713,7 +713,7 @@ public class FileCache implements DataCacheIFace
 	{
         CloseableHttpClient httpClient = HttpClients.createDefault();
 		HttpGet get = new HttpGet(url);
-		ProxyHelper.applyProxySettings(httpClient);
+		ProxyHelper.applyProxySettings(get, null);
 		CloseableHttpResponse httpResponse = httpClient.execute(get);
 		int result = httpResponse.getStatusLine().getStatusCode();
 		if (result != 200)

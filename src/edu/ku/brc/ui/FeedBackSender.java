@@ -27,6 +27,7 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -37,6 +38,8 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Properties;
 import java.util.Vector;
+import java.util.Arrays;
+import java.nio.charset.StandardCharsets;
 
 
 /**
@@ -142,22 +145,19 @@ public abstract class FeedBackSender
             // check the website for the info about the latest version
             CloseableHttpClient httpClient = HttpClients.createDefault();
             httpClient.getParams().setParameter("http.useragent", getClass().getName()); //$NON-NLS-1$
-            ProxyHelper.applyProxySettings(httpClient);
 
             HttpPost postMethod = new HttpPost(getSenderURL());
             
             // get the POST parameters (which includes usage stats, if we're allowed to send them)
             //https://stackoverflow.com/questions/9362427/adding-parameter-to-httppost-on-apaches-httpclient
             NameValuePair[] postParams = createPostParameters(item);
-            postMethod.setEntity(new UrlEncodedFormEntity(new ArrayList<NameValuePair>(postParams), HTTP.UTF_8));
-            //postMethod.setRequestBody(postParams);
+            postMethod.setEntity(new UrlEncodedFormEntity(Arrays.asList(postParams), StandardCharsets.UTF_8));
+            ProxyHelper.applyProxySettings(postMethod, null);
 
             // connect to the server
             try
             {
-                CloseableHttpResponse response = httpClient.execute(getMethod);
-
-                // get the server response
+                CloseableHttpResponse response = httpClient.execute(postMethod);
                 String responseString = EntityUtils.toString(response.getEntity());
 
                 if (StringUtils.isNotEmpty(responseString))

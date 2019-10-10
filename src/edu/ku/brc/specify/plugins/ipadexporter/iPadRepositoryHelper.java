@@ -26,6 +26,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -39,9 +40,14 @@ import java.util.TreeMap;
 import java.util.Vector;
 
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.HttpStatus;
+import org.apache.http.util.EntityUtils;
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.core.AppContextMgr;
@@ -63,6 +69,7 @@ import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
+import org.apache.http.protocol.HTTP;
 
 /**
  * @author rods
@@ -400,20 +407,24 @@ public class iPadRepositoryHelper
             
             //System.out.println("Uploading " + targetFile.getName() + " to " + targetURL+ "Src Exists: "+targetFile.exists());
             //System.out.println("Hash [" + sha1Hash + "]");
-                    
-            Part[] parts = {
-                    new FilePart(targetFile.getName(), targetFile),
-                    new StringPart("store", fileName),
-                    new StringPart("dir", dirName),
-                    new StringPart("hash", sha1Hash == null ? "" : sha1Hash),
-                    new StringPart("action", "upload"),
-                };
 
-            filePost.setRequestEntity(new MultipartRequestEntity(parts, filePost.getParams()));
+            MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+            builder.setCharset(StandardCharsets.UTF_8);
+            builder.addTextBody("store", fileName);
+            builder.addTextBody("dir", dirName);
+            builder.addTextBody("hash", sha1Hash == null ? "" : sha1Hash);
+            builder.addTextBody("action", "upload");
+            builder.addBinaryBody(targetFile.getName(), targetFile);
+            filePost.setEntity(builder.build());
+            RequestConfig.Builder requestConfig = RequestConfig.custom();
+            requestConfig.setConnectTimeout(15000);
+            filePost.setConfig(requestConfig.build());
+
+
             CloseableHttpClient client = HttpClients.createDefault();
-            client.getHttpConnectionManager().getParams().setConnectionTimeout(15000);
 
-            int status = client.executeMethod(filePost);
+            CloseableHttpResponse response = client.execute(filePost);
+            int status = response.getStatusLine().getStatusCode();
             
             //System.out.println(filePost.getResponseBodyAsString());
 
@@ -424,7 +435,7 @@ public class iPadRepositoryHelper
             } else
             {
                 System.err.println("HTTP Status: "+status);
-                System.err.println(filePost.getResponseBodyAsString());
+                System.err.println(EntityUtils.toString(response.getEntity()));
             }
             
         } catch (java.net.UnknownHostException uex)

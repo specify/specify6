@@ -22,6 +22,8 @@ package edu.ku.brc.helpers;
 import edu.ku.brc.af.prefs.AppPreferences;
 import org.apache.http.HttpHost;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.log4j.Logger;
 
 /**
@@ -128,7 +130,31 @@ public class ProxyHelper
                       false);
     }
 
+    public static boolean applyProxySettings(HttpRequestBase method, RequestConfig.Builder requestConfigArg) {
+        String proxyHost = System.getProperty("http.proxyHost");
+        if (proxyHost != null) {
+            boolean builtBuilder = requestConfigArg == null;
+            RequestConfig.Builder requestConfig = builtBuilder ? RequestConfig.custom() : requestConfig;
+            Integer proxyPort = null;
+            try {
+                proxyPort = Integer.valueOf(System.getProperty("http.proxyPort"));
+            } catch (Exception e) {
+                //disregard stupid port
+                log.warn("invalid proxy port. defaulting to 3128.");
+                proxyPort = 3128;
+            }
+            requestConfig.setProxy(new HttpHost(proxyHost, proxyPort));
+            if (builtBuilder) {
+                method.setConfig(requestConfig.build());
+            }
+            return true;
+        }
+        return false;
+    }
+
     public static void applyProxySettings(HttpClient httpClient) {
+        log.error("applyProxySettings(HttpClient) is no longer supported.");
+        /*
         String proxyHost = System.getProperty("http.proxyHost");
         if (proxyHost != null) {
             Integer proxyPort = null;
@@ -144,6 +170,7 @@ public class ProxyHelper
             httpClient.setHostConfiguration(hc);
             log.info("applied proxy settings: " + proxyHost + ":" + proxyPort);
         }
+        */
     }
 
 }

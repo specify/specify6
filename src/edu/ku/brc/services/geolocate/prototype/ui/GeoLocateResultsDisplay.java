@@ -52,10 +52,12 @@ import net.sf.json.util.JSONTokener;
 
 import org.apache.axis.message.MessageElement;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.util.EntityUtils;
 import org.jdesktop.swingx.mapviewer.GeoPosition;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -515,8 +517,8 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
 		                HttpGet getMethod = new HttpGet(url);
 		                try
 		                {
-		                    httpClient.executeMethod(getMethod);
-		                    String jsonResponse = getMethod.getResponseBodyAsString();
+                            CloseableHttpResponse response = httpClient.execute(getMethod);
+		                    String jsonResponse = EntityUtils.toString(response.getEntity());
                             JSONTokener tok = new JSONTokener(jsonResponse);
                             if (tok.more()) {
                                 JSONObject obj = (JSONObject)tok.nextValue();

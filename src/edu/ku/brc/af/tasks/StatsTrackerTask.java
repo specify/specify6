@@ -36,8 +36,16 @@ import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.util.EntityUtils;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.client.params.HttpClientParams;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -46,15 +54,12 @@ import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
-
-//import org.apache.http.impl.client.CloseableHttpClient;
-//import org.apache.http.impl.client.HttpClientBuilder;
-//import org.apache.http.client.params.HttpClientParams;
-//import org.apache.http.client.methods.HttpPost;
 
 /**
  * This class sends usage stats.
@@ -358,17 +363,16 @@ public class StatsTrackerTask extends BaseTask
         CloseableHttpClient httpClient = HttpClients.createDefault();
         httpClient.getParams().setParameter("http.useragent", userAgentName); //$NON-NLS-1$
 
-        ProxyHelper.applyProxySettings(httpClient);
         HttpPost postMethod = new HttpPost(url);
-        
+        ProxyHelper.applyProxySettings(postMethod, null);
+
         // get the POST parameters (which includes usage stats, if we're allowed to send them)
-        postMethod.setRequestBody(buildNamePairArray(postParams));
-        
+        postMethod.setEntity(new UrlEncodedFormEntity(postParams, StandardCharsets.UTF_8));
+
         // connect to the server
         try
         {
-            httpClient.executeMethod(postMethod);
-
+            httpClient.execute(postMethod);
         } catch (java.net.UnknownHostException ex)
         {
             log.debug("Couldn't reach host.");
