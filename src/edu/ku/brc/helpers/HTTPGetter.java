@@ -233,12 +233,6 @@ public class HTTPGetter implements Runnable
             log.error(String.format("Could not make HTTP connection. (%s)", ce.toString())); //$NON-NLS-1$
             status = ErrorCode.HttpError;
 
-        } catch (HttpException he)
-        {
-            excp = he;
-            log.error(String.format("Http problem making request.  (%s)", he.toString())); //$NON-NLS-1$
-            status = ErrorCode.HttpError;
-
         } catch (IOException ioe)
         {
             excp = ioe;

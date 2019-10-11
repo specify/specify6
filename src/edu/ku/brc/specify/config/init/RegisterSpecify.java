@@ -435,7 +435,6 @@ public class RegisterSpecify
             }
         }
         */
-        return null;
     }
     
     /**

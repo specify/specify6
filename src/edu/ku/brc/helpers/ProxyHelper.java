@@ -143,7 +143,7 @@ public class ProxyHelper
         String proxyHost = System.getProperty("http.proxyHost");
         if (proxyHost != null) {
             boolean builtBuilder = requestConfigArg == null;
-            RequestConfig.Builder requestConfig = builtBuilder ? RequestConfig.custom() : requestConfig;
+            RequestConfig.Builder requestConfig = builtBuilder ? RequestConfig.custom() : requestConfigArg;
             Integer proxyPort = null;
             try {
                 proxyPort = Integer.valueOf(System.getProperty("http.proxyPort"));

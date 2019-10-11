@@ -65,7 +65,6 @@ public class PostXMLSp
 			throws Exception
 	{
 		throw new Exception("post() is not implemented.");
-	    return null;
         //NOT migrating to apache http 4.x
 	    /*
         File input = new File(strXMLFilename);

@@ -187,7 +187,6 @@ public class MorphBankTest
 	public static HttpPost getImagePostRequest(String strURL, String id, String originalFileName, String imageFileName) throws Exception
 	{
 		throw new NotImplementedException("getImagePostRequest() is not implemented.");
-		return null;
 		//NOT migrating this method to apache http 4.x
 		/*File input = new File(imageFileName);
 		// Prepare HTTP post
