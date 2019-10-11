@@ -209,12 +209,13 @@ public class GbifSandbox {
             CloseableHttpResponse response = client.execute(method, localContext);
             int status = response.getStatusLine().getStatusCode();
             boolean success = status == successCode;
+            Pair<Boolean, String> result = new Pair<>(success, EntityUtils.toString(response.getEntity()));
             try {
                 EntityUtils.consume(response.getEntity());
             } finally {
                 response.close();
             }
-            return new Pair<>(success, EntityUtils.toString(response.getEntity()));
+            return result;
         } catch (java.io.IOException x) {
             log.error(x);
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
@@ -261,8 +262,8 @@ public class GbifSandbox {
 
             MultipartEntityBuilder builder = MultipartEntityBuilder.create();
             builder.setCharset(StandardCharsets.UTF_8);
-            builder.addTextBody("data",  "{'filename': '" + file.getName()+ "'}");
-            builder.addBinaryBody("uploadfile", file, ContentType.APPLICATION_OCTET_STREAM, file.getName());
+            //builder.addTextBody("data",  "{'filename': '" + file.getName()+ "'}");
+            builder.addBinaryBody("uploadfile", file, ContentType.TEXT_PLAIN, file.getName());
 
             //
             // FileRequestEntity fe = new FileRequestEntity(file, "text/csv");
