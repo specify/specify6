@@ -2669,7 +2669,26 @@ public class FormViewObj implements Viewable,
             localSession.saveOrUpdate(obj);
         }
     }
-    
+
+    private boolean hasUniqueConstraint(final Object dataObj) {
+        javax.persistence.Table annotation = dataObj.getClass().getAnnotation(javax.persistence.Table.class);
+        if (annotation != null) {
+            return annotation.uniqueConstraints().length > 0;
+        } else {
+            return false;
+        }
+    }
+
+    private Vector<Object> removeObjsWithoutUniqueConstraint(final Vector<Object> objs) {
+        Vector<Object> result = new Vector<>();
+        for (Object obj: objs) {
+            if (hasUniqueConstraint(obj)) {
+                result.add(obj);
+            }
+        }
+        return result;
+    }
+
     /**
      * This method enables us to loop when there is a duplicate key
      * @param dataObj the data object to be saved
@@ -2693,6 +2712,10 @@ public class FormViewObj implements Viewable,
         int     numTries         = 0;
         
         Vector<Object> deletedItems   = mvParent != null ? mvParent.getDeletedItems() : null;
+        if (deletedItems != null) {
+            //see comment re deletion below.
+            deletedItems = removeObjsWithoutUniqueConstraint(deletedItems);
+        }
         Vector<Object> toBeSavedItems = mvParent != null ? mvParent.getToBeSavedItems() : null;
 
         Object dObj = null;
@@ -2751,7 +2774,6 @@ public class FormViewObj implements Viewable,
                 traverseToSetModified(getMVParent());
                                 
                 session.beginTransaction();
-                
                 if (numTries == 1 && deletedItems != null && deletedItems.size() > 0)
                 {
                 	

@@ -1246,7 +1246,7 @@ public void setReservedText3(String reservedText3) {
     /**
      *
      */
-    @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "collectionObject")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "collectionObject")
     @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<OtherIdentifier> getOtherIdentifiers() {
         return this.otherIdentifiers;
