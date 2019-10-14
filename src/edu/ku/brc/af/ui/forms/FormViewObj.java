@@ -2670,6 +2670,11 @@ public class FormViewObj implements Viewable,
         }
     }
 
+    /**
+     *
+     * @param dataObj
+     * @return
+     */
     private boolean hasUniqueConstraint(final Object dataObj) {
         javax.persistence.Table annotation = dataObj.getClass().getAnnotation(javax.persistence.Table.class);
         if (annotation != null) {
@@ -2679,10 +2684,53 @@ public class FormViewObj implements Viewable,
         }
     }
 
-    private Vector<Object> removeObjsWithoutUniqueConstraint(final Vector<Object> objs) {
+    /**
+     *
+     * @param busRuleCls
+     * @param name
+     * @return
+     */
+    private boolean hasDelBusRuleMethod(Class<?> busRuleCls, String name) {
+        try {
+            Method m = busRuleCls.getDeclaredMethod(name, Object.class, DataProviderSessionIFace.class);
+            return true;
+        } catch (Exception x) {
+            return false;
+        }
+    }
+
+    /**
+     *
+     * @param dataObj
+     * @return
+     */
+    private boolean hasDeleteBusinessRules(final Object obj) {
+        BusinessRulesIFace busRules = DBTableIdMgr.getInstance().getBusinessRule(obj);
+        if (busRules != null) {
+            Class<?> cls = busRules.getClass();
+            return hasDelBusRuleMethod(cls, "beforeDelete") || hasDelBusRuleMethod(cls, "beforeDeleteCommit");
+        }
+        return false;
+    }
+
+    /**
+     *
+     * @param dataObj
+     * @return
+     */
+    private boolean needsToBeDeletedManually(final Object dataObj) {
+        return hasUniqueConstraint(dataObj) || hasDeleteBusinessRules(dataObj);
+    }
+
+    /**
+     *
+     * @param objs
+     * @return
+     */
+    private Vector<Object> getItemsToDeleteManually(final Vector<Object> objs) {
         Vector<Object> result = new Vector<>();
         for (Object obj: objs) {
-            if (hasUniqueConstraint(obj)) {
+            if (needsToBeDeletedManually(obj)) {
                 result.add(obj);
             }
         }
@@ -2712,10 +2760,7 @@ public class FormViewObj implements Viewable,
         int     numTries         = 0;
         
         Vector<Object> deletedItems   = mvParent != null ? mvParent.getDeletedItems() : null;
-        if (deletedItems != null) {
-            //see comment re deletion below.
-            deletedItems = removeObjsWithoutUniqueConstraint(deletedItems);
-        }
+        Vector<Object> deletedItemsForManualDelete = deletedItems == null ? null : getItemsToDeleteManually(deletedItems);
         Vector<Object> toBeSavedItems = mvParent != null ? mvParent.getToBeSavedItems() : null;
 
         Object dObj = null;
@@ -2785,7 +2830,7 @@ public class FormViewObj implements Viewable,
                    //If not for the merging done by business rules for embedded collectingevents it would be possible
                    //to only delete manually if numTries was 2, i.e. hibernate failed the first try, but the merging generates
                    //exceptions for duplicate keys that are not thrown up to this method but mess up the session.
-                   deleteItemsInDelList(session, deletedItems);
+                   deleteItemsInDelList(session, deletedItemsForManualDelete);
                    try 
                    {
                 	   //need to flush so later actions in the transaction know about the deletes.
