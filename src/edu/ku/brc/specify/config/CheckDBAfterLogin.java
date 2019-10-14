@@ -1261,7 +1261,7 @@ public class CheckDBAfterLogin
             for (Integer defId : gtpTreeDefIds)
             {
                 String sql = String.format("SELECT COUNT(*) FROM geologictimeperiodtreedefitem WHERE ParentItemID IS NULL AND GeologicTimePeriodTreeDefID=%d", defId);
-                if (BasicSQLUtils.getCount(sql) == 1) continue;
+                if (BasicSQLUtils.getCount(sql).equals(1)) continue;
                
                 sql = String.format("SELECT GeologicTimePeriodTreeDefItemID FROM geologictimeperiodtreedefitem WHERE GeologicTimePeriodTreeDefID=%d ORDER BY RankID", defId);
                 Vector<Integer> gtpTreeDefItemIds = BasicSQLUtils.queryForInts(sql);

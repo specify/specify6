@@ -478,7 +478,7 @@ public class BasicSQLUtils
      * @param sql
      * @return
      */
-    public static Long getCount(final String sql)
+    public static <T extends Number> T getCount(final String sql)
     {
         return getCount(dbConn != null ? dbConn : DBConnection.getInstance().getConnection(), sql);
     }
@@ -487,9 +487,10 @@ public class BasicSQLUtils
      * @param sql
      * @return
      */
-    public static long getCountAsInt(final String sql)
+    public static int getCountAsInt(final String sql)
     {
-        return getCountAsInt(dbConn != null ? dbConn : DBConnection.getInstance().getConnection(), sql);
+        Number result = getCount(sql);
+        return result == null ? 0 : result.intValue();
     }
     
     /**
@@ -497,19 +498,19 @@ public class BasicSQLUtils
      * @param sql
      * @return
      */
-    public static long getCountAsInt(final Connection conn, final String sql)
+    public static int getCountAsInt(final Connection conn, final String sql)
     {
-        Long cnt = getCount(conn, sql);
-        return cnt == null ? 0 : cnt;
+        Number cnt = getCount(conn, sql);
+        return cnt == null ? 0 : cnt.intValue();
     }
     
     /**
      * @param sql
      * @return
      */
-    public static Long getCount(final Connection connection, final String sql)
+    public static <T extends Number> T getCount(final Connection connection, final String sql)
     {
-        Long   count = null;
+        Number   count = null;
         Statement stmt  = null;
         ResultSet rs    = null;
         try
@@ -518,8 +519,8 @@ public class BasicSQLUtils
             rs   = stmt.executeQuery(sql);
             if (rs.next())
             {
-                count = rs.getLong(1);
-                return rs.wasNull() ? null : count;
+                count = (Number)rs.getObject(1);
+                return rs.wasNull() ? null : (T)count;
             }
 
         } catch (Exception ex)
@@ -536,7 +537,7 @@ public class BasicSQLUtils
             } catch (Exception ex) {}
         }
 
-        return count;
+        return null;
     }
     
     /**

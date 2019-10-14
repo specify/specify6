@@ -278,7 +278,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
                 int divId = AppContextMgr.getInstance().getClassObject(Division.class).getDivisionId();
                 String sql = "delete from autonumsch_div where divisionid = " + divId;
                 BasicSQLUtils.update(sql);
-                if (0 != BasicSQLUtils.getCount("select count(*) from autonumsch_div where divisionid = " + divId)) {
+                if (!BasicSQLUtils.getCount("select count(*) from autonumsch_div where divisionid = " + divId).equals(0)) {
                     log.error("error executing sql: " + sql);
                 }
             }

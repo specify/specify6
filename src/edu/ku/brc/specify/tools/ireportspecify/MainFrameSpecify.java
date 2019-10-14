@@ -1101,7 +1101,7 @@ public class MainFrameSpecify extends MainFrame
     		+ " and spa.SpAppResourceID = " + ((SpAppResource )repRes).getId();
     	try 
     	{
-    		return BasicSQLUtils.getCount(sql1) != 0 || BasicSQLUtils.getCount(sql2) != 0; 
+    		return !BasicSQLUtils.getCount(sql1).equals(0) || !BasicSQLUtils.getCount(sql2).equals(0);
     	} catch (Exception ex)
     	{
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();

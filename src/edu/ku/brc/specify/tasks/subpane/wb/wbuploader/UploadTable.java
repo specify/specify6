@@ -4233,7 +4233,7 @@ public class UploadTable implements Comparable<UploadTable>
     								} else {
     									//System.out.println("one-to-many count check");
     									String sql = "select count(*) from " + pmi.getTable().getTable().getTableInfo().getName() + " where " + this.getTable().getTableInfo().getPrimaryKeyName() + " = " + mine.getId();
-    									go = pmi.isBlank() ? BasicSQLUtils.getCount(sql) == 0 : false;
+    									go = pmi.isBlank() ? BasicSQLUtils.getCount(sql).equals(0) : false;
     								}
     							} else {
     								for (DataModelObjBase theirs : pmi.getMatches()) {
@@ -5634,9 +5634,9 @@ public class UploadTable implements Comparable<UploadTable>
 			//and DBFieldInfo to do it generally.
 			if (fldInfo.getName().equalsIgnoreCase("catalognumber")  && tblInfo.getName().equals("collectionobject"))
 			{
-				if (BasicSQLUtils.getCount("select count(*) from collectionobject where CollectionMemberID = " 
+				if (!BasicSQLUtils.getCount("select count(*) from collectionobject where CollectionMemberID = "
 					+ AppContextMgr.getInstance().getClassObject(Collection.class).getId()
-					+ " and CatalogNumber = '" + val[0] + "'") != 0)
+					+ " and CatalogNumber = '" + val[0] + "'").equals(0))
 				{
 					throw new Exception(getResourceString("UploadTable.UniquenessViolation"));
 				}

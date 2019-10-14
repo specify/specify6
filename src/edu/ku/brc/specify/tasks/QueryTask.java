@@ -1001,8 +1001,8 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
      */
     public static boolean isSchemaExportQuery(SpQuery query)
     {
-    	return BasicSQLUtils.getCount("select count(*) from spexportschemaitemmapping mapping inner join spqueryfield qf "
-    			+ " on qf.spqueryfieldid = mapping.spqueryfieldid where qf.spqueryid = " + query.getId()) > 0;
+    	return !BasicSQLUtils.getCount("select count(*) from spexportschemaitemmapping mapping inner join spqueryfield qf "
+    			+ " on qf.spqueryfieldid = mapping.spqueryfieldid where qf.spqueryid = " + query.getId()).equals(0);
     }
  
     /**

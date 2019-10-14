@@ -908,7 +908,7 @@ public class TaskSemaphoreMgr
         String sqlStr = String.format("SELECT count(*) FROM sptasksemaphore WHERE TaskName = '%s' AND Scope = %d AND OwnerID = %d AND IsLocked <> 0", 
                                       name, scope.ordinal(), user.getId());
         //System.err.println(sqlStr+"  ["+BasicSQLUtils.getCount(sqlStr)+"]");
-        return BasicSQLUtils.getCount(sqlStr) > 0;
+        return !BasicSQLUtils.getCount(sqlStr).equals(0);
     }
     
     /**
