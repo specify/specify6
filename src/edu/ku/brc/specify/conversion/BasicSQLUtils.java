@@ -478,7 +478,7 @@ public class BasicSQLUtils
      * @param sql
      * @return
      */
-    public static Integer getCount(final String sql)
+    public static Long getCount(final String sql)
     {
         return getCount(dbConn != null ? dbConn : DBConnection.getInstance().getConnection(), sql);
     }
@@ -487,7 +487,7 @@ public class BasicSQLUtils
      * @param sql
      * @return
      */
-    public static int getCountAsInt(final String sql)
+    public static long getCountAsInt(final String sql)
     {
         return getCountAsInt(dbConn != null ? dbConn : DBConnection.getInstance().getConnection(), sql);
     }
@@ -497,9 +497,9 @@ public class BasicSQLUtils
      * @param sql
      * @return
      */
-    public static int getCountAsInt(final Connection conn, final String sql)
+    public static long getCountAsInt(final Connection conn, final String sql)
     {
-        Integer cnt = getCount(conn, sql);
+        Long cnt = getCount(conn, sql);
         return cnt == null ? 0 : cnt;
     }
     
@@ -507,9 +507,9 @@ public class BasicSQLUtils
      * @param sql
      * @return
      */
-    public static Integer getCount(final Connection connection, final String sql)
+    public static Long getCount(final Connection connection, final String sql)
     {
-        Integer   count = null;
+        Long   count = null;
         Statement stmt  = null;
         ResultSet rs    = null;
         try
@@ -518,7 +518,7 @@ public class BasicSQLUtils
             rs   = stmt.executeQuery(sql);
             if (rs.next())
             {
-                count = rs.getInt(1);
+                count = rs.getLong(1);
                 return rs.wasNull() ? null : count;
             }
 

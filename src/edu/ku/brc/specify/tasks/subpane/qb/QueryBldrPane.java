@@ -3363,7 +3363,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     	//not worrying about multi-user issues
     	String baseName = exportSchema.getSchemaName() + exportSchema.getSchemaVersion();
     	String result = baseName;
-    	int cnt = BasicSQLUtils.getCount("select count(*) from spquery where name = '" + result + "'");
+    	long cnt = BasicSQLUtils.getCount("select count(*) from spquery where name = '" + result + "'");
     	int suffix = 2;
     	while (cnt > 0)
     	{
@@ -3399,7 +3399,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         //If the query's timestampModified is not modified the schema export tool doesn't know the 
         //export schema needs to be rebuilt.
         if (!saveAs && query.getId() != null) {
-        	int origCount = BasicSQLUtils.getCountAsInt("select count(*) from spqueryfield where spqueryid=" + query.getId());
+        	long origCount = BasicSQLUtils.getCountAsInt("select count(*) from spqueryfield where spqueryid=" + query.getId());
         	if (origCount > query.getFields().size()) {
         		query.setTimestampModified(new Timestamp(System.currentTimeMillis()));
         	}
