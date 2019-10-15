@@ -478,7 +478,7 @@ public class BasicSQLUtils
      * @param sql
      * @return
      */
-    public static <T extends Number> T getCount(final String sql)
+    public static <T extends Number> T  getCount(final String sql)
     {
         return getCount(dbConn != null ? dbConn : DBConnection.getInstance().getConnection(), sql);
     }
@@ -489,8 +489,7 @@ public class BasicSQLUtils
      */
     public static int getCountAsInt(final String sql)
     {
-        Number result = getCount(sql);
-        return result == null ? 0 : result.intValue();
+        return getCountAsInt(dbConn != null ? dbConn : DBConnection.getInstance().getConnection(), sql);
     }
     
     /**
@@ -500,15 +499,29 @@ public class BasicSQLUtils
      */
     public static int getCountAsInt(final Connection conn, final String sql)
     {
-        Number cnt = getCount(conn, sql);
-        return cnt == null ? 0 : cnt.intValue();
+        Number cnt = getCount(conn, sql, true);
+        if (cnt != null) {
+            if (cnt.longValue() > Integer.MAX_VALUE) {
+                String str = "BasicSQLUtils.getCountAsInt(): truncating " + cnt.toString() + " to " + Integer.MAX_VALUE;
+                log.warn(str);
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().sendMsg(BasicSQLUtils.class, str, new Exception(str));
+                return Integer.MAX_VALUE;
+            } else {
+                return cnt.intValue();
+            }
+        } else {
+            return 0;
+        }
     }
-    
+
+    public static  <T extends Number> T getCount(final Connection connection, final String sql) {
+        return getCount(connection, sql, false);
+    }
     /**
      * @param sql
      * @return
      */
-    public static <T extends Number> T getCount(final Connection connection, final String sql)
+    public static <T extends Number> T getCount(final Connection connection, final String sql, final Boolean asNumber)
     {
         Number   count = null;
         Statement stmt  = null;
@@ -520,7 +533,17 @@ public class BasicSQLUtils
             if (rs.next())
             {
                 count = (Number)rs.getObject(1);
-                return rs.wasNull() ? null : (T)count;
+                if (rs.wasNull()) {
+                    return null;
+                } else {
+                    if (asNumber) {
+                        return (T)count;
+                    } else if (count.longValue() - count.intValue() > 0) {
+                        return (T)Long.valueOf(count.longValue());
+                    } else {
+                        return (T)Integer.valueOf(count.intValue());
+                    }
+                }
             }
 
         } catch (Exception ex)

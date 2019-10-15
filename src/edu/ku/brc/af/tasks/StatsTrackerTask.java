@@ -416,18 +416,18 @@ public class StatsTrackerTask extends BaseTask
      * @param sql the SQL statement to be executed
      * @return the value of the count query
      */
-    protected int addStat(final String statName, final Vector<NameValuePair> statsList, final String sql)
+    protected long addStat(final String statName, final Vector<NameValuePair> statsList, final String sql)
     {
-        Integer count = 0;
+        Long count = 0L;
         if (sql != null)
         {
             count = BasicSQLUtils.getCount(sql);
             if (count != null)
             {
-                statsList.add(new NameValuePair(statName, Integer.toString(count)));
+                statsList.add(new NameValuePair(statName, Long.toString(count)));
             } else
             {
-                return 0;
+                return 0L;
             }
         }
         return count;
