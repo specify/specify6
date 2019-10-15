@@ -3,27 +3,35 @@
   <head>
     <meta charset="utf-8">
     <title>
-      Specify 6.7.03 Release Notes
+      Specify 6.7.04 Release Notes
     </title>
   </head>
   <body>
-    <p>
-      <h3>Specify Collections Consortium</h3>
-      <p><strong>Specify 6 Update Release </strong>&nbsp;</p>
-      </p>
-      <strong> <br>
-      Release Notes <br>
-      Specify 6.7.03 <br>
-      11 July 2019 <br>
-      </strong><br>
     
-	<u>General Note</u>
-  <p>This small Specify 6 maintenance release addresses three recent issues of some urgency. It does not update the Specify database schema. Another Specify 6 release with additional fixes and a likely schema update will be released in August 2019.</p>
-	<u>Issues resolved</u>
+      <h3>Specify Collections Consortium<br>
+  Specify 6 Update</h3>
+      &nbsp;<br>
+      <strong>Release Notes <br>
+Specify 6.7.04 <br>
+15 October 2019 <br>
+      </strong> <br>
+      <br>
+  <p><u>General Note</u></p>
+  <p>This maintenance release addresses a small number of recent issues. It does not update the Specify database schema. The next schema update will be performed with  Specify 6.8, which will be released in late 2019 or early 2020 along with concurrent updates to the Specify Web Portal and Specify 7.</p>
+	<u>Issues Resolved</u>
     <ol>
-      <li>Batch Editing Locality records from a Collection Object query that does not include a field from the Collecting Event table will no longer result in the Station Field Number data for that record being deleted. (GitHub Issue 300)
-      <li>Zero Date setting in MySQL is no longer included in the Data Exporter Database connection.  The Data Exporter will no longer throw an error when partial dates include a "00" value for a portion of the date for any collections. (301)</li>
-      <li> Resolved connectivity/permission problem with basemap Open Street Map layer used in the GeoLocate Plugin. (310) </li>
+      <li>The Start Date Precision and End Date Precision fields have been removed from the Workbench configuration as their values are automatically assigned by business rules when dates are uploaded. (GitHub Issue #235)</li>
+      <li>Removing a field belonging to Collection Object Properties or Preparation Properties tables from a newly-saved query no longer causes an error. (287)</li>
+      <li>Extra spaces in latitude/longitude strings no longer cause those values to be marked as invalid when uploading through the Workbench. (288)</li>
+	<li>Constructing a query using the Preparation Property table no longer erroneously displays hidden fields. (289)</li>
+	<li>New agent fields in the Collection Object, Collection Object Attribute, and Collecting Trip tables can now be used in queries. (290) </li>
+	<li>Reports based on queries that set the 'distinct' option and utilizing either tree or formatted data fields now work correctly. (297)</li>
+	<li>If Catalog Number is set to auto-increment and set as "Is Required", Collection Object table Batch Editing now works as expected. (298)</li>
+	<li>Specify 6 auto-update checking was broken in releases 6.7.02 and 6.7.03. Auto updates are fixed and working correctly in this release, but sites operating 6.7.03 or an earlier release will need to manually download 6.7.04 from the Specify web site for installation.  Subsequent updates will be identified and downloadable if the installation is configured to use the auto-update feature. (316)</li>
+	<li>An error that occurred when using bar codes in certain printed reports has been fixed (Emory Herbarium). (325)</li>
+	<li>UMich reported a discrepancy between the results returned by Sp6 and Sp7 for a loan query that selected only the quantity and count of loaned items. That is now fixed. (326)</li>
+	<li>Reports based on distinct queries no longer show duplicates, if the report contains levels from trees or aggregated fields. (337)</li>
+	<li>Right clicking on a Storage Tree node to view 'Associated Collection Objects' now also finds and returns Collection Objects linked through the alternateStorage field that supports a second storage location for tracking temporary or historical placement of Collection Objects (Barcelona). (342)</li>
     </ol>
   </body>
 </html>
