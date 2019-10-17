@@ -49,6 +49,7 @@ public class UIFieldFormatterField implements Cloneable
     protected String    value;
     protected boolean   incrementer;
     protected boolean   byYear;
+    protected boolean isOptional = false; //should only be true if the field is last in the format
     
     static {
         for (int i=0;i<255;i++)
@@ -56,7 +57,8 @@ public class UIFieldFormatterField implements Cloneable
             alphaNumericSample += "A";
             alphaSample        += "a";
             anyCharSample      += "X";
-            anyNumericSample   += "N";
+            //anyNumericSample   += "N";
+            anyNumericSample   += (i+1) % 10;
      }
     }
     
@@ -263,6 +265,57 @@ public class UIFieldFormatterField implements Cloneable
 		}
 		
 		return sample.substring(0, value.length()); 
+    }
+
+    public String getRegExp() {
+        if (type == FieldType.separator) {
+            return value;
+        }
+
+        if (type == FieldType.alphanumeric) {
+            return "\\p{Alnum}{" + getSize() + "}";
+        }
+
+        if (type == FieldType.alpha) {
+            return "\\p{Alpha}{" + getSize() + "}";
+        }
+
+        if (type == FieldType.anychar) {
+            return  ".{" + getSize() + "}";
+        }
+
+        if (type == FieldType.numeric) {
+            if (isIncrementer()) {
+                return "\\p{Digit}{" + getSize() + "}";
+            } else {
+                return "\\p{Digit}{" + getSize() + "}";
+            }
+        }
+
+        if (type == FieldType.year) {
+            return Integer.toString(Calendar.getInstance().get(Calendar.YEAR));
+        }
+
+        if (type == FieldType.constant) {
+            return value.substring(0, value.length());
+        }
+        return "";
+    }
+
+    public String getRegExpGrp(int idx) {
+        String result = "G" + idx + getType().toString();
+        if (isIncrementer()) {
+            result += "INC";
+        } else if (isOptional()) { //assuming incrementers can't be optional
+            result += "OPT";
+        } else {
+            result += "XXX";
+        }
+        return result;
+    }
+
+    public boolean isOptional() {
+        return isOptional;
     }
 
     /**

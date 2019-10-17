@@ -19,25 +19,19 @@
 */
 package edu.ku.brc.af.ui.forms.formatters;
 
-import static edu.ku.brc.helpers.XMLHelper.xmlAttr;
-import static org.apache.commons.lang.StringUtils.isAlpha;
-import static org.apache.commons.lang.StringUtils.isAlphanumeric;
-import static org.apache.commons.lang.StringUtils.isEmpty;
-import static org.apache.commons.lang.StringUtils.isNotEmpty;
-
-import java.math.BigDecimal;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Vector;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-
 import edu.ku.brc.af.core.db.AutoNumberIFace;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+
+import java.math.BigDecimal;
+import java.util.*;
+
+import static edu.ku.brc.helpers.XMLHelper.xmlAttr;
+import static org.apache.commons.lang.StringUtils.*;
 
 
 /**
@@ -123,6 +117,92 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
         this.isDefault       = isDefault;
         this.fields          = fields;
         this.isIncrementer   = isIncrementer;
+        System.out.println(getRegExp());
+        String rx = getRegExp();
+        //Pattern p = new Pattern(rx);
+        System.out.println(getSample());
+        System.out.println(java.util.regex.Pattern.matches(rx, getSample()));
+        if (!java.util.regex.Pattern.matches(rx, getSample()) || "".equals(rx)) {
+            System.out.println("huh?");
+            getRegExp();
+        }
+    }
+
+    private String getRegExp() {
+        if (fields.size() > 0) {
+            return getRegExpFromFlds();
+        } else if (type.equals(FormatterType.date)) {
+            String year = getYearRx(), month = getMonthRx(), day = getDayRx();
+            if (partialDateType.equals(PartialDateEnum.Full) || partialDateType.equals(PartialDateEnum.Search)) {
+                return makeDateRx(year, month, day);
+            }
+            if (partialDateType.equals(PartialDateEnum.Month)) {
+                return makeDateRx(year, month, null);
+            }
+            if (partialDateType.equals(PartialDateEnum.Year)) {
+                return makeDateRx(year, null, null);
+            }
+        }
+        return "";
+    }
+
+    private String makeDateRx(String year, String mon, String day) {
+        String sep = getDateSep();
+        List<String> pieces = orderDateRx(year, mon, day);
+        String result = "";
+        for (String p : pieces) {
+            if (!"".equals(result)) {
+                result += sep;
+            }
+            result += p;
+        }
+        return result;
+    }
+    private String getDateSep() {
+        //XXX based on pref and locale???
+        return "-";
+    }
+    private List<String> orderDateRx(String year, String mon, String day) {
+        //XXX order according to prefs and locale???
+        List<String> result = new ArrayList<>();
+        int len = 0;
+        if (year != null) {
+            result.add(year);
+        }
+        if (mon != null) {
+            result.add(mon);
+        }
+        if (day != null) {
+            result.add(day);
+        }
+        return result;
+    }
+    private String getDayRx() {
+        return "\\p{Digit}{2}";
+    }
+    private String getMonthRx() {
+        return "\\p{Digit}{2}";
+    }
+    private String getYearRx() {
+        return "\\p{Digit}{" + getYearSize() + "}";
+    }
+    private int getYearSize() {
+        return 4;
+    }
+
+
+    private String getRegExpFromFlds() {
+        List<Pair<String, String>> fldRegExps = new ArrayList();
+        int idx = 0;
+        for (UIFieldFormatterField field : fields) {
+            fldRegExps.add(new Pair<>(field.getRegExpGrp(++idx), field.getRegExp()));
+        }
+        String result = "";
+        for (Pair<String, String> fre : fldRegExps) {
+            result += "(?<" + fre.getFirst() + ">" + fre.getSecond() + ")";
+            //result += fre.getSecond();
+        }
+        return result;
     }
 
     /**
@@ -1036,7 +1116,16 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
         {
             return lengthOfData < getLength();
         }
-        return lengthOfData == getLength();
+
+        return getLength() - lengthOfData == getOptionalSuffixLen() || getLength() - lengthOfData == 0;
+    }
+
+    private int getOptionalSuffixLen() {
+        if ("world o' pain".equalsIgnoreCase(getName())) {
+            return 1;
+        } else {
+            return 0;
+        }
     }
 
     /* (non-Javadoc)
