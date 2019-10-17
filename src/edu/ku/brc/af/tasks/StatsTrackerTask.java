@@ -418,19 +418,19 @@ public class StatsTrackerTask extends BaseTask
      */
     protected long addStat(final String statName, final Vector<NameValuePair> statsList, final String sql)
     {
-        Long count = 0L;
+        Number count = Long.valueOf(0L);
         if (sql != null)
         {
             count = BasicSQLUtils.getCount(sql);
             if (count != null)
             {
-                statsList.add(new NameValuePair(statName, Long.toString(count)));
+                statsList.add(new NameValuePair(statName, count.toString()));
             } else
             {
                 return 0L;
             }
         }
-        return count;
+        return count.longValue();
     }
     
     /**
