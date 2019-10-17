@@ -532,10 +532,17 @@ public class BasicSQLUtils
             rs   = stmt.executeQuery(sql);
             if (rs.next())
             {
-                count = (Number)rs.getObject(1);
+                Object returnVal = rs.getObject(1);
                 if (rs.wasNull()) {
                     return null;
-                } else {
+                }
+                else {
+                    if (returnVal instanceof Boolean) {
+                        Boolean b = (Boolean)returnVal;
+                        count =  b ? Long.valueOf(1L) : Long.valueOf(0L);
+                    } else {
+                        count = (Number) returnVal;
+                    }
                     if (asNumber) {
                         return (T)count;
                     } else if (count.longValue() - count.intValue() > 0) {
