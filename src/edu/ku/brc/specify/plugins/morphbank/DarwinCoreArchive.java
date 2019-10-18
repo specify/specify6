@@ -47,7 +47,8 @@ public class DarwinCoreArchive
 	protected DwcMapper mapper;
 	protected final boolean useCache;
 	protected Statement stmt = null;
-	
+	DataProviderSessionIFace globalSession = null;
+
 	/**
 	 * @param file
 	 * @param mapperID
@@ -155,6 +156,7 @@ public class DarwinCoreArchive
 			}
 		} finally {
 			stmt.close();
+			stmt = null;
 		}
 	}
 
@@ -177,6 +179,7 @@ public class DarwinCoreArchive
 			}
 		} finally {
 			stmt.close();
+			stmt = null;
 		}
 		
 	}
@@ -217,13 +220,21 @@ public class DarwinCoreArchive
 	private Class<? extends DataModelObjBase> getBaseClass() {
 		return CollectionObject.class;
 	}
-	
+
+	protected DataProviderSessionIFace getGlobalSession() {
+		if (globalSession == null) {
+			globalSession = DataProviderFactory.getInstance().createSession();
+			mapper.setGlobalSession(globalSession);
+		}
+		return globalSession;
+	}
 	/**
 	 * @param id
 	 * @return
 	 */
 	private DataModelObjBase getBaseRecord(Integer id) {
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        //DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+		DataProviderSessionIFace session = getGlobalSession();
 		DataModelObjBase result = null;
 		try
 		{
@@ -231,7 +242,7 @@ public class DarwinCoreArchive
 			result.forceLoad();
 		} finally 
 		{
-			session.close();
+			//session.close();
 		}
 		return result;		
 	}
@@ -515,6 +526,12 @@ public class DarwinCoreArchive
 				if (valObj != null && List.class.isAssignableFrom(valObj.getClass())) {
 					List<?> vals = (List<?>)valObj;
 					//for cores, result.size() is always 1;
+					if (vals.size() > result.size() && !archiveFile.isCore()) {
+						String parentId = result.get(0);
+						while (result.size() < vals.size()) {
+							result.add(parentId);
+						}
+					}
 					for (int i = 0; i < result.size(); i++)
 					{
 						String currentLine = result.get(i);

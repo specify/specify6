@@ -41,6 +41,7 @@ import edu.ku.brc.specify.tools.export.ExportPanel;
 import edu.ku.brc.specify.tools.export.MappedFieldInfo;
 import edu.ku.brc.ui.UIRegistry;
 import org.apache.log4j.Logger;
+import org.hibernate.NonUniqueObjectException;
 
 /**
  * @author timo
@@ -64,7 +65,8 @@ public class DwcMapper
 	final Vector<MappingInfo> concepts = new Vector<MappingInfo>();
 	
 	public static Connection connection; //for testing
-	
+	DataProviderSessionIFace globalSession = null;
+
 	/**
 	 * @param mappingId
 	 */
@@ -307,7 +309,17 @@ public class DwcMapper
 		//But maybe it is easier to construct a query or to create and save a query for this purpose into SpQuery.SqlStr (even though it will have to be hql for now)
 		//hibernate strategy is beginning to suck. And what about lazy-loading and session attachment, and the chance for messing things up in the form system's session...???
 	}
-	
+
+	public void setGlobalSession(DataProviderSessionIFace globalSession) {
+		this.globalSession = globalSession;
+	}
+
+	protected DataProviderSessionIFace getGlobalSession() {
+		if (globalSession == null) {
+			globalSession = DataProviderFactory.getInstance().createSession();
+		}
+		return globalSession;
+	}
 	/**
 	 * @param mi
 	 * @param obj
@@ -316,12 +328,17 @@ public class DwcMapper
 	protected Object getMappedValue(MappingInfo mi, DataModelObjBase obj) throws Exception
 	{
 		String[] mapSegments = mi.getMapping().split(",");
-		DataModelObjBase currentObject = obj;
-		DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+		DataProviderSessionIFace session = getGlobalSession();
 		try
 		{
-			session.attach(currentObject);
-			
+			DataModelObjBase currentObject = obj;
+			if (!session.contains(currentObject)) {
+				try {
+					session.attach(currentObject);
+				} catch (NonUniqueObjectException ex) {
+					currentObject = (DataModelObjBase)session.get(obj.getDataClass(), obj.getId());
+				}
+			}
 			if (mapSegments.length == 1)
 			{
 				return getValueFromObject(currentObject, mapSegments[0], mi.isFormatted(), mi.isTreeRank(), session);
@@ -356,7 +373,7 @@ public class DwcMapper
 			}*/
 		} finally
 		{
-			session.close();
+			//session.close();
 		}
 		//return null;
 	}
@@ -401,10 +418,16 @@ public class DwcMapper
 				return null;
 			}
 			
-			for (DataModelObjBase obj : currentObjects)
+			for (DataModelObjBase cobj : currentObjects)
 			{
-				session.attach(obj); //shouldn't have to do this explicitly???
-				
+				DataModelObjBase obj = cobj;
+				if (!session.contains(obj)) {
+					try {
+						session.attach(obj); //shouldn't have to do this explicitly???
+					} catch (NonUniqueObjectException noex) {
+						obj = (DataModelObjBase)session.get(cobj.getDataClass(), cobj.getId());
+					}
+				}
 				//System.out.println("   "
 				//		+ currentObject.getClass().getSimpleName());
 
@@ -613,9 +636,9 @@ public class DwcMapper
 			}
 			if (method == null)
 			{
-				NoSuchMethodException smex = new NoSuchMethodException(mapping);
-				log.error(smex);
-				smex.printStackTrace();
+				//NoSuchMethodException smex = new NoSuchMethodException(mapping);
+				//log.error(smex);
+				//smex.printStackTrace();
 				return null;
 				//throw new NoSuchMethodException(mapping);
 			}
