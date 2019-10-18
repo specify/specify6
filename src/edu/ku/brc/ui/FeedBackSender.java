@@ -27,6 +27,7 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.NameValuePair;
@@ -143,8 +144,10 @@ public abstract class FeedBackSender
         if (item != null)
         {
             // check the website for the info about the latest version
-            CloseableHttpClient httpClient = HttpClients.createDefault();
-            httpClient.getParams().setParameter("http.useragent", getClass().getName()); //$NON-NLS-1$
+            CloseableHttpClient httpClient = HttpClientBuilder.create()
+                .setUserAgent(getClass().getName())
+                .build();
+            //httpClient.getParams().setParameter("http.useragent", getClass().getName()); //$NON-NLS-1$
 
             HttpPost postMethod = new HttpPost(getSenderURL());
             
