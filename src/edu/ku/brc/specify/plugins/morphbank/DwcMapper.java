@@ -40,6 +40,7 @@ import edu.ku.brc.specify.tools.export.ConceptMapUtils;
 import edu.ku.brc.specify.tools.export.ExportPanel;
 import edu.ku.brc.specify.tools.export.MappedFieldInfo;
 import edu.ku.brc.ui.UIRegistry;
+import org.apache.log4j.Logger;
 
 /**
  * @author timo
@@ -50,6 +51,7 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class DwcMapper
 {
+	protected static final Logger log            = Logger.getLogger(DwcMapper.class);
 	final Integer mappingId; //SpExportSchemaMappingID - key for spexportschemamappingid.
 	final String mappingName;
 	final String schemaName;
@@ -611,7 +613,11 @@ public class DwcMapper
 			}
 			if (method == null)
 			{
-				throw new NoSuchMethodException(mapping);
+				NoSuchMethodException smex = new NoSuchMethodException(mapping);
+				log.error(smex);
+				smex.printStackTrace();
+				return null;
+				//throw new NoSuchMethodException(mapping);
 			}
 			//System.out.println("Getting a value: " + object + ", " + mapping + " = " + method.invoke(object));
 			Object result = method.invoke(object);
