@@ -489,24 +489,6 @@ public class DwcMapper
 		return selectRelatedObject(object, (Collection<DataModelObjBase> )objs);
 	}
 	
-	/**
-	 * @param object
-	 * @param mapping
-	 * @return
-	 * @throws Exception
-	 */
-	@SuppressWarnings("unchecked")
-	protected Object getRelatedObjects(DataModelObjBase object, String mapping) throws Exception
-	{
-		String[] mapInfo = mapping.split("-");
-		int tableId = Integer.parseInt(mapInfo[0].split("\\.")[0]);
-		String relationshipName = mapInfo.length > 1 ? mapInfo[1].split("\\.")[0] : null;
-		Class<? extends DataModelObjBase> relatedClass = (Class<? extends DataModelObjBase> )DBTableIdMgr.getInstance().getInfoById(tableId).getClassObj();
-		String methName = relationshipName == null ?  "get" + relatedClass.getSimpleName() 
-				: "get" + relationshipName.substring(0, 1).toUpperCase().concat(relationshipName.substring(1));
-		Method meth = object.getClass().getMethod(methName);
-		return meth.invoke(object);
-	}
 
 	/**
 	 * @param parent
@@ -602,6 +584,32 @@ public class DwcMapper
 	}
 
 	private Map<String, Pair<Method,Boolean>> methods = new TreeMap<>();
+	private Map<String, Pair<Method,Boolean>> relMethods = new TreeMap<>();
+
+
+	/**
+	 * @param object
+	 * @param mapping
+	 * @return
+	 * @throws Exception
+	 */
+	@SuppressWarnings("unchecked")
+	protected Object getRelatedObjects(DataModelObjBase object, String mapping) throws Exception
+	{
+		Pair<Method,Boolean> methInfo = relMethods.get(mapping);
+		Method meth = methInfo != null ? methInfo.getFirst() : null;
+		if (meth == null) {
+			String[] mapInfo = mapping.split("-");
+			int tableId = Integer.parseInt(mapInfo[0].split("\\.")[0]);
+			String relationshipName = mapInfo.length > 1 ? mapInfo[1].split("\\.")[0] : null;
+			Class<? extends DataModelObjBase> relatedClass = (Class<? extends DataModelObjBase>) DBTableIdMgr.getInstance().getInfoById(tableId).getClassObj();
+			String methName = relationshipName == null ? "get" + relatedClass.getSimpleName()
+					: "get" + relationshipName.substring(0, 1).toUpperCase().concat(relationshipName.substring(1));
+			meth = object.getClass().getMethod(methName);
+			relMethods.put(mapping, new Pair<>(meth, null));
+		}
+		return meth.invoke(object);
+	}
 
 	/**
 	 *
@@ -725,33 +733,26 @@ public class DwcMapper
 			}
 		}
 	}
-	
-	/**
-	 * @param object
-	 * @param mapping
-	 * @param session
-	 * @return
-	 * @throws Exception
-	 */
-	protected String getFormatted(DataModelObjBase object, String mapping, DataProviderSessionIFace session) throws Exception
-	{
-		//System.out.println("Getting a formatted/aggregated value: " + object + ", " + mapping);
-		Object objects = getRelatedObjects(object, mapping);
-		if (objects == null)
-		{
-			return null;
+
+	//A map of tableids to objectids to format result
+	//assumes default formats used for all mappings to a table
+	private Map<Integer, Map<Integer, String>> objFormats = new TreeMap<>();
+
+	private String getObjFormat(Object obj) {
+		DataModelObjBase dobj = (DataModelObjBase) obj;
+		Map<Integer, String> idMap = objFormats.get(dobj.getTableId());
+		String result = null;
+		if (idMap == null) {
+			idMap = new TreeMap<>();
+			objFormats.put(dobj.getTableId(), idMap);
+		} else {
+			result = idMap.get(dobj.getId());
 		}
-		if (!Collection.class.isAssignableFrom(objects.getClass()))
-		{
-			//return DataObjFieldFormatMgr.getInstance().format(object, object.getClass());	
-			return DataObjFieldFormatMgr.getInstance().format(objects, objects.getClass());	
+		if (result == null) {
+			result = DataObjFieldFormatMgr.getInstance().format(dobj, dobj.getClass());
+			idMap.put(dobj.getId(), result);
 		}
-		Collection<?> objs = (Collection<?> )objects;
-		if (objs.size() == 0)
-		{
-			return null; 
-		}
-		return DataObjFieldFormatMgr.getInstance().aggregate(objs, objs.iterator().next().getClass());
+		return result;
 	}
 	/**
 	 * @param object
@@ -760,23 +761,62 @@ public class DwcMapper
 	 * @return
 	 * @throws Exception
 	 */
-	protected String getTreeRank(Treeable<?, ?, ?> object, String mapping, DataProviderSessionIFace session) throws Exception
-	{
-		//System.out.println("Getting a tree rank: " + object + ", " + mapping);
-		String tblName = object.getClass().getSimpleName().toLowerCase();
-		String treeDefFld = object.getClass().getSimpleName().toLowerCase() + "TreeDefID";
-		TreeDefIface<?,?,?> treeDef = (TreeDefIface<?,?,?> )session.get(object.getDefinition().getClass(), object.getDefinition().getTreeDefId());
-		for (TreeDefItemIface<?,?,?> di : treeDef.getTreeDefItems())
-		{
-			if (mapping.endsWith(di.getName()))
-			{
-				String sql = "select name from " + tblName + " where " + treeDefFld + " = " + object.getDefinition().getTreeDefId()
-					+ " and rankid = " + di.getRankId() + " and " + object.getNodeNumber() + " between NodeNumber and HighestChildNodeNumber";
-				return BasicSQLUtils.querySingleObj(sql);
-			}
-					
+	protected String getFormatted(DataModelObjBase object, String mapping, DataProviderSessionIFace session) throws Exception {
+		//System.out.println("Getting a formatted/aggregated value: " + object + ", " + mapping);
+		Object objects = getRelatedObjects(object, mapping);
+		if (objects == null) {
+			return null;
 		}
-		return null;
+		if (!Collection.class.isAssignableFrom(objects.getClass())) {
+			//String format = objFormats
+			//return DataObjFieldFormatMgr.getInstance().format(objects, objects.getClass());
+			return getObjFormat(objects);
+		}
+		Collection<?> objs = (Collection<?>) objects;
+		if (objs.size() == 0) {
+			return null;
+		}
+		return DataObjFieldFormatMgr.getInstance().aggregate(objs, objs.iterator().next().getClass());
+	}
+
+	//map tableids to mappings/ranks to recordids to values.
+	private Map<Integer, Map<String, Map<Integer, String>>> rank = new TreeMap<>();
+
+	/**
+	 * @param object
+	 * @param mapping
+	 * @param session
+	 * @return
+	 * @throws Exception
+	 */
+	protected String getTreeRank(Treeable<?, ?, ?> object, String mapping, DataProviderSessionIFace session) throws Exception {
+		//System.out.println("Getting a tree rank: " + object + ", " + mapping);
+		Map<String, Map<Integer, String>> treeMap = rank.get(object.getTableId());
+		if (treeMap == null) {
+			treeMap = new TreeMap<>();
+			rank.put(object.getTableId(), treeMap);
+		}
+		Map<Integer, String> mapMap = treeMap.get(mapping);
+		if (mapMap == null) {
+			mapMap = new TreeMap<>();
+			treeMap.put(mapping, mapMap);
+		}
+		String result = mapMap.get(object.getTreeId());
+		if (result == null) {
+			String tblName = object.getClass().getSimpleName().toLowerCase();
+			String treeDefFld = object.getClass().getSimpleName().toLowerCase() + "TreeDefID";
+			TreeDefIface<?, ?, ?> treeDef = (TreeDefIface<?, ?, ?>) session.get(object.getDefinition().getClass(), object.getDefinition().getTreeDefId());
+			for (TreeDefItemIface<?, ?, ?> di : treeDef.getTreeDefItems()) {
+				if (mapping.endsWith(di.getName())) {
+
+					String sql = "select name from " + tblName + " where " + treeDefFld + " = " + object.getDefinition().getTreeDefId()
+							+ " and rankid = " + di.getRankId() + " and " + object.getNodeNumber() + " between NodeNumber and HighestChildNodeNumber";
+					result = BasicSQLUtils.querySingleObj(sql);
+					mapMap.put(object.getTreeId(), result == null ? "" : result);
+				}
+			}
+		}
+		return result;
 	}
 	/**
 	 * @return number of concepts
