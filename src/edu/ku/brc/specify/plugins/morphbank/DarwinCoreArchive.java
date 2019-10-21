@@ -413,6 +413,8 @@ public class DarwinCoreArchive
 				getExportText(rec.getRecordId(), result);
 				if (prog != null) {
 					prog.setValue(++n);
+				} else {
+					System.out.println("getExportText() row = " + (++n));
 				}
 			}
 		} finally {

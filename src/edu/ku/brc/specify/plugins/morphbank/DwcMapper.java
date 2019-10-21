@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
@@ -40,6 +41,7 @@ import edu.ku.brc.specify.tools.export.ConceptMapUtils;
 import edu.ku.brc.specify.tools.export.ExportPanel;
 import edu.ku.brc.specify.tools.export.MappedFieldInfo;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.util.Pair;
 import org.apache.log4j.Logger;
 import org.hibernate.NonUniqueObjectException;
 
@@ -598,6 +600,59 @@ public class DwcMapper
 		DBTableInfo tbl = DBTableIdMgr.getInstance().getInfoById(object.getTableId());
 		return tbl.getFieldByName(fieldName);
 	}
+
+	private Map<String, Pair<Method,Boolean>> methods = new TreeMap<>();
+
+	/**
+	 *
+	 * @param object
+	 * @param mapping
+	 * @return
+	 */
+	private Pair<Method,Boolean> getMethodForMapping(DataModelObjBase object, String mapping) {
+		Pair<Method,Boolean> result = methods.get(mapping);
+		if (result == null) {
+			String fieldName = getMappingFldName(mapping);
+			List<String> methNames = getMappingMethNames(fieldName);
+			boolean useDatePartAccessor = false;
+			Method method = null;
+			for (int m = 0; m < methNames.size(); m++) {
+				String methodName = methNames.get(m);
+				try {
+					method = object.getClass().getMethod(methodName);
+					break;
+				} catch (NoSuchMethodException ex) {
+					useDatePartAccessor = true;
+					continue;
+				}
+			}
+			methods.put(mapping, new Pair<>(method, useDatePartAccessor));
+		}
+		return result == null ? new Pair<Method, Boolean>(null, false) : result;
+	}
+
+	/**
+	 *
+	 * @param mapping
+	 * @return
+	 */
+	private String getMappingFldName(String mapping) {
+		return mapping.split("\\.")[2];
+	}
+
+	/**
+	 *
+	 * @param mapping
+	 * @return
+	 */
+	private List<String> getMappingMethNames(String fieldName) {
+		List<String> methNames = new ArrayList<>();
+		methNames.add("get" + fieldName.substring(0, 1).toUpperCase().concat(fieldName.substring(1)));
+		if (isDatePartAccessor(methNames.get(0))) {
+			methNames.add(getDateFieldNameForDatePartAccessor(methNames.get(0)));
+		}
+		return methNames;
+	}
 	/**
 	 * @param object
 	 * @param mapping
@@ -607,35 +662,13 @@ public class DwcMapper
 	 * @return
 	 * @throws Exception
 	 */
-	protected Object getValueFromObject(DataModelObjBase object, String mapping, boolean isFormatted, 
-			boolean isTreeRank, DataProviderSessionIFace session) throws Exception
-	{
-		if (!isFormatted && !isTreeRank)
-		{
-			String fieldName = mapping.split("\\.")[2];
-			Vector<String> methNames = new Vector<String>();
-			methNames.add("get" + fieldName.substring(0, 1).toUpperCase().concat(fieldName.substring(1)));
-			if (isDatePartAccessor(methNames.get(0)))
-			{
-				methNames.add(getDateFieldNameForDatePartAccessor(methNames.get(0)));
-			}
-			boolean useDatePartAccessor = false;
-			Method method = null;
-			for (int m = 0; m < methNames.size(); m++)
-			{
-				String methodName = methNames.get(m);
-				try 
-				{
-					method = object.getClass().getMethod(methodName);
-					break;
-				} catch (NoSuchMethodException ex)
-				{
-					useDatePartAccessor = true;
-					continue;
-				}
-			}
-			if (method == null)
-			{
+	protected Object getValueFromObject(DataModelObjBase object, String mapping, boolean isFormatted,
+										boolean isTreeRank, DataProviderSessionIFace session) throws Exception {
+		if (!isFormatted && !isTreeRank) {
+			Pair<Method, Boolean> methInfo = getMethodForMapping(object, mapping);
+			Method method = methInfo.getFirst();
+			Boolean useDatePartAccessor = methInfo.getSecond();
+			if (method == null) {
 				//NoSuchMethodException smex = new NoSuchMethodException(mapping);
 				//log.error(smex);
 				//smex.printStackTrace();
@@ -644,65 +677,50 @@ public class DwcMapper
 			}
 			//System.out.println("Getting a value: " + object + ", " + mapping + " = " + method.invoke(object));
 			Object result = method.invoke(object);
-			DBFieldInfo fi = getFieldInfo(object, fieldName);
-			if (fi != null && !useDatePartAccessor)
-			{
-				if (fi.getFormatter() != null)
-				{
+			DBFieldInfo fi = getFieldInfo(object, getMappingFldName(mapping));
+			if (fi != null && !useDatePartAccessor) {
+				if (fi.getFormatter() != null) {
 					result = fi.getFormatter().formatToUI(result);
-				} else if (Calendar.class.equals(fi.getDataClass()))
-	            {
-	            	Object date = result;
-	            	if (date != null)
-	            	{
-	    				UIFieldFormatterIFace.PartialDateEnum precision = UIFieldFormatterIFace.PartialDateEnum.Full;
-	    				
-	    				if (fi.isPartialDate())
-	    				{
-	    					String methodName = "get" + StringUtils.capitalize(fi.getDatePrecisionName());
-	    					Method precMethod = object.getClass().getMethod(methodName);
-	    					Byte rawPrec = (Byte)precMethod.invoke(object);
-	    		            if (rawPrec != null)
-	    		            {
-	    		            	precision = UIFieldFormatterIFace.PartialDateEnum.values()[rawPrec];
-	    		            }
-	    				}
-	    				boolean isPartial = false;
-	    				String formatName = "Date";
-	    				if (precision.equals(UIFieldFormatterIFace.PartialDateEnum.Month))
-	    				{
-	    					isPartial = true;
-	    					formatName = "PartialDateMonth";
-	    				} else if (precision.equals(UIFieldFormatterIFace.PartialDateEnum.Year))
-	    				{
-	    					isPartial = true;
-	    					formatName = "PartialDateYear";
-	    				}
-	    				for (UIFieldFormatterIFace formatter : UIFieldFormatterMgr.getInstance().getDateFormatterList(isPartial))
-	    				{
-	    					if (formatter.getName().equals(formatName))
-	    					{
-	    						result = formatter.getDateWrapper().format(((Calendar)date).getTime());
-	    						break;
-	    					}
-	    				}
-	            	}
-	            }
+				} else if (Calendar.class.equals(fi.getDataClass())) {
+					//Need to clean this up
+					Object date = result;
+					if (date != null) {
+						UIFieldFormatterIFace.PartialDateEnum precision = UIFieldFormatterIFace.PartialDateEnum.Full;
+
+						if (fi.isPartialDate()) {
+							String methodName = "get" + StringUtils.capitalize(fi.getDatePrecisionName());
+							Method precMethod = object.getClass().getMethod(methodName);
+							Byte rawPrec = (Byte) precMethod.invoke(object);
+							if (rawPrec != null) {
+								precision = UIFieldFormatterIFace.PartialDateEnum.values()[rawPrec];
+							}
+						}
+						boolean isPartial = false;
+						String formatName = "Date";
+						if (precision.equals(UIFieldFormatterIFace.PartialDateEnum.Month)) {
+							isPartial = true;
+							formatName = "PartialDateMonth";
+						} else if (precision.equals(UIFieldFormatterIFace.PartialDateEnum.Year)) {
+							isPartial = true;
+							formatName = "PartialDateYear";
+						}
+						for (UIFieldFormatterIFace formatter : UIFieldFormatterMgr.getInstance().getDateFormatterList(isPartial)) {
+							if (formatter.getName().equals(formatName)) {
+								result = formatter.getDateWrapper().format(((Calendar) date).getTime());
+								break;
+							}
+						}
+					}
+				}
 			}
-			if (useDatePartAccessor && result != null)
-			{
-				result = getDatePart((Calendar )result, methNames.get(0));
+			if (useDatePartAccessor && result != null) {
+				result = getDatePart((Calendar) result, getMappingMethNames(getMappingFldName(mapping)).get(0));
 			}
 			return result;
-		}
-		else
-		{
-			if (isTreeRank)
-			{
-				return getTreeRank((Treeable<?,?,?> )object, mapping, session);
-			}
-			else
-			{
+		} else {
+			if (isTreeRank) {
+				return getTreeRank((Treeable<?, ?, ?>) object, mapping, session);
+			} else {
 				return getFormatted(object, mapping, session);
 			}
 		}
