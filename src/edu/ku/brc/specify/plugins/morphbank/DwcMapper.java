@@ -8,15 +8,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.Vector;
+import java.util.*;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -808,15 +800,53 @@ public class DwcMapper
 			TreeDefIface<?, ?, ?> treeDef = (TreeDefIface<?, ?, ?>) session.get(object.getDefinition().getClass(), object.getDefinition().getTreeDefId());
 			for (TreeDefItemIface<?, ?, ?> di : treeDef.getTreeDefItems()) {
 				if (mapping.endsWith(di.getName())) {
-
-					String sql = "select name from " + tblName + " where " + treeDefFld + " = " + object.getDefinition().getTreeDefId()
-							+ " and rankid = " + di.getRankId() + " and " + object.getNodeNumber() + " between NodeNumber and HighestChildNodeNumber";
+//					String sql = "select name from " + tblName + " where " + treeDefFld + " = " + object.getDefinition().getTreeDefId()
+//							+ " and rankid = " + di.getRankId() + " and " + object.getNodeNumber() + " between NodeNumber and HighestChildNodeNumber";
+					String sql = getRankSQL("name", mapping, object.getTreeId(), tblName, treeDef);
 					result = BasicSQLUtils.querySingleObj(sql);
 					mapMap.put(object.getTreeId(), result == null ? "" : result);
 				}
 			}
 		}
 		return result;
+	}
+
+	/**
+	 *
+	 * @param selectFld
+	 * @param mapping
+	 * @param id
+	 * @param tblName
+	 * @param treeDef
+	 * @return
+	 */
+	private String getRankSQL(String selectFld, String mapping, Integer id, String tblName, TreeDefIface<?, ?, ?> treeDef) {
+		List<TreeDefItemIface<?,?,?>> items = new ArrayList<>(treeDef.getTreeDefItems());
+		Collections.sort(items, (t1, t2) -> t2.getRankId().compareTo(t1.getRankId()));
+		int n = 0;
+		String idFld = tblName + "id"; //cheating.
+		String parentFld = "parentid"; //cheat
+		String treeDefFld = tblName + "treedefid"; //cheat bastard
+		String cases = "";
+		String joins = "";
+		Integer rankToGet = 0;
+		for (TreeDefItemIface t : items) {
+			cases += " when t" + n + ".rankid = %s then t" + n + "." + selectFld;
+			if (joins.length() > 0){
+				joins += " left join " + tblName + " t" + n  + " on t" + n + "." + idFld + " = t" + (n-1) + "." + parentFld;
+			} else {
+				joins += tblName + " t" + n;
+			}
+			if (mapping.endsWith(t.getName())) {
+				rankToGet = t.getRankId();
+				cases += " else null end";
+				cases = "case " + cases.replaceAll("%s", rankToGet.toString());
+				break;
+			}
+			n++;
+		}
+		return "select " + cases + " from " + joins + " where t0." + treeDefFld + "=" + treeDef.getTreeDefId() +
+				" and t0." + idFld + "=" + id;
 	}
 	/**
 	 * @return number of concepts
