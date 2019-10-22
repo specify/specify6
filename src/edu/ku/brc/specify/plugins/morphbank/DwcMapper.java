@@ -9,7 +9,9 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Statement;
 import java.util.*;
+import java.util.Collection;
 
+import edu.ku.brc.specify.datamodel.*;
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.core.db.DBFieldInfo;
@@ -22,12 +24,6 @@ import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
-import edu.ku.brc.specify.datamodel.CollectionObject;
-import edu.ku.brc.specify.datamodel.DataModelObjBase;
-import edu.ku.brc.specify.datamodel.Determination;
-import edu.ku.brc.specify.datamodel.TreeDefIface;
-import edu.ku.brc.specify.datamodel.TreeDefItemIface;
-import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.tasks.subpane.qb.DateAccessorQRI;
 import edu.ku.brc.specify.tools.export.ConceptMapUtils;
 import edu.ku.brc.specify.tools.export.ExportPanel;
@@ -586,8 +582,23 @@ public class DwcMapper
 	 * @throws Exception
 	 */
 	@SuppressWarnings("unchecked")
-	protected Object getRelatedObjects(DataModelObjBase object, String mapping) throws Exception
-	{
+	protected Object getRelatedObjects(DataModelObjBase object, String mapping) throws Exception {
+		Method meth = getRelatedObjectMethod(object, mapping);
+		if (meth != null) {
+			return meth.invoke(object);
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 *
+	 * @param object
+	 * @param mapping
+	 * @return
+	 * @throws Exception
+	 */
+	private Method getRelatedObjectMethod(DataModelObjBase object, String mapping) {
 		Pair<Method,Boolean> methInfo = relMethods.get(mapping);
 		Method meth = methInfo != null ? methInfo.getFirst() : null;
 		if (meth == null) {
@@ -597,12 +608,32 @@ public class DwcMapper
 			Class<? extends DataModelObjBase> relatedClass = (Class<? extends DataModelObjBase>) DBTableIdMgr.getInstance().getInfoById(tableId).getClassObj();
 			String methName = relationshipName == null ? "get" + relatedClass.getSimpleName()
 					: "get" + relationshipName.substring(0, 1).toUpperCase().concat(relationshipName.substring(1));
-			meth = object.getClass().getMethod(methName);
-			relMethods.put(mapping, new Pair<>(meth, null));
+			try {
+				meth = object.getClass().getMethod(methName);
+				relMethods.put(mapping, new Pair<>(meth, null));
+			} catch (NoSuchMethodException ex) {
+				log.warn("No method found for '" + mapping + "'");
+			}
 		}
-		return meth.invoke(object);
+		return meth;
 	}
 
+	/**
+	 *
+	 * @param object
+	 * @param mapping
+	 * @return
+	 * @throws Exception
+	 */
+	private boolean isOneToManyRelationship(DataModelObjBase object, String mapping) throws Exception {
+		Method m = getRelatedObjectMethod(object, mapping);
+		if (m == null) {
+			return false;
+		} else {
+			Class<?> cls = m.getReturnType();
+			return cls != null && Collection.class.isAssignableFrom(cls);
+		}
+	}
 	/**
 	 *
 	 * @param object
@@ -731,20 +762,33 @@ public class DwcMapper
 	private Map<Integer, Map<Integer, String>> objFormats = new TreeMap<>();
 
 	private String getObjFormat(Object obj) {
-		DataModelObjBase dobj = (DataModelObjBase) obj;
-		Map<Integer, String> idMap = objFormats.get(dobj.getTableId());
 		String result = null;
-		if (idMap == null) {
-			idMap = new TreeMap<>();
-			objFormats.put(dobj.getTableId(), idMap);
-		} else {
-			result = idMap.get(dobj.getId());
-		}
-		if (result == null) {
-			result = DataObjFieldFormatMgr.getInstance().format(dobj, dobj.getClass());
-			idMap.put(dobj.getId(), result);
+		if (obj != null) {
+			DataModelObjBase dobj = (DataModelObjBase) obj;
+			Map<Integer, String> idMap = objFormats.get(dobj.getTableId());
+			if (idMap == null) {
+				idMap = new TreeMap<>();
+				objFormats.put(dobj.getTableId(), idMap);
+			} else {
+				result = idMap.get(dobj.getId());
+			}
+			if (result == null) {
+				result = DataObjFieldFormatMgr.getInstance().format(dobj, dobj.getClass());
+				idMap.put(dobj.getId(), result);
+			}
 		}
 		return result;
+	}
+
+	//map mapping to object ids to aggregations
+	private Map<String, Map<Integer, String>> aggs = new TreeMap<>();
+
+	private boolean doMapAgg(DataModelObjBase object, String mappingName) {
+		Class<?> cls = object.getClass();
+		return cls.equals(edu.ku.brc.specify.datamodel.CollectingEvent.class)
+				|| cls.equals(edu.ku.brc.specify.datamodel.Locality.class)
+				|| cls.equals(edu.ku.brc.specify.datamodel.ReferenceWork.class)
+				|| cls.equals(edu.ku.brc.specify.datamodel.Agent.class);
 	}
 	/**
 	 * @param object
@@ -755,20 +799,33 @@ public class DwcMapper
 	 */
 	protected String getFormatted(DataModelObjBase object, String mapping, DataProviderSessionIFace session) throws Exception {
 		//System.out.println("Getting a formatted/aggregated value: " + object + ", " + mapping);
-		Object objects = getRelatedObjects(object, mapping);
-		if (objects == null) {
-			return null;
+		boolean isOneToMany = isOneToManyRelationship(object, mapping);
+		if (isOneToMany) {
+			boolean mapAgg = doMapAgg(object, mapping);
+			Map<Integer, String> idMap = null;
+			if (mapAgg) {
+				idMap = aggs.get(mapping);
+				if (idMap == null) {
+					idMap = new TreeMap<>();
+					aggs.put(mapping, idMap);
+				}
+			}
+			String result = mapAgg ? idMap.get(object.getId()) : null;
+			if (result == null) {
+				Collection<?> objs = (Collection<?>)getRelatedObjects(object, mapping);
+				if (objs.size() == 0) {
+					result = null;
+				} else {
+					result = DataObjFieldFormatMgr.getInstance().aggregate(objs, objs.iterator().next().getClass());
+				}
+				if (mapAgg) {
+					idMap.put(object.getId(), result);
+				}
+			}
+			return result;
+		} else {
+			return getObjFormat(getRelatedObjects(object, mapping));
 		}
-		if (!Collection.class.isAssignableFrom(objects.getClass())) {
-			//String format = objFormats
-			//return DataObjFieldFormatMgr.getInstance().format(objects, objects.getClass());
-			return getObjFormat(objects);
-		}
-		Collection<?> objs = (Collection<?>) objects;
-		if (objs.size() == 0) {
-			return null;
-		}
-		return DataObjFieldFormatMgr.getInstance().aggregate(objs, objs.iterator().next().getClass());
 	}
 
 	//map tableids to mappings/ranks to recordids to values.
