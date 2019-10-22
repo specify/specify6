@@ -50,6 +50,16 @@ public class UIFieldFormatterField implements Cloneable
     protected boolean   incrementer;
     protected boolean   byYear;
     protected boolean isOptional = false; //should only be true if the field is last in the format
+
+    public String getRegEx() {
+        return regEx;
+    }
+
+    public void setRegEx(String regEx) {
+        this.regEx = regEx;
+    }
+
+    protected String regEx = null;
     
     static {
         for (int i=0;i<255;i++)

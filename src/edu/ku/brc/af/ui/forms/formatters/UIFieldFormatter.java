@@ -29,6 +29,7 @@ import org.apache.log4j.Logger;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.regex.Pattern;
 
 import static edu.ku.brc.helpers.XMLHelper.xmlAttr;
 import static org.apache.commons.lang.StringUtils.*;
@@ -1041,6 +1042,10 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
                         {
                             //numeric, alphanumeric, alpha, separator, year
                             String val = text.substring(pos, Math.min(pos+field.getSize(), txtLen));
+                            String rx = field.getRegEx();
+                            if (rx != null) {
+                                return Pattern.matches(rx, val);
+                            }
                             switch (field.getType())
                             {
                                 case numeric: {

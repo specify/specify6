@@ -33,6 +33,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
 
+import edu.ku.brc.specify.ui.CatalogNumberStringRegExUIFieldFormatter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
@@ -593,6 +594,9 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
                     if (length != null) {
                     	formatter.setLength(Integer.valueOf(length));
                     }
+                    if (formatter instanceof CatalogNumberStringRegExUIFieldFormatter) {
+                        ((CatalogNumberStringRegExUIFieldFormatter)formatter).setRegEx(external.attributeValue("regex"));
+                    }
                     hash.put(name, formatter);
 
                 } catch (Exception ex)
@@ -619,6 +623,7 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
             int     size    = XMLHelper.getAttr(fldElement, "size", 1);
             String  value   = fldElement.attributeValue("value");
             String  typeStr = fldElement.attributeValue("type");
+            String regex = fldElement.attributeValue("regex");
             boolean increm  = XMLHelper.getAttr(fldElement, "inc", false);
             boolean byYear  = false;
 

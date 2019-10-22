@@ -3,11 +3,16 @@ package edu.ku.brc.specify.ui;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 
 public class CatalogNumberStringRegExUIFieldFormatter extends CatalogNumberStringUIFieldFormatter implements UIFieldFormatterIFace {
-    private String regEx;
+    private String regEx = "";
+
+    public CatalogNumberStringRegExUIFieldFormatter() {
+        super();
+    }
+
 
     @Override
     public boolean isValid(String value) {
-        return super.isValid(value);
+        return java.util.regex.Pattern.matches(getRegEx(), value) && value.length() <= getLength();
     }
 
     public String getRegEx() {
