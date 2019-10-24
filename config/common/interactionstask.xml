@@ -1,5 +1,5 @@
 <vector>
-  <entry name="accession" table="accession" view="Accession" type="Interactions" action="NEW_ACC" icon="Accession" isonleft="true" 
+  <entry name="accession" table="accession" view="Accession" type="Interactions" action="NEW_ACC" icon="Accession" isonleft="true"
          issrchsrv="false" order="0" enabled="true" visible="true" tooltip="">
     <draggableFlavors/>
     <droppableFlavors>
@@ -111,13 +111,13 @@
       </flavor>
     </droppableFlavors>
   </entry>
-  <entry name="exchangeout" table="exchangeout" view="ExchangeOut" type="Interactions" action="OpenNewView" icon="ExchangeOut" isonleft="true" 
+  <entry name="exchangeout" table="exchangeout" view="ExchangeOut" type="Interactions" action="NEW_EXCHANGE_OUT" icon="ExchangeOut" isonleft="true"
          issrchsrv="true" order="0" enabled="true" visible="true" tooltip="">
     <draggableFlavors/>
     <droppableFlavors>
       <flavor isdrag="false" classname="edu.ku.brc.specify.tasks.RecordSetTask" humanreadable="Record_Set">
         <tableIds>
-          <int>40</int>
+          <int>1</int>
         </tableIds>
       </flavor>
     </droppableFlavors>

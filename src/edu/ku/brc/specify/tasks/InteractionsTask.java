@@ -2461,9 +2461,11 @@ public class InteractionsTask extends BaseTask
                         {	
                         	accProcessor.createOrAdd(rs);
                         	
-                        } else
+                        } else if (isNewGift)
                         {
                             giftProcessor.createOrAdd(rs);
+                        } else if (isNewExchange) {
+                            exchProcessor.createOrAdd(rs);
                         }
                     }
                 } else
