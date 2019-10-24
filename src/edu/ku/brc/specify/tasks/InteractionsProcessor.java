@@ -350,48 +350,39 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
     protected void prepsLoaded(final Hashtable<Integer, ColObjInfo> coToPrepHash,
                                final Hashtable<Integer, String>     prepTypeHash,
                                final T                              prepProvider,
-                               final InfoRequest                    infoRequest)
-    {
-        if (coToPrepHash.size() == 0 || prepTypeHash.size() == 0)
-        {
+                               final InfoRequest                    infoRequest) {
+        if (coToPrepHash.size() == 0 || prepTypeHash.size() == 0) {
             UIRegistry.showLocalizedMsg("NEW_INTER_NO_PREPS_TITLE", "NEW_INTER_NO_PREPS");
             return;
         }
-        
+
         final DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(tableId);
 
         final SelectPrepsDlg loanSelectPrepsDlg = new SelectPrepsDlg(coToPrepHash, prepTypeHash, ti.getTitle());
         loanSelectPrepsDlg.createUI();
         loanSelectPrepsDlg.setModal(true);
-        
+
         UIHelper.centerAndShow(loanSelectPrepsDlg);
-        
-        if (loanSelectPrepsDlg.isCancelled())
-        {
-            if (viewable != null)
-            {
+
+        if (loanSelectPrepsDlg.isCancelled()) {
+            if (viewable != null) {
                 viewable.setNewObject(null);
             }
             return;
         }
 
         final Hashtable<Integer, Integer> prepsHash = loanSelectPrepsDlg.getSelection();
-        if (prepsHash.size() > 0)
-        {
-            final SwingWorker worker = new SwingWorker()
-            {
+        if (prepsHash.size() > 0) {
+            final SwingWorker worker = new SwingWorker() {
                 @Override
-                public Object construct()
-                {
+                public Object construct() {
                     JStatusBar statusBar = UIRegistry.getStatusBar();
                     statusBar.setIndeterminate("INTERACTIONS", true);
                     statusBar.setText(getLocalizedMessage("CREATING_INTERACTION", ti.getTitle()));
-                    
-                    if (isFor == forLoan)
-                    {
+
+                    if (isFor == forLoan) {
                         task.addPrepsToLoan(prepProvider, infoRequest, prepsHash, viewable);
-                    } else if (isFor == forGift)
-                    {
+                    } else if (isFor == forGift) {
                         task.addPrepsToGift(prepProvider, infoRequest, prepsHash, viewable);
                     } else if (isFor == forExchange) {
                         task.addPrepsToExchangeOut(prepProvider, infoRequest, prepsHash, viewable);
@@ -401,8 +392,7 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
 
                 //Runs on the event-dispatching thread.
                 @Override
-                public void finished()
-                {
+                public void finished() {
                     JStatusBar statusBar = UIRegistry.getStatusBar();
                     statusBar.setProgressDone("INTERACTIONS");
                     statusBar.setText("");
@@ -511,23 +501,26 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
         }
 
         protected String getAvailableCountForPrepSQL(String where) {
-            String sql = "select preparationid, coalesce(p.countamt, 0) - (sum(coalesce(lp.quantity, 0) "
+            String sql = "select p.preparationid, coalesce(p.countamt, 0) - (sum(coalesce(lp.quantity, 0) "
                     + "- coalesce(lp.quantityresolved,0)) + sum(coalesce(gp.quantity,0)) + sum(coalesce(ep.quantity,0)) "
                     + "+ sum(coalesce(dp.quantity,0))) available from preparation p "
                     + "left join loanpreparation lp on lp.preparationid = p.preparationid left join "
                     + "giftpreparation gp on gp.preparationid = p.preparationid left join exchangeoutprep ep on "
                     + "ep.preparationid = p.preparationid left join deaccessionpreparation dp on dp.preparationid = "
-                    + "p.preparationid group by 1";
+                    + "p.preparationid";
             if (where != null) {
                 sql += " where " + where;
             }
+            sql += " group by 1";
             return sql;
         }
 
         protected List<Object[]> getAvailableCounts(List<String> collectionObjectIds) {
             String sql = "select p.collectionobjectid, p.preparationid, coalesce(p.CountAmt,0), pt.Name, pt.PrepTypeID, avail.available from preparation p";
             //assuming there aren't 10s of 1000s of items in collectionObjectIds
-            String where = "collectionobjectid in(" + collectionObjectIds.toString() + ")";
+            String idStr = collectionObjectIds.toString();
+            idStr = idStr.substring(1, idStr.length()-1);
+            String where = "collectionobjectid in(" + idStr + ")";
             String subSql = getAvailableCountForPrepSQL(where);
             sql = sql + " inner join (" + subSql + ") avail on avail.preparationid = p.preparationid"
                     + " inner join preptype pt on pt.preptypeid = p.preptypeid";
@@ -549,13 +542,13 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
                     String prepType  = (String)row[3];
                     int prepTypeId = (Integer)row[4];
                     int coId   = (Integer)row[0];
-                    int available = (Integer)row[5];
+                    int available = Integer.valueOf(row[5].toString());
                     prepTypeHash.put(prepTypeId, prepType);
                     ColObjInfo colObjInfo = coToPrepHash.get(coId);
                     if (colObjInfo != null) {
                         PrepInfo prepInfo = colObjInfo.get(prepId);
                         //stuffing available into existing PrepInfo structure for now
-                        colObjInfo.add(new PrepInfo(prepId, (Integer)row[5], prepQty, available, available));
+                        colObjInfo.add(new PrepInfo(prepId, prepTypeId, prepQty, available, available));
                     } else {
                         //what went wrong?
                     }
@@ -580,122 +573,7 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
          */
         protected int collectForLoan()
         {
-            int total = 0;
-            int count = 0;
-            try
-            {
-                Vector<Object[]> coIdRows = getColObjsFromRecordSet();
-                total = coIdRows.size() * 2;
-                if (coIdRows.size() != 0)
-                {
-                    UIRegistry.getStatusBar().setProgressRange(LOAN_LOADR, 0, Math.min(count, total));
-    
-                    // Get Preps with Gifts
-                    StringBuilder sb = new StringBuilder();
-                    sb.append("SELECT co.CollectionObjectID, p.PreparationID, gp.Quantity " +
-                             "FROM preparation AS p INNER JOIN collectionobject AS co ON p.CollectionObjectID = co.CollectionObjectID " +
-                             "INNER JOIN giftpreparation AS gp ON p.PreparationID = gp.PreparationID " +
-                             "WHERE co.CollectionMemberID = COLMEMID AND co.CollectionObjectID in (");
-                   for (Object[] row : coIdRows)
-                   {
-                       count++;
-                       if ((count % 10) == 0) firePropertyChange(PROGRESS, 0, count);
-                       
-                       Integer coId = (Integer)row[0];
-                       sb.append(coId);
-                       sb.append(',');
-                       
-                       if (row[1] != null)
-                       {
-                           coToPrepHash.put(coId, new ColObjInfo(coId, row[1].toString(), row.length == 3 ? row[2].toString() : null));
-                       }
-                   }
-                   sb.setLength(sb.length()-1); // chomp last comma
-                   sb.append(')');
-                   
-                   // Get a hash contain a mapping from PrepId to Gift Quantity
-                   Hashtable<Integer, Integer> prepIdToGiftQnt = new Hashtable<Integer, Integer>();
-                   
-                   String sql = QueryAdjusterForDomain.getInstance().adjustSQL(sb.toString());
-                   log.debug(sql);
-                   
-                   Vector<Object[]> rows = BasicSQLUtils.query(sql);
-                   if (rows.size() > 0)
-                   {
-                       for (Object[] row : rows)
-                       {
-                           prepIdToGiftQnt.put((Integer)row[1], (Integer)row[2]);
-                       }
-                   }
-                   
-                   // Now get the Preps With Loans
-                   sb = new StringBuilder();
-                   sb.append("SELECT p.PreparationID, p.CountAmt, lp.Quantity, lp.QuantityResolved, " +
-                             "co.CollectionObjectID, pt.PrepTypeID, pt.Name " +
-                             "FROM preparation AS p INNER JOIN collectionobject AS co ON p.CollectionObjectID = co.CollectionObjectID " +
-                             "INNER JOIN preptype AS pt ON p.PrepTypeID = pt.PrepTypeID " +
-                             "LEFT OUTER JOIN loanpreparation AS lp ON p.PreparationID = lp.PreparationID " +
-                             "WHERE pt.IsLoanable <> 0 AND co.CollectionObjectID in (");
-                   for (Object[] row : coIdRows)
-                   {
-                       sb.append(row[0]);
-                       sb.append(',');
-                   }
-                   sb.setLength(sb.length()-1); // chomp last comma
-                   sb.append(") ORDER BY co.CatalogNumber ASC");
-                   
-                   // Get the Preps and Qty
-                   sql = QueryAdjusterForDomain.getInstance().adjustSQL(sb.toString());
-                   log.debug(sql);
-                   
-                   rows = BasicSQLUtils.query(sql);
-                   if (rows.size() > 0)
-                   {
-                       for (Object[] row : rows)
-                       {
-                           count++;
-                           if ((count % 10) == 0) firePropertyChange(PROGRESS, 0, Math.min(count, total));
-                           
-                           int prepId = getInt(row[0]);
-                           int pQty   = getInt(row[1]);
-                           int qty    = getInt(row[2]);
-                           int qtyRes = getInt(row[3]);
-                           int coId   = getInt(row[4]);
-                           
-                           prepTypeHash.put((Integer)row[5], row[6].toString());
-                           
-                           pQty -= getInt(prepIdToGiftQnt.get(prepId));
-                           
-                           ColObjInfo colObjInfo = coToPrepHash.get(coId);
-                           if (colObjInfo == null)
-                           {
-                               // error
-                           }
-                           
-                           if (colObjInfo != null)
-                           {
-                               PrepInfo prepInfo = colObjInfo.get(prepId);
-                               if (prepInfo != null)
-                               {
-                                   prepInfo.add(qty, qtyRes);
-                               } else
-                               {
-                                   colObjInfo.add(new PrepInfo(prepId, (Integer)row[5], pQty, qty, qtyRes));    
-                               }
-                           }
-                       }
-                   }                   
-                }
-            } catch (Exception ex)
-            {
-                ex.printStackTrace();
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(InteractionsProcessor.class, ex);
-    
-            }
-            firePropertyChange(PROGRESS, 0, total);
-            UIRegistry.getStatusBar().setIndeterminate(LOAN_LOADR, true);
-            return 0;
+            return collect();
         }
         
         /**

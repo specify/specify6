@@ -69,7 +69,8 @@ public class PrepInfo
      */
     public int getAvailable()
     {
-        return qtyPrep - qtyLoaned + qtyResolved;
+        //return qtyPrep - qtyLoaned + qtyResolved;
+        return qtyLoaned; //avaialble temporarily stuffed in both qtlLoaned and qtyResolved
     }
     
     /**
