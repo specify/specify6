@@ -105,6 +105,7 @@ import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.ExchangeIn;
 import edu.ku.brc.specify.datamodel.ExchangeOut;
+import edu.ku.brc.specify.datamodel.ExchangeOutPrep;
 import edu.ku.brc.specify.datamodel.Gift;
 import edu.ku.brc.specify.datamodel.GiftPreparation;
 import edu.ku.brc.specify.datamodel.InfoRequest;
@@ -202,6 +203,7 @@ public class InteractionsTask extends BaseTask
     
     InteractionsProcessor<Gift> giftProcessor = new InteractionsProcessor<Gift>(this, InteractionsProcessor.forGift, Gift.getClassTableId());
     InteractionsProcessor<Loan> loanProcessor = new InteractionsProcessor<Loan>(this, InteractionsProcessor.forLoan,  Loan.getClassTableId());
+    InteractionsProcessor<ExchangeOut> exchProcessor = new InteractionsProcessor<ExchangeOut>(this, InteractionsProcessor.forExchange,  ExchangeOut.getClassTableId());
     InteractionsProcessor<Accession> accProcessor = new InteractionsProcessor<Accession>(this, InteractionsProcessor.forAcc,  Accession.getClassTableId());
     
     static 
@@ -1212,7 +1214,110 @@ public class InteractionsTask extends BaseTask
             CommandDispatcher.dispatch(new CommandAction(INTERACTIONS, "REFRESH_GIFT_PREPS", gift));
         }
     }
-    
+
+    protected void addPrepsToExchangeOut(final OneToManyProviderIFace existingExchangeOutArg,
+                                      final InfoRequest infoRequest,
+                                      final Hashtable<Integer, Integer> prepsHash,
+                                      final Viewable srcViewable) {
+        ExchangeOut existingExchangeOut = (ExchangeOut) existingExchangeOutArg;
+        ExchangeOut exchange;
+
+        if (existingExchangeOut == null) {
+            exchange = new ExchangeOut();
+            exchange.initialize();
+
+            Calendar dueDate = Calendar.getInstance();
+            dueDate.add(Calendar.MONTH, 6);                 // XXX PREF Due Date
+
+            Shipment shipment = new Shipment();
+            shipment.initialize();
+
+            // Get Defaults for Certain fields
+            //SpecifyAppContextMgr appContextMgr     = (SpecifyAppContextMgr)AppContextMgr.getInstance();
+
+            // Comment out defaults for now until we can manage them
+            //PickListItemIFace    defShipmentMethod = appContextMgr.getDefaultPickListItem("ShipmentMethod", getResourceString("SHIPMENT_METHOD"));
+            //if (defShipmentMethod != null)
+            //{
+            //     shipment.setShipmentMethod(defShipmentMethod.getValue());
+            //}
+
+            //FormDataObjIFace shippedBy = appContextMgr.getDefaultObject(Agent.class, "ShippedBy", getResourceString("SHIPPED_BY"), true, false);
+            //if (shippedBy != null)
+            //{
+            //    shipment.setShippedBy((Agent)shippedBy);
+            //}
+
+            if (infoRequest != null && infoRequest.getAgent() != null) {
+                shipment.setShippedTo(infoRequest.getAgent());
+            }
+
+            exchange.addReference(shipment, "shipments");
+        } else {
+            exchange = existingExchangeOut;
+        }
+
+        Hashtable<Integer, ExchangeOutPrep> prepToExchangeOutPrepHash = null;
+        if (existingExchangeOut != null) {
+            prepToExchangeOutPrepHash = new Hashtable<Integer, ExchangeOutPrep>();
+            for (ExchangeOutPrep lp : existingExchangeOut.getExchangeOutPreps()) {
+                prepToExchangeOutPrepHash.put(lp.getPreparation().getId(), lp);
+            }
+        }
+
+        DataProviderSessionIFace session = null;
+        try {
+            session = DataProviderFactory.getInstance().createSession();
+
+            for (Integer prepId : prepsHash.keySet()) {
+                Preparation prep = session.get(Preparation.class, prepId);
+                Integer count = prepsHash.get(prepId);
+                if (prepToExchangeOutPrepHash != null) {
+                    ExchangeOutPrep gp = prepToExchangeOutPrepHash.get(prep.getId());
+                    if (gp != null) {
+                        int lpCnt = gp.getQuantity();
+                        lpCnt += count;
+                        gp.setQuantity(lpCnt);
+                        //System.err.println("Adding "+count+"  to "+lp.hashCode());
+                        continue;
+                    }
+                }
+
+                ExchangeOutPrep gpo = new ExchangeOutPrep();
+                gpo.initialize();
+                gpo.setPreparation(prep);
+                gpo.setQuantity(count);
+                gpo.setExchangeOut(exchange);
+                exchange.getExchangeOutPreps().add(gpo);
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(InteractionsTask.class, ex);
+
+        } finally {
+            if (session != null) {
+                session.close();
+            }
+        }
+
+        if (existingExchangeOut == null) {
+            if (srcViewable != null) {
+                srcViewable.setNewObject(exchange);
+
+            } else {
+                DataEntryTask dataEntryTask = (DataEntryTask) TaskMgr.getTask(DataEntryTask.DATA_ENTRY);
+                if (dataEntryTask != null) {
+                    DBTableInfo exchangeTableInfo = DBTableIdMgr.getInstance().getInfoById(exchange.getTableId());
+                    dataEntryTask.openView(this, null, exchangeTableInfo.getDefaultFormName(), "edit", exchange, true);
+                }
+            }
+        } else {
+            CommandDispatcher.dispatch(new CommandAction(INTERACTIONS, "REFRESH_EXCHANGE_PREPS", exchange));
+        }
+    }
+
     /**
      * Displays UI that asks the user to select a predefined label.
      * @return the name of the label file or null if canceled
@@ -2275,6 +2380,7 @@ public class InteractionsTask extends BaseTask
         boolean isNewLoanNoPreps = cmdAction.isAction(LN_NO_PRP);
         boolean isNewGift        = cmdAction.isAction(NEW_GIFT);
         boolean isInfoReq        = cmdAction.isAction(INFO_REQ_MESSAGE);
+        boolean isNewExchange    = cmdAction.isAction(NEW_EXCHANGE_OUT);
 
         boolean isOKToAdd;
         if (AppContextMgr.isSecurityOn())
@@ -2283,14 +2389,16 @@ public class InteractionsTask extends BaseTask
             PermissionSettings giftPerms = DBTableIdMgr.getInstance().getInfoById(Gift.getClassTableId()).getPermissions();
             PermissionSettings irPerms   = DBTableIdMgr.getInstance().getInfoById(InfoRequest.getClassTableId()).getPermissions();
             PermissionSettings accPerms  = DBTableIdMgr.getInstance().getInfoById(Accession.getClassTableId()).getPermissions();
-            
+            PermissionSettings exchPerms = DBTableIdMgr.getInstance().getInfoById(ExchangeOut.getClassTableId()).getPermissions();
+
             isOKToAdd = ((isNewLoan || isNewLoanNoPreps) && (loanPerms == null || loanPerms.canAdd())) ||
                         (isNewGift && (giftPerms == null || giftPerms.canAdd())) ||
+                        (isNewExchange && (exchPerms == null || exchPerms.canAdd())) ||
                         (isInfoReq && (irPerms == null || irPerms.canAdd())) ||
                         (isNewAccession && (accPerms == null || accPerms.canAdd()));
         } else
         {
-            isOKToAdd = isNewLoan || isNewGift || isInfoReq || isNewLoanNoPreps || isNewAccession;
+            isOKToAdd = isNewLoan || isNewGift || isInfoReq || isNewLoanNoPreps || isNewAccession || isNewExchange;
         }
         
         UsageTracker.incrUsageCount("IN."+cmdAction.getType());
@@ -2314,7 +2422,7 @@ public class InteractionsTask extends BaseTask
                 }
             }
             
-        } else if (isNewLoan || isNewGift || isNewLoanNoPreps || isNewAccession)
+        } else if (isNewLoan || isNewGift || isNewLoanNoPreps || isNewAccession || isNewExchange)
         {
             if (cmdAction.getData() == cmdAction)
             {
@@ -2333,9 +2441,9 @@ public class InteractionsTask extends BaseTask
                     {
                     	accProcessor.createOrAdd();
                     	
-                    } else	
+                    } else if (isNewExchange)
                     {
-                        giftProcessor.createOrAdd();
+                        exchProcessor.createOrAdd();
                     }
                 }
                 

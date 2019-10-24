@@ -24,6 +24,7 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
@@ -72,6 +73,7 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
     protected static final int forLoan = 0;
     protected static final int forGift = 1;
     protected static final int forAcc = 2;
+    protected static final int forExchange = 3;
 
     protected InteractionsTask task;
     protected int              isFor;
@@ -388,10 +390,12 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
                     if (isFor == forLoan)
                     {
                         task.addPrepsToLoan(prepProvider, infoRequest, prepsHash, viewable);
-                    } else 
+                    } else if (isFor == forGift)
                     {
                         task.addPrepsToGift(prepProvider, infoRequest, prepsHash, viewable);
-                    }                     
+                    } else if (isFor == forExchange) {
+                        task.addPrepsToExchangeOut(prepProvider, infoRequest, prepsHash, viewable);
+                    }
                     return null;
                 }
 
@@ -505,7 +509,72 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
             }
             return fullItems;
         }
-        
+
+        protected String getAvailableCountForPrepSQL(String where) {
+            String sql = "select preparationid, coalesce(p.countamt, 0) - (sum(coalesce(lp.quantity, 0) "
+                    + "- coalesce(lp.quantityresolved,0)) + sum(coalesce(gp.quantity,0)) + sum(coalesce(ep.quantity,0)) "
+                    + "+ sum(coalesce(dp.quantity,0))) available from preparation p "
+                    + "left join loanpreparation lp on lp.preparationid = p.preparationid left join "
+                    + "giftpreparation gp on gp.preparationid = p.preparationid left join exchangeoutprep ep on "
+                    + "ep.preparationid = p.preparationid left join deaccessionpreparation dp on dp.preparationid = "
+                    + "p.preparationid group by 1";
+            if (where != null) {
+                sql += " where " + where;
+            }
+            return sql;
+        }
+
+        protected List<Object[]> getAvailableCounts(List<String> collectionObjectIds) {
+            String sql = "select p.collectionobjectid, p.preparationid, coalesce(p.CountAmt,0), pt.Name, pt.PrepTypeID, avail.available from preparation p";
+            //assuming there aren't 10s of 1000s of items in collectionObjectIds
+            String where = "collectionobjectid in(" + collectionObjectIds.toString() + ")";
+            String subSql = getAvailableCountForPrepSQL(where);
+            sql = sql + " inner join (" + subSql + ") avail on avail.preparationid = p.preparationid"
+                    + " inner join preptype pt on pt.preptypeid = p.preptypeid";
+            if (isFor == forLoan) {
+                sql += " where pt.isloanable";
+            }
+            List<Object[]> rows = BasicSQLUtils.query(sql);
+            return rows;
+        }
+
+        protected int collect() {
+            List<String> coIds = new ArrayList<>();
+            processRecordSetForCollect(coIds);
+            List<Object[]> rows = getAvailableCounts(coIds);
+            if (rows.size() > 0) {
+                for (Object[] row : rows) {
+                    int prepId = (Integer)row[1];
+                    int prepQty = (Integer)row[2];
+                    String prepType  = (String)row[3];
+                    int prepTypeId = (Integer)row[4];
+                    int coId   = (Integer)row[0];
+                    int available = (Integer)row[5];
+                    prepTypeHash.put(prepTypeId, prepType);
+                    ColObjInfo colObjInfo = coToPrepHash.get(coId);
+                    if (colObjInfo != null) {
+                        PrepInfo prepInfo = colObjInfo.get(prepId);
+                        //stuffing available into existing PrepInfo structure for now
+                        colObjInfo.add(new PrepInfo(prepId, (Integer)row[5], prepQty, available, available));
+                    } else {
+                        //what went wrong?
+                    }
+                }
+            }
+            return 0;
+        }
+
+
+        protected void processRecordSetForCollect(List<String> coIds) {
+            List<Object[]> coIdRows = getColObjsFromRecordSet();
+            for (Object[] row : coIdRows) {
+                Integer coId = (Integer)row[0];
+                coIds.add(coId.toString());
+                if (row[1] != null) {
+                    coToPrepHash.put(coId, new ColObjInfo(coId, row[1].toString(), row.length == 3 ? row[2].toString() : null));
+                }
+            }
+        }
         /**
          * @return
          */
@@ -760,7 +829,131 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
             return 0;
         }
 
-        
+        /**
+         * @return
+         */
+        protected int collectForExchange()
+        {
+            int total = 0;
+            int count = 0;
+            try
+            {
+                Vector<Object[]> coIdRows = getColObjsFromRecordSet();
+                if (coIdRows.size() != 0)
+                {
+                    UIRegistry.getStatusBar().setProgressRange(LOAN_LOADR, 0, total);
+
+                    // Get Preps with Loans
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("SELECT p.PreparationID, lp.Quantity, lp.QuantityResolved " +
+                            "FROM preparation AS p INNER JOIN collectionobject AS co ON p.CollectionObjectID = co.CollectionObjectID " +
+                            "INNER JOIN loanpreparation AS lp ON p.PreparationID = lp.PreparationID " +
+                            "WHERE co.CollectionMemberID = COLMEMID AND co.CollectionObjectID in (");
+                    for (Object[] row : coIdRows)
+                    {
+                        count++;
+                        if ((count % 10) == 0) firePropertyChange(PROGRESS, 0, Math.min(count, total));
+
+                        Integer coId = (Integer)row[0];
+                        sb.append(coId);
+                        sb.append(',');
+
+                        if (row[1] != null)
+                        {
+                            coToPrepHash.put(coId, new ColObjInfo(coId, row[1].toString(), row.length == 3 ? row[2].toString() : null));
+                        }
+                    }
+                    sb.setLength(sb.length()-1); // chomp last comma
+                    sb.append(')');
+
+                    // Get a hash contain a mapping from PrepId to Gift Quantity
+                    Hashtable<Integer, Integer> prepIdToLoanQnt = new Hashtable<Integer, Integer>();
+
+                    String sql = QueryAdjusterForDomain.getInstance().adjustSQL(sb.toString());
+                    log.debug(sql);
+
+                    Vector<Object[]> rows = BasicSQLUtils.query(sql);
+                    if (rows.size() > 0)
+                    {
+                        for (Object[] row : rows)
+                        {
+                            int qty    = getInt(row[1]);
+                            int qtyRes = getInt(row[2]);
+                            prepIdToLoanQnt.put((Integer)row[0], qty-qtyRes);
+                        }
+                    }
+
+                    // Now get the Preps With Gift
+                    sb = new StringBuilder();
+                    sb.append("SELECT p.PreparationID, p.CountAmt, gp.Quantity, " +
+                            "co.CollectionObjectID, pt.PrepTypeID, pt.Name " +
+                            "FROM preparation AS p INNER JOIN collectionobject AS co ON p.CollectionObjectID = co.CollectionObjectID " +
+                            "INNER JOIN preptype AS pt ON p.PrepTypeID = pt.PrepTypeID " +
+                            "LEFT OUTER JOIN giftpreparation AS gp ON p.PreparationID = gp.PreparationID " +
+                            "WHERE pt.IsLoanable <> 0 AND co.CollectionObjectID in (");
+                    for (Object[] row : coIdRows)
+                    {
+                        sb.append(row[0]);
+                        sb.append(',');
+                    }
+                    sb.setLength(sb.length()-1); // chomp last comma
+                    sb.append(") ORDER BY co.CatalogNumber ASC");
+
+                    // Get the Preps and Qty
+                    sql = QueryAdjusterForDomain.getInstance().adjustSQL(sb.toString());
+                    log.debug(sql);
+
+                    rows = BasicSQLUtils.query(sql);
+                    if (rows.size() > 0)
+                    {
+                        for (Object[] row : rows)
+                        {
+                            int prepId = getInt(row[0]);
+
+                            count++;
+                            if ((count % 10) == 0) firePropertyChange(PROGRESS, 0, Math.min(count, total));
+
+                            int pQty   = getInt(row[1]);
+                            int qty    = getInt(row[2]);
+                            int coId   = getInt(row[3]);
+
+                            prepTypeHash.put((Integer)row[4], row[5].toString());
+
+                            pQty -= getInt(prepIdToLoanQnt.get(prepId));
+
+                            ColObjInfo colObjInfo = coToPrepHash.get(coId);
+                            if (colObjInfo == null)
+                            {
+                                // error
+                            }
+
+                            if (colObjInfo != null)
+                            {
+                                PrepInfo prepInfo = colObjInfo.get(prepId);
+                                if (prepInfo != null)
+                                {
+                                    prepInfo.add(qty, qty);
+                                } else
+                                {
+                                    colObjInfo.add(new PrepInfo(prepId, (Integer)row[4], pQty, qty, 0));
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(InteractionsProcessor.class, ex);
+
+            }
+            firePropertyChange(PROGRESS, 0, total);
+            UIRegistry.getStatusBar().setIndeterminate(LOAN_LOADR, true);
+            return 0;
+        }
+
+
         /* (non-Javadoc)
          * @see javax.swing.SwingWorker#doInBackground()
          */
@@ -769,7 +962,17 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
         {
             coToPrepHash = new Hashtable<Integer, ColObjInfo>();
             
-            return isFor == forLoan ? collectForLoan() : (isFor == forGift ? collectForGift() : collectForAcc());
+            if (isFor == forLoan) {
+                return collectForLoan();
+            } else if (isFor == forGift) {
+                return collectForGift();
+            } else if (isFor == forAcc) {
+                return collectForAcc();
+            } else if (isFor == forExchange) {
+                return collectForExchange();
+            } else {
+                return null;
+            }
         }
 
         /* (non-Javadoc)

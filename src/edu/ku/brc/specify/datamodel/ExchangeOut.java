@@ -53,7 +53,7 @@ import org.hibernate.annotations.Index;
 		@Index (name="DescriptionOfMaterialIDX2", columnNames={"DescriptionOfMaterial"})
     })
 @SuppressWarnings("serial")
-public class ExchangeOut extends DataModelObjBase implements java.io.Serializable {
+public class ExchangeOut extends DataModelObjBase implements java.io.Serializable, OneToManyProviderIFace {
 
     // Fields    
 
