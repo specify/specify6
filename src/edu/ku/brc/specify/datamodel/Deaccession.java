@@ -52,7 +52,7 @@ import org.hibernate.annotations.Index;
         @Index (name="DeaccessionDateIDX", columnNames={"DeaccessionDate"})
     })
 @SuppressWarnings("serial")
-public class Deaccession extends DataModelObjBase implements java.io.Serializable {
+public class Deaccession extends DataModelObjBase implements java.io.Serializable, OneToManyProviderIFace {
 
     // Fields    
 

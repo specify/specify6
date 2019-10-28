@@ -74,6 +74,7 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
     protected static final int forGift = 1;
     protected static final int forAcc = 2;
     protected static final int forExchange = 3;
+    protected static final int forDeacc = 4;
 
     protected InteractionsTask task;
     protected int              isFor;
