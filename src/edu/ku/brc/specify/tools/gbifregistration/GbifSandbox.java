@@ -75,50 +75,6 @@ public class GbifSandbox {
     private static String zenodoApi = "sandbox.zenodo.org/api";
     private static String zenodoApiUrl = "https://" + zenodoApi + "/";
 
-//    private void makeAJsonObject() {
-//        //JSONObject o = JSONObject.fromObject("{\"name\": \"BoB\"}");
-//        JSONObject o = JSONObject.fromObject("{\"key\":\"04672bb4-5621-4b5b-949d-63ceea77ae24\",\"code\":\"COCOA\",\"name\":\"Colorado College Arthropod Collection\",\"contentTypes\":[\"BIOLOGICAL_PRESERVED_ORGANISMS\"],\"active\":true,\"personalCollection\":false,\"homepage\":\"https://www.coloradocollege.edu/academics/dept/obe/BiodiversityCollections/entomology-collection.html\",\"accessionStatus\":\"INSTITUTIONAL\",\"institutionKey\":\"58554974-6af4-4082-b036-259442c1c0a4\",\"mailingAddress\":{\"key\":11393,\"address\":\"Attn: Steven J Taylor, Office of General Studies, Colorado College, 14 E Cache La Poudre St.\",\"city\":\"Colorado Springs\",\"province\":\"Colorado\",\"postalCode\":\"80903\",\"country\":\"US\"},\"createdBy\":\"GRBIO\",\"modifiedBy\":\"registry-migration-grbio.gbif.org\",\"created\":\"2018-05-08T09:43:00.000+0000\",\"modified\":\"2018-11-15T10:23:01.527+0000\",\"tags\":[],\"identifiers\":[{\"key\":171542,\"type\":\"GRBIO_URI\",\"identifier\":\"http://grscicoll.org/institutional-collection/colorado-college-arthropod-collection\",\"createdBy\":\"registry-migration-grbio.gbif.org\",\"created\":\"2019-08-15T08:12:24.368+0000\"},{\"key\":163383,\"type\":\"GRBIO_URI\",\"identifier\":\"http://grbio.org/institutional-collection/colorado-college-arthropod-collection\",\"createdBy\":\"registry-migration-grbio.gbif.org\",\"created\":\"2019-08-15T08:12:17.277+0000\"},{\"key\":146265,\"type\":\"GRBIO_ID\",\"identifier\":\"25845\",\"createdBy\":\"registry-migration-grbio.gbif.org\",\"created\":\"2018-11-15T10:23:01.527+0000\"}],\"contacts\":[{\"key\":\"342bd382-da9e-46e2-a88f-ebbb559544f8\",\"firstName\":\"Steven J. Taylor\",\"position\":\"Associate Research Professor\",\"phone\":\"217.714.2871\",\"email\":\"sjtaylor@coloradocollege.edu\",\"mailingAddress\":{\"key\":24761,\"address\":\"Office of General Studies, Colorado College, 14 E Cache La Poudre St\",\"city\":\"Colorado Springs\",\"province\":\"Colorado\",\"postalCode\":\"80903\",\"country\":\"US\"},\"primaryInstitutionKey\":\"58554974-6af4-4082-b036-259442c1c0a4\",\"createdBy\":\"GRBIO\",\"modifiedBy\":\"registry-migration-grbio.gbif.org\",\"created\":\"2018-05-08T09:34:00.000+0000\",\"modified\":\"2018-11-15T10:23:01.527+0000\"}]}");
-//        System.out.println((o.get("key")));
-//        HashMap<Object, Object> m = hashMapFromJSON(o);
-//        System.out.println(m);
-//        getACollectionFromGBIF();
-//        makeADlg();
-//    }
-
-//    public void makeADlg() {
-//        ViewBasedDisplayIFace dlg2 = UIRegistry.getViewbasedFactory().createDisplay(UIRegistry.getMostRecentWindow(),
-//                "GBIFCollection",
-//                "GEE! BIFF",
-//                "GO",
-//                true,
-//                0,
-//                null,
-//                ViewBasedDialogFactoryIFace.FRAME_TYPE.DIALOG);
-//        HashMap<Object, Object> co = hashMapFromJSON(getACollectionFromGBIF());
-//        dlg2.setData(co);
-//        dlg2.showDisplay(true);
-//        System.out.println(co);
-//    }
-//    public JSONObject getACollectionFromGBIF() {
-//        CloseableHttpClient httpClient = HttpClients.createDefault();
-//        httpClient.getParams().setParameter("http.useragent", getClass().getName()); //$NON-NLS-1$
-//        httpClient.getParams().setParameter("http.socket.timeout", 15000);
-//
-//        String url = "http://api.gbif.org/v1/grscicoll/collection/04672bb4-5621-4b5b-949d-63ceea77ae24";
-//        HttpGet getMethod = new HttpGet(url);
-//        try {
-//            httpClient.executeMethod(getMethod);
-//            String jsonResponse = getMethod.getResponseBodyAsString();
-//            JSONObject r = JSONObject.fromObject(jsonResponse);
-//            return r;
-//        } catch (Exception e) {
-//            System.out.println(e.getMessage());
-//            log.error(e);
-//        }
-//        return null;
-//    }
-
-
 
     private Pair<String, String> getGbifRegCredentials() {
         return new Pair<String, String>("timoatku", "Zne$L0ngO");
@@ -164,15 +120,9 @@ public class GbifSandbox {
                                            final HttpEntity entity) {
         HttpPost postMethod  = new HttpPost(uri);
         if (headers != null) {
-//            for (Pair<String, String> h : headers) {
-//                postMethod.addRequestHeader(h.getFirst(), h.getSecond());
-//            }
             return new Pair<>(false, "postToApi() headers parameter is not supported");
         }
         if (params != null) {
-//            for (Pair<String, String> p : params) {
-//                postMethod.addParameter(p.getFirst(), p.getSecond());
-//            }
             return new Pair<>(false, "postToApi() params parameter is not supported");
         }
         if (entity != null) {
@@ -244,10 +194,6 @@ public class GbifSandbox {
     }
 
     public Pair<Boolean, String>  uploadToZenodo(File file) {
-        //List<Pair<String, String>> params = new ArrayList<>();
-        //params.add(new Pair<>("access_token", getZenodoUploadToken()));
-        //List<Pair<String, String>> headers = new ArrayList<>();
-        //headers.add(new Pair<>("Content-Type", "application/json"));
         try {
             StringEntity se = new StringEntity("{}", "application/json", StandardCharsets.UTF_8.toString());
             Pair<Boolean, String> result1 = postToApi(zenodoApiUrl + "deposit/depositions?access_token=" + getZenodoUploadToken(),
@@ -274,32 +220,6 @@ public class GbifSandbox {
         } catch (java.io.UnsupportedEncodingException x) {
             return new Pair<>(false, x.getMessage());
         }
-        //return postToApi(zenodoApiUrl + "deposit/depositions/" + )
-
-//        try {
-//
-//            post.setRequestEntity(entity);
-//
-//            //System.out.println("SKIPPING the POST!!!");
-//            int postStatus = /*200;*/ httpClient.executeMethod(post);
-//            //System.out.println("Status from Symbiota Post: " + postStatus);
-//            if (postStatus == 200) {
-//                byte[] responseBytes = post.getResponseBody();
-//                String response = responseBytes == null ? "" : new String(responseBytes);
-//                System.out.println("ResponseBody: " + response);
-//                if (!response.startsWith("FAILED") && !response.startsWith("ERROR")) {
-//                    result.setFirst(true);
-//                }
-//                result.setSecond(response);
-//            } else {
-//                result.setSecond(String.format(UIRegistry.getResourceString("SymbiotaPane.BadPostStatus"), postStatus));
-//            }
-//
-//        } catch (Exception ex) {
-//            //ex.printStackTrace();
-//            result.setSecond(ex.getLocalizedMessage());
-//        }
-//        return result;
     }
 
     public Pair<Boolean, String> deleteADataset() {

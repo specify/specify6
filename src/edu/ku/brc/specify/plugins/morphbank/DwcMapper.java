@@ -288,7 +288,7 @@ public class DwcMapper
 					System.out.println("stop");
 				}
 				if ("1,9-determinations,4.taxon.Species Author".equals(mi.getMapping())) {
-					System.out.println("breakpoint here now please");
+					//System.out.println("breakpoint here now please");
 					spec.set(mi.getTerm(), null);
 					return;
 				}
@@ -315,134 +315,86 @@ public class DwcMapper
 	 * @param obj
 	 * @return
 	 */
-	protected Object getMappedValue(MappingInfo mi, DataModelObjBase obj) throws Exception
-	{
+	protected Object getMappedValue(MappingInfo mi, DataModelObjBase obj) throws Exception {
 		String[] mapSegments = mi.getMapping().split(",");
 		DataProviderSessionIFace session = getGlobalSession();
-		try
-		{
-			DataModelObjBase currentObject = obj;
-			if (!session.contains(currentObject)) {
-				try {
-					session.attach(currentObject);
-				} catch (NonUniqueObjectException ex) {
-					currentObject = (DataModelObjBase)session.get(obj.getDataClass(), obj.getId());
-				}
+		DataModelObjBase currentObject = obj;
+		if (!session.contains(currentObject)) {
+			try {
+				session.attach(currentObject);
+			} catch (NonUniqueObjectException ex) {
+				currentObject = (DataModelObjBase) session.get(obj.getDataClass(), obj.getId());
 			}
-			if (mapSegments.length == 1)
-			{
-				return getValueFromObject(currentObject, mapSegments[0], mi.isFormatted(), mi.isTreeRank(), session);
-			}
-			
-			return getMappedValue2(mi, mapSegments, 1, currentObject, getAllManies, session);
-			/*for (int s = 1; s < mapSegments.length; s++)
-			{
-				//System.out.println(mapSegments[s]);
-
-				if (currentObject != null
-						&& (s < mapSegments.length - 1 || !mi.isFormatted()))
-				{
-					currentObject = getRelatedObject(currentObject,
-							mapSegments[s]);
-				}
-				if (currentObject == null)
-				{
-					return null;
-				}
-				
-				session.attach(currentObject); //shouldn't have to do this explicitly???
-				
-				//System.out.println("   "
-				//		+ currentObject.getClass().getSimpleName());
-
-				if (s == mapSegments.length - 1)
-				{
-					return getValueFromObject(currentObject, mapSegments[s], mi
-							.isFormatted(), mi.isTreeRank(), session);
-				}
-			}*/
-		} finally
-		{
-			//session.close();
 		}
-		//return null;
+		if (mapSegments.length == 1) {
+			return getValueFromObject(currentObject, mapSegments[0], mi.isFormatted(), mi.isTreeRank(), session);
+		}
+
+		return getMappedValue2(mi, mapSegments, 1, currentObject, getAllManies, session);
 	}
-	
-	
+
+
 	protected Object getMappedValue2(MappingInfo mi, String[] mapSegments, int segIdx, DataModelObjBase currentObj, boolean getManies,
-			DataProviderSessionIFace session) throws Exception
-	{
+									 DataProviderSessionIFace session) throws Exception {
 		DataModelObjBase currentObject = currentObj;
-			//System.out.println(mapSegments[s]);
+		//System.out.println(mapSegments[s]);
 		List<DataModelObjBase> currentObjects = new ArrayList<DataModelObjBase>();
 		List<Object> results = new ArrayList<Object>();
 		boolean returnFirstResult = true;
 		if (currentObject != null
-				&& (segIdx < mapSegments.length - 1 || !mi.isFormatted()))
-		{
-			if (getManies) 
-			{
+				&& (segIdx < mapSegments.length - 1 || !mi.isFormatted())) {
+			if (getManies) {
 				Object objs = getRelatedObjects(currentObject, mapSegments[segIdx]);
-				if (objs != null)
-				{
-					if (!Collection.class.isAssignableFrom(objs.getClass()))
-					{
-						currentObjects.add((DataModelObjBase )objs);
-					} else
-					{
+				if (objs != null) {
+					if (!Collection.class.isAssignableFrom(objs.getClass())) {
+						currentObjects.add((DataModelObjBase) objs);
+					} else {
 						returnFirstResult = false;
-						currentObjects.addAll((Collection<? extends DataModelObjBase>)objs);
+						currentObjects.addAll((Collection<? extends DataModelObjBase>) objs);
 					}
 				}
-			} else
-			{
+			} else {
 				currentObject = getRelatedObject(currentObject,
-					mapSegments[segIdx]);
-				if (currentObject != null)
-				{
+						mapSegments[segIdx]);
+				if (currentObject != null) {
 					currentObjects.add(currentObject);
 				}
 			}
-			if (currentObjects.size() == 0)
-			{
+			if (currentObjects.size() == 0) {
 				return null;
 			}
-			
-			for (DataModelObjBase cobj : currentObjects)
-			{
+
+			for (DataModelObjBase cobj : currentObjects) {
 				DataModelObjBase obj = cobj;
 				if (!session.contains(obj)) {
 					try {
 						session.attach(obj); //shouldn't have to do this explicitly???
 					} catch (NonUniqueObjectException noex) {
-						obj = (DataModelObjBase)session.get(cobj.getDataClass(), cobj.getId());
+						obj = (DataModelObjBase) session.get(cobj.getDataClass(), cobj.getId());
 					}
 				}
 				//System.out.println("   "
 				//		+ currentObject.getClass().getSimpleName());
 
-				if (segIdx == mapSegments.length - 1)
-				{
+				if (segIdx == mapSegments.length - 1) {
 					results.add(getValueFromObject(obj, mapSegments[segIdx], mi
-						.isFormatted(), mi.isTreeRank(), session));
-				} else
-				{
-					results.add(getMappedValue2(mi, mapSegments, segIdx+1, obj, false /*NO manies off manies!*/, session));
+							.isFormatted(), mi.isTreeRank(), session));
+				} else {
+					//MANY MANIES ALERT
+					//System.out.println("MANY MANIES ALERT! " + mi.getTerm() + ": " + mi.getMapping());
+//					results.add(getMappedValue2(mi, mapSegments, segIdx + 1, obj, false /*NO manies off manies!*/, session));
+					results.add(getMappedValue2(mi, mapSegments, segIdx + 1, obj, true, session));
 				}
 			}
-		} else if (mi.isFormatted())
-		{
+		} else if (mi.isFormatted()) {
 			return getValueFromObject(currentObj, mapSegments[segIdx], mi
 					.isFormatted(), mi.isTreeRank(), session);
 		}
-		if (results.size() == 0)
-		{
+		if (results.size() == 0) {
 			return null;
-		} else if (results.size() == 1 && returnFirstResult)
-		{
-			return results.get(0); 
-		} else 
-		{
+		} else if (results.size() == 1 && returnFirstResult) {
+			return results.get(0);
+		} else {
 			return results;
 		}
 	}
