@@ -23,6 +23,10 @@ package edu.ku.brc.specify.tools.gbifregistration;
 import edu.ku.brc.af.ui.ViewBasedDialogFactoryIFace;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.helpers.ProxyHelper;
+import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.datamodel.SpExportSchemaMapping;
+import edu.ku.brc.specify.plugins.morphbank.DarwinCoreArchiveFile;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 import net.sf.json.JSONArray;
@@ -57,6 +61,7 @@ import org.apache.http.client.protocol.HttpClientContext;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.dom4j.Element;
 
 
 import java.nio.charset.StandardCharsets;
@@ -323,4 +328,26 @@ public class GbifSandbox {
         return result;
     }
 
+    public static String getDwcaSchema(SpExportSchemaMapping map) {
+        String result = null;
+        String sql = "select data from spappresource r inner join spappresourcedata d on d.spappresourceid = "
+            + "r.spappresourceid where r.name = '" + map.getMappingName() +"'";
+        //plus other context parame, or use appcontext mgr to get resource...
+        try {
+            List<Object> blob = BasicSQLUtils.querySingleCol(sql);
+            if (blob != null && blob.size() > 0) {
+                //Byte[] blobBytes = (Byte [])blob.get(0);
+                String dataStr = new String((byte[])blob.get(0));
+                Element el = XMLHelper.readStrToDOM4J(dataStr);
+                List<Object> core = el.selectNodes("/archive");
+                if (core != null && core.size() > 0) {
+                    Element archiveElement = (Element) core.get(0); //assuming 1
+                    result = archiveElement.getText();
+                }
+            }
+        } catch (Exception x) {
+            log.error(x);
+        }
+        return result;
+    }
 }

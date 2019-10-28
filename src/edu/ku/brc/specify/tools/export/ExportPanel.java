@@ -51,6 +51,7 @@ import edu.ku.brc.specify.datamodel.*;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.plugins.morphbank.DarwinCoreArchive;
 import edu.ku.brc.specify.tasks.subpane.SymbiotaPane;
+import edu.ku.brc.specify.tools.gbifregistration.GbifSandbox;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.tools.ant.util.FileUtils;
@@ -129,6 +130,8 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 	protected JButton exportToTabDelimBtn;
 	protected JButton setupWebPortalBtn;
 	protected JButton showIPTSQLBtn;
+	protected JButton createDwcaBtn;
+	protected JButton publishToGbifBtn;
 	protected JButton helpBtn;
 	protected JLabel status;
 	protected JProgressBar prog;
@@ -219,12 +222,29 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 		boolean notUpdating = mapUpdating.get() == -1;
 		//System.out.println("updateUIAfterMapSelection: Row: " + selectedIdx + ", isBuilt: " + isBuilt + ", updating: " + !notUpdating);
 		this.showIPTSQLBtn.setEnabled(notUpdating && isBuilt);
+		this.createDwcaBtn.setEnabled(isDwcaMapping(selectedIdx));
+		this.publishToGbifBtn.setEnabled(hasGbifRegistration(selectedIdx));
 		this.exportToTabDelimBtn.setEnabled(notUpdating && isBuilt);
 		this.setupWebPortalBtn.setEnabled(notUpdating && isBuilt);
 		this.exportToDbTblBtn.setEnabled(notUpdating && !isCheckingStatus);
 		
 	}
 
+	protected boolean isDwcaMapping(int selectedIdx) {
+		SpExportSchemaMapping map = maps.get(selectedIdx);
+		String sql = "select count(spappresourceid) from spappresource where name = '" + map.getMappingName() +"'";
+		//plus other context parame, or use appcontext mgr to get resource...
+		return BasicSQLUtils.getCount(sql).equals(1);
+	}
+
+	protected boolean hasGbifRegistration(int selectedIdx) {
+		boolean result = isDwcaMapping(selectedIdx);
+		if (result) {
+			SpExportSchemaMapping map = maps.get(selectedIdx);
+			result = GbifSandbox.getDwcaSchema(map) != null;
+		}
+		return result;
+	}
 
 	protected void buildDwCArchive(final SpExportSchemaMapping schemaMapping) {
 
@@ -244,7 +264,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 						String sql = "select " + getCacheTableName(schemaMapping.getMappingName()) +
 								"id from " + getCacheTableName(schemaMapping.getMappingName());
 						List<?> ids = BasicSQLUtils.querySingleCol(sql);
-						return new Pair<Integer, Iterator<?>>(ids.size(), ids.iterator());
+						return new Pair<>(ids.size(), ids.iterator());
 					}
 
 					/**
@@ -266,7 +286,6 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 							size += csv.getSecond().size();
 						}
 						//initProgRange(size);
-						size = 0;
 						for (Pair<String, List<String>> csv : csvs) {
 							zout.putNextEntry(new ZipEntry(csv.getFirst()));
 							for (String line : csv.getSecond()) {
@@ -331,9 +350,8 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 	/**
 	 * 
 	 */
-	public void createUI()
-	{
-    	buildTableModel();
+	public void createUI() {
+		buildTableModel();
 		mapsDisplay = new JTable(mapsModel) {
 
 			/* (non-Javadoc)
@@ -343,7 +361,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 			public boolean isCellEditable(int row, int column) {
 				return false;
 			}
-			
+
 		};
 		mapsDisplay.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 
@@ -352,347 +370,301 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 			 */
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
-				if (!e.getValueIsAdjusting())
-				{
-					SwingUtilities.invokeLater(new Runnable(){
-
-						/* (non-Javadoc)
-						 * @see java.lang.Runnable#run()
-						 */
-						@Override
-						public void run() {
-							updateUIAfterMapSelection();
-						}
-					
-					});
+				if (!e.getValueIsAdjusting()) {
+					/* (non-Javadoc)
+					 * @see java.lang.Runnable#run()
+					 */
+					SwingUtilities.invokeLater(() -> updateUIAfterMapSelection());
 				}
-				
+
 			}
-			
+
 		});
 		mapsDisplay.getTableHeader().setReorderingAllowed(false);
 		mapsDisplay.setPreferredScrollableViewportSize(mapsDisplay.getPreferredSize());
 		mapsDisplay.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		mapsDisplay.getSelectionModel().setSelectionInterval(0, 0);
-    	setLayout(new BorderLayout());
-    	JScrollPane sp = new JScrollPane(mapsDisplay);
-    	PanelBuilder tblpb = new PanelBuilder(new FormLayout("2dlu, f:p:g, 2dlu", "5dlu, f:p:g, 5dlu"));
-    	CellConstraints cc = new CellConstraints();
-    	tblpb.add(sp, cc.xy(2, 2));
-    	
-    	add(tblpb.getPanel(), BorderLayout.CENTER);
-    	exportToDbTblBtn = UIHelper.createButton(UIRegistry.getResourceString("ExportPanel.ExportToDBTbl"));
-    	exportToDbTblBtn.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0)
-			{
-				int row = mapsDisplay.getSelectedRow();
-				if (row != -1)
-				{
-					mapUpdating.set(row);
-					stupid = 1;
-					SpExportSchemaMapping map = maps.get(row);
-					boolean reBuildIt = false;
-					if (isUpToDateForRow(row)) 
-					{
-						reBuildIt = UIRegistry.displayConfirmLocalized("ExportPanel.ConfirmForceRebuildTitle", "ExportPanel.ConfirmForceRebuildMsg", 
-								"ExportPanel.RebuildBtn", "Cancel", JOptionPane.QUESTION_MESSAGE);
-						if (!reBuildIt) {
-							return;
-						}
-					}
-					if (checkLock(map)) 
-					{
-						updater = exportToTable(map, rebuildForRow(row) || reBuildIt);
-						if (updater != null) 
-						{
-							updater.execute();
-							SwingUtilities.invokeLater(new Runnable() 
-							{
+		setLayout(new BorderLayout());
+		JScrollPane sp = new JScrollPane(mapsDisplay);
+		PanelBuilder tblpb = new PanelBuilder(new FormLayout("2dlu, f:p:g, 2dlu", "5dlu, f:p:g, 5dlu"));
+		CellConstraints cc = new CellConstraints();
+		tblpb.add(sp, cc.xy(2, 2));
 
-								/*
-								 * (non-Javadoc)
-								 * 
-								 * @see java.lang.Runnable#run()
-								 */
-								@Override
-								public void run() 
-								{
-									updateBtnStates();
-									((CardLayout) progPane.getLayout())
-											.last(progPane);
-								}
-
-							});
-						}
-					}
-				}
-				else 
-				{
-					UIRegistry.showLocalizedMsg("ExportPanel.PleaseMakeASelection");
-				}
-			}
-    	});
-
-    	setupWebPortalBtn = UIHelper.createButton(UIRegistry.getResourceString("ExportPanel.SetupWebPortalBtnTitle"));
-		setupWebPortalBtn.setToolTipText(UIRegistry.getResourceString("ExportPanel.SetupWebPortalBtnHint"));
-    	setupWebPortalBtn.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				int row = mapsDisplay.getSelectedRow();
-				if (row != -1) {
-					mapUpdating.set(row);
-					stupid = 1;
-					SpExportSchemaMapping map = maps.get(row);
-					if (rebuildForRow(row)) {
-						// The button probably won't be enabled in this case but...
-						UIRegistry
-								.displayInfoMsgDlg(getResourceString("ExportPanel.NoWebSetupForCacheNeedsRebuild"));
-					} else if (!isUpToDateForRow(row)) {
-						// The button probably won't be enabled in this case but...
-						UIRegistry
-								.displayInfoMsgDlg(getResourceString("ExportPanel.NoWebSetupForCacheNotUpToDate"));
-					} else if (checkLock(map)) {
-						AppPreferences localPrefs =  AppPreferences.getLocalPrefs();
-						String defPath = localPrefs.get(EXPORT_WEBPORTAL_PATH, null);
-						JFileChooser save = defPath == null ? new JFileChooser() :
-							new JFileChooser(new File(defPath));
-						save.setFileSelectionMode(JFileChooser.FILES_ONLY);
-                        save.setFileFilter(new UIFileFilter("zip"));
-						int result = save.showSaveDialog(null);
-	    				if (result != JFileChooser.APPROVE_OPTION)
-						{	
-							return;
-						}
-	    				//localPrefs.put(EXPORT_WEBPORTAL_PATH, save.getCurrentDirectory().getPath());
-	    				localPrefs.put(EXPORT_WEBPORTAL_PATH, save.getSelectedFile().getPath());
-
-                        String zipFile = save.getSelectedFile().getPath();
-                        if (!zipFile.toLowerCase().endsWith(".zip"))
-                        {
-                             zipFile += ".zip";
-                        }
-                        final BuildSearchIndex2 bsi = new BuildSearchIndex2(
-                                maps.get(row),
-                                zipFile,
-                                getCollectionName(),
-                                getAttachmentURL());
-
-			        	try {
-			        		bsi.connect();
-			        	} catch (SQLException sqex) {
-			                UsageTracker.incrHandledUsageCount();
-			                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ExportPanel.class, sqex);	
-			                return;
-			        	}
-			        	new javax.swing.SwingWorker<Boolean, Object>() {
-
-			        		Boolean success = false;
-							/* (non-Javadoc)
-							 * @see javax.swing.SwingWorker#doInBackground()
-							 */
-							@Override
-							protected Boolean doInBackground() throws Exception {
-								success = bsi.index(ExportPanel.this);
-								return success;
-							}
-
-							/* (non-Javadoc)
-							 * @see javax.swing.SwingWorker#done()
-							 */
-							@Override
-							protected void done() {
-								if (!success)
-								{
-									String msg = getResourceString("ExportPanel.SetupWebFailMsg");
-									UIRegistry.displayErrorDlg(msg);
-									ExportPanel.this.done(-1);
-								} else
-								{
-									ExportPanel.this.done(1);
-								}
-							}
-			        		
-			        	}.execute();
-			        	
-						SwingUtilities.invokeLater(new Runnable() {
-							@Override
-							public void run() {
-								((CardLayout) progPane.getLayout())
-										.last(progPane);
-							}
-
-						});
-					}
-				} else {
-					UIRegistry
-							.showLocalizedMsg("ExportPanel.PleaseMakeASelection");
-				}
-			}
-		});
-    	//disabling for jar release for WB RecordSet-to-Dataset fix.
-    	//setupWebPortalBtn.setVisible(false);
-
-    	this.exportToTabDelimBtn = UIHelper.createButton(UIRegistry.getResourceString("ExportPanel.ExportTabDelimTxt"));
-    	this.exportToTabDelimBtn.setToolTipText(UIRegistry.getResourceString("ExportPanel.ExportTabDelimTxtHint"));
-    	this.exportToTabDelimBtn.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0)
-			{
-				int row = mapsDisplay.getSelectedRow();
-				if (row != -1)
-				{
-					if (!isBuiltForRow(row))
-					{
-						UIRegistry.displayInfoMsgDlgLocalized("ExportPanel.CacheNotCreated");
+		add(tblpb.getPanel(), BorderLayout.CENTER);
+		exportToDbTblBtn = UIHelper.createButton(UIRegistry.getResourceString("ExportPanel.ExportToDBTbl"));
+		exportToDbTblBtn.addActionListener(arg0 -> {
+			int row = mapsDisplay.getSelectedRow();
+			if (row != -1) {
+				mapUpdating.set(row);
+				stupid = 1;
+				SpExportSchemaMapping map = maps.get(row);
+				boolean reBuildIt = false;
+				if (isUpToDateForRow(row)) {
+					reBuildIt = UIRegistry.displayConfirmLocalized("ExportPanel.ConfirmForceRebuildTitle", "ExportPanel.ConfirmForceRebuildMsg",
+							"ExportPanel.RebuildBtn", "Cancel", JOptionPane.QUESTION_MESSAGE);
+					if (!reBuildIt) {
 						return;
 					}
-					AppPreferences localPrefs =  AppPreferences.getLocalPrefs();
-					String defPath = localPrefs.get(EXPORT_TEXT_PATH, null);
-					JFileChooser save = defPath == null ? new JFileChooser() :
-						new JFileChooser(new File(defPath));
-					int result = save.showSaveDialog(null);
-    				if (result != JFileChooser.APPROVE_OPTION)
-					{	
-						return;
-					}
-    				localPrefs.put(EXPORT_TEXT_PATH, save.getCurrentDirectory().getPath());
-					mapUpdating.set(row);
-					stupid = 0;
-					SpExportSchemaMapping map = maps.get(row);
-					SpQuery q = map.getMappings().iterator().next()
-						.getQueryField().getQuery();
-					Vector<QBDataSourceListenerIFace> ls = new Vector<QBDataSourceListenerIFace>();
-					ls.add(ExportPanel.this);
-					//File file = new File(UIRegistry.getDefaultWorkingPath() + File.separator + q.getName() + ".txt");
-					File file = save.getSelectedFile();
-					exportToDbTblBtn.setEnabled(false);
-					exportToTabDelimBtn.setEnabled(false);
-					dumper = ExportToMySQLDB.exportRowsToTabDelimitedText(file, null, getCacheTableName(q.getName()), ls);
-					SwingUtilities.invokeLater(new Runnable() {
-
-						/* (non-Javadoc)
+				}
+				if (checkLock(map)) {
+					updater = exportToTable(map, rebuildForRow(row) || reBuildIt);
+					if (updater != null) {
+						updater.execute();
+						/*
+						 * (non-Javadoc)
+						 *
 						 * @see java.lang.Runnable#run()
 						 */
-						@Override
-						public void run()
-						{
-							((CardLayout )progPane.getLayout()).last(progPane);
-						}
-						
-					});
-					dumper.execute();
-				}
-				else 
-				{
-					UIRegistry.showLocalizedMsg("ExportPanel.PleaseMakeASelection");
-				}
-			}
-    	});
-
-    	if (false) {
-			showIPTSQLBtn = UIHelper.createButton(UIRegistry.getResourceString("ExportPanel.ShowSQLBtn"));
-			showIPTSQLBtn.setToolTipText(UIRegistry.getResourceString("ExportPanel.ShowSQLBtnTT"));
-			showIPTSQLBtn.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent arg0) {
-					int row = mapsDisplay.getSelectedRow();
-					if (row != -1) {
-						if (!isBuiltForRow(row)) {
-							UIRegistry.displayInfoMsgDlgLocalized("ExportPanel.NoSQLForRebuild");
-						} else {
-							JPanel panel = new JPanel(new BorderLayout());
-
-							SpExportSchemaMapping map = maps.get(row);
-							String iptSQL = ExportToMySQLDB
-									.getSelectForIPTDBSrc(getCacheTableName(map.getMappingName()));
-							JTextArea ta = new JTextArea(iptSQL);
-							ta.setLineWrap(true);
-							ta.setColumns(60);
-							ta.setRows(10);
-							ta.selectAll();
-							JScrollPane scrp = new JScrollPane(ta);
-							panel.add(scrp, BorderLayout.CENTER);
-							panel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
-							CustomDialog cd = new CustomDialog((Frame) UIRegistry
-									.getTopWindow(), UIRegistry
-									.getResourceString("ExportPanel.SQLTitle"),
-									true, CustomDialog.OK_BTN, panel);
-							cd.setOkLabel(UIRegistry.getResourceString("CLOSE"));
-							UIHelper.centerAndShow(cd);
-						}
-					} else {
-						UIRegistry.showLocalizedMsg("ExportPanel.PleaseMakeASelection");
+						SwingUtilities.invokeLater(() -> {
+							updateBtnStates();
+							((CardLayout) progPane.getLayout())
+									.last(progPane);
+						});
 					}
 				}
-			});
-		} else {
-			showIPTSQLBtn = UIHelper.createButton(UIRegistry.getResourceString("ExportPanel.ToDwc"));
-			showIPTSQLBtn.setToolTipText(UIRegistry.getResourceString("ExportPanel.export_to_dwc_archive"));
-			showIPTSQLBtn.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent arg0) {
-					int row = mapsDisplay.getSelectedRow();
-					SpExportSchemaMapping map = maps.get(row);
-					showIPTSQLBtn.setEnabled(false);
-					buildDwCArchive(map);
-				}
-			});
-		}
-        helpBtn = createButton(getResourceString("HELP"));
-        HelpMgr.registerComponent(helpBtn, "schema_tool");
-    	
-        PanelBuilder btnPB = new PanelBuilder(new FormLayout("p,f:p:g,4px,p,8px,p,8px,p,8px,p,8px,p", "p"));
-        quitBtn = UIHelper.createButton("Quit");
-        
-        btnPB.add(helpBtn,             cc.xy(1, 1));
-        btnPB.add(showIPTSQLBtn,       cc.xy(4, 1));
-        btnPB.add(exportToTabDelimBtn, cc.xy(6, 1));
-        btnPB.add(exportToDbTblBtn,    cc.xy(8, 1));
-        btnPB.add(setupWebPortalBtn,   cc.xy(10, 1));
-        btnPB.add(quitBtn,             cc.xy(12, 1));
-        
-    	status = new JLabel(UIRegistry.getResourceString("ExportPanel.InitialStatus")); 
-    	status.setFont(status.getFont().deriveFont(Font.ITALIC));
-    	Dimension pref = status.getPreferredSize();
-    	pref.setSize(Math.max(300, pref.getWidth()), pref.getHeight());
-    	status.setPreferredSize(pref);
-    	
-    	
-    	progPane = new JPanel(new CardLayout());
-    	progPane.add(new JPanel(), "blank");
-    	
-    	prog = new JProgressBar();
-    	progPane.add(prog, "prog");
-    	
-    	
-        PanelBuilder pbb = new PanelBuilder(new FormLayout("f:p:g,8px,f:p:g", "p, 8px, p"));
-        pbb.add(status,           cc.xy(1, 1));
-        pbb.add(progPane,         cc.xy(3, 1));
-        pbb.add(btnPB.getPanel(), cc.xyw(1, 3, 3));
-    	
-    	//prog.setVisible(false);
-    	add(pbb.getPanel(), BorderLayout.SOUTH);
+			} else {
+				UIRegistry.showLocalizedMsg("ExportPanel.PleaseMakeASelection");
+			}
+		});
 
-    	setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
-    	
-        HelpMgr.setAppDefHelpId("schema_tool");
-        
-        quitBtn.addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                SwingUtilities.invokeLater(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        shutdown();
-                    }
-                });
-            }
-        });
+		setupWebPortalBtn = UIHelper.createButton(UIRegistry.getResourceString("ExportPanel.SetupWebPortalBtnTitle"));
+		setupWebPortalBtn.setToolTipText(UIRegistry.getResourceString("ExportPanel.SetupWebPortalBtnHint"));
+		setupWebPortalBtn.addActionListener(arg0 -> {
+			int row = mapsDisplay.getSelectedRow();
+			if (row != -1) {
+				mapUpdating.set(row);
+				stupid = 1;
+				SpExportSchemaMapping map = maps.get(row);
+				if (rebuildForRow(row)) {
+					// The button probably won't be enabled in this case but...
+					UIRegistry
+							.displayInfoMsgDlg(getResourceString("ExportPanel.NoWebSetupForCacheNeedsRebuild"));
+				} else if (!isUpToDateForRow(row)) {
+					// The button probably won't be enabled in this case but...
+					UIRegistry
+							.displayInfoMsgDlg(getResourceString("ExportPanel.NoWebSetupForCacheNotUpToDate"));
+				} else if (checkLock(map)) {
+					AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+					String defPath = localPrefs.get(EXPORT_WEBPORTAL_PATH, null);
+					JFileChooser save = defPath == null ? new JFileChooser() :
+							new JFileChooser(new File(defPath));
+					save.setFileSelectionMode(JFileChooser.FILES_ONLY);
+					save.setFileFilter(new UIFileFilter("zip"));
+					int result = save.showSaveDialog(null);
+					if (result != JFileChooser.APPROVE_OPTION) {
+						return;
+					}
+					//localPrefs.put(EXPORT_WEBPORTAL_PATH, save.getCurrentDirectory().getPath());
+					localPrefs.put(EXPORT_WEBPORTAL_PATH, save.getSelectedFile().getPath());
+
+					String zipFile = save.getSelectedFile().getPath();
+					if (!zipFile.toLowerCase().endsWith(".zip")) {
+						zipFile += ".zip";
+					}
+					final BuildSearchIndex2 bsi = new BuildSearchIndex2(
+							maps.get(row),
+							zipFile,
+							getCollectionName(),
+							getAttachmentURL());
+
+					try {
+						bsi.connect();
+					} catch (SQLException sqex) {
+						UsageTracker.incrHandledUsageCount();
+						edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ExportPanel.class, sqex);
+						return;
+					}
+					new javax.swing.SwingWorker<Boolean, Object>() {
+
+						Boolean success = false;
+
+						/* (non-Javadoc)
+						 * @see javax.swing.SwingWorker#doInBackground()
+						 */
+						@Override
+						protected Boolean doInBackground() throws Exception {
+							success = bsi.index(ExportPanel.this);
+							return success;
+						}
+
+						/* (non-Javadoc)
+						 * @see javax.swing.SwingWorker#done()
+						 */
+						@Override
+						protected void done() {
+							if (!success) {
+								String msg = getResourceString("ExportPanel.SetupWebFailMsg");
+								UIRegistry.displayErrorDlg(msg);
+								ExportPanel.this.done(-1);
+							} else {
+								ExportPanel.this.done(1);
+							}
+						}
+
+					}.execute();
+
+					SwingUtilities.invokeLater(new Runnable() {
+						@Override
+						public void run() {
+							((CardLayout) progPane.getLayout())
+									.last(progPane);
+						}
+
+					});
+				}
+			} else {
+				UIRegistry
+						.showLocalizedMsg("ExportPanel.PleaseMakeASelection");
+			}
+		});
+		//disabling for jar release for WB RecordSet-to-Dataset fix.
+		//setupWebPortalBtn.setVisible(false);
+
+		this.exportToTabDelimBtn = UIHelper.createButton(UIRegistry.getResourceString("ExportPanel.ExportTabDelimTxt"));
+		this.exportToTabDelimBtn.setToolTipText(UIRegistry.getResourceString("ExportPanel.ExportTabDelimTxtHint"));
+		this.exportToTabDelimBtn.addActionListener(arg0 -> {
+			int row = mapsDisplay.getSelectedRow();
+			if (row != -1) {
+				if (!isBuiltForRow(row)) {
+					UIRegistry.displayInfoMsgDlgLocalized("ExportPanel.CacheNotCreated");
+					return;
+				}
+				AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+				String defPath = localPrefs.get(EXPORT_TEXT_PATH, null);
+				JFileChooser save = defPath == null ? new JFileChooser() :
+						new JFileChooser(new File(defPath));
+				int result = save.showSaveDialog(null);
+				if (result != JFileChooser.APPROVE_OPTION) {
+					return;
+				}
+				localPrefs.put(EXPORT_TEXT_PATH, save.getCurrentDirectory().getPath());
+				mapUpdating.set(row);
+				stupid = 0;
+				SpExportSchemaMapping map = maps.get(row);
+				SpQuery q = map.getMappings().iterator().next()
+						.getQueryField().getQuery();
+				Vector<QBDataSourceListenerIFace> ls = new Vector<QBDataSourceListenerIFace>();
+				ls.add(ExportPanel.this);
+				//File file = new File(UIRegistry.getDefaultWorkingPath() + File.separator + q.getName() + ".txt");
+				File file = save.getSelectedFile();
+				exportToDbTblBtn.setEnabled(false);
+				exportToTabDelimBtn.setEnabled(false);
+				dumper = ExportToMySQLDB.exportRowsToTabDelimitedText(file, null, getCacheTableName(q.getName()), ls);
+				SwingUtilities.invokeLater(new Runnable() {
+
+					/* (non-Javadoc)
+					 * @see java.lang.Runnable#run()
+					 */
+					@Override
+					public void run() {
+						((CardLayout) progPane.getLayout()).last(progPane);
+					}
+
+				});
+				dumper.execute();
+			} else {
+				UIRegistry.showLocalizedMsg("ExportPanel.PleaseMakeASelection");
+			}
+		});
+
+		showIPTSQLBtn = UIHelper.createButton(UIRegistry.getResourceString("ExportPanel.ShowSQLBtn"));
+		showIPTSQLBtn.setToolTipText(UIRegistry.getResourceString("ExportPanel.ShowSQLBtnTT"));
+		showIPTSQLBtn.addActionListener(arg0 -> {
+			int row = mapsDisplay.getSelectedRow();
+			if (row != -1) {
+				if (!isBuiltForRow(row)) {
+					UIRegistry.displayInfoMsgDlgLocalized("ExportPanel.NoSQLForRebuild");
+				} else {
+					JPanel panel = new JPanel(new BorderLayout());
+
+					SpExportSchemaMapping map = maps.get(row);
+					String iptSQL = ExportToMySQLDB
+							.getSelectForIPTDBSrc(getCacheTableName(map.getMappingName()));
+					JTextArea ta = new JTextArea(iptSQL);
+					ta.setLineWrap(true);
+					ta.setColumns(60);
+					ta.setRows(10);
+					ta.selectAll();
+					JScrollPane scrp = new JScrollPane(ta);
+					panel.add(scrp, BorderLayout.CENTER);
+					panel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+					CustomDialog cd = new CustomDialog((Frame) UIRegistry
+							.getTopWindow(), UIRegistry
+							.getResourceString("ExportPanel.SQLTitle"),
+							true, CustomDialog.OK_BTN, panel);
+					cd.setOkLabel(UIRegistry.getResourceString("CLOSE"));
+					UIHelper.centerAndShow(cd);
+				}
+			} else {
+				UIRegistry.showLocalizedMsg("ExportPanel.PleaseMakeASelection");
+			}
+		});
+
+		createDwcaBtn = UIHelper.createButton(UIRegistry.getResourceString("ExportPanel.ToDwc"));
+		createDwcaBtn.setToolTipText(UIRegistry.getResourceString("ExportPanel.export_to_dwc_archive"));
+		createDwcaBtn.addActionListener(arg0 -> {
+			int row = mapsDisplay.getSelectedRow();
+			SpExportSchemaMapping map = maps.get(row);
+			createDwcaBtn.setEnabled(false);
+			buildDwCArchive(map);
+		});
+
+		publishToGbifBtn = UIHelper.createButton(UIRegistry.getResourceString("ExportPanel.ToDwcToGbif"));
+		publishToGbifBtn.setToolTipText(UIRegistry.getResourceString("ExportPanel.to_gbif"));
+		publishToGbifBtn.addActionListener(arg0 -> {
+			int row = mapsDisplay.getSelectedRow();
+			SpExportSchemaMapping map = maps.get(row);
+			publishToGbifBtn.setEnabled(false);
+			buildDwCArchive(map);
+		});
+
+		helpBtn = createButton(getResourceString("HELP"));
+		HelpMgr.registerComponent(helpBtn, "schema_tool");
+
+		PanelBuilder btnPB = new PanelBuilder(new FormLayout("p,f:p:g,4px,p,8px,p,8px,p,8px,p,8px,p,8px,p,8px,p", "p"));
+		quitBtn = UIHelper.createButton("Quit");
+
+		btnPB.add(helpBtn, cc.xy(1, 1));
+		btnPB.add(createDwcaBtn, cc.xy(4, 1));
+		btnPB.add(publishToGbifBtn, cc.xy(6, 1));
+		btnPB.add(showIPTSQLBtn, cc.xy(8, 1));
+		btnPB.add(exportToTabDelimBtn, cc.xy(10, 1));
+		btnPB.add(exportToDbTblBtn, cc.xy(12, 1));
+		btnPB.add(setupWebPortalBtn, cc.xy(14, 1));
+		btnPB.add(quitBtn, cc.xy(16, 1));
+
+		status = new JLabel(UIRegistry.getResourceString("ExportPanel.InitialStatus"));
+		status.setFont(status.getFont().deriveFont(Font.ITALIC));
+		Dimension pref = status.getPreferredSize();
+		pref.setSize(Math.max(300, pref.getWidth()), pref.getHeight());
+		status.setPreferredSize(pref);
+
+
+		progPane = new JPanel(new CardLayout());
+		progPane.add(new JPanel(), "blank");
+
+		prog = new JProgressBar();
+		progPane.add(prog, "prog");
+
+
+		PanelBuilder pbb = new PanelBuilder(new FormLayout("f:p:g,8px,f:p:g", "p, 8px, p"));
+		pbb.add(status, cc.xy(1, 1));
+		pbb.add(progPane, cc.xy(3, 1));
+		pbb.add(btnPB.getPanel(), cc.xyw(1, 3, 3));
+
+		//prog.setVisible(false);
+		add(pbb.getPanel(), BorderLayout.SOUTH);
+
+		setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+
+		HelpMgr.setAppDefHelpId("schema_tool");
+
+		quitBtn.addActionListener(e -> SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				shutdown();
+			}
+		}));
 	}
 	
     /**

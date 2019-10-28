@@ -55,24 +55,29 @@ public class DarwinCoreArchive
 	 * @param useCache
 	 * @throws Exception
 	 */
-	public DarwinCoreArchive(File file, int mapperID, boolean useCache) throws Exception
-	{
-		mapper = new DwcMapper(mapperID, true);
-
-        files = new ArrayList<DarwinCoreArchiveFile>();
-		Element el = XMLHelper.readFileToDOM4J(file);		
-        for (Object core : el.selectNodes("/archive"))
-        {
-        	for (Object c : ((Element)core).selectNodes("*"))
-        	{
-        		files.add(new DarwinCoreArchiveFile("core".equals(((Element)c).getName()), (Element)c));
-        	}
-        }
-        this.useCache = useCache;
-        
-        //buildExportSchemasFromSymbiotaDwcDef("SymbiotaDwc");
+	public DarwinCoreArchive(File file, int mapperID, boolean useCache) throws Exception {
+		this(FileUtils.readFileToString(file), mapperID, useCache);
 	}
-	
+
+	/**
+	 *
+	 * @param dwca
+	 * @param mapperID
+	 * @param useCache
+	 * @throws Exception
+	 */
+	public DarwinCoreArchive(String dwca, int mapperID, boolean useCache) throws Exception {
+		mapper = new DwcMapper(mapperID, true);
+		files = new ArrayList<>();
+		Element el = XMLHelper.readStrToDOM4J(dwca);
+		for (Object core : el.selectNodes("/archive")) {
+			for (Object c : ((Element) core).selectNodes("*")) {
+				files.add(new DarwinCoreArchiveFile("core".equals(((Element) c).getName()), (Element) c));
+			}
+		}
+		this.useCache = useCache;
+	}
+
 	/**
 	 * @param exportSchemaName
 	 */
