@@ -328,10 +328,10 @@ public class GbifSandbox {
         return result;
     }
 
-    public static String getDwcaSchema(SpExportSchemaMapping map) {
+    public static Element getDwcaSchema(String mappingName) {
         String result = null;
         String sql = "select data from spappresource r inner join spappresourcedata d on d.spappresourceid = "
-            + "r.spappresourceid where r.name = '" + map.getMappingName() +"'";
+            + "r.spappresourceid where r.name = '" + mappingName +"'";
         //plus other context parame, or use appcontext mgr to get resource...
         try {
             List<Object> blob = BasicSQLUtils.querySingleCol(sql);
@@ -342,7 +342,7 @@ public class GbifSandbox {
                 List<Object> core = el.selectNodes("/archive");
                 if (core != null && core.size() > 0) {
                     Element archiveElement = (Element) core.get(0); //assuming 1
-                    result = archiveElement.getText();
+                    result = element;
                 }
             }
         } catch (Exception x) {

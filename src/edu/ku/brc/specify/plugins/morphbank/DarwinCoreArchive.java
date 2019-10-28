@@ -17,6 +17,7 @@ import java.util.TreeSet;
 
 import javax.swing.JProgressBar;
 
+import edu.ku.brc.specify.tools.gbifregistration.GbifSandbox;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
@@ -56,20 +57,30 @@ public class DarwinCoreArchive
 	 * @throws Exception
 	 */
 	public DarwinCoreArchive(File file, int mapperID, boolean useCache) throws Exception {
-		this(FileUtils.readFileToString(file), mapperID, useCache);
+		this(XMLHelper.readFileToDOM4J(file), mapperID, useCache);
 	}
 
 	/**
 	 *
-	 * @param dwca
+	 * @param mappingName
 	 * @param mapperID
 	 * @param useCache
 	 * @throws Exception
 	 */
-	public DarwinCoreArchive(String dwca, int mapperID, boolean useCache) throws Exception {
+	public DarwinCoreArchive(String mappingName, int mapperID, boolean useCache) throws Exception {
+		this(GbifSandbox.getDwcaSchema(mappingName), mapperID, useCache);
+	}
+
+	/**
+	 *
+	 * @param el
+	 * @param mapperID
+	 * @param useCache
+	 * @throws Exception
+	 */
+	public DarwinCoreArchive(Element el, int mapperID, boolean useCache) throws Exception {
 		mapper = new DwcMapper(mapperID, true);
 		files = new ArrayList<>();
-		Element el = XMLHelper.readStrToDOM4J(dwca);
 		for (Object core : el.selectNodes("/archive")) {
 			for (Object c : ((Element) core).selectNodes("*")) {
 				files.add(new DarwinCoreArchiveFile("core".equals(((Element) c).getName()), (Element) c));

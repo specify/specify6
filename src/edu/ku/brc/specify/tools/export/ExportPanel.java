@@ -241,7 +241,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 		boolean result = isDwcaMapping(selectedIdx);
 		if (result) {
 			SpExportSchemaMapping map = maps.get(selectedIdx);
-			result = GbifSandbox.getDwcaSchema(map) != null;
+			result = GbifSandbox.getDwcaSchema(map.getMappingName()) != null;
 		}
 		return result;
 	}
