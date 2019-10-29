@@ -29,6 +29,7 @@ import edu.ku.brc.specify.datamodel.SpExportSchemaMapping;
 import edu.ku.brc.specify.plugins.morphbank.DarwinCoreArchiveFile;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
+import edu.ku.brc.specify.tools.gbifregistration.GbifSandbox;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.http.client.HttpClient;
@@ -328,8 +329,13 @@ public class GbifSandbox {
         return result;
     }
 
+    /**
+     *
+     * @param mappingName
+     * @return
+     */
     public static Element getDwcaSchema(String mappingName) {
-        String result = null;
+        Element result = null;
         String sql = "select data from spappresource r inner join spappresourcedata d on d.spappresourceid = "
             + "r.spappresourceid where r.name = '" + mappingName +"'";
         //plus other context parame, or use appcontext mgr to get resource...
@@ -342,12 +348,26 @@ public class GbifSandbox {
                 List<Object> core = el.selectNodes("/archive");
                 if (core != null && core.size() > 0) {
                     Element archiveElement = (Element) core.get(0); //assuming 1
-                    result = element;
+                    result = el;
                 }
             }
         } catch (Exception x) {
             log.error(x);
         }
         return result;
+    }
+
+    /**
+     *
+     * @param mappingName
+     * @return
+     */
+    public static String getDwcaSchemaAsStr(String mappingName) {
+        Element el = getDwcaSchema(mappingName);
+        if (el != null) {
+            return el.asXML();
+        } else {
+            return null;
+        }
     }
 }

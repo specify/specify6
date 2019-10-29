@@ -55,6 +55,7 @@ import edu.ku.brc.specify.tools.gbifregistration.GbifSandbox;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.tools.ant.util.FileUtils;
+import org.dom4j.Element;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -273,13 +274,13 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 					 * @param csvs
 					 * @throws Exception
 					 */
-					protected void writeToArchiveFile(String archiveName, File metaFile, List<Pair<String, List<String>>> csvs) throws Exception {
+					protected void writeToArchiveFile(String archiveName, String dwcMeta, List<Pair<String, List<String>>> csvs) throws Exception {
 						ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(new File(archiveName)));
 
 						Charset utf8 = Charset.forName("utf8");
 
 						zout.putNextEntry(new ZipEntry("meta.xml"));
-						zout.write(org.apache.commons.io.FileUtils.readFileToString(metaFile, utf8).getBytes(utf8));
+						zout.write(dwcMeta.getBytes(utf8));
 						zout.closeEntry();
 						int size = 0;
 						for (Pair<String, List<String>> csv : csvs) {
@@ -305,9 +306,8 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 					@Override
 					protected Boolean doInBackground() throws Exception {
 						try {
-							//File archiveMetaFile = new File("/home/timo/meta.xml");
-							File archiveMetaFile = XMLHelper.getConfigDir("SymbiotaDwcMeta.xml");
-							DarwinCoreArchive dwc = new DarwinCoreArchive(archiveMetaFile, schemaMapping.getId(), false);
+							Element dwcMetaEl = GbifSandbox.getDwcaSchema(schemaMapping.getMappingName());
+							DarwinCoreArchive dwc = new DarwinCoreArchive(dwcMetaEl, schemaMapping.getId(), false);
 							RecordSet rs = new RecordSet();
 							rs.initialize();
 							rs.setDbTableId(CollectionObject.getClassTableId());
@@ -325,7 +325,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 							}
 							//setProgValue(0);
 							List<Pair<String, List<String>>> csvs = dwc.getExportText(rs, null);
-							writeToArchiveFile(outputFileName, archiveMetaFile, csvs);
+							writeToArchiveFile(outputFileName, dwcMetaEl.asXML(), csvs);
 						} catch (Exception e) {
 							UsageTracker.incrHandledUsageCount();
 							edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SymbiotaPane.class, e);
