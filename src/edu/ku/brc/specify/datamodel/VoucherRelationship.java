@@ -318,14 +318,7 @@ public class VoucherRelationship extends CollectionMember implements Cloneable {
     @Override
     @Transient
     public Integer getParentId() {
-        if (collectionObject != null && collectionObject.getId() != null) {
-            //what is going on?
-            Vector<Object> ids = BasicSQLUtils.querySingleCol("SELECT CollectionObjectID FROM collectionobject WHERE CollectionObjectID = " + collectionObject.getId());
-            if (ids.size() == 1) {
-                return (Integer) ids.get(0);
-            }
-        }
-        return null;
+        return collectionObject != null ? collectionObject.getId() : null;
     }
 
     /* (non-Javadoc)
