@@ -84,6 +84,7 @@ import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.busrules.AccessionBusRules;
+import edu.ku.brc.specify.datamodel.busrules.PreparationBusRules;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.IconManager;
@@ -575,14 +576,14 @@ public class SelectPrepsDlg extends CustomDialog
         
         public void actionPerformed(final ActionEvent e)
         {
-            final JStatusBar statusBar = UIRegistry.getStatusBar();
-            statusBar.setIndeterminate("LoanLoader", true);
+            //final JStatusBar statusBar = UIRegistry.getStatusBar();
+            //statusBar.setIndeterminate("LoanLoader", true);
             
-            UIRegistry.writeSimpleGlassPaneMsg(getResourceString("NEW_INTER_LOADING_PREP"), 24);
+            //UIRegistry.writeSimpleGlassPaneMsg(getResourceString("NEW_INTER_LOADING_PREP"), 24);
  
-            LoanLoader loanLoader = new LoanLoader(parent, prepInfo.getPrepId());
-            loanLoader.execute();
-            
+            //LoanLoader loanLoader = new LoanLoader(parent, prepInfo.getPrepId());
+            //loanLoader.execute();
+            PreparationBusRules.showInteractions(prepInfo.getPrepId());
         }
     }
     
@@ -680,26 +681,23 @@ public class SelectPrepsDlg extends CustomDialog
             }
             
             
-            DataProviderSessionIFace session = null;
-            try
-            {
-               session = DataProviderFactory.getInstance().createSession();
-               loans = (List<Loan>)session.getDataList("FROM Loan WHERE loanId in("+sb.toString()+")");
-               
-            } catch (Exception ex)
-            {
-               edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AccessionBusRules.class, ex);
-               ex.printStackTrace();
-               UsageTracker.incrNetworkUsageCount();
-               
-            } finally
-            {
-               if (session != null)
-               {
-                   session.close();
-               }
-            }
+            if (sb.length() > 0) {
+                DataProviderSessionIFace session = null;
+                try {
+                    session = DataProviderFactory.getInstance().createSession();
+                    loans = (List<Loan>) session.getDataList("FROM Loan WHERE loanId in(" + sb.toString() + ")");
 
+                } catch (Exception ex) {
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AccessionBusRules.class, ex);
+                    ex.printStackTrace();
+                    UsageTracker.incrNetworkUsageCount();
+
+                } finally {
+                    if (session != null) {
+                        session.close();
+                    }
+                }
+            }
             return 0;
         }
 

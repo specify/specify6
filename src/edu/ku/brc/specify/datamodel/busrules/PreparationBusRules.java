@@ -87,102 +87,125 @@ public class PreparationBusRules extends AttachmentOwnerBaseBusRules
     }
 
 
+    /**
+     *
+     */
     private void showInteractions() {
         if (formViewObj != null) {
             Preparation prep = (Preparation)formViewObj.getDataObj();
-            int loanCnt = BasicSQLUtils.getCountAsInt("select count(distinct l.loanid) from loan l inner join loanpreparation lp on lp.loanid = l.loanid where lp.preparationid = " + prep.getId());
-            int giftCnt = BasicSQLUtils.getCountAsInt("select count(distinct l.giftid) from gift l inner join giftpreparation lp on lp.giftid = l.giftid where lp.preparationid = " + prep.getId());
-            int deaccCnt = BasicSQLUtils.getCountAsInt("select count(distinct l.deaccessionid) from deaccession l inner join deaccessionpreparation lp on lp.deaccessionid = l.deaccessionid where lp.preparationid = " + prep.getId());
-            int exchCnt = BasicSQLUtils.getCountAsInt("select count(distinct l.exchangeoutid) from exchangeout l inner join exchangeoutprep lp on lp.exchangeoutid = l.exchangeoutid where lp.preparationid = " + prep.getId());
-            if (loanCnt > 0) {
-                showLoans();
+            if (prep != null && prep.getId() != null) {
+                showInteractions(prep.getId());
             }
-            if (giftCnt > 0) {
-                showGifts();
-            }
-            if (deaccCnt > 0) {
-                showDeaccessions();
-            }
-            if (exchCnt > 0) {
-                showExchanges();
-            }
-            if (loanCnt + giftCnt + deaccCnt + exchCnt == 0) {
-                UIRegistry.showLocalizedMsg(JOptionPane.INFORMATION_MESSAGE, "PreparationBusRules.NoAssociatedInteractionsTitle","PreparationBusRules.NoAssociatedInteractions");
-            }
+        }
+    }
+
+    /**
+     *
+     * @param prepId
+     */
+    public static void showInteractions(Integer prepId) {
+        int loanCnt = BasicSQLUtils.getCountAsInt("select count(distinct l.loanid) from loan l inner join loanpreparation lp on lp.loanid = l.loanid where lp.preparationid = " + prepId);
+        int giftCnt = BasicSQLUtils.getCountAsInt("select count(distinct l.giftid) from gift l inner join giftpreparation lp on lp.giftid = l.giftid where lp.preparationid = " + prepId);
+        int deaccCnt = BasicSQLUtils.getCountAsInt("select count(distinct l.deaccessionid) from deaccession l inner join deaccessionpreparation lp on lp.deaccessionid = l.deaccessionid where lp.preparationid = " + prepId);
+        int exchCnt = BasicSQLUtils.getCountAsInt("select count(distinct l.exchangeoutid) from exchangeout l inner join exchangeoutprep lp on lp.exchangeoutid = l.exchangeoutid where lp.preparationid = " + prepId);
+        if (loanCnt > 0) {
+            showLoans(prepId);
+        }
+        if (giftCnt > 0) {
+            showGifts(prepId);
+        }
+        if (deaccCnt > 0) {
+            showDeaccessions(prepId);
+        }
+        if (exchCnt > 0) {
+            showExchanges(prepId);
+        }
+        if (loanCnt + giftCnt + deaccCnt + exchCnt == 0) {
+            UIRegistry.showLocalizedMsg(JOptionPane.INFORMATION_MESSAGE, "PreparationBusRules.NoAssociatedInteractionsTitle", "PreparationBusRules.NoAssociatedInteractions");
         }
     }
     /**
-     * 
+     *
+     * @param prepId
      */
-    private void showLoans() {
-        this.showInteraction(DBTableIdMgr.getInstance().getInfoById(Loan.getClassTableId()));
+    private static void showLoans(Integer prepId) {
+        showInteraction(DBTableIdMgr.getInstance().getInfoById(Loan.getClassTableId()), prepId);
     }
 
-    private void showGifts() {
-        this.showInteraction(DBTableIdMgr.getInstance().getInfoById(Gift.getClassTableId()));
+    /**
+     *
+     * @param prepId
+     */
+    private static void showGifts(Integer prepId) {
+        showInteraction(DBTableIdMgr.getInstance().getInfoById(Gift.getClassTableId()), prepId);
     }
 
-    private void showDeaccessions() {
-        this.showInteraction(DBTableIdMgr.getInstance().getInfoById(Deaccession.getClassTableId()));
+    /**
+     *
+     * @param prepId
+     */
+    private static void showDeaccessions(Integer prepId) {
+        showInteraction(DBTableIdMgr.getInstance().getInfoById(Deaccession.getClassTableId()), prepId);
     }
 
-    private void showExchanges() {
-        this.showInteraction(DBTableIdMgr.getInstance().getInfoById(ExchangeOut.getClassTableId()));
+    /**
+     *
+     * @param prepId
+     */
+    private static void showExchanges(Integer prepId) {
+        showInteraction(DBTableIdMgr.getInstance().getInfoById(ExchangeOut.getClassTableId()), prepId);
     }
 
-    private void showInteraction(DBTableInfo tbl) {
-        if (formViewObj != null) {
-            Preparation prep = (Preparation)formViewObj.getDataObj();
-            if (prep != null) {
-                ViewBasedDisplayDialog dlg = new ViewBasedDisplayDialog((java.awt.Dialog)null,
-                        null,
-                        tbl.getTitle(),
-                        null,
-                        tbl.getTitle() + "s", // I18N ?
-                        UIRegistry.getResourceString("CLOSE"),
-                        tbl.getClassName(),
-                        tbl.getIdFieldName(),
-                        false,
-                        MultiView.HIDE_SAVE_BTN |
-                                MultiView.RESULTSET_CONTROLLER);
+    /**
+     *
+     * @param tbl
+     * @param prepId
+     */
+    private static void showInteraction(DBTableInfo tbl, Integer prepId) {
+        ViewBasedDisplayDialog dlg = new ViewBasedDisplayDialog((java.awt.Dialog) null,
+                null,
+                tbl.getTitle(),
+                null,
+                tbl.getTitle() + "s", // I18N ?
+                UIRegistry.getResourceString("CLOSE"),
+                tbl.getClassName(),
+                tbl.getIdFieldName(),
+                false,
+                MultiView.HIDE_SAVE_BTN |
+                        MultiView.RESULTSET_CONTROLLER);
 
-                List<Object> iActions = new ArrayList<>();
+        List<Object> iActions = new ArrayList<>();
 
-                DataProviderSessionIFace session = null;
-                try {
-                    String prepTblName = tbl.getName();
-                    prepTblName += "exchangeout".equalsIgnoreCase(prepTblName) ? "prep" : "preparation";
-                    session = DataProviderFactory.getInstance().createSession();
-                    String sql = " SELECT DISTINCT " + tbl.getName() + "." + tbl.getIdColumnName() + " FROM "
-                    + tbl.getName() +  " Inner Join " + prepTblName + " AS lp ON " + tbl.getName() + "."
+        DataProviderSessionIFace session = null;
+        try {
+            String prepTblName = tbl.getName();
+            prepTblName += "exchangeout".equalsIgnoreCase(prepTblName) ? "prep" : "preparation";
+            session = DataProviderFactory.getInstance().createSession();
+            String sql = " SELECT DISTINCT " + tbl.getName() + "." + tbl.getIdColumnName() + " FROM "
+                    + tbl.getName() + " Inner Join " + prepTblName + " AS lp ON " + tbl.getName() + "."
                     + tbl.getIdColumnName() + " = lp." + tbl.getIdColumnName() + " WHERE ";
-                    //if (tbl.getFieldByName("IsClosed") != null) {
-                    //    sql += "not " + tbl.getName() + ".IsClosed AND ";
-                    //}
-                    sql += "lp.PreparationID =" +prep.getId();
-                    for (Integer id : BasicSQLUtils.queryForInts(sql)) {
-                        Object iAction = session.get(tbl.getClassObj(), id);
-                        if (iAction != null) {
-                            iActions.add(iAction);
-                            ((DataModelObjBase)iAction).forceLoad();
-                        }
-                    }
-
-                } catch (Exception ex) {
-                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AccessionBusRules.class, ex);
-                    ex.printStackTrace();
-                    UsageTracker.incrNetworkUsageCount();
-
-                } finally {
-                    if (session != null) {
-                        session.close();
-                    }
+            sql += "lp.PreparationID =" + prepId;
+            for (Integer id : BasicSQLUtils.queryForInts(sql)) {
+                Object iAction = session.get(tbl.getClassObj(), id);
+                if (iAction != null) {
+                    iActions.add(iAction);
+                    ((DataModelObjBase) iAction).forceLoad();
                 }
+            }
 
-                dlg.setData(iActions);
-                UIHelper.centerAndShow(dlg);
+        } catch (Exception ex) {
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AccessionBusRules.class, ex);
+            ex.printStackTrace();
+            UsageTracker.incrNetworkUsageCount();
+
+        } finally {
+            if (session != null) {
+                session.close();
             }
         }
+
+        dlg.setData(iActions);
+        UIHelper.centerAndShow(dlg);
     }
 
     /* (non-Javadoc)
