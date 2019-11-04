@@ -147,7 +147,10 @@ public class SystemPrefs extends GenericPrefsPanel
                         ResourceBundle rb = ResourceBundle.getBundle("resources", l);
                         
                         boolean isOK = (l.getLanguage().equals("en") && StringUtils.isEmpty(l.getCountry())) ||
-                                       (l.getLanguage().equals("pt") && l.getCountry().equals("PT"));
+                                       (l.getLanguage().equals("pt") && l.getCountry().equals("PT")) ||
+                                (l.getLanguage().equals("pt") && l.getCountry().equals("BR")) ||
+                                (l.getLanguage().equals("ru") && StringUtils.isEmpty(l.getCountry())) ||
+                                (l.getLanguage().equals("uk") && StringUtils.isEmpty(l.getCountry()));
 
                         if (isOK && rb.getKeys().hasMoreElements())
                         {
