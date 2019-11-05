@@ -1825,35 +1825,29 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      * NOTE: for large databases this method might take a long time.
      * It probably should be called from a SwingWorker. 
      */
-    public static Pair<Boolean, Long> checkUniqueRecIds(final String hql, final List<Pair<String, Object>> params)
-    {
-    	String distinctHql = getCountDistinctIdHql(hql);
-    	
-    	DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        try
-        {
-        	try
-        	{
-            	QueryIFace q1 = session.createQuery(hql, false);
-        		QueryIFace q2 = session.createQuery(distinctHql, false);
-        		for (Pair<String, Object> param : params)
-        		{
-        			q1.setParameter(param.getFirst(), param.getSecond());
-        			q2.setParameter(param.getFirst(), param.getSecond());
-        		}
-        		Long q1Size = Long.valueOf(q1.list().size());
+    public static Pair<Boolean, Long> checkUniqueRecIds(final String hql, final List<Pair<String, Object>> params) {
+        String distinctHql = getCountDistinctIdHql(hql);
+        String countHql = distinctHql.replace("select count(distinct ", "select count(");
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        try {
+            try {
+                QueryIFace q1 = session.createQuery(countHql, false);
+                QueryIFace q2 = session.createQuery(distinctHql, false);
+                for (Pair<String, Object> param : params) {
+                    q1.setParameter(param.getFirst(), param.getSecond());
+                    q2.setParameter(param.getFirst(), param.getSecond());
+                }
+                Long q1Size = Long.valueOf(q1.list().get(0).toString());
                 Long q2Size = Long.valueOf(q2.list().get(0).toString());
-        		return new Pair<Boolean, Long>(q1Size.equals(q2Size), q1Size);
-        	} catch (Exception ex) 
-        	{
+                return new Pair<Boolean, Long>(q1Size.equals(q2Size), q1Size);
+            } catch (Exception ex) {
                 UsageTracker.incrHandledUsageCount();
                 edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryBldrPane.class, ex);
-        	}
-        } finally
-        {
-        	session.close();
+            }
+        } finally {
+            session.close();
         }
-    	return new Pair<Boolean, Long>(false, 0L);
+        return new Pair<Boolean, Long>(false, 0L);
     }
     /**
      * @param rootAlias
