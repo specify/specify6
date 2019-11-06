@@ -19,6 +19,7 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Set;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -95,7 +96,7 @@ public class ExportMappingTask extends QueryTask
 {
     private static final Logger log  = Logger.getLogger(ExportMappingTask.class);
     
-	protected SpExportSchema		exportSchema	= null;
+	protected Set<SpExportSchema>		exportSchemas	= null;
 	protected SpExportSchemaMapping	schemaMapping	= null;
 	protected final AtomicBoolean	addingMapping	= new AtomicBoolean(false);
 	
@@ -450,17 +451,14 @@ public class ExportMappingTask extends QueryTask
 	 * @param query
 	 * @return a QueryBldrPane for query
 	 */
-	protected QueryBldrPane buildQb(final SpQuery query) throws QueryTask.QueryBuilderContextException
-	{
-		if (!addingMapping.get())
-		{
+	protected QueryBldrPane buildQb(final SpQuery query) throws QueryTask.QueryBuilderContextException {
+		if (!addingMapping.get()) {
 			schemaMapping = query.getMapping();
-			if (schemaMapping != null)
-        	{
-        		exportSchema = schemaMapping.getSpExportSchema();
-        	}
+			if (schemaMapping != null) {
+				exportSchemas = schemaMapping.getSpExportSchemas();
+			}
 		}
-        return new QueryBldrPane(query.getName(), this, query, false, exportSchema, schemaMapping);
+		return new QueryBldrPane(query.getName(), this, query, false, exportSchemas, schemaMapping);
 	}
 
 	
@@ -520,34 +518,26 @@ public class ExportMappingTask extends QueryTask
 	 * Prompts to choose ExportSchema and opens new mapping, closing currently
 	 * open mapping if necessary.
 	 */
-	protected void addMapping()
-	{
-		if (queryBldrPane == null || queryBldrPane.aboutToShutdown())
-		{
+	protected void addMapping() {
+		if (queryBldrPane == null || queryBldrPane.aboutToShutdown()) {
 			List<SpExportSchema> selectedSchemas = chooseExportSchema();
-			if (selectedSchemas != null) 
-			{
-				SpExportSchema selectedSchema = selectedSchemas.get(0);
-				
-				if (selectedSchema.getSpExportSchemaId() == null)
-				{
-					exportSchema = null;
-				} else
-				{
-					exportSchema = selectedSchema;
+			if (exportSchemas == null) {
+				exportSchemas = new HashSet<>();
+			}
+			exportSchemas.clear();
+			if (selectedSchemas != null) {
+				for (SpExportSchema selectedSchema : selectedSchemas) {
+					exportSchemas.add(selectedSchema);
 				}
 				schemaMapping = new SpExportSchemaMapping();
 				schemaMapping.initialize();
-				schemaMapping.setSpExportSchema(exportSchema);
+				schemaMapping.setSpExportSchemas(exportSchemas);
 				SpQuery query = createNewQueryDataObj();
-				if (query != null) 
-				{
+				if (query != null) {
 					addingMapping.set(true);
-					try 
-					{
+					try {
 						editQuery(query);
-					} finally 
-					{
+					} finally {
 						addingMapping.set(false);
 					}
 				}

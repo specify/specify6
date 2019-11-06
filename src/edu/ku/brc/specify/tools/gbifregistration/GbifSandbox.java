@@ -357,6 +357,35 @@ public class GbifSandbox {
         return result;
     }
 
+    public class DwcTermInfo {
+        String term;
+        String value;
+        String rowType;
+        Boolean isCore;
+
+        public String getTerm() {
+            return term;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public DwcTermInfo(String term, String value) {
+            this.term = term;
+            this.value = value;
+        }
+    }
+
+//    public static List<DwcTermInfo> getConceptsInDwcaSchema(Element schema) {
+//        List<DwcTermInfo> result = new ArrayList<>();
+//        for (Object archive : schema.selectNodes("/archive")) {
+//            for (Object c : ((Element) archive).selectNodes("core")) {
+//                files.add(new DarwinCoreArchiveFile("core".equals(((Element) c).getName()), (Element) c));
+//            }
+//        }
+//
+//    }
     /**
      *
      * @param mappingName

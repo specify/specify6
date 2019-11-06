@@ -1666,28 +1666,26 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 	}
 
 	/**
-	 * 
+	 *
+	 * @param mapToRefresh
 	 */
-	protected void refreshUpdatedMapDisplay(int mapToRefresh)
-	{
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        try
-        {
-        	SpExportSchemaMapping newMap = session.get(SpExportSchemaMapping.class,	maps.get(mapToRefresh).getId());
+	protected void refreshUpdatedMapDisplay(int mapToRefresh) {
+		DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+		try {
+			SpExportSchemaMapping newMap = session.get(SpExportSchemaMapping.class, maps.get(mapToRefresh).getId());
 			newMap.forceLoad();
 			newMap.getMappings().iterator().next().getQueryField().getQuery().forceLoad();
-			if (newMap.getSpExportSchema() != null)
-			{
-				newMap.getSpExportSchema().forceLoad();
+			if (newMap.getSpExportSchemas() != null) {
+				for (SpExportSchema schema : newMap.getSpExportSchemas()) {
+					schema.forceLoad();
+				}
 			}
-	        maps.set(mapToRefresh, newMap);
-       }
-        finally
-        {
-        	session.close();
-        }
-        mapsModel.setValueAt(maps.get(mapToRefresh).getTimestampExported().toString(), mapToRefresh, 1);
-        mapsModel.setValueAt(UIRegistry.getResourceString("ExportPanel.Uptodate"), mapToRefresh, 2);
+			maps.set(mapToRefresh, newMap);
+		} finally {
+			session.close();
+		}
+		mapsModel.setValueAt(maps.get(mapToRefresh).getTimestampExported().toString(), mapToRefresh, 1);
+		mapsModel.setValueAt(UIRegistry.getResourceString("ExportPanel.Uptodate"), mapToRefresh, 2);
 	}
 	
 	/* (non-Javadoc)

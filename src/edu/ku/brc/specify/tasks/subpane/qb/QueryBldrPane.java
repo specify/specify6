@@ -154,7 +154,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     protected ExpressSearchResultsPaneIFace                  esrp        = null;
     protected boolean                                        isHeadless  = false; 
     
-    protected SpExportSchema                                 exportSchema;
+    protected Set<SpExportSchema>                                 exportSchemas;
     protected SpExportSchemaMapping                          schemaMapping; 
     protected boolean		 								 isExportMapping = false;
     protected AtomicBoolean									 isUpdatingAvailableConcepts = new AtomicBoolean(false);
@@ -204,7 +204,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                          final Taskable task, 
                          final SpQuery query,
                          final boolean isHeadless,
-                         final SpExportSchema exportSchema,
+                         final Set<SpExportSchema> exportSchemas,
                          final SpExportSchemaMapping schemaMapping) throws QueryTask.QueryBuilderContextException
     {
         super(name, task);
@@ -214,14 +214,14 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         if (query != null) {
             formatAuditRecIds = query.getFormatAuditRecIds() != null ? query.getFormatAuditRecIds() : false;
         }
-        this.isExportMapping = exportSchema != null || schemaMapping != null;
-        this.exportSchema = exportSchema != null ? exportSchema : 
-        	schemaMapping != null ? schemaMapping.getSpExportSchema() : null;
+        this.isExportMapping = exportSchemas != null || schemaMapping != null;
+        this.exportSchemas = exportSchemas != null ? exportSchemas :
+        	schemaMapping != null ? schemaMapping.getSpExportSchemas() : null;
         if (schemaMapping == null && isExportMapping)
         {
         	this.schemaMapping = new SpExportSchemaMapping();
         	this.schemaMapping.initialize();
-        	this.schemaMapping.setSpExportSchema(exportSchema);
+        	this.schemaMapping.setSpExportSchemas(exportSchemas);
         }
         else
         {
@@ -3324,7 +3324,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     	result.initialize();
     	result.setMappingName(schemaMapping.getMappingName());
     	result.setDescription(schemaMapping.getDescription());
-    	result.setSpExportSchema(schemaMapping.getSpExportSchema());
+    	result.setSpExportSchemas(schemaMapping.getSpExportSchemas());
     	for (SpExportSchemaItemMapping item : schemaMapping.getMappings())
     	{
     		SpExportSchemaItemMapping newItem = new SpExportSchemaItemMapping();
@@ -3356,6 +3356,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     protected boolean getExportMappingQueryName()
     {
     	//not worrying about multi-user issues
+        SpExportSchema exportSchema = exportSchemas.iterator().next();
     	String baseName = exportSchema.getSchemaName() + exportSchema.getSchemaVersion();
     	String result = baseName;
     	int cnt = BasicSQLUtils.getCount("select count(*) from spquery where name = '" + result + "'");
@@ -4684,25 +4685,25 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         Vector<QueryFieldPanel> result = new Vector<QueryFieldPanel>();
         //Need to change columnDefStr if mapMode...
         //result.add(bldQueryFieldPanel(this, null, null, getColumnDefStr(), saveBtn));
-		result.add(new QueryFieldPanel(container, null, 
-				container.getColumnDefStr(), saveBtn, null, schemaMapping, null));
-        
-		Vector<SpExportSchemaItem> sis = new Vector<SpExportSchemaItem>();
-		if (schemaMapping.getSpExportSchema() != null)
-		{
-			sis.addAll(schemaMapping.getSpExportSchema().getSpExportSchemaItems());
-		} 
-        Collections.sort(sis, new Comparator<SpExportSchemaItem>(){
+        result.add(new QueryFieldPanel(container, null,
+                container.getColumnDefStr(), saveBtn, null, schemaMapping, null));
 
-			/* (non-Javadoc)
-			 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-			 */
-			@Override
-			public int compare(SpExportSchemaItem o1, SpExportSchemaItem o2)
-			{
-				return o1.getFieldName().compareTo(o2.getFieldName());
-			}
-        		
+        Vector<SpExportSchemaItem> sis = new Vector<SpExportSchemaItem>();
+        if (schemaMapping.getSpExportSchemas() != null) {
+            for (SpExportSchema exportSchema: schemaMapping.getSpExportSchemas()) {
+                sis.addAll(exportSchema.getSpExportSchemaItems());
+            }
+        }
+        Collections.sort(sis, new Comparator<SpExportSchemaItem>() {
+
+            /* (non-Javadoc)
+             * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+             */
+            @Override
+            public int compare(SpExportSchemaItem o1, SpExportSchemaItem o2) {
+                return o1.getFieldName().compareTo(o2.getFieldName());
+            }
+
         });
         for (SpExportSchemaItem schemaItem : sis)
         {
@@ -5591,30 +5592,25 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     	return false;
     }
 
-	protected List<SpExportSchemaItem> getAvailableConcepts() 
-	{
-		List<SpExportSchemaItem> result = null;
-		if (this.isExportMapping) 
-		{
-			result = new ArrayList<SpExportSchemaItem>();
-			//XXX Don't forget that technically, theoretically, eventually schemaMappings can have more than one associated
-			//exportSchema...
-			if (exportSchema != null) 
-			{
-				result.addAll(exportSchema.getSpExportSchemaItems());
-				for (QueryFieldPanel qfp : queryFieldItems)
-				{
-					SpExportSchemaItem qi = qfp.getSchemaItem();
-					if (qi != null)
-					{
-						result.remove(qi);
-					}
-				}
-			}
-			Collections.sort(result);
-		}
-		return result;
-	}
+    protected List<SpExportSchemaItem> getAvailableConcepts() {
+        List<SpExportSchemaItem> result = null;
+        if (this.isExportMapping) {
+            result = new ArrayList<SpExportSchemaItem>();
+            if (exportSchemas != null) {
+                for (SpExportSchema exportSchema : exportSchemas) {
+                    result.addAll(exportSchema.getSpExportSchemaItems());
+                    for (QueryFieldPanel qfp : queryFieldItems) {
+                        SpExportSchemaItem qi = qfp.getSchemaItem();
+                        if (qi != null) {
+                            result.remove(qi);
+                        }
+                    }
+                }
+            }
+            Collections.sort(result);
+        }
+        return result;
+    }
     
 
 	/* (non-Javadoc)
