@@ -407,12 +407,45 @@ public class DarwinCoreArchive
 		}
 		return result;
 	}
-	
+
 	/**
 	 * @param records
 	 * @return
 	 * @throws Exception
 	 */
+	public List<Pair<String, List<String>>> getExportText(Integer tableId, List<Integer> recordIds, JProgressBar prog) throws Exception {
+		if (tableId != CollectionObject.getClassTableId()) {
+			throw new Exception("Unsupported Table " + tableId);
+		}
+		stmt = DBConnection.getInstance().getConnection().createStatement();
+		List<Pair<String, List<String>>> result = buildExportDataStruct();
+		try {
+			for (Pair<String, List<String>> f : result) {
+				f.getSecond().add(getFileByName(f.getFirst()).getHeader());
+			}
+			int n = 0;
+			for (Integer recId : recordIds) {
+				getExportText(recId, result);
+				if (prog != null) {
+					prog.setValue(++n);
+				} else {
+					System.out.println("getExportText() row = " + (++n));
+				}
+			}
+		} finally {
+			if (stmt != null) {
+				stmt.close();
+				stmt = null;
+			}
+		}
+		return result;
+	}
+
+		/**
+         * @param records
+         * @return
+         * @throws Exception
+         */
 	public List<Pair<String, List<String>>> getExportText(RecordSet records, JProgressBar prog) throws Exception {
 		if (records.getDbTableId() != CollectionObject.getClassTableId()) {
 			throw new Exception("Unsupported Table " + records.getTableId());

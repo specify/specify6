@@ -278,7 +278,6 @@ public class DwcMapper
 	protected void setDarwinCoreValuesForObj(DarwinCoreSpecimen spec) throws Exception
 	{
 		//throw new Exception("No code is present to do this thing.");
-		
 		//Using hibernate objects and reflection ...
 		for (MappingInfo mi : concepts)
 		{
@@ -546,12 +545,21 @@ public class DwcMapper
 	/**
 	 *
 	 * @param object
+	 * @param mappingName
+	 * @return
+	 */
+	protected String getRelMethodKey(DataModelObjBase object, String mappingName) {
+		return object.getDataClass().getSimpleName() + ":" + mappingName;
+	}
+	/**
+	 *
+	 * @param object
 	 * @param mapping
 	 * @return
 	 * @throws Exception
 	 */
 	private Method getRelatedObjectMethod(DataModelObjBase object, String mapping) {
-		Pair<Method,Boolean> methInfo = relMethods.get(mapping);
+		Pair<Method,Boolean> methInfo = relMethods.get(getRelMethodKey(object, mapping));
 		Method meth = methInfo != null ? methInfo.getFirst() : null;
 		if (meth == null) {
 			String[] mapInfo = mapping.split("-");
@@ -562,7 +570,7 @@ public class DwcMapper
 					: "get" + relationshipName.substring(0, 1).toUpperCase().concat(relationshipName.substring(1));
 			try {
 				meth = object.getClass().getMethod(methName);
-				relMethods.put(mapping, new Pair<>(meth, null));
+				relMethods.put(getRelMethodKey(object, mapping), new Pair<>(meth, null));
 			} catch (NoSuchMethodException ex) {
 				log.warn("No method found for '" + mapping + "'");
 			}
@@ -609,7 +617,8 @@ public class DwcMapper
 					continue;
 				}
 			}
-			methods.put(mapping, new Pair<>(method, useDatePartAccessor));
+			result = new Pair<>(method, useDatePartAccessor);
+			methods.put(mapping, result);
 		}
 		return result == null ? new Pair<Method, Boolean>(null, false) : result;
 	}

@@ -4,11 +4,7 @@
 package edu.ku.brc.specify.plugins.morphbank;
 
 import java.sql.DriverManager;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
+import java.util.*;
 
 import org.apache.log4j.Logger;
 
@@ -64,27 +60,23 @@ public class DarwinCoreSpecimen
 	 * @param value
 	 * @throws Exception
 	 */
-	protected void add(String term, String value) throws Exception
-	{
-		if (concepts.containsKey(term))
-		{
-			throw new Exception(term + " concept is already mapped.");
+	protected void add(String term, String value) throws Exception {
+		if (concepts.containsKey(term)) {
+			//throw new Exception(term + " concept is already mapped.");
+			log.warn(term + " concept is already mapped.");
+		} else {
+			concepts.put(term, new Pair<String, Object>(term, value));
 		}
-		
-		concepts.put(term, new Pair<String, Object>(term, value));		
 	}
-	
-	
+
 	/**
 	 * @param term
 	 * @param value
 	 * @throws Exception
 	 */
-	protected void set(String term, Object value) throws Exception
-	{
+	protected void set(String term, Object value) throws Exception {
 		String fullTerm = term;
-		if (!concepts.containsKey(term))
-		{
+		if (!concepts.containsKey(term)) {
 			//throw new Exception(fieldName + " concept is not mapped.");
 			Map.Entry<String, Pair<String, Object>> m = getMappingByName(term);
 			if (m == null) {
@@ -92,9 +84,33 @@ public class DarwinCoreSpecimen
 				return;
 			}
 			fullTerm = m.getKey();
-		} 
-		
-		concepts.put(fullTerm, new Pair<String, Object>(fullTerm, value));
+		}
+		Object valueToSet = value;
+		Object existingValue = concepts.get(fullTerm).getSecond();
+		if (existingValue != null) {
+			if (valueToSet != null) {
+				if (Collection.class.isAssignableFrom(existingValue.getClass())) {
+					if (Collection.class.isAssignableFrom(valueToSet.getClass())) {
+						((Collection) existingValue).addAll((Collection) valueToSet);
+					} else {
+						((Collection) existingValue).add(valueToSet);
+					}
+					valueToSet = existingValue;
+				} else {
+					if (Collection.class.isAssignableFrom(valueToSet.getClass())) {
+						((Collection) valueToSet).add(existingValue);
+					} else {
+						List l = new ArrayList(2);
+						l.add(existingValue);
+						l.add(valueToSet);
+						valueToSet = l;
+					}
+				}
+			} else {
+				valueToSet = existingValue;
+			}
+		}
+		concepts.put(fullTerm, new Pair<String, Object>(fullTerm, valueToSet));
 	}
 	
 	/**
