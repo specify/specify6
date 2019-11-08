@@ -30,6 +30,7 @@ import edu.ku.brc.specify.config.SpecifyAppPrefs;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.SpExportSchemaMapping;
+import edu.ku.brc.specify.datamodel.SpExportSchema;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.tasks.QueryTask;
 import edu.ku.brc.specify.tasks.subpane.qb.QueryBldrPane;
@@ -119,78 +120,58 @@ public class SchemaExportLauncher implements DatabaseLoginListener
     /**
      * 
      */
-    protected void openSchemaExporter() 
-    {
-//       SwingUtilities.invokeLater(new Runnable()
-//        {
-//            public void run()
-//            {
-                try
-                {
-                	TaskMgr.register(new QueryTask(), false);
-                	DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-                    List<SpExportSchemaMapping> maps = null;
-                    try
-                    {
-                    	maps = session.getDataList(SpExportSchemaMapping.class);
-                    	Collection coll = AppContextMgr.getInstance().getClassObject(Collection.class);
-                    	for (int m = maps.size() - 1; m >= 0; m--)
-                    	{
-                    		SpExportSchemaMapping map = maps.get(m);
-                        	if (!map.getCollectionMemberId().equals(coll.getId()))
-                    		{
-                    			maps.remove(m);
-                    		}
-                    		else
-                    		{
-                    			map.forceLoad();
-                    			map.getMappings().iterator().next().getQueryField().getQuery().forceLoad();
-                    			if (map.getSpExportSchema() != null)
-                    			{
-                    				map.getSpExportSchema().forceLoad();
-                    			}
-                    		}
-                    	}
-                    }
-                    catch (Exception ex)
-                    {
-                        UsageTracker.incrHandledUsageCount();
-                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryBldrPane.class, ex);
-                        ex.printStackTrace();
-                        System.exit(1);
-                    }
-                    finally
-                    {
-                    	session.close();
-                    }
-                    if (maps != null)
-                    {
-                    	if (maps.size() == 0)
-                    	{
-                            JOptionPane.showMessageDialog(null, getResourceString("SchemaExportLauncher.NoExportSchemaFound"),
-                                    getResourceString("SchemaExportLauncher.NoExportSchemaFoundTitle"),
-                                    JOptionPane.ERROR_MESSAGE);
-                            System.exit(0);
-                    	}
-                    	final ExportPanel ep = new ExportPanel(maps);
-                    	final JFrame frame = new JFrame();
-                    	frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-                    	frame.setTitle(UIRegistry.getResourceString("SchemaExportLauncher.DlgTitle"));
-                    	frame.setContentPane(ep);
-                    	frame.pack();
-                    	
-                    	frame.setIconImage(IconManager.getImage(IconManager.makeIconName("SpecifyWhite32")).getImage());
-                    	UIHelper.centerAndShow(frame, null, 300);
+    protected void openSchemaExporter() {
+        try {
+            TaskMgr.register(new QueryTask(), false);
+            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+            List<SpExportSchemaMapping> maps = null;
+            try {
+                maps = session.getDataList(SpExportSchemaMapping.class);
+                Collection coll = AppContextMgr.getInstance().getClassObject(Collection.class);
+                for (int m = maps.size() - 1; m >= 0; m--) {
+                    SpExportSchemaMapping map = maps.get(m);
+                    if (!map.getCollectionMemberId().equals(coll.getId())) {
+                        maps.remove(m);
+                    } else {
+                        map.forceLoad();
+                        map.getMappings().iterator().next().getQueryField().getQuery().forceLoad();
+                        if (map.getSpExportSchemas() != null) {
+                            for (SpExportSchema exportSchema : map.getSpExportSchemas()) {
+                                exportSchema.forceLoad();
+                            }
+                        }
                     }
                 }
-                catch (Exception e)
-                {
-                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(IReportLauncher.class, e);
-                    e.printStackTrace();
-                    throw new RuntimeException(e);
+            } catch (Exception ex) {
+                UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryBldrPane.class, ex);
+                ex.printStackTrace();
+                System.exit(1);
+            } finally {
+                session.close();
+            }
+            if (maps != null) {
+                if (maps.size() == 0) {
+                    JOptionPane.showMessageDialog(null, getResourceString("SchemaExportLauncher.NoExportSchemaFound"),
+                            getResourceString("SchemaExportLauncher.NoExportSchemaFoundTitle"),
+                            JOptionPane.ERROR_MESSAGE);
+                    System.exit(0);
                 }
-//            }
-//        });
+                final ExportPanel ep = new ExportPanel(maps);
+                final JFrame frame = new JFrame();
+                frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+                frame.setTitle(UIRegistry.getResourceString("SchemaExportLauncher.DlgTitle"));
+                frame.setContentPane(ep);
+                frame.pack();
+
+                frame.setIconImage(IconManager.getImage(IconManager.makeIconName("SpecifyWhite32")).getImage());
+                UIHelper.centerAndShow(frame, null, 300);
+            }
+        } catch (Exception e) {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(IReportLauncher.class, e);
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
     }
 }
