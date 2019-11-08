@@ -550,11 +550,21 @@ public class RecordSet extends CollectionMember implements java.io.Serializable,
         ((RecordSetItem)item).setRecordSet(this);
         return item;
     }
-    
+
+    public static List<Integer> getUniqueIdList(Integer rsId) {
+        return getIdList(rsId, null, true);
+    }
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.RecordSetIFace#getIdList()
      */
-    public static List<Integer> getIdList(final Integer rsId, final Set<RecordSetItem>rsiSet)
+    public static List<Integer> getIdList(final Integer rsId, final Set<RecordSetItem>rsiSet) {
+        return getIdList(rsId, rsiSet, false);
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.RecordSetIFace#getIdList()
+     */
+    public static List<Integer> getIdList(final Integer rsId, final Set<RecordSetItem>rsiSet, boolean unique)
     {
         
         if (rsId != null)
@@ -572,7 +582,8 @@ public class RecordSet extends CollectionMember implements java.io.Serializable,
                 {
                     conn = DatabaseService.getInstance().getConnection();
                     stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-                    ResultSet rs = stmt.executeQuery("SELECT RecordId "+sql);
+                    String selectSql = "select " + (unique ? "distinct " : "") + "recordid ";
+                    ResultSet rs = stmt.executeQuery(selectSql + sql);
                     
                     while (rs.next())
                     {

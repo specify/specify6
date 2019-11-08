@@ -308,23 +308,22 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 						try {
 							Element dwcMetaEl = GbifSandbox.getDwcaSchema(schemaMapping.getMappingName());
 							DarwinCoreArchive dwc = new DarwinCoreArchive(dwcMetaEl, schemaMapping.getId(), false);
-							RecordSet rs = new RecordSet();
-							rs.initialize();
-							rs.setDbTableId(CollectionObject.getClassTableId());
-							Pair<Integer, Iterator<?>> ids = getSizeAndIterator();
-							Iterator<?> its = ids.getSecond();
-							//initProgRange(ids.getFirst());
-							int rec = 0;
-							while (its.hasNext()) {
-								Integer id = (Integer)its.next();
-								RecordSetItem rsi = new RecordSetItem();
-								rsi.initialize();
-								rsi.setRecordId(id);
-								rs.getRecordSetItems().add(rsi);
-								//setProgValue(++rec);
+							List<Integer> recIds;
+							if (schemaMapping.getMappingName().equals("multiqs")) {
+								recIds = RecordSet.getUniqueIdList(81);
+							} else{
+								Pair<Integer, Iterator<?>> ids = getSizeAndIterator();
+								Iterator<?> its = ids.getSecond();
+								recIds = new ArrayList<>(ids.getFirst());
+								//initProgRange(ids.getFirst());
+								int rec = 0;
+								while (its.hasNext()) {
+									recIds.add((Integer) its.next());
+									//setProgValue(++rec);
+								}
 							}
 							//setProgValue(0);
-							List<Pair<String, List<String>>> csvs = dwc.getExportText(rs, null);
+							List<Pair<String, List<String>>> csvs = dwc.getExportText(1, recIds, null);
 							writeToArchiveFile(outputFileName, dwcMetaEl.asXML(), csvs);
 						} catch (Exception e) {
 							UsageTracker.incrHandledUsageCount();
