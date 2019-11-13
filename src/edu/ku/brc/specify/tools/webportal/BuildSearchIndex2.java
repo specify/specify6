@@ -738,7 +738,7 @@ public class BuildSearchIndex2
         try {
             System.out.println("Exporting to directory '" + INDEX_DIR + "'...");
             ExportMappingHelper map = new ExportMappingHelper(dbConn, mapping.getId());
-            totalRecs = BasicSQLUtils.getCount(dbConn, "SELECT COUNT(*) FROM " + map.getCacheTblName());
+            totalRecs = BasicSQLUtils.getCount(dbConn, "SELECT COUNT(*) FROM " + map.getCacheTblName()).longValue();
             if (progressListener != null) {
                 progressListener.loaded();
                 progressListener.rowCount(totalRecs);
