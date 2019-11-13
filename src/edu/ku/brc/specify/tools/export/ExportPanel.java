@@ -15,6 +15,8 @@ import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.FileOutputStream;
 import java.nio.charset.Charset;
 import java.sql.Connection;
@@ -120,7 +122,8 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 
     protected static final String EXPORT_TEXT_PATH = "ExportPanel.TabDelimExportPath";
     protected static final String EXPORT_WEBPORTAL_PATH = "ExportPanelExportWebPortalPath";
-    protected static final long maxExportRowCount = 100000;
+    protected static final String EXPORT_BLOCK_SIZE = "ExportPanelExportBlockSize";
+    protected static long maxExportRowCount;
     
     protected boolean exportIsThreaded = true;
     
@@ -160,19 +163,18 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 	/**
 	 * @param maps
 	 */
-	public ExportPanel(List<SpExportSchemaMapping> maps)
-	{
-		super();
-		this.maps = maps;
-		this.updateStats = new ArrayList<Pair<SpExportSchemaMapping, Long>>();
-		for (SpExportSchemaMapping map : maps)
-		{
-			updateStats.add(new Pair<SpExportSchemaMapping, Long>(map, -2L));
-		}
+    public ExportPanel(List<SpExportSchemaMapping> maps) {
+        super();
+        this.maps = maps;
+        this.updateStats = new ArrayList<Pair<SpExportSchemaMapping, Long>>();
+        for (SpExportSchemaMapping map : maps) {
+            updateStats.add(new Pair<SpExportSchemaMapping, Long>(map, -2L));
+        }
         StartUpTask.configureAttachmentManager();
-		createUI();
-		startStatusCalcs();
-	}
+        createUI();
+        startStatusCalcs();
+        maxExportRowCount = AppPreferences.getLocalPrefs().getInt(EXPORT_BLOCK_SIZE, 100000);
+    }
 	
 	/**
 	 * Starts threads to calculate status of maps
@@ -268,6 +270,70 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 						return new Pair<>(ids.size(), ids.iterator());
 					}
 
+
+                    /**
+                     *
+                     * @param archiveName
+                     * @param csvs
+                     * @throws Exception
+                     */
+                    protected void writeFiles(String archiveName, List<Pair<String, List<String>>> csvs) throws Exception {
+                        String dirName = (new File(archiveName)).getParent();
+                        for (Pair<String, List<String>> csv : csvs) {
+                            File f = new File(dirName + File.separator + csv.getFirst());
+                            org.apache.commons.io.FileUtils.writeLines(f, "UTF-8", csv.getSecond(), true);
+
+                        }
+                    }
+
+                    /**
+                     *
+                     * @param zos
+                     * @param path
+                     * @param file
+                     * @throws IOException
+                     */
+                    private void zipFile(ZipOutputStream zos, File file) throws IOException {
+                        if (!file.canRead()) {
+                            System.out.println("Cannot read " + file.getCanonicalPath() + " (maybe because of permissions)");
+                            return;
+                        }
+                        System.out.println("Compressing " + file.getName());
+                        zos.putNextEntry(new ZipEntry(file.getName()));
+                        FileInputStream fis = new FileInputStream(file);
+                        byte[] buffer = new byte[4092];
+                        int byteCount = 0;
+                        while ((byteCount = fis.read(buffer)) != -1) {
+                            zos.write(buffer, 0, byteCount);
+                            System.out.print('.');
+                            System.out.flush();
+                        }
+                        System.out.println();
+                        fis.close();
+                        zos.closeEntry();
+                    }
+
+                    /**
+                     *
+                     * @param archiveName
+                     * @param dwcMeta
+                     * @param csvs
+                     * @throws Exception
+                     */
+                    protected void zipUpArchive(String archiveName, String dwcMeta, List<Pair<String, List<String>>> csvs) throws Exception {
+                        ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(new File(archiveName)));
+                        Charset utf8 = Charset.forName("utf8");
+
+                        zout.putNextEntry(new ZipEntry("meta.xml"));
+                        zout.write(dwcMeta.getBytes(utf8));
+                        zout.closeEntry();
+
+                        String dirName = (new File(archiveName)).getParent();
+                        for (Pair<String, List<String>> csv : csvs) {
+                            zipFile(zout, new File(dirName + File.separator + csv.getFirst()));
+                        }
+                        zout.close();
+                    }
 					/**
 					 * @param archiveName
 					 * @param metaFild
@@ -300,6 +366,21 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 						zout.close();
 					}
 
+					private void showStats(DarwinCoreArchive dwc) {
+                        List<Pair<String, Integer>> objStats = dwc.getMapper().getObjFormatStats();
+                        System.out.println("#############################################################");
+                        System.out.println("Object Format Stats");
+                        for (Pair<String, Integer> stat : objStats) {
+                            System.out.println(stat.getFirst() + ": " + stat.getSecond());
+                        }
+                        objStats = dwc.getMapper().getAggStats();
+                        System.out.println("#############################################################");
+                        System.out.println("Agg Stats");
+                        for (Pair<String, Integer> stat : objStats) {
+                            System.out.println(stat.getFirst() + ": " + stat.getSecond());
+                        }
+
+                    }
 					/* (non-Javadoc)
 					 * @see javax.swing.SwingWorker#doInBackground()
 					 */
@@ -308,23 +389,49 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 						try {
 							Element dwcMetaEl = GbifSandbox.getDwcaSchema(schemaMapping.getMappingName());
 							DarwinCoreArchive dwc = new DarwinCoreArchive(dwcMetaEl, schemaMapping.getId(), false);
-							List<Integer> recIds;
+							List<Integer> recIds = null;
+                            int blk = dwc.getBlockSize();
+							int recSetId = 0;
 							if (schemaMapping.getMappingName().equals("multiqs")) {
-								recIds = RecordSet.getUniqueIdList(81);
-							} else{
+                                //recSetId = 832; //herps
+                                recSetId = 81; //fish with ce and co atts.
+                            } else if (schemaMapping.getMappingName().equalsIgnoreCase("dwckui")) {
+                                recSetId = 832; //herps all
+							} else {
 								Pair<Integer, Iterator<?>> ids = getSizeAndIterator();
 								Iterator<?> its = ids.getSecond();
 								recIds = new ArrayList<>(ids.getFirst());
 								//initProgRange(ids.getFirst());
 								int rec = 0;
+								blk = 0;
 								while (its.hasNext()) {
 									recIds.add((Integer) its.next());
 									//setProgValue(++rec);
 								}
 							}
 							//setProgValue(0);
-							List<Pair<String, List<String>>> csvs = dwc.getExportText(1, recIds, null);
-							writeToArchiveFile(outputFileName, dwcMetaEl.asXML(), csvs);
+
+                            long cnt = 0;
+                            long size = recIds == null ? RecordSet.getUniqueSize(recSetId) : recIds.size();
+							List<Pair<String, List<String>>> csvs = null;
+                            while (cnt < size) {
+                                if (blk != 0) {
+                                    recIds = RecordSet.getUniqueIdList(recSetId, blk, cnt);
+                                }
+                                dwc.setGlobalSession(null);
+                                csvs = dwc.getExportText(1, recIds, null);
+                                writeFiles(outputFileName, csvs);
+                                if (blk != 0) {
+                                    cnt += blk;
+                                    showStats(dwc);
+                                } else {
+                                    cnt = size;
+                                }
+                            }
+                            showStats(dwc);
+                            if (csvs != null) {
+                                zipUpArchive(outputFileName, dwcMetaEl.asXML(), csvs);
+                            }
 						} catch (Exception e) {
 							UsageTracker.incrHandledUsageCount();
 							edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SymbiotaPane.class, e);

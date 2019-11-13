@@ -63,7 +63,7 @@ public class DarwinCoreSpecimen
 	protected void add(String term, String value) throws Exception {
 		if (concepts.containsKey(term)) {
 			//throw new Exception(term + " concept is already mapped.");
-			log.warn(term + " concept is already mapped.");
+			//log.warn(term + " concept is already mapped.");
 		} else {
 			concepts.put(term, new Pair<String, Object>(term, value));
 		}

@@ -11,6 +11,7 @@ import java.sql.Statement;
 import java.util.*;
 import java.util.Collection;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.specify.datamodel.*;
 import org.apache.commons.lang.StringUtils;
 
@@ -275,46 +276,52 @@ public class DwcMapper
 	 * @param spec
 	 * @throws Exception
 	 */
-	protected void setDarwinCoreValuesForObj(DarwinCoreSpecimen spec) throws Exception
-	{
-		//throw new Exception("No code is present to do this thing.");
-		//Using hibernate objects and reflection ...
-		for (MappingInfo mi : concepts)
-		{
-			if (debugging) {
-				System.out.println("DwcMapper.setDarwinCoreValuesForObj -- setting " + mi.getName() + " : " + mi.getMappedFieldName() + ", isFormatted: " + mi.isFormatted());
-				if (mi.getName().equals("dateIdentified")) {
-					System.out.println("stop");
-				}
-				if ("1,9-determinations,4.taxon.Species Author".equals(mi.getMapping())) {
-					//System.out.println("breakpoint here now please");
-					spec.set(mi.getTerm(), null);
-					return;
-				}
-			}
-			spec.set(mi.getTerm(), getMappedValue(mi, spec.getCollectionObject()));
-		}
-		
-		//But maybe it is easier to construct a query or to create and save a query for this purpose into SpQuery.SqlStr (even though it will have to be hql for now)
-		//hibernate strategy is beginning to suck. And what about lazy-loading and session attachment, and the chance for messing things up in the form system's session...???
-	}
+    protected void setDarwinCoreValuesForObj(DarwinCoreSpecimen spec) throws Exception {
+        //throw new Exception("No code is present to do this thing.");
+        //Using hibernate objects and reflection ...
+        for (MappingInfo mi : concepts) {
+            if (debugging) {
+                System.out.println("DwcMapper.setDarwinCoreValuesForObj -- setting " + mi.getName() + " : " + mi.getMappedFieldName() + ", isFormatted: " + mi.isFormatted());
+                if (mi.getName().equals("dateIdentified")) {
+                    System.out.println("stop");
+                }
+                if ("1,9-determinations,4.taxon.Species Author".equals(mi.getMapping())) {
+                    //System.out.println("breakpoint here now please");
+                    spec.set(mi.getTerm(), null);
+                    return;
+                }
+            }
+            spec.set(mi.getTerm(), getMappedValue(mi, spec.getCollectionObject()));
+        }
 
-	public void setGlobalSession(DataProviderSessionIFace globalSession) {
+        //But maybe it is easier to construct a query or to create and save a query for this purpose into SpQuery.SqlStr (even though it will have to be hql for now)
+        //hibernate strategy is beginning to suck. And what about lazy-loading and session attachment, and the chance for messing things up in the form system's session...???
+    }
+
+    /**
+     *
+     * @param globalSession
+     */
+    public void setGlobalSession(DataProviderSessionIFace globalSession) {
 		this.globalSession = globalSession;
 	}
 
-	protected DataProviderSessionIFace getGlobalSession() {
-		if (globalSession == null) {
-			globalSession = DataProviderFactory.getInstance().createSession();
-		}
+    /**
+     *
+     * @return
+     */
+    protected DataProviderSessionIFace getGlobalSession() {
 		return globalSession;
 	}
-	/**
-	 * @param mi
-	 * @param obj
-	 * @return
-	 */
-	protected Object getMappedValue(MappingInfo mi, DataModelObjBase obj) throws Exception {
+
+    /**
+     *
+     * @param mi
+     * @param obj
+     * @return
+     * @throws Exception
+     */
+    protected Object getMappedValue(MappingInfo mi, DataModelObjBase obj) throws Exception {
 		String[] mapSegments = mi.getMapping().split(",");
 		DataProviderSessionIFace session = getGlobalSession();
 		DataModelObjBase currentObject = obj;
@@ -333,7 +340,18 @@ public class DwcMapper
 	}
 
 
-	protected Object getMappedValue2(MappingInfo mi, String[] mapSegments, int segIdx, DataModelObjBase currentObj, boolean getManies,
+    /**
+     *
+     * @param mi
+     * @param mapSegments
+     * @param segIdx
+     * @param currentObj
+     * @param getManies
+     * @param session
+     * @return
+     * @throws Exception
+     */
+    protected Object getMappedValue2(MappingInfo mi, String[] mapSegments, int segIdx, DataModelObjBase currentObj, boolean getManies,
 									 DataProviderSessionIFace session) throws Exception {
 		DataModelObjBase currentObject = currentObj;
 		//System.out.println(mapSegments[s]);
@@ -718,24 +736,69 @@ public class DwcMapper
 		}
 	}
 
+
 	//A map of tableids to objectids to format result
 	//assumes default formats used for all mappings to a table
 	private Map<Integer, Map<Integer, String>> objFormats = new TreeMap<>();
 
-	private String getObjFormat(Object obj) {
+    /**
+     *
+     * @return
+     */
+    public List<Pair<String, Integer>> getObjFormatStats() {
+        List<Pair<String, Integer>> result = new ArrayList<>();
+        for (Integer tblId : objFormats.keySet()) {
+            result.add(new Pair<>(DBTableIdMgr.getInstance().getInfoById(tblId).getName(), objFormats.get(tblId).size()));
+        }
+        return result;
+    }
+
+    /**
+     *
+     */
+    protected void clearFormatMaps() {
+        objFormats.clear();
+        aggs.clear();
+    }
+
+    /**
+     *
+     * @param object
+     * @return
+     */
+    private boolean doMapObj(Object object) {
+        if (object instanceof CollectingEvent) {
+            return !AppContextMgr.getInstance().getClassObject(edu.ku.brc.specify.datamodel.Collection.class).getIsEmbeddedCollectingEvent();
+        } else {
+            return true;
+        }
+    }
+
+    /**
+     *
+     * @param obj
+     * @return
+     */
+    private String getObjFormat(Object obj) {
 		String result = null;
 		if (obj != null) {
 			DataModelObjBase dobj = (DataModelObjBase) obj;
-			Map<Integer, String> idMap = objFormats.get(dobj.getTableId());
-			if (idMap == null) {
-				idMap = new TreeMap<>();
-				objFormats.put(dobj.getTableId(), idMap);
-			} else {
-				result = idMap.get(dobj.getId());
-			}
+            Map<Integer, String> idMap = null;
+            boolean mapObj = doMapObj(obj);
+			if (mapObj) {
+			    idMap = objFormats.get(dobj.getTableId());
+                if (idMap == null) {
+                    idMap = new TreeMap<>();
+                    objFormats.put(dobj.getTableId(), idMap);
+                } else {
+                    result = idMap.get(dobj.getId());
+                }
+            }
 			if (result == null) {
 				result = DataObjFieldFormatMgr.getInstance().format(dobj, dobj.getClass());
-				idMap.put(dobj.getId(), result);
+				if (mapObj) {
+                    idMap.put(dobj.getId(), result);
+                }
 			}
 		}
 		return result;
@@ -744,9 +807,23 @@ public class DwcMapper
 	//map mapping to object ids to aggregations
 	private Map<String, Map<Integer, String>> aggs = new TreeMap<>();
 
-	private boolean doMapAgg(DataModelObjBase object, String mappingName) {
+    public List<Pair<String, Integer>> getAggStats() {
+        List<Pair<String, Integer>> result = new ArrayList<>();
+        for (String mapping : aggs.keySet()) {
+            result.add(new Pair<>(mapping, aggs.get(mapping).size()));
+        }
+        return result;
+    }
+    /**
+     *
+     * @param object
+     * @param mappingName
+     * @return
+     */
+    private boolean doMapAgg(DataModelObjBase object, String mappingName) {
 		Class<?> cls = object.getClass();
-		return cls.equals(edu.ku.brc.specify.datamodel.CollectingEvent.class)
+		boolean isEmbeddedCE = AppContextMgr.getInstance().getClassObject(edu.ku.brc.specify.datamodel.Collection.class).getIsEmbeddedCollectingEvent();
+		return (cls.equals(edu.ku.brc.specify.datamodel.CollectingEvent.class) && !isEmbeddedCE)
 				|| cls.equals(edu.ku.brc.specify.datamodel.Locality.class)
 				|| cls.equals(edu.ku.brc.specify.datamodel.ReferenceWork.class)
 				|| cls.equals(edu.ku.brc.specify.datamodel.Agent.class);

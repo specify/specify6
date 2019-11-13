@@ -17,6 +17,7 @@ import java.util.TreeSet;
 
 import javax.swing.JProgressBar;
 
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.specify.tools.gbifregistration.GbifSandbox;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
@@ -43,11 +44,18 @@ import edu.ku.brc.util.Pair;
 public class DarwinCoreArchive 
 {
     private static final Logger log  = Logger.getLogger(DarwinCoreArchive.class);
-    
+
+    private static final String BLOCK_SIZE_PREF = "DarwinCoreArchive.BlockSize";
 	protected List<DarwinCoreArchiveFile> files;
 	protected DwcMapper mapper;
 	protected final boolean useCache;
 	protected Statement stmt = null;
+
+	public int getBlockSize() {
+		return blockSize;
+	}
+
+	protected int blockSize = AppPreferences.getLocalPrefs().getInt(BLOCK_SIZE_PREF, 55555);
 	DataProviderSessionIFace globalSession = null;
 
 	/**
@@ -144,7 +152,8 @@ public class DarwinCoreArchive
 		}
 		return result;
 	}
-	
+
+
 	/**
 	 * @param schemaName
 	 * @param schemaNum
@@ -244,6 +253,14 @@ public class DarwinCoreArchive
 		}
 		return globalSession;
 	}
+
+	public void setGlobalSession(DataProviderSessionIFace globalSession) {
+		if (this.globalSession !=  null) {
+			this.globalSession.close();
+		}
+		this.globalSession = globalSession;
+	}
+
 	/**
 	 * @param id
 	 * @return
@@ -336,19 +353,19 @@ public class DarwinCoreArchive
 			}
 		}
 	}
-	
+
 	/**
+	 *
 	 * @param collectionObjectID
-	 * @return
+	 * @param archiveData
 	 * @throws Exception
 	 */
-	protected void getExportText(int collectionObjectID, List<Pair<String, List<String>>> archiveData) throws Exception
-	{
+	protected void getExportText(int collectionObjectID, List<Pair<String, List<String>>> archiveData) throws Exception {
 		DarwinCoreSpecimen spec = new DarwinCoreSpecimen(mapper);
 		if (useCache) {
 			spec.setCollectionObjectId(collectionObjectID);
 		} else {
-			CollectionObject co = (CollectionObject)getBaseRecord(collectionObjectID);
+			CollectionObject co = (CollectionObject) getBaseRecord(collectionObjectID);
 			if (co != null) {
 				spec.setCollectionObject(co);
 			}
@@ -357,10 +374,9 @@ public class DarwinCoreArchive
 			{
 				System.out.println(fld.getFirst() + " = " + fld.getSecond());
 			}*/
-		
-		
-		for (Pair<String, List<String>> data : archiveData)
-		{
+
+
+		for (Pair<String, List<String>> data : archiveData) {
 			data.getSecond().addAll(getFileLines(getFileByName(data.getFirst()), spec, getCOGUID(spec)));
 		}
 	}
@@ -389,31 +405,44 @@ public class DarwinCoreArchive
 	 * @return
 	 * @throws Exception
 	 */
-	protected  List<Pair<String, List<String>>> buildExportDataStruct() throws Exception
-	{
+	protected List<Pair<String, List<String>>> buildExportDataStruct() throws Exception {
 		List<Pair<String, List<String>>> result = new ArrayList<Pair<String, List<String>>>();
 		DarwinCoreArchiveFile core = getCoreFile();
-		if (core != null)
-		{
-			result.add(new Pair<String, List<String>>(core.getFiles().get(0), new ArrayList<String>()));
-		} else
-		{
+		if (core != null) {
+			result.add(new Pair<>(core.getFiles().get(0), new ArrayList<>()));
+		} else {
 			throw new Exception("DarwinCoreArchive missing core file.");
 		}
-		
-		for (DarwinCoreArchiveFile ext : getExtensionFiles())
-		{
-			result.add(new Pair<String, List<String>>(ext.getFiles().get(0), new ArrayList<String>()));
+
+		for (DarwinCoreArchiveFile ext : getExtensionFiles()) {
+			result.add(new Pair<>(ext.getFiles().get(0), new ArrayList<>()));
 		}
 		return result;
 	}
 
 	/**
-	 * @param records
+	 *
+	 * @param tableId
+	 * @param recordIds
+	 * @param prog
 	 * @return
 	 * @throws Exception
 	 */
-	public List<Pair<String, List<String>>> getExportText(Integer tableId, List<Integer> recordIds, JProgressBar prog) throws Exception {
+	public List<Pair<String, List<String>>> getExportText(Integer tableId, List<Integer> recordIds,
+														  JProgressBar prog) throws Exception {
+		return getExportText(tableId, recordIds, 0, recordIds.size(), prog);
+	}
+
+		/**
+         *
+         * @param tableId
+         * @param recordIds
+         * @param prog
+         * @return
+         * @throws Exception
+         */
+	public List<Pair<String, List<String>>> getExportText(Integer tableId, List<Integer> recordIds, int startIdx, int endIdx,
+														  JProgressBar prog) throws Exception {
 		if (tableId != CollectionObject.getClassTableId()) {
 			throw new Exception("Unsupported Table " + tableId);
 		}
@@ -423,13 +452,12 @@ public class DarwinCoreArchive
 			for (Pair<String, List<String>> f : result) {
 				f.getSecond().add(getFileByName(f.getFirst()).getHeader());
 			}
-			int n = 0;
-			for (Integer recId : recordIds) {
-				getExportText(recId, result);
+			for (int i = startIdx; i < endIdx; i++) {
+				getExportText(recordIds.get(i), result);
 				if (prog != null) {
-					prog.setValue(++n);
+					prog.setValue(i+1);
 				} else {
-					System.out.println("getExportText() row = " + (++n));
+					//System.out.println("getExportText() row = " + i);
 				}
 			}
 		} finally {
@@ -441,11 +469,17 @@ public class DarwinCoreArchive
 		return result;
 	}
 
-		/**
-         * @param records
-         * @return
-         * @throws Exception
-         */
+	public DwcMapper getMapper() {
+		return mapper;
+	}
+
+	/**
+	 *
+	 * @param records
+	 * @param prog
+	 * @return
+	 * @throws Exception
+	 */
 	public List<Pair<String, List<String>>> getExportText(RecordSet records, JProgressBar prog) throws Exception {
 		if (records.getDbTableId() != CollectionObject.getClassTableId()) {
 			throw new Exception("Unsupported Table " + records.getTableId());
