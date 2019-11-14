@@ -5756,7 +5756,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
                     } else if (newFieldName.equalsIgnoreCase("SampleNumber")
                             || newFieldName.equalsIgnoreCase("Status")
-                            || newFieldName.equalsIgnoreCase("YesNo3"))
+                            || newFieldName.equalsIgnoreCase("YesNo3")
+                            || newFieldName.equalsIgnoreCase("alternateStorageId"))
                     {
                         str.append("NULL");
 
