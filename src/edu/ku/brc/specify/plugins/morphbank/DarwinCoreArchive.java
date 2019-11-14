@@ -55,7 +55,7 @@ public class DarwinCoreArchive
 		return blockSize;
 	}
 
-	protected int blockSize = AppPreferences.getLocalPrefs().getInt(BLOCK_SIZE_PREF, 55555);
+	protected int blockSize = AppPreferences.getLocalPrefs().getInt(BLOCK_SIZE_PREF, 100000);
 	DataProviderSessionIFace globalSession = null;
 
 	/**
@@ -284,14 +284,13 @@ public class DarwinCoreArchive
 	 * @return
 	 * @throws Exception
 	 */
-	protected List<Pair<String, List<String>>> getExportText(int collectionObjectID) throws Exception
-	{
+	protected List<Pair<String, List<String>>> getExportText(int collectionObjectID) throws Exception {
 		List<Pair<String, List<String>>> result = new ArrayList<Pair<String, List<String>>>();
 		DarwinCoreSpecimen spec = new DarwinCoreSpecimen(mapper);
 		if (useCache) {
 			spec.setCollectionObjectId(collectionObjectID);
 		} else {
-			CollectionObject co = (CollectionObject)getBaseRecord(collectionObjectID);
+			CollectionObject co = (CollectionObject) getBaseRecord(collectionObjectID);
 			if (co != null) {
 				spec.setCollectionObject(co);
 			}
@@ -300,23 +299,20 @@ public class DarwinCoreArchive
 			{
 				System.out.println(fld.getFirst() + " = " + fld.getSecond());
 			}*/
-		
+
 		DarwinCoreArchiveFile core = getCoreFile();
-		if (core != null)
-		{
+		if (core != null) {
 			List<String> line = getFileLines(core, spec, spec.getCollectionObjectGUID());
 			result.add(new Pair<String, List<String>>(core.getFiles().get(0), line));
-		} else
-		{
+		} else {
 			throw new Exception("DarwinCoreArchive missing core file.");
 		}
-		
-		for (DarwinCoreArchiveFile ext : getExtensionFiles())
-		{
+
+		for (DarwinCoreArchiveFile ext : getExtensionFiles()) {
 			List<String> lines = getFileLines(ext, spec, spec.getCollectionObjectGUID());
 			result.add(new Pair<String, List<String>>(ext.getFiles().get(0), lines));
 		}
-		
+
 		return result;
 	}
 

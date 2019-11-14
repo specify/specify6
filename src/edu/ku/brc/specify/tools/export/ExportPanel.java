@@ -396,7 +396,8 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
                                 //recSetId = 832; //herps
                                 recSetId = 81; //fish with ce and co atts.
                             } else if (schemaMapping.getMappingName().equalsIgnoreCase("dwckui")) {
-                                recSetId = 832; //herps all
+                                //recSetId = 832; //herps all
+								recSetId = 16001; //ento all
 							} else {
 								Pair<Integer, Iterator<?>> ids = getSizeAndIterator();
 								Iterator<?> its = ids.getSecond();
