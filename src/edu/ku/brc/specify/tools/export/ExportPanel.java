@@ -258,7 +258,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 		 */
 				new javax.swing.SwingWorker<Boolean, Object>() {
 
-					String outputFileName = "/home/timo/exporterDwc.zip";
+					String outputFileName = "/home/timo/datas/dwckuiDwc.zip";
 
 					/**
 					 * @return
@@ -277,11 +277,11 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
                      * @param csvs
                      * @throws Exception
                      */
-                    protected void writeFiles(String archiveName, List<Pair<String, List<String>>> csvs) throws Exception {
+                    protected void writeFiles(String archiveName, List<Pair<String, List<String>>> csvs, boolean append) throws Exception {
                         String dirName = (new File(archiveName)).getParent();
                         for (Pair<String, List<String>> csv : csvs) {
                             File f = new File(dirName + File.separator + csv.getFirst());
-                            org.apache.commons.io.FileUtils.writeLines(f, "UTF-8", csv.getSecond(), true);
+                            org.apache.commons.io.FileUtils.writeLines(f, "UTF-8", csv.getSecond(), append);
 
                         }
                     }
@@ -397,7 +397,8 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
                                 recSetId = 81; //fish with ce and co atts.
                             } else if (schemaMapping.getMappingName().equalsIgnoreCase("dwckui")) {
                                 //recSetId = 832; //herps all
-								recSetId = 16001; //ento all
+								//recSetId = 16001; //ento all
+								recSetId = 83; //fish multiple dets
 							} else {
 								Pair<Integer, Iterator<?>> ids = getSizeAndIterator();
 								Iterator<?> its = ids.getSecond();
@@ -421,7 +422,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
                                 }
                                 dwc.setGlobalSession(null);
                                 csvs = dwc.getExportText(1, recIds, null);
-                                writeFiles(outputFileName, csvs);
+                                writeFiles(outputFileName, csvs, cnt > 0);
                                 if (blk != 0) {
                                     cnt += blk;
                                     showStats(dwc);

@@ -55,7 +55,7 @@ public class DarwinCoreArchive
 		return blockSize;
 	}
 
-	protected int blockSize = AppPreferences.getLocalPrefs().getInt(BLOCK_SIZE_PREF, 100000);
+	protected int blockSize = AppPreferences.getLocalPrefs().getInt(BLOCK_SIZE_PREF, 50000);
 	DataProviderSessionIFace globalSession = null;
 
 	/**
@@ -302,15 +302,25 @@ public class DarwinCoreArchive
 
 		DarwinCoreArchiveFile core = getCoreFile();
 		if (core != null) {
-			List<String> line = getFileLines(core, spec, spec.getCollectionObjectGUID());
-			result.add(new Pair<String, List<String>>(core.getFiles().get(0), line));
+			String id = spec.getCollectionObjectGUID();
+			if (id != null) {
+				List<String> line = getFileLines(core, spec, id);
+				result.add(new Pair<String, List<String>>(core.getFiles().get(0), line));
+			} else {
+				log.warn("skipping record without ID");
+			}
 		} else {
 			throw new Exception("DarwinCoreArchive missing core file.");
 		}
 
 		for (DarwinCoreArchiveFile ext : getExtensionFiles()) {
-			List<String> lines = getFileLines(ext, spec, spec.getCollectionObjectGUID());
-			result.add(new Pair<String, List<String>>(ext.getFiles().get(0), lines));
+			String id = spec.getCollectionObjectGUID();
+			if (id != null) {
+				List<String> lines = getFileLines(ext, spec, id);
+				result.add(new Pair<String, List<String>>(ext.getFiles().get(0), lines));
+			} else {
+				log.warn("skipping record without ID");
+			}
 		}
 
 		return result;
@@ -373,7 +383,12 @@ public class DarwinCoreArchive
 
 
 		for (Pair<String, List<String>> data : archiveData) {
-			data.getSecond().addAll(getFileLines(getFileByName(data.getFirst()), spec, getCOGUID(spec)));
+			String id = getCOGUID(spec);
+			if (id != null) {
+				data.getSecond().addAll(getFileLines(getFileByName(data.getFirst()), spec, id));
+			} else {
+				log.warn("skipping record without ID");
+			}
 		}
 	}
 
@@ -453,7 +468,7 @@ public class DarwinCoreArchive
 				if (prog != null) {
 					prog.setValue(i+1);
 				} else {
-					//System.out.println("getExportText() row = " + i);
+					System.out.println("getExportText() row = " + i);
 				}
 			}
 		} finally {
