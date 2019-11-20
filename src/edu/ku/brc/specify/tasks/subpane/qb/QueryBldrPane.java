@@ -104,7 +104,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     protected QueryFieldPanel                                selectedQFP = null; 
     protected int                                            currentInx       = -1;
     protected JPanel                                         queryFieldsPanel;
-    protected JScrollPane                                    queryFieldsScroll;
+    protected JComponent                                     queryFieldsScroll;
     
     protected SpQuery                                        query            = null;
 
@@ -450,7 +450,12 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     		*/
     	}
     }
-    
+
+    protected JPanel makeFieldsPanel() {
+        JPanel result = new JPanel();
+        result.setLayout(new NavBoxLayoutManager(0, 2));
+        return result;
+    }
     /**
      * create the query builder UI.
      */
@@ -639,14 +644,21 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         topPanel.add(schemaPanel, BorderLayout.CENTER);
         add(topPanel, BorderLayout.NORTH);
 
-        queryFieldsPanel = new JPanel();
-        queryFieldsPanel.setLayout(new NavBoxLayoutManager(0, 2));
-        queryFieldsScroll = new JScrollPane(queryFieldsPanel,
-                ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
-                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        queryFieldsScroll.setBorder(null);
+        queryFieldsPanel = makeFieldsPanel();
+        if (schemaMapping == null) {
+            queryFieldsScroll = new JScrollPane(queryFieldsPanel,
+                    ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+                    ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+            queryFieldsScroll.setBorder(null);
+        } else {
+            queryFieldsScroll = new JTabbedPane();
+            /*((JTabbedPane) queryFieldsScroll).addTab("core", new JScrollPane(queryFieldsPanel,
+                    ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+                    ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER));
+            addExtensionTab(new DwcExtensionInfo("audobon core", "blah blah blah"));*/
+        }
         add(queryFieldsScroll);
-        
+
         //if (!isExportMapping)
         //{
         	final JPanel mover = buildMoverPanel(false);
@@ -1066,7 +1078,53 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         return getQueryFieldPanels(container, q.getFields(), tblTree, ttHash, null, null);
     }
     
-    
+    protected List<JScrollPane> getFieldScrollPanes() {
+        List<JScrollPane> result = new ArrayList<>();
+        if (queryFieldsScroll instanceof JScrollPane) {
+            result.add((JScrollPane)queryFieldsScroll);
+        } else {
+            JTabbedPane tp = (JTabbedPane)queryFieldsScroll;
+            for (int t = 0; t < tp.getTabCount(); t++) {
+                result.add((JScrollPane) tp.getComponentAt(t));
+            }
+        }
+        return result;
+    }
+
+    protected Map<DwcExtensionInfo, Component> extensionInfoMap = new HashMap<>();
+
+    protected void addExtensionTab(DwcExtensionInfo ei) {
+        JScrollPane sp = new JScrollPane(makeFieldsPanel(),
+                ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        ((JTabbedPane)queryFieldsScroll).addTab(ei.getShortName(), sp);
+        extensionInfoMap.put(ei, sp);
+    }
+
+    protected void removeExtensionTab(DwcExtensionInfo ei) {
+        Component c = extensionInfoMap.get(ei);
+        ((JTabbedPane)queryFieldsScroll).remove(c);
+        extensionInfoMap.remove(ei);
+    }
+
+
+    protected Map<JScrollPane, List<QueryFieldPanel>> processRowTypes(List<QueryFieldPanel> qfps) {
+        Map<JScrollPane, List<QueryFieldPanel>> result = new HashMap<>();
+        if (schemaMapping != null) {
+            for (QueryFieldPanel qfp : qfps) {
+                List<QueryFieldPanel> qfpList = result.get((JScrollPane) extensionInfoMap.get(qfp.getExtensionInfo()));
+                if (qfpList == null) {
+                    addExtensionTab(qfp.getExtensionInfo());
+                    qfpList = new ArrayList<>();
+                    result.put((JScrollPane) extensionInfoMap.get(qfp.getExtensionInfo()), qfpList);
+                }
+                qfpList.add(qfp);
+            }
+        } else {
+            result.put((JScrollPane)queryFieldsScroll, qfps);
+        }
+        return result;
+    }
     /**
      * 
      */
@@ -1136,28 +1194,25 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             }
         }
 
-        boolean header = true;
-        for (final QueryFieldPanel qfp : qfps)
-        {
-            if (header)
-            {
-                header = false;
-                this.queryFieldsScroll.setColumnHeaderView(qfp);
-            }
-            else
-            {
-                queryFieldItems.add(qfp);
-                qfp.addMouseListener(new MouseInputAdapter()
-                {
-                    @Override
-                    public void mousePressed(MouseEvent e)
-                    {
-                        selectQFP(qfp);
-                    }
-                });
-                qfp.resetValidator();
-                queryFieldsPanel.add(qfp);
-                //doAutoMap &= qfp.getFieldQRI() == null;
+        Map<JScrollPane, List<QueryFieldPanel>> rowTypes = processRowTypes(qfps);
+        for (JScrollPane rowType : rowTypes.keySet()) {
+            boolean header = true;
+            for (final QueryFieldPanel qfp : rowTypes.get(rowType)) {
+                if (header) {
+                    header = false;
+                    rowType.setColumnHeaderView(qfp);
+                } else {
+                    queryFieldItems.add(qfp);
+                    qfp.addMouseListener(new MouseInputAdapter() {
+                        @Override
+                        public void mousePressed(MouseEvent e) {
+                            selectQFP(qfp);
+                        }
+                    });
+                    qfp.resetValidator();
+                    ((JPanel )rowType.getViewport().getView()).add(qfp);
+                    //doAutoMap &= qfp.getFieldQRI() == null;
+                }
             }
         }
         qualifyFieldLabels();
@@ -5352,29 +5407,27 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             }
         });
     }
-    
+
+    protected JScrollPane getCurrentScrollPane() {
+        if (queryFieldsScroll instanceof JScrollPane) {
+            return (JScrollPane)queryFieldsScroll;
+        } else {
+            JTabbedPane tp = (JTabbedPane)queryFieldsScroll;
+            return (JScrollPane) tp.getSelectedComponent();
+        }
+    }
     /**
      * @param rect - the rectangle to make visible.
      * 
      * Wrapper for JViewport.scrollReectToVisible() with a work around for a java bug.
      */
-    protected void scrollQueryFieldsToRect(final Rectangle rect)
-    {
-        //scrollRectToVisible doesn't work when newBounds is above the viewport.
-        //This is a java bug: http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6333318
-//        if (rect.y < queryFieldsScroll.getViewport().getViewPosition().y)
-//        {
-//            queryFieldsScroll.getViewport().setViewPosition(new Point(rect.x,rect.y));
-//        }
-       
-    	queryFieldsScroll.getViewport().scrollRectToVisible(rect);
+    protected void scrollQueryFieldsToRect(final Rectangle rect) {
+        getCurrentScrollPane().getViewport().scrollRectToVisible(rect);
         
         //scrollRectToVisible doesn't work when newBounds is above the viewport.
         //This is a java bug: http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6333318
-        
-    	if (rect.y < queryFieldsScroll.getViewport().getViewPosition().y)
-        {
-            queryFieldsScroll.getViewport().setViewPosition(new Point(rect.x,rect.y));
+    	if (rect.y < getCurrentScrollPane().getViewport().getViewPosition().y) {
+            getCurrentScrollPane().getViewport().setViewPosition(new Point(rect.x,rect.y));
         }
     }
     
