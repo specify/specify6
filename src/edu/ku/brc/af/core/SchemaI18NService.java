@@ -74,7 +74,7 @@ public abstract class SchemaI18NService
     static
     {
         Locale defLocale = Locale.getDefault();
-        currentLocale    = new Locale(defLocale.getLanguage(), "", ""); //$NON-NLS-1$ //$NON-NLS-2$
+        currentLocale    = new Locale(defLocale.getLanguage(), defLocale.getCountry(), defLocale.getVariant()); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     
