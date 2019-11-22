@@ -149,7 +149,8 @@ public class QueryFieldPanel extends JPanel implements ActionListener
 	protected SpExportSchemaItem			schemaItem      = null;
 	protected String	 					schemaItemName  = null;
 	protected boolean						autoMapped      = false;
-	
+	protected boolean createAsHeader = false;
+
 	protected PickListDBAdapterIFace		pickList		= null;
 
 	protected FormValidator					validator;
@@ -162,7 +163,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
 	protected DateConverter					dateConverter	= null;
 
 	protected boolean						selected		= false;
-    protected DwcExtensionInfo extensionInfo = new DwcExtensionInfo("core", "occurrence");
+    protected DwcExtensionInfo extensionInfo = new DwcExtensionInfo("http://rs.tdwg.org/dwc/terms/Occurrence", false);
 
     /**
      * @author timbo
@@ -427,9 +428,9 @@ public class QueryFieldPanel extends JPanel implements ActionListener
             final Component       saveBtn,
             final SpQueryField  queryField,
             final SpExportSchemaMapping schemaMapping,
-            final SpExportSchemaItem schemaItem)
+            final SpExportSchemaItemMapping itemMapping)
     {
-    	this(ownerQuery, fieldQRI, IconManager.IconSize.Std24, columnDefStr, saveBtn, queryField, schemaMapping, schemaItem);
+    	this(ownerQuery, fieldQRI, IconManager.IconSize.Std24, columnDefStr, saveBtn, queryField, schemaMapping, itemMapping);
     }
 
     /**
@@ -449,11 +450,11 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                            final Component       saveBtn,
                            final SpQueryField  queryField,
                            final SpExportSchemaMapping schemaMapping,
-                           final SpExportSchemaItem schemaItem)
+                           final SpExportSchemaItemMapping itemMapping)
     {        
         this.ownerQuery = ownerQuery;
         this.schemaMapping = schemaMapping;
-        this.schemaItem = schemaItem;
+        this.schemaItem = itemMapping != null ? itemMapping.getExportSchemaItem() : null;
         boolean isForSchema = this.schemaMapping != null;
         if (this.ownerQuery.isPromptMode()) {
             if (!isForSchema) {
@@ -500,6 +501,9 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                         " "};
             }
         }
+        if (itemMapping != null) {
+            extensionInfo = new DwcExtensionInfo(itemMapping.getRowType(), itemMapping.isExtensionItem());
+        }
         this.iconSize = iconSize;
         this.fieldQRI      = fieldQRI;
         if (fieldQRI != null && (fieldQRI.getDataClass().equals(Calendar.class) || fieldQRI.getDataClass().equals(java.sql.Timestamp.class)))
@@ -520,7 +524,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
         }
         validator.setEnabled(true);
         
-        boolean createAsHeader = StringUtils.isEmpty(columnDefStr);
+        createAsHeader = StringUtils.isEmpty(columnDefStr);
         
         int[] widths = buildControlLayout(iconSize, createAsHeader, saveBtn);
         if (createAsHeader)
@@ -536,7 +540,15 @@ public class QueryFieldPanel extends JPanel implements ActionListener
             setToolTipText(getQualifiedLabel(fieldQRI.getTableTree(), true));
         }
 }
-    
+
+    /**
+     *
+     * @return
+     */
+    public boolean isCreateAsHeader() {
+        return createAsHeader;
+    }
+
     public void updateQueryField()
     {
         updateQueryField(queryField);

@@ -1077,7 +1077,11 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     {
         return getQueryFieldPanels(container, q.getFields(), tblTree, ttHash, null, null);
     }
-    
+
+    /**
+     *
+     * @return
+     */
     protected List<JScrollPane> getFieldScrollPanes() {
         List<JScrollPane> result = new ArrayList<>();
         if (queryFieldsScroll instanceof JScrollPane) {
@@ -1093,6 +1097,10 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 
     protected Map<DwcExtensionInfo, Component> extensionInfoMap = new HashMap<>();
 
+    /**
+     *
+     * @param ei
+     */
     protected void addExtensionTab(DwcExtensionInfo ei) {
         JScrollPane sp = new JScrollPane(makeFieldsPanel(),
                 ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
@@ -1101,6 +1109,10 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         extensionInfoMap.put(ei, sp);
     }
 
+    /**
+     *
+     * @param ei
+     */
     protected void removeExtensionTab(DwcExtensionInfo ei) {
         Component c = extensionInfoMap.get(ei);
         ((JTabbedPane)queryFieldsScroll).remove(c);
@@ -1108,6 +1120,11 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     }
 
 
+    /**
+     *
+     * @param qfps
+     * @return
+     */
     protected Map<JScrollPane, List<QueryFieldPanel>> processRowTypes(List<QueryFieldPanel> qfps) {
         Map<JScrollPane, List<QueryFieldPanel>> result = new HashMap<>();
         if (schemaMapping != null) {
@@ -1119,6 +1136,12 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     result.put((JScrollPane) extensionInfoMap.get(qfp.getExtensionInfo()), qfpList);
                 }
                 qfpList.add(qfp);
+            }
+            for (List<QueryFieldPanel> panels : result.values()) {
+                //assuming header will always be first
+                if (panels.size() > 0 && !panels.get(0).isCreateAsHeader()) {
+                    panels.add(0, new QueryFieldPanel(this, null, null, saveBtn, null, schemaMapping));
+                }
             }
         } else {
             result.put((JScrollPane)queryFieldsScroll, qfps);
@@ -4712,31 +4735,60 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         }
         return result;
     }
-  
-    protected static SpQueryField getQueryFieldMapping(final SpExportSchemaMapping schemaMapping, final SpExportSchemaItem schemaItem)
-    {
-    	if (schemaMapping != null)
-    	{
-    		for (SpExportSchemaItemMapping mapping : schemaMapping.getMappings())
-    		{
-    				if (mapping.getExportSchemaItem() != null && mapping.getExportSchemaItem().getId().equals(schemaItem.getId()))
-    				{
-    					return mapping.getQueryField();
-    				}
-    		}
-    	}
-    	return null;
-    }
-    
+
     /**
+     *
+     * @param schemaMapping
+     * @param schemaItem
      * @return
      */
-    public static Vector<QueryFieldPanel> getQueryFieldPanelsForMapping(final QueryFieldPanelContainerIFace container, 
-            Set<SpQueryField> fields, final TableTree tblTree, 
-            final Hashtable<String,TableTree> ttHash, final Component saveBtn,
-            SpExportSchemaMapping schemaMapping, List<String> missingFlds,
-            Map<String, Vector<MappedFieldInfo>> autoMaps)
-    {
+    protected static List<SpQueryField> getQueryFieldMappings(final SpExportSchemaMapping schemaMapping, final SpExportSchemaItem schemaItem) {
+        List<SpQueryField> result = new ArrayList<>();
+        if (schemaMapping != null) {
+            for (SpExportSchemaItemMapping mapping : schemaMapping.getMappings()) {
+                if (mapping.getExportSchemaItem() != null && mapping.getExportSchemaItem().getId().equals(schemaItem.getId())) {
+                    result.add(mapping.getQueryField());
+                }
+            }
+        } else {
+            result.add(null);
+        }
+        return result;
+    }
+
+
+    /**
+     *
+     * @param schemaMapping
+     * @param queryField
+     * @return
+     */
+    protected static SpExportSchemaItemMapping getItemMappingForQueryField(final SpExportSchemaMapping schemaMapping, final SpQueryField queryField) {
+        for (SpExportSchemaItemMapping item : schemaMapping.getMappings()) {
+            if (item.getQueryField().getId() != null && item.getQueryField().getId().equals(queryField.getId())) {
+                return item;
+            }
+        }
+        return null;
+    }
+
+    /**
+     *
+     * @param container
+     * @param fields
+     * @param tblTree
+     * @param ttHash
+     * @param saveBtn
+     * @param schemaMapping
+     * @param missingFlds
+     * @param autoMaps
+     * @return
+     */
+    public static Vector<QueryFieldPanel> getQueryFieldPanelsForMapping(final QueryFieldPanelContainerIFace container,
+                                                                        Set<SpQueryField> fields, final TableTree tblTree,
+                                                                        final Hashtable<String, TableTree> ttHash, final Component saveBtn,
+                                                                        SpExportSchemaMapping schemaMapping, List<String> missingFlds,
+                                                                        Map<String, Vector<MappedFieldInfo>> autoMaps) {
         Vector<QueryFieldPanel> result = new Vector<QueryFieldPanel>();
         //Need to change columnDefStr if mapMode...
         //result.add(bldQueryFieldPanel(this, null, null, getColumnDefStr(), saveBtn));
@@ -4745,7 +4797,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 
         Vector<SpExportSchemaItem> sis = new Vector<SpExportSchemaItem>();
         if (schemaMapping.getSpExportSchemas() != null) {
-            for (SpExportSchema exportSchema: schemaMapping.getSpExportSchemas()) {
+            for (SpExportSchema exportSchema : schemaMapping.getSpExportSchemas()) {
                 sis.addAll(exportSchema.getSpExportSchemaItems());
             }
         }
@@ -4760,220 +4812,198 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             }
 
         });
-        for (SpExportSchemaItem schemaItem : sis)
-        {
-        	//System.out.println("SchemaItem: " + schemaItem.getFieldName());
-        	boolean autoMapped = false;
-        	SpQueryField fld = getQueryFieldMapping(schemaMapping, schemaItem);
-        	FieldQRI fieldQRI = null;
-        	if (fld == null && autoMaps != null)
-        	{
-				Vector<MappedFieldInfo> mappedTos = autoMaps.get(schemaItem.getFieldName().toLowerCase());
-				
-				if (mappedTos != null)
-				{
-					for (MappedFieldInfo mappedTo : mappedTos)
-					{
-						fieldQRI = getFieldQRI(tblTree, mappedTo
-							.getFieldName(), mappedTo.isRel(), mappedTo
-							.getStringId(), getTableIds(mappedTo.getTableIds()), 0, ttHash);
-						if (fieldQRI != null)
-						{
-							if (!fieldQRI.isFieldHidden())
-							{
-								autoMapped = true;
-							} else
-							{
-								fieldQRI = null;
-							}
-							break;
-						}
-					}
-				}
-        		//result.add(new QueryFieldPanel(container, null, 
-        		//	container.getColumnDefStr(), saveBtn, fld, schemaMapping, schemaItem));
-        	}
-        	else if (fld != null)
-        	{
-        		fieldQRI = getFieldQRI(tblTree, fld.getFieldName(), fld.getIsRelFld() != null && fld.getIsRelFld(),
-            				fld.getStringId(), getTableIds(fld.getTableList()), 0, ttHash);
-        	}
-        	if (fieldQRI != null)
-        	{
-        		QueryFieldPanel newPanel = new QueryFieldPanel(container, fieldQRI, 
-            			container.getColumnDefStr(), saveBtn, fld, schemaMapping, schemaItem);
-        		newPanel.setAutoMapped(autoMapped);
-        		result.add(newPanel);
-        		fieldQRI.setIsInUse(true);
-        		if (fieldQRI.isFieldHidden() && !container.isPromptMode() && !container.isForSchemaExport())
-        		{
-        			UIRegistry.showLocalizedMsg("QB_FIELD_HIDDEN_TITLE", "QB_FIELD_HIDDEN_SHOULD_REMOVE", fieldQRI.getTitle());
-        		}
-        	}
-        	else if (fld != null)
-        	{
-        		log.error("Couldn't find [" + fld.getFieldName() + "] [" + fld.getTableList()
-                       + "]");
-        		if (!container.isForSchemaExport() && !container.isPromptMode()) {
-        			for (SpQueryField field : fields) {
-        				//ain't superstitious but checking ids in case 
-        				//fld and field are different java objects
-        				if (field.getId().equals(fld.getId())) {
-        					SpExportSchemaItemMapping mappingForField = null;
-        					for (SpExportSchemaItemMapping m : schemaMapping.getMappings()) {
-        						if (m.getQueryField() != null && field.getId().equals(m.getQueryField().getId())) {
-        							mappingForField = m;
-        							break;
-        						}
-        					}
-        					if (mappingForField != null) {
-        						schemaMapping.getMappings().remove(mappingForField);
-        						mappingForField.setExportSchemaItem(null);
-        						mappingForField.setExportSchemaMapping(null);
-        						mappingForField.setQueryField(null);
-        					}
-        					fields.remove(field);
-        					field.setQuery(null);
-        					fld.setQuery(null);
-        					break;
-        				}
-        			}
-        		}
-        		if (missingFlds != null)
-        		{
-                       String fldText = fld.getColumnAlias() != null ? fld.getColumnAlias()
-                       		: fld.getFieldName();
-        			missingFlds.add(fldText);
-        		}
-        	}
+        for (SpExportSchemaItem schemaItem : sis) {
+            //System.out.println("SchemaItem: " + schemaItem.getFieldName());
+            boolean autoMapped = false;
+            List<SpQueryField> flds = getQueryFieldMappings(schemaMapping, schemaItem);
+            for (SpQueryField fld : flds) {
+                FieldQRI fieldQRI = null;
+                if (fld == null && autoMaps != null) {
+                    Vector<MappedFieldInfo> mappedTos = autoMaps.get(schemaItem.getFieldName().toLowerCase());
+
+                    if (mappedTos != null) {
+                        for (MappedFieldInfo mappedTo : mappedTos) {
+                            fieldQRI = getFieldQRI(tblTree, mappedTo
+                                    .getFieldName(), mappedTo.isRel(), mappedTo
+                                    .getStringId(), getTableIds(mappedTo.getTableIds()), 0, ttHash);
+                            if (fieldQRI != null) {
+                                if (!fieldQRI.isFieldHidden()) {
+                                    autoMapped = true;
+                                } else {
+                                    fieldQRI = null;
+                                }
+                                break;
+                            }
+                        }
+                    }
+                    //result.add(new QueryFieldPanel(container, null,
+                    //	container.getColumnDefStr(), saveBtn, fld, schemaMapping, schemaItem));
+                } else if (fld != null) {
+                    fieldQRI = getFieldQRI(tblTree, fld.getFieldName(), fld.getIsRelFld() != null && fld.getIsRelFld(),
+                            fld.getStringId(), getTableIds(fld.getTableList()), 0, ttHash);
+                }
+                if (fieldQRI != null) {
+                    QueryFieldPanel newPanel = new QueryFieldPanel(container, fieldQRI,
+                            container.getColumnDefStr(), saveBtn, fld, schemaMapping, getItemMappingForQueryField(schemaMapping, fld));
+                    newPanel.setAutoMapped(autoMapped);
+                    result.add(newPanel);
+                    fieldQRI.setIsInUse(true);
+                    if (fieldQRI.isFieldHidden() && !container.isPromptMode() && !container.isForSchemaExport()) {
+                        UIRegistry.showLocalizedMsg("QB_FIELD_HIDDEN_TITLE", "QB_FIELD_HIDDEN_SHOULD_REMOVE", fieldQRI.getTitle());
+                    }
+                } else if (fld != null) {
+                    log.error("Couldn't find [" + fld.getFieldName() + "] [" + fld.getTableList()
+                            + "]");
+                    if (!container.isForSchemaExport() && !container.isPromptMode()) {
+                        for (SpQueryField field : fields) {
+                            //ain't superstitious but checking ids in case
+                            //fld and field are different java objects
+                            if (field.getId().equals(fld.getId())) {
+                                SpExportSchemaItemMapping mappingForField = null;
+                                for (SpExportSchemaItemMapping m : schemaMapping.getMappings()) {
+                                    if (m.getQueryField() != null && field.getId().equals(m.getQueryField().getId())) {
+                                        mappingForField = m;
+                                        break;
+                                    }
+                                }
+                                if (mappingForField != null) {
+                                    schemaMapping.getMappings().remove(mappingForField);
+                                    mappingForField.setExportSchemaItem(null);
+                                    mappingForField.setExportSchemaMapping(null);
+                                    mappingForField.setQueryField(null);
+                                }
+                                fields.remove(field);
+                                field.setQuery(null);
+                                fld.setQuery(null);
+                                break;
+                            }
+                        }
+                    }
+                    if (missingFlds != null) {
+                        String fldText = fld.getColumnAlias() != null ? fld.getColumnAlias()
+                                : fld.getFieldName();
+                        missingFlds.add(fldText);
+                    }
+                }
+            }
         }
 
-        List<SpQueryField> toRemove = new ArrayList<SpQueryField>(); 
+        List<SpQueryField> toRemove = new ArrayList<SpQueryField>();
 
         //add 'auto-mapped' fields not mapped to a concept
-    	if (autoMaps != null && fields.size() == 0 /* a new mapping */) {
-    		int cnt = 0;
-			for (Map.Entry<String, Vector<MappedFieldInfo>> me : autoMaps.entrySet()) {
-				if (me.getKey().startsWith("Unmapped:")) {
-					MappedFieldInfo fi = me.getValue().get(0);
-					SpQueryField fld = new SpQueryField();
-					fld.initialize();
-					
-					fld.setIsNot(false);
-					fld.setAlwaysFilter(false);
-					fld.setIsPrompt(true);
-					fld.setIsRelFld(false);
-					fld.setSortType(Byte.valueOf("0"));
-					fld.setPosition(Short.valueOf(String.valueOf(result.size()-1 + cnt++)));
-					
-					fld.setSpQueryFieldId(-1);
-					fld.setIsDisplay(false);
-					fld.setOperStart(fi.getOperator());
-					fld.setFieldName(fi.getFieldName());
-					fld.setStringId(fi.getStringId());
-					fld.setTableList(fi.getTableIds());
-					fld.setContextTableIdent(fi.getContextTableId());
-					
-					fields.add(fld);
-					toRemove.add(fld);
-				}
-			}
-    		
-    	}
-    	
+        if (autoMaps != null && fields.size() == 0 /* a new mapping */) {
+            int cnt = 0;
+            for (Map.Entry<String, Vector<MappedFieldInfo>> me : autoMaps.entrySet()) {
+                if (me.getKey().startsWith("Unmapped:")) {
+                    MappedFieldInfo fi = me.getValue().get(0);
+                    SpQueryField fld = new SpQueryField();
+                    fld.initialize();
+
+                    fld.setIsNot(false);
+                    fld.setAlwaysFilter(false);
+                    fld.setIsPrompt(true);
+                    fld.setIsRelFld(false);
+                    fld.setSortType(Byte.valueOf("0"));
+                    fld.setPosition(Short.valueOf(String.valueOf(result.size() - 1 + cnt++)));
+
+                    fld.setSpQueryFieldId(-1);
+                    fld.setIsDisplay(false);
+                    fld.setOperStart(fi.getOperator());
+                    fld.setFieldName(fi.getFieldName());
+                    fld.setStringId(fi.getStringId());
+                    fld.setTableList(fi.getTableIds());
+                    fld.setContextTableIdent(fi.getContextTableId());
+
+                    fields.add(fld);
+                    toRemove.add(fld);
+                }
+            }
+
+        }
+
         //now add un-mapped fields
-        for (SpQueryField fld : fields)
-        {
-        	//int insertAt = 0;
-        	if (fld.getMapping() == null || fld.getMapping().getExportSchemaItem() == null)
-        	{
-        		FieldQRI fieldQRI = getFieldQRI(tblTree, fld.getFieldName(), fld.getIsRelFld() != null && fld.getIsRelFld(),
-            			fld.getStringId(), getTableIds(fld.getTableList()), 0, ttHash);
-        		if (fieldQRI != null)
-        		{
+        for (SpQueryField fld : fields) {
+            //int insertAt = 0;
+            if (fld.getMapping() == null || fld.getMapping().getExportSchemaItem() == null) {
+                FieldQRI fieldQRI = getFieldQRI(tblTree, fld.getFieldName(), fld.getIsRelFld() != null && fld.getIsRelFld(),
+                        fld.getStringId(), getTableIds(fld.getTableList()), 0, ttHash);
+                if (fieldQRI != null) {
 //        			result.insertElementAt(new QueryFieldPanel(container, fieldQRI, 
 //            				container.getColumnDefStr(), saveBtn, fld, null, true), insertAt++);
-        			QueryFieldPanel newQfp = new QueryFieldPanel(container, fieldQRI, 
-            				container.getColumnDefStr(), saveBtn, fld, schemaMapping, null); 
-        			result.add(newQfp);
-        			fieldQRI.setIsInUse(true);
-        			if (fld.getSpQueryFieldId() == -1) {
-        				newQfp.setAutoMapped(true);
-        				newQfp.setQueryFieldForAutomapping(null);
-        			}
-        			if (fieldQRI.isFieldHidden() && !container.isPromptMode() && !container.isForSchemaExport())
-        			{
-        				UIRegistry.showLocalizedMsg("QB_FIELD_HIDDEN_TITLE", "QB_FIELD_HIDDEN_SHOULD_REMOVE", fieldQRI.getTitle());
-        			}
-        		}
-        		else
-        		{
-        			log.error("Couldn't find [" + fld.getFieldName() + "] [" + fld.getTableList()
-                        + "]");
-            		if (!container.isForSchemaExport() && !container.isPromptMode()) {
-            			for (SpQueryField field : fields) {
-            				//ain't superstitious but checking ids in case 
-            				//fld and field are different java objects
-            				if (field.getId().equals(fld.getId())) {
-            					SpExportSchemaItemMapping mappingForField = null;
-            					for (SpExportSchemaItemMapping m : schemaMapping.getMappings()) {
-            						if (m.getQueryField() != null && field.getId().equals(m.getQueryField().getId())) {
-            							mappingForField = m;
-            							break;
-            						}
-            					}
-            					if (mappingForField != null) {
-            						schemaMapping.getMappings().remove(mappingForField);
-            						mappingForField.setExportSchemaItem(null);
-            						mappingForField.setExportSchemaMapping(null);
-            						mappingForField.setQueryField(null);
-            					}
-            					toRemove.add(field);
-            					field.setQuery(null);
-            					fld.setQuery(null);
-            					break;
-            				}
-            			}
-            		}
-        			if (missingFlds != null)
-        			{
-        				missingFlds.add(fld.getColumnAlias());
-        			}
-        		}
-        	}
+                    QueryFieldPanel newQfp = new QueryFieldPanel(container, fieldQRI,
+                            container.getColumnDefStr(), saveBtn, fld, schemaMapping, null);
+                    result.add(newQfp);
+                    fieldQRI.setIsInUse(true);
+                    if (fld.getSpQueryFieldId() == -1) {
+                        newQfp.setAutoMapped(true);
+                        newQfp.setQueryFieldForAutomapping(null);
+                    }
+                    if (fieldQRI.isFieldHidden() && !container.isPromptMode() && !container.isForSchemaExport()) {
+                        UIRegistry.showLocalizedMsg("QB_FIELD_HIDDEN_TITLE", "QB_FIELD_HIDDEN_SHOULD_REMOVE", fieldQRI.getTitle());
+                    }
+                } else {
+                    log.error("Couldn't find [" + fld.getFieldName() + "] [" + fld.getTableList()
+                            + "]");
+                    if (!container.isForSchemaExport() && !container.isPromptMode()) {
+                        for (SpQueryField field : fields) {
+                            //ain't superstitious but checking ids in case
+                            //fld and field are different java objects
+                            if (field.getId().equals(fld.getId())) {
+                                SpExportSchemaItemMapping mappingForField = null;
+                                for (SpExportSchemaItemMapping m : schemaMapping.getMappings()) {
+                                    if (m.getQueryField() != null && field.getId().equals(m.getQueryField().getId())) {
+                                        mappingForField = m;
+                                        break;
+                                    }
+                                }
+                                if (mappingForField != null) {
+                                    schemaMapping.getMappings().remove(mappingForField);
+                                    mappingForField.setExportSchemaItem(null);
+                                    mappingForField.setExportSchemaMapping(null);
+                                    mappingForField.setQueryField(null);
+                                }
+                                toRemove.add(field);
+                                field.setQuery(null);
+                                fld.setQuery(null);
+                                break;
+                            }
+                        }
+                    }
+                    if (missingFlds != null) {
+                        missingFlds.add(fld.getColumnAlias());
+                    }
+                }
+            }
         }
         for (SpQueryField f : toRemove) {
-        	fields.remove(f);
+            fields.remove(f);
         }
-        
+
         // now add placeHolder panel for adding new condition
-		//result.add(new QueryFieldPanel(container, null, 
-		//		container.getColumnDefStr(), saveBtn, null, null, null, true));
-        
+        //result.add(new QueryFieldPanel(container, null,
+        //		container.getColumnDefStr(), saveBtn, null, null, null, true));
+
         //now sort on queryfield position
         Collections.sort(result, new Comparator<QueryFieldPanel>() {
 
-			/* (non-Javadoc)
-			 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-			 */
-			@Override
-			public int compare(QueryFieldPanel o1, QueryFieldPanel o2) {
-				SpQueryField f1 = o1.getQueryField();
-				SpQueryField f2 = o2.getQueryField();
-				if (f1 != null && f2 != null) 
-				{
-					return f1.getPosition().compareTo(f2.getPosition());
-				} else if (f1 != null)
-				{
-					return 1;
-				} else if (f2 != null)
-				{
-					return -1;
-				} else return 0;
-			}
-        	
+            /* (non-Javadoc)
+             * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+             */
+            @Override
+            public int compare(QueryFieldPanel o1, QueryFieldPanel o2) {
+                SpQueryField f1 = o1.getQueryField();
+                SpQueryField f2 = o2.getQueryField();
+                if (f1 != null && f2 != null) {
+                    return f1.getPosition().compareTo(f2.getPosition());
+                } else if (f1 != null) {
+                    return 1;
+                } else if (f2 != null) {
+                    return -1;
+                } else return 0;
+            }
+
         });
-        
+
         return result;
     }
 

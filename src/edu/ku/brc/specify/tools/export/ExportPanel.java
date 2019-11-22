@@ -258,7 +258,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 		 */
 				new javax.swing.SwingWorker<Boolean, Object>() {
 
-					String outputFileName = "/home/timo/datas/dwckuiDwc.zip";
+					String outputFileName = "/home/timo/datas/dwckuiwarpedmultis.zip";
 
 					/**
 					 * @return
