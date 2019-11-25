@@ -29,6 +29,7 @@ import javax.imageio.ImageIO;
 import org.apache.commons.io.FileUtils;
 
 import edu.ku.brc.ui.GraphicsUtils;
+import org.apache.commons.io.FilenameUtils;
 
 /**
  * This class generates thumbnails for any image readable by {@link ImageIO#read(File)}.
@@ -57,7 +58,7 @@ public class ImageThumbnailGenerator extends BaseThumbnailGenerator
      * @return the bytes of the output file
      * @throws IOException if any IO errors occur during generation or storing the output
      */
-    public byte[] generateThumbnail(final byte[] originalImageData,
+    public byte[] generateThumbnail(final String formatName, final byte[] originalImageData,
                                     final boolean doHighQuality) throws IOException
     {
         ByteArrayInputStream inputStr = new ByteArrayInputStream(originalImageData);
@@ -72,7 +73,7 @@ public class ImageThumbnailGenerator extends BaseThumbnailGenerator
                     return originalImageData;
                 }
                 
-                byte[] scaledImgData = GraphicsUtils.scaleImage(orig, maxSize.height, maxSize.width, true, doHighQuality);
+                byte[] scaledImgData = GraphicsUtils.scaleImage(formatName, orig, maxSize.height, maxSize.width, true, doHighQuality);
                 return scaledImgData;
             }
         }
@@ -83,14 +84,18 @@ public class ImageThumbnailGenerator extends BaseThumbnailGenerator
 	 * @see edu.ku.brc.util.thumbnails.ThumbnailGenerator#generateThumbnail(java.lang.String, java.lang.String, boolean)
 	 */
     @Override
-	public boolean generateThumbnail(final String originalFile, 
+	public boolean generateThumbnail(final String originalFile,
 	                                 final String thumbnailFile,
 	                                 final boolean doHighQuality) throws IOException
 	{
 	    byte[] origData = GraphicsUtils.readImage(originalFile);
         if (origData != null)
         {
-            byte[] thumb = generateThumbnail(origData, doHighQuality);
+            String ext = FilenameUtils.getExtension(originalFile);
+            if ("".equals(ext)) {
+                ext = null;
+            }
+            byte[] thumb = generateThumbnail(ext != null ? ext : "jpeg", origData, doHighQuality);
             if (thumb != null)
             {
                 FileUtils.writeByteArrayToFile(new File(thumbnailFile), thumb);
