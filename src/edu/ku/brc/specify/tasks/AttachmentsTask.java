@@ -34,6 +34,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
+import edu.ku.brc.af.auth.BasicPermisionPanel;
+import edu.ku.brc.af.auth.PermissionEditorIFace;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -463,6 +465,11 @@ public class AttachmentsTask extends BaseTask implements ImageLoaderListener
         //adminNavBox  = new NavBox("Admin");
     }
 
+    public PermissionEditorIFace getPermEditorPanel()
+    {
+        return new BasicPermisionPanel("ATTACHMENTS", "ENABLE", null,
+                null, null);
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.core.BaseTask#getStarterPane()
