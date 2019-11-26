@@ -596,6 +596,14 @@ public class DwcMapper
 		return meth;
 	}
 
+	public boolean isMapped(String term) {
+		for (MappingInfo mi : concepts) {
+			if (mi.getTerm().equals(term)) {
+				return true;
+			}
+		}
+		return false;
+	}
 	/**
 	 *
 	 * @param object

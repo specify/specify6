@@ -7,13 +7,7 @@ import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 import javax.swing.JProgressBar;
 
@@ -583,7 +577,28 @@ public class DarwinCoreArchive
 		if (enclose) line += encloser;
 		return line;
 	}
-	
+
+	private List<DarwinCoreArchiveField> getUnmappedFields(DarwinCoreArchiveFile f) {
+		List<DarwinCoreArchiveField> result = new ArrayList<>();
+		for (DarwinCoreArchiveField fld : f.getMappings()) {
+			if (!"coreid".equals(fld.getTerm()) && !"id".equals(fld.getTerm()) && !mapper.isMapped(fld.getTerm()) ) {
+				result.add(fld);
+			}
+		}
+		return result;
+	}
+
+	public Map<DarwinCoreArchiveFile, List<DarwinCoreArchiveField>> getUnmappedFields() {
+		Map<DarwinCoreArchiveFile, List<DarwinCoreArchiveField>> result = new HashMap<>();
+		for (DarwinCoreArchiveFile f : files) {
+			List<DarwinCoreArchiveField> unmapped = getUnmappedFields(f);
+			if (unmapped.size() > 0) {
+				result.put(f, unmapped);
+			}
+		}
+		return result;
+	}
+
 	/**
 	 * @param archiveFile
 	 * @param obj

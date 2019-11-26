@@ -5,6 +5,7 @@ package edu.ku.brc.specify.tools.export;
 
 
 import static edu.ku.brc.ui.UIHelper.createButton;
+import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
@@ -52,8 +53,11 @@ import javax.swing.table.DefaultTableModel;
 import edu.ku.brc.specify.datamodel.*;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.plugins.morphbank.DarwinCoreArchive;
+import edu.ku.brc.specify.plugins.morphbank.DarwinCoreArchiveField;
 import edu.ku.brc.specify.tasks.subpane.SymbiotaPane;
 import edu.ku.brc.specify.tools.gbifregistration.GbifSandbox;
+import edu.ku.brc.ui.*;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.tools.ant.util.FileUtils;
@@ -100,17 +104,13 @@ import edu.ku.brc.specify.tasks.subpane.qb.TableTree;
 import edu.ku.brc.specify.tools.webportal.BuildSearchIndex2;
 import edu.ku.brc.specify.ui.AppBase;
 import edu.ku.brc.specify.ui.HelpMgr;
-import edu.ku.brc.ui.CustomDialog;
-import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.IconManager.IconSize;
-import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.AttachmentManagerIface;
 import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.Pair;
 import edu.ku.brc.util.WebStoreAttachmentMgr;
-
-
+import edu.ku.brc.specify.plugins.morphbank.DarwinCoreArchiveFile;
+import edu.ku.brc.ui.ChooseFromListDlg;
 /**
  * @author timo
  *
@@ -259,6 +259,13 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 				new javax.swing.SwingWorker<Boolean, Object>() {
 
 					String outputFileName = "/home/timo/datas/dwckuiwarpedmultis.zip";
+					int META_FROM_RESOURCE = 0;
+					int META_FROM_FILE = 1;
+					int metaSrc = META_FROM_RESOURCE;
+					int SRC_REC_SET = 0;
+					int SRC_MAPPING = 1;
+					int SRC_QUERY = 2;
+					int SRC_ALL = 3;
 
 					/**
 					 * @return
@@ -271,6 +278,39 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 					}
 
 
+					private File selectArchiveDefinitionFile() {
+						JFileChooser chooser = new JFileChooser();
+						chooser.setDialogTitle(getResourceString("CHOOSE_DWC_DEF_FILE"));
+						chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+						chooser.setMultiSelectionEnabled(false);
+						chooser.setFileFilter(new UIFileFilter("xml", getResourceString("DWC_DEF_FILES")));
+
+						if (chooser.showOpenDialog(UIRegistry.get(UIRegistry.FRAME)) != JFileChooser.APPROVE_OPTION) {
+							return null;
+						}
+
+						File file = chooser.getSelectedFile();
+
+						String path = chooser.getCurrentDirectory().getPath();
+						if (StringUtils.isNotEmpty(path)) {
+							AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+							localPrefs.put("DWC_DEF_FILE_PATH", path);
+						}
+						return file;
+					}
+
+					private Element getMetaElementFromFile() {
+						File metaFile = selectArchiveDefinitionFile();
+						Element result = null;
+						if (metaFile != null) {
+							try {
+								result = XMLHelper.readFileToDOM4J(metaFile);
+							} catch (Exception x) {
+								UIRegistry.displayErrorDlg(x.getMessage());
+							}
+						}
+						return result;
+					}
                     /**
                      *
                      * @param archiveName
@@ -381,17 +421,125 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
                         }
 
                     }
+
+                    private Element getMetaElement() {
+						if (metaSrc == META_FROM_RESOURCE) {
+							return GbifSandbox.getDwcaSchema(schemaMapping.getMappingName());
+						} else if (metaSrc == META_FROM_FILE){
+							return getMetaElementFromFile();
+						} else {
+							return null;
+						}
+					}
+
+
+					private boolean showUnmappedTerms(Map<DarwinCoreArchiveFile, List<DarwinCoreArchiveField>> unmapped) {
+						//rough job
+						List<String> descriptions = new ArrayList<>();
+						for (DarwinCoreArchiveFile f : unmapped.keySet()) {
+							for (DarwinCoreArchiveField fld : unmapped.get(f)) {
+								descriptions.add(f.getRowType() + ": " + fld.getTerm());
+							}
+						}
+						ChooseFromListDlg<String> dog = new ChooseFromListDlg<String>((Frame)UIRegistry.get(UIRegistry.FRAME),
+								getResourceString("DWC_UNMAPPED_DLG_TITLE"),
+								ChooseFromListDlg.OKCANCEL, descriptions);
+						dog.createUI();
+						dog.getList().setSelectedIndex(0);
+						dog.getList().setEnabled(false);
+						dog.setModal(true);
+						UIHelper.centerAndShow(dog);
+						return !dog.isCancelled();
+					}
+
+					private int getRecSrc() {
+						List<String> recsetOptions = new ArrayList<>();
+						recsetOptions.add(getResourceString("DWC_SRC_REC_SET"));
+						recsetOptions.add(getResourceString("DWC_SRC_MAPPING_RESULTS"));
+						recsetOptions.add(getResourceString("DWC_SRC_QUERY"));
+						recsetOptions.add(getResourceString("DWC_SRC_ALL_RECORDS"));
+						ChooseFromListDlg<String> dog = new ChooseFromListDlg<>((Frame)UIRegistry.get(UIRegistry.FRAME),
+								getResourceString("DWC_SRC_DLG_TITLE"),
+								ChooseFromListDlg.OKCANCEL, recsetOptions);
+						dog.createUI();
+						dog.getList().setSelectedIndex(0);
+						dog.setModal(true);
+						UIHelper.centerAndShow(dog);
+						if (dog.isCancelled()) {
+							return -1;
+						} else {
+							return dog.getSelectedIndices()[0];
+						}
+					}
+
+					private int getSrcRecSet() {
+						List<Object[]> rs = BasicSQLUtils.query("select recordsetid, name from recordset where tableid = 1 "
+						 	+ "and specifyuserid = "  + Agent.getUserAgent().getSpecifyUser().getId() + " and type = 0 order by 2");
+						Map<String, Integer> idMap = new HashMap<>();
+						List<String> names = new ArrayList<>();
+						for (Object[] row : rs) {
+							names.add((String)row[1]);
+							idMap.put((String)row[1], (Integer)row[0]);
+						}
+						ChooseFromListDlg<String> dog = new ChooseFromListDlg<>((Frame)UIRegistry.get(UIRegistry.FRAME),
+								getResourceString("DWC_SRC_RECSET_TITLE"),
+								ChooseFromListDlg.OKCANCEL, names);
+						dog.createUI();
+						dog.getList().setSelectedIndex(0);
+						dog.setModal(true);
+						UIHelper.centerAndShow(dog);
+						if (dog.isCancelled()) {
+							return -1;
+						} else {
+							return idMap.get(dog.getSelectedObject());
+						}
+					}
+
+					private int getSrcMapping() {
+						return -1;
+					}
+
+					private int getSrcQuery() {
+						return -1;
+					}
+
+					private int getSrcAll() {
+						return -1;
+					}
+
+					private int getSrcRecSetId() {
+						int src = getRecSrc();
+						if (src == -1) {
+							return -1;
+						} else if (src == SRC_REC_SET) {
+							return getSrcRecSet();
+						} else if (src == SRC_MAPPING) {
+							return getSrcMapping();
+						} else if (src == SRC_QUERY) {
+							return getSrcQuery();
+						} else if (src == SRC_ALL) {
+							return getSrcAll();
+						} else {
+							return -1;
+						}
+					}
 					/* (non-Javadoc)
 					 * @see javax.swing.SwingWorker#doInBackground()
 					 */
 					@Override
 					protected Boolean doInBackground() throws Exception {
 						try {
-							Element dwcMetaEl = GbifSandbox.getDwcaSchema(schemaMapping.getMappingName());
+							Element dwcMetaEl = getMetaElement();
 							DarwinCoreArchive dwc = new DarwinCoreArchive(dwcMetaEl, schemaMapping.getId(), false);
+							Map<DarwinCoreArchiveFile, List<DarwinCoreArchiveField>> unmapped = dwc.getUnmappedFields();
+							if (unmapped.size() > 0) {
+								if (!showUnmappedTerms(unmapped)) {
+									return false;
+								}
+							}
 							List<Integer> recIds = null;
                             int blk = dwc.getBlockSize();
-							int recSetId = 0;
+							int recSetId = getSrcRecSetId();
 							if (schemaMapping.getMappingName().equals("multiqs")) {
                                 //recSetId = 832; //herps
                                 recSetId = 81; //fish with ce and co atts.
