@@ -22621,9 +22621,14 @@ Specify provides an extensive array of utilities for curatorial management of sp
             <version>0</version>
             <text>Modified By Agent</text>
           </str>
-          <str language="en">
+          <str language="pt">
             <version>0</version>
             <text>Modificado pelo Agente</text>
+          </str>
+          <str language="pt" country="BR" variant="">
+            <version>0</version>
+            <text>Modificado pelo Agente</text>
+            <itemName reference="../../.."/>
           </str>
         </names>
         <descs/>
