@@ -1390,7 +1390,7 @@ public class ExportToMySQLDB
 						String sql = getSQLForTabDelimExport(conn, tableName);
 						ResultSet rows = stmt.executeQuery(sql);
 						//no simple way to get record count from ResultSet??
-						rowCount = BasicSQLUtils.getCount(conn, "select count(*) from `" + tableName + "`");
+						rowCount = BasicSQLUtils.getCount(conn, "select count(*) from `" + tableName + "`").longValue();
 						for (QBDataSourceListenerIFace listener : listeners)
 						{
 							listener.loaded();
