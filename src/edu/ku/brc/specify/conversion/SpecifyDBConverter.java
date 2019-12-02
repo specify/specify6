@@ -407,7 +407,7 @@ public class SpecifyDBConverter extends AppBase
             pb.add(UIHelper.createScrollPane(list, true), cc.xy(1,3));
             pb.setDefaultDialogBorder();
             
-            final CustomDialog dlg = new CustomDialog(null, title, true, pb.getPanel());
+            final CustomDialog dlg = new CustomDialog((Frame)null, title, true, pb.getPanel());
             list.addListSelectionListener(new ListSelectionListener() {
                 @Override
                 public void valueChanged(ListSelectionEvent e)
@@ -3011,7 +3011,7 @@ public class SpecifyDBConverter extends AppBase
         panel.add(pb.getPanel(), cc.xy(3, 1));
         panel.setDefaultDialogBorder();
 
-        CustomDialog dlg = new CustomDialog(null, "Specify Converter", true, panel.getPanel());
+        CustomDialog dlg = new CustomDialog((Frame)null, "Specify Converter", true, panel.getPanel());
         UIHelper.centerAndShow(dlg);
         
         dlg.dispose();

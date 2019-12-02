@@ -6363,7 +6363,7 @@ public class Uploader implements ActionListener, KeyListener
         lstPane.setBorder(new EmptyBorder(1, 1, 10, 1));
         lstPane.add(lst, BorderLayout.CENTER);
         pane.add(lstPane, BorderLayout.CENTER);
-        CustomDialog dlg = JOptionPane.showMessageDialog(null,
+        CustomDialog dlg = new CustomDialog((Frame)null,
                 getResourceString("WB_UPLOAD_BAD_STRUCTURE_DLG"),
                 true,
                 CustomDialog.OKHELP,

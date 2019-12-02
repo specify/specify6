@@ -1355,7 +1355,7 @@ public class RegisterApp extends JPanel implements FrameworkAppIFace
         }
         
         final JList        list = new JList(versionsList);
-        final CustomDialog dlg  = new CustomDialog(null, "Set Version", true, pb.getPanel());
+        final CustomDialog dlg  = new CustomDialog((java.awt.Frame)null, "Set Version", true, pb.getPanel());
         
         pb.add(UIHelper.createLabel("Versions", SwingConstants.CENTER), cc.xy(1,1));
         pb.add(UIHelper.createScrollPane(list),  cc.xy(1,3));

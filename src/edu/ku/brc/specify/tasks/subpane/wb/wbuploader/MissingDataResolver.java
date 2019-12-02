@@ -714,11 +714,11 @@ public class MissingDataResolver implements ActionListener
         CustomDialog cwin;
         if (!readOnly)
         {
-            cwin = new CustomDialog(null, "Missing Data", true, mainPane); // i18n
+            cwin = new CustomDialog((java.awt.Frame)null, "Missing Data", true, mainPane); // i18n
         }
         else
         {
-            cwin = new CustomDialog(null, "Missing Data", true, CustomDialog.OK_BTN, mainPane, CustomDialog.OK_BTN); // i18n
+            cwin = new CustomDialog((java.awt.Frame)null, "Missing Data", true, CustomDialog.OK_BTN, mainPane, CustomDialog.OK_BTN); // i18n
         }
             
         cwin.setModal(true);

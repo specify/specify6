@@ -243,7 +243,7 @@ public class LocalityWorldWindPlugin extends LocalityGoogleEarthPlugin implement
         if (worldWindDlg == null)
         {
             int btns = isViewMode ? CustomDialog.CANCEL_BTN : CustomDialog.OKCANCEL;
-            worldWindDlg = JOptionPane.showMessageDialog(null, "World Wind", true, btns, wwPanel);
+            worldWindDlg = new CustomDialog((Frame)null, "World Wind", true, btns, wwPanel);
             worldWindDlg.setCancelLabel(UIRegistry.getResourceString(isViewMode ? "CLOSE" : "CANCEL"));
             worldWindDlg.createUI();
             worldWindDlg.pack();

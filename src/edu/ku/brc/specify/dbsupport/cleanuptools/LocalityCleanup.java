@@ -196,7 +196,7 @@ public class LocalityCleanup
         pb.add(UIHelper.createScrollPane(table), cc.xy(1,1));
         pb.setDefaultDialogBorder();
         
-        CustomDialog dlg = new CustomDialog(null, "Locality Duplicates", true, pb.getPanel());
+        CustomDialog dlg = new CustomDialog((java.awt.Frame)null, "Locality Duplicates", true, pb.getPanel());
         dlg.setVisible(true);
         if (!dlg.isCancelled())
         {

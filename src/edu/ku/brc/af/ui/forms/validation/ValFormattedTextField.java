@@ -1475,7 +1475,7 @@ public class ValFormattedTextField extends JPanel implements ValFormattedTextFie
 
                    ValFormattedTextField formattedTextField = new ValFormattedTextField(uif, false);
                    
-                   CustomDialog dlg = new CustomDialog(null, "Test", true, formattedTextField);
+                   CustomDialog dlg = new CustomDialog((Frame)null, "Test", true, formattedTextField);
                    formattedTextField.setText("2005-IT-001");
                    dlg.setVisible(true);
                    

@@ -866,7 +866,7 @@ public class InteractionsTask extends BaseTask
         
         pb.setDefaultDialogBorder();
         
-        CustomDialog dlg = JOptionPane.showMessageDialog(null,
+        CustomDialog dlg = new CustomDialog((Frame)null,
                 getResourceString("InteractionsTask.MISSING_DET_TITLE"), 
                 true, 
                 CustomDialog.OK_BTN, 

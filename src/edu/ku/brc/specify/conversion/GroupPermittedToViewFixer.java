@@ -387,7 +387,7 @@ public class GroupPermittedToViewFixer extends AppBase
         panel.add(new JLabel(IconManager.getIcon("SpecifyLargeIcon")), cc.xy(1, 1));
         panel.add(pb.getPanel(), cc.xy(3, 1));
 
-        CustomDialog dlg = new CustomDialog(null, "Database Info", true, panel.getPanel());
+        CustomDialog dlg = new CustomDialog((java.awt.Frame)null, "Database Info", true, panel.getPanel());
         ((JPanel)dlg.getContentPanel()).setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         UIHelper.centerAndShow(dlg);
         
@@ -536,7 +536,7 @@ public class GroupPermittedToViewFixer extends AppBase
     
                 pb.setDefaultDialogBorder();
                 
-                final CustomDialog dlg = new CustomDialog(null, "Select a DB to Verify", true, pb.getPanel());
+                final CustomDialog dlg = new CustomDialog((java.awt.Frame)null, "Select a DB to Verify", true, pb.getPanel());
                 
                 ListSelectionListener lsl = new ListSelectionListener() {
                     @Override

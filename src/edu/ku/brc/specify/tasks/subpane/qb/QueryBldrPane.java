@@ -1128,7 +1128,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 pb.setDefaultDialogBorder();
                 
                 dirty = qfps.size() > 0;
-                CustomDialog dlg = JOptionPane.showMessageDialog(null,
+                CustomDialog dlg = new CustomDialog((Frame)null,
                                                     UIRegistry.getResourceString("QB_FIELD_MISSING_TITLE"), true, 
                                                     CustomDialog.OK_BTN, pb.getPanel());
                 dlg.setOkLabel(UIRegistry.getResourceString("CLOSE"));
@@ -3138,7 +3138,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     pb.add(new JLabel(String.format(UIRegistry.getResourceString("QB_CANT_DISPLAY_MSG2"), runningResults.get().getMaxTableRows())), new CellConstraints().xy(2, 4));
                     pb.add(new JLabel(UIRegistry.getResourceString("QB_CANT_DISPLAY_MSG3")), new CellConstraints().xy(2, 6));
                     
-                    CustomDialog dlg = JOptionPane.showMessageDialog(null,
+                    CustomDialog dlg = new CustomDialog((Frame)null,
                             UIRegistry.getResourceString("QB_CANT_DISPLAY_TITLE"),
                             true,
                             CustomDialog.OKHELP,
@@ -3594,7 +3594,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 CellConstraints cc = new CellConstraints();
                 pane.add(nameLbl, cc.xy(2, 2));
                 pane.add(nameText, cc.xy(4, 2));
-                CustomDialog cd = JOptionPane.showMessageDialog(null,
+                CustomDialog cd = new CustomDialog((Frame)null,
                         getSaveDlgTitle(saveAs), 
                         true, CustomDialog.OKCANCELHELP, pane.getPanel());
                 cd.setHelpContext("QBSave");

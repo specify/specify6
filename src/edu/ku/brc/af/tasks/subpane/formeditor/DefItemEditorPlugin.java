@@ -138,7 +138,7 @@ public class DefItemEditorPlugin extends JPanel implements GetSetValueIFace, UIP
                                                           true);
         
         panel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-        CustomDialog dlg = JOptionPane.showMessageDialog(null, (isRow ? "Row" : "Column") + " Definition Editor", true, panel);
+        CustomDialog dlg = new CustomDialog((Frame)null, (isRow ? "Row" : "Column") + " Definition Editor", true, panel);
         dlg.setVisible(true);
         
         if (!dlg.isCancelled())

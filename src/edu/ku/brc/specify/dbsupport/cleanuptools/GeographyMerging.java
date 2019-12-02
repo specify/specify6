@@ -151,7 +151,7 @@ public class GeographyMerging
         PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g", "f:p:g"));
         pb.add(sp, cc.xy(1,1));
         pb.setDefaultDialogBorder();
-        dlg = JOptionPane.showMessageDialog(null, " ", true, CustomDialog.OKCANCELAPPLYHELP, pb.getPanel()) // Title is set later
+        dlg = new CustomDialog((Frame)null, " ", true, CustomDialog.OKCANCELAPPLYHELP, pb.getPanel()) // Title is set later
         {
             @Override
             protected void cancelButtonPressed() // Skip Button

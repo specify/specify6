@@ -318,7 +318,7 @@ public class GPXPanel extends JPanel
         if (fileName != null)
         {
             GPXPanel panel = new GPXPanel(new File(fileDlg.getDirectory() + File.separator + fileName));
-            CustomDialog dlg = JOptionPane.showMessageDialog(null, "GPX Points", true, panel);
+            CustomDialog dlg = new CustomDialog((Frame)null, "GPX Points", true, panel);
             dlg.createUI();
             dlg.pack();
             dlg.setSize(950, 700);

@@ -259,7 +259,7 @@ public class MatchHandler
         pane.add(btnPane, BorderLayout.SOUTH);
         
         String tblTitle = DBTableIdMgr.getInstance().getByShortClassName(uploadTable.getTblClass().getSimpleName()).getTitle();
-        matchDlg = JOptionPane.showMessageDialog(null, getResourceString("WB_UPLOAD_CHOOSE_MATCH") + " - " + tblTitle, true,
+        matchDlg = new CustomDialog((Frame)null, getResourceString("WB_UPLOAD_CHOOSE_MATCH") + " - " + tblTitle, true,
                 CustomDialog.OKCANCELAPPLYHELP, pane, CustomDialog.OK_BTN);
         matchDlg.setOkLabel(getResourceString("WB_UPLOAD_MATCH_SELECT_BTN"));
         matchDlg.setCancelLabel(getResourceString("WB_UPLOAD_MATCH_ADD_BTN"));
@@ -316,7 +316,7 @@ public class MatchHandler
         
         try
         {
-            settingDlg = new CustomDialog(null, getResourceString("WB_UPLOAD_SETTINGS"), true,
+            settingDlg = new CustomDialog((Frame)null, getResourceString("WB_UPLOAD_SETTINGS"), true,
                     CustomDialog.OKCANCELAPPLYHELP, umsbp, CustomDialog.OK_BTN);
             settingDlg.setApplyLabel(getResourceString("WB_UPLOAD_APPLY_TO_ALL"));
             settingDlg.createUI();

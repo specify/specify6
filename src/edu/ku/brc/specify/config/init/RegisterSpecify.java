@@ -744,7 +744,7 @@ public class RegisterSpecify
             pb.add(UIHelper.createI18NLabel("SpReg.ISA_EXPL"), cc.xyw(1, 3, 3));
             pb.setDefaultDialogBorder();
             
-            CustomDialog dlg = JOptionPane.showMessageDialog(null, isaTitle, true, pb.getPanel());
+            CustomDialog dlg = new CustomDialog((Frame)null, isaTitle, true, pb.getPanel());
             dlg.createUI();
             final JButton okBtn = dlg.getOkBtn();
             okBtn.setEnabled(false);

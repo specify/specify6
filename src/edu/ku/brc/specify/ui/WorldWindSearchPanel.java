@@ -781,7 +781,7 @@ public class WorldWindSearchPanel extends JPanel
     {
         WorldWindSearchPanel panel = new WorldWindSearchPanel();
         
-        CustomDialog dlg = new CustomDialog(null, "", true, panel);
+        CustomDialog dlg = new CustomDialog((java.awt.Frame)null, "", true, panel);
         dlg.setVisible(true);
         
         return dlg;

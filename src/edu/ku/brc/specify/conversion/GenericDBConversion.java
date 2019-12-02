@@ -1020,7 +1020,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             pb.add(UIHelper.createScrollPane(tableBot), cc.xy(1,7));
             
             pb.setDefaultDialogBorder();
-            CustomDialog dlg = new CustomDialog(null, "Taxononic Types", true, pb.getPanel());
+            CustomDialog dlg = new CustomDialog((Frame)null, "Taxononic Types", true, pb.getPanel());
             dlg.createUI();
            
             dlg.setSize(1024, 500);

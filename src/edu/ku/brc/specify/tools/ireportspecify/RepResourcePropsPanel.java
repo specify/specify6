@@ -427,7 +427,7 @@ public class RepResourcePropsPanel extends JPanel
     
     public static void main(String args[])
     {
-        CustomDialog tcd = new CustomDialog(null, "Testing", false, 
+        CustomDialog tcd = new CustomDialog((java.awt.Frame)null, "Testing", false,
                 new RepResourcePropsPanel(null, null, true, null));
         centerAndShow(tcd);
     }

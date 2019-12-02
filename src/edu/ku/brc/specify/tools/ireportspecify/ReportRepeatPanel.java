@@ -286,7 +286,7 @@ public class ReportRepeatPanel extends JPanel
     {
         ReportRepeatPanel rpp = new ReportRepeatPanel(null, null);
         rpp.createUI(6);
-        CustomDialog cd = new CustomDialog(null, "Blah", true, rpp);
+        CustomDialog cd = new CustomDialog((java.awt.Frame)null, "Blah", true, rpp);
         UIHelper.centerAndShow(cd);
         System.exit(0);
     }
