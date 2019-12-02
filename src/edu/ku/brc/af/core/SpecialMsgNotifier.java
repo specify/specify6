@@ -114,7 +114,7 @@ public class SpecialMsgNotifier
                         String header = msg.length() > 6 ? msg.substring(0, 7).toUpperCase() : "";
                         if (header.startsWith("<HTML>"))
                         {
-                            UIRegistry.showLocalizedError("NO_INTERNET");
+                            log.warn("Unable to connect to specify msg server");
                         } else
                         {
                             UIRegistry.showError(JOptionPane.WARNING_MESSAGE, msg);

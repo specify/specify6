@@ -5224,14 +5224,14 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         
         String sql = String.format("SELECT COUNT(*) FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE TABLE_SCHEMA = '%s' AND TABLE_NAME = 'geoname'", 
                                     DBConnection.getInstance().getDatabaseName());
-        if (BasicSQLUtils.getCount(sql) == 0)
+        if (BasicSQLUtils.getCount(sql).equals(0))
         {
             AppPreferences.getGlobalPrefs().putBoolean(FIXED_GEO, true);
             return;
         }
         
         final int numRecs = BasicSQLUtils.getCountAsInt("SELECT COUNT(*) FROM geoname ge INNER JOIN geography g ON ge.name = g.Name WHERE ge.Name <> ge.asciiname");
-        if (BasicSQLUtils.getCount(sql) == 0)
+        if (BasicSQLUtils.getCount(sql).equals(0))
         {
             AppPreferences.getGlobalPrefs().putBoolean(FIXED_GEO, true);
             return;

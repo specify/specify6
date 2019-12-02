@@ -669,10 +669,10 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
                     rs.close();
                     isOnLoan = totalOnLoan > 0;
                     if (!isOnLoan && checkAllInteractions) {
-                        isOnLoan = 0 < BasicSQLUtils.getCount("select count(*) from preparation p left join giftpreparation"
+                        isOnLoan = !BasicSQLUtils.getCount("select count(*) from preparation p left join giftpreparation"
                                 + " gp on gp.preparationid = p.preparationid left join deaccessionpreparation dp on dp.preparationid"
                                 + " = p.preparationid left join exchangeoutprep ep on ep.preparationid = p.preparationid where p.preparationid = "
-                                + getId() + " and (gp.quantity > 0 or dp.quantity > 0 or ep.quantity > 0)");
+                                + getId() + " and (gp.quantity > 0 or dp.quantity > 0 or ep.quantity > 0)").equals(0);
                     }
                         
 

@@ -478,7 +478,7 @@ public class BasicSQLUtils
      * @param sql
      * @return
      */
-    public static Integer getCount(final String sql)
+    public static <T extends Number> T  getCount(final String sql)
     {
         return getCount(dbConn != null ? dbConn : DBConnection.getInstance().getConnection(), sql);
     }
@@ -499,17 +499,31 @@ public class BasicSQLUtils
      */
     public static int getCountAsInt(final Connection conn, final String sql)
     {
-        Integer cnt = getCount(conn, sql);
-        return cnt == null ? 0 : cnt;
+        Number cnt = getCount(conn, sql, true);
+        if (cnt != null) {
+            if (cnt.longValue() > Integer.MAX_VALUE) {
+                String str = "BasicSQLUtils.getCountAsInt(): truncating " + cnt.toString() + " to " + Integer.MAX_VALUE;
+                log.warn(str);
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().sendMsg(BasicSQLUtils.class, str, new Exception(str));
+                return Integer.MAX_VALUE;
+            } else {
+                return cnt.intValue();
+            }
+        } else {
+            return 0;
+        }
     }
-    
+
+    public static  <T extends Number> T getCount(final Connection connection, final String sql) {
+        return getCount(connection, sql, false);
+    }
     /**
      * @param sql
      * @return
      */
-    public static Integer getCount(final Connection connection, final String sql)
+    public static <T extends Number> T getCount(final Connection connection, final String sql, final Boolean asNumber)
     {
-        Integer   count = null;
+        Number   count = null;
         Statement stmt  = null;
         ResultSet rs    = null;
         try
@@ -518,8 +532,25 @@ public class BasicSQLUtils
             rs   = stmt.executeQuery(sql);
             if (rs.next())
             {
-                count = rs.getInt(1);
-                return rs.wasNull() ? null : count;
+                Object returnVal = rs.getObject(1);
+                if (rs.wasNull()) {
+                    return null;
+                }
+                else {
+                    if (returnVal instanceof Boolean) {
+                        Boolean b = (Boolean)returnVal;
+                        count =  b ? Long.valueOf(1L) : Long.valueOf(0L);
+                    } else {
+                        count = (Number) returnVal;
+                    }
+                    if (asNumber) {
+                        return (T)count;
+                    } else if (count.longValue() - count.intValue() > 0) {
+                        return (T)Long.valueOf(count.longValue());
+                    } else {
+                        return (T)Integer.valueOf(count.intValue());
+                    }
+                }
             }
 
         } catch (Exception ex)
@@ -536,7 +567,7 @@ public class BasicSQLUtils
             } catch (Exception ex) {}
         }
 
-        return count;
+        return null;
     }
     
     /**

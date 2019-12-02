@@ -540,7 +540,7 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
 
 			if (scale) 
 			{
-				imgBytes = GraphicsUtils.scaleImage(bytes, this.maxHeight,
+				imgBytes = GraphicsUtils.scaleImage("jpeg", bytes, this.maxHeight,
 						this.maxWidth, true, false);
 			} else 
 			{

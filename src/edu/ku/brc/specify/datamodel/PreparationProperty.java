@@ -2399,14 +2399,8 @@ public class PreparationProperty extends CollectionMember implements Cloneable
      */
     @Override
     @Transient
-    public Integer getParentId()
-    {
-        Vector<Object> ids = BasicSQLUtils.querySingleCol("SELECT PreparationID FROM preparation WHERE PreparationID = " + preparation.getId());
-        if (ids.size() == 1)
-        {
-            return (Integer)ids.get(0);
-        }
-        return null;
+    public Integer getParentId() {
+        return preparation != null ? preparation.getId() : null;
     }
 
     /* (non-Javadoc)

@@ -120,7 +120,7 @@ public class Exsiccata extends DataModelObjBase implements java.io.Serializable
      *
      * @return
      */
-    @Column(name = "Schedae", unique = false, nullable = false, insertable = true, updatable = true, length = 255)
+    @Column(name = "Schedae", unique = false, nullable = true, insertable = true, updatable = true, length = 255)
     public String getSchedae() {
         return schedae;
     }

@@ -1439,8 +1439,9 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
 		try
 		{
 			if (connection != null) {
-                boolean isMySql8 = connection.getMetaData().getDatabaseProductVersion().startsWith("8.");
-                if (isMySql8) {
+			    String mysqlVersion = connection.getMetaData().getDatabaseProductVersion();
+                boolean isMySql8Or7 = mysqlVersion.startsWith("8.") || mysqlVersion.startsWith("5.7");
+                if (isMySql8Or7) {
                     String sql = String.format("CREATE USER '%s'@'%s' IDENTIFIED BY '%s'", username, hostName, password);
                     stmt = connection.createStatement();
                     int rv = stmt.executeUpdate(sql);
@@ -1450,7 +1451,7 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
                 }
                 StringBuilder sb = new StringBuilder("GRANT ");
                 appendPerms(sb, permissions);
-                if (!isMySql8) {
+                if (!isMySql8Or7) {
                     sb.append(String.format(" ON %s.* TO '%s'@'%s' IDENTIFIED BY '%s'", dbName, username, hostName, password));
                     stmt = connection.createStatement();
                 } else {

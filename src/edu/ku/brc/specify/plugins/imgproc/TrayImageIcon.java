@@ -94,7 +94,7 @@ public class TrayImageIcon implements Trayable
             hsvDbl = RGBtoHSV(0, 0, 255);
             System.out.println(hsvDbl[0]+","+hsvDbl[1]+","+hsvDbl[2]+"   ");
             
-            imgIcon = GraphicsUtils.scaleImageToIconImage(destImage, 120, 120, true, true);
+            imgIcon = GraphicsUtils.scaleImageToIconImage("jpeg", destImage, 120, 120, true, true);
         } catch (IOException e)
         {
             e.printStackTrace();

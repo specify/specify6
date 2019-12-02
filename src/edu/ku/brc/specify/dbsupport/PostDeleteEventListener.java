@@ -19,11 +19,19 @@
 */
 package edu.ku.brc.specify.dbsupport;
 
+import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.specify.datamodel.DataModelObjBase;
+import org.apache.log4j.Logger;
 import org.hibernate.event.PostDeleteEvent;
 
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
+import org.hibernate.event.PostUpdateEvent;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class listens for Insert events from Hibernate so it can update the Lucene index. 
@@ -37,27 +45,63 @@ import edu.ku.brc.ui.CommandDispatcher;
  * Created Date: Nov 2, 2006
  *
  */
-public class PostDeleteEventListener implements org.hibernate.event.PostDeleteEventListener
-{
+public class PostDeleteEventListener implements org.hibernate.event.PostDeleteEventListener {
+    private static final Logger log = Logger.getLogger(PostDeleteEventListener.class);
 
     /* (non-Javadoc)
      * @see org.hibernate.event.PostDeleteEventListener#onPostDelete(org.hibernate.event.PostDeleteEvent)
      */
     @Override
-    public void onPostDelete(PostDeleteEvent obj)
-    {
-        if (obj.getEntity() instanceof FormDataObjIFace)
-        {
+    public void onPostDelete(PostDeleteEvent obj) {
+        if (obj.getEntity() instanceof FormDataObjIFace) {
             CommandDispatcher.dispatch(new CommandAction(PostInsertEventListener.DB_CMD_TYPE, PostInsertEventListener.DELETE_CMD_ACT, obj.getEntity()));
-            
-            if (PostInsertEventListener.isAuditOn())
-            {
-                if (((FormDataObjIFace)obj.getEntity()).isChangeNotifier())
-                {
-                    PostInsertEventListener.saveOnAuditTrail((byte)2, obj.getEntity(), null);
+
+            if (PostInsertEventListener.isAuditOn()) {
+                if (((FormDataObjIFace) obj.getEntity()).isChangeNotifier()) {
+                    List<PropertyUpdateInfo> updates = PostUpdateEventListener.getLogFieldValues() ? getPropertyUpdates(obj) : null;
+                    PostInsertEventListener.saveOnAuditTrail((byte) 2, obj.getEntity(), updates);
                 }
             }
         }
     }
 
+    private String getPropertyName(int colIdx, PostDeleteEvent obj) {
+        String name = obj.getPersister().getPropertyNames()[colIdx];
+        if (obj.getEntity() instanceof edu.ku.brc.specify.datamodel.Treeable) {
+            if (name.toLowerCase().startsWith("accepted")) {
+                name = "acceptedid";
+            } else if (name.toLowerCase().startsWith("parent")) {
+                name = "parentid";
+            }
+        }
+        return name;
+    }
+
+    private boolean shouldAuditProperty(int colIdx, PostDeleteEvent obj) {
+        String name = obj.getPersister().getPropertyNames()[colIdx];
+        boolean result = obj.getDeletedState()[colIdx] != null && PostUpdateEventListener.shouldAuditProperty(name);
+        if (result) {
+            if (obj.getDeletedState()[colIdx] instanceof java.util.Set) {
+                result = false;
+            } else if (obj.getEntity() instanceof DataModelObjBase){
+                DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(((DataModelObjBase)obj.getEntity()).getTableId());
+                result = tableInfo != null && name != null && !name.equalsIgnoreCase(((DBTableInfo) tableInfo).getIdColumnName());
+            }
+        }
+        return result;
+    }
+    private List<PropertyUpdateInfo> getPropertyUpdates(final PostDeleteEvent obj) {
+        List<PropertyUpdateInfo> result = new ArrayList<>();
+        for (int i = 0; i < obj.getDeletedState().length; i++) {
+            try {
+                if (shouldAuditProperty(i, obj)) {
+                    result.add(new PropertyUpdateInfo(getPropertyName(i, obj), obj.getDeletedState()[i], null));
+                }
+            } catch (org.hibernate.LazyInitializationException ex) {
+                //move along
+                log.warn("Lazy load exception getting properties.");
+            }
+        }
+        return result;
+    }
 }
