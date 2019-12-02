@@ -586,7 +586,7 @@ public class DeterminationBusRules extends BaseBusRules
                 pb.add(UIHelper.createLabel(msg1), cc.xy(2, 2));
                 pb.add(UIHelper.createLabel(msg2), cc.xy(2, 4));
                 String formTitle = UIRegistry.getResourceString("DeterminationBusRules.SYNONYM_INFORMATION");
-                CustomDialog cd = new CustomDialog((Frame)UIRegistry.getTopWindow(), formTitle, true, 
+                CustomDialog cd = JOptionPane.showMessageDialog(null, formTitle, true,
                         CustomDialog.OKCANCELHELP, pb.getPanel());
                 cd.setModal(true);
                 cd.setOkLabel(UIRegistry.getResourceString("DeterminationBusRules.Change"));

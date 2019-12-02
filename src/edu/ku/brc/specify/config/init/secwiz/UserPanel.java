@@ -506,7 +506,7 @@ public class UserPanel extends BaseSetupPanel
         final Hashtable<String, String> emailPrefs = new Hashtable<String, String>();
         if (!EMailHelper.isEMailPrefsOK(emailPrefs))
         {
-            JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
+            JOptionPane.showMessageDialog(null,
                     getResourceString("NO_EMAIL_PREF_INFO"), 
                     getResourceString("NO_EMAIL_PREF_INFO_TITLE"), JOptionPane.WARNING_MESSAGE);
             return;
@@ -617,7 +617,7 @@ public class UserPanel extends BaseSetupPanel
         p.add(scrollPane, BorderLayout.CENTER);
         p.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
         
-        CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), "Summary", true, CustomDialog.OK_BTN, p);
+        CustomDialog dlg = JOptionPane.showMessageDialog(null, "Summary", true, CustomDialog.OK_BTN, p);
         dlg.setOkLabel(UIRegistry.getResourceString("CLOSE"));
         dlg.createUI();
         dlg.setSize(dlg.getPreferredSize().width, 768);

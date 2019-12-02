@@ -730,7 +730,7 @@ public class RegisterSpecify
         if (StringUtils.isNotEmpty(isaNumber))
         {
             String msg = UIRegistry.getLocalizedMessage("SpReg.ISA_NUM", isaNumber);
-            JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), msg, isaTitle, JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, msg, isaTitle, JOptionPane.INFORMATION_MESSAGE);
             
         } else
         {
@@ -744,7 +744,7 @@ public class RegisterSpecify
             pb.add(UIHelper.createI18NLabel("SpReg.ISA_EXPL"), cc.xyw(1, 3, 3));
             pb.setDefaultDialogBorder();
             
-            CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), isaTitle, true, pb.getPanel());
+            CustomDialog dlg = JOptionPane.showMessageDialog(null, isaTitle, true, pb.getPanel());
             dlg.createUI();
             final JButton okBtn = dlg.getOkBtn();
             okBtn.setEnabled(false);

@@ -28,9 +28,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
 
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
 import org.apache.commons.lang.StringUtils;
@@ -153,7 +151,7 @@ public class GeographyMerging
         PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g", "f:p:g"));
         pb.add(sp, cc.xy(1,1));
         pb.setDefaultDialogBorder();
-        dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), " ", true, CustomDialog.OKCANCELAPPLYHELP, pb.getPanel()) // Title is set later
+        dlg = JOptionPane.showMessageDialog(null, " ", true, CustomDialog.OKCANCELAPPLYHELP, pb.getPanel()) // Title is set later
         {
             @Override
             protected void cancelButtonPressed() // Skip Button

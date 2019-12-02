@@ -3687,7 +3687,7 @@ public class Uploader implements ActionListener, KeyListener
         }
         if (!(wasCommitted || wasRolledBack) && currentTask.get() != null ||
         		(shuttingDownSS != null && (currentOp.equals(Uploader.SUCCESS)  || currentOp.equals(Uploader.SUCCESS_PARTIAL)) && getUploadedObjects() > 0)) {
-            JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), getResourceString(isUpdateUpload() ? "WB_BATCH_EDIT_PENDING_EDITS" :"WB_UPLOAD_BUSY_CANNOT_CLOSE"));
+            JOptionPane.showMessageDialog(null, getResourceString(isUpdateUpload() ? "WB_BATCH_EDIT_PENDING_EDITS" :"WB_UPLOAD_BUSY_CANNOT_CLOSE"));
             return false;
         }
         
@@ -4176,7 +4176,7 @@ public class Uploader implements ActionListener, KeyListener
                     	   @Override
                     	   public void run()
                     	   {
-                               JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
+                               JOptionPane.showMessageDialog(null,
                                        String.format(getResourceString(WB_TOO_MANY_ERRORS), String.valueOf(MAX_MSG_DISPLAY_COUNT),
                                                    String.valueOf(validationIssues.size())), 
                                        getResourceString(WB_UPLOAD_FORM_TITLE), 
@@ -5241,7 +5241,7 @@ public class Uploader implements ActionListener, KeyListener
                     });
                 }
                 if (getOpKiller() != null) {
-                    JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), String.format(
+                    JOptionPane.showMessageDialog(null, String.format(
                             getResourceString("WB_UPLOAD_CLEANUP_FAILED"), new Object[] {
                                     getResourceString((isUserCmd ? "WB_UPLOAD_UNDO_BTN"
                                             : "WB_UPLOAD_CLEANUP")), theWb.getName(),
@@ -6363,7 +6363,7 @@ public class Uploader implements ActionListener, KeyListener
         lstPane.setBorder(new EmptyBorder(1, 1, 10, 1));
         lstPane.add(lst, BorderLayout.CENTER);
         pane.add(lstPane, BorderLayout.CENTER);
-        CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(),
+        CustomDialog dlg = JOptionPane.showMessageDialog(null,
                 getResourceString("WB_UPLOAD_BAD_STRUCTURE_DLG"),
                 true,
                 CustomDialog.OKHELP,

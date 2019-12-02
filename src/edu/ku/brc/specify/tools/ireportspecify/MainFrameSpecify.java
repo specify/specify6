@@ -713,7 +713,7 @@ public class MainFrameSpecify extends MainFrame
             }
             else
             {
-                JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), UIRegistry.getResourceString("REP_UNABLE_TO_SAVE_IREPORT"), UIRegistry.getResourceString("Error"), JOptionPane.ERROR_MESSAGE);                        
+                JOptionPane.showMessageDialog(null, UIRegistry.getResourceString("REP_UNABLE_TO_SAVE_IREPORT"), UIRegistry.getResourceString("Error"), JOptionPane.ERROR_MESSAGE);
             }
         }
     }
@@ -880,7 +880,7 @@ public class MainFrameSpecify extends MainFrame
         boolean goodProps = false;
         boolean overwrite = false;
         SpAppResource match = null;
-        CustomDialog cd = new CustomDialog((Frame)UIRegistry.getTopWindow(), 
+        CustomDialog cd = JOptionPane.showMessageDialog(null,
                 UIRegistry.getResourceString("REP_PROPS_DLG_TITLE"),
                 true,
                 propPanel);
@@ -897,12 +897,12 @@ public class MainFrameSpecify extends MainFrame
             boolean isNameOK = repName.matches("[a-zA-Z0-9\\-. '`_]*");
             if (StringUtils.isEmpty(repName))
             {
-                JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), String.format(UIRegistry.getResourceString("REP_NAME_MUST_NOT_BE_BLANK"), propPanel.getNameTxt().getText()));
+                JOptionPane.showMessageDialog(null, String.format(UIRegistry.getResourceString("REP_NAME_MUST_NOT_BE_BLANK"), propPanel.getNameTxt().getText()));
             }
             else if (!isNameOK)
             {
                 Toolkit.getDefaultToolkit().beep();
-            	JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), UIRegistry.getResourceString("INVALID_CHARS_NAME"));
+            	JOptionPane.showMessageDialog(null, UIRegistry.getResourceString("INVALID_CHARS_NAME"));
             }
             else 
             {
@@ -1198,7 +1198,7 @@ public class MainFrameSpecify extends MainFrame
             }
             else
             {
-                JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), UIRegistry.getResourceString("REP_NO_REPORTS_TO_EDIT"), "", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, UIRegistry.getResourceString("REP_NO_REPORTS_TO_EDIT"), "", JOptionPane.INFORMATION_MESSAGE);
             }
             return result;
     }
@@ -1567,7 +1567,7 @@ public class MainFrameSpecify extends MainFrame
         }
         if (spConns.size() == 0)
         {
-            JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), UIRegistry.getResourceString("REP_NO_QUERIES_FOR_DATA_SOURCES"), "", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, UIRegistry.getResourceString("REP_NO_QUERIES_FOR_DATA_SOURCES"), "", JOptionPane.INFORMATION_MESSAGE);
             return null;
         }
         ChooseFromListDlg<SpJRIReportConnection> dlg = new ChooseFromListDlg<SpJRIReportConnection>(this, 

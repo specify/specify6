@@ -866,7 +866,7 @@ public class InteractionsTask extends BaseTask
         
         pb.setDefaultDialogBorder();
         
-        CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), 
+        CustomDialog dlg = JOptionPane.showMessageDialog(null,
                 getResourceString("InteractionsTask.MISSING_DET_TITLE"), 
                 true, 
                 CustomDialog.OK_BTN, 
@@ -1654,7 +1654,7 @@ public class InteractionsTask extends BaseTask
                     final Hashtable<String, String> emailPrefs = new Hashtable<String, String>();
                     if (!EMailHelper.isEMailPrefsOK(emailPrefs))
                     {
-                        JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
+                        JOptionPane.showMessageDialog(null,
                                 getResourceString("NO_EMAIL_PREF_INFO"), 
                                 getResourceString("NO_EMAIL_PREF_INFO_TITLE"), JOptionPane.WARNING_MESSAGE);
                         return;

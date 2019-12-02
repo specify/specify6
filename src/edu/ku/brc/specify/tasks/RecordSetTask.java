@@ -881,11 +881,11 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
                             String msg = String.format(getResourceString("RecordSetTask.MERGE_SUCCESS"), new Object[] {srcTI.getShortClassName(), dstTI.getShortClassName()});
                             UIRegistry.displayStatusBarText(msg);
                         } else {
-                            JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), mergeErrStr, getResourceString("Error"), JOptionPane.ERROR_MESSAGE);
+                            JOptionPane.showMessageDialog(null, mergeErrStr, getResourceString("Error"), JOptionPane.ERROR_MESSAGE);
                         }
                     }
                 } else {
-                    JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), mergeErrStr, getResourceString("Error"), JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, mergeErrStr, getResourceString("Error"), JOptionPane.ERROR_MESSAGE);
                 }
             } else {
                 log.error("The src or the dst RecordSet were null src["+srcRecordSet+"]  dst["+dstRecordSet+"]");

@@ -4685,7 +4685,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     pb.add(new JScrollPane(ta, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED), cc.xy(1, 1));
                     pb.setDefaultDialogBorder();
                     
-                    CustomDialog    dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), getResourceString("SCHEMA_UPDATE_ERROR"), true, pb.getPanel());
+                    CustomDialog    dlg = JOptionPane.showMessageDialog(null, getResourceString("SCHEMA_UPDATE_ERROR"), true, pb.getPanel());
                     UIHelper.centerAndShow(dlg);
                 }
                 

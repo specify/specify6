@@ -3657,7 +3657,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         lstPane.setBorder(new EmptyBorder(1, 1, 10, 1));
         lstPane.add(lst, BorderLayout.CENTER);
         pane.add(lstPane, BorderLayout.CENTER);
-        CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(),
+        CustomDialog dlg = JOptionPane.showMessageDialog(null,
                 getResourceString("WB_UNMAPPED_BATCH_EDIT_FLDS_TITLE"),
                 true,
                 CustomDialog.OK_BTN,
@@ -4054,7 +4054,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         {
             return UIRegistry.displayConfirmLocalized("WB_ERROR_LOAD_IMAGE", key,  getResourceString("Continue"), "WB_STOP_LOADING", JOptionPane.ERROR_MESSAGE);
         }
-        JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), getResourceString(key), getResourceString("WB_ERROR_LOAD_IMAGE"), JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(null, getResourceString(key), getResourceString("WB_ERROR_LOAD_IMAGE"), JOptionPane.ERROR_MESSAGE);
         return false;
         
     }

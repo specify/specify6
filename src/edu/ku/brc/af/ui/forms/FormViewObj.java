@@ -3287,7 +3287,7 @@ public class FormViewObj implements Viewable,
                 sb.append(s);
                 sb.append("\n");
             }
-            JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
+            JOptionPane.showMessageDialog(null,
                     sb.toString(), 
                     getResourceString("COULDNT_DELETE_OBJ_TITLE"), JOptionPane.WARNING_MESSAGE);
         }
@@ -4467,7 +4467,7 @@ public class FormViewObj implements Viewable,
                     @Override
                     public void run()
                     {
-                        JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
+                        JOptionPane.showMessageDialog(null,
                                 getResourceString("NO_RECORD_FOUND"), 
                                 getResourceString("NO_RECORD_FOUND_TITLE"), JOptionPane.WARNING_MESSAGE);
                     }
@@ -4479,7 +4479,7 @@ public class FormViewObj implements Viewable,
                 @Override
                 public void run()
                 {
-                    JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
+                    JOptionPane.showMessageDialog(null,
                             getResourceString("ERROR_LOADING_FORM_DATA"), 
                             getResourceString("ERROR_LOADING_FORM_DATA_TITLE"), JOptionPane.WARNING_MESSAGE);
                 }

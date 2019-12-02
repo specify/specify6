@@ -1455,6 +1455,7 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
                     stmt = connection.createStatement();
                 } else {
                     sb.append(String.format(" ON %s.* TO '%s'@'%s'", dbName, username, hostName));
+                    sb.append(String.format(" ON %s.* TO '%s'@'%s'", dbName, username, hostName));
                 }
                 int rv = stmt.executeUpdate(sb.toString());
                 return rv == 0;

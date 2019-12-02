@@ -386,7 +386,7 @@ public class InfoRequestTask extends BaseTask
                     final Hashtable<String, String> emailPrefs = new Hashtable<String, String>();
                     if (!isEMailPrefsOK(emailPrefs))
                     {
-                        JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
+                        JOptionPane.showMessageDialog(null,
                                 getResourceString("NO_EMAIL_PREF_INFO"), 
                                 getResourceString("NO_EMAIL_PREF_INFO_TITLE"), JOptionPane.WARNING_MESSAGE);
                         return;

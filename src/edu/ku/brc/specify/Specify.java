@@ -1606,7 +1606,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
 							return;
 						}
 					} else {
-						JOptionPane.showMessageDialog(UIRegistry.getTopWindow(),
+						JOptionPane.showMessageDialog(null,
 								getLocalizedMessage("Specify.UPDATE_AVAIL_BUT_UPDATES_DISABLED", entry.getNewVersion()), //$NON-NLS-1$
 								getResourceString("Specify.UPDATE_AVAIL_TITLE"), //$NON-NLS-1$
 								JOptionPane.INFORMATION_MESSAGE);

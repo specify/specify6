@@ -268,7 +268,7 @@ public class DropDialog extends CustomDialog
 						Integer preferredHeight = new Integer(pref);
 						ta.setPreferredSize(new Dimension(600, preferredHeight.intValue()));
 						
-						CustomDialog cd = new CustomDialog((Frame )UIRegistry.getTopWindow(), UIRegistry.getResourceString("DropDlg.TreeActionDetailTitle"), true, 
+						CustomDialog cd = new CustomDialog(null, UIRegistry.getResourceString("DropDlg.TreeActionDetailTitle"), true,
 								CustomDialog.OKHELP, ta, CustomDialog.OK_BTN);
 						cd.setHelpContext(getInfoDlgHelpContext(optNo));
 						cd.createUI();

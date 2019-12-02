@@ -1380,7 +1380,7 @@ public class DataEntryTask extends BaseTask
                 }
                 final DuplicateSetDisplay dusd = new DuplicateSetDisplay(tblInfo, dupSets);
                 dusd.createUI();
-                CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), getResourceString("DataEntryTask.DupDlgTitle"),
+                CustomDialog dlg = JOptionPane.showMessageDialog(null, getResourceString("DataEntryTask.DupDlgTitle"),
                         true, CustomDialog.OKCANCELAPPLY, dusd);
                 dlg.createUI();
                 dlg.setApplyLabel(getResourceString("DataEntryTask.RemoveBtn"));
