@@ -484,7 +484,11 @@ public final class UIHelper
      */
     public static void centerAndShow(java.awt.Window window)
     {
-        centerAndShow(window, null, null);
+        //centerAndShow(window, null, null);
+        window.pack();
+        window.setLocationRelativeTo(UIRegistry.getTopWindow());
+        window.setVisible(true);
+
     }
 
     /**
