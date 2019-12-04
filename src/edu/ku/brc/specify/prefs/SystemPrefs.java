@@ -150,7 +150,7 @@ public class SystemPrefs extends GenericPrefsPanel
                                        (l.getLanguage().equals("pt") && StringUtils.isEmpty(l.getCountry())) ||
                                 (l.getLanguage().equals("pt") && l.getCountry().equals("BR")) ||
                                 (l.getLanguage().equals("ru") && l.getCountry().equals("RU")) ||
-                                (l.getLanguage().equals("uk") && l.getCountry().equals("UK"));
+                                (l.getLanguage().equals("uk") && l.getCountry().equals("UA"));
 
                         if (isOK && rb.getKeys().hasMoreElements())
                         {
