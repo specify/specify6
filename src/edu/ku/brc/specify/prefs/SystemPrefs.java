@@ -27,12 +27,7 @@ import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Locale;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
-import java.util.Vector;
+import java.util.*;
 import java.util.prefs.BackingStoreException;
 
 import javax.swing.DefaultListCellRenderer;
@@ -43,6 +38,8 @@ import javax.swing.JDialog;
 import javax.swing.JList;
 import javax.swing.JTextField;
 
+import edu.ku.brc.af.core.SchemaI18NService;
+import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.core.AppContextMgr;
@@ -116,21 +113,23 @@ public class SystemPrefs extends GenericPrefsPanel
         SwingWorker workerThread = new SwingWorker()
         {
             protected int inx = -1;
-            
+
             @Override
             public Object construct()
             {
                 
-                Vector<Locale> locales = new Vector<Locale>();
-                Collections.addAll(locales, Locale.getAvailableLocales());
-                Collections.sort(locales, new Comparator<Locale>() {
-                    public int compare(Locale o1, Locale o2)
-                    {
-                        return o1.getDisplayName().compareTo(o2.getDisplayName());
+                List<String> sysLocales = new ArrayList<String>();
+                for (Locale l : Locale.getAvailableLocales()) {
+                    sysLocales.add(l.toString());
+                }
+                List<Locale> spLocales = SchemaI18NService.getInstance().getLocalesFromData(SpLocaleContainer.CORE_SCHEMA,
+                        AppContextMgr.getInstance().getClassObject(edu.ku.brc.specify.datamodel.Discipline.class).getId());
+                Collections.sort(spLocales, new Comparator<Locale>(){
+                    public int compare(Locale l1, Locale l2) {
+                        return l1.getDisplayName().compareTo(l2.getDisplayName());
                     }
                 });
-                
-                int i = 0;
+
                 String language = AppPreferences.getLocalPrefs().get("locale.lang", Locale.getDefault().getLanguage());
                 String country  = AppPreferences.getLocalPrefs().get("locale.country", Locale.getDefault().getCountry());
                 String variant  = AppPreferences.getLocalPrefs().get("locale.var", Locale.getDefault().getVariant());
@@ -139,40 +138,28 @@ public class SystemPrefs extends GenericPrefsPanel
                 
                 int justLangIndex = -1;
                 Locale cachedLocale = Locale.getDefault();
-                for (Locale l : locales)
-                {
-                    try
-                    {
-                        Locale.setDefault(l);
-                        ResourceBundle rb = ResourceBundle.getBundle("resources", l);
-                        
-                        boolean isOK = (l.getLanguage().equals("en") && StringUtils.isEmpty(l.getCountry())) ||
-                                       (l.getLanguage().equals("pt") && StringUtils.isEmpty(l.getCountry())) ||
-                                (l.getLanguage().equals("pt") && l.getCountry().equals("BR")) ||
-                                (l.getLanguage().equals("ru") && l.getCountry().equals("RU")) ||
-                                (l.getLanguage().equals("uk") && l.getCountry().equals("UA"));
-
-                        if (isOK && rb.getKeys().hasMoreElements())
-                        {
-                            if (l.getLanguage().equals(prefLocale.getLanguage()))
-                            {
-                                justLangIndex = i;
+                for (Locale l : spLocales) {
+                    try  {
+                        boolean isOK = sysLocales.indexOf(l.toString()) != -1;
+                        if (isOK) {
+                            Locale.setDefault(l);
+                            ResourceBundle rb = ResourceBundle.getBundle("resources", l);
+                            if (rb.getKeys().hasMoreElements()) {
+                                localeCBX.getComboBox().addItem(l);
+                                if (l.getLanguage().equals(prefLocale.getLanguage())) {
+                                    justLangIndex = localeCBX.getComboBox().getItemCount()-1;
+                                }
+                                if (l.equals(prefLocale)) {
+                                    inx = localeCBX.getComboBox().getItemCount()-1;
+                                }
                             }
-                            if (l.equals(prefLocale))
-                            {
-                                inx = i;
-                            }
-                            localeCBX.getComboBox().addItem(l);
-                            i++;
                         }
-                        
                     } catch (MissingResourceException ex)
                     {
                     }
                 }
-                
-                if (inx == -1 && justLangIndex > -1)
-                {
+
+                if (inx == -1 && justLangIndex > -1) {
                     inx = justLangIndex;
                 }
                 Locale.setDefault(cachedLocale);
