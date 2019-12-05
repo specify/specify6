@@ -497,7 +497,8 @@ public final class UIHelper
      */
     public static void centerWindow(final java.awt.Window window)
     {
-        centerWindow(window, null, null);
+        window.pack(); //this is perhaps not very nice
+        window.setLocationRelativeTo(UIRegistry.getTopWindow());
     }
 
     /**
@@ -513,7 +514,7 @@ public final class UIHelper
         JFrame topFrame = (JFrame)UIRegistry.getTopWindow();
         Insets    screenInsets = null;
         Rectangle screenRect   = null;
-        
+
         if (width != null || height != null)
         {
             Dimension s = window.getSize();
@@ -521,7 +522,7 @@ public final class UIHelper
             if (height != null) s.height = height;
             window.setSize(s);
         }
-        
+
         // if there is a registered TOPFRAME, and it's not the same as the window being passed in...
         if (topFrame != null && topFrame != window)
         {
@@ -533,7 +534,7 @@ public final class UIHelper
             screenRect = window.getGraphicsConfiguration().getBounds();
             screenInsets = Toolkit.getDefaultToolkit().getScreenInsets(window.getGraphicsConfiguration());
         }
-        
+
         // Make sure we don't place the demo off the screen.
         int centerWidth = screenRect.width < window.getSize().width ? screenRect.x : screenRect.x
             + screenRect.width / 2 - window.getSize().width / 2;
