@@ -578,7 +578,7 @@ public class ViewSetSelectorPanel extends JPanel implements PropertyChangeListen
     {
         List<ControlIFace> list = getControlsList(true);
 
-        ToggleButtonChooserDlg<ControlIFace> dlg = new ToggleButtonChooserDlg<ControlIFace>((Frame)UIRegistry.getTopWindow(), "ViewSetSelectorPanel.CHOOSE_A_CONTROL", list, ToggleButtonChooserPanel.Type.RadioButton); //$NON-NLS-1$
+        ToggleButtonChooserDlg<ControlIFace> dlg = new ToggleButtonChooserDlg<ControlIFace>((Frame)null, "ViewSetSelectorPanel.CHOOSE_A_CONTROL", list, ToggleButtonChooserPanel.Type.RadioButton); //$NON-NLS-1$
         dlg.setUseScrollPane(true);
         dlg.setVisible(true);
         
@@ -1543,7 +1543,7 @@ public class ViewSetSelectorPanel extends JPanel implements PropertyChangeListen
     {
         List<ControlIFace> list = getControlsList(true);
 
-        ToggleButtonChooserDlg<ControlIFace> dlg = new ToggleButtonChooserDlg<ControlIFace>((Frame)UIRegistry.getTopWindow(), 
+        ToggleButtonChooserDlg<ControlIFace> dlg = new ToggleButtonChooserDlg<ControlIFace>((Frame)null,
                 "ViewSetSelectorPanel.CHOOSE_A_CONTROL", list, ToggleButtonChooserPanel.Type.RadioButton); //$NON-NLS-1$
         dlg.setUseScrollPane(true);
         dlg.setVisible(true);

@@ -1161,7 +1161,7 @@ public class FormViewObj implements Viewable,
 
         buildFieldInfoList(itemLabels, tblInfo);
         
-        ToggleButtonChooserDlg<FVOFieldInfo> dlg = new ToggleButtonChooserDlg<FVOFieldInfo>((Frame)UIRegistry.getTopWindow(),
+        ToggleButtonChooserDlg<FVOFieldInfo> dlg = new ToggleButtonChooserDlg<FVOFieldInfo>((Frame)null,
                                                                     "CONFIG_CARRY_FORWARD_TITLE", itemLabels);
         dlg.setUseScrollPane(true);
         dlg.setAddSelectAll(true);

@@ -180,7 +180,7 @@ public class PermissionEditor extends JPanel implements PermissionPanelContainer
 	            list.add(title);
 	        }
 	    }
-	    ToggleButtonChooserDlg<String> dlg = new ToggleButtonChooserDlg<String>((Frame)getTopWindow(), 
+	    ToggleButtonChooserDlg<String> dlg = new ToggleButtonChooserDlg<String>((Frame)null,
 	                                                 getResourceString("SEC_SEL_TITLE"), 
 	                                                 getResourceString("SEC_SEL_DESC"), list);
         dlg.setVisible(true);

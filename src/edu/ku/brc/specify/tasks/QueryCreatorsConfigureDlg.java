@@ -250,7 +250,7 @@ public class QueryCreatorsConfigureDlg extends CustomDialog
             return;
         }
         
-        ToggleButtonChooserDlg<String> dlg = new ToggleButtonChooserDlg<String>((Frame)UIRegistry.getTopWindow(),
+        ToggleButtonChooserDlg<String> dlg = new ToggleButtonChooserDlg<String>((Frame)null,
                 "QY_AVAIL_QUERIES_CONFIG", uniqueList);
         
         dlg.setUseScrollPane(true);

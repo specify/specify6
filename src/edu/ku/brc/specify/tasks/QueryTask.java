@@ -608,7 +608,7 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
         Vector<String> configNames = new Vector<String>();
         Collections.addAll(configNames, configCreators, configQueries);
         
-        ToggleButtonChooserDlg<String> dlg = new ToggleButtonChooserDlg<String>((Frame)UIRegistry.getTopWindow(), 
+        ToggleButtonChooserDlg<String> dlg = new ToggleButtonChooserDlg<String>((Frame)null,
                 "QY_CHOOSE_CONFIG", 
                 configNames, 
                 ToggleButtonChooserPanel.Type.RadioButton);
@@ -734,7 +734,7 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
                 tiHash.put(tableInfo.getTitle(), tableInfo);
                 
             }
-            ToggleButtonChooserDlg<String> dlg = new ToggleButtonChooserDlg<String>((Frame)UIRegistry.getTopWindow(), 
+            ToggleButtonChooserDlg<String> dlg = new ToggleButtonChooserDlg<String>((Frame)null,
                     "QY_EXTRA_TABLES", 
                     names, 
                     ToggleButtonChooserPanel.Type.RadioButton);
@@ -786,7 +786,7 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
                 Object[] row = (Object[])obj;
                 queryList.add((SpQuery)row[0]); 
             }
-            ToggleButtonChooserDlg<SpQuery> dlg = new ToggleButtonChooserDlg<SpQuery>((Frame)UIRegistry.getTopWindow(), 
+            ToggleButtonChooserDlg<SpQuery> dlg = new ToggleButtonChooserDlg<SpQuery>((Frame)null,
                     "QY_OTHER_QUERIES", 
                     queryList, 
                     ToggleButtonChooserPanel.Type.RadioButton);
