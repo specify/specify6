@@ -534,8 +534,7 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
         {
         	public void actionPerformed(ActionEvent e)
         	{
-    			Frame frame = (Frame)UIRegistry.getTopWindow(); 
-    			DataObjFieldFmtListEdtDlg dlg = new DataObjFieldFmtListEdtDlg(frame, 
+    			DataObjFieldFmtListEdtDlg dlg = new DataObjFieldFmtListEdtDlg((java.awt.Dialog)UIRegistry.getMostRecentWindow(),
                                                             				  tableInfo, 
                                                             				  dataObjFieldFormatMgrCache, 
                                                             				  uiFieldFormatterMgrCache);
@@ -564,8 +563,7 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
         {
         	public void actionPerformed(ActionEvent e)
         	{
-    			Frame frame = (Frame)UIRegistry.getTopWindow(); 
-    			DataObjAggListEdtDlg dlg = new DataObjAggListEdtDlg(frame, 
+    			DataObjAggListEdtDlg dlg = new DataObjAggListEdtDlg((java.awt.Dialog)UIRegistry.getMostRecentWindow(),
                                     			        tableInfo, 
                                     					dataObjFieldFormatMgrCache, 
                                     					uiFieldFormatterMgrCache);

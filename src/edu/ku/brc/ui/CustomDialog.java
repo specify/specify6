@@ -168,6 +168,23 @@ public class CustomDialog extends JDialog
         }
     }
 
+    public CustomDialog(final Dialog     owner,
+                        final String    title,
+                        final boolean   isModal,
+                        final int       whichBtns,
+                        final Component contentPanel) throws HeadlessException
+    {
+        super(owner, title, isModal);
+
+        this.whichBtns    = whichBtns;
+        this.contentPanel = contentPanel;
+
+        if (appIcon != null)
+        {
+            setIconImage(appIcon.getImage());
+        }
+    }
+
     private static Object getDefaultOwner() {
         Window mostRecent = UIRegistry.getMostRecentWindow();
         if (mostRecent instanceof Dialog) {
@@ -176,6 +193,7 @@ public class CustomDialog extends JDialog
             return UIRegistry.getTopWindow();
         }
     }
+
     public static CustomDialog create(final String title,
                                       final boolean isModal,
                                       final Component contentPanel) throws HeadlessException {
@@ -260,30 +278,6 @@ public class CustomDialog extends JDialog
         }
     }
 
-    /**
-     * @param dlg parent frame
-     * @param title the title of the dialog
-     * @param isModal whether or not it is model
-     * @param whichBtns which button to use for the dialog
-     * @param contentPanel the contentPanel
-     * @throws HeadlessException
-     */
-    public CustomDialog(final Dialog    dialog, 
-                        final String    title, 
-                        final boolean   isModal,
-                        final int       whichBtns,
-                        final Component contentPanel) throws HeadlessException
-    {
-        super(dialog, title, isModal);
-        
-        this.whichBtns    = whichBtns;
-        this.contentPanel = contentPanel;
-        
-        if (appIcon != null)
-        {
-            setIconImage(appIcon.getImage());
-        }
-    }
 
     /**
      * Sets the title bar to look like the contents have been modified.

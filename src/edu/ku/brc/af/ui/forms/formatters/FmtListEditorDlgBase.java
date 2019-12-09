@@ -74,7 +74,7 @@ public abstract class FmtListEditorDlgBase extends CustomDialog
     /**
      * @throws HeadlessException
      */
-    public FmtListEditorDlgBase(final Frame                 frame, 
+    public FmtListEditorDlgBase(final java.awt.Dialog                owner,
                                 final String                titleKey,
                                 final String                helpContext,
                                 final DBInfoBase            baseInfo, 
@@ -82,7 +82,7 @@ public abstract class FmtListEditorDlgBase extends CustomDialog
                                 final UIFieldFormatterMgr   uiFieldFormatterMgrCache) 
         throws HeadlessException
     {
-        super(frame, getResourceString(titleKey), true, OK_BTN | HELP_BTN, null);
+        super(owner, getResourceString(titleKey), true, OK_BTN | HELP_BTN, null);
         this.baseInfo                  = baseInfo;
         this.dataObjFieldFormatMgrCache = dataObjFieldFormatMgrCache;
         this.uiFieldFormatterMgrCache   = uiFieldFormatterMgrCache;

@@ -49,13 +49,13 @@ public class DataObjAggListEdtDlg extends FmtListEditorDlgBase
     /**
      * @throws HeadlessException
      */
-    public DataObjAggListEdtDlg(final Frame                 frame, 
+    public DataObjAggListEdtDlg(final java.awt.Dialog                 owner,
                                 final DBTableInfo           tableInfo, 
                                 final DataObjFieldFormatMgr dataObjFieldFormatMgrCache,
                                 final UIFieldFormatterMgr   uiFieldFormatterMgrCache) 
         throws HeadlessException
     {
-        super(frame, 
+        super(owner,
               "DOA_DLG_AVAIL_TITLE",
               "DOA_LIST_EDITOR", 
               tableInfo, 

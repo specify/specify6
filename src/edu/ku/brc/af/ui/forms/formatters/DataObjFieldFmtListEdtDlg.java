@@ -56,12 +56,12 @@ public class DataObjFieldFmtListEdtDlg extends FmtListEditorDlgBase
      * @param uiFieldFormatterMgrCache
      * @throws HeadlessException
      */
-    public DataObjFieldFmtListEdtDlg(final Frame                 frame, 
+    public DataObjFieldFmtListEdtDlg(final java.awt.Dialog                 owner,
                                      final DBTableInfo           tableInfo, 
                                      final DataObjFieldFormatMgr dataObjFieldFormatMgrCache,
                                      final UIFieldFormatterMgr   uiFieldFormatterMgrCache) throws HeadlessException
     {
-        super(frame, 
+        super(owner,
                 "DOF_DLG_AVAIL_TITLE",
                 "DOF_LIST_EDITOR",  // HelpContext
                 tableInfo, 
