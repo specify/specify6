@@ -862,7 +862,7 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
                 p.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
                 p.add(UIHelper.createScrollPane(ta, true), BorderLayout.CENTER);
                 
-                CustomDialog dlg = new CustomDialog((Frame)null, "Debug", true, CustomDialog.OK_BTN, p);
+                CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), "Debug", true, CustomDialog.OK_BTN, p);
                 dlg.setOkLabel("Close");
                 dlg.setVisible(true);
             }

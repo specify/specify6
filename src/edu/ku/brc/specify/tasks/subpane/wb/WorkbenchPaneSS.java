@@ -3079,7 +3079,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         pb.add(titlePanel, cc.xy(1,1));
         pb.add(inclPanel, cc.xy(3,1));
 
-        CustomDialog dlg = new CustomDialog((Frame)null, getResourceString("GE_CHOOSE_FIELD_FOR_EXPORT_TITLE"), true, pb.getPanel()){
+        CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), getResourceString("GE_CHOOSE_FIELD_FOR_EXPORT_TITLE"), true, pb.getPanel()){
 
 			/* (non-Javadoc)
 			 * @see edu.ku.brc.ui.CustomDialog#okButtonPressed()
@@ -4427,7 +4427,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             pb.add(new JLabel(loginStr), new CellConstraints().xy(2, 4));
             pb.add(new JLabel(UIRegistry.getResourceString("WB_UPLOAD_OTHER_USERS2")), new CellConstraints().xy(2, 6));
             
-            CustomDialog dlg = new CustomDialog((Frame)null,
+            CustomDialog dlg = CustomDialog.create(
                     UIRegistry.getResourceString("WB_UPLOAD_DENIED_DLG"),
                     true,
                     CustomDialog.OKCANCELAPPLYHELP,
@@ -4449,7 +4449,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             }
             PanelBuilder pb2 = new PanelBuilder(new FormLayout("5dlu, f:p:g, 5dlu", "5dlu, f:p:g, 5dlu"));
             pb2.add(new JLabel(UIRegistry.getResourceString("WB_UPLOAD_CONFIRM_ANNIHILATION")), new CellConstraints().xy(2, 2));
-            CustomDialog dlg2 = new CustomDialog((Frame)null,
+            CustomDialog dlg2 = CustomDialog.create(
                     UIRegistry.getResourceString("WB_UPLOAD_DANGER"),
                     true,
                     CustomDialog.OKCANCELHELP,

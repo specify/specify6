@@ -201,7 +201,7 @@ public class SpecifyExceptionTracker extends ExceptionTracker
         });
         
         pb.setDefaultDialogBorder();
-        dlg = new CustomDialog((Frame)null, getResourceString("UnhandledExceptionTitle"), true, CustomDialog.OK_BTN, pb.getPanel());
+        dlg = CustomDialog.create(getResourceString("UnhandledExceptionTitle"), true, CustomDialog.OK_BTN, pb.getPanel());
         dlg.setOkLabel(getResourceString("UNHDL_EXCP_SEND"));
         
         dlg.createUI();

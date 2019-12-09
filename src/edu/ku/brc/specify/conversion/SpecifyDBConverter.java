@@ -309,7 +309,7 @@ public class SpecifyDBConverter extends AppBase
             rows[i][1] = BasicSQLUtils.getCount(newDBConn, queries[i]);
         }
         JTable table = new JTable(rows, new Object[] {"Description", "Count"});
-        CustomDialog dlg = new CustomDialog((Frame)null, "Destination DB Statistics", true, CustomDialog.OKCANCEL, UIHelper.createScrollPane(table, true));
+        CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), "Destination DB Statistics", true, CustomDialog.OKCANCEL, UIHelper.createScrollPane(table, true));
         dlg.setOkLabel("Continue");
         dlg.setVisible(true);
         return !dlg.isCancelled();
@@ -407,7 +407,7 @@ public class SpecifyDBConverter extends AppBase
             pb.add(UIHelper.createScrollPane(list, true), cc.xy(1,3));
             pb.setDefaultDialogBorder();
             
-            final CustomDialog dlg = new CustomDialog((Frame)null, title, true, pb.getPanel());
+            final CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), title, true, pb.getPanel());
             list.addListSelectionListener(new ListSelectionListener() {
                 @Override
                 public void valueChanged(ListSelectionEvent e)
@@ -3011,7 +3011,7 @@ public class SpecifyDBConverter extends AppBase
         panel.add(pb.getPanel(), cc.xy(3, 1));
         panel.setDefaultDialogBorder();
 
-        CustomDialog dlg = new CustomDialog((Frame)null, "Specify Converter", true, panel.getPanel());
+        CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), "Specify Converter", true, panel.getPanel());
         UIHelper.centerAndShow(dlg);
         
         dlg.dispose();

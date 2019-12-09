@@ -458,7 +458,7 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
         pb.add(UIHelper.createScrollPane(list), (new CellConstraints()).xy(1, 1));
         pb.setDefaultDialogBorder();
         
-        final CustomDialog dlg = new CustomDialog((Frame)null, getResourceString("SchemaLocalizerFrame.CHOOSE_LOCALE"), true, pb.getPanel());
+        final CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), getResourceString("SchemaLocalizerFrame.CHOOSE_LOCALE"), true, pb.getPanel());
         list.addListSelectionListener(new ListSelectionListener()
         {
             @Override

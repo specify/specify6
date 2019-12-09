@@ -3610,7 +3610,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         lstPane.setBorder(new EmptyBorder(1, 1, 10, 1));
         lstPane.add(lst, BorderLayout.CENTER);
         pane.add(lstPane, BorderLayout.CENTER);
-        CustomDialog dlg = new CustomDialog((Frame)null,
+        CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(),
                 getResourceString("WB_UNMAPPED_BATCH_EDIT_FLDS_TITLE"),
                 true,
                 CustomDialog.OK_BTN,

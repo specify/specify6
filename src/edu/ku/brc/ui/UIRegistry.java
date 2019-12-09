@@ -1149,7 +1149,7 @@ public class UIRegistry
         }
         pb.setDefaultDialogBorder();
         
-        final CustomDialog dlg = new CustomDialog((Frame)null, getResourceString(titleKey), true, 
+        final CustomDialog dlg = CustomDialog.create(getResourceString(titleKey), true,
                                                   doMustHaveValue ? CustomDialog.OK_BTN : CustomDialog.OKCANCEL, pb.getPanel());
         dlg.createUI();
         dlg.getOkBtn().setEnabled(false);

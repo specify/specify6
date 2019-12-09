@@ -880,7 +880,7 @@ public class MainFrameSpecify extends MainFrame
         boolean goodProps = false;
         boolean overwrite = false;
         SpAppResource match = null;
-        CustomDialog cd = new CustomDialog((Frame)null,
+        CustomDialog cd = CustomDialog.create(
                 UIRegistry.getResourceString("REP_PROPS_DLG_TITLE"),
                 true,
                 propPanel);

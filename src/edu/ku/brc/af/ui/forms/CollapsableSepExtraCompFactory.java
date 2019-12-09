@@ -138,7 +138,7 @@ public class CollapsableSepExtraCompFactory
                     pb.add(sc, (new CellConstraints()).xy(1,1));
                     pb.setDefaultDialogBorder();
                     
-                    final CustomDialog dlg = new CustomDialog((Frame)null, UIRegistry.getResourceString("CHSE_VIDEO"), true, CustomDialog.OKCANCEL, pb.getPanel());
+                    final CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), UIRegistry.getResourceString("CHSE_VIDEO"), true, CustomDialog.OKCANCEL, pb.getPanel());
                     list.addMouseListener(new MouseAdapter()
                     {
                         @Override

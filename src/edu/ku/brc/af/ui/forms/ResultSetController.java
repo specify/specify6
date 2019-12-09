@@ -569,7 +569,7 @@ public class ResultSetController implements ValidationListener
         p.add(tf, cc.xy(3,1));
         p.setDefaultDialogBorder();
         
-        CustomDialog dlg = new CustomDialog((Frame)null, "", true, CustomDialog.OKCANCEL, p.getPanel());
+        CustomDialog dlg = CustomDialog.create("", true, CustomDialog.OKCANCEL, p.getPanel());
         dlg.setCustomTitleBar(getResourceString("RS_JUMP_TITLE"));
         
         UIHelper.centerAndShow(dlg);

@@ -202,7 +202,7 @@ public class FormDisplayer
         PanelBuilder pb = new PanelBuilder(new FormLayout("p", "p"));
         pb.add(stopBtn, (new CellConstraints()).xy(1, 1));
         pb.setDefaultDialogBorder();
-        cancelDlg = new CustomDialog((Frame)null, "Stop Image Generation", false, CustomDialog.OK_BTN, pb.getPanel());
+        cancelDlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), "Stop Image Generation", false, CustomDialog.OK_BTN, pb.getPanel());
         cancelDlg.setOkLabel(getResourceString("CLOSE"));
         
         cancelDlg.setAlwaysOnTop(true);

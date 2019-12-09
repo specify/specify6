@@ -617,7 +617,7 @@ public class UserPanel extends BaseSetupPanel
         p.add(scrollPane, BorderLayout.CENTER);
         p.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
         
-        CustomDialog dlg = new CustomDialog((Frame)null, "Summary", true, CustomDialog.OK_BTN, p);
+        CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), "Summary", true, CustomDialog.OK_BTN, p);
         dlg.setOkLabel(UIRegistry.getResourceString("CLOSE"));
         dlg.createUI();
         dlg.setSize(dlg.getPreferredSize().width, 768);

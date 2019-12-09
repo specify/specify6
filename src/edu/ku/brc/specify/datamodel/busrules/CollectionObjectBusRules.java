@@ -892,7 +892,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
         pane.add(sp, BorderLayout.CENTER);
         //pane.setPreferredSize(new Dimension((int )lbl.getPreferredSize().getWidth() + 5, (int )lst.getPreferredScrollableViewportSize().getHeight() + 5));
         //pane.setPreferredSize(new Dimension((int )lbl.getPreferredSize().getWidth() + 5, (int )lst.getPreferredScrollableViewportSize().getHeight() + 5));
-        CustomDialog dlg = new CustomDialog((Frame)null,
+        CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(),
         		UIRegistry.getResourceString(TitleKey),
                 true,
                 CustomDialog.OKHELP,
