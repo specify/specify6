@@ -438,9 +438,6 @@ public class CustomDialog extends JDialog
         setContentPane(mainPanel);
         
         pack();
-        
-        setLocationRelativeTo(this.getOwner());
-
     }
     
     /**
@@ -666,8 +663,6 @@ public class CustomDialog extends JDialog
             {
                 createUI();
             }
-            UIHelper.centerWindow(this);
-            
         } else
         {
             UIRegistry.popWindow(this);
