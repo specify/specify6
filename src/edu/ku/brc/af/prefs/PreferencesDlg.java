@@ -92,7 +92,9 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener, 
     protected int MAX_DELAY       = (int)(MILLI_SEC_DELAY * 1.5);
     
     public static final String PREFERENCES = "Preferences"; //$NON-NLS-1$
-    
+
+    private Window prevTopWindow = null;
+
     protected SimpleGlassPane       glassPane;
     protected JAutoCompTextField    searchText;
 
@@ -491,7 +493,17 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener, 
             size.width = Math.max(size.width, 400);
             size.height = Math.max(size.height, 250);
             setPreferredSize(size);
+            if (prevTopWindow == null) {
+                prevTopWindow = UIRegistry.getTopWindow();
+                UIRegistry.setTopWindow(this);
+            }
+
+        } else {
+            if (prevTopWindow != null) {
+                UIRegistry.setTopWindow(prevTopWindow);
+            }
         }
+
         super.setVisible(visible);
     }
 
