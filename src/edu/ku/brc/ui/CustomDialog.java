@@ -653,21 +653,18 @@ public class CustomDialog extends JDialog
      * @see java.awt.Dialog#setVisible(boolean)
      */
     @Override
-    public void setVisible(final boolean visible)
-    {
-        if (visible)
-        {
+    public void setVisible(final boolean visible) {
+        if (visible) {
             UIRegistry.pushWindow(this);
-            
-            if (!isCreated && visible)
-            {
+
+            if (!isCreated && visible) {
                 createUI();
             }
-        } else
-        {
+            setLocationRelativeTo(getOwner());
+        } else {
             UIRegistry.popWindow(this);
         }
-        
+
         super.setVisible(visible);
     }
 
