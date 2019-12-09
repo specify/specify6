@@ -31,8 +31,7 @@ import static edu.ku.brc.ui.UIRegistry.loadAndPushResourceBundle;
 import static edu.ku.brc.ui.UIRegistry.popResourceBundle;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
-import java.awt.Color;
-import java.awt.Frame;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
@@ -472,7 +471,7 @@ public class UserAndMasterPasswordMgr
             }
         });
         
-        final CustomDialog dlg = new CustomDialog((Frame)null, getResourceString("MASTER_TITLE"), true, CustomDialog.OKCANCELHELP, pb.getPanel());
+        final CustomDialog dlg = CustomDialog.create(getResourceString("MASTER_TITLE"), true, CustomDialog.OKCANCELHELP, pb.getPanel());
         if (!isEditMode)
         {
             dlg.setOkLabel(getResourceString("CONT"));
@@ -544,7 +543,7 @@ public class UserAndMasterPasswordMgr
         popResourceBundle();
         
         dlg.setVisible(true);
-        
+
         if (!dlg.isCancelled())
         {
             String value;
@@ -610,7 +609,7 @@ public class UserAndMasterPasswordMgr
         
         pb.setDefaultDialogBorder();
                
-        final CustomDialog dlg = new CustomDialog((Frame)null, getResourceString("MASTER_INFO_TITLE"), 
+        final CustomDialog dlg = new CustomDialog((Dialog)UIRegistry.getMostRecentWindow(), getResourceString("MASTER_INFO_TITLE"),
                                                   true, CustomDialog.OKCANCELAPPLYHELP, pb.getPanel());
         dlg.setOkLabel(getResourceString("GENERATE_KEY"));
         dlg.setHelpContext("MASTERPWD_GEN");
@@ -626,7 +625,7 @@ public class UserAndMasterPasswordMgr
             protected void changed(DocumentEvent e)
             {
                 String dbUserStr = dbUsrTxt.getText();
-                
+
                 boolean enable = !dbUserStr.isEmpty() &&
                                  !((JTextField)dbPwdTxt).getText().isEmpty() &&
                                  !usrText.getText().isEmpty() &&
@@ -641,7 +640,7 @@ public class UserAndMasterPasswordMgr
                 dlg.getOkBtn().setEnabled(enable);
             }
         };
-        
+
         dbUsrTxt.getDocument().addDocumentListener(docListener);
         dbPwdTxt.getDocument().addDocumentListener(docListener);
         usrText.getDocument().addDocumentListener(docListener);
@@ -659,8 +658,10 @@ public class UserAndMasterPasswordMgr
                 dbPwdTxt.setEchoChar(currEcho);
             }
         });
-        
-        dlg.setVisible(true);
+
+        //dlg.setVisible(true);
+        dlg.pack();
+        UIHelper.centerAndShow(dlg);
         if (!dlg.isCancelled())
         {
             return new String[] { dbUsrTxt.getText(), ((JTextField)dbPwdTxt).getText(), usrText.getText(), ((JTextField)pwdText).getText()};

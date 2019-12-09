@@ -22,14 +22,7 @@ package edu.ku.brc.ui;
 import static edu.ku.brc.ui.UIHelper.createButton;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dialog;
-import java.awt.Frame;
-import java.awt.HeadlessException;
-import java.awt.SystemColor;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -174,6 +167,71 @@ public class CustomDialog extends JDialog
             setIconImage(appIcon.getImage());
         }
     }
+
+    private static Object getDefaultOwner() {
+        Window mostRecent = UIRegistry.getMostRecentWindow();
+        if (mostRecent instanceof Dialog) {
+           return mostRecent;
+        } else {
+            return UIRegistry.getTopWindow();
+        }
+    }
+    public static CustomDialog create(final String title,
+                                      final boolean isModal,
+                                      final Component contentPanel) throws HeadlessException {
+        return create(title, isModal, -1, contentPanel, -1);
+    }
+
+    public static CustomDialog create(final String title,
+                                      final boolean isModal,
+                                      final int whichBtns,
+                                      final Component contentPanel) throws HeadlessException {
+        return create(title, isModal, whichBtns, contentPanel, -1);
+    }
+
+    public static CustomDialog create( final String    title,
+                          final boolean   isModal,
+                          final int       whichBtns,
+                          final Component contentPanel,
+                          final int defaultBtn) throws HeadlessException {
+        Object defOwner = getDefaultOwner();
+        if (defOwner instanceof Dialog) {
+            return new CustomDialog((Dialog)defOwner, title, isModal, whichBtns, contentPanel, defaultBtn);
+        } else {
+            return new CustomDialog((Frame)defOwner, title, isModal, whichBtns, contentPanel, defaultBtn);
+        }
+    }
+
+    /**
+     * @param dlg parent dialog
+     * @param title the title of the dialog
+     * @param isModal whether or not it is model
+     * @param whichBtns which button to use for the dialog
+     * @param contentPanel the contentPanel
+     * @throws HeadlessException
+     */
+    public CustomDialog(final Dialog     dlg,
+                        final String    title,
+                        final boolean   isModal,
+                        final int       whichBtns,
+                        final Component contentPanel,
+                        final int defaultBtn) throws HeadlessException
+    {
+        super(dlg, title, isModal);
+
+        if (whichBtns != -1) {
+            this.whichBtns = whichBtns;
+        }
+        this.contentPanel = contentPanel;
+        if (defaultBtn != -1) {
+            this.defaultBtn = defaultBtn;
+        }
+        if (appIcon != null)
+        {
+            setIconImage(appIcon.getImage());
+        }
+    }
+
 
     /**
      * @param frame parent frame
@@ -740,68 +798,4 @@ public class CustomDialog extends JDialog
         this.extraBtn = extraBtn;
     }
     
-//    /**
-//     * @param titleKey
-//     * @param content
-//     * @return
-//     */
-//    public static CustomDialog createI18NDlg(final String titleKey, final JComponent content)
-//    {
-//        PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g", "f:p:g"));
-//        pb.add(content, (new CellConstraints().xy(1, 1)));
-//        pb.setDefaultDialogBorder();
-//        
-//        return new CustomDialog((Frame)UIRegistry.getMostRecentWindow(), getResourceString(titleKey), true, pb.getPanel());
-//    }
-//    
-//    /**
-//     * @param titleKey
-//     * @param model
-//     * @return
-//     */
-//    @SuppressWarnings({ "unchecked", "rawtypes" })
-//    public static CustomDialog createI18NDlg(final String titleKey, final JList list)
-//    {
-////        PanelBuilder btnPB = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g,p,f:p:g", "p")); //$NON-NLS-1$ //$NON-NLS-2$
-////        selectAllBtn   = createI18NButton("SELECTALL"); //$NON-NLS-1$
-////        deselectAllBtn = createI18NButton("DESELECTALL"); //$NON-NLS-1$
-////        btnPB.add(selectAllBtn,   cc.xy(2, 1));
-////        btnPB.add(deselectAllBtn, cc.xy(4, 1));
-////        PanelBuilder pb = new PanelBuilder(new FormLayout("p,2px,f:p:g", (topMsg != null ? "p,2px," : "") + "p,2px,p,2px,p"));
-//
-//        JScrollPane  sb   = new JScrollPane(list, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-//        PanelBuilder pb   = new PanelBuilder(new FormLayout("f:p:g", "f:p:g"));
-//        pb.add(sb, (new CellConstraints().xy(1, 1)));
-//        pb.setDefaultDialogBorder();
-//        
-//        final CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getMostRecentWindow(), getResourceString(titleKey), true, pb.getPanel());
-//        dlg.createUI();
-//        dlg.getOkBtn().setEnabled(false);
-//        
-//        list.addListSelectionListener(new ListSelectionListener()
-//        {
-//            @Override
-//            public void valueChanged(ListSelectionEvent e)
-//            {
-//                if (!e.getValueIsAdjusting())
-//                {
-//                    dlg.getOkBtn().setEnabled(!list.isSelectionEmpty());
-//                }
-//            }
-//        });
-//        
-//        list.addMouseListener(new MouseAdapter()
-//        {
-//            @Override
-//            public void mouseClicked(MouseEvent e)
-//            {
-//                if (e.getClickCount() == 2)
-//                {
-//                    dlg.getOkBtn().doClick();
-//                }
-//            }
-//        });
-//        
-//        return dlg;
-//    }
 }

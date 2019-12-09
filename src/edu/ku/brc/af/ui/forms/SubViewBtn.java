@@ -23,9 +23,7 @@ import static edu.ku.brc.ui.UIHelper.createButton;
 import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Frame;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashSet;
@@ -357,58 +355,103 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
         boolean isEdit      = MultiView.isOptionOn(options, MultiView.IS_EDITTING) || isNewObject;
         
         String closeBtnTitle = isEdit ? getResourceString("DONE") : getResourceString("CLOSE");
-        
-        ViewBasedDisplayDialog dlg = new ViewBasedDisplayDialog((Frame)UIRegistry.getTopWindow(),
-                subviewDef.getViewSetName(),
-                subviewDef.getViewName(),
-                null,                      // What is this argument???
-                frameTitle,
-                closeBtnTitle,
-                view.getClassName(),
-                cellName,  // idFieldName
-                isEdit | isNewObject,
-                false,
-                cellName,
-                mvParent,
-                options | MultiView.HIDE_SAVE_BTN | MultiView.DONT_ADD_ALL_ALTVIEWS | MultiView.USE_ONLY_CREATION_MODE,
-                CustomDialog.CANCEL_BTN | (StringUtils.isNotEmpty(helpContext) ? CustomDialog.HELP_BTN : 0))
-        {
 
-            /* (non-Javadoc)
-             * @see edu.ku.brc.ui.db.ViewBasedDisplayDialog#cancelButtonPressed()
-             */
-            @Override
-            protected void cancelButtonPressed()
-            {
-                multiView.aboutToShutdown();
-                
-                FormViewObj fvo = multiView.getCurrentViewAsFormViewObj();
-                if (fvo != null)
-                {
-                    FormValidator validator = multiView.getCurrentValidator();
-                    if (validator != null && validator.getState() != UIValidatable.ErrorType.Valid)
-                    {
-                        boolean  isNew   = fvo.isNewlyCreatedDataObj();
-                        String   msgKey  = isNew ? "MV_INCOMPLETE_DATA_NEW" : "MV_INCOMPLETE_DATA";
-                        String   btnKey  = isNew ? "MV_REMOVE_ITEM" : "MV_DISCARD_ITEM";
-                        Object[] optionLabels = { getResourceString(btnKey), getResourceString("CANCEL") };
-                        int rv = JOptionPane.showOptionDialog(UIRegistry.getMostRecentWindow(), 
+        Window parentDlg = (Dialog)UIRegistry.getMostRecentWindow();
+        ViewBasedDisplayDialog dlg;
+        if (parentDlg instanceof Dialog) {
+            dlg = new ViewBasedDisplayDialog((Dialog) parentDlg,
+                    subviewDef.getViewSetName(),
+                    subviewDef.getViewName(),
+                    null,                      // What is this argument???
+                    frameTitle,
+                    closeBtnTitle,
+                    view.getClassName(),
+                    cellName,  // idFieldName
+                    isEdit | isNewObject,
+                    false,
+                    cellName,
+                    mvParent,
+                    options | MultiView.HIDE_SAVE_BTN | MultiView.DONT_ADD_ALL_ALTVIEWS | MultiView.USE_ONLY_CREATION_MODE,
+                    CustomDialog.CANCEL_BTN | (StringUtils.isNotEmpty(helpContext) ? CustomDialog.HELP_BTN : 0)) {
+
+                /* (non-Javadoc)
+                 * @see edu.ku.brc.ui.db.ViewBasedDisplayDialog#cancelButtonPressed()
+                 */
+                @Override
+                protected void cancelButtonPressed() {
+                    multiView.aboutToShutdown();
+
+                    FormViewObj fvo = multiView.getCurrentViewAsFormViewObj();
+                    if (fvo != null) {
+                        FormValidator validator = multiView.getCurrentValidator();
+                        if (validator != null && validator.getState() != UIValidatable.ErrorType.Valid) {
+                            boolean isNew = fvo.isNewlyCreatedDataObj();
+                            String msgKey = isNew ? "MV_INCOMPLETE_DATA_NEW" : "MV_INCOMPLETE_DATA";
+                            String btnKey = isNew ? "MV_REMOVE_ITEM" : "MV_DISCARD_ITEM";
+                            Object[] optionLabels = {getResourceString(btnKey), getResourceString("CANCEL")};
+                            int rv = JOptionPane.showOptionDialog(UIRegistry.getMostRecentWindow(),
                                     getResourceString(msgKey),
                                     getResourceString("MV_INCOMPLETE_DATA_TITLE"),
                                     JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
-                                    null, optionLabels, optionLabels[0]);                        
-                        if (rv == JOptionPane.NO_OPTION)
-                        {
-                            return;
+                                    null, optionLabels, optionLabels[0]);
+                            if (rv == JOptionPane.NO_OPTION) {
+                                return;
+                            }
                         }
                     }
+                    super.cancelButtonPressed();
                 }
-                super.cancelButtonPressed();
-            }
-            
-        };
-        
-        dlg.setHelpContext("SUBVIEW_FORM_HELP");
+
+            };
+        } else {
+            dlg = new ViewBasedDisplayDialog((Frame)UIRegistry.getTopWindow(),
+                    subviewDef.getViewSetName(),
+                    subviewDef.getViewName(),
+                    null,                      // What is this argument???
+                    frameTitle,
+                    closeBtnTitle,
+                    view.getClassName(),
+                    cellName,  // idFieldName
+                    isEdit | isNewObject,
+                    false,
+                    cellName,
+                    mvParent,
+                    options | MultiView.HIDE_SAVE_BTN | MultiView.DONT_ADD_ALL_ALTVIEWS | MultiView.USE_ONLY_CREATION_MODE,
+                    CustomDialog.CANCEL_BTN | (StringUtils.isNotEmpty(helpContext) ? CustomDialog.HELP_BTN : 0)) {
+
+                /* (non-Javadoc)
+                 * @see edu.ku.brc.ui.db.ViewBasedDisplayDialog#cancelButtonPressed()
+                 */
+                @Override
+                protected void cancelButtonPressed() {
+                    multiView.aboutToShutdown();
+
+                    FormViewObj fvo = multiView.getCurrentViewAsFormViewObj();
+                    if (fvo != null) {
+                        FormValidator validator = multiView.getCurrentValidator();
+                        if (validator != null && validator.getState() != UIValidatable.ErrorType.Valid) {
+                            boolean isNew = fvo.isNewlyCreatedDataObj();
+                            String msgKey = isNew ? "MV_INCOMPLETE_DATA_NEW" : "MV_INCOMPLETE_DATA";
+                            String btnKey = isNew ? "MV_REMOVE_ITEM" : "MV_DISCARD_ITEM";
+                            Object[] optionLabels = {getResourceString(btnKey), getResourceString("CANCEL")};
+                            int rv = JOptionPane.showOptionDialog(UIRegistry.getMostRecentWindow(),
+                                    getResourceString(msgKey),
+                                    getResourceString("MV_INCOMPLETE_DATA_TITLE"),
+                                    JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
+                                    null, optionLabels, optionLabels[0]);
+                            if (rv == JOptionPane.NO_OPTION) {
+                                return;
+                            }
+                        }
+                    }
+                    super.cancelButtonPressed();
+                }
+
+            };
+        }
+
+
+            dlg.setHelpContext("SUBVIEW_FORM_HELP");
         
         dlg.setCancelLabel(closeBtnTitle);
         frame     = dlg;

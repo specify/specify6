@@ -166,7 +166,7 @@ public class CollabNode extends JPanel implements GhostActionable
         pb.add(UIHelper.createLabel("Active Users"), cc.xy(1,1));
         pb.add(UIHelper.createScrollPane(list), cc.xy(1,3));
         pb.setDefaultDialogBorder();
-        CustomDialog dlg = new CustomDialog((Frame)null, title, true, doSelectUser ? CustomDialog.OKCANCEL : CustomDialog.OK_BTN, pb.getPanel());
+        CustomDialog dlg = CustomDialog.create(title, true, doSelectUser ? CustomDialog.OKCANCEL : CustomDialog.OK_BTN, pb.getPanel());
         if (!doSelectUser)
         {
             dlg.setOkLabel("Close");
