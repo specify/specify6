@@ -113,7 +113,7 @@ public class WebLinkEditorDlg extends CustomDialog
     public WebLinkEditorDlg(final WebLinkDef webLinkDef,
                             final DBTableInfo tableInfo) throws HeadlessException
     {
-        super((Frame)UIRegistry.getTopWindow(), getResourceString("WebLinkArgDlg.WEB_LNK_EDTR"), true, OKCANCELHELP, null); //$NON-NLS-1$
+        super((java.awt.Dialog)UIRegistry.getMostRecentWindow(), getResourceString("WebLinkArgDlg.WEB_LNK_EDTR"), true, OKCANCELHELP, null); //$NON-NLS-1$
         
         this.webLinkDef = webLinkDef;
         this.tableInfo  = tableInfo;

@@ -68,7 +68,7 @@ public class WebLinkConfigDlg extends CustomDialog
                             final DBTableInfo tableInfo,
                             final boolean     isTableMode) throws HeadlessException
     {
-        super((Frame)UIRegistry.getTopWindow(), UIRegistry.getResourceString("WebLinkConfigDlg.WEB_LNK_EDT"), true, isTableMode ? OKHELP : OKCANCELHELP, null); // I18N //$NON-NLS-1$
+        super((java.awt.Dialog)UIRegistry.getMostRecentWindow(), UIRegistry.getResourceString("WebLinkConfigDlg.WEB_LNK_EDT"), true, isTableMode ? OKHELP : OKCANCELHELP, null); // I18N //$NON-NLS-1$
         
         this.wlMgr       = wlMgr;
         this.tableInfo   = tableInfo;
