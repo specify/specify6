@@ -51,7 +51,7 @@ import edu.ku.brc.ui.UIRegistry;
 public class SecuritySummaryDlg extends CustomDialog
 {
     /**
-     * @param parentDlg
+     * 
      */
     public SecuritySummaryDlg()
     {
