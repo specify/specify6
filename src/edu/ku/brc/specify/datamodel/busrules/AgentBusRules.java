@@ -681,8 +681,8 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
         pb.add(email, cc.xy(3, 5));
         
         pb.setDefaultDialogBorder();
-        CustomDialog dlg = new CustomDialog((Dialog)null, "Create Agent", true, CustomDialog.OKCANCEL, pb.getPanel());   
-        UIHelper.centerAndShow(dlg);
+        CustomDialog dlg = new CustomDialog((Dialog)null, "Create Agent", true, CustomDialog.OKCANCEL, pb.getPanel());
+        dlg.setVisible(true);
         
         boolean hasData = StringUtils.isNotEmpty(lName.getText()) && StringUtils.isNotEmpty(fName.getText());
         if (hasData && !dlg.isCancelled())

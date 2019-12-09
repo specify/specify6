@@ -220,14 +220,13 @@ public class SelectPrepsDlg extends CustomDialog
         contentPanel = tPanel;
         mainPanel.add(contentPanel, BorderLayout.CENTER);
 
-        pack();
-        
         doEnableOKBtn();
 
         Dimension size = getPreferredSize();
         size.width += 20;
         size.height = size.height > 500 ? 500 : size.height;
-        setSize(size);
+        setPreferredSize(size);
+        pack();
     }
     
     /**

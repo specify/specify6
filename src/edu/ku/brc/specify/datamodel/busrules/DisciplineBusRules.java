@@ -267,7 +267,7 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
                 
             }
         });
-        UIHelper.centerAndShow(dlg);
+        dlg.setVisible(true);
         
         UIRegistry.popResourceBundle();
         
@@ -772,7 +772,7 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
                 
             }
         });
-        UIHelper.centerAndShow(dlg);
+        dlg.setVisible(true);
         
         UIRegistry.popResourceBundle();
         

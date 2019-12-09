@@ -443,6 +443,7 @@ public class UIFormatterEditorDlg extends CustomDialog
         fieldTypeCbx.setSelectedIndex(-1);
         fieldHasChanged = false;
         updateEnabledState();
+        pack();
     }
     
     /**

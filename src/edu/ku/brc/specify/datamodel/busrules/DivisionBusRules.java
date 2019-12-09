@@ -313,7 +313,7 @@ public class DivisionBusRules extends BaseBusRules implements CommandListener
             	
             }
         });
-        UIHelper.centerAndShow(dlg);
+        dlg.setVisible(true);
         
         UIRegistry.popResourceBundle();
         

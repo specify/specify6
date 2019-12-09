@@ -27,6 +27,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
+import java.awt.Dimension;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -175,8 +176,9 @@ public class GeographyMerging
         currIndex = -1;
         doNextGeographyInList();
 
+        dlg.setPreferredSize(new Dimension(800, dlg.getHeight()));
         dlg.pack();
-        UIHelper.centerAndShow(dlg, 800, dlg.getSize().height);
+        dlg.setVisible(true);
         
         return true;
     }

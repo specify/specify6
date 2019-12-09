@@ -48,6 +48,7 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
+import edu.ku.brc.ui.UIRegistry;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.auth.PermissionPanelContainerIFace;
@@ -180,7 +181,7 @@ public class PermissionEditor extends JPanel implements PermissionPanelContainer
 	            list.add(title);
 	        }
 	    }
-	    ToggleButtonChooserDlg<String> dlg = new ToggleButtonChooserDlg<String>((Frame)null,
+	    ToggleButtonChooserDlg<String> dlg = new ToggleButtonChooserDlg<String>((Frame) UIRegistry.getTopWindow(),
 	                                                 getResourceString("SEC_SEL_TITLE"), 
 	                                                 getResourceString("SEC_SEL_DESC"), list);
         dlg.setVisible(true);

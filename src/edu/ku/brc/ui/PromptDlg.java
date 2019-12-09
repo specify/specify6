@@ -122,6 +122,7 @@ public class PromptDlg extends CustomDialog
         pb.setDefaultDialogBorder();
         
         mainPanel.add(pb.getPanel(), BorderLayout.CENTER);
+        pack();
     }
 
     /**

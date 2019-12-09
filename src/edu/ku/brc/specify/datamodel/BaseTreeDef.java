@@ -410,8 +410,8 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
             dlg.getOkBtn().setVisible(false); 
             dlg.setCancelLabel(dlg.getOkBtn().getText());
             //...Stoopid x-box
-            
-            UIHelper.centerAndShow(dlg);
+
+            dlg.setVisible(true);
             dlg.dispose();
             if (dlg.isCancelled())
             {
@@ -425,7 +425,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
                     CustomDialog.OKCANCELHELP,
                     pb2.getPanel());
             dlg2.setOkLabel(getResourceString("YES"));
-            UIHelper.centerAndShow(dlg2);
+            dlg.setVisible(true);
             dlg2.dispose();
             if (dlg2.isCancelled())
             {
@@ -757,7 +757,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
                         CustomDialog.OKCANCELHELP,
                         pb.getPanel());
                 dlg.setCancelLabel(getResourceString("SpecifyAppContextMgr.EXIT"));
-                UIHelper.centerAndShow(dlg);
+                dlg.setVisible(true);
                 if (dlg.getBtnPressed() == CustomDialog.OK_BTN)
                 {
                     updateAllNodes(null, useProgDlg, false);
@@ -779,7 +779,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
                         true,
                         CustomDialog.OKHELP,
                         pb.getPanel());
-                UIHelper.centerAndShow(dlg);
+                dlg.setVisible(true);
                 result = false;               
            }
         }

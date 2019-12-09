@@ -706,7 +706,7 @@ public class CheckDBAfterLogin
             
             CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getMostRecentWindow(), UIRegistry.getResourceString("FDBAL_PERMFIXED"), true, CustomDialog.OK_BTN, pb.getPanel());
             dlg.setOkLabel(UIRegistry.getResourceString("CLOSE"));
-            UIHelper.centerAndShow(dlg);
+            dlg.setVisible(true);
         }
     }
     

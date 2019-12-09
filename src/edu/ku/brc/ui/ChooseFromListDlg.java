@@ -506,7 +506,6 @@ public class ChooseFromListDlg<T> extends JDialog
 
         setContentPane(builder.getPanel());
         pack();
-        // setLocationRelativeTo(locationComp);
     }
     
     /**
@@ -656,7 +655,6 @@ public class ChooseFromListDlg<T> extends JDialog
         {
             createUI();
         }
-        UIHelper.centerWindow(this);
         super.setVisible(visible);
     }
 

@@ -167,12 +167,12 @@ public class QueryCreatorsConfigureDlg extends CustomDialog
         contentPanel = mainPB.getPanel();
         mainPanel.add(contentPanel, BorderLayout.CENTER);
         
-        pack();
-        
+
         Dimension size = getSize();
         size.width  = Math.max(size.width, 500);
         size.height = Math.max(size.height, 350);
-        setSize(size);
+        setPreferredSize(size);
+        pack();
     }
     
     /**
@@ -250,7 +250,7 @@ public class QueryCreatorsConfigureDlg extends CustomDialog
             return;
         }
         
-        ToggleButtonChooserDlg<String> dlg = new ToggleButtonChooserDlg<String>((Frame)null,
+        ToggleButtonChooserDlg<String> dlg = new ToggleButtonChooserDlg<String>(this,
                 "QY_AVAIL_QUERIES_CONFIG", uniqueList);
         
         dlg.setUseScrollPane(true);

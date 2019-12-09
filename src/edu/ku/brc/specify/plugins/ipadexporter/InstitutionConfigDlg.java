@@ -212,6 +212,7 @@ public class InstitutionConfigDlg extends CustomDialog
         contentPanel = pb.getPanel();
         
         mainPanel.add(contentPanel, BorderLayout.CENTER);
+        pack();
     }
     
     /**

@@ -368,7 +368,7 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
         		filteredFreqs,
         		filteredExtras,
         		filterQueryList(stdQueries, AppContextMgr.isSecurityOn(), true));
-        UIHelper.centerAndShow(dlg);
+        dlg.setVisible(true);
         if (!dlg.isCancelled())
         {
             actionNavBox.clear();
@@ -402,7 +402,7 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
     protected void configureFavoriteQueries()
     {
         QueryConfigureDlg dlg = new QueryConfigureDlg(QueryTask.this);
-        UIHelper.centerAndShow(dlg);
+        dlg.setVisible(true);
         if (!dlg.isCancelled())
         {
             Vector<SpQuery> favs  = dlg.getFavQueries();
@@ -608,7 +608,7 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
         Vector<String> configNames = new Vector<String>();
         Collections.addAll(configNames, configCreators, configQueries);
         
-        ToggleButtonChooserDlg<String> dlg = new ToggleButtonChooserDlg<String>((Frame)null,
+        ToggleButtonChooserDlg<String> dlg = new ToggleButtonChooserDlg<String>((Frame)UIRegistry.getTopWindow(),
                 "QY_CHOOSE_CONFIG", 
                 configNames, 
                 ToggleButtonChooserPanel.Type.RadioButton);
@@ -734,7 +734,7 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
                 tiHash.put(tableInfo.getTitle(), tableInfo);
                 
             }
-            ToggleButtonChooserDlg<String> dlg = new ToggleButtonChooserDlg<String>((Frame)null,
+            ToggleButtonChooserDlg<String> dlg = new ToggleButtonChooserDlg<String>((Frame)UIRegistry.getTopWindow(),
                     "QY_EXTRA_TABLES", 
                     names, 
                     ToggleButtonChooserPanel.Type.RadioButton);
@@ -786,7 +786,7 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
                 Object[] row = (Object[])obj;
                 queryList.add((SpQuery)row[0]); 
             }
-            ToggleButtonChooserDlg<SpQuery> dlg = new ToggleButtonChooserDlg<SpQuery>((Frame)null,
+            ToggleButtonChooserDlg<SpQuery> dlg = new ToggleButtonChooserDlg<SpQuery>((Frame)UIRegistry.getTopWindow(),
                     "QY_OTHER_QUERIES", 
                     queryList, 
                     ToggleButtonChooserPanel.Type.RadioButton);

@@ -119,6 +119,7 @@ public class CarryForwardConfigDlg extends CustomDialog
         JScrollPane sp = new JScrollPane(table, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         contentPanel = sp;//new JPanel(new BorderLayout()));
         mainPanel.add(contentPanel, BorderLayout.CENTER);
+        pack();
     }
     
     /**

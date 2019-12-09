@@ -562,7 +562,7 @@ public class ViewToSchemaReview
                 pb.setDefaultDialogBorder();
                 
                 CustomDialog dlg = new CustomDialog(parentDlg, "Fixed Items", true, CustomDialog.OK_BTN, pb.getPanel());
-                UIHelper.centerAndShow(dlg);
+                dlg.setVisible(true);
             }
         });
     }

@@ -334,7 +334,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             TaxonTypeHolder selectedTTH = null;
             if (datas.size() > 1)
             {
-                ToggleButtonChooserDlg<TaxonTypeHolder> dlg = new ToggleButtonChooserDlg<TaxonTypeHolder>((Frame)null, 
+                ToggleButtonChooserDlg<TaxonTypeHolder> dlg = new ToggleButtonChooserDlg<TaxonTypeHolder>((Frame)UIR,
                         "Choose a Collection Object Type", 
                         datas, 
                         ToggleButtonChooserPanel.Type.RadioButton);
@@ -2783,7 +2783,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             CustomDialog    dlg       = new CustomDialog((Frame)null, "Choose Agent Mapping File", true, pb.getPanel());
             dlg.createUI();
             dlg.pack();
-            UIHelper.centerAndShow(dlg, 600, dlg.getHeight());
+            dlg.setVisible(true);
             if (!dlg.isCancelled())
             {
                 String fileName = textField.getText();

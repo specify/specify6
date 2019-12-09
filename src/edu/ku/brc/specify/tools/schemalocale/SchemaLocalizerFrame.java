@@ -472,8 +472,8 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
         });
         dlg.createUI();
         dlg.getOkBtn().setEnabled(false);
-        
-        UIHelper.centerAndShow(dlg);
+
+        dlg.setVisible(true);
         if (!dlg.isCancelled())
         {
             Locale locale = (Locale)list.getSelectedValue();
@@ -572,7 +572,7 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
             }
             ToggleButtonChooserDlg<DisplayLocale> dlg = new ToggleButtonChooserDlg<DisplayLocale>((Dialog)null, "Choose", dspLocales, ToggleButtonChooserPanel.Type.RadioButton);
             dlg.setUseScrollPane(true);
-            UIHelper.centerAndShow(dlg);
+            dlg.setVisible(true);
             if (!dlg.isCancelled())
             {
                 DisplayLocale dl = dlg.getSelectedObject();

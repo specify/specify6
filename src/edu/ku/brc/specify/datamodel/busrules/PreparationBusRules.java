@@ -205,7 +205,7 @@ public class PreparationBusRules extends AttachmentOwnerBaseBusRules
         }
 
         dlg.setData(iActions);
-        UIHelper.centerAndShow(dlg);
+        dlg.setVisible(true);
     }
 
     /* (non-Javadoc)

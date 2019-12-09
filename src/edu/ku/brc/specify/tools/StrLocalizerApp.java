@@ -1489,7 +1489,7 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
         }
     	
     	ChooseFromListDlg<LanguageEntry> ldlg = new ChooseFromListDlg<LanguageEntry>((Frame )getTopWindow(), getResourceString("StrLocalizerApp.ChooseLanguageDlgTitle"), languages);
-        UIHelper.centerAndShow(ldlg);
+        ldlg.setVisible(true);
         if (ldlg.isCancelled() || ldlg.getSelectedObject() == null)
         {
         	return;
@@ -1605,7 +1605,7 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
     	
     	ChooseFromListDlg<StrLocaleFile> ldlg = new ChooseFromListDlg<StrLocaleFile>((Frame )getTopWindow(), 
         		                                   getResourceString("StrLocalizerApp.ChooseFileDlgTitle"), srcFiles);
-        UIHelper.centerAndShow(ldlg);
+        ldlg.setVisible(true);
         if (ldlg.isCancelled() || ldlg.getSelectedObject() == null)
         {
         	return;

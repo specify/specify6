@@ -491,8 +491,6 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener, 
             size.width = Math.max(size.width, 400);
             size.height = Math.max(size.height, 250);
             setPreferredSize(size);
-            setSize(size);
-            UIHelper.centerWindow(this);
         }
         super.setVisible(visible);
     }

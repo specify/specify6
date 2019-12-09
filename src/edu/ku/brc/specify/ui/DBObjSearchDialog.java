@@ -151,6 +151,7 @@ public class DBObjSearchDialog extends CustomDialog implements ViewBasedSearchDi
         if (panel != null)
         {
             panel.setOKBtn(okBtn);
+            pack();
             //panel.getScrollPane().setPreferredSize(new Dimension(300, 200));
         }
 

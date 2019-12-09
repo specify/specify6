@@ -864,7 +864,7 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
                 
                 CustomDialog dlg = new CustomDialog((Frame)null, "Debug", true, CustomDialog.OK_BTN, p);
                 dlg.setOkLabel("Close");
-                UIHelper.centerAndShow(dlg);
+                dlg.setVisible(true);
             }
             
 

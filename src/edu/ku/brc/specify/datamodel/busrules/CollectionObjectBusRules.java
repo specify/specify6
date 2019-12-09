@@ -897,7 +897,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                 true,
                 CustomDialog.OKHELP,
                 pane);
-        UIHelper.centerAndShow(dlg);
+        dlg.setVisible(true);
         dlg.dispose();
 	}
 

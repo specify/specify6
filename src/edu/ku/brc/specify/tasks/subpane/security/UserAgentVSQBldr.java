@@ -88,7 +88,7 @@ public class UserAgentVSQBldr implements ViewBasedSearchQueryBuilderIFace
             divDlg.getCancelBtn().setVisible(false);
             
             divDlg.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-            UIHelper.centerAndShow(divDlg);
+            divDlg.setVisible(true);
             int inx = divisionNames.indexOf(divDlg.getSelectedObject());
             disciplineID = (Integer)disciplineIds.get(inx);
             

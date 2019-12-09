@@ -159,6 +159,7 @@ public class DataSetDlg extends CustomDialog
         instNameTF.setText(title);
         
         okBtn.setEnabled(isValidInput(instNameTF.getText()));
+        pack();
     }
     
     /**

@@ -143,7 +143,7 @@ public class DataEntryConfigDlg extends TaskConfigureDlg
         
         Collections.sort(uniqueList);
         
-        ToggleButtonChooserDlg<String> dlg = new ToggleButtonChooserDlg<String>((Frame)null,
+        ToggleButtonChooserDlg<String> dlg = new ToggleButtonChooserDlg<String>((Frame)UIRegistry.getTopWindow(),
                 "DET_AVAIL_VIEWS", uniqueList);
         
         dlg.setUseScrollPane(true);

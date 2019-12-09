@@ -137,7 +137,7 @@ public class SchemaLocaleUpdater extends CustomDialog
 
         contentPanel = pb.getPanel();
         mainPanel.add(contentPanel, BorderLayout.CENTER);
-        
+        pack();
         hideAll.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e)

@@ -235,8 +235,7 @@ public class CollectionBusRules extends BaseBusRules
             }
         });
         dlg.createUI();
-        dlg.pack();
-        UIHelper.centerAndShow(dlg);
+        dlg.setVisible(true);
         
         UIRegistry.popResourceBundle();
         

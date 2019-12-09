@@ -591,7 +591,7 @@ public class DeterminationBusRules extends BaseBusRules
                 cd.setModal(true);
                 cd.setOkLabel(UIRegistry.getResourceString("DeterminationBusRules.Change"));
                 cd.setCancelLabel(UIRegistry.getResourceString("DeterminationBusRules.Keep"));
-                UIHelper.centerAndShow(cd);
+                cd.setVisible(true);
                 if (cd.getBtnPressed() == CustomDialog.OK_BTN)
                 {
                     taxon = taxon.getAcceptedParent();

@@ -957,19 +957,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
      */
     private static void processUnhandledException(final Throwable throwable)
     {
-        /*if (UIHelper.isExceptionOKToThrow(throwable))
-        {
-            SwingUtilities.invokeLater(new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    String msg = "There was an error while updating the schema.";
-                    UnhandledExceptionDialog dlg = new UnhandledExceptionDialog(msg, throwable);
-                    UIHelper.centerAndShow(dlg);
-                }
-            });
-        }*/
+        //streamlined expedition
     }
     
     /**
@@ -4686,7 +4674,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     pb.setDefaultDialogBorder();
                     
                     CustomDialog    dlg = new CustomDialog((Frame)null, getResourceString("SCHEMA_UPDATE_ERROR"), true, pb.getPanel());
-                    UIHelper.centerAndShow(dlg);
+                    dlg.setVisible(true);
                 }
                 
                 dbmsMgr.close();

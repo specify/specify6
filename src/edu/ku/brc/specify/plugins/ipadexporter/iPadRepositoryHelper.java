@@ -167,7 +167,7 @@ public class iPadRepositoryHelper
                 Vector<Agent> agentsLst = new Vector<Agent>(agents);
                 agentsLst.add(usrAgent);
                 ChooseFromListDlg<Agent> dlg = new ChooseFromListDlg<Agent>((Frame)UIRegistry.getTopWindow(), "Choose Agent", agentsLst);
-                UIHelper.centerAndShow(dlg);
+                dlg.setVisible(true);
                 if (!dlg.isCancelled())
                 {
                     return dlg.getSelectedObject();

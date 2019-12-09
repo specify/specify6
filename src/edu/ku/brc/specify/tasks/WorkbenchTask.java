@@ -752,7 +752,7 @@ public class WorkbenchTask extends BaseTask
         	UIRegistry.showLocalizedMsg("WorkbenchTask.ExportedDatasetTemplateNotEditable");
         	mapper.setReadOnly(true);
         }
-        UIHelper.centerAndShow(mapper);
+        mapper.setVisible(true);
         return mapper;
     }
     
@@ -1017,14 +1017,14 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         // Ask the user to choose an existing template.
         if (matchingTemplates.size() > 0)
         {
-            SelectNewOrExistingDlg<WorkbenchTemplate> dlg = new SelectNewOrExistingDlg<WorkbenchTemplate>((Frame)UIRegistry.get(UIRegistry.FRAME), 
+            SelectNewOrExistingDlg<WorkbenchTemplate> dlg = new SelectNewOrExistingDlg<>((Frame)UIRegistry.getTopWindow(),
                     "WB_CHOOSE_DATASET_REUSE_TITLE", 
                     "WB_CREATE_NEW_MAPPING",
                     "WB_USE_EXISTING_MAPPING",
                     helpContext, 
                     matchingTemplates);
             
-            UIHelper.centerAndShow(dlg);
+            dlg.setVisible(true);
             
             if (dlg.getBtnPressed() == ChooseFromListDlg.OK_BTN)
             {
@@ -1140,7 +1140,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                         ChooseFromListDlg.OKCANCELHELP, 
                         ExportFileConfigurationFactory.getExportList(), "WorkbenchImportCvs");
             dlg.setModal(true);
-            UIHelper.centerAndShow(dlg);
+            dlg.setVisible(true);
     
             if (!dlg.isCancelled())
             {
@@ -1154,12 +1154,6 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             dlg.dispose();
         }
         
-//        FileDialog fileDialog = new FileDialog((Frame) UIRegistry.get(UIRegistry.FRAME),
-//                                               String.format(getResourceString("CHOOSE_WORKBENCH_EXPORT_FILE"), fileTypeCaption), FileDialog.SAVE);
-//        fileDialog.setDirectory(getDefaultDirPath(EXPORT_FILE_PATH));
-//        UIHelper.centerAndShow(fileDialog);
-//        fileDialog.dispose();
-
         JFileChooser chooser = new JFileChooser(getDefaultDirPath(EXPORT_FILE_PATH));
         chooser.setDialogTitle(getResourceString("CHOOSE_WORKBENCH_EXPORT_FILE"));
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -1220,7 +1214,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             
             CustomDialog confirmer = new CustomDialog((Frame)UIRegistry.get(UIRegistry.FRAME), 
                     getResourceString("WB_FILE_EXISTS_TITLE"), true, CustomDialog.OKCANCEL, builder.getPanel(), CustomDialog.CANCEL_BTN);
-            UIHelper.centerAndShow(confirmer);
+            confirmer.setVisible(true);
             confirmer.dispose();
             if (confirmer.isCancelled())
             {
@@ -1554,31 +1548,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
      */
     protected Workbench createNewWorkbenchFromFile()
     {
-        // For ease of testing
         File file = null;
-//        FileDialog fileDialog = new FileDialog(/*(Frame)UIRegistry.get(UIRegistry.FRAME),*/
-//        										(Frame )UIRegistry.getTopWindow(),
-//                                               getResourceString("CHOOSE_WORKBENCH_IMPORT_FILE"), 
-//                                               FileDialog.LOAD);
-//        fileDialog.setDirectory(getDefaultDirPath(IMPORT_FILE_PATH));
-//        fileDialog.setFilenameFilter(new java.io.FilenameFilter()
-//        {
-//            public boolean accept(File dir, String filename)
-//            {
-//                for (ExportFileConfigurationFactory.ExportableType exportType : ExportFileConfigurationFactory.getExportList())
-//                {
-//                    String ext = FilenameUtils.getExtension(filename);
-//                    if (StringUtils.isNotEmpty(ext) && exportType.getExtension().toLowerCase().equals(ext))
-//                    {
-//                        return true;
-//                    }
-//                }
-//                return false;
-//            }
-//
-//        });
-//        UIHelper.centerAndShow(fileDialog);
-//        fileDialog.dispose();
 
         JFileChooser chooser = new JFileChooser(getDefaultDirPath(IMPORT_FILE_PATH));
         chooser.setDialogTitle(getResourceString("CHOOSE_WORKBENCH_IMPORT_FILE"));
@@ -1602,23 +1572,6 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             return null;
         }
 
-        
-//        String fileName = fileDialog.getFile();
-//        String path     = fileDialog.getDirectory();
-//        if (StringUtils.isNotEmpty(path))
-//        {
-//            AppPreferences localPrefs = AppPreferences.getLocalPrefs();
-//            localPrefs.put(IMPORT_FILE_PATH, path);
-//        }
-//
-//        if (StringUtils.isNotEmpty(fileName) && StringUtils.isNotEmpty(path))
-//        {
-//            file = new File(path + File.separator + fileName);
-//        } else
-//        {
-//            return null;
-//        }
-        
         file = chooser.getSelectedFile();
         
         if (file.exists())
@@ -2564,7 +2517,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                             helpContext);
                 
                 dlg.setModal(true);
-                UIHelper.centerAndShow(dlg);
+                dlg.setVisible(true);
                 if (!dlg.isCancelled())
                 {
                     session   = DataProviderFactory.getInstance().createSession();
@@ -2641,7 +2594,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     {
         Collections.sort(items);
         
-        ToggleButtonChooserDlg<WorkbenchTemplateMappingItem> dlg = new ToggleButtonChooserDlg<WorkbenchTemplateMappingItem>(
+        ToggleButtonChooserDlg<WorkbenchTemplateMappingItem> dlg = new ToggleButtonChooserDlg<>(
                 (Frame)UIRegistry.get(UIRegistry.FRAME),
                 "WB_SELECT_FIELD_TITLE", 
                 "WB_SELECT_FIELD", 
@@ -3662,7 +3615,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 true,
                 CustomDialog.OK_BTN,
                 pane);
-        UIHelper.centerAndShow(dlg);
+        dlg.setVisible(true);
         dlg.dispose();
     }
 

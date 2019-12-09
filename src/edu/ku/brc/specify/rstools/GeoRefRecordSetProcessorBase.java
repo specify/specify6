@@ -255,7 +255,7 @@ public abstract class GeoRefRecordSetProcessorBase implements RecordSetToolsIFac
                     pb.setDefaultDialogBorder();
                     CustomDialog dlg = new CustomDialog((Frame)null, UIRegistry.getResourceString("WARNING"), true, CustomDialog.OK_BTN | CustomDialog.CANCEL_BTN, pb.getPanel());
                     dlg.setOkLabel("Continue");
-                    UIHelper.centerAndShow(dlg);
+                    dlg.setVisible(true);
                     if (dlg.isCancelled())
                     {
                         return;

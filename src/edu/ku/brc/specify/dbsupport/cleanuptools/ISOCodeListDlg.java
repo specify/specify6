@@ -235,6 +235,7 @@ public class ISOCodeListDlg extends CustomDialog
         fillTableFromItem(null); // eEarth doesn't need an item
         
         table.getColumnModel().getColumn(0).setPreferredWidth(260);
+        pack();
     }
 
     /**

@@ -3607,8 +3607,6 @@ public class Uploader implements ActionListener, KeyListener
                             SwingUtilities.invokeLater(new Runnable() {
                                 @Override
                                 public void run() {
-                                    //UIHelper.centerAndShow(progDlg);
-                                    //GlassPane's don't come with indeterminate progress bars, so maybe progDlg is better???
                                     UIRegistry.writeSimpleGlassPaneMsg(getResourceString(rollBack ? "WB_BATCH_EDIT_ROLLING_BACK" : "WB_BATCH_EDIT_COMMITTING"),
                                             WorkbenchTask.GLASSPANE_FONT_SIZE);
                                 }
@@ -3757,7 +3755,7 @@ public class Uploader implements ActionListener, KeyListener
         }
         cwin.setAlwaysOnTop(true); //ALWAYS
         cwin.setModal(true);
-        UIHelper.centerAndShow(cwin);
+        cwin.setVisible(true);
         if (!cwin.isCancelled())
         {
             usp.getMatchPanel().apply();
@@ -6368,7 +6366,7 @@ public class Uploader implements ActionListener, KeyListener
                 true,
                 CustomDialog.OKHELP,
                 pane);
-        UIHelper.centerAndShow(dlg);
+        dlg.setVisible(true);
         dlg.dispose();
     }
 

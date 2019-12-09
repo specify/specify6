@@ -320,14 +320,14 @@ public class MasterLoginPanel extends GenericFormPanel
     {
         List<String> dbList = getSpecifyDatabases(mgr, mgr.getDatabaseList());
         
-        ToggleButtonChooserDlg<String> dlg = new ToggleButtonChooserDlg<String>((Frame)null, "SEC_SELECT_DBS",
+        ToggleButtonChooserDlg<String> dlg = new ToggleButtonChooserDlg<String>((Frame)UIRegistry.getTopWindow(), "SEC_SELECT_DBS",
                                                                                 "SEC_SELECT_DBS_DESC", dbList, 
                                                                                 CustomDialog.OKCANCELHELP, ToggleButtonChooserPanel.Type.Checkbox);
         dlg.setHelpContext("security_wizreset");
         dlg.setAddSelectAll(true);
         dlg.setUseScrollPane(true);
         dlg.createUI();
-        UIHelper.centerAndShow(dlg);
+        dlg.setVisible(true);
         if (!dlg.isCancelled())
         {
             return dlg.getSelectedObjects();

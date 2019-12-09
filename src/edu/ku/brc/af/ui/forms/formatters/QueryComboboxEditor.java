@@ -161,8 +161,8 @@ public class QueryComboboxEditor extends CustomDialog
                 }
             }
         });
-        
-        setSize(300,350);
+        setPreferredSize(new java.awt.Dimension(300,350));
+        pack();
     }
     
     /**

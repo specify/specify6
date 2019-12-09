@@ -275,9 +275,9 @@ public class Sp5Forms extends JFrame implements FrameworkAppIFace
     {
         SchemaLocaleUpdater dlg = new SchemaLocaleUpdater(selectedForm);
         dlg.createUI();
-        dlg.setSize(800, 550);
+        dlg.setPreferredSize(new Dimension(800, 550));
         dlg.pack();
-        UIHelper.centerAndShow(dlg);
+        dlg.setVisible(true);
     }
     
     /**

@@ -630,7 +630,7 @@ public class UserPanel extends BaseSetupPanel
                 scrollPane.getVerticalScrollBar().setValue(0);
             }
         });
-        UIHelper.centerAndShow(dlg);
+        dlg.setVisible(true);
     }
 
     /**

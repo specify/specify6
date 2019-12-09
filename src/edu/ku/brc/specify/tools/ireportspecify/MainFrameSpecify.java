@@ -887,7 +887,7 @@ public class MainFrameSpecify extends MainFrame
         propPanel.setCanceller(cd.getCancelBtn());
         while (!goodProps)
         {
-            UIHelper.centerAndShow(cd);
+            cd.setVisible(true);
             if (cd.isCancelled())
             {
                 return null;
@@ -1962,8 +1962,8 @@ public class MainFrameSpecify extends MainFrame
                     panel.add(UIHelper.createI18NLabel("MOBILE_SHUTTING_DOWN", SwingConstants.CENTER), BorderLayout.CENTER);
                     processDlg = new CustomDialog((Frame)null, "Shutdown", false, CustomDialog.NONE_BTN, panel);
                     processDlg.setAlwaysOnTop(true);
-                    
-                    UIHelper.centerAndShow(processDlg);
+
+                    processDlg.setVisible(true);
                     
                 }
             });

@@ -288,7 +288,7 @@ public class AgentCleanupProcessor
         {
             prgDlg.toBack();
             AgentCleanupListDlg dlg = new AgentCleanupListDlg("Agent", "Exact Match Duplicates", itemsList);
-            UIHelper.centerAndShow(dlg);
+            dlg.setVisible(true);
             prgDlg.toFront();
             
             if (!dlg.isCancelled())

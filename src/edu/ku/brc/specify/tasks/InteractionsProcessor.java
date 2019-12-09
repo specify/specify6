@@ -362,7 +362,7 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
         loanSelectPrepsDlg.createUI();
         loanSelectPrepsDlg.setModal(true);
         
-        UIHelper.centerAndShow(loanSelectPrepsDlg);
+        loanSelectPrepsDlg.setVisible(true);
         
         if (loanSelectPrepsDlg.isCancelled())
         {

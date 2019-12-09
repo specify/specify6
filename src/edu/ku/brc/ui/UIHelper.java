@@ -474,7 +474,6 @@ public final class UIHelper
                                      final Integer height)
     {
         centerWindow(window, width, height);
-
         window.setVisible(true);
     }
 
@@ -484,11 +483,11 @@ public final class UIHelper
      */
     public static void centerAndShow(java.awt.Window window)
     {
-        //centerAndShow(window, null, null);
-        window.pack();
-        window.setLocationRelativeTo(UIRegistry.getTopWindow());
-        window.setVisible(true);
-
+        if (window instanceof CustomDialog) {
+            window.setVisible(true);
+        } else {
+            centerAndShow(window, null, null);
+        }
     }
 
     /**
@@ -497,8 +496,11 @@ public final class UIHelper
      */
     public static void centerWindow(final java.awt.Window window)
     {
-        window.pack(); //this is perhaps not very nice
-        window.setLocationRelativeTo(UIRegistry.getTopWindow());
+        if (window instanceof CustomDialog) {
+            window.setLocationRelativeTo(window.getOwner());
+        } else {
+            centerWindow(window, null, null);
+        }
     }
 
     /**

@@ -578,7 +578,7 @@ public class ViewSetSelectorPanel extends JPanel implements PropertyChangeListen
     {
         List<ControlIFace> list = getControlsList(true);
 
-        ToggleButtonChooserDlg<ControlIFace> dlg = new ToggleButtonChooserDlg<ControlIFace>((Frame)null, "ViewSetSelectorPanel.CHOOSE_A_CONTROL", list, ToggleButtonChooserPanel.Type.RadioButton); //$NON-NLS-1$
+        ToggleButtonChooserDlg<ControlIFace> dlg = new ToggleButtonChooserDlg<ControlIFace>((Frame)UIRegistry.getTopWindow(), "ViewSetSelectorPanel.CHOOSE_A_CONTROL", list, ToggleButtonChooserPanel.Type.RadioButton); //$NON-NLS-1$
         dlg.setUseScrollPane(true);
         dlg.setVisible(true);
         
@@ -804,7 +804,7 @@ public class ViewSetSelectorPanel extends JPanel implements PropertyChangeListen
         
         if (!skip && formCell != null)
         {
-            CustomDialog propDlg = new CustomDialog((Frame)null, getResourceString("ViewSetSelectorPanel.CREATE"), true, panel); //$NON-NLS-1$
+            CustomDialog propDlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), getResourceString("ViewSetSelectorPanel.CREATE"), true, panel); //$NON-NLS-1$
             propDlg.createUI();
             //panel.getViewDefMultiView().getCurrentView().getValidator().addEnableItem(propDlg.getOkBtn());
             propDlg.pack();
@@ -1543,7 +1543,7 @@ public class ViewSetSelectorPanel extends JPanel implements PropertyChangeListen
     {
         List<ControlIFace> list = getControlsList(true);
 
-        ToggleButtonChooserDlg<ControlIFace> dlg = new ToggleButtonChooserDlg<ControlIFace>((Frame)null,
+        ToggleButtonChooserDlg<ControlIFace> dlg = new ToggleButtonChooserDlg<ControlIFace>((Frame)UIRegistry.getTopWindow(),
                 "ViewSetSelectorPanel.CHOOSE_A_CONTROL", list, ToggleButtonChooserPanel.Type.RadioButton); //$NON-NLS-1$
         dlg.setUseScrollPane(true);
         dlg.setVisible(true);

@@ -176,6 +176,7 @@ public class AgentCleanupListDlg extends CustomDialog
                 getOkBtn().setEnabled(false);
             }
         });
+        pack();
     }
     
     /**

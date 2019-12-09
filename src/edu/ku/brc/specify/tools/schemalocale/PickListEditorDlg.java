@@ -444,7 +444,7 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
         
         dlg.setData(pickList);
         dlg.setModal(true);
-        UIHelper.centerAndShow(dlg);
+        dlg.setVisible(true);
         
         if (dlg.getBtnPressed() == ViewBasedDisplayIFace.OK_BTN)
         {

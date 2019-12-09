@@ -125,7 +125,7 @@ public class ImageWorkFlowPanel extends JPanel implements ImageProcListener, Wor
             protected void cancelButtonPressed()
             {
                 ConfigDlg configDlg = new ConfigDlg(dlg);
-                UIHelper.centerAndShow(configDlg);
+                configDlg.setVisible(true);
                 if (!configDlg.isCancelled())
                 {
                     imgProcPanel.readSetupPrefs();
@@ -278,7 +278,7 @@ public class ImageWorkFlowPanel extends JPanel implements ImageProcListener, Wor
                 {
                     if (firstDisplay)
                     {
-                        UIHelper.centerAndShow(dlg);
+                        dlg.setVisible(true);
                         firstDisplay = false;
                     } else
                     {

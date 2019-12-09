@@ -299,7 +299,7 @@ public class SecurityAdminTask extends BaseTask
         {
             public void actionPerformed(ActionEvent ae)
             {
-            	SecuritySummaryDlg dlg = new SecuritySummaryDlg(null);
+            	SecuritySummaryDlg dlg = new SecuritySummaryDlg();
             	dlg.setVisible(true);
             }
         });

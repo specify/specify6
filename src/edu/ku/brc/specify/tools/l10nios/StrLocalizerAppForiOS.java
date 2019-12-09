@@ -308,7 +308,7 @@ public class StrLocalizerAppForiOS extends JPanel implements FrameworkAppIFace, 
         ToggleButtonChooserDlg<String> chooser = new ToggleButtonChooserDlg<String>((Frame) null,
                 "CHOOSE_LOCALE", localeNames, ToggleButtonChooserPanel.Type.RadioButton);
         chooser.setUseScrollPane(true);
-        UIHelper.centerAndShow(chooser);
+        chooser.setVisible(true);
         
         if (!chooser.isCancelled()) 
         { 

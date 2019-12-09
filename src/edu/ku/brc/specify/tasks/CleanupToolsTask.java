@@ -154,7 +154,7 @@ public class CleanupToolsTask extends BaseTask
                 public void actionPerformed(ActionEvent e)
                 {
                     ISOCodeListDlg dlg = new ISOCodeListDlg(null, CustomDialog.OK_BTN);
-                    UIHelper.centerAndShow(dlg);
+                    dlg.setVisible(true);
                 }
             })); 
         
@@ -462,7 +462,7 @@ public class CleanupToolsTask extends BaseTask
     private void doLastNameParsing()
     {
         AgentNameCleanupParserDlg dlg = new AgentNameCleanupParserDlg(DBConnection.getInstance().getConnection());
-        UIHelper.centerAndShow(dlg);
+        dlg.setVisible(true);
         
         if (!dlg.isCancelled())
         {

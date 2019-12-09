@@ -3020,7 +3020,7 @@ public class ConvertVerifier extends AppBase
 
         CustomDialog dlg = new CustomDialog((java.awt.Frame)null, "Database Info", true, panel.getPanel());
         ((JPanel)dlg.getContentPanel()).setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        UIHelper.centerAndShow(dlg);
+        dlg.setVisible(true);
         
         dlg.dispose();
         if (dlg.isCancelled())

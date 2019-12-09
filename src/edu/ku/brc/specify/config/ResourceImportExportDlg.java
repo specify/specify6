@@ -1548,7 +1548,7 @@ public class ResourceImportExportDlg extends CustomDialog
     protected boolean getMetaInformation(final SpAppResource appRes, final String fileName)
     {
         ResImpExpMetaInfoDlg dlg = new ResImpExpMetaInfoDlg(appRes, fileName);
-        UIHelper.centerAndShow(dlg);
+        dlg.setVisible(true);
         return !dlg.isCancelled();
     }
     

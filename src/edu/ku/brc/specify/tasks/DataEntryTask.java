@@ -1194,7 +1194,7 @@ public class DataEntryTask extends BaseTask
         //    
         //} else
         //{
-            ToggleButtonChooserDlg<DataEntryView> dlg = new ToggleButtonChooserDlg<DataEntryView>((Frame)null,
+            ToggleButtonChooserDlg<DataEntryView> dlg = new ToggleButtonChooserDlg<DataEntryView>((Frame)UIRegistry.getTopWindow(),
                     "DET_CHOOSE_TITLE", availMiscViews, ToggleButtonChooserPanel.Type.RadioButton);
             dlg.setUseScrollPane(true);
             dlg.setVisible(true);

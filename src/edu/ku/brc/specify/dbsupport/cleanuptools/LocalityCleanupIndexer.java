@@ -558,7 +558,7 @@ public class LocalityCleanupIndexer
         dlg.setCloseOnApplyClk(true);
         dlg.createUI();
         dlg.pack();
-        UIHelper.centerAndShow(dlg, 800, dlg.getSize().height);
+        dlg.setVisible(true);
         
         return dlg.getBtnPressed();
     }

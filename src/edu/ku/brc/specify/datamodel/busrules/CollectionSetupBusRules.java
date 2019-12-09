@@ -205,7 +205,7 @@ public class CollectionSetupBusRules extends BaseBusRules
         scheme.initialize();
         scheme.setTableNumber(CollectionObject.getClassTableId());
         dlg.setData(scheme);
-        UIHelper.centerAndShow(dlg);
+        dlg.setVisible(true);
         if (!dlg.isCancelled())
         {
             ValTextField numSchemTxt = formViewObj.getCompById("numScheme");

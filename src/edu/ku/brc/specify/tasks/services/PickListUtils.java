@@ -426,7 +426,7 @@ public class PickListUtils
         pickDlg.setAddSelectAll(true);
         pickDlg.createUI();
         pickDlg.setSelectedObjects(selectedItems);
-        UIHelper.centerAndShow(pickDlg);
+        pickDlg.setVisible(true);
         
         Integer cnt = null;
         if (!pickDlg.isCancelled())
