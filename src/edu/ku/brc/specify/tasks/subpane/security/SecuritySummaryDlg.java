@@ -53,9 +53,9 @@ public class SecuritySummaryDlg extends CustomDialog
     /**
      * @param parentDlg
      */
-    public SecuritySummaryDlg(final CustomDialog parentDlg) 
+    public SecuritySummaryDlg()
     {
-        super(parentDlg, getResourceString("SecuritySummaryDlg.DLG_TITLE"), true, OKHELP, null);
+        super((java.awt.Frame)UIRegistry.getTopWindow(), getResourceString("SecuritySummaryDlg.DLG_TITLE"), true, OKHELP, null);
         helpContext = "SecuritySummary";
         
         okLabel = getResourceString("CLOSE");
@@ -114,10 +114,9 @@ public class SecuritySummaryDlg extends CustomDialog
 		{
 		    UIRegistry.showError(String.format("The user '%s' doesn't have a User Principal object, which should not happen.\nPlease contact Specify Support.", user.getName()));
 		}
-        
+
+        setPreferredSize(new java.awt.Dimension(600, 500));
         pack();
-        
-        setSize(600, 500);
     }
 }
 
