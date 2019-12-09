@@ -804,7 +804,7 @@ public class ViewSetSelectorPanel extends JPanel implements PropertyChangeListen
         
         if (!skip && formCell != null)
         {
-            CustomDialog propDlg = new CustomDialog((Frame)null, getResourceString("ViewSetSelectorPanel.CREATE"), true, panel); //$NON-NLS-1$
+            CustomDialog propDlg = CustomDialog.create(getResourceString("ViewSetSelectorPanel.CREATE"), true, panel); //$NON-NLS-1$
             propDlg.createUI();
             //panel.getViewDefMultiView().getCurrentView().getValidator().addEnableItem(propDlg.getOkBtn());
             propDlg.pack();

@@ -483,14 +483,14 @@ public class AppBase extends JPanel implements DatabaseLoginListener, CommandLis
         JTabbedPane tabPane = new JTabbedPane();
         tabPane.add(getResourceString("Specify.ERROR"), getLogFilePanel(errLogFile, true)); //$NON-NLS-1$
         tabPane.add("Specify",                          getLogFilePanel(spLogFile, true)); //$NON-NLS-1$
-        
+        tabPane.setPreferredSize(new Dimension(700, 550));
         String title = getResourceString("Specify.LOG_FILES_TITLE");//$NON-NLS-1$
         CustomDialog dialog = new CustomDialog((JFrame)UIRegistry.getTopWindow(), title, true, CustomDialog.OK_BTN, tabPane); 
         String okLabel = getResourceString("Specify.CLOSE");//$NON-NLS-1$
         dialog.setOkLabel(okLabel); 
         dialog.createUI();
-        dialog.setSize(800, 600);
-        UIHelper.centerWindow(dialog);
+        //dialog.setSize(800, 600);
+        //dialog.setLocationRelativeTo(UIRegistry.getTopWindow());        //UIHelper.centerWindow(dialog, 800, 600);
         dialog.setVisible(true);
     }
 

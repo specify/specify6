@@ -206,7 +206,7 @@ public class ValTextAreaBrief extends ValTextArea
         
         
         JScrollPane sp;
-        final CustomDialog dlg = new CustomDialog((Frame)null, "", true, isEditting ? CustomDialog.OKCANCEL : CustomDialog.OK_BTN, pb.getPanel());
+        final CustomDialog dlg = CustomDialog.create( "", true, isEditting ? CustomDialog.OKCANCEL : CustomDialog.OK_BTN, pb.getPanel());
         if (isEditting)
         {
             sp = UIHelper.createScrollPane(ta);

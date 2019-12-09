@@ -471,7 +471,7 @@ public class UserAndMasterPasswordMgr
             }
         });
         
-        final CustomDialog dlg = new CustomDialog((Frame)null, getResourceString("MASTER_TITLE"), true, CustomDialog.OKCANCELHELP, pb.getPanel());
+        final CustomDialog dlg = CustomDialog.create(getResourceString("MASTER_TITLE"), true, CustomDialog.OKCANCELHELP, pb.getPanel());
         if (!isEditMode)
         {
             dlg.setOkLabel(getResourceString("CONT"));
@@ -525,7 +525,6 @@ public class UserAndMasterPasswordMgr
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                UIRegistry.pushWindow(UIHelper.getWindow((Component)e.getSource()));
                 String[] keys = getUserNamePasswordKey();
                 if (keys != null && keys.length == 4)
                 {
@@ -543,8 +542,7 @@ public class UserAndMasterPasswordMgr
 
         popResourceBundle();
         
-        //dlg.setVisible(true);
-        dlg.show();
+        dlg.setVisible(true);
 
         if (!dlg.isCancelled())
         {
