@@ -27,6 +27,8 @@ import static edu.ku.brc.ui.UIRegistry.getTopWindow;
 import java.awt.BorderLayout;
 import java.awt.FileDialog;
 import java.awt.Frame;
+import java.awt.Component;
+import java.awt.Dialog;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -378,12 +380,21 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace, Document
         {
             if (useNativeFileDlg)
             {
+                Object containingWindow = UIHelper.getWindow((Component)e.getSource());
                 if (isForInputBA)
                 {
-                    fileDlg = new FileDialog((Frame)getTopWindow(), getResourceString("CHOOSE_FILE"), FileDialog.LOAD);
+                    if (containingWindow instanceof Dialog) {
+                        fileDlg = new FileDialog((Dialog) containingWindow, getResourceString("CHOOSE_FILE"), FileDialog.LOAD);
+                    } else {
+                        fileDlg = new FileDialog((Frame)UIRegistry.getTopWindow(), getResourceString("CHOOSE_FILE"), FileDialog.LOAD);
+                    }
                 } else
                 {
-                    fileDlg = new FileDialog((Frame)getTopWindow(), getResourceString("CHOOSE_FILE"), FileDialog.SAVE);
+                    if (containingWindow instanceof Dialog) {
+                        fileDlg = new FileDialog((Dialog)containingWindow, getResourceString("CHOOSE_FILE"), FileDialog.SAVE);
+                    } else {
+                        fileDlg = new FileDialog((Frame)UIRegistry.getTopWindow(), getResourceString("CHOOSE_FILE"), FileDialog.SAVE);
+                    }
                 }
                 fileDlg.setFilenameFilter(nativeDlgFilter);
                 if (currentDir != null)
@@ -428,10 +439,10 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace, Document
                 int returnVal;
                 if (isForInputBA)
                 {
-                    returnVal = chooser.showOpenDialog(UIRegistry.getTopWindow());
+                    returnVal = chooser.showOpenDialog(UIHelper.getWindow((Component)e.getSource()));
                 } else
                 {
-                    returnVal = chooser.showSaveDialog(UIRegistry.getTopWindow());
+                    returnVal = chooser.showSaveDialog(UIHelper.getWindow((Component)e.getSource()));
                 }
                 
                 if (returnVal == JFileChooser.APPROVE_OPTION)
