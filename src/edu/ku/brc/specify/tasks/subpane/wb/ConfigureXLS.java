@@ -209,7 +209,7 @@ public class ConfigureXLS extends ConfigureExternalDataBase
                 colStr += badHeadingIdxs.get(c)+adjust;
             }
         }
-        JOptionPane.showMessageDialog(null,
+        JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(),
                 String.format(getResourceString((badHeadingIdxs.size() == 1 ? "WB_IMPORT_INVALID_COL_HEADER" : "WB_IMPORT_INVALID_COL_HEADERS")), colStr), 
                 title, JOptionPane.ERROR_MESSAGE);
 

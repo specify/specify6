@@ -1654,7 +1654,7 @@ public class InteractionsTask extends BaseTask
                     final Hashtable<String, String> emailPrefs = new Hashtable<String, String>();
                     if (!EMailHelper.isEMailPrefsOK(emailPrefs))
                     {
-                        JOptionPane.showMessageDialog(null,
+                        JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(),
                                 getResourceString("NO_EMAIL_PREF_INFO"), 
                                 getResourceString("NO_EMAIL_PREF_INFO_TITLE"), JOptionPane.WARNING_MESSAGE);
                         return;

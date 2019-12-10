@@ -676,7 +676,7 @@ public class MainFrameSpecify extends MainFrame
             PermissionIFace permissions = SecurityMgr.getInstance().getPermission("Task.Reports");
             if (!permissions.canModify())
             {
-                JOptionPane.showMessageDialog(null, getResourceString("IReportLauncher.PERMISSION_TO_MODIFY_DENIED"),
+                JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(), getResourceString("IReportLauncher.PERMISSION_TO_MODIFY_DENIED"),
                         getResourceString("IReportLauncher.PERMISSION_DENIED_TITLE"),
                         JOptionPane.ERROR_MESSAGE);
                 return;
@@ -713,7 +713,7 @@ public class MainFrameSpecify extends MainFrame
             }
             else
             {
-                JOptionPane.showMessageDialog(null, UIRegistry.getResourceString("REP_UNABLE_TO_SAVE_IREPORT"), UIRegistry.getResourceString("Error"), JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(), UIRegistry.getResourceString("REP_UNABLE_TO_SAVE_IREPORT"), UIRegistry.getResourceString("Error"), JOptionPane.ERROR_MESSAGE);
             }
         }
     }
@@ -752,7 +752,7 @@ public class MainFrameSpecify extends MainFrame
             PermissionIFace permissions = SecurityMgr.getInstance().getPermission("Task.Reports");
             if (!permissions.canAdd())
             {
-                JOptionPane.showMessageDialog(null, getResourceString("IReportLauncher.PERMISSION_TO_ADD_DENIED"),
+                JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(), getResourceString("IReportLauncher.PERMISSION_TO_ADD_DENIED"),
                         getResourceString("IReportLauncher.PERMISSION_DENIED_TITLE"),
                         JOptionPane.ERROR_MESSAGE);
                 return null;
@@ -897,12 +897,12 @@ public class MainFrameSpecify extends MainFrame
             boolean isNameOK = repName.matches("[a-zA-Z0-9\\-. '`_]*");
             if (StringUtils.isEmpty(repName))
             {
-                JOptionPane.showMessageDialog(null, String.format(UIRegistry.getResourceString("REP_NAME_MUST_NOT_BE_BLANK"), propPanel.getNameTxt().getText()));
+                JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(), String.format(UIRegistry.getResourceString("REP_NAME_MUST_NOT_BE_BLANK"), propPanel.getNameTxt().getText()));
             }
             else if (!isNameOK)
             {
                 Toolkit.getDefaultToolkit().beep();
-            	JOptionPane.showMessageDialog(null, UIRegistry.getResourceString("INVALID_CHARS_NAME"));
+            	JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(), UIRegistry.getResourceString("INVALID_CHARS_NAME"));
             }
             else 
             {
@@ -956,7 +956,7 @@ public class MainFrameSpecify extends MainFrame
                     SpReport matchRep = session.getData(SpReport.class, "appResource", match, DataProviderSessionIFace.CompareType.Equals);
                     if (matchRep == null)
                     {
-                        JOptionPane.showMessageDialog(null, String.format(UIRegistry.getResourceString("REP_UNABLE_TO_OVERWRITE"), match.getName()), 
+                        JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(), String.format(UIRegistry.getResourceString("REP_UNABLE_TO_OVERWRITE"), match.getName()),
                                 UIRegistry.getResourceString("Error"), JOptionPane.ERROR_MESSAGE);
                         return null;
                     }
@@ -1198,7 +1198,7 @@ public class MainFrameSpecify extends MainFrame
             }
             else
             {
-                JOptionPane.showMessageDialog(null, UIRegistry.getResourceString("REP_NO_REPORTS_TO_EDIT"), "", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(), UIRegistry.getResourceString("REP_NO_REPORTS_TO_EDIT"), "", JOptionPane.INFORMATION_MESSAGE);
             }
             return result;
     }
@@ -1550,7 +1550,7 @@ public class MainFrameSpecify extends MainFrame
             PermissionIFace permissions = SecurityMgr.getInstance().getPermission("Task.Reports");
             if (!permissions.canAdd())
             {
-                JOptionPane.showMessageDialog(null, getResourceString("IReportLauncher.PERMISSION_TO_ADD_DENIED"),
+                JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(), getResourceString("IReportLauncher.PERMISSION_TO_ADD_DENIED"),
                         getResourceString("IReportLauncher.PERMISSION_DENIED_TITLE"),
                         JOptionPane.ERROR_MESSAGE);
                 return null;
@@ -1567,7 +1567,7 @@ public class MainFrameSpecify extends MainFrame
         }
         if (spConns.size() == 0)
         {
-            JOptionPane.showMessageDialog(null, UIRegistry.getResourceString("REP_NO_QUERIES_FOR_DATA_SOURCES"), "", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(), UIRegistry.getResourceString("REP_NO_QUERIES_FOR_DATA_SOURCES"), "", JOptionPane.INFORMATION_MESSAGE);
             return null;
         }
         ChooseFromListDlg<SpJRIReportConnection> dlg = new ChooseFromListDlg<SpJRIReportConnection>(this, 

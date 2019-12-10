@@ -730,7 +730,7 @@ public class RegisterSpecify
         if (StringUtils.isNotEmpty(isaNumber))
         {
             String msg = UIRegistry.getLocalizedMessage("SpReg.ISA_NUM", isaNumber);
-            JOptionPane.showMessageDialog(null, msg, isaTitle, JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(), msg, isaTitle, JOptionPane.INFORMATION_MESSAGE);
             
         } else
         {

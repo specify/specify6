@@ -105,7 +105,7 @@ public class AddressBusRules extends BaseBusRules
                     {
                         if (addr.getIsPrimary())
                         {
-                            JOptionPane.showMessageDialog(null, UIRegistry.getResourceString("ADDR_HASPRIMARY_ALREADY"));
+                            JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(), UIRegistry.getResourceString("ADDR_HASPRIMARY_ALREADY"));
                             cbx.setSelected(false);
                             break;
                         }

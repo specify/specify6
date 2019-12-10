@@ -535,7 +535,7 @@ public class FormDisplayer
             {
                 if (!dstDirFile.mkdirs())
                 {
-                    JOptionPane.showMessageDialog(null, "Error creating the site directory.");
+                    JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(), "Error creating the site directory.");
                 }
             }
             
@@ -594,7 +594,7 @@ public class FormDisplayer
         } catch (Exception ex)
         {
             ex.printStackTrace();
-            JOptionPane.showMessageDialog(null, "You are missing the template that is needed to run this tool.");
+            JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(), "You are missing the template that is needed to run this tool.");
         }
         return null;
     }
@@ -648,7 +648,7 @@ public class FormDisplayer
         } catch (IOException ex)
         {
             ex.printStackTrace();
-            JOptionPane.showMessageDialog(null, "You are missing the template that is needed to run this tool.");
+            JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(), "You are missing the template that is needed to run this tool.");
             return false;
         }
         

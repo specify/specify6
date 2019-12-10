@@ -543,7 +543,7 @@ public class SpecifyDBSetupWizard extends JPanel
                         {
                             setupLoginPrefs();
                             
-                            JOptionPane.showMessageDialog(null,
+                            JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(),
                                     getResourceString("CONVUPLD_DONE"),
                                     getResourceString("COMPLETE"), JOptionPane.INFORMATION_MESSAGE);
                             SpecifyDBSetupWizard.this.listener.finished();
@@ -1060,7 +1060,7 @@ public class SpecifyDBSetupWizard extends JPanel
                     }
                 }
                 
-                JOptionPane.showMessageDialog(null,
+                JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(),
                         getLocalizedMessage("BLD_DONE", getResourceString(isOK ? "BLD_OK" :"BLD_NOTOK")),
                         getResourceString("COMPLETE"), JOptionPane.INFORMATION_MESSAGE);                                
 

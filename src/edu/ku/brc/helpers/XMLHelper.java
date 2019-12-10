@@ -109,7 +109,7 @@ public class XMLHelper
             !file.getName().equals("checksum.ini") &&  //$NON-NLS-1$
             !XMLChecksumUtil.checkSignature(file))
         {
-            JOptionPane.showMessageDialog(null, getResourceString("XMLHelper.CHECKSUM_MSG"), getResourceString("XMLHelper.CHECKSUM_TITLE"), JOptionPane.ERROR_MESSAGE); //$NON-NLS-1$ //$NON-NLS-2$
+            JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(), getResourceString("XMLHelper.CHECKSUM_MSG"), getResourceString("XMLHelper.CHECKSUM_TITLE"), JOptionPane.ERROR_MESSAGE); //$NON-NLS-1$ //$NON-NLS-2$
             System.exit(0);
         }
         

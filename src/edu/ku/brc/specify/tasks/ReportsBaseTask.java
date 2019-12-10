@@ -877,7 +877,7 @@ public class ReportsBaseTask extends BaseTask
         {
             if (((RecordSetIFace)cmdAction.getData()).getDbTableId() != cmdAction.getTableId())
             {
-                JOptionPane.showMessageDialog(null, getResourceString("ERROR_RECORDSET_TABLEID"), getResourceString("Error"), JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(), getResourceString("ERROR_RECORDSET_TABLEID"), getResourceString("Error"), JOptionPane.ERROR_MESSAGE);
                 return;
             }
         }*/

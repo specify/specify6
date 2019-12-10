@@ -170,7 +170,7 @@ public class LocalityGeoRefPlugin extends JButton implements GetSetValueIFace,
                     }
                 } else
                 {
-                    JOptionPane.showMessageDialog(null, "The LatLonUI is missing the 'geoid' parameter", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(), "The LatLonUI is missing the 'geoid' parameter", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
             }
@@ -195,7 +195,7 @@ public class LocalityGeoRefPlugin extends JButton implements GetSetValueIFace,
                         }
                     } else
                     {
-                        JOptionPane.showMessageDialog(null, "The LatLonUI is missing the 'locid' parameter", "Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(), "The LatLonUI is missing the 'locid' parameter", "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 }
                 GeoCoordData geoCoordData = new GeoCoordData(id,
@@ -380,7 +380,7 @@ public class LocalityGeoRefPlugin extends JButton implements GetSetValueIFace,
            
            if (llId == null)
            {
-               JOptionPane.showMessageDialog(null, "The LatLonUI is missing the 'llid' parameter", "Error", JOptionPane.ERROR_MESSAGE);
+               JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(), "The LatLonUI is missing the 'llid' parameter", "Error", JOptionPane.ERROR_MESSAGE);
                return;
            }
            LatLonUI latLonUI = parent.getCompById(llId);

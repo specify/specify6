@@ -2449,7 +2449,7 @@ public class FormViewObj implements Viewable,
      */
     protected void recoverFromStaleObject(final String msgResStr, final String actualMsg)
     {
-        JOptionPane.showMessageDialog(null, actualMsg != null ? actualMsg : getResourceString(msgResStr), getResourceString("Error"), JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(), actualMsg != null ? actualMsg : getResourceString(msgResStr), getResourceString("Error"), JOptionPane.ERROR_MESSAGE);
         reloadDataObj();
     }
     
@@ -3354,7 +3354,7 @@ public class FormViewObj implements Viewable,
                 sb.append(s);
                 sb.append("\n");
             }
-            JOptionPane.showMessageDialog(null,
+            JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(),
                     sb.toString(), 
                     getResourceString("COULDNT_DELETE_OBJ_TITLE"), JOptionPane.WARNING_MESSAGE);
         }
@@ -4534,7 +4534,7 @@ public class FormViewObj implements Viewable,
                     @Override
                     public void run()
                     {
-                        JOptionPane.showMessageDialog(null,
+                        JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(),
                                 getResourceString("NO_RECORD_FOUND"), 
                                 getResourceString("NO_RECORD_FOUND_TITLE"), JOptionPane.WARNING_MESSAGE);
                     }
@@ -4546,7 +4546,7 @@ public class FormViewObj implements Viewable,
                 @Override
                 public void run()
                 {
-                    JOptionPane.showMessageDialog(null,
+                    JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(),
                             getResourceString("ERROR_LOADING_FORM_DATA"), 
                             getResourceString("ERROR_LOADING_FORM_DATA_TITLE"), JOptionPane.WARNING_MESSAGE);
                 }

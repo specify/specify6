@@ -845,7 +845,7 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener, R
         if (numcols == 0 || numrows == 0 || !((numrows - 1 == rowsselected[rowsselected.length - 1] - rowsselected[0] && numrows == rowsselected.length) && 
               (numcols - 1 == colsselected[colsselected.length - 1] - colsselected[0] && numcols == colsselected.length)))
         {
-            //JOptionPane.showMessageDialog(null, "Invalid Copy Selection",
+            //JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(), "Invalid Copy Selection",
             //        "Invalid Copy Selection", JOptionPane.ERROR_MESSAGE);
             return false;
         }

@@ -95,7 +95,7 @@ public class IReportLauncher implements DatabaseLoginListener
             {
                 
                 // TODO This is really bad because there is a Database Login with no Specify login
-                JOptionPane.showMessageDialog(null, 
+                JOptionPane.showMessageDialog(null,
                                               getResourceString("Specify.LOGIN_USER_MISMATCH"),  //$NON-NLS-1$
                                               getResourceString("Specify.LOGIN_USER_MISMATCH_TITLE"),  //$NON-NLS-1$
                                               JOptionPane.ERROR_MESSAGE);

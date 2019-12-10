@@ -175,7 +175,7 @@ public class HelpMgr
         {
             // XXX REMOVE ME BEFORE RELEASE
             // this used to find help that doesn't have a key word.
-            JOptionPane.showMessageDialog(null, "There is no entry for '" + id + "' in the help system.");
+            JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(), "There is no entry for '" + id + "' in the help system.");
 //            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
 //            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(HelpMgr.class, e);
             return false;

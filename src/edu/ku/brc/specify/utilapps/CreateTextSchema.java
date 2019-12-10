@@ -475,7 +475,7 @@ public class CreateTextSchema
                 //File file = XMLHelper.getConfigDir(specifyDescFileName);
                 //file.delete();
     
-                JOptionPane.showMessageDialog(null, "Done");
+                JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(), "Done");
           }
         });
     }

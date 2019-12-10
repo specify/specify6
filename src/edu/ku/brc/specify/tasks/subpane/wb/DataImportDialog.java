@@ -729,7 +729,7 @@ public class DataImportDialog extends JDialog implements ActionListener
             textArea.setCaretPosition(0);
             JScrollPane pane = new JScrollPane(textArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
                                                          ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
-            JOptionPane.showMessageDialog(null, pane,getResourceString("DATA_IMPORT_ISSUES"),JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(), pane,getResourceString("DATA_IMPORT_ISSUES"),JOptionPane.WARNING_MESSAGE);
             okBtn.setEnabled(false); 	
         }
         else if (listOfErrors.getModel().getSize() > 0)
@@ -749,7 +749,7 @@ public class DataImportDialog extends JDialog implements ActionListener
             textArea.setCaretPosition(0);
             JScrollPane pane = new JScrollPane(textArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
                                                          ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
-            JOptionPane.showMessageDialog(null, pane,getResourceString("DATA_IMPORT_ISSUES"),JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(), pane,getResourceString("DATA_IMPORT_ISSUES"),JOptionPane.WARNING_MESSAGE);
         }
     }
     

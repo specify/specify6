@@ -1048,7 +1048,7 @@ public class UIRegistry
      */
     public static void showLocalizedMsg(final int iconType, final String titleKey, final String msgKey, final Object ... args)
     {
-        JOptionPane.showMessageDialog(null,
+        JOptionPane.showMessageDialog(UIRegistry.getTopWindow(),
                 (args.length == 0 ? getResourceString(msgKey) : String.format(getResourceString(msgKey), args)), 
                 getResourceString(StringUtils.isNotEmpty(titleKey) ? titleKey : "WARNING"), iconType);
     }
@@ -1187,7 +1187,7 @@ public class UIRegistry
         log.error(msg);
         
         String titleKey = dlgType != null && dlgType == JOptionPane.WARNING_MESSAGE ? "WARNING" : "UIRegistry.UNRECOVERABLE_ERROR_TITLE";
-        JOptionPane.showMessageDialog(null,
+        JOptionPane.showMessageDialog(UIRegistry.getTopWindow(),
                 msg, 
                 getResourceString(titleKey), dlgType == null ? JOptionPane.ERROR_MESSAGE : dlgType);
     }

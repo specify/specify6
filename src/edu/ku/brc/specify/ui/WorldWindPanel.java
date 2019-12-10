@@ -175,7 +175,7 @@ public class WorldWindPanel extends JPanel
                         message += "Reason: " + t.getMessage() + "\n";
                         message += "This program will end when you press OK.";
 
-                        JOptionPane.showMessageDialog(null, message, "Unable to Start Program",
+                        JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(), message, "Unable to Start Program",
                             JOptionPane.ERROR_MESSAGE);
                         System.exit(-1);
                     }

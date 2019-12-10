@@ -1606,7 +1606,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
 							return;
 						}
 					} else {
-						JOptionPane.showMessageDialog(null,
+						JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(),
 								getLocalizedMessage("Specify.UPDATE_AVAIL_BUT_UPDATES_DISABLED", entry.getNewVersion()), //$NON-NLS-1$
 								getResourceString("Specify.UPDATE_AVAIL_TITLE"), //$NON-NLS-1$
 								JOptionPane.INFORMATION_MESSAGE);
@@ -2651,7 +2651,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             {
                 
                 // TODO This is really bad because there is a Database Login with no Specify login
-                JOptionPane.showMessageDialog(null, 
+                JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(),
                                               getResourceString("Specify.LOGIN_USER_MISMATCH"),  //$NON-NLS-1$
                                               getResourceString("Specify.LOGIN_USER_MISMATCH_TITLE"),  //$NON-NLS-1$
                                               JOptionPane.ERROR_MESSAGE);

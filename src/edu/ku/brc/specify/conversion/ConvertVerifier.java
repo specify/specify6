@@ -2958,7 +2958,7 @@ public class ConvertVerifier extends AppBase
 	                		
 	                	} else
 	                	{
-	                	    JOptionPane.showMessageDialog(null, "The ConvertVerifier was unable to login", "Not Logged In", JOptionPane.ERROR_MESSAGE);
+	                	    JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(), "The ConvertVerifier was unable to login", "Not Logged In", JOptionPane.ERROR_MESSAGE);
 	                	    System.exit(0);
 	                	}
                 	} catch (Exception ex)

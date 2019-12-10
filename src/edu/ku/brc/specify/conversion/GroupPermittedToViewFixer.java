@@ -653,7 +653,7 @@ public class GroupPermittedToViewFixer extends AppBase
                             
                         } else
                         {
-                            JOptionPane.showMessageDialog(null, "The GroupPermittedToViewFixer was unable to login", "Not Logged In", JOptionPane.ERROR_MESSAGE);
+                            JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(), "The GroupPermittedToViewFixer was unable to login", "Not Logged In", JOptionPane.ERROR_MESSAGE);
                             System.exit(0);
                         }
                     } catch (Exception ex)

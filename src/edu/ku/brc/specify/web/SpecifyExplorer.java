@@ -619,7 +619,7 @@ public class SpecifyExplorer extends HttpServlet
         
                 } else
                 {
-                    //JOptionPane.showMessageDialog(null, 
+                    //JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(),
                     //        getResourceString("USER_NOT_FOUND"), 
                     //        getResourceString("USER_NOT_FOUND_TITLE"), JOptionPane.WARNING_MESSAGE);
                     
