@@ -356,10 +356,11 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
         
         String closeBtnTitle = isEdit ? getResourceString("DONE") : getResourceString("CLOSE");
 
-        Window parentDlg = (Dialog)UIRegistry.getMostRecentWindow();
+        Window containingWindow = UIHelper.getWindow(this);
         ViewBasedDisplayDialog dlg;
-        if (parentDlg instanceof Dialog) {
-            dlg = new ViewBasedDisplayDialog((Dialog) parentDlg,
+        //since DBOBjDialogFactory doesn't have a suitable createDisplay method...
+        if (containingWindow instanceof Dialog) {
+            dlg = new ViewBasedDisplayDialog((Dialog) containingWindow,
                     subviewDef.getViewSetName(),
                     subviewDef.getViewName(),
                     null,                      // What is this argument???
