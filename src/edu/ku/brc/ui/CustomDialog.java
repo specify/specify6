@@ -185,15 +185,6 @@ public class CustomDialog extends JDialog
         }
     }
 
-    private static Object getDefaultOwner() {
-        Window mostRecent = UIRegistry.getMostRecentWindow();
-        if (mostRecent instanceof Dialog) {
-           return mostRecent;
-        } else {
-            return UIRegistry.getTopWindow();
-        }
-    }
-
     public static CustomDialog create(final String title,
                                       final boolean isModal,
                                       final Component contentPanel) throws HeadlessException {
@@ -212,7 +203,7 @@ public class CustomDialog extends JDialog
                           final int       whichBtns,
                           final Component contentPanel,
                           final int defaultBtn) throws HeadlessException {
-        Object defOwner = getDefaultOwner();
+        Object defOwner = UIRegistry.getMostRecentWindow();
         if (defOwner instanceof Dialog) {
             return new CustomDialog((Dialog)defOwner, title, isModal, whichBtns, contentPanel, defaultBtn);
         } else {
