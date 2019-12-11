@@ -391,7 +391,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                                     doSchemaUpdate = true;
                                 } else
                                 {
-                                    CommandDispatcher.dispatch(new CommandAction(APP, APP_REQ_EXIT, null));
+                                    //CommandDispatcher.dispatch(new CommandAction(APP, APP_REQ_EXIT, null));
                                     return SchemaUpdateType.Error;
                                 }
                             }
@@ -431,7 +431,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                             
                             if (!askToUpdateSchema())
                             {
-                                CommandDispatcher.dispatch(new CommandAction(APP, APP_REQ_EXIT, null));
+                                //CommandDispatcher.dispatch(new CommandAction(APP, APP_REQ_EXIT, null));
                                 return SchemaUpdateType.Error;
                             }
                             
@@ -455,7 +455,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                             int opt = UIRegistry.askYesNoLocalized("EXIT", "CONTINUE", msg, "MySQLBackupService.BACKUP_NOW");
                             if (opt == JOptionPane.YES_OPTION)
                             {
-                                CommandDispatcher.dispatch(new CommandAction(APP, APP_REQ_EXIT, null));
+                                //CommandDispatcher.dispatch(new CommandAction(APP, APP_REQ_EXIT, null));
                                 return SchemaUpdateType.Error;  
                             }
                             
@@ -523,7 +523,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                                 
                             } else
                             {
-                                CommandDispatcher.dispatch(new CommandAction(APP, APP_REQ_EXIT, null));
+                                //CommandDispatcher.dispatch(new CommandAction(APP, APP_REQ_EXIT, null));
                                 return SchemaUpdateType.Error;
                             }
                             
