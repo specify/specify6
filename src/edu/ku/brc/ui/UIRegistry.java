@@ -1048,7 +1048,7 @@ public class UIRegistry
      */
     public static void showLocalizedMsg(final int iconType, final String titleKey, final String msgKey, final Object ... args)
     {
-        JOptionPane.showMessageDialog(UIRegistry.getTopWindow(),
+        JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow(),
                 (args.length == 0 ? getResourceString(msgKey) : String.format(getResourceString(msgKey), args)), 
                 getResourceString(StringUtils.isNotEmpty(titleKey) ? titleKey : "WARNING"), iconType);
     }
@@ -1187,7 +1187,7 @@ public class UIRegistry
         log.error(msg);
         
         String titleKey = dlgType != null && dlgType == JOptionPane.WARNING_MESSAGE ? "WARNING" : "UIRegistry.UNRECOVERABLE_ERROR_TITLE";
-        JOptionPane.showMessageDialog(UIRegistry.getTopWindow(),
+        JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow(),
                 msg, 
                 getResourceString(titleKey), dlgType == null ? JOptionPane.ERROR_MESSAGE : dlgType);
     }
@@ -1205,7 +1205,7 @@ public class UIRegistry
         pb.add(UIHelper.createLabel(msg), cc.xy(1,1));
         pb.setDefaultDialogBorder();
         
-        CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), 
+        CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getMostRecentWindow(),
                                    getResourceString("UIRegistry.UNRECOVERABLE_ERROR_TITLE"),
                                    false,
                                    CustomDialog.OK_BTN,
