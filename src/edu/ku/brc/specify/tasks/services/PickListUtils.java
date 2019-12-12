@@ -178,8 +178,12 @@ public class PickListUtils
                                           final Collection collection)
     {
         // Apply is Import All PickLists
-        
-        FileDialog dlg = new FileDialog(((Frame)UIRegistry.getTopWindow()), getResourceString(getI18n("PL_IMPORT")), FileDialog.LOAD);
+
+        Window  window   = UIRegistry.getTopWindow();
+        boolean isDialog = window instanceof Dialog;
+        FileDialog dlg = isDialog ?
+                new FileDialog((Dialog)window, getResourceString(getI18n("PL_IMPORT")), FileDialog.LOAD) :
+                new FileDialog((Frame)window, getResourceString(getI18n("PL_IMPORT")), FileDialog.LOAD);
         dlg.setDirectory(UIRegistry.getUserHomeDir());
         dlg.setFile(getPickListXMLName());
         UIHelper.centerAndShow(dlg);

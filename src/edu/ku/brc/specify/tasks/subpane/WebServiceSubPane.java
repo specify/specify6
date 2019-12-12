@@ -219,7 +219,7 @@ public class WebServiceSubPane extends BaseSubPane
      */
     private void addFileItem()
     {
-        FileDialog dlg = new FileDialog((Frame)UIRegistry.getMostRecentWindow(), "WSSP_CHSE_FILE", FileDialog.LOAD);
+        FileDialog dlg = new FileDialog((Frame)UIRegistry.getTopWindow(), "WSSP_CHSE_FILE", FileDialog.LOAD);
         dlg.setModal(true);
         dlg.setVisible(true);
         String fileName = dlg.getFile();

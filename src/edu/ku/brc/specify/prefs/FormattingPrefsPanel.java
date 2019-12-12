@@ -21,12 +21,7 @@ package edu.ku.brc.specify.prefs;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
-import java.awt.Component;
-import java.awt.FileDialog;
-import java.awt.Font;
-import java.awt.Frame;
-import java.awt.GraphicsEnvironment;
-import java.awt.Image;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -540,9 +535,11 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
      */
     protected void chooseToolbarIcon(final JLabel appLabel, final JButton clearIconBtn)
     {
-        FileDialog fileDialog = new FileDialog((Frame) UIRegistry.get(UIRegistry.FRAME),
-                                               getResourceString("PREF_CHOOSE_APPICON_TITLE"), 
-                                               FileDialog.LOAD); //$NON-NLS-1$
+        Window window   = UIRegistry.getTopWindow();
+        boolean isDialog = window instanceof Dialog;
+        FileDialog fileDialog = isDialog ?
+                new FileDialog((Dialog)window, getResourceString("PREF_CHOOSE_APPICON_TITLE"), FileDialog.LOAD) :
+                new FileDialog((Frame)window, getResourceString("PREF_CHOOSE_APPICON_TITLE"), FileDialog.LOAD);  //$NON-NLS-1$
         fileDialog.setFilenameFilter(new ImageFilter());
         UIHelper.centerAndShow(fileDialog);
         fileDialog.dispose();
