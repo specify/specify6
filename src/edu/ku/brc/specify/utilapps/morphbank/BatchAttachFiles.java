@@ -323,7 +323,7 @@ public class BatchAttachFiles
             //fileChooser.setFileHidingEnabled(true);
     
             File indexFile      = null;
-            int    returnVal = fileChooser.showOpenDialog(getTopWindow());
+            int    returnVal = fileChooser.showOpenDialog(UIRegistry.getMostRecentWindow());
             if (returnVal == JFileChooser.APPROVE_OPTION)
             {
                 indexFile = fileChooser.getSelectedFile();
@@ -359,7 +359,7 @@ public class BatchAttachFiles
                     chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             
                     File indexFile      = null;
-                    int    returnVal = chooser.showOpenDialog(getTopWindow());
+                    int    returnVal = chooser.showOpenDialog(getMostRecentWindow());
                     if (returnVal == JFileChooser.APPROVE_OPTION)
                     {
                         indexFile = chooser.getSelectedFile();
@@ -376,7 +376,7 @@ public class BatchAttachFiles
                 } else
                 {
                     String title = "title";
-                    FileDialog dialog = new FileDialog((Frame)null, title, FileDialog.LOAD);
+                    FileDialog dialog = new FileDialog((Frame)UIRegistry.getTopWindow(), title, FileDialog.LOAD);
                     dialog.setMultipleMode(true);
                     
                     // FILE FILTER!!!!!!!!!

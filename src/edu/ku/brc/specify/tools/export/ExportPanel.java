@@ -361,7 +361,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 							new JFileChooser(new File(defPath));
 						save.setFileSelectionMode(JFileChooser.FILES_ONLY);
                         save.setFileFilter(new UIFileFilter("zip"));
-						int result = save.showSaveDialog(null);
+						int result = save.showSaveDialog(UIHelper.getWindow(ExportPanel.this));
 	    				if (result != JFileChooser.APPROVE_OPTION)
 						{	
 							return;
@@ -453,7 +453,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 					String defPath = localPrefs.get(EXPORT_TEXT_PATH, null);
 					JFileChooser save = defPath == null ? new JFileChooser() :
 						new JFileChooser(new File(defPath));
-					int result = save.showSaveDialog(null);
+					int result = save.showSaveDialog(UIHelper.getWindow(ExportPanel.this));
     				if (result != JFileChooser.APPROVE_OPTION)
 					{	
 						return;

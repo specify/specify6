@@ -1164,7 +1164,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         	chooser.setSelectedFile(new File(chooser.getCurrentDirectory().getPath() + File.separator + defaultFileName + ".xls"));
         }
         
-        if (chooser.showSaveDialog(UIRegistry.get(UIRegistry.FRAME)) != JFileChooser.APPROVE_OPTION)
+        if (chooser.showSaveDialog(UIRegistry.getMostRecentWindow()) != JFileChooser.APPROVE_OPTION)
         {
             UIRegistry.getStatusBar().setText("");
             return false;
@@ -1566,7 +1566,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         	}
         }
         
-        if (chooser.showOpenDialog(UIRegistry.get(UIRegistry.FRAME)) != JFileChooser.APPROVE_OPTION)
+        if (chooser.showOpenDialog(UIRegistry.getMostRecentWindow()) != JFileChooser.APPROVE_OPTION)
         {
             UIRegistry.getStatusBar().setText("");
             return null;
@@ -3822,7 +3822,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         chooser.setMultiSelectionEnabled(true);
         chooser.setFileFilter(imageFilter);
         
-        if (chooser.showOpenDialog(UIRegistry.get(UIRegistry.FRAME)) != JFileChooser.APPROVE_OPTION)
+        if (chooser.showOpenDialog(UIRegistry.getMostRecentWindow()) != JFileChooser.APPROVE_OPTION)
         {
             UIRegistry.getStatusBar().setText("");
             return;

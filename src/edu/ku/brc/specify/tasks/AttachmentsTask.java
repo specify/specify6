@@ -348,7 +348,7 @@ public class AttachmentsTask extends BaseTask implements ImageLoaderListener
             String       usrHome = System.getProperty("user.home");
             JFileChooser dlg     = new JFileChooser(usrHome);
             dlg.setSelectedFile(new File(origFilePath));
-            int rv = dlg.showSaveDialog((Frame)UIRegistry.getTopWindow());
+            int rv = dlg.showSaveDialog(UIRegistry.getMostRecentWindow());
             if (rv == JFileChooser.APPROVE_OPTION)
             {
                 File file = dlg.getSelectedFile();
