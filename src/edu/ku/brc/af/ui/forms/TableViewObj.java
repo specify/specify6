@@ -24,11 +24,14 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import static org.apache.commons.lang.StringUtils.split;
 
+import edu.ku.brc.ui.CustomDialog;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.Window;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EventObject;
@@ -1314,6 +1317,12 @@ public class TableViewObj implements Viewable,
         orderablePanel.validate();
         orderablePanel.invalidate(); 
         orderablePanel.doLayout();
+        //resize window
+        Window w = UIHelper.getWindow(orderablePanel);
+        if (w instanceof CustomDialog) {
+            w.pack();
+            w.setLocationRelativeTo(w.getOwner());
+        }
     }
     
     /**
