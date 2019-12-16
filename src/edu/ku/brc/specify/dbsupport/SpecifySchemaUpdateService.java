@@ -187,7 +187,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 {
     protected static final Logger  log = Logger.getLogger(SpecifySchemaUpdateService.class);
     
-    private final int OVERALL_TOTAL = 66; //the number of incOverall() calls (+1 or +2)
+    private final int OVERALL_TOTAL = 67; //the number of incOverall() calls (+1 or +2)
 
     private static final String TINYINT4 = "TINYINT(4)";
     private static final String INT11    = "INT(11)";
@@ -2502,7 +2502,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 
                     //-------------------------------------------------------------------------------
                     //
-                    // Schema changes for 2.6
+                    // Schema changes for 2.7
                     //
                     //-------------------------------------------------------------------------------
                     frame.setDesc("Adding index for Preparation.SampleNumber");
@@ -2512,6 +2512,14 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                             errMsgList.add("update error: " + sql);
                             return false;
                         }
+                    }
+                    frame.incOverall();
+
+                    frame.setDesc("Increasing length of TreatmentEvent.type");
+                    sql = "alter table treatmentevent modify column `type` varchar(128)";
+                    if (-1 == update(conn, sql)) {
+                        errMsgList.add("update error: " + sql);
+                        return false;
                     }
                     frame.incOverall();
 

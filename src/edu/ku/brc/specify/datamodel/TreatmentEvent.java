@@ -392,7 +392,7 @@ public class TreatmentEvent extends DataModelObjBase implements java.io.Serializ
     /**
      * @return the type
      */
-    @Column(name = "Type", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
+    @Column(name = "Type", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
     public String getType()
     {
         return type;
