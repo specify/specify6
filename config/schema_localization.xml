@@ -2836,12 +2836,12 @@
 					</str>
 					<str language="ru" country="RU" variant="">
 						<version>0</version>
-						<text>Максимальная единица оценки неопределенности</text>
+						<text>Единица оценки максимальной неопределенности</text>
 						<itemName reference="../../.."/>
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Максимальна одиниця оцінки невизначеності</text>
+						<text>Одиниця оцінки максимальної невизначеності</text>
 						<itemName reference="../../.."/>
 					</str>
 				</names>
@@ -3976,7 +3976,7 @@
 			</str>
 			<str language="uk" country="UA" variant="">
 				<version>0</version>
-				<text>Поширена ім'я</text>
+				<text>Поширене ім'я</text>
 				<containerName class="container" reference="../../.."/>
 			</str>
 		</names>
@@ -4749,7 +4749,7 @@
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Абревіатура журнал</text>
+						<text>Абревіатура журналу</text>
 						<itemName reference="../../.."/>
 					</str>
 				</names>
@@ -14734,7 +14734,7 @@
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Збирати подія</text>
+						<text>Подія збору</text>
 						<itemName reference="../../.."/>
 					</str>
 				</names>
@@ -15939,12 +15939,12 @@
 					</str>
 					<str language="ru" country="RU" variant="">
 						<version>0</version>
-						<text>Подготовленная дата</text>
+						<text>Дата подготовки</text>
 						<itemName reference="../../.."/>
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Підготовлена дата</text>
+						<text>Дата підготовлення</text>
 						<itemName reference="../../.."/>
 					</str>
 				</names>
@@ -16105,7 +16105,7 @@
 				<names>
 					<str language="ru" country="RU" variant="">
 						<version>0</version>
-						<text>Подготовлен</text>
+						<text>Кто подготовал</text>
 						<itemName reference="../../.."/>
 					</str>
 					<str language="pt" country="BR" variant="">
@@ -16123,7 +16123,7 @@
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Підготовлено</text>
+						<text>Хто підготував</text>
 						<itemName reference="../../.."/>
 					</str>
 				</names>
@@ -21158,12 +21158,12 @@
 					</str>
 					<str language="ru" country="RU" variant="">
 						<version>0</version>
-						<text>Номер доступа</text>
+						<text>Номер присоединения</text>
 						<itemName reference="../../.."/>
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Номер доступу</text>
+						<text>Номер приєднання</text>
 						<itemName reference="../../.."/>
 					</str>
 				</names>
@@ -26268,7 +26268,7 @@
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Збирати подія</text>
+						<text>Подія збору</text>
 						<itemName reference="../../.."/>
 					</str>
 				</names>
@@ -28356,7 +28356,7 @@
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Примітки про місцевість і місцях проживання</text>
+						<text>Примітки про місцевість і місця проживання</text>
 						<itemName reference="../../.."/>
 					</str>
 				</names>
@@ -28676,7 +28676,7 @@
 			</str>
 			<str language="uk" country="UA" variant="">
 				<version>0</version>
-				<text>Збирати подія</text>
+				<text>Подія збору</text>
 				<containerName class="container" reference="../../.."/>
 			</str>
 		</names>
@@ -34551,7 +34551,7 @@
 					</str>
 					<str language="ru" country="RU" variant="">
 						<version>0</version>
-						<text>Разрешать</text>
+						<text>Разрешения</text>
 						<itemName reference="../../.."/>
 					</str>
 					<str language="en">
@@ -34560,7 +34560,7 @@
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Дозволяти</text>
+						<text>Дозвіл</text>
 						<itemName reference="../../.."/>
 					</str>
 				</names>
@@ -35968,12 +35968,12 @@
 					</str>
 					<str language="ru" country="RU" variant="">
 						<version>0</version>
-						<text>Биостратиграфия</text>
+						<text>Является биостратиграфией</text>
 						<itemName reference="../../.."/>
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Биостратиграфия</text>
+						<text>Є біостратиграфєю</text>
 						<itemName reference="../../.."/>
 					</str>
 				</names>
@@ -46138,7 +46138,7 @@
 				<names>
 					<str language="ru" country="RU" variant="">
 						<version>0</version>
-						<text>Данная величина</text>
+						<text>Инфо</text>
 						<itemName reference="../../.."/>
 					</str>
 					<str language="en">
@@ -46156,7 +46156,7 @@
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Дана величина</text>
+						<text>Інфо</text>
 						<itemName reference="../../.."/>
 					</str>
 				</names>
@@ -46900,12 +46900,12 @@
 					</str>
 					<str language="ru" country="RU" variant="">
 						<version>0</version>
-						<text>Название населенного пункта</text>
+						<text>Название локации</text>
 						<itemName reference="../../.."/>
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Назва населеного пункту</text>
+						<text>Назва локації</text>
 						<itemName reference="../../.."/>
 					</str>
 				</names>
@@ -54881,7 +54881,7 @@
 				<names>
 					<str language="ru" country="RU" variant="">
 						<version>0</version>
-						<text>Второй инициал</text>
+						<text>Инициал отчества</text>
 						<itemName reference="../../.."/>
 					</str>
 					<str language="pt" country="BR" variant="">
@@ -54899,7 +54899,7 @@
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Другий ініціал</text>
+						<text>Ініціал по батькові</text>
 						<itemName reference="../../.."/>
 					</str>
 				</names>
@@ -57083,7 +57083,7 @@
 					</str>
 					<str language="ru" country="RU" variant="">
 						<version>0</version>
-						<text>Разрешать</text>
+						<text>Разрешения</text>
 						<itemName reference="../../.."/>
 					</str>
 					<str language="en">
@@ -57092,7 +57092,7 @@
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Дозволяти</text>
+						<text>Дозвіл</text>
 						<itemName reference="../../.."/>
 					</str>
 				</names>
@@ -59780,7 +59780,7 @@
 			</str>
 			<str language="ru" country="RU" variant="">
 				<version>0</version>
-				<text>Разрешать</text>
+				<text>Разрешения</text>
 				<containerName class="container" reference="../../.."/>
 			</str>
 			<str language="pt" country="BR" variant="">
@@ -59794,7 +59794,7 @@
 			</str>
 			<str language="uk" country="UA" variant="">
 				<version>0</version>
-				<text>Дозволяти</text>
+				<text>Дозвіл</text>
 				<containerName class="container" reference="../../.."/>
 			</str>
 		</names>
@@ -69375,7 +69375,7 @@
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Певна дата</text>
+						<text>Дата визначення</text>
 						<itemName reference="../../.."/>
 					</str>
 				</names>
@@ -69909,7 +69909,7 @@
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Збирати подія</text>
+						<text>Подія збору</text>
 						<itemName reference="../../.."/>
 					</str>
 				</names>
@@ -74772,7 +74772,7 @@
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Поширена ім'я</text>
+						<text>Поширене ім'я</text>
 						<itemName reference="../../.."/>
 					</str>
 				</names>
@@ -75565,7 +75565,7 @@
 				<names>
 					<str language="ru" country="RU" variant="">
 						<version>0</version>
-						<text>Предпочитаемый geo</text>
+						<text>Предпочитаемыя Гео</text>
 						<itemName reference="../../.."/>
 					</str>
 					<str language="pt">
@@ -75583,7 +75583,7 @@
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Бажаний geo</text>
+						<text>Бажана Гео</text>
 						<itemName reference="../../.."/>
 					</str>
 				</names>
@@ -78768,7 +78768,7 @@
 					</str>
 					<str language="ru" country="RU" variant="">
 						<version>0</version>
-						<text>Таксон цитаты</text>
+						<text>Цитирования таксона</text>
 						<itemName reference="../../.."/>
 					</str>
 					<str language="pt">
@@ -78777,7 +78777,7 @@
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Таксон цитати</text>
+						<text>Цитування таксона</text>
 						<itemName reference="../../.."/>
 					</str>
 				</names>
@@ -79715,7 +79715,7 @@
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Поширена ім'я</text>
+						<text>Поширене ім'я</text>
 						<itemName reference="../../.."/>
 					</str>
 				</names>
@@ -84548,7 +84548,7 @@
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Збирати подія</text>
+						<text>Подія збору</text>
 						<itemName reference="../../.."/>
 					</str>
 				</names>
@@ -85753,7 +85753,7 @@
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Детермінанта</text>
+						<text>Детермінатор</text>
 						<itemName reference="../../.."/>
 					</str>
 				</names>
@@ -86096,7 +86096,7 @@
 					</str>
 					<str language="ru" country="RU" variant="">
 						<version>0</version>
-						<text>Определенная дата</text>
+						<text>Дата определения</text>
 						<itemName reference="../../.."/>
 					</str>
 					<str language="pt">
@@ -86105,7 +86105,7 @@
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Певна дата</text>
+						<text>Дата визначення</text>
 						<itemName reference="../../.."/>
 					</str>
 				</names>
@@ -86774,7 +86774,7 @@
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Статус типу</text>
+						<text>Тип статусу</text>
 						<itemName reference="../../.."/>
 					</str>
 				</names>
@@ -88673,7 +88673,7 @@
 					</str>
 					<str language="ru" country="RU" variant="">
 						<version>0</version>
-						<text>Объем</text>
+						<text>Книга</text>
 						<itemName reference="../../.."/>
 					</str>
 					<str language="pt" country="BR" variant="">
@@ -88687,7 +88687,7 @@
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Обсяг</text>
+						<text>Книга</text>
 						<itemName reference="../../.."/>
 					</str>
 				</names>
@@ -105618,7 +105618,7 @@
 				<names>
 					<str language="ru" country="RU" variant="">
 						<version>0</version>
-						<text>Разрешать</text>
+						<text>Разрешение</text>
 						<itemName reference="../../.."/>
 					</str>
 					<str language="en">
@@ -105628,7 +105628,7 @@
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Дозволяти</text>
+						<text>Дозвіл</text>
 						<itemName reference="../../.."/>
 					</str>
 				</names>
@@ -105674,7 +105674,7 @@
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Збирати подія</text>
+						<text>Подія збору</text>
 						<itemName reference="../../.."/>
 					</str>
 				</names>
@@ -111211,7 +111211,7 @@
 				<names>
 					<str language="ru" country="RU" variant="">
 						<version>0</version>
-						<text>Разрешать</text>
+						<text>Разрешения</text>
 						<itemName reference="../../.."/>
 					</str>
 					<str language="en">
@@ -111221,7 +111221,7 @@
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Дозволяти</text>
+						<text>Дозвіл</text>
 						<itemName reference="../../.."/>
 					</str>
 				</names>
