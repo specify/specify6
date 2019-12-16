@@ -434,12 +434,12 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
             {
                 String  tblName      = rs.getString(2);
                 boolean isAttachment = false;//(tblName.startsWith(ATTACHMENT) || tblName.endsWith(ATTACHMENT)) && !tblName.equals(ATTACHMENT);
-                
+                boolean isAuditLogTbl = "spauditlog".equalsIgnoreCase(tblName) || "spauditlogfield".equalsIgnoreCase(tblName);
                 System.out.println(tblName+" "+isAttachment);
                 
-                if (shouldIncludeAppTables() || 
+                if (shouldIncludeAppTables() || isAuditLogTbl ||
                     !(tblName.startsWith("sp") || 
-                            isAttachment || 
+                            isAttachment ||
                             tblName.startsWith("autonum") || 
                             tblName.equals("picklist") || 
                             tblName.equals("attributedef") || 
