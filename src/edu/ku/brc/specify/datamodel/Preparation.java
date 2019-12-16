@@ -64,7 +64,8 @@ import edu.ku.brc.dbsupport.DBConnection;
 @org.hibernate.annotations.Table(appliesTo="preparation", indexes =
     {   @Index (name="PreparedDateIDX", columnNames={"preparedDate"}),
         @Index (name="PrepColMemIDX", columnNames={"CollectionMemberID"}),
-    	@Index (name="PrepGuidIDX", columnNames={"GUID"})
+    	@Index (name="PrepGuidIDX", columnNames={"GUID"}),
+        @Index (name="PrepSampleNumIDX", columnNames={"SampleNumber"})
     })
 @SuppressWarnings("serial")
 public class Preparation extends CollectionMember implements AttachmentOwnerIFace<PreparationAttachment>, 

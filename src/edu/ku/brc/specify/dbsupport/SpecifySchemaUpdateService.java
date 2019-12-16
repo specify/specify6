@@ -187,7 +187,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 {
     protected static final Logger  log = Logger.getLogger(SpecifySchemaUpdateService.class);
     
-    private final int OVERALL_TOTAL = 65; //the number of incOverall() calls (+1 or +2)
+    private final int OVERALL_TOTAL = 66; //the number of incOverall() calls (+1 or +2)
 
     private static final String TINYINT4 = "TINYINT(4)";
     private static final String INT11    = "INT(11)";
@@ -2497,6 +2497,21 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     if (-1 == update(conn, sql)) {
                         errMsgList.add("update error: " + sql);
                         return false;
+                    }
+                    frame.incOverall();
+
+                    //-------------------------------------------------------------------------------
+                    //
+                    // Schema changes for 2.6
+                    //
+                    //-------------------------------------------------------------------------------
+                    frame.setDesc("Adding index for Preparation.SampleNumber");
+                    if (!doesIndexExist("preparation", "PrepSampleNumIDX")) {
+                        sql = "create index PrepSampleNumIDX on preparation(SampleNumber)";
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
                     }
                     frame.incOverall();
 
