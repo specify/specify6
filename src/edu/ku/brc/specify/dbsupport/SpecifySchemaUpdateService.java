@@ -2492,13 +2492,6 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         return false;
                     }
                     frame.incOverall();
-                    //but this still needs to be done. However, it needs to be moved to "fixDbAfterLogin" (or whatever)
-                    sql = "update splocalecontainer c inner join splocalecontaineritem i on i.splocalecontainerid = c.splocalecontainerid set i.ishidden = false where c.name in('spauditlog','spauditlogfield')";
-                    if (-1 == update(conn, sql)) {
-                        errMsgList.add("update error: " + sql);
-                        return false;
-                    }
-                    frame.incOverall();
 
                     //-------------------------------------------------------------------------------
                     //
@@ -2523,6 +2516,13 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     }
                     frame.incOverall();
 
+                    frame.setDesc("Making audit log fields visible.");
+                    sql = "update splocalecontainer c inner join splocalecontaineritem i on i.splocalecontainerid = c.splocalecontainerid set i.ishidden = false where c.name in('spauditlog','spauditlogfield')";
+                    if (-1 == update(conn, sql)) {
+                        errMsgList.add("update error: " + sql);
+                        return false;
+                    }
+                    frame.incOverall();
                     frame.setProcess(0, 100);
 
                     return true;
