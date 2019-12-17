@@ -187,7 +187,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 {
     protected static final Logger  log = Logger.getLogger(SpecifySchemaUpdateService.class);
     
-    private final int OVERALL_TOTAL = 67; //the number of incOverall() calls (+1 or +2)
+    private final int OVERALL_TOTAL = 70; //the number of incOverall() calls (+1 or +2)
 
     private static final String TINYINT4 = "TINYINT(4)";
     private static final String INT11    = "INT(11)";
@@ -2523,6 +2523,23 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         return false;
                     }
                     frame.incOverall();
+
+                    frame.setDesc("Increasing length of Geography.Name");
+                    sql = "alter table geography modify column `name` varchar(128)";
+                    if (-1 == update(conn, sql)) {
+                        errMsgList.add("update error: " + sql);
+                        return false;
+                    }
+                    frame.incOverall();
+
+                    frame.setDesc("Increasing length of Geography.FullName");
+                    sql = "alter table geography modify column `fullname` varchar(500)";
+                    if (-1 == update(conn, sql)) {
+                        errMsgList.add("update error: " + sql);
+                        return false;
+                    }
+                    frame.incOverall();
+
                     frame.setProcess(0, 100);
 
                     return true;
