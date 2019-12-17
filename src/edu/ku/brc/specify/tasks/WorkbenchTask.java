@@ -1754,7 +1754,8 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                     if (foundWB != null && !skip)
                     {
                         UIRegistry.getStatusBar().setErrorMessage(String.format(getResourceString("WB_DATASET_EXISTS"), new Object[] { newWorkbenchName}));
-                        workbench.setName("");
+                        UIRegistry.displayErrorDlg(String.format(getResourceString("WB_DATASET_EXISTS"), new Object[] { newWorkbenchName}));
+                        //workbench.setName("");
                     }
                     skip = false;
                 }
@@ -1768,10 +1769,11 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                     if (askUserForInfo("Workbench", getResourceString("WB_DATASET_INFO"), workbench, canEdit) && canEdit)
                     {
                         newWorkbenchName = workbench.getName();
-                        // This Part here needfs to be moved into an <enablerule/>
+                        // length is enforced on the data form so this is unnecessary...
                         if (StringUtils.isNotEmpty(newWorkbenchName) && newWorkbenchName.length() > 64)
                         {
                             UIRegistry.getStatusBar().setErrorMessage(getResourceString("WB_NAME_TOO_LONG"));
+                            UIRegistry.displayErrorDlg(getResourceString("WB_NAME_TOO_LONG"));
                         }
                         foundWB = workbench;
                     } else
