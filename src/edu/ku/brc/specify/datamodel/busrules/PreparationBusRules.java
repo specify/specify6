@@ -57,9 +57,20 @@ import java.util.ArrayList;
  */
 public class PreparationBusRules extends AttachmentOwnerBaseBusRules
 {
+    JButton showInteractionsBtn = null;
     public PreparationBusRules()
     {
         super(Preparation.class);
+    }
+
+    JButton getShowInteractionsBtn() {
+        if (showInteractionsBtn == null && formViewObj != null) {
+            showInteractionsBtn = formViewObj.getCompById("ShowLoansBtn");
+            if (showInteractionsBtn == null) {
+                showInteractionsBtn = formViewObj.getCompById("ShowInteractionsBtn");
+            }
+        }
+        return showInteractionsBtn;
     }
 
     /* (non-Javadoc)
@@ -72,7 +83,7 @@ public class PreparationBusRules extends AttachmentOwnerBaseBusRules
         
         if (formViewObj != null)
         {
-            JButton btn = formViewObj.getCompById("ShowLoansBtn");
+            JButton btn = getShowInteractionsBtn();
             if (btn != null)
             {
                 btn.addActionListener(new ActionListener() {
@@ -86,6 +97,13 @@ public class PreparationBusRules extends AttachmentOwnerBaseBusRules
         }
     }
 
+    @Override
+    public void afterFillForm(Object dataObj) {
+        super.afterFillForm(dataObj);
+        if (dataObj instanceof DataModelObjBase && getShowInteractionsBtn() != null) {
+            getShowInteractionsBtn().setEnabled(((DataModelObjBase) dataObj).getId() != null);
+        }
+    }
 
     /**
      *
