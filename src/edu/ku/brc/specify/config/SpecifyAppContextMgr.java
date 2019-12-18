@@ -543,16 +543,14 @@ public class SpecifyAppContextMgr extends AppContextMgr
                             colDlg = new ChooseCollectionDlg(list);
                             colDlg.setSelectedIndex(selectColInx);
                             colDlg.createUI();
-                            colDlg.pack();
                             Dimension size = colDlg.getSize();
                             size.width  = Math.max(size.width, 300);
                             if (size.height < 150)
                             {
                                 size.height += 100;
                             }
-                            colDlg.setSize(size);
-                            
-                            UIHelper.centerWindow(colDlg);
+                            colDlg.setPreferredSize(size);
+                            colDlg.pack();
                             colDlg.setVisible(true);
                             
                         } while (colDlg.getSelectedObject() == null || colDlg.isCancelled());
