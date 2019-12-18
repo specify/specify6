@@ -1251,7 +1251,7 @@
 					</str>
 					<str language="ru" country="RU" variant="">
 						<version>0</version>
-						<text>Штат</text>
+						<text>Штат/Регион</text>
 						<itemName reference="../../.."/>
 					</str>
 					<str language="pt" country="BR" variant="">
@@ -1261,7 +1261,7 @@
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Штат</text>
+						<text>Штат/Регіон</text>
 						<itemName reference="../../.."/>
 					</str>
 				</names>
@@ -2107,7 +2107,7 @@
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Установа</text>
+						<text>Заклад</text>
 						<itemName reference="../../.."/>
 					</str>
 				</names>
@@ -4800,7 +4800,7 @@
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Установа</text>
+						<text>Заклад</text>
 						<itemName reference="../../.."/>
 					</str>
 				</names>
@@ -6668,12 +6668,12 @@
 					</str>
 					<str language="ru" country="RU" variant="">
 						<version>0</version>
-						<text>Url</text>
+						<text>URL</text>
 						<itemName reference="../../.."/>
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Url</text>
+						<text>URL</text>
 						<itemName reference="../../.."/>
 					</str>
 				</names>
@@ -6693,12 +6693,12 @@
 					</str>
 					<str language="ru" country="RU" variant="">
 						<version>0</version>
-						<text>Url для проекта</text>
+						<text>URL для проекта</text>
 						<itemDesc reference="../../.."/>
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Url для проекту</text>
+						<text>URL для проекту</text>
 						<itemDesc reference="../../.."/>
 					</str>
 				</descs>
@@ -12523,7 +12523,7 @@
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Установа</text>
+						<text>Заклад</text>
 						<itemName reference="../../.."/>
 					</str>
 				</names>
@@ -30730,17 +30730,17 @@
 				<names>
 					<str language="en">
 						<version>0</version>
-						<text>License Logo Url</text>
+						<text>License Logo URL</text>
 						<itemName reference="../../.."/>
 					</str>
 					<str language="ru" country="RU" variant="">
 						<version>0</version>
-						<text>Url логотипа лицензии</text>
+						<text>URL логотипа лицензии</text>
 						<itemName reference="../../.."/>
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Url логотипу ліцензії</text>
+						<text>URL логотипу ліцензії</text>
 						<itemName reference="../../.."/>
 					</str>
 				</names>
@@ -33040,12 +33040,12 @@
 					</str>
 					<str language="ru" country="RU" variant="">
 						<version>0</version>
-						<text>Url</text>
+						<text>URL</text>
 						<itemName reference="../../.."/>
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Url</text>
+						<text>URL</text>
 						<itemName reference="../../.."/>
 					</str>
 				</names>
@@ -33258,7 +33258,7 @@
 					</str>
 					<str language="ru" country="RU" variant="">
 						<version>0</version>
-						<text>Включена ли безопасность</text>
+						<text>Включить защиту</text>
 						<itemName reference="../../.."/>
 					</str>
 					<str language="pt">
@@ -33272,7 +33272,7 @@
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Чи увімкнено безпеку</text>
+						<text>Ввімкнути захист</text>
 						<itemName reference="../../.."/>
 					</str>
 				</names>
@@ -33454,7 +33454,7 @@
 					</str>
 					<str language="ru" country="RU" variant="">
 						<version>0</version>
-						<text>Url значка</text>
+						<text>URL значка</text>
 						<itemName reference="../../.."/>
 					</str>
 					<str language="pt">
@@ -33463,7 +33463,7 @@
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Url значка</text>
+						<text>URL значка</text>
 						<itemName reference="../../.."/>
 					</str>
 				</names>
@@ -33899,7 +33899,7 @@
 			</str>
 			<str language="uk" country="UA" variant="">
 				<version>0</version>
-				<text>Установа</text>
+				<text>Заклад</text>
 				<containerName class="container" reference="../../.."/>
 			</str>
 		</names>
@@ -43606,12 +43606,12 @@
 					</str>
 					<str language="ru" country="RU" variant="">
 						<version>0</version>
-						<text>Схемы нумерации</text>
+						<text>Формат нумерации</text>
 						<itemName reference="../../.."/>
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Схеми нумерації</text>
+						<text>Формат нумерації</text>
 						<itemName reference="../../.."/>
 					</str>
 				</names>
@@ -54392,7 +54392,7 @@
 					</str>
 					<str language="ru" country="RU" variant="">
 						<version>0</version>
-						<text>Url значка</text>
+						<text>URL значка</text>
 						<itemName reference="../../.."/>
 					</str>
 					<str language="pt">
@@ -54405,14 +54405,14 @@
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Url значка</text>
+						<text>URL значка</text>
 						<itemName reference="../../.."/>
 					</str>
 				</names>
 				<descs>
 					<str language="ru" country="RU" variant="">
 						<version>0</version>
-						<text>Url к их иконке</text>
+						<text>URL к их иконке</text>
 						<itemDesc reference="../../.."/>
 					</str>
 					<str language="en">
@@ -54430,7 +54430,7 @@
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Url до їх іконки</text>
+						<text>URL до їх іконки</text>
 						<itemDesc reference="../../.."/>
 					</str>
 				</descs>
@@ -54458,7 +54458,7 @@
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Установа</text>
+						<text>Заклад</text>
 						<itemName reference="../../.."/>
 					</str>
 				</names>
@@ -54483,7 +54483,7 @@
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Установа, до якої відноситься цей підрозділ.</text>
+						<text>Заклад, до якої відноситься цей підрозділ.</text>
 						<itemDesc reference="../../.."/>
 					</str>
 				</descs>
@@ -54585,7 +54585,7 @@
 					</str>
 					<str language="ru" country="RU" variant="">
 						<version>0</version>
-						<text>Url</text>
+						<text>URL</text>
 						<itemName reference="../../.."/>
 					</str>
 					<str language="en">
@@ -54598,7 +54598,7 @@
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Url</text>
+						<text>URL</text>
 						<itemName reference="../../.."/>
 					</str>
 				</names>
@@ -55194,11 +55194,11 @@
 					</str>
 					<str language="en">
 						<version>0</version>
-						<text>Url</text>
+						<text>URL</text>
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Веб-сайт</text>
+						<text>URL</text>
 						<itemName reference="../../.."/>
 					</str>
 				</names>
@@ -55213,7 +55213,7 @@
 					</str>
 					<str language="ru" country="RU" variant="">
 						<version>0</version>
-						<text>Url-адрес веб-сайта человека или группы.</text>
+						<text>URL-адрес веб-сайта человека или группы.</text>
 						<itemDesc reference="../../.."/>
 					</str>
 					<str language="pt" country="BR" variant="">
@@ -55223,7 +55223,7 @@
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Url-адреса веб-сайту людини або групи.</text>
+						<text>URL-адреса веб-сайту людини або групи.</text>
 						<itemDesc reference="../../.."/>
 					</str>
 				</descs>
@@ -59320,7 +59320,7 @@
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Установа</text>
+						<text>Заклад</text>
 						<itemName reference="../../.."/>
 					</str>
 				</names>
@@ -67319,12 +67319,12 @@
 					</str>
 					<str language="ru" country="RU" variant="">
 						<version>0</version>
-						<text>Администратор контакт</text>
+						<text>Контакты администратора</text>
 						<itemName reference="../../.."/>
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Адміністратор контакт</text>
+						<text>Контакти адміністратора</text>
 						<itemName reference="../../.."/>
 					</str>
 				</names>
@@ -67349,12 +67349,12 @@
 					</str>
 					<str language="ru" country="RU" variant="">
 						<version>0</version>
-						<text>Схемы нумерации</text>
+						<text>Формат нумерации</text>
 						<itemName reference="../../.."/>
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Схеми нумерації</text>
+						<text>Формат нумерації</text>
 						<itemName reference="../../.."/>
 					</str>
 				</names>
@@ -68188,7 +68188,7 @@
 					</str>
 					<str language="ru" country="RU" variant="">
 						<version>0</version>
-						<text>Штат</text>
+						<text>Штат/Регион</text>
 						<itemName reference="../../.."/>
 					</str>
 					<str language="pt" country="BR" variant="">
@@ -68198,7 +68198,7 @@
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Штат</text>
+						<text>Штат/Регіон</text>
 						<itemName reference="../../.."/>
 					</str>
 				</names>
@@ -77013,12 +77013,12 @@
 			</str>
 			<str language="ru" country="RU" variant="">
 				<version>0</version>
-				<text>Схема автоматической нумерации</text>
+				<text>Автоматической формат нумерации</text>
 				<containerName class="container" reference="../../.."/>
 			</str>
 			<str language="uk" country="UA" variant="">
 				<version>0</version>
-				<text>Схема автоматичної нумерації</text>
+				<text>Автоматичний формат нумерації</text>
 				<containerName class="container" reference="../../.."/>
 			</str>
 		</names>
@@ -84832,12 +84832,12 @@
 					</str>
 					<str language="ru" country="RU" variant="">
 						<version>0</version>
-						<text>Ссудный</text>
+						<text>Можно одолжить</text>
 						<itemName reference="../../.."/>
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Позичковий</text>
+						<text>Можна позичати</text>
 						<itemName reference="../../.."/>
 					</str>
 				</names>
@@ -88833,25 +88833,25 @@
 				<names>
 					<str language="ru" country="RU" variant="">
 						<version>0</version>
-						<text>Веб-сайт</text>
+						<text>URL</text>
 						<itemName reference="../../.."/>
 					</str>
 					<str language="pt" country="BR" variant="">
 						<version>0</version>
-						<text>Url</text>
+						<text>URL</text>
 						<itemName reference="../../.."/>
 					</str>
 					<str language="pt">
 						<version>0</version>
-						<text>Url</text>
+						<text>URL</text>
 					</str>
 					<str language="en">
 						<version>0</version>
-						<text>Url</text>
+						<text>URL</text>
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Веб-сайт</text>
+						<text>URL</text>
 						<itemName reference="../../.."/>
 					</str>
 				</names>
@@ -89211,7 +89211,7 @@
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Установа</text>
+						<text>Заклад</text>
 						<itemName reference="../../.."/>
 					</str>
 				</names>
@@ -111810,17 +111810,17 @@
 				<names>
 					<str language="en">
 						<version>0</version>
-						<text>Url Link</text>
+						<text>URL Link</text>
 						<itemName reference="../../.."/>
 					</str>
 					<str language="ru" country="RU" variant="">
 						<version>0</version>
-						<text>Url-ссылка</text>
+						<text>URL-ссылка</text>
 						<itemName reference="../../.."/>
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Url Посилання</text>
+						<text>URL Посилання</text>
 						<itemName reference="../../.."/>
 					</str>
 				</names>

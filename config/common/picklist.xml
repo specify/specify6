@@ -156,7 +156,7 @@
         <picklistitem title="Bug Room" value="bugroom"/>
         <picklistitem title="CO2" value="co2"/>
       </items>
-    </picklist> 
+    </picklist>
     <picklist name="TypeOfAddr" issystem="true" type="0" readonly="true" tablename="address" sizelimit="2">
 	  	<items>
 	  		<picklistitem title="Home" value="home"/>

@@ -9256,11 +9256,11 @@
         <names>
           <str language="en">
             <version>0</version>
-            <text>Url</text>
+            <text>URL</text>
           </str>
           <str language="pt" country="" variant="">
             <version>0</version>
-            <text>Url</text>
+            <text>URL</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -17867,7 +17867,7 @@
     <names>
       <str language="en">
         <version>0</version>
-        <text>D N A Sequence</text>
+        <text>DNA Sequence</text>
         <containerName class="container" reference="../../.."/>
       </str>
     </names>
