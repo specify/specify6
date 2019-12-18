@@ -624,7 +624,9 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
                     
                 if (progDlg != null && isOnUIThread)
                 {
-                    UIHelper.centerAndShow(progDlg);
+                    progDlg.pack();
+                    progDlg.setLocationRelativeTo(progDlg.getOwner());
+                    progDlg.setVisible(true);
                 }
                 setNodeNumbersAreUpToDate(treeRebuilder.get());
                 return true;

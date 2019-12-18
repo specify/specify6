@@ -69,6 +69,7 @@ public class ProgressDialog extends JDialog
                           final boolean includeBothBars,
                           final boolean includeClose)
     {
+        super(UIRegistry.getMostRecentWindow());
         String rowDef = "p,5px" + (includeBothBars ? ",p,5px" : "") + (includeClose ? ",p,10px" : "") + ",p";
         PanelBuilder    builder    = new PanelBuilder(new FormLayout("p,2px,f:p:g", rowDef));
         CellConstraints cc         = new CellConstraints();
