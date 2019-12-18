@@ -650,6 +650,12 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
         {
             super.addExtraObjectForProcessing(prep);
         }
+        for (DNASequence dna : colObj.getDnaSequences()) {
+            super.addExtraObjectForProcessing(dna);
+            for (DNASequencingRun dnar : dna.getDnaSequencingRuns()) {
+                super.addExtraObjectForProcessing(dnar);
+            }
+        }
     }
 
     /* (non-Javadoc)
