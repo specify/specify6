@@ -46,6 +46,7 @@
 		<mapping class="edu.ku.brc.specify.datamodel.AccessionAgent"/>
 		<mapping class="edu.ku.brc.specify.datamodel.AccessionAttachment"/>
 		<mapping class="edu.ku.brc.specify.datamodel.AccessionAuthorization"/>
+		<mapping class="edu.ku.brc.specify.datamodel.AccessionCitation"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Address"/>
 		<mapping class="edu.ku.brc.specify.datamodel.AddressOfRecord"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Agent"/>

@@ -5,6 +5,7 @@
     
     <!--  Table Icons -->
     <icon name="accession"            file="accession.png" sizes="all"/>
+    <icon name="accessioncitation" file="citation.png" sizes="all"/>
     <icon name="deaccession"          file="deaccession.png" sizes="all"/>
     <icon name="appraisal"            file="appraisal.png" sizes="all"/>
     <icon name="accessionagent"       file="agent.png" sizes="all"/>
@@ -228,6 +229,7 @@
     <icon name="Reference Work"         alias="referencework"/>
     
     <icon name="Accession"              alias="accession"/>
+    <icon name="AccessionCitation" alias="citation"/>
     <icon name="AccessionAgent"         alias="agent"/>
     <icon name="Address"                alias="address"/>
     <icon name="AddressOfRecord"        alias="addressofrecord"/>

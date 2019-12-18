@@ -17,6 +17,9 @@
         <alias name="Agent" field="createdByAgent" />
         <alias name="CollectionObject" field="collectionObjects"/>
         <alias name="Deaccession" field="deaccessions" />
+        <table name="AccessionCitation" field="accessionCitations">
+            <alias name="ReferenceWork"/>
+        </table>
         <alias name="Agent" field="modifiedByAgent" />
         <alias name="RepositoryAgreement" field="repositoryAgreement" />
         <alias name="TreatmentEvent" field="treatmentEvents" />

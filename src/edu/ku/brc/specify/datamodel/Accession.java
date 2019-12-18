@@ -85,6 +85,7 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
     protected Set<Appraisal>              appraisals;
     protected Set<TreatmentEvent>         treatmentEvents;
     protected Set<Deaccession>            deaccessions;
+    protected Set<AccessionCitation> accessionCitations;
 
     // Constructors
 
@@ -137,7 +138,7 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
         appraisals              = new HashSet<Appraisal>();
         treatmentEvents         = new HashSet<TreatmentEvent>();
         deaccessions            = new HashSet<Deaccession>();
-        
+        accessionCitations = new HashSet<>();
     }
     // End Initializer
 
@@ -157,6 +158,7 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
         obj.appraisals              = new HashSet<Appraisal>();
         obj.treatmentEvents         = new HashSet<TreatmentEvent>();
         obj.deaccessions            = new HashSet<Deaccession>();
+        obj.accessionCitations = new HashSet<>();
 
         for (AccessionAuthorization a : this.accessionAuthorizations) {
             AccessionAuthorization c = (AccessionAuthorization)a.clone();
@@ -186,6 +188,11 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
         for (Deaccession a : this.deaccessions) {
             Deaccession c = (Deaccession)a.clone();
             obj.deaccessions.add(c);
+            c.setAccession(obj);
+        }
+        for (AccessionCitation a : this.accessionCitations) {
+            AccessionCitation c = (AccessionCitation)a.clone();
+            obj.accessionCitations.add(c);
             c.setAccession(obj);
         }
 
@@ -278,6 +285,20 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+
+    /**
+     *
+     */
+    @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "accession")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    public Set<AccessionCitation> getAccessionCitations() {
+        return this.accessionCitations;
+    }
+
+    public void setAccessionCitations(Set<AccessionCitation> accessionCitations) {
+        this.accessionCitations = accessionCitations;
     }
 
     /**
