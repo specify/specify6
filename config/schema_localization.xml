@@ -20739,12 +20739,12 @@
 					</str>
 					<str language="ru" country="RU" variant="">
 						<version>0</version>
-						<text>Укажите пользователя</text>
+						<text>Specify пользователь</text>
 						<itemName reference="../../.."/>
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Вкажіть користувача</text>
+						<text>Specify користувач</text>
 						<itemName reference="../../.."/>
 					</str>
 				</names>
@@ -22472,7 +22472,7 @@
 				<names>
 					<str language="ru" country="RU" variant="">
 						<version>0</version>
-						<text>Укажите пользователя</text>
+						<text>Specify пользователь</text>
 						<itemName reference="../../.."/>
 					</str>
 					<str language="en">
@@ -22481,7 +22481,7 @@
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Вкажіть користувача</text>
+						<text>Specify користувач</text>
 						<itemName reference="../../.."/>
 					</str>
 				</names>
@@ -32020,7 +32020,7 @@
 		<names>
 			<str language="ru" country="RU" variant="">
 				<version>0</version>
-				<text>Укажите пользователя</text>
+				<text>Specify пользователь</text>
 				<containerName class="container" reference="../../.."/>
 			</str>
 			<str language="en">
@@ -32029,7 +32029,7 @@
 			</str>
 			<str language="uk" country="UA" variant="">
 				<version>0</version>
-				<text>Вкажіть користувача</text>
+				<text>Specify користувач</text>
 				<containerName class="container" reference="../../.."/>
 			</str>
 		</names>
@@ -56393,7 +56393,7 @@
 					</str>
 					<str language="ru" country="RU" variant="">
 						<version>0</version>
-						<text>Укажите пользователя</text>
+						<text>Specify пользователь</text>
 						<itemName reference="../../.."/>
 					</str>
 					<str language="pt" country="BR" variant="">
@@ -56403,7 +56403,7 @@
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Вкажіть користувача</text>
+						<text>Specify користувач</text>
 						<itemName reference="../../.."/>
 					</str>
 				</names>
@@ -66176,7 +66176,7 @@
 				<names>
 					<str language="ru" country="RU" variant="">
 						<version>0</version>
-						<text>Укажите пользователей</text>
+						<text>Specify пользователь</text>
 						<itemName reference="../../.."/>
 					</str>
 					<str language="en">
@@ -66185,7 +66185,7 @@
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Вкажіть користувачів</text>
+						<text>Specify користувач</text>
 						<itemName reference="../../.."/>
 					</str>
 				</names>
@@ -72664,7 +72664,7 @@
 				<names>
 					<str language="ru" country="RU" variant="">
 						<version>0</version>
-						<text>Укажите пользователя</text>
+						<text>Specify пользователь</text>
 						<itemName reference="../../.."/>
 					</str>
 					<str language="en">
@@ -72673,7 +72673,7 @@
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Вкажіть користувача</text>
+						<text>Specify користувач</text>
 						<itemName reference="../../.."/>
 					</str>
 				</names>
@@ -73662,12 +73662,12 @@
 					</str>
 					<str language="ru" country="RU" variant="">
 						<version>0</version>
-						<text>Укажите пользователя</text>
+						<text>Specify пользователь</text>
 						<itemName reference="../../.."/>
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Вкажіть користувача</text>
+						<text>Specify користувач</text>
 						<itemName reference="../../.."/>
 					</str>
 				</names>
@@ -85426,7 +85426,7 @@
 				<names>
 					<str language="ru" country="RU" variant="">
 						<version>0</version>
-						<text>Укажите пользователя</text>
+						<text>Specify пользователь</text>
 						<itemName reference="../../.."/>
 					</str>
 					<str language="en">
@@ -85435,7 +85435,7 @@
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Вкажіть користувача</text>
+						<text>Specify користувач</text>
 						<itemName reference="../../.."/>
 					</str>
 				</names>
@@ -87437,12 +87437,12 @@
 					</str>
 					<str language="ru" country="RU" variant="">
 						<version>0</version>
-						<text>Укажите пользователя</text>
+						<text>Specify пользователь</text>
 						<itemName reference="../../.."/>
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Вкажіть користувача</text>
+						<text>Specify користувач</text>
 						<itemName reference="../../.."/>
 					</str>
 				</names>
@@ -87987,7 +87987,7 @@
 				<names>
 					<str language="ru" country="RU" variant="">
 						<version>0</version>
-						<text>Укажите пользователя</text>
+						<text>Specify пользователь</text>
 						<itemName reference="../../.."/>
 					</str>
 					<str language="en">
@@ -87996,7 +87996,7 @@
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Вкажіть користувача</text>
+						<text>Specify користувач</text>
 						<itemName reference="../../.."/>
 					</str>
 				</names>
@@ -89935,12 +89935,12 @@
 					</str>
 					<str language="ru" country="RU" variant="">
 						<version>0</version>
-						<text>Укажите пользователя</text>
+						<text>Specify пользователь</text>
 						<itemName reference="../../.."/>
 					</str>
 					<str language="uk" country="UA" variant="">
 						<version>0</version>
-						<text>Вкажіть користувача</text>
+						<text>Specify користувач</text>
 						<itemName reference="../../.."/>
 					</str>
 				</names>
