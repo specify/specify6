@@ -852,7 +852,8 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                 }
             }
         });
-
+        toolBar.setFloatable(false);
+        
         return toolBar;
     }
 
