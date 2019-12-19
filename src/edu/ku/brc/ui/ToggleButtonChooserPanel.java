@@ -135,42 +135,31 @@ public class ToggleButtonChooserPanel<T> extends JPanel implements ActionListene
         
         setDoubleBuffered(true);
     }
-    
-    protected JToggleButton createBtn(final String label)
-    {
+
+    protected JToggleButton createBtn(final String label) {
         JToggleButton togBtn;
-        if (uiType == Type.Checkbox)
-        {
+        if (uiType == Type.Checkbox) {
             togBtn = createCheckBox(label);
-        } else
-        {
+        } else {
             togBtn = createRadioButton(label);
             group.add(togBtn);
         }
 
-        if (changeListener != null)
-        {
+        if (changeListener != null) {
             togBtn.addChangeListener(changeListener);
         }
-        
-        if (actionListener != null)
-        {
+
+        if (actionListener != null) {
             togBtn.addActionListener(actionListener);
         }
-        
-        if (okBtn != null)
-        {
-            togBtn.addChangeListener(new ChangeListener() {
-                public void stateChanged(ChangeEvent e)
-                {
-                    if (((JToggleButton)e.getSource()).isSelected())
-                    {
-                        okBtn.setEnabled(true);
-                    }
+
+        togBtn.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                if (((JToggleButton) e.getSource()).isSelected() && okBtn != null) {
+                    okBtn.setEnabled(true);
                 }
-            });
-        }
-        
+            }
+        });
         togBtn.setOpaque(false);
         return togBtn;
     }

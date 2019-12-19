@@ -108,7 +108,6 @@ public class ToggleButtonChooserDlg<T> extends CustomDialog
         super(parentFrame, UIRegistry.getResourceString(key), true, whichButtons, null);
         
         panel = new ToggleButtonChooserPanel<T>(listItems, UIRegistry.getResourceString(descKey), uiType);
-
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }
 
@@ -189,19 +188,14 @@ public class ToggleButtonChooserDlg<T> extends CustomDialog
     @Override
     public void createUI()
     {
-        super.createUI();
-        
-        panel.setOkBtn(okBtn);
         panel.createUI();
-        
+        contentPanel = panel;
+        super.createUI();
+        panel.setOkBtn(okBtn);
         mainPanel.setBorder(BorderFactory.createEmptyBorder(14, 14, 6, 14));
-        mainPanel.add(panel.getUIComponent(), BorderLayout.CENTER);
-        
-        pack();
-        
         okBtn.setEnabled(false);
-        
-    }
+        pack();
+   }
 
     /**
      * @param addSelectAll
