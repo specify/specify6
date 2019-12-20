@@ -256,9 +256,10 @@ public class SpecifySchemaI18NService extends SchemaI18NService
     {
         List<Locale> localesList = new ArrayList<Locale>();
         
-        String sql = String.format("SELECT i.Language, i.Country, i.Variant FROM splocalecontainer cn INNER JOIN splocaleitemstr i ON " +
-                                   "cn.SpLocaleContainerID = i.SpLocaleContainerNameID WHERE cn.SchemaType = %d AND cn.DisciplineID = %d GROUP BY Language, Country, Variant",
-                                   schemaType, disciplineId);
+        String sql = String.format("SELECT distinct i.Language, case when trim(i.Country) = '' then null else i.Country end, "
+                + "case when trim(i.Variant) = '' then null else i.Variant end FROM splocalecontainer cn INNER JOIN splocaleitemstr i ON "
+                +"cn.SpLocaleContainerID = i.SpLocaleContainerNameID WHERE cn.SchemaType = %d AND cn.DisciplineID = %d order by 1,2,3",
+                schemaType, disciplineId);
         for (Object[] row : BasicSQLUtils.query(sql))
         {
             String language = (String)row[0];
