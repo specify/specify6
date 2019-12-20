@@ -879,11 +879,10 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
     private void openPrefsEditor(final AppPreferences prefs, final String titleKey)
     {
         String             titleStr = UIRegistry.getResourceString("Specify."+titleKey); //$NON-NLS-1$
-        final CustomDialog dialog   = new CustomDialog(topFrame, titleStr, true, CustomDialog.OK_BTN, new AppPrefsEditor(prefs));
+        final CustomDialog dialog = CustomDialog.create(titleStr, true, CustomDialog.OK_BTN, new AppPrefsEditor(prefs));
         String             okLabel  = UIRegistry.getResourceString("Specify.CLOSE"); //$NON-NLS-1$
         dialog.setOkLabel(okLabel);
-        dialog.pack();
-        UIHelper.centerAndShow(dialog);
+        dialog.setVisible(true);
         if (!dialog.isCancelled())
         {
             try
