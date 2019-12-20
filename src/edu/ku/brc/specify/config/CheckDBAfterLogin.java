@@ -390,6 +390,34 @@ public class CheckDBAfterLogin
         return updated == toFix;
     }
 
+    public static boolean fixSpAuditLogVisibility() {
+        String sql = "update splocalecontainer c inner join splocalecontaineritem i on i.splocalecontainerid = c.splocalecontainerid set i.ishidden = false where c.name in('spauditlog','spauditlogfield') and i.ishidden";
+        String countSql = "select count(*) from splocalecontainer c inner join splocalecontaineritem i on i.splocalecontainerid = c.splocalecontainerid where c.name in('spauditlog','spauditlogfield') and i.ishidden";
+        Connection conn = DBConnection.getInstance().getConnection();
+        int toFix = BasicSQLUtils.getCountAsInt(countSql);
+        int updated = 0;
+        if (toFix > 0) {
+            updated = BasicSQLUtils.update(conn, sql);
+            //DBTableIdMgr is already loaded so changes above aren't visible in current Sp instance,
+            // so update the loaded fields...
+            if (updated == toFix) {
+                DBTableInfo tbl = DBTableIdMgr.getInstance().getInfoByTableName("spauditlog");
+                if (tbl != null) {
+                    for (DBFieldInfo fld : tbl.getFields()) {
+                        fld.setHidden(false);
+                    }
+                }
+                tbl = DBTableIdMgr.getInstance().getInfoByTableName("spauditlogfield");
+                if (tbl != null) {
+                    for (DBFieldInfo fld : tbl.getFields()) {
+                        fld.setHidden(false);
+                    }
+                }
+            }
+        }
+        return updated == toFix;
+    }
+
 
     /**
      * 
