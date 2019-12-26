@@ -1,0 +1,473 @@
+SetupAppTitle=Інсталятор
+#SetupAppTitle=Setup
+SetupWindowTitle=Інсталятор - {0}
+UninstallAppTitle=Видалити
+UninstallAppFullTitle={0} Видалити
+InformationTitle=Інформація
+ConfirmTitle=Підтвердити
+ErrorTitle=Помилка
+SetupLdrStartupMessage=Це встановить {0}. Ви хочете продовжити?
+LdrCannotCreateTemp=Неможливо створити тимчасовий файл. Установка перервана
+LdrCannotExecTemp=Неможливо відкити файл у тимчасовій папці. Установка перервана
+LastErrorMessage={0}.\n\nОшібка {1}: {2}
+SetupFileMissing=Файл {0} відсутній в каталозі інсталяції. Будь ласка, виправте проблему або отримайте нову копію програми.
+SetupFileCorrupt=Файли інсталяції пошкоджені. Будь ласка, отримайте нову копію програми.
+SetupFileCorruptOrWrongVer=Файли установки пошкоджені або несумісні з цією версією програми установки. Будь ласка, виправте проблему або отримайте нову копію програми.
+NotOnThisPlatform=Ця програма не працюватиме на {0}.
+OnlyOnThisPlatform=Ця програма повинна бути запущена на {0}.
+WinVersionTooLowError=Ця програма вимагає {0} версії {1} або новіше.
+WinVersionTooHighError=Цю програму не можна встановити в {0} версії {1} або новіше.
+AdminPrivilegesRequired=Ви повинні увійти в систему як адміністратор при інсталяції цієї програми.
+PowerUserPrivilegesRequired=Ви повинні увійти в систему як адміністратор або як член групи "Супер користувачі" при установці цієї програми.
+SetupAppRunningError=Інсталятор виявив, що в даний момент виконується {0}.\n\nЗакрийте всі його екземпляри зараз і натисніть "OK", щоб продовжити, або "Скасувати", щоб вийти.
+UninstallAppRunningError=Програма видалення виявила, що в даний момент виконується {0}.\n\nБудь ласка, закрийте всі його екземпляри зараз і натисніть "OK", щоб продовжити, або "Скасувати", щоб вийти.
+ErrorCreatingDir=Інсталятор не зміг створити каталог "{0}".
+ErrorTooManyFilesInDir=Не вдалося створити файл в каталозі "{0}", так як він містить занадто багато файлів
+ExitSetupTitle=Вихід з інсталятора
+ExitSetupMessage=Інсталяція не завершена. Якщо ви вийдете зараз, програма не буде встановлена.\n\nВи можете знову запустити інсталятор в інший час, щоб завершити інсталяцію.\n\nВийти з інсталятора?
+AboutSetupMenuItem=Про інсталятора ...
+AboutSetupTitle=Про інсталятора
+AboutSetupMessage={0} версія {1}\n{2}\n\n{0} Домашня сторінка:\n{3}
+AboutSetupNote=
+ButtonBack=Назад
+ButtonNext=Далі
+ButtonInstall=Інсталяція
+ButtonOK=OK
+ButtonCancel=Скасувати
+ButtonYes=Так
+ButtonYesToAll=Так для всіх
+ButtonNo=Ні
+ButtonNoToAll=Ні для всіх
+ButtonFinish=Готово
+#ButtonFinish=Finish
+ButtonBrowse=Вибрати...
+ClickNext=Натисніть "Далі", щоб продовжити, або "Скасувати", щоб вийти з інсталятора.
+BeveledLabel=
+WelcomeLabel1=Ласкаво просимо в {0} Інсталятор.
+WelcomeLabel2=Він встановить {0} на ваш комп'ютер.\n\nРекомендуется закрити всі інші додатки перед продовженням.
+WizardPassword=Пароль
+PasswordLabel1=Ця установка захищена паролем.
+PasswordLabel3=Будь ласка, введіть пароль, потім натисніть Далі, щоб продовжити. Паролі чутливі до регістру.
+PasswordEditLabel=Пароль:
+IncorrectPassword=Введений вами пароль є невірним. Будь ласка, спробуйте ще раз.
+WizardLicense=Ліцензійна угода
+LicenseLabel=Ласка, прочитайте наступну важливу інформацію, перш ніж продовжити.
+LicenseLabel3=Будь ласка, прочитайте цю ліцензійну угоду. Ви повинні прийняти умови цієї угоди, перш ніж продовжити інсталяцію.
+LicenseAccepted=Я приймаю угоду
+LicenseNotAccepted=Я не приймаю угоду
+WizardInfoBefore=Інформація
+InfoBeforeLabel=Будь ласка, прочитайте наступну важливу інформацію, перш ніж продовжити.
+InfoBeforeClickLabel=Коли ви будете готові продовжити інсталяцію, натисніть "Далі".
+WizardInfoAfter=Інформація
+InfoAfterLabel=Будь ласка, прочитайте наступну важливу інформацію, перш ніж продовжити.
+InfoAfterClickLabel=Коли ви будете готові продовжити інсталяцію, натисніть "Далі".
+WizardUserInfo=Інформація про користувача
+UserInfoDesc=Будь ласка, введіть вашу інформацію.
+UserInfoName=Ім'я користувача:
+UserInfoOrg=Організація:
+UserInfoSerial=Серійний номер:
+UserInfoNameRequired=Ви повинні ввести ім'я.
+WizardSelectDir=Виберіть каталог для інсталяції програми
+SelectDirDesc=Де слід встановити {0}?
+SelectDirLabel=Виберіть папку, в яку ви хочете встановити {0}, і натисніть Далі.
+DiskSpaceMBLabel=Програма вимагає не менше {0} МБ дискового простору.
+ToUNCPathname=Інсталятор не може встановити на UNC шлях. Якщо ви намагаєтеся встановити на мережевий диск, вам необхідно підключити мережевий диск.
+InvalidPath=Ви повинні ввести повний шлях з літерою диска; наприклад:\n\nC:\APP\n\nor UNC-шлях в формі:\n\n\\server\share
+InvalidDrive=Обраний диск або загальний UNC-ресурс не існує або недоступний. Будь ласка, виберіть інший.
+DiskSpaceWarningTitle=Недостатньо місця на диску
+DiskSpaceWarning=Інсталятору потрібно не менше {0} КБ вільного місця, але на вибраному диску доступно тільки {1} КБ.\n\nПродовжити?
+BadDirName32=Імена каталогів не можуть містити жодного з наступних символів:\n\n{0}
+DirExistsTitle=Каталог вже існує
+DirExists=Каталог:\n\n{0}\n\nвже існує. Ви хочете встановити в цей каталог в будь-якому випадку?
+DirDoesntExistTitle=Папка не існує
+DirDoesntExist=Папка:\n\n{0}\n\- не існує. Хочете, щоб папка був створеною?
+WizardSelectComponents=Виберіть компоненти
+SelectComponentsDesc=Які компоненти повинні бути встановлені?
+SelectComponentsLabel2=Виберіть компоненти, які ви хочете встановити; очистіть компоненти, які ви не хочете встановлювати. Натисніть "Далі", коли ви будете готові продовжити.
+FullInstallation=Повна інсталяція
+CompactInstallation=Компактна інсталяція
+CustomInstallation=Вибіркова інсталяція
+NoUninstallWarningTitle=Компоненти існують
+NoUninstallWarning=Програма установки виявила, що на вашому комп'ютері вже встановлено такі компоненти:\n\n{0}\n\nЯкщо ви не виділете ці компоненти, вони не будуть видалені.\n\nБажаєте продовжити в будь-якому випадку?
+ComponentSize1={0} КБ
+ComponentSize2={0} МБ Для
+ComponentsDiskSpaceMBLabel=Поточна конфігурація потребує не менше {0} МБ дискового простору.
+WizardSelectTasks=Виберіть додаткові завдання
+SelectTasksDesc=Які додаткові завдання повинні бути виконані?
+SelectTasksLabel2=Виберіть додаткові завдання, які ви хочете виконати при інсталяції {0}, і натисніть кнопку Далі.
+CreateDesktopIcon=Створіть значок на робочому столі.
+WizardSelectProgramGroup=Виберіть папку "Пуск".
+SelectStartMenuFolderDesc=Де слід розміщувати ярлики програм?
+SelectStartMenuFolderLabel=Виберіть папку "Пуск", в якій ви хочете, щоб інсталятор створив ярлики програми, і натисніть "Далі".
+NoIconsCheck=Не створюйте іконки
+MustEnterGroupName=Ви повинні ввести ім'я папки.
+BadGroupName=Ім'я папки не може містити жодного з наступних символів:\n\n{0}
+NoProgramGroupCheck2=Не створювати папку меню "Пуск".
+WizardReady=Готовий до установки
+ReadyLabel1=Програма установки готова почати установку {0} на вашому комп'ютері.
+ReadyLabel2a=Натисніть "Встановити", щоб продовжити установку, або "Назад", якщо ви хочете переглянути або змінити будь-які налаштування.
+ReadyLabel2b=Натисніть "Встановити", щоб продовжити установку.
+ReadyMemoUserInfo=Інформація про користувача:
+ReadyMemoDir=Каталог призначення:
+ReadyMemoType=Тип інсталяції:
+ReadyMemoComponents=Обрані компоненти:
+ReadyMemoGroup=Папка меню "Пуск":
+ReadyMemoTasks=Додаткові завдання:
+WizardPreparing=Підготовка до встановлення
+PreparingDesc=Інсталятор готується до встановлення {0} на ваш комп'ютер.
+PreviousInstallNotCompleted=Встановлення/видалення попередньої програми не була завершена. Для завершення інсталяції вам буде потрібно перезавантажити комп'ютер.\n\nПісля перезавантаження комп'ютера знову запустіть програму встановлення, щоб завершити інсталяцію {0}.
+CannotContinue=Встановлення не може бути продовженим. Будь ласка, натисніть "Скасувати", щоб вийти.
+WizardInstalling=Встановлення
+InstallingLabel=Будь ласка, зачекайте, поки інсталятор скопіює {0} на ваш комп'ютер.
+FinishedHeadingLabel=Завершення інсталяції {0}
+FinishedLabelNoIcons={0} встановлено на ваш комп'ютер.
+FinishedLabel=Інсталятор завершив встановлення {0} на ваш комп'ютер. Додаток можна запустити, вибравши встановлені значки.
+ClickFinish=Натисніть "Готово", щоб вийти з програми установки.
+FinishedRestartLabel=Для завершення встановлення {0} інсталятор повиннен перезавантажити ваш комп'ютер. Хочете перезавантажити зараз?
+FinishedRestartMessage=Для завершення встановлення {0} інсталятор повиннен перезавантажити комп'ютер.\n\nХочете перезавантажити зараз?
+ShowReadmeCheck=Так, я хотів би переглянути файл README
+YesRadio=Так, перезавантажте комп'ютер зараз.
+NoRadio=Ні, я перезавантажу комп'ютер пізніше.
+RunEntryExec=Запустити {0}
+RunEntryShellExec=Перегляд {0}
+ChangeDiskTitle=Для встановлення необхідний наступний диск.
+SelectDirectory=Виберіть каталог.
+SelectDiskLabel2=Вставте диск {0} і натисніть клавішу "ОК".\n\nЯкшо файли на цьому диску можуть перебуваючи в папці, відмінній від вказаної нижче, введіть правильний шлях або натисніть "Огляд".
+PathLabel=Шлях:
+FileNotInDir2=Не можу знайти файл "{0}" в "{1}". Будь ласка, вставте правильний диск або виберіть іншу папку.
+SelectDirectoryLabel=Будь ласка, вкажіть місце розташування наступного диска.
+SetupAborted=Встановлення не було завершеним.\n\nБудь ласка, вирішіть проблему і знову запустіть інсталятор.
+EntryAbortRetryIgnore=Натисніть "Повторити", щоб повторити спробу, "Ігнорувати", щоб продовжити, або "Перервати", щоб скасувати встановлення.
+StatusCreateDirs=Створення каталогів ...
+StatusExtractFiles=Вилучення файлів ...
+StatusCreateIcons=Створення значків програм ...
+StatusCreateIniEntries=Створення записів INI ...
+StatusCreateRegistryEntries=Створення записів реєстру ...
+StatusRegisterFiles=Реєстрація файлів ...
+StatusSavingUninstall=Збереження інформації про видалення ...
+StatusRunProgram=Завершення установки ...
+StatusRollback=Відкат змін ...
+ErrorInternal2=Внутрішня помилка: {0}
+ErrorFunctionFailedNoCode={0} помилка
+ErrorFunctionFailed={0}; код {1}
+ErrorFunctionFailedWithMessage={0} не виконано; code {1}.\n{2}
+ErrorExecutingProgram=Неможливо виконати файл:\n{0}
+ErrorRegOpenKey=Помилка відкриття розділу реєстру:\n{0}\{1}
+ErrorRegCreateKey=Помилка створення розділу реєстру:\n{0}\{1}
+ErrorRegWriteKey=Помилка створення запису INI в файлі "{0}".
+ErrorIniEntry=Не можу записати розділ реєстру:\n{0}\{1}
+FileAbortRetryIgnore=Натисніть "Повторити", щоб повторити спробу, "Ігнорувати", щоб пропустити цей файл (не рекомендується), або "Перервати", щоб скасувати установку.
+FileAbortRetryIgnore2=Натисніть "Повторити", щоб повторити спробу, "Ігнорувати" для продовження (не рекомендується) або "Скасувати" для скасування установки.
+SourceIsCorrupted=Вихідний файл пошкоджений
+SourceDoesntExist=Вихідний файл "{0}" не існує
+ExistingFileReadOnly=Існуючий файл позначений як доступний тільки для читання.\n\nНатисніть "Повторити", щоб видалити атрибут "тільки для читання", і спробуйте ще раз, "Пропустити", щоб пропустити цей файл, або "Скасувати", щоб скасувати встановлення.
+ErrorReadingExistingDest=Сталася помилка під час спроби прочитати існуючий файл:
+FileExists=Файл вже існує.\n\nХочете, щоб встановлювач перезаписав його?
+ExistingFileNewer=Існуючий файл новіший, ніж той, який намагається встановити програма установки. Рекомендується зберегти існуючий файл.\n\nХочете зберегти існуючий файл?
+ErrorChangingAttr=Сталася помилка під час спроби змінити атрибути існуючого файлу:
+ErrorCreatingTemp=Відбулася помилка при спробі створити файл в цільовому каталозі:
+ErrorReadingSource=Відбулася помилка при спробі прочитати вихідний файл:
+ErrorCopying=Відбулася помилка при спробі скопіювати файл:
+ErrorReplacingExistingFile=Сталася помилка при спробі замінити існуючий файл:
+ErrorRestartReplace=Помилка RestartReplace:
+ErrorRenamingTemp=Сталася помилка при спробі перейменувати файл в цільовому каталозі:
+ErrorRegisterServer=Не вдалося зареєструвати DLL\OCX: {0}
+ErrorRegisterServerMissingExport=Експорт DllRegisterServer не найден
+ErrorRegisterTypeLib=Неможливо зареєструвати бібліотеку типів: {0}
+ErrorOpeningReadme=Помилка при спробі відкрити файл README.
+ErrorRestartingComputer=Програма установки не змогла перезавантажити комп'ютер. Будь ласка, зробіть це вручну.
+UninstallNotFound=Файл "{0}" не існує. Неможливо видалити.
+UninstallUnsupportedVer=Файл журналу видалення "{0}" має формат, що не розпізнається цією версією програми видалення. Неможливо видалити
+UninstallUnknownEntry=У журналі видалення виявлена невідома запис ({0}).
+ConfirmUninstall=Ви дійсно хочете повністю видалити {0} і всі його компоненти?
+OnlyAdminCanUninstall=Ця установка може бути видалена лише користувачем з правами адміністратора.
+UninstallStatusLabel=Будь ласка, зачекайте, поки {0} видалений з вашого комп'ютера.
+UninstalledAll={0} був успішно видалений з вашого комп'ютера.
+UninstalledMost={0} видалення завершено.\n\nМожливо, деякі елементи не можуть бути видалені. Їх можна видалити вручну.
+UninstalledAndNeedsRestart=Щоб завершити видалення {0}, ваш комп'ютер повинен бути перезавантажений.\n\nПерезагрузіть зараз?
+UninstallDataCorrupted=Файл "{0}" пошкоджений. Неможливо видалити
+ConfirmDeleteSharedFileTitle=Видалити загальний файл?
+ConfirmDeleteSharedFile2=Система вказує, що наступний спільний файл більше не використовується ніякими програмами. Ви хочете, щоб програма Uninstall видалила цей спільний файл?\n\nЯкщо якісь програми все ще використовують цей файл і він був знищений, ці програми можуть працювати неправильно. Якщо ви не впевнені, виберіть "Ні". Залишок цього файлу у вашій системі не заподіє ніякої шкоди.
+SharedFileNameLabel=Файл:
+SharedFileLocationLabel=Місцезнаходження:
+WizardUninstalling=Статус Видалення
+StatusUninstalling=Видалення {0} ...
+MustEnterDirectory=Ви повинні ввести каталог призначення.
+InvalidDirectory=Каталог:\n\n{0}\n\nє недійсною.
+CreateQuickLaunchIcon=Створити значок швидкого запуску
+CreateIconsGroup=Додаткові значки:
+PrepareCancel=Підготовка до скасування ...
+
+Downloading=Завантаження ...
+# {0} is a file name
+DownloadingWithFileName=Завантаження {0} ...
+# {0} is the application that is uninstalled
+UninstallerMenuEntry={0} Деінсталятор
+# {0} is a file name
+AskRetryInstallFile={0}\nне вдалося створити цей файл. Чи повинен я спробувати ще раз?
+WindowsServicesTitle=Служба Windows
+WindowsServicesSubtitle=Будь ласка, виберіть параметри, як служби повинні бути встановлені.
+# {0} is the name of the Windows service
+WindowsServiceInstallCheckbox=Встановлення служб Windows "{0}"
+WindowsServiceStartOnBootupCheckbox=Запускати при завантаженні
+UnixDaemonsTitle=Daemons
+# {0} is the name of the application
+UnixDaemonsSubTitle=Зверніть увагу на демонів, що надаються {0}.
+# {0} is the name of the Unix daemon
+UnixDaemonStartStopScriptLabel=Скрипт запуску/зупинки для демона "{0}":
+MacosStartupItemsTitle=Елементи запуску
+MacosStartupItemsSubTitle=Будь ласка, вкажіть, як елементи запуску повинні бути встановлені.
+# {0} is the name of the Mac OS X startup item
+MacosStartupItemInstallCheckbox=Встановити елемент автозавантаження "{0}"
+# {0} is the name of the service
+ErrorInstallService=Неможливо встановити службу "{0}"
+# {0} is the name of the service
+ErrorUninstallService=Неможливо видалити службу "{0}"
+ErrorInstallIcons=Неможливо встановити значки.
+# {0} is a version number, {1} is an application name
+AppleJavaMinVersionError=Для встановлення {1} потрібно як мінімум {0} віртуальна машина Java.\nБудь ласка, завантажте її з http:\\www.apple.com
+# {0} is a file name
+AskContinue=Неможливо встановити файл\n{0}\nБажаєте продовжити інсталяцію?
+UninstallFailureTitle=Результати дєїнсталлятора
+# {0} is an application name
+UninstallFailureSubTitle=Не всі файли {0} можуть бути видалені.
+UninstallFailureLabel=Наступні файли і каталоги не можуть бути видалені:
+# {0} is an application name
+DownloadingJre={0} завантажує середовище виконання Java (TM). Будь ласка, зачекайте.
+ErrorWininet=Неможливо ініціалізувати wininet.dll. Будь ласка, встановіть Internet Explorer 3.0 або вище.
+DownloadJreError=Помилка завантаження середовища виконання Java (TM).\nБудь ласка, перевірте підключення до Інтернету і почніть встановлення заново.
+ChooseJavaExe=Будь ласка, виберіть файл "java.exe" JRE
+# {0} is an application name
+PrepareInstaller={0}, готує майстер install4j, який проведе вас через весь інший процес установки.
+InitConnection=Створити ярлики для всіх користувачів
+# {0} is the amount downloaded so far, {1} is the total size of the file, {3} is the download speed, measured in kb/s
+DownloadProgress=Ініціалізація з'єднання ...
+ButtonDownload={0} МБ {1} МБ ({2}%) при {3} кбіт/с
+ButtonLocate=Завантажте
+WizardCaption=Locate
+JvmStartError=Install4j Wizard
+NoDirNameWithSpace=Не вдається запустити віртуальну машину Java (TM). Будь ласка, перезапустіть\nінсталяцію. Ви можете використовувати параметр "/manual"\n, щоб завантажити або вручну вибрати іншу віртуальну машину.
+ConfirmReboot=Ім'я каталогу не повинно містити пробілів.
+ProgramGroupAllUsers=Для завершення встановлення вам необхідно перезавантажити систему. Ви хочете перезавантажити Windows зараз?
+# {0} is a the application name
+FinishedLabelUnix=Програма встановлення завершила інсталяцію {0} на ваш комп'ютер. Додаток може бути запущено шляхом виконання встановлених стартових скриптів.
+WizardSelectLinkDir=Виберіть каталог для посилань.
+SelectLinkDirDesc=Де {0} створювати посилання на виконувані файли?
+NoSymlinksCheck=Не створювати посилання
+SelectLinkDirLabel=Виберіть папку, в якій ви хочете {0} створити посилання, потім натисніть "Далі".
+LastRunFailed=Програма встановлення не запустилася правильно при останньому запуску.\nМожливо, це пов'язано з пошкодженням віртуальної машини Java.\nВи хочете завантажити або вручну вибрати JVM?
+WizardSelectAssociations=Виберіть Асоціації файлів
+SelectAssociationsDesc=Які асоціації файлів повинні бути створені?
+SelectAssociationsLabel=Виберіть асоціації файлів, які ви хочете створити; очистіть асоціації файлів, які ви не хочете створювати. Натисніть "Next", коли ви будете готові продовжити.
+LocateBrowerExecutable=Будь ласка, знайдіть виконуваний файл вашого інтернет-браузера.
+ErrorStartingBrowser=Помилка під час запуску браузера.
+NoWritePermissions=У вас немає прав на запис в цей каталог. Будь ласка, виберіть інший каталог.
+LocateOrDownloadJre2=Майстру install4j не вдалося знайти середовище виконання Java (TM) у вашій системі. Ви можете знайти або завантажити відповідну JRE. (мінімальна версія: {0}, максимальна версія: {1})
+LocateJre2=Майстру install4j не вдалося знайти середовище виконання Java (TM) у вашій системі. Будь ласка, знайдіть відповідний JRE. (мінімальна версія: {0}, максимальна версія: {1}).
+EnterPassword=Будь ласка, введіть ваш пароль:
+AdminGroupRequired=Ви повинні бути членом групи адміністраторів.
+EnterPasswordTitle=Введіть пароль
+WrongPassword=Введений вами пароль невірний. Будь ласка, спробуйте ще раз.
+FileCorrupted=Файл інсталяції пошкоджений. Якщо це завантаження, спробуйте ще раз.
+StatusStoppingServices=Зупинення служб
+StatusUninstallingPrevious=Видалення попередньої версії
+DifferentApplication=Цей каталог містить іншу програму. Будь ласка, виберіть інший каталог.
+NoTargetApplication=Це доповнення для інсталятора. В обраному вами каталозі\nНе міститься цільового програми.\nБудь ласка, виберіть інший.
+DifferentApplication2=Каталог встановлення містить іншу програму.\nВстановлення не може бути виконаним.
+NoTargetApplication2=Цільовий додаток для цього інсталятора доповнення не може бути знайдено в вашій системі.\nНе вдається виконати встановлення.
+InternetConnection=Підключення до Інтернету
+DirectConnection=У мене є пряме підключення до Інтернету.
+ProxyConnection=Я підключаюся до Інтернету через проксі сервер.
+ProxyAuthentication=Потрібно аутентифікація для проксі сервера
+ProxyHost=Проксі хост.
+ProxyPort=Порт проксі.
+UserName=Ім'я користувача
+Password=Пароль
+PortValueError=Допустимі тільки числові значення від 1 до 65536.
+DownloadError=Не вдалося з'єднатися з сервером завантаження.
+ConnectionParametersRequest=Будь ласка, введіть параметри вашого інтернет-з'єднання:
+ProxySettings=Налаштування проксі
+EnterInformation=Будь ласка, введіть всю необхідну інформацію.
+ComponentHideDescription=Приховати опис
+ComponentShowDescription=Показати опис
+ComponentDownloadedFromInternet=Компонент завантажений з Інтернету.
+ComponentIncludedInInstaller=Компонент вбудований в інсталятор
+exe4j.MessageBoxTitle=Помилка
+exe4j.NoJvmFound=Не можу знайти JVM у вашій системі.\nБудь ласка, визначте EXE4J_JAVA_HOME\n, щоб вказати на встановлений JDK або JRE, або завантажте JRE з www.java.com.
+exe4j.JvmInPath=Виявлена на вашому шляху JVM пошкоджена.\nБудь ласка, перевстановіть або визначте EXE4J_JAVA_HOME\n, щоб вказати на встановлений JDK або JRE.
+# {0} is the name of an environment variable
+exe4j.JvmEnvVar=Змінна середовища {0} не вказує на\nробочк JDK або JRE.
+# {0} is a directory name
+exe4j.JvmDefinedPath=JVM, знайдена в {0}, пошкоджена.\nБудь ласка, перевстановіть або визначте EXE4J_JAVA_HOME\n, щоб вказати на встановлений JDK або JRE.
+exe4j.JvmStart=JVM не може бути запущена. Максимальний розмір heap (-Xmx) може бути занадто великим, або антивірус або брандмауер можуть заблокувати виконання.
+# {0} is a file name
+exe4j.FileNotFound=Файл або каталог {0} не знайдений або є порожнім\n
+exe4j.WrongParameters=Неправильне використання параметра
+# {0} is the name of an environment variable
+exe4j.EnvVarNotDefined=Необхідно визначити змінну середовища {0}.
+# {0} is an internal error code
+exe4j.InternalError=Внутрішня помилка (код помилки: {0})
+exe4j.MainClassNotFound=Не вдалося завантажити основний клас.
+exe4j.MainMethodNotFound=Основний метод не знайдений.
+exe4j.ErrorDialogCaption=Помилка
+exe4j.ErrorDialogOk=Ok
+# {0} is an application name
+exe4j.ErrorDialogText=Сталася помилка при запуску {0}:
+WizardInstallationType=Виберіть тип встановлення
+SelectInstallationType=Який тип встановлення слід виконати?
+SelectInstallationTypeLabel=Виберіть тип встановлення, який ви хочете виконати. Натисніть "Далі", коли ви будете готові продовжити.
+StandardInstallation=Стандартна установка
+StandardInstallationDescription=Всі компоненти, необхідні для регулярного використання, встановлені. Деякі рідко використовувані компоненти не встановлюються для економії місця на диску.
+FullInstallationDescription=Всі компоненти, що містяться в цьому інсталяторі, встановлені.
+CustomInstallationDescription=На наступному кроці ви зможете налаштувати компоненти, які повинні бути встановлені. Початковий вибір встановлений на стандартну установку.
+SelectAll=Вибрати все
+SelectNone=Вибрати ніякі
+# See the NoProgramGroupCheck2 message, this is just the positive version of the question with a question mark
+ConsoleProgramGroupCheck=Створити папку меню Пуск?
+# See the NoSymlinksCheck message, this is just the positive version of the question with a question mark
+ConsoleSymlinksCheck=Створити посилання?
+# {0} is the name of the application
+updater.WindowTitle=Оновлювач - {0}
+# {0} is the name of the application
+updater.WelcomeTitle=Ласкаво просимо в {0} оновлювач
+updater.WelcomeInfoText=Це перевірить, чи доступне оновлення для {0}.
+updater.CheckForUpdateTitle=Перевірка оновлень
+updater.CheckForUpdateSubtitle=Будь ласка, зачекайте, поки програма оновлення перевіряє, чи доступне оновлення.
+updater.CheckForUpdateLabel=Перевірка оновлень ...
+# {0} is a URL
+updater.CheckForUpdateError=Не вдалося завантажити інформацію про оновлення з\n\n{0}\n\nПреревірте підключення до мережі.
+updater.UpToDateTitle=У вас найновіша ваерсія.
+# {0} is the name of the application
+updater.UpToDateInfoText=Ви використовуєте останню версію {0}
+updater.NewVersionAvailableTitle=Доступна
+updater.NewVersionAvailableSubtitle=Доступна нова версія {0}, будь ласка, перевірте подробиці нижче.
+updater.CurrentVersionLabel=Поточна версія:
+updater.NewVersionLabel=Нова версія:
+updater.ShowComments=Показати коментарі
+updater.DownloadLocationLabel=На наступному кроці буде завантажений встановлювач. Вас буде запитано перед встановленням. Якщо ви не хочете завантажувати встановлювач, натисніть "Скасування".
+updater.DownloadToLabel=Завантажити в:
+updater.DownloadSizeLabel=Розмір завантаження:
+
+updater.CommentsTitle=Коментарі
+updater.CommentsSubTitle=Ласка, прочитайте коментарі щодо оновлення нижче.
+updater.CommentsLabel=Коментарі
+updater.DownloadTitle=Завантаження установника
+updater.DownloadSubTitle=Будь ласка, зачекайте, поки завантажується встановлювач оновлень.
+# {0} is a URL
+updater.DownloadError=При завантаженні з\n\n{0}\n\nвиникла помилка. Перевірте підключення до мережі.
+
+updater.FinishTitle=Завантаження завершено
+updater.FinishInfoText=Оновлення для {0} було завантажено на ваш комп'ютер.
+updater.LaunchError=Програма встановлення оновлення не може бути запущений
+updater.LaunchUpdaterQuestion=Ви хочете запустити програму установки оновлення зараз?
+updater.LaunchUpdaterLabel=Так, запустіть інсталятор оновлень.
+updater.DoNotLaunchUpdaterLabel=Ні, я запустіть програму установки оновлень пізніше.
+updater.OpenContainingFolderLabel=Відкрийте містить папку.
+
+WaitLabel=Будь ласка зачекайте ...
+
+# {0} is the name of the application
+ConsoleWelcomeLabel=Це встановить {0} на ваш комп'ютер.
+# {0} is the name of the application
+SelectTasksUninstallLabel=Виберіть додаткові завдання, які потрібно виконати програмі встановлення при видаленні {0}, і натисніть клавішу "Далі".
+RollbackWindowTitle=Відкат змін
+ExitUninstallerMessage=Видалення не завершено. Якщо ви вийдете зараз, програма не буде видалена.\n\nВи можете запустити програму видалення в інший час, щоб завершити видалення.\n\nВийти з програми видалення?
+ExitApplication=Ви дійсно хочете вийти?
+exe4j.PowerUserRequired=Ви повинні бути хоча б Poweruser для запуску цієї програми.
+
+# "root" is the Unix super-user, do not translate
+RootPrivilegesRequired=Ви повинні увійти в систему як користувач root при установці цієї програми.
+
+# "root" is the Unix super-user, do not translate
+RootPrivilegesRequired2=Ця операція вимагає прав суперкористувача.
+
+UseSudo=Використовуйте sudo (будь ласка, введіть свій пароль)
+# "root" is the Unix super-user, do not translate
+UseSu=Використовуйте su (будь ласка, введіть пароль користувача root)
+
+
+languages.zh_CN=Китайська (спрощена)
+languages.zh_TW=Китайська (традиційна)
+languages.hr=Хорватська
+languages.cs=Чеська
+languages.da=Данська
+languages.nl=Голландська
+languages.en=Англійська
+languages.fi=Фінська
+languages.fr=Французька
+languages.de=Німецька
+languages.el=Грецька
+languages.hu=Угорська
+languages.it=Італійська
+languages.ja=Японська
+languages.ko=Корейська
+languages.no=Норвезька
+languages.pl=Польська
+languages.pt=Португальська
+languages.pt_BR=Португальська (бразильський)
+languages.ru=Російська
+languages.es=Іспанська
+languages.sv=Шведська
+languages.tr=Турецька
+languages.ro=Румунська
+
+LanguageSelectionDialogTitle=Вибір мови
+LanguageSelectionLabel=Виберіть мову:
+ConsoleMultipleSelectionLabel=Будь ласка, введіть розділений комами список обраних значень або [Enter] для вибору за замовчуванням:
+# This is the "Enter" key on the keyboard
+ConsoleEnter=Enter
+
+RequiredDiskSpaceLabel=Необхідний дисковий простір:
+FreeDiskSpaceLabel=Вільний дисковий простір:
+
+# don't translate {0}-bit, it is either 32-bit or 64-bit
+exe4j.NoJvmFound3264=У вашій системі не знайдено JVM.\nБудь ласка, визначте EXE4J_JAVA_HOME\n, щоб вказати на встановлений {0}-бітний JDK або JRE, або завантажте JRE з www.java.com.
+# don't translate {0}-bit, it is either 32-bit or 64-bit
+exe4j.JvmInPath3264=Виявлена на вашому шляху JVM пошкоджена.\nБудь ласка, перевстановіть або визначте EXE4J_JAVA_HOME\n, щоб вказати на встановлений {0} -бітний JDK або JRE.
+# {0} is the name of an environment variable, don't translate 32-bit
+exe4j.JvmEnvVar32=Змінна середовища {0}\nвказує на працюючий 32-бітний JDK або JRE.
+# {0} is the name of an environment variable, don't translate 64-bit
+exe4j.JvmEnvVar64=Змінна середовища {0}\nвказує на працюючий 64-бітний JDK або JRE.
+# {0} is a directory name, don't translate 32-bit
+exe4j.JvmDefinedPath32=JVM, знайдена в {0}, пошкоджена.\nБудь ласка, перевстановіть або визначте EXE4J_JAVA_HOME\n, щоб вказати на встановлений 32-розрядний JDK або JRE.
+# {0} is a directory name, don't translate 64-bit
+exe4j.JvmDefinedPath64=JVM, знайдена в {0}, пошкоджена.\nБудь ласка, перевстановіть або визначте EXE4J_JAVA_HOME\n, щоб вказати на встановлений 64-бітний JDK або JRE.
+
+# don't translate {0}-bit, it is either 32-bit or 64-bit
+LocateOrDownloadJre3=Майстру install4j не вдалося знайти середу виконання Java (TM) у вашій системі. Ви можете знайти або завантажити відповідну {0}-бітну JRE.
+# don't translate {0}-bit, it is either 32-bit or 64-bit
+LocateJre3=Майстру install4j не вдалося знайти середу виконання Java (TM) у вашій системі. Будь ласка, знайдіть відповідний {0}-бітний JRE.
+
+MinimumVersion=Мінімальна версія:
+MaximumVersion=Максимальна версія:
+
+ReadLicenseFirst=Будь ласка, спочатку прочитайте всю ліцензію.
+
+UnattendedRunningFailure=Додаток працює. Будь ласка, закрийте всі екземпляри і запустіть цей інсталятор знову.
+# don't translate -DproxyAuthPassword=[password]
+ProxyPasswordRequired=Потрібно пароль для проксі. Будь ласка, встановіть параметр -DproxyAuthPassword=[пароль].
+EnterCredentialsTitle=Введіть облікові дані
+# {0} is a URL
+EnterCredentialsLabel=Будь ласка, введіть свої облікові дані для завантаження сайту {0}
+# don't translate -DserverAuthUser=[user] / -DproxyAuthPassword=[password]
+ServerPasswordRequired=Потрібно пароль сервера. Будь ласка, встановіть параметри -DserverAuthUser=[користувач] і -DserverAuthPassword=[пароль].
+
+CheckForUpdatesLabel=Перевіряти наявність оновлень:
+updateSchedule.start=При кожному запуску
+updateSchedule.daily=Щодня
+updateSchedule.weekly=Щотижня
+updateSchedule.monthly=Щомісяця
+updateSchedule.never=Ніколи
+
+DirectoryChooserLabel=Введіть ім'я нової папки:
+DirectoryChooserTitle=Створити нову папку
+DirectoryChooserTooltip=Нова папка
+
+#Specify
+
+changesThisVersion=Нова ця версія
+changesThatFollow=включає в себе наступні зміни:
+explanationStartWizard=Щоб використовувати Specify в перший раз, необхідно виконати три завдання: (1) MySQL повинен бути встановлений на цьому комп'ютері або на сервері в якості ядра бази даних, (2) повинен бути виконаний Specify Installer (ця програма), і (3) майстер налаштувань (SpWizard.exe) повинен бути запущений для налаштування нової бази даних Specify для вашої колекції. Якщо у вас вже є робоча копія бази даних Specify, виберіть "Відкрити Specify" або "Закрити інсталятор", потім натисніть "Готово". Якщо ви раніше не встановлювали MySQL, натисніть "Готово", щоб закрити програму Specify Installer, а потім див. "Specify документація для установки MySQL". Якщо у вас встановлений MySQL і ви налаштовуєте нову базу даних Specify на цьому комп'ютері або на сервері, виберіть "Запустити Specify Setup Wizard" і натисніть "Готово".
+justFinish=Закрити інсталятор
+runSpWizard=Запустити Specify Setup Wizard
+runSpecify=Відкрити Specify
