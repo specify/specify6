@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<root>
+<vector>
   <container name="accession" isHidden="false" format="Accession">
     <version>0</version>
     <items>
@@ -27544,4 +27544,4 @@
     </names>
     <descs/>
   </container>
-</root>
+</vector>
