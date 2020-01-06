@@ -4404,7 +4404,6 @@ public class Uploader implements ActionListener, KeyListener
                         //result.setResizable(false);
                         result.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
                         result.setModal(true);
-                        result.setAlwaysOnTop(true);
                         SwingUtilities.invokeLater(new Runnable() {
                             @Override
                             public void run() {

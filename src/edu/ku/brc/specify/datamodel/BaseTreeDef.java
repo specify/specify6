@@ -508,7 +508,8 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
         final TreeRebuilder<N,D,I> treeRebuilder = theSession == null ? new TreeRebuilder<N,D,I>((D )this, minRank, rebuildMode) : new TreeRebuilder<N,D,I>((D)this, minRank, rebuildMode, theSession);
         final JStatusBar nStatusBar = useProgDlg ? null : getStatusBar();      
         final ProgressDialog progDlg =  nStatusBar != null || !isOnUIThread ? null :
-                    new ProgressDialog(getResourceString("BaseTreeDef.UPDATING_TREE_DLG"), false, false);
+                    new ProgressDialog(getResourceString("BaseTreeDef." +
+                            "UPDATING_TREE_DLG"), false, false);
         if (nStatusBar != null)
         {
             nStatusBar.setProgressRange(treeRebuilder.getProgressName(), 0, 100);
@@ -528,7 +529,6 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
             {
             	progDlg.setDesc(String.format(getResourceString("BaseTreeDef.UPDATING_TREE"), getName()));
             }
-            progDlg.setAlwaysOnTop(true);
             treeRebuilder.setProgWin(progDlg);
         }
         

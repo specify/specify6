@@ -957,7 +957,6 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 		       //progDlg.setModal(false);
 		       progDlg.setModal(true);
 
-		       progDlg.setAlwaysOnTop(true);
 		       UIHelper.centerAndShow(progDlg);
 			}
 		});
