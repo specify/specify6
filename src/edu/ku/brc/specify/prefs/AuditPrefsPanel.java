@@ -96,10 +96,20 @@ public class AuditPrefsPanel extends GenericPrefsPanel implements PrefsSavable, 
 
         AppPreferences gPrefs = AppPreferences.getGlobalPrefs();
         AppPreferences rPrefs = AppPreferences.getRemote();
+        boolean doAuditChanged = false;
+        Boolean oldDoAudit = rPrefs.getBoolean(Specify.hiddenDoAuditPrefName, null);
+        if (oldDoAudit == null && !doAuditsChk.isSelected()) {
+            doAuditChanged = true;
+        }
+        boolean oldDoFields = rPrefs.getBoolean(Specify.hiddenAuditFldUpdatePrefName, false);
+        boolean doFleldsChanged = oldDoFields != doAuditFieldValsChk.isSelected();
+        int oldDuration = gPrefs.getInt(AuditLogCleanupTask.AUDIT_LIFESPAN_MONTHS_PREF, 0);
+        int duration = lifeSpanSpin.getValue() == null ? 0 : (Integer)lifeSpanSpin.getValue();
+        boolean durationChanged = oldDuration != duration;
         super.savePrefs(); // Gets data from form
-        rPrefs.putBoolean(Specify.hiddenDoAuditPrefName, doAuditsChk.isSelected());
-        rPrefs.putBoolean(Specify.hiddenAuditFldUpdatePrefName, doAuditFieldValsChk.isSelected());
-        gPrefs.putInt(AuditLogCleanupTask.AUDIT_LIFESPAN_MONTHS_PREF, (Integer)lifeSpanSpin.getValue());
+        if (doAuditChanged || doFleldsChanged || durationChanged) {
+            UIRegistry.displayInfoMsgDlg(UIRegistry.getResourceString("MiscPrefsPanel.RestartRequired"));
+        }
     }
 
     /* (non-Javadoc)
