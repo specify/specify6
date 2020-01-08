@@ -42,6 +42,7 @@ import javax.persistence.Basic;
 import javax.swing.JEditorPane;
 import javax.swing.JTextArea;
 
+import edu.ku.brc.af.core.db.DBRelationshipInfo;
 import edu.ku.brc.specify.dbsupport.SpecifySchemaUpdateService;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -401,16 +402,17 @@ public class CheckDBAfterLogin
             //DBTableIdMgr is already loaded so changes above aren't visible in current Sp instance,
             // so update the loaded fields...
             if (updated == toFix) {
-                DBTableInfo tbl = DBTableIdMgr.getInstance().getInfoByTableName("spauditlog");
-                if (tbl != null) {
-                    for (DBFieldInfo fld : tbl.getFields()) {
-                        fld.setHidden(false);
-                    }
-                }
-                tbl = DBTableIdMgr.getInstance().getInfoByTableName("spauditlogfield");
-                if (tbl != null) {
-                    for (DBFieldInfo fld : tbl.getFields()) {
-                        fld.setHidden(false);
+                List<DBTableInfo> audTbls = new ArrayList<>();
+                audTbls.add(DBTableIdMgr.getInstance().getInfoByTableName("spauditlog"));
+                audTbls.add(DBTableIdMgr.getInstance().getInfoByTableName("spauditlogfield"));
+                for (DBTableInfo tbl : audTbls) {
+                    if (tbl != null) {
+                        for (DBFieldInfo fld : tbl.getFields()) {
+                            fld.setHidden(false);
+                        }
+                        for (DBRelationshipInfo rel : tbl.getRelationships()) {
+                            rel.setHidden(false);
+                        }
                     }
                 }
             }
