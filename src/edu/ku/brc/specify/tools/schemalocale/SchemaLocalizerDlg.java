@@ -861,7 +861,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
         Session session = HibernateUtil.getNewSession();
         try
         {
-            String sql = "SELECT DISTINCT nms.language FROM SpLocaleContainer as ctn " +
+            String sql = "SELECT DISTINCT nms.language, nms.country FROM SpLocaleContainer as ctn " +
             	         "INNER JOIN ctn.items as itm " +
             	         "INNER JOIN itm.names nms " +
             	         "INNER JOIN ctn.discipline as d " +
@@ -870,9 +870,12 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
             log.debug(sql);
             Query   query = session.createQuery(sql);
             List<?> list  = query.list();
-            for (Object lang : list)
+            for (Object item : list)
             {
-                locales.add(new Locale(lang.toString(), "", ""));
+                Object[] lang = (Object[])item;
+                String language = lang[0].toString();
+                String country = lang[1] == null ? "" : lang[1].toString();
+                locales.add(new Locale(language, country, ""));
             }
             
         } catch (Exception ex)
