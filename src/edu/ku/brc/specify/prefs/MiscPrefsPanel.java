@@ -20,6 +20,8 @@
 package edu.ku.brc.specify.prefs;
 
 import java.awt.Component;
+import java.util.Map;
+import java.util.HashMap;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.TaskMgr;
@@ -43,7 +45,7 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class MiscPrefsPanel extends GenericPrefsPanel implements PrefsSavable, PrefsPanelIFace
 {
-    
+    Map<String, Boolean> defaults = new HashMap<>();
     /**
      * 
      */
@@ -52,11 +54,16 @@ public class MiscPrefsPanel extends GenericPrefsPanel implements PrefsSavable, P
         createForm("Preferences", "Misc");
         
         setCheckbox("1", "Interactions.Using.Interactions", true);
+        defaults.put("1", true);
         setCheckbox("2", "ExportTask.OnTaskbar", false);
+        defaults.put("2", false);
         setCheckbox("3", "StartupTask.OnTaskbar", true);
+        defaults.put("3", true);
         setCheckbox("4", "AttachmentsTask.OnTaskbar", true, "ATTACHMENTS");
+        defaults.put("4", true);
         //setCheckbox("5", "CleanupToolsTask.OnTaskbar", false, "CLEANUP");
         setCheckbox("6", SymbiotaTask.IS_USING_SYMBIOTA_PREFNAME, false);
+        defaults.put("6", false);
         //setCheckbox("7", SGRTask.IS_USING_SGR_PREFNAME, true);
     }
     
@@ -123,8 +130,9 @@ public class MiscPrefsPanel extends GenericPrefsPanel implements PrefsSavable, P
             String         ds          = AppContextMgr.getInstance().getClassObject(Discipline.class).getType();
             AppPreferences remotePrefs = AppPreferences.getRemote();
             Boolean v = remotePrefs.getBoolean(prefName+"."+ds, null);
-            if (v == null || !v.equals(((ValCheckBox)comp).isSelected())) {
-            	remotePrefs.putBoolean(prefName+"."+ds, ((ValCheckBox)comp).isSelected());
+            boolean isSelected = ((ValCheckBox)comp).isSelected();
+            if ((v == null && isSelected != defaults.get(id)) || (v != null && !v.equals(isSelected))) {
+            	remotePrefs.putBoolean(prefName+"."+ds, isSelected);
             	result = true;
             }
         } 
