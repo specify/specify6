@@ -106,7 +106,11 @@ public class AuditPrefsPanel extends GenericPrefsPanel implements PrefsSavable, 
         int oldDuration = gPrefs.getInt(AuditLogCleanupTask.AUDIT_LIFESPAN_MONTHS_PREF, 0);
         int duration = lifeSpanSpin.getValue() == null ? 0 : (Integer)lifeSpanSpin.getValue();
         boolean durationChanged = oldDuration != duration;
-        super.savePrefs(); // Gets data from form
+        super.savePrefs(); // Gets data from form and saves it to prefs.
+        //but savePrefs() doesn't work for global prefs??
+        if (durationChanged) {
+            gPrefs.putInt(AuditLogCleanupTask.AUDIT_LIFESPAN_MONTHS_PREF, duration);
+        }
         if (doAuditChanged || doFleldsChanged || durationChanged) {
             UIRegistry.displayInfoMsgDlg(UIRegistry.getResourceString("MiscPrefsPanel.RestartRequired"));
         }
