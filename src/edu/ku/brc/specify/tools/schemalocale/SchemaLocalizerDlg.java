@@ -854,39 +854,21 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
      * Return the locales in the database
      * @return the list of locale
      */
-    public static Vector<Locale> getLocalesInUseInDB(final Byte schemaType)
-    {
-        Vector<Locale> locales = new Vector<Locale>();
-        
-        Session session = HibernateUtil.getNewSession();
-        try
-        {
-            String sql = "SELECT DISTINCT nms.language, nms.country FROM SpLocaleContainer as ctn " +
-            	         "INNER JOIN ctn.items as itm " +
-            	         "INNER JOIN itm.names nms " +
-            	         "INNER JOIN ctn.discipline as d " +
-            	         "WHERE d.userGroupScopeId = DSPLNID AND nms.language IS NOT NULL AND ctn.schemaType = "+ schemaType;
-            sql = QueryAdjusterForDomain.getInstance().adjustSQL(sql);
-            log.debug(sql);
-            Query   query = session.createQuery(sql);
-            List<?> list  = query.list();
-            for (Object item : list)
-            {
-                Object[] lang = (Object[])item;
-                String language = lang[0].toString();
-                String country = lang[1] == null ? "" : lang[1].toString();
-                locales.add(new Locale(language, country, ""));
-            }
-            
-        } catch (Exception ex)
-        {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SchemaLocalizerDlg.class, ex);
-            ex.printStackTrace();
-        } finally
-        {
-            session.close();
+    public static Vector<Locale> getLocalesInUseInDB(final Byte schemaType) {
+        Vector<Locale> locales = new Vector<>();
+        String sql = "SELECT DISTINCT nms.language, trim(ifnull(nms.country,'')) FROM splocalecontainer ctn " +
+                "INNER JOIN splocalecontaineritem itm on itm.splocalecontainerid = ctn.splocalecontainerid " +
+                "INNER JOIN splocaleitemstr nms on nms.splocalecontaineritemnameid = itm.splocalecontaineritemid " +
+                "WHERE ctn.disciplineid = " + AppContextMgr.getInstance().getClassObject(Discipline.class).getId() +
+                " AND nms.language IS NOT NULL AND ctn.schemaType = " + schemaType;
+        log.debug(sql);
+        List<Object[]> list = BasicSQLUtils.query(sql);
+        for (Object[] lang : list) {
+            String language = lang[0].toString();
+            String country = lang[1] == null ? "" : lang[1].toString();
+            locales.add(new Locale(language, country, ""));
         }
+
         return locales;
     }
 
