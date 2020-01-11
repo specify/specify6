@@ -45,7 +45,7 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class MiscPrefsPanel extends GenericPrefsPanel implements PrefsSavable, PrefsPanelIFace
 {
-    Map<String, Boolean> defaults = new HashMap<>();
+    Map<String, Boolean> originals = new HashMap<>();
     /**
      * 
      */
@@ -53,17 +53,12 @@ public class MiscPrefsPanel extends GenericPrefsPanel implements PrefsSavable, P
     {
         createForm("Preferences", "Misc");
         
-        setCheckbox("1", "Interactions.Using.Interactions", true);
-        defaults.put("1", true);
-        setCheckbox("2", "ExportTask.OnTaskbar", false);
-        defaults.put("2", false);
-        setCheckbox("3", "StartupTask.OnTaskbar", true);
-        defaults.put("3", true);
-        setCheckbox("4", "AttachmentsTask.OnTaskbar", true, "ATTACHMENTS");
-        defaults.put("4", true);
+        originals.put("1", setCheckbox("1", "Interactions.Using.Interactions", true));
+        originals.put("1", setCheckbox("2", "ExportTask.OnTaskbar", false));
+        originals.put("1", setCheckbox("3", "StartupTask.OnTaskbar", true));
+        originals.put("1", setCheckbox("4", "AttachmentsTask.OnTaskbar", true, "ATTACHMENTS"));
         //setCheckbox("5", "CleanupToolsTask.OnTaskbar", false, "CLEANUP");
-        setCheckbox("6", SymbiotaTask.IS_USING_SYMBIOTA_PREFNAME, false);
-        defaults.put("6", false);
+        originals.put("1", setCheckbox("6", SymbiotaTask.IS_USING_SYMBIOTA_PREFNAME, false));
         //setCheckbox("7", SGRTask.IS_USING_SGR_PREFNAME, true);
     }
     
@@ -72,14 +67,14 @@ public class MiscPrefsPanel extends GenericPrefsPanel implements PrefsSavable, P
      * @param prefName
      * @param defVal
      */
-    protected void setCheckbox(final String id, 
+    protected boolean setCheckbox(final String id,
                                final String prefName, 
                                final boolean defVal,
                                final String taskName)
     {
         Taskable task = TaskMgr.getTask(taskName);
         boolean enable = !AppContextMgr.isSecurityOn() || (task != null && task.getPermissions().canView());
-        setCheckbox(id, prefName, defVal, enable);
+        return setCheckbox(id, prefName, defVal, enable);
     }
     
     /**
@@ -87,11 +82,11 @@ public class MiscPrefsPanel extends GenericPrefsPanel implements PrefsSavable, P
      * @param prefName
      * @param defVal
      */
-    protected void setCheckbox(final String id, 
+    protected boolean setCheckbox(final String id,
                                final String prefName, 
                                final boolean defVal)
     {
-        setCheckbox(id, prefName, defVal, true);
+        return setCheckbox(id, prefName, defVal, true);
     }
     
     
@@ -100,7 +95,7 @@ public class MiscPrefsPanel extends GenericPrefsPanel implements PrefsSavable, P
      * @param prefName
      * @param defVal
      */
-    protected void setCheckbox(final String id, 
+    protected boolean setCheckbox(final String id,
                                final String prefName, 
                                final boolean defVal,
                                final boolean enable)
@@ -113,7 +108,9 @@ public class MiscPrefsPanel extends GenericPrefsPanel implements PrefsSavable, P
             boolean value = remotePrefs.getBoolean(prefName+"."+ds, defVal);
             ((ValCheckBox)comp).setSelected(value);
             comp.setEnabled(enable);
+            return value;
         }
+        return defVal;
     }
     
     /**
@@ -131,7 +128,7 @@ public class MiscPrefsPanel extends GenericPrefsPanel implements PrefsSavable, P
             AppPreferences remotePrefs = AppPreferences.getRemote();
             Boolean v = remotePrefs.getBoolean(prefName+"."+ds, null);
             boolean isSelected = ((ValCheckBox)comp).isSelected();
-            if ((v == null && isSelected != defaults.get(id)) || (v != null && !v.equals(isSelected))) {
+            if ((v == null && isSelected != originals.get(id)) || (v != null && !v.equals(isSelected))) {
             	remotePrefs.putBoolean(prefName+"."+ds, isSelected);
             	result = true;
             }
