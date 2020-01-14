@@ -774,8 +774,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                                 changesBuffer.append("<td align=\"center\">"+ti.getName()+"</td><td align=\"center\">");
                                 changesBuffer.append(ri.getName());
                                 changesBuffer.append("</td></tr>");
-                                
-                            } else 
+                            } else
                             {
                                 if (item.getNames().size() == 0)
                                 {
