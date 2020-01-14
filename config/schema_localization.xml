@@ -21915,7 +21915,7 @@
           </str>
           <str language="uk" country="UA" variant="">
             <version>0</version>
-            <text>Дозволи на вступ</text>
+            <text>Дозволи на приєднання</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -34617,7 +34617,7 @@
           </str>
           <str language="uk" country="UA" variant="">
             <version>0</version>
-            <text>Дозволяти</text>
+            <text>Дозвіл</text>
             <itemName reference="../../.."/>
           </str>
           <str language="pt">
@@ -34626,7 +34626,7 @@
           </str>
           <str language="ru" country="RU" variant="">
             <version>0</version>
-            <text>Разрешать</text>
+            <text>Разрешение</text>
             <itemName reference="../../.."/>
           </str>
           <str language="pt" country="BR" variant="">
@@ -57039,12 +57039,12 @@
           </str>
           <str language="uk" country="UA" variant="">
             <version>0</version>
-            <text>Дозволяти</text>
+            <text>Дозвіл</text>
             <itemName reference="../../.."/>
           </str>
           <str language="ru" country="RU" variant="">
             <version>0</version>
-            <text>Разрешать</text>
+            <text>Разрешение</text>
             <itemName reference="../../.."/>
           </str>
           <str language="pt">
@@ -58655,7 +58655,7 @@
           </str>
           <str language="uk" country="UA" variant="">
             <version>0</version>
-            <text>Виданий</text>
+            <text>Виданий ким</text>
             <itemName reference="../../.."/>
           </str>
           <str language="pt">
@@ -58664,7 +58664,7 @@
           </str>
           <str language="ru" country="RU" variant="">
             <version>0</version>
-            <text>Выдан</text>
+            <text>Выдан кем</text>
             <itemName reference="../../.."/>
           </str>
           <str language="pt" country="BR" variant="">
@@ -59690,7 +59690,7 @@
           </str>
           <str language="uk" country="UA" variant="">
             <version>0</version>
-            <text>Дозволи на вступ</text>
+            <text>Дозволи на приєднання</text>
             <itemName reference="../../.."/>
           </str>
           <str language="en">
@@ -59802,12 +59802,12 @@
       </str>
       <str language="ru" country="RU" variant="">
         <version>0</version>
-        <text>Разрешать</text>
+        <text>Разрешения</text>
         <containerName class="container" reference="../../.."/>
       </str>
       <str language="uk" country="UA" variant="">
         <version>0</version>
-        <text>Дозволяти</text>
+        <text>Дозвіл</text>
         <containerName class="container" reference="../../.."/>
       </str>
     </names>
@@ -69494,7 +69494,7 @@
           </str>
           <str language="uk" country="UA" variant="">
             <version>0</version>
-            <text>Певна дата</text>
+            <text>Визначена дата</text>
             <itemName reference="../../.."/>
           </str>
           <str language="en">
@@ -85656,7 +85656,7 @@
           </str>
           <str language="uk" country="UA" variant="">
             <version>0</version>
-            <text>Певна дата</text>
+            <text>Визначенна дата</text>
             <itemName reference="../../.."/>
           </str>
           <str language="pt" country="BR" variant="">
@@ -105746,12 +105746,12 @@
         <names>
           <str language="ru" country="RU" variant="">
             <version>0</version>
-            <text>Разрешать</text>
+            <text>Разрешение</text>
             <itemName reference="../../.."/>
           </str>
           <str language="uk" country="UA" variant="">
             <version>0</version>
-            <text>Дозволяти</text>
+            <text>Дозвіл</text>
             <itemName reference="../../.."/>
           </str>
           <str language="en">
@@ -111367,12 +111367,12 @@
           </str>
           <str language="uk" country="UA" variant="">
             <version>0</version>
-            <text>Дозволяти</text>
+            <text>Дозвіл</text>
             <itemName reference="../../.."/>
           </str>
           <str language="ru" country="RU" variant="">
             <version>0</version>
-            <text>Разрешать</text>
+            <text>Разрешение</text>
             <itemName reference="../../.."/>
           </str>
         </names>
