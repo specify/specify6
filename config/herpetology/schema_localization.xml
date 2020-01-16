@@ -11,6 +11,14 @@
             <version>0</version>
             <text>Weight</text>
           </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>Вага</text>
+          </str>
+          <str language="ru" country="RU" variant="">
+            <version>0</version>
+            <text>Вес</text>
+          </str>
         </names>
         <descs/>
         <spExportSchemaItems/>
@@ -22,6 +30,14 @@
           <str language="en">
             <version>0</version>
             <text>Tail Length</text>
+          </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>Довжина хвоста</text>
+          </str>
+          <str language="ru" country="RU" variant="">
+            <version>0</version>
+            <text>Длина хвоста</text>
           </str>
         </names>
         <descs/>
@@ -35,6 +51,14 @@
             <version>0</version>
             <text>Sex</text>
           </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>Стать</text>
+          </str>
+          <str language="ru" country="RU" variant="">
+            <version>0</version>
+            <text>Пол</text>
+          </str>
         </names>
         <descs/>
         <spExportSchemaItems/>
@@ -47,6 +71,14 @@
             <version>0</version>
             <text>Color in Life</text>
           </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>Колір в житті</text>
+          </str>
+          <str language="ru" country="RU" variant="">
+            <version>0</version>
+            <text>Цвет в жизни</text>
+          </str>
         </names>
         <descs/>
         <spExportSchemaItems/>
@@ -56,6 +88,14 @@
         <isSystem>false</isSystem>
         <names>
           <str language="en">
+            <version>0</version>
+            <text>SVL</text>
+          </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>SVL</text>
+          </str>
+          <str language="ru" country="RU" variant="">
             <version>0</version>
             <text>SVL</text>
           </str>
@@ -71,6 +111,14 @@
             <version>0</version>
             <text>Total Length</text>
           </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>Загальна довжина</text>
+          </str>
+          <str language="ru" country="RU" variant="">
+            <version>0</version>
+            <text>Общая длина</text>
+          </str>
         </names>
         <descs/>
         <spExportSchemaItems/>
@@ -80,6 +128,14 @@
         <isSystem>false</isSystem>
         <names>
           <str language="en">
+            <version>0</version>
+            <text>ReproCondition</text>
+          </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>ReproCondition</text>
+          </str>
+          <str language="ru" country="RU" variant="">
             <version>0</version>
             <text>ReproCondition</text>
           </str>
@@ -94,6 +150,14 @@
           <str language="en">
             <version>0</version>
             <text>Stage</text>
+          </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>Стадія</text>
+          </str>
+          <str language="ru" country="RU" variant="">
+            <version>0</version>
+            <text>Стадия</text>
           </str>
         </names>
         <descs/>

@@ -11,6 +11,14 @@
             <version>0</version>
             <text>Length</text>
           </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>Довжина</text>
+          </str>
+          <str language="ru" country="RU" variant="">
+            <version>0</version>
+            <text>Длина</text>
+          </str>
         </names>
         <descs/>
         <spExportSchemaItems/>
@@ -22,6 +30,14 @@
           <str language="en">
             <version>0</version>
             <text>Sex</text>
+          </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>Стать</text>
+          </str>
+          <str language="ru" country="RU" variant="">
+            <version>0</version>
+            <text>Пол</text>
           </str>
         </names>
         <descs/>
@@ -38,6 +54,14 @@
             <version>1</version>
             <text>Texto8</text>
           </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>Текст8</text>
+          </str>
+          <str language="ru" country="RU" variant="">
+            <version>0</version>
+            <text>Текст8</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -51,6 +75,14 @@
           <str language="en">
             <version>0</version>
             <text>Text7</text>
+          </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>Текст7</text>
+          </str>
+          <str language="ru" country="RU" variant="">
+            <version>0</version>
+            <text>Текст7</text>
           </str>
         </names>
         <descs/>
@@ -66,6 +98,14 @@
             <version>1</version>
             <text>Texto6</text>
           </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>Текст6</text>
+          </str>
+          <str language="ru" country="RU" variant="">
+            <version>0</version>
+            <text>Текст6</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -80,6 +120,14 @@
             <version>1</version>
             <text>Texto5</text>
           </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>Текст5</text>
+          </str>
+          <str language="ru" country="RU" variant="">
+            <version>0</version>
+            <text>Текст5</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -90,6 +138,14 @@
           <str language="en">
             <version>0</version>
             <text>Stage</text>
+          </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>Етап</text>
+          </str>
+          <str language="ru" country="RU" variant="">
+            <version>0</version>
+            <text>Стадия</text>
           </str>
         </names>
         <descs/>
@@ -102,6 +158,14 @@
           <str language="en">
             <version>0</version>
             <text>Weight</text>
+          </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>Вага</text>
+          </str>
+          <str language="ru" country="RU" variant="">
+            <version>0</version>
+            <text>Вес</text>
           </str>
         </names>
         <descs/>

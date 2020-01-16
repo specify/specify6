@@ -11,11 +11,27 @@
             <version>0</version>
             <text>Field Number</text>
           </str>
+          <str language="ru" country="RU" variant="">
+            <version>0</version>
+            <text>Номер поля</text>
+          </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>Номер поля</text>
+          </str>
         </names>
         <descs>
           <str language="en" country="" variant="">
             <version>0</version>
             <text>Station number or field number of the site where collecting event took place, A number or code recorded in field notes and/or written on field tags that identifies ALL material collected in a Collecting Event.</text>
+          </str>
+          <str language="ru" country="RU" variant="">
+            <version>0</version>
+            <text>Номер станции или номер поля места, где произошло событие сбора. Номер или код, записанный в примечаниях к полю и/или записанный в метках поля, который идентифицирует ВСЕ материалы, собранные в событии сбора.</text>
+          </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>Номер станції або номер поля місця, де відбулася подія збору. Номер або код, записаний в примітках до поля і/або записаний в мітках поля, який ідентифікує ВСІ матеріали, зібрані в подію збору.</text>
           </str>
         </descs>
         <spExportSchemaItems/>
@@ -28,11 +44,27 @@
             <version>0</version>
             <text>Method</text>
           </str>
+          <str language="ru" country="RU" variant="">
+            <version>0</version>
+            <text>Метод</text>
+          </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>Метод</text>
+          </str>
         </names>
         <descs>
           <str language="en" country="" variant="">
             <version>0</version>
             <text>A method, such as net or trap, which is used to obtain the specimen.</text>
+          </str>
+          <str language="ru" country="RU" variant="">
+            <version>0</version>
+            <text>Метод, такой как сеть или ловушка, который используется для получения образца.</text>
+          </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>Метод, такий як сітка або пастка, який використовується для отримання зразка.</text>
           </str>
         </descs>
         <spExportSchemaItems/>
@@ -53,6 +85,14 @@
             <version>0</version>
             <text>Sex</text>
           </str>
+          <str language="ru" country="RU" variant="">
+            <version>0</version>
+            <text>Стать</text>
+          </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>Стать</text>
+          </str>
         </names>
         <descs/>
         <spExportSchemaItems/>
@@ -64,6 +104,14 @@
           <str language="en">
             <version>0</version>
             <text>Stomach</text>
+          </str>
+          <str language="ru" country="RU" variant="">
+            <version>0</version>
+            <text>Желудок</text>
+          </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>Шлунок</text>
           </str>
         </names>
         <descs/>
@@ -77,6 +125,14 @@
             <version>0</version>
             <text>Molt</text>
           </str>
+          <str language="ru" country="RU" variant="">
+            <version>0</version>
+            <text>Плесень</text>
+          </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>Цвіль</text>
+          </str>
         </names>
         <descs/>
         <spExportSchemaItems/>
@@ -88,6 +144,14 @@
           <str language="en">
             <version>0</version>
             <text>Body</text>
+          </str>
+          <str language="ru" country="RU" variant="">
+            <version>0</version>
+            <text>Тело</text>
+          </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>Тіло</text>
           </str>
         </names>
         <descs/>
@@ -101,6 +165,14 @@
             <version>0</version>
             <text>Age</text>
           </str>
+          <str language="ru" country="RU" variant="">
+            <version>0</version>
+            <text>Возраст</text>
+          </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>Вік</text>
+          </str>
         </names>
         <descs/>
         <spExportSchemaItems/>
@@ -112,6 +184,14 @@
           <str language="en">
             <version>0</version>
             <text>Weight</text>
+          </str>
+          <str language="ru" country="RU" variant="">
+            <version>0</version>
+            <text>Вес</text>
+          </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>Вага</text>
           </str>
         </names>
         <descs/>
@@ -125,6 +205,14 @@
             <version>0</version>
             <text>Gonads</text>
           </str>
+          <str language="ru" country="RU" variant="">
+            <version>0</version>
+            <text>Половы органы</text>
+          </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>Статеві орграни</text>
+          </str>
         </names>
         <descs/>
         <spExportSchemaItems/>
@@ -134,6 +222,14 @@
         <isSystem>false</isSystem>
         <names>
           <str language="en">
+            <version>0</version>
+            <text>ReproCondition</text>
+          </str>
+          <str language="ru" country="RU" variant="">
+            <version>0</version>
+            <text>ReproCondition</text>
+          </str>
+          <str language="uk" country="UA" variant="">
             <version>0</version>
             <text>ReproCondition</text>
           </str>
@@ -157,11 +253,27 @@
             <version>0</version>
             <text>Type Status</text>
           </str>
+          <str language="ru" country="RU" variant="">
+            <version>0</version>
+            <text>Статус типа</text>
+          </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>Статус типу</text>
+          </str>
         </names>
         <descs>
           <str language="en" country="" variant="">
             <version>0</version>
-            <text>A pick list of all available type designations; Holotype, Paratype, Neotype. Specify ships with predetermined values which are editable for users.</text>
+            <text>A pick list of all available type designations; Holotype, Paratype, Neotype. Specify ships with predetermined values that are editable for users.</text>
+          </str>
+          <str language="ru" country="RU" variant="">
+            <version>0</version>
+            <text>Список всех доступных обозначений типов; Голотип, Паратип, Неотип. Specify имеет заранее определении значения, которые могут быть изменены пользователями.</text>
+          </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>Список всіх доступних позначень типів; Голотип, Паратіп, Неотіп. Specify має заздалегідь визначенні значення, які можуть бути змінені користувачами.</text>
           </str>
         </descs>
         <spExportSchemaItems/>

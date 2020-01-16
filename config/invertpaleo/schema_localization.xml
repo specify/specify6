@@ -12,6 +12,16 @@
             <text>Bottom Distance</text>
             <itemName reference="../../.."/>
           </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>Відстань внизу</text>
+            <itemName reference="../../.."/>
+          </str>
+          <str language="ru" country="RU" variant="">
+            <version>0</version>
+            <text>Нижнее расстояние</text>
+            <itemName reference="../../.."/>
+          </str>
         </names>
         <descs/>
         <spExportSchemaItems/>
@@ -27,6 +37,14 @@
             <version>1</version>
             <text>Texto4</text>
           </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>Текст4</text>
+          </str>
+          <str language="ru" country="RU" variant="">
+            <version>0</version>
+            <text>Текст4</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -40,6 +58,14 @@
           <str language="pt">
             <version>1</version>
             <text>Texto1</text>
+          </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>Текст1</text>
+          </str>
+          <str language="ru" country="RU" variant="">
+            <version>0</version>
+            <text>Текст1</text>
           </str>
         </names>
         <descs/>
@@ -55,6 +81,14 @@
             <version>0</version>
             <text>Text8</text>
           </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>Текст8</text>
+          </str>
+          <str language="ru" country="RU" variant="">
+            <version>0</version>
+            <text>Текст8</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -68,6 +102,14 @@
           <str language="en">
             <version>0</version>
             <text>Text5</text>
+          </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>Текст5</text>
+          </str>
+          <str language="ru" country="RU" variant="">
+            <version>0</version>
+            <text>Текст5</text>
           </str>
         </names>
         <descs/>
@@ -83,6 +125,14 @@
             <version>1</version>
             <text>Texto2</text>
           </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>Текст2</text>
+          </str>
+          <str language="ru" country="RU" variant="">
+            <version>0</version>
+            <text>Текст2</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -93,6 +143,16 @@
           <str language="en">
             <version>0</version>
             <text>Top Distance</text>
+            <itemName reference="../../.."/>
+          </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>Верхня відстань</text>
+            <itemName reference="../../.."/>
+          </str>
+          <str language="ru" country="RU" variant="">
+            <version>0</version>
+            <text>Максимальное расстояние</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -108,6 +168,16 @@
             <text>Distance Units</text>
             <itemName reference="../../.."/>
           </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>Одиниці відстані</text>
+            <itemName reference="../../.."/>
+          </str>
+          <str language="ru" country="RU" variant="">
+            <version>0</version>
+            <text>Единицы расстояния</text>
+            <itemName reference="../../.."/>
+          </str>
         </names>
         <descs/>
         <spExportSchemaItems/>
@@ -119,6 +189,16 @@
           <str language="en">
             <version>0</version>
             <text>Position State</text>
+            <itemName reference="../../.."/>
+          </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>Статус позиції</text>
+            <itemName reference="../../.."/>
+          </str>
+          <str language="ru" country="RU" variant="">
+            <version>0</version>
+            <text>Статус положение</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -136,6 +216,14 @@
             <version>1</version>
             <text>Texto7</text>
           </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>Текст7</text>
+          </str>
+          <str language="ru" country="RU" variant="">
+            <version>0</version>
+            <text>Текст7</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -146,6 +234,16 @@
           <str language="en">
             <version>0</version>
             <text>Direction</text>
+            <itemName reference="../../.."/>
+          </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>Напрямок</text>
+            <itemName reference="../../.."/>
+          </str>
+          <str language="ru" country="RU" variant="">
+            <version>0</version>
+            <text>Направление</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -163,6 +261,14 @@
             <version>1</version>
             <text>Texto3</text>
           </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>Текст3</text>
+          </str>
+          <str language="ru" country="RU" variant="">
+            <version>0</version>
+            <text>Текст3</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -176,6 +282,14 @@
           <str language="en">
             <version>0</version>
             <text>Text6</text>
+          </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>Текст6</text>
+          </str>
+          <str language="ru" country="RU" variant="">
+            <version>0</version>
+            <text>Текст6</text>
           </str>
         </names>
         <descs/>
@@ -198,6 +312,14 @@
           <str language="en">
             <version>0</version>
             <text>Col Obj Attribute</text>
+          </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>Атрибут об'єкта колекції</text>
+          </str>
+          <str language="ru" country="RU" variant="">
+            <version>0</version>
+            <text>Атрибут объекта коллекции</text>
           </str>
         </names>
         <descs/>
