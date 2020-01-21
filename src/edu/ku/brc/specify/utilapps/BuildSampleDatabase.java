@@ -1291,7 +1291,39 @@ public class BuildSampleDatabase
         loadSchemaLocalization(discipline, SpLocaleContainer.WORKBENCH_SCHEMA, wbTableMgr, null, null, UpdateType.eBuildNew, null);//hSession);
         
         frame.setProcess(++createStep);
-        
+
+//        System.out.println("Persisting Discipline---------------------------------------------------------------------------------------------------------------");
+//        HashMap<String,Integer> l10nStrs = new HashMap<>();
+//        for (SpLocaleContainer c : discipline.getSpLocaleContainers()) {
+//            for (SpLocaleContainerItem ci : c.getItems()) {
+//                for (SpLocaleItemStr s : ci.getNames()) {
+//                    String loc = s.getLanguage();
+//                    if (s.getCountry() != null) {
+//                        loc += "_" + s.getCountry();
+//                    }
+//                    Integer cnt = l10nStrs.get(loc);
+//                    if (cnt == null) {
+//                        cnt = 0;
+//                    }
+//                    l10nStrs.put(loc,cnt+1);
+//                }
+//                for (SpLocaleItemStr s : ci.getNames()) {
+//                    String loc = s.getLanguage();
+//                    if (s.getCountry() != null) {
+//                        loc += "_" + s.getCountry();
+//                    }
+//                    Integer cnt = l10nStrs.get(loc);
+//                    if (cnt == null) {
+//                        cnt = 0;
+//                    }
+//                    l10nStrs.put(loc,cnt+1);
+//                }
+//            }
+//        }
+//        for (Map.Entry<String,Integer> e : l10nStrs.entrySet()) {
+//            System.out.println(e.getKey() + " : " + e.getValue());
+//        }
+
         persist(discipline);
         
         frame.setProcess(++createStep);
