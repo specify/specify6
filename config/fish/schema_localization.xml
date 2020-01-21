@@ -11,6 +11,14 @@
             <version>0</version>
             <text>Weight</text>
           </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>Вага</text>
+          </str>
+          <str language="ru" country="RU" variant="">
+            <version>0</version>
+            <text>Вес</text>
+          </str>
         </names>
         <descs/>
         <spExportSchemaItems/>
@@ -20,6 +28,14 @@
         <isSystem>false</isSystem>
         <names>
           <str language="en">
+            <version>0</version>
+            <text>ReproCondition</text>
+          </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>ReproCondition</text>
+          </str>
+          <str language="ru" country="RU" variant="">
             <version>0</version>
             <text>ReproCondition</text>
           </str>
@@ -35,6 +51,14 @@
             <version>0</version>
             <text>Total Length</text>
           </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>Загальна довжина</text>
+          </str>
+          <str language="ru" country="RU" variant="">
+            <version>0</version>
+            <text>Общая длина</text>
+          </str>
         </names>
         <descs/>
         <spExportSchemaItems/>
@@ -44,6 +68,14 @@
         <isSystem>false</isSystem>
         <names>
           <str language="en">
+            <version>0</version>
+            <text>TL</text>
+          </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>TL</text>
+          </str>
+          <str language="ru" country="RU" variant="">
             <version>0</version>
             <text>TL</text>
           </str>
@@ -59,6 +91,14 @@
             <version>0</version>
             <text>Stage</text>
           </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>Стадія</text>
+          </str>
+          <str language="ru" country="RU" variant="">
+            <version>0</version>
+            <text>Стадия</text>
+          </str>
         </names>
         <descs/>
         <spExportSchemaItems/>
@@ -71,6 +111,14 @@
             <version>0</version>
             <text>Sex</text>
           </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>Стать</text>
+          </str>
+          <str language="ru" country="RU" variant="">
+            <version>0</version>
+            <text>Пол</text>
+          </str>
         </names>
         <descs/>
         <spExportSchemaItems/>
@@ -80,6 +128,14 @@
         <isSystem>false</isSystem>
         <names>
           <str language="en">
+            <version>0</version>
+            <text>SL</text>
+          </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>SL</text>
+          </str>
+          <str language="ru" country="RU" variant="">
             <version>0</version>
             <text>SL</text>
           </str>
@@ -94,6 +150,14 @@
           <str language="en">
             <version>0</version>
             <text>Color in Life</text>
+          </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>Колір в природі</text>
+          </str>
+          <str language="ru" country="RU" variant="">
+            <version>0</version>
+            <text>Цвет в природе</text>
           </str>
         </names>
         <descs/>
@@ -115,6 +179,14 @@
             <version>0</version>
             <text>Min Depth</text>
           </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>Мінімальна глибина</text>
+          </str>
+          <str language="ru" country="RU" variant="">
+            <version>0</version>
+            <text>Минимальная глубина</text>
+          </str>
         </names>
         <descs/>
         <spExportSchemaItems/>
@@ -130,6 +202,14 @@
             <version>0</version>
             <text>Remarks</text>
           </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>Примітки</text>
+          </str>
+          <str language="ru" country="RU" variant="">
+            <version>0</version>
+            <text>Замечания</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -140,6 +220,14 @@
           <str language="en">
             <version>0</version>
             <text>Current</text>
+          </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>Поточний</text>
+          </str>
+          <str language="ru" country="RU" variant="">
+            <version>0</version>
+            <text>Текущий</text>
           </str>
         </names>
         <descs/>
@@ -153,6 +241,14 @@
             <version>0</version>
             <text>Max Depth</text>
           </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>Максимальна глибина</text>
+          </str>
+          <str language="ru" country="RU" variant="">
+            <version>0</version>
+            <text>Максимальная глубина</text>
+          </str>
         </names>
         <descs/>
         <spExportSchemaItems/>
@@ -164,6 +260,14 @@
           <str language="en">
             <version>0</version>
             <text>Vegetation</text>
+          </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>Рослинність</text>
+          </str>
+          <str language="ru" country="RU" variant="">
+            <version>0</version>
+            <text>Растительность</text>
           </str>
         </names>
         <descs/>
@@ -177,6 +281,14 @@
             <version>0</version>
             <text>Clarity</text>
           </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>Ясність</text>
+          </str>
+          <str language="ru" country="RU" variant="">
+            <version>0</version>
+            <text>Ясность</text>
+          </str>
         </names>
         <descs/>
         <spExportSchemaItems/>
@@ -188,6 +300,14 @@
           <str language="en">
             <version>0</version>
             <text>Salinity</text>
+          </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>Солоність</text>
+          </str>
+          <str language="ru" country="RU" variant="">
+            <version>0</version>
+            <text>Соленость</text>
           </str>
         </names>
         <descs/>
@@ -201,6 +321,14 @@
             <version>0</version>
             <text>Turbidity</text>
           </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>Каламутність</text>
+          </str>
+          <str language="ru" country="RU" variant="">
+            <version>0</version>
+            <text>Мутность</text>
+          </str>
         </names>
         <descs/>
         <spExportSchemaItems/>
@@ -213,6 +341,14 @@
             <version>0</version>
             <text>Temp</text>
           </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>Температура</text>
+          </str>
+          <str language="ru" country="RU" variant="">
+            <version>0</version>
+            <text>Температура</text>
+          </str>
         </names>
         <descs/>
         <spExportSchemaItems/>
@@ -224,6 +360,14 @@
           <str language="en">
             <version>0</version>
             <text>Habitat Type</text>
+          </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>Тип середовища проживання</text>
+          </str>
+          <str language="ru" country="RU" variant="">
+            <version>0</version>
+            <text>Тип среды обитания</text>
           </str>
         </names>
         <descs/>
@@ -245,11 +389,27 @@
             <version>0</version>
             <text>Other number</text>
           </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>Інший номер</text>
+          </str>
+          <str language="ru" country="RU" variant="">
+            <version>0</version>
+            <text>Другой номер</text>
+          </str>
         </names>
         <descs>
           <str language="en" country="" variant="">
             <version>0</version>
             <text>User definable.</text>
+          </str>
+          <str language="uk" country="UA" variant="">
+            <version>0</version>
+            <text>Визначається користувачем.</text>
+          </str>
+          <str language="ru" country="RU" variant="">
+            <version>0</version>
+            <text>Определяемый пользователем.</text>
           </str>
         </descs>
         <spExportSchemaItems/>

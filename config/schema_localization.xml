@@ -413,7 +413,7 @@
           </str>
           <str language="en">
             <version>0</version>
-            <text>Insitutions</text>
+            <text>Instiutions</text>
           </str>
           <str language="uk" country="UA" variant="">
             <version>0</version>
@@ -1960,7 +1960,7 @@
       </str>
       <str language="en">
         <version>1</version>
-        <text>Refers to an attachment and provides order.</text>
+        <text>This refers to an attachment and provides order.</text>
       </str>
       <str language="ru" country="RU" variant="">
         <version>0</version>
@@ -4587,7 +4587,7 @@
         <descs>
           <str language="en">
             <version>0</version>
-            <text>Full name of hte journal.</text>
+            <text>Full name of the journal.</text>
           </str>
           <str language="uk" country="UA" variant="">
             <version>0</version>
@@ -5971,7 +5971,7 @@
           </str>
           <str language="en">
             <version>0</version>
-            <text>Description of project</text>
+            <text>Description of the project</text>
           </str>
         </descs>
       </desc>
@@ -7436,12 +7436,12 @@
         <names>
           <str language="en">
             <version>0</version>
-            <text>Dna Primer</text>
+            <text>DNA Primer</text>
             <itemName reference="../../.."/>
           </str>
           <str language="ru" country="RU" variant="">
             <version>0</version>
-            <text>Днк праймер</text>
+            <text>ДНК праймер</text>
             <itemName reference="../../.."/>
           </str>
           <str language="uk" country="UA" variant="">
@@ -7606,7 +7606,7 @@
           </str>
           <str language="en">
             <version>0</version>
-            <text>Dna Sequence</text>
+            <text>DNA Sequence</text>
           </str>
           <str language="pt" country="BR" variant="">
             <version>0</version>
@@ -9108,7 +9108,7 @@
           </str>
           <str language="en">
             <version>0</version>
-            <text>Agent ID of person who recorded the exchange.</text>
+            <text>Agent ID of the person who recorded the exchange.</text>
           </str>
         </descs>
       </desc>
@@ -11045,7 +11045,7 @@
       </str>
       <str language="en">
         <version>1</version>
-        <text>Describes additional names for a given Locaity.</text>
+        <text>Describes additional names for a given Locality.</text>
       </str>
       <str language="pt" country="BR" variant="">
         <version>0</version>
@@ -11726,7 +11726,7 @@
         <names>
           <str language="en">
             <version>0</version>
-            <text>Litho Strat</text>
+            <text>LithoStrat</text>
           </str>
           <str language="ru" country="RU" variant="">
             <version>0</version>
@@ -12934,7 +12934,7 @@
           </str>
           <str language="en">
             <version>0</version>
-            <text>Email of agent requesting the information.</text>
+            <text>Email of an agent requesting the information.</text>
           </str>
           <str language="ru" country="RU" variant="">
             <version>0</version>
@@ -13059,7 +13059,7 @@
     <descs>
       <str language="en">
         <version>1</version>
-        <text>Describes a request for information of a collection and refers to a Bundle of Collection Objects.</text>
+        <text>Describes a request for information on a collection and refers to a Bundle of Collection Objects.</text>
       </str>
       <str language="ru" country="RU" variant="">
         <version>0</version>
@@ -13145,7 +13145,7 @@
           </str>
           <str language="en">
             <version>0</version>
-            <text>User definable.</text>
+            <text>User-definable.</text>
           </str>
           <str language="ru" country="RU" variant="">
             <version>0</version>
@@ -20966,7 +20966,7 @@
           </str>
           <str language="en">
             <version>0</version>
-            <text>Usually an integer or alphanumeric value that is assigned to material when it enters the collection. The format of accession numbers varies among collections, but all refer to the acquisition of specimens, observations, or other collection objects.</text>
+            <text>Usually an integer or alphanumeric value that is assigned to the material when it enters the collection. The format of accession numbers varies among collections, but all refer to the acquisition of specimens, observations, or other collection objects.</text>
           </str>
           <str language="uk" country="UA" variant="">
             <version>0</version>
@@ -21915,7 +21915,7 @@
           </str>
           <str language="uk" country="UA" variant="">
             <version>0</version>
-            <text>Дозволи на вступ</text>
+            <text>Дозволи на приєднання</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -24329,7 +24329,7 @@
           </str>
           <str language="en">
             <version>0</version>
-            <text>Where system form rely on this picklist, not user defined</text>
+            <text>Where system form rely on this picklist, not user-defined</text>
           </str>
           <str language="ru" country="RU" variant="">
             <version>0</version>
@@ -28412,7 +28412,7 @@
         <descs>
           <str language="en">
             <version>0</version>
-            <text>Date which collector recorded in field book, exactly as reported by the collector. Should indicate whether reported as range, season, month, etc.</text>
+            <text>Date which collector recorded in a field book, exactly as reported by the collector. It should indicate whether reported as a range, season, month, etc.</text>
           </str>
           <str language="ru" country="RU" variant="">
             <version>0</version>
@@ -28710,7 +28710,7 @@
       </str>
       <str language="en">
         <version>1</version>
-        <text>A collecting event is the place and time that a collection is made. In some disciplines a field number is used as the primary designation for place and time information, while in others, locality name and date are used to link specimens.</text>
+        <text>A collecting event is a place and time that a collection is made. In some disciplines, a field number is used as the primary designation for place and time information, while in others, locality name and date are used to link specimens.</text>
       </str>
       <str language="ru" country="RU" variant="">
         <version>0</version>
@@ -28959,7 +28959,7 @@
           </str>
           <str language="en">
             <version>0</version>
-            <text>Members position in group; i.e. 1st, 2nd, 3rd.</text>
+            <text>Members position in the group; i.e. 1st, 2nd, 3rd.</text>
           </str>
         </descs>
       </desc>
@@ -29832,7 +29832,7 @@
         <descs>
           <str language="en">
             <version>0</version>
-            <text>Date of copyright of attachment.</text>
+            <text>Date of the copyright of attachment.</text>
           </str>
           <str language="ru" country="RU" variant="">
             <version>0</version>
@@ -30006,7 +30006,7 @@
           </str>
           <str language="en">
             <version>0</version>
-            <text>User defined key words for attachments.</text>
+            <text>User-defined keywords for attachments.</text>
           </str>
           <str language="ru" country="RU" variant="">
             <version>0</version>
@@ -33107,10 +33107,10 @@
           </str>
           <str language="en">
             <version>0</version>
-            <text>A sequence of statements related to Intellectual Property Rights, credit and acknowledgement.</text>
+            <text>A sequence of statements related to Intellectual Property Rights, credit and acknowledgment.</text>
           </str>
         </descs>
-      </desc>
+      </desc>acknowledgement
       <desc name="license" isHidden="true" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
@@ -34322,7 +34322,7 @@
           </str>
           <str language="en">
             <version>0</version>
-            <text>THe full name used as a variant or vernacular name.</text>
+            <text>The full name used as a variant or vernacular name.</text>
           </str>
         </descs>
       </desc>
@@ -34617,7 +34617,7 @@
           </str>
           <str language="uk" country="UA" variant="">
             <version>0</version>
-            <text>Дозволяти</text>
+            <text>Дозвіл</text>
             <itemName reference="../../.."/>
           </str>
           <str language="pt">
@@ -34626,7 +34626,7 @@
           </str>
           <str language="ru" country="RU" variant="">
             <version>0</version>
-            <text>Разрешать</text>
+            <text>Разрешение</text>
             <itemName reference="../../.."/>
           </str>
           <str language="pt" country="BR" variant="">
@@ -35101,16 +35101,16 @@
           </str>
           <str language="pt">
             <version>1</version>
-            <text>Dna Corrida Sequenciação</text>
+            <text>DNA Corrida Sequenciação</text>
           </str>
           <str language="pt" country="BR" variant="">
             <version>0</version>
-            <text>Dna Corrida Sequenciação</text>
+            <text>DNA Corrida Sequenciação</text>
             <itemName reference="../../.."/>
           </str>
           <str language="en">
             <version>0</version>
-            <text>Dna Sequencing Runs</text>
+            <text>DNA Sequencing Runs</text>
           </str>
         </names>
         <descs/>
@@ -35998,7 +35998,7 @@
           </str>
           <str language="en">
             <version>0</version>
-            <text>Numeric representation of Items rank in stratigraphic hierarchy.</text>
+            <text>Numeric representation of Items rank in the stratigraphic hierarchy.</text>
           </str>
           <str language="uk" country="UA" variant="">
             <version>0</version>
@@ -40965,7 +40965,7 @@
           </str>
           <str language="en">
             <version>0</version>
-            <text>Dna Sequence</text>
+            <text>DNA Sequence</text>
             <itemName reference="../../.."/>
           </str>
           <str language="pt" country="BR" variant="">
@@ -43123,7 +43123,7 @@
     <descs>
       <str language="en">
         <version>1</version>
-        <text>A group of specimens that another institution borrows from your collection. Specify lets you manage all aspects of loans electronically, so that you always have an up-to-date record of which specimen have been loaned and which have been returned.</text>
+        <text>A group of specimens that another institution borrows from your collection. Specify lets you manage all aspects of loans electronically so that you always have an up-to-date record of which specimen have been loaned and which have been returned.</text>
       </str>
       <str language="ru" country="RU" variant="">
         <version>0</version>
@@ -43731,7 +43731,7 @@
           </str>
           <str language="en">
             <version>0</version>
-            <text>Litho Strat Tree Def</text>
+            <text>LithoStrat Tree Def</text>
           </str>
           <str language="ru" country="RU" variant="">
             <version>0</version>
@@ -45515,7 +45515,7 @@
         <descs>
           <str language="en">
             <version>0</version>
-            <text>Longitude of first point</text>
+            <text>Longitude of the first point</text>
           </str>
           <str language="pt">
             <version>1</version>
@@ -46261,7 +46261,7 @@
           </str>
           <str language="en">
             <version>0</version>
-            <text>Latitude of first point</text>
+            <text>Latitude of the first point</text>
           </str>
         </descs>
       </desc>
@@ -47125,7 +47125,7 @@
           </str>
           <str language="en">
             <version>0</version>
-            <text>Latitude of second point</text>
+            <text>Latitude of the second point</text>
           </str>
         </descs>
       </desc>
@@ -47408,7 +47408,7 @@
           </str>
           <str language="en">
             <version>0</version>
-            <text>Longitude of second point</text>
+            <text>Longitude of the second point</text>
           </str>
           <str language="pt">
             <version>1</version>
@@ -49327,7 +49327,7 @@
         <descs>
           <str language="en">
             <version>0</version>
-            <text>The name of the meta data field.</text>
+            <text>The name of the metadata field.</text>
           </str>
           <str language="uk" country="UA" variant="">
             <version>0</version>
@@ -49425,7 +49425,7 @@
           </str>
           <str language="en">
             <version>0</version>
-            <text>The value of the meta data field.</text>
+            <text>The value of the metadata field.</text>
           </str>
         </descs>
       </desc>
@@ -49492,7 +49492,7 @@
       </str>
       <str language="en">
         <version>1</version>
-        <text>This holds meta data about the attachment. It is a set of named value pairs.</text>
+        <text>This holds metadata about the attachment. It is a set of named value pairs.</text>
       </str>
       <str language="ru" country="RU" variant="">
         <version>0</version>
@@ -55151,7 +55151,7 @@
           </str>
           <str language="en">
             <version>0</version>
-            <text>Agent`s (person) job title at specified address and organization.</text>
+            <text>Agent`s (person) job title at the specified address and organization.</text>
           </str>
           <str language="pt">
             <version>1</version>
@@ -56399,7 +56399,7 @@
         <descs>
           <str language="en">
             <version>0</version>
-            <text>An URL for the web site of a Person or Group.</text>
+            <text>A URL for the web site of a Person or Group.</text>
           </str>
           <str language="pt">
             <version>1</version>
@@ -57039,12 +57039,12 @@
           </str>
           <str language="uk" country="UA" variant="">
             <version>0</version>
-            <text>Дозволяти</text>
+            <text>Дозвіл</text>
             <itemName reference="../../.."/>
           </str>
           <str language="ru" country="RU" variant="">
             <version>0</version>
-            <text>Разрешать</text>
+            <text>Разрешение</text>
             <itemName reference="../../.."/>
           </str>
           <str language="pt">
@@ -58301,7 +58301,7 @@
           </str>
           <str language="en">
             <version>0</version>
-            <text>Provides a sequencial order for the attachments.</text>
+            <text>Provides a sequential order for the attachments.</text>
           </str>
           <str language="uk" country="UA" variant="">
             <version>0</version>
@@ -58655,7 +58655,7 @@
           </str>
           <str language="uk" country="UA" variant="">
             <version>0</version>
-            <text>Виданий</text>
+            <text>Виданий ким</text>
             <itemName reference="../../.."/>
           </str>
           <str language="pt">
@@ -58664,7 +58664,7 @@
           </str>
           <str language="ru" country="RU" variant="">
             <version>0</version>
-            <text>Выдан</text>
+            <text>Выдан кем</text>
             <itemName reference="../../.."/>
           </str>
           <str language="pt" country="BR" variant="">
@@ -59690,7 +59690,7 @@
           </str>
           <str language="uk" country="UA" variant="">
             <version>0</version>
-            <text>Дозволи на вступ</text>
+            <text>Дозволи на приєднання</text>
             <itemName reference="../../.."/>
           </str>
           <str language="en">
@@ -59802,12 +59802,12 @@
       </str>
       <str language="ru" country="RU" variant="">
         <version>0</version>
-        <text>Разрешать</text>
+        <text>Разрешения</text>
         <containerName class="container" reference="../../.."/>
       </str>
       <str language="uk" country="UA" variant="">
         <version>0</version>
-        <text>Дозволяти</text>
+        <text>Дозвіл</text>
         <containerName class="container" reference="../../.."/>
       </str>
     </names>
@@ -60836,7 +60836,7 @@
       </str>
       <str language="en">
         <version>1</version>
-        <text>An action that occurrs to a Conservation Description.</text>
+        <text>An action that occurs to a Conservation Description.</text>
       </str>
     </descs>
   </container>
@@ -67104,7 +67104,7 @@
           </str>
           <str language="en">
             <version>0</version>
-            <text>Yes if collecting event is one-to-one relationship.</text>
+            <text>Yes if collecting event is a one-to-one relationship.</text>
           </str>
           <str language="pt" country="BR" variant="">
             <version>0</version>
@@ -69494,7 +69494,7 @@
           </str>
           <str language="uk" country="UA" variant="">
             <version>0</version>
-            <text>Певна дата</text>
+            <text>Визначена дата</text>
             <itemName reference="../../.."/>
           </str>
           <str language="en">
@@ -71302,7 +71302,7 @@
     <descs>
       <str language="en">
         <version>1</version>
-        <text>An attribute tag of an attachment. This consists of a single text field for storing a tag. In later versions users will be allowed to search attachments by their tag.</text>
+        <text>An attribute tag of an attachment. This consists of a single text field for storing a tag. In later versions, users will be allowed to search attachments by their tag.</text>
       </str>
       <str language="uk" country="UA" variant="">
         <version>0</version>
@@ -75809,7 +75809,7 @@
       </str>
       <str language="en">
         <version>1</version>
-        <text>Represents a politcal boundary (Country, State, County, Township, etc.).</text>
+        <text>Represents politcal boundary (Country, State, County, Township, etc.).</text>
       </str>
       <str language="ru" country="RU" variant="">
         <version>0</version>
@@ -77043,7 +77043,7 @@
       </str>
       <str language="en">
         <version>1</version>
-        <text>This is an internal table used to group together parts of a collection with the same numbering scheme.</text>
+        <text>This is an internal table used to group parts of a collection with the same numbering scheme.</text>
       </str>
       <str language="uk" country="UA" variant="">
         <version>0</version>
@@ -83422,7 +83422,7 @@
           </str>
           <str language="en">
             <version>0</version>
-            <text>Inventorized By</text>
+            <text>Inventoried By</text>
             <itemName reference="../../.."/>
           </str>
           <str language="ru" country="RU" variant="">
@@ -84573,7 +84573,7 @@
           </str>
           <str language="en">
             <version>0</version>
-            <text>Additonal comments.</text>
+            <text>Additional comments.</text>
           </str>
           <str language="uk" country="UA" variant="">
             <version>0</version>
@@ -85524,7 +85524,7 @@
       </str>
       <str language="en">
         <version>1</version>
-        <text>Describes a set of records of any type that can be acted upon within the applicaiton.</text>
+        <text>Describes a set of records of any type that can be acted upon within the applicatiton.</text>
       </str>
     </descs>
   </container>
@@ -85580,7 +85580,7 @@
           </str>
           <str language="en">
             <version>0</version>
-            <text>User customizable pick list used to describe the context of the name entered into the taxon or Alternate name fields.</text>
+            <text>User customizable picklist used to describe the context of the name entered into the taxon or Alternate name fields.</text>
           </str>
         </descs>
       </desc>
@@ -85656,7 +85656,7 @@
           </str>
           <str language="uk" country="UA" variant="">
             <version>0</version>
-            <text>Певна дата</text>
+            <text>Визначенна дата</text>
             <itemName reference="../../.."/>
           </str>
           <str language="pt" country="BR" variant="">
@@ -86736,7 +86736,7 @@
           </str>
           <str language="en">
             <version>0</version>
-            <text>A pick list of all available type designations; Holotype, Paratype, Neotype. Specify ships with predetermined values which are editable for users.</text>
+            <text>A picklist of all available type designations; Holotype, Paratype, Neotype. Specify ships with predetermined values that are editable for users.</text>
           </str>
         </descs>
       </desc>
@@ -89718,16 +89718,16 @@
         <names>
           <str language="ru" country="RU" variant="">
             <version>0</version>
-            <text>Sql str</text>
+            <text>SQL str</text>
             <itemName reference="../../.."/>
           </str>
           <str language="en">
             <version>0</version>
-            <text>Sql Str</text>
+            <text>SQL Str</text>
           </str>
           <str language="uk" country="UA" variant="">
             <version>0</version>
-            <text>Sql str</text>
+            <text>SQL str</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -91904,7 +91904,7 @@
           </str>
           <str language="en">
             <version>0</version>
-            <text>The data items associated wirth this row</text>
+            <text>The data items associated with this row</text>
           </str>
           <str language="ru" country="RU" variant="">
             <version>0</version>
@@ -94600,7 +94600,7 @@
           </str>
           <str language="pt">
             <version>0</version>
-            <text>User defined.</text>
+            <text>User-defined.</text>
           </str>
           <str language="ru" country="RU" variant="">
             <version>0</version>
@@ -94609,12 +94609,12 @@
           </str>
           <str language="pt" country="BR" variant="">
             <version>0</version>
-            <text>User defined.</text>
+            <text>User-defined.</text>
             <itemDesc reference="../../.."/>
           </str>
           <str language="en">
             <version>0</version>
-            <text>User defined.</text>
+            <text>User-defined.</text>
           </str>
         </descs>
       </desc>
@@ -96345,7 +96345,7 @@
           </str>
           <str language="en">
             <version>0</version>
-            <text>Preferred Litho Strat</text>
+            <text>Preferred LithoStrat</text>
           </str>
           <str language="ru" country="RU" variant="">
             <version>0</version>
@@ -97161,7 +97161,7 @@
       </str>
       <str language="en">
         <version>1</version>
-        <text>The Litho stratigraphy tree.</text>
+        <text>The Lithostratigraphy tree.</text>
       </str>
       <str language="ru" country="RU" variant="">
         <version>0</version>
@@ -102541,7 +102541,7 @@
           </str>
           <str language="en">
             <version>0</version>
-            <text>Dna Sequencing Run</text>
+            <text>DNA Sequencing Run</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -103904,7 +103904,7 @@
         <names>
           <str language="en">
             <version>0</version>
-            <text>Dna Sequencing Runs</text>
+            <text>DNA Sequencing Runs</text>
             <itemName reference="../../.."/>
           </str>
           <str language="ru" country="RU" variant="">
@@ -104922,7 +104922,7 @@
           </str>
           <str language="en">
             <version>0</version>
-            <text>Dna Sequences</text>
+            <text>DNA Sequences</text>
             <itemName reference="../../.."/>
           </str>
           <str language="ru" country="RU" variant="">
@@ -105746,12 +105746,12 @@
         <names>
           <str language="ru" country="RU" variant="">
             <version>0</version>
-            <text>Разрешать</text>
+            <text>Разрешение</text>
             <itemName reference="../../.."/>
           </str>
           <str language="uk" country="UA" variant="">
             <version>0</version>
-            <text>Дозволяти</text>
+            <text>Дозвіл</text>
             <itemName reference="../../.."/>
           </str>
           <str language="en">
@@ -111367,12 +111367,12 @@
           </str>
           <str language="uk" country="UA" variant="">
             <version>0</version>
-            <text>Дозволяти</text>
+            <text>Дозвіл</text>
             <itemName reference="../../.."/>
           </str>
           <str language="ru" country="RU" variant="">
             <version>0</version>
-            <text>Разрешать</text>
+            <text>Разрешение</text>
             <itemName reference="../../.."/>
           </str>
         </names>
