@@ -11,7 +11,7 @@
             <version>0</version>
             <text>Collector Number</text>
           </str>
-          <str language="uk" country="UA" variant="">
+          <!--str language="uk" country="UA" variant="">
             <version>0</version>
             <text>Номер Коллектора</text>
           </str>
@@ -19,13 +19,13 @@
             <version>0</version>
             <text>Номер Коллектора</text>
           </str>
-        </names>
+        --></names>
         <descs>
           <str language="en" country="" variant="">
             <version>0</version>
             <text>Collector Number</text>
           </str>
-          <str language="uk" country="UA" variant="">
+          <!--str language="uk" country="UA" variant="">
             <version>0</version>
             <text>Номер Коллектора</text>
           </str>
@@ -33,7 +33,7 @@
             <version>0</version>
             <text>Номер Коллектора</text>
           </str>
-        </descs>
+        --></descs>
         <spExportSchemaItems/>
       </desc>
       <desc name="remarks" type="text" isHidden="false" isUIFormatter="false" isRequired="false">
@@ -44,7 +44,7 @@
             <version>0</version>
             <text>Locality and\n Habitat Notes</text>
           </str>
-          <str language="uk" country="UA" variant="">
+          <!--str language="uk" country="UA" variant="">
             <version>0</version>
             <text>Примітки про місцевість і\nзамітки до середовища перебування</text>
           </str>
@@ -52,13 +52,13 @@
             <version>0</version>
             <text>Примечания о местности и\nпримечания к среде обитания</text>
           </str>
-        </names>
+        --></names>
         <descs>
           <str language="en" country="" variant="">
             <version>0</version>
             <text>Field to record information on locality and habitat where the specimen was collected.</text>
           </str>
-          <str language="uk" country="UA" variant="">
+          <!--str language="uk" country="UA" variant="">
             <version>0</version>
             <text>Поле для запису інформації про місцевість і середовища проживання, де був зібраний зразок.</text>
           </str>
@@ -66,7 +66,7 @@
             <version>0</version>
             <text>Поле для записи информации о местности и среде обитания, где был собран образец.</text>
           </str>
-        </descs>
+        --></descs>
         <spExportSchemaItems/>
       </desc>
     </items>
@@ -80,15 +80,11 @@
       <desc name="collectionObjectAttribute" type="ManyToOne" isHidden="true" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
-          <str language="pt">
-            <version>1</version>
-            <text>Atributo Objeto Coleção</text>
-          </str>
           <str language="en">
             <version>0</version>
             <text>Col Obj Attribute</text>
           </str>
-          <str language="uk" country="UA" variant="">
+          <!--str language="uk" country="UA" variant="">
             <version>0</version>
             <text>Атрибут об'єкту колекції</text>
           </str>
@@ -96,7 +92,7 @@
             <version>0</version>
             <text>Атрибут Объекта коллекции</text>
           </str>
-        </names>
+        --></names>
         <descs/>
       </desc>
       <desc name="description" type="java.lang.String" isHidden="false" isUIFormatter="false" isRequired="false">
@@ -107,7 +103,7 @@
             <version>0</version>
             <text>Specimen\nDescription</text>
           </str>
-          <str language="uk" country="UA" variant="">
+          <!--str language="uk" country="UA" variant="">
             <version>0</version>
             <text>Зразок\nОпис</text>
           </str>
@@ -115,13 +111,13 @@
             <version>0</version>
             <text>Образец\nОписание</text>
           </str>
-        </names>
+        --></names>
         <descs>
           <str language="en" country="" variant="">
             <version>0</version>
             <text>Image, Sound, Preparation, Container(Container Label?).</text>
           </str>
-          <str language="uk" country="UA" variant="">
+          <!--str language="uk" country="UA" variant="">
             <version>0</version>
             <text>Зображення, звук, підготовка, контейнер (ярлик контейнера?).</text>
           </str>
@@ -129,21 +125,17 @@
             <version>0</version>
             <text>Изображение, звук, подготовка, контейнер (ярлык контейнера?).</text>
           </str>
-        </descs>
+        --></descs>
         <spExportSchemaItems/>
       </desc>
       <desc name="exsiccataItems" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
-          <str language="pt">
-            <version>1</version>
-            <text>Itens Exsiccata</text>
-          </str>
           <str language="en">
             <version>0</version>
             <text>Exsiccata Items</text>
           </str>
-          <str language="uk" country="UA" variant="">
+          <!--str language="uk" country="UA" variant="">
             <version>0</version>
             <text>Елементи Exsiccata</text>
           </str>
@@ -151,7 +143,7 @@
             <version>0</version>
             <text>Элементы Exsiccata</text>
           </str>
-        </names>
+        --></names>
         <descs/>
       </desc>
       <desc name="text1" type="java.lang.String" isHidden="false" isUIFormatter="false" pickListName="Phenology" isRequired="false">
@@ -162,7 +154,7 @@
             <version>0</version>
             <text>Phenology</text>
           </str>
-          <str language="uk" country="UA" variant="">
+          <!--str language="uk" country="UA" variant="">
             <version>0</version>
             <text>Фенологія</text>
           </str>
@@ -170,13 +162,13 @@
             <version>0</version>
             <text>Фенология</text>
           </str>
-        </names>
+        --></names>
         <descs>
           <str language="en" country="" variant="">
             <version>0</version>
             <text>User-definable.</text>
           </str>
-          <str language="uk" country="UA" variant="">
+          <!--str language="uk" country="UA" variant="">
             <version>0</version>
             <text>Визначається користувачем.</text>
           </str>
@@ -184,7 +176,7 @@
             <version>0</version>
             <text>Определяемый пользователем.</text>
           </str>
-        </descs>
+        --></descs>
         <spExportSchemaItems/>
       </desc>
     </items>

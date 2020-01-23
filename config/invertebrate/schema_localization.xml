@@ -11,7 +11,7 @@
             <version>0</version>
             <text>Method</text>
           </str>
-          <str language="uk" country="UA" variant="">
+          <!--str language="uk" country="UA" variant="">
             <version>0</version>
             <text>Метод</text>
           </str>
@@ -19,13 +19,13 @@
             <version>0</version>
             <text>Метод</text>
           </str>
-        </names>
+        --></names>
         <descs>
           <str language="en" country="" variant="">
             <version>0</version>
             <text>A method, such as net or trap, which is used to obtain the specimen.</text>
           </str>
-          <str language="uk" country="UA" variant="">
+          <!--str language="uk" country="UA" variant="">
             <version>0</version>
             <text>Метод, такий як сітка або пастка, який використовується для отримання зразка.</text>
           </str>
@@ -33,7 +33,7 @@
             <version>0</version>
             <text>Метод, такой как сеть или ловушка, который используется для получения образца.</text>
           </str>
-        </descs>
+        --></descs>
         <spExportSchemaItems/>
       </desc>
     </items>
@@ -52,7 +52,7 @@
             <version>0</version>
             <text>ReproCondition</text>
           </str>
-          <str language="uk" country="UA" variant="">
+          <!--str language="uk" country="UA" variant="">
             <version>0</version>
             <text>ReproCondition</text>
           </str>
@@ -60,7 +60,7 @@
             <version>0</version>
             <text>ReproCondition</text>
           </str>
-        </names>
+        --></names>
         <descs/>
         <spExportSchemaItems/>
       </desc>
@@ -72,7 +72,7 @@
             <version>0</version>
             <text>Sex</text>
           </str>
-          <str language="uk" country="UA" variant="">
+          <!--str language="uk" country="UA" variant="">
             <version>0</version>
             <text>Стать</text>
           </str>
@@ -80,7 +80,7 @@
             <version>0</version>
             <text>Пол</text>
           </str>
-        </names>
+        --></names>
         <descs/>
         <spExportSchemaItems/>
       </desc>
@@ -92,7 +92,7 @@
             <version>0</version>
             <text>Range of Size</text>
           </str>
-          <str language="uk" country="UA" variant="">
+          <!--str language="uk" country="UA" variant="">
             <version>0</version>
             <text>Діапазон розмірів</text>
           </str>
@@ -100,7 +100,7 @@
             <version>0</version>
             <text>Диапазон размеров</text>
           </str>
-        </names>
+        --></names>
         <descs/>
         <spExportSchemaItems/>
       </desc>
@@ -112,7 +112,7 @@
             <version>0</version>
             <text>Head Width</text>
           </str>
-          <str language="uk" country="UA" variant="">
+          <!--str language="uk" country="UA" variant="">
             <version>0</version>
             <text>Ширина голови</text>
           </str>
@@ -120,7 +120,7 @@
             <version>0</version>
             <text>Ширина головы</text>
           </str>
-        </names>
+        --></names>
         <descs/>
         <spExportSchemaItems/>
       </desc>
@@ -132,7 +132,7 @@
             <version>0</version>
             <text>Weight</text>
           </str>
-          <str language="uk" country="UA" variant="">
+          <!--str language="uk" country="UA" variant="">
             <version>0</version>
             <text>Вага</text>
           </str>
@@ -140,7 +140,7 @@
             <version>0</version>
             <text>Вес</text>
           </str>
-        </names>
+        --></names>
         <descs/>
         <spExportSchemaItems/>
       </desc>
@@ -152,7 +152,7 @@
             <version>0</version>
             <text>Total Length</text>
           </str>
-          <str language="uk" country="UA" variant="">
+          <!--str language="uk" country="UA" variant="">
             <version>0</version>
             <text>Загальна довжина</text>
           </str>
@@ -160,7 +160,7 @@
             <version>0</version>
             <text>Общая длина</text>
           </str>
-        </names>
+        --></names>
         <descs/>
         <spExportSchemaItems/>
       </desc>
@@ -172,7 +172,7 @@
             <version>0</version>
             <text>Stage</text>
           </str>
-          <str language="uk" country="UA" variant="">
+          <!--str language="uk" country="UA" variant="">
             <version>0</version>
             <text>Етап</text>
           </str>
@@ -180,7 +180,7 @@
             <version>0</version>
             <text>Стадия</text>
           </str>
-        </names>
+        --></names>
         <descs/>
         <spExportSchemaItems/>
       </desc>
@@ -192,7 +192,7 @@
             <version>0</version>
             <text>Body Width</text>
           </str>
-          <str language="uk" country="UA" variant="">
+          <!--str language="uk" country="UA" variant="">
             <version>0</version>
             <text>Ширина тіла</text>
           </str>
@@ -200,7 +200,7 @@
             <version>0</version>
             <text>Ширина кузова</text>
           </str>
-        </names>
+        --></names>
         <descs/>
         <spExportSchemaItems/>
       </desc>

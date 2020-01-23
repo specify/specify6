@@ -22,7 +22,7 @@
             <text>Нижнее расстояние</text>
             <itemName reference="../../.."/>
           </str>
-        </names>
+        --></names>
         <descs/>
         <spExportSchemaItems/>
       </desc>
@@ -33,11 +33,7 @@
             <version>0</version>
             <text>Text4</text>
           </str>
-          <str language="pt">
-            <version>1</version>
-            <text>Texto4</text>
-          </str>
-          <str language="uk" country="UA" variant="">
+          <!--str language="uk" country="UA" variant="">
             <version>0</version>
             <text>Текст4</text>
           </str>
@@ -45,7 +41,7 @@
             <version>0</version>
             <text>Текст4</text>
           </str>
-        </names>
+        --></names>
         <descs/>
       </desc>
       <desc name="text1" isHidden="true" isUIFormatter="false" isRequired="false">
@@ -55,11 +51,7 @@
             <version>0</version>
             <text>Text1</text>
           </str>
-          <str language="pt">
-            <version>1</version>
-            <text>Texto1</text>
-          </str>
-          <str language="uk" country="UA" variant="">
+          <!--str language="uk" country="UA" variant="">
             <version>0</version>
             <text>Текст1</text>
           </str>
@@ -67,21 +59,17 @@
             <version>0</version>
             <text>Текст1</text>
           </str>
-        </names>
+        --></names>
         <descs/>
       </desc>
       <desc name="text8" isHidden="true" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
-          <str language="pt">
-            <version>1</version>
-            <text>Texto8</text>
-          </str>
           <str language="en">
             <version>0</version>
             <text>Text8</text>
           </str>
-          <str language="uk" country="UA" variant="">
+          <!--str language="uk" country="UA" variant="">
             <version>0</version>
             <text>Текст8</text>
           </str>
@@ -89,21 +77,17 @@
             <version>0</version>
             <text>Текст8</text>
           </str>
-        </names>
+        --></names>
         <descs/>
       </desc>
       <desc name="text5" isHidden="true" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
-          <str language="pt">
-            <version>1</version>
-            <text>Texto5</text>
-          </str>
           <str language="en">
             <version>0</version>
             <text>Text5</text>
           </str>
-          <str language="uk" country="UA" variant="">
+          <!--str language="uk" country="UA" variant="">
             <version>0</version>
             <text>Текст5</text>
           </str>
@@ -111,7 +95,7 @@
             <version>0</version>
             <text>Текст5</text>
           </str>
-        </names>
+        --></names>
         <descs/>
       </desc>
       <desc name="text2" isHidden="true" isUIFormatter="false" isRequired="false">
@@ -121,11 +105,7 @@
             <version>0</version>
             <text>Text2</text>
           </str>
-          <str language="pt">
-            <version>1</version>
-            <text>Texto2</text>
-          </str>
-          <str language="uk" country="UA" variant="">
+          <!--str language="uk" country="UA" variant="">
             <version>0</version>
             <text>Текст2</text>
           </str>
@@ -133,7 +113,7 @@
             <version>0</version>
             <text>Текст2</text>
           </str>
-        </names>
+        --></names>
         <descs/>
       </desc>
       <desc name="topDistance" isHidden="false" isRequired="false">
@@ -145,7 +125,7 @@
             <text>Top Distance</text>
             <itemName reference="../../.."/>
           </str>
-          <str language="uk" country="UA" variant="">
+          <!--str language="uk" country="UA" variant="">
             <version>0</version>
             <text>Верхня відстань</text>
             <itemName reference="../../.."/>
@@ -155,7 +135,7 @@
             <text>Максимальное расстояние</text>
             <itemName reference="../../.."/>
           </str>
-        </names>
+        --></names>
         <descs/>
         <spExportSchemaItems/>
       </desc>
@@ -168,7 +148,7 @@
             <text>Distance Units</text>
             <itemName reference="../../.."/>
           </str>
-          <str language="uk" country="UA" variant="">
+          <!--str language="uk" country="UA" variant="">
             <version>0</version>
             <text>Одиниці відстані</text>
             <itemName reference="../../.."/>
@@ -178,7 +158,7 @@
             <text>Единицы расстояния</text>
             <itemName reference="../../.."/>
           </str>
-        </names>
+        --></names>
         <descs/>
         <spExportSchemaItems/>
       </desc>
@@ -191,7 +171,7 @@
             <text>Position State</text>
             <itemName reference="../../.."/>
           </str>
-          <str language="uk" country="UA" variant="">
+          <!--str language="uk" country="UA" variant="">
             <version>0</version>
             <text>Статус позиції</text>
             <itemName reference="../../.."/>
@@ -201,7 +181,7 @@
             <text>Статус положение</text>
             <itemName reference="../../.."/>
           </str>
-        </names>
+        --></names>
         <descs/>
         <spExportSchemaItems/>
       </desc>
@@ -212,11 +192,7 @@
             <version>0</version>
             <text>Text7</text>
           </str>
-          <str language="pt">
-            <version>1</version>
-            <text>Texto7</text>
-          </str>
-          <str language="uk" country="UA" variant="">
+          <!--str language="uk" country="UA" variant="">
             <version>0</version>
             <text>Текст7</text>
           </str>
@@ -224,7 +200,7 @@
             <version>0</version>
             <text>Текст7</text>
           </str>
-        </names>
+        --></names>
         <descs/>
       </desc>
       <desc name="direction" isHidden="false" isRequired="false">
@@ -236,7 +212,7 @@
             <text>Direction</text>
             <itemName reference="../../.."/>
           </str>
-          <str language="uk" country="UA" variant="">
+          <!--str language="uk" country="UA" variant="">
             <version>0</version>
             <text>Напрямок</text>
             <itemName reference="../../.."/>
@@ -246,7 +222,7 @@
             <text>Направление</text>
             <itemName reference="../../.."/>
           </str>
-        </names>
+        --></names>
         <descs/>
         <spExportSchemaItems/>
       </desc>
@@ -257,11 +233,7 @@
             <version>0</version>
             <text>Text3</text>
           </str>
-          <str language="pt">
-            <version>1</version>
-            <text>Texto3</text>
-          </str>
-          <str language="uk" country="UA" variant="">
+          <!--str language="uk" country="UA" variant="">
             <version>0</version>
             <text>Текст3</text>
           </str>
@@ -269,21 +241,17 @@
             <version>0</version>
             <text>Текст3</text>
           </str>
-        </names>
+        --></names>
         <descs/>
       </desc>
       <desc name="text6" isHidden="true" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
-          <str language="pt">
-            <version>1</version>
-            <text>Texto6</text>
-          </str>
           <str language="en">
             <version>0</version>
             <text>Text6</text>
           </str>
-          <str language="uk" country="UA" variant="">
+          <!--str language="uk" country="UA" variant="">
             <version>0</version>
             <text>Текст6</text>
           </str>
@@ -291,7 +259,7 @@
             <version>0</version>
             <text>Текст6</text>
           </str>
-        </names>
+        --></names>
         <descs/>
       </desc>
     </items>
@@ -305,15 +273,11 @@
       <desc name="collectionObjectAttribute" type="ManyToOne" isHidden="true" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
-          <str language="pt">
-            <version>1</version>
-            <text>Atributo Objeto Coleção</text>
-          </str>
           <str language="en">
             <version>0</version>
             <text>Col Obj Attribute</text>
           </str>
-          <str language="uk" country="UA" variant="">
+          <!--str language="uk" country="UA" variant="">
             <version>0</version>
             <text>Атрибут об'єкта колекції</text>
           </str>
@@ -321,7 +285,7 @@
             <version>0</version>
             <text>Атрибут объекта коллекции</text>
           </str>
-        </names>
+        --></names>
         <descs/>
       </desc>
     </items>

@@ -1,285 +1,323 @@
 <vector>
-  <container name="collectingevent" isHidden="false">
-    <version>0</version>
-    <isSystem>false</isSystem>
-    <items>
-      <desc name="stationFieldNumber" type="java.lang.String" isHidden="false" isRequired="false">
+    <container name="collectingevent" isHidden="false">
         <version>0</version>
         <isSystem>false</isSystem>
-        <names>
-          <str language="en" country="" variant="">
-            <version>0</version>
-            <text>Field Number</text>
-          </str>
-          <str language="ru" country="RU" variant="">
-            <version>0</version>
-            <text>Номер поля</text>
-          </str>
-          <str language="uk" country="UA" variant="">
-            <version>0</version>
-            <text>Номер поля</text>
-          </str>
-        </names>
-        <descs>
-          <str language="en" country="" variant="">
-            <version>0</version>
-            <text>Station number or field number of the site where collecting event took place, A number or code recorded in field notes and/or written on field tags that identifies ALL material collected in a Collecting Event.</text>
-          </str>
-          <str language="ru" country="RU" variant="">
-            <version>0</version>
-            <text>Номер станции или номер поля места, где произошло событие сбора. Номер или код, записанный в примечаниях к полю и/или записанный в метках поля, который идентифицирует ВСЕ материалы, собранные в событии сбора.</text>
-          </str>
-          <str language="uk" country="UA" variant="">
-            <version>0</version>
-            <text>Номер станції або номер поля місця, де відбулася подія збору. Номер або код, записаний в примітках до поля і/або записаний в мітках поля, який ідентифікує ВСІ матеріали, зібрані в подію збору.</text>
-          </str>
-        </descs>
-        <spExportSchemaItems/>
-      </desc>
-      <desc name="method" type="java.lang.String" isHidden="false" isUIFormatter="false" pickListName="Method" isRequired="false">
-        <version>0</version>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en" country="" variant="">
-            <version>0</version>
-            <text>Method</text>
-          </str>
-          <str language="ru" country="RU" variant="">
-            <version>0</version>
-            <text>Метод</text>
-          </str>
-          <str language="uk" country="UA" variant="">
-            <version>0</version>
-            <text>Метод</text>
-          </str>
-        </names>
-        <descs>
-          <str language="en" country="" variant="">
-            <version>0</version>
-            <text>A method, such as net or trap, which is used to obtain the specimen.</text>
-          </str>
-          <str language="ru" country="RU" variant="">
-            <version>0</version>
-            <text>Метод, такой как сеть или ловушка, который используется для получения образца.</text>
-          </str>
-          <str language="uk" country="UA" variant="">
-            <version>0</version>
-            <text>Метод, такий як сітка або пастка, який використовується для отримання зразка.</text>
-          </str>
-        </descs>
-        <spExportSchemaItems/>
-      </desc>
-    </items>
-    <names/>
-    <descs/>
-  </container>
-  <container name="collectionobjectattribute" isHidden="false">
-    <version>0</version>
-    <isSystem>false</isSystem>
-    <items>
-      <desc name="text2" isHidden="false" isUIFormatter="false" pickListName="BiologicalSex" isRequired="false">
-        <version>0</version>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en">
-            <version>0</version>
-            <text>Sex</text>
-          </str>
-          <str language="ru" country="RU" variant="">
-            <version>0</version>
-            <text>Стать</text>
-          </str>
-          <str language="uk" country="UA" variant="">
-            <version>0</version>
-            <text>Стать</text>
-          </str>
-        </names>
+        <items>
+            <desc name="stationFieldNumber" type="java.lang.String" isHidden="false" isRequired="false">
+                <version>0</version>
+                <isSystem>false</isSystem>
+                <names>
+                    <str language="en" country="" variant="">
+                        <version>0</version>
+                        <text>Field Number</text>
+                    </str>
+                    <!-- DBSetupWiz currently only supports en in discipline-specific l10n files -->
+                    <!--<str language="ru" country="RU" variant="">
+                    <version>0</version>
+                    <text>Номер поля</text>
+                  </str>
+                  <str language="uk" country="UA" variant="">
+                    <version>0</version>
+                    <text>Номер поля</text>
+                  </str>
+                ... non-en removal-->
+                </names>
+                <descs>
+                    <str language="en" country="" variant="">
+                        <version>0</version>
+                        <text>Station number or field number of the site where collecting event took place, A number or
+                            code recorded in field notes and/or written on field tags that identifies ALL material
+                            collected in a Collecting Event.
+                        </text>
+                    </str>
+                    <!-- DBSetupWiz currently only supports en in discipline-specific l10n files -->
+                    <!--<str language="ru" country="RU" variant="">
+                    <version>0</version>
+                    <text>Номер станции или номер поля места, где произошло событие сбора. Номер или код, записанный в примечаниях к полю и/или записанный в метках поля, который идентифицирует ВСЕ материалы, собранные в событии сбора.</text>
+                  </str>
+                  <str language="uk" country="UA" variant="">
+                    <version>0</version>
+                    <text>Номер станції або номер поля місця, де відбулася подія збору. Номер або код, записаний в примітках до поля і/або записаний в мітках поля, який ідентифікує ВСІ матеріали, зібрані в подію збору.</text>
+                  </str>
+                  -->
+                </descs>
+                <spExportSchemaItems/>
+            </desc>
+            <desc name="method" type="java.lang.String" isHidden="false" isUIFormatter="false" pickListName="Method"
+                  isRequired="false">
+                <version>0</version>
+                <isSystem>false</isSystem>
+                <names>
+                    <str language="en" country="" variant="">
+                        <version>0</version>
+                        <text>Method</text>
+                    </str>
+                    <!-- DBSetupWiz currently only supports en in discipline-specific l10n files-->
+                    <!--<str language="ru" country="RU" variant="">
+                    <version>0</version>
+                    <text>Метод</text>
+                  </str>
+                  <str language="uk" country="UA" variant="">
+                    <version>0</version>
+                    <text>Метод</text>
+                  </str>
+                ... non-en removal-->
+                </names>
+                <descs>
+                    <str language="en" country="" variant="">
+                        <version>0</version>
+                        <text>A method, such as net or trap, which is used to obtain the specimen.</text>
+                    </str>
+                    <!-- DBSetupWiz currently only supports en in discipline-specific l10n files-->
+                    <!--<str language="ru" country="RU" variant="">
+                    <version>0</version>
+                    <text>Метод, такой как сеть или ловушка, который используется для получения образца.</text>
+                  </str>
+                  <str language="uk" country="UA" variant="">
+                    <version>0</version>
+                    <text>Метод, такий як сітка або пастка, який використовується для отримання зразка.</text>
+                  </str>
+                  -->
+                </descs>
+                <spExportSchemaItems/>
+            </desc>
+        </items>
+        <names/>
         <descs/>
-        <spExportSchemaItems/>
-      </desc>
-      <desc name="text5" isHidden="false" isUIFormatter="false" isRequired="false">
+    </container>
+    <container name="collectionobjectattribute" isHidden="false">
         <version>0</version>
         <isSystem>false</isSystem>
-        <names>
-          <str language="en">
-            <version>0</version>
-            <text>Stomach</text>
-          </str>
-          <str language="ru" country="RU" variant="">
-            <version>0</version>
-            <text>Желудок</text>
-          </str>
-          <str language="uk" country="UA" variant="">
-            <version>0</version>
-            <text>Шлунок</text>
-          </str>
-        </names>
+        <items>
+            <desc name="text2" isHidden="false" isUIFormatter="false" pickListName="BiologicalSex" isRequired="false">
+                <version>0</version>
+                <isSystem>false</isSystem>
+                <names>
+                    <str language="en">
+                        <version>0</version>
+                        <text>Sex</text>
+                    </str>
+                    <!-- DBSetupWiz currently only supports en in discipline-specific l10n files-->
+                    <!--<str language="ru" country="RU" variant="">
+                    <version>0</version>
+                    <text>Стать</text>
+                  </str>
+                  <str language="uk" country="UA" variant="">
+                    <version>0</version>
+                    <text>Стать</text>
+                  </str>
+                ... non-en removal-->
+                </names>
+                <descs/>
+                <spExportSchemaItems/>
+            </desc>
+            <desc name="text5" isHidden="false" isUIFormatter="false" isRequired="false">
+                <version>0</version>
+                <isSystem>false</isSystem>
+                <names>
+                    <str language="en">
+                        <version>0</version>
+                        <text>Stomach</text>
+                    </str>
+                    <!-- DBSetupWiz currently only supports en in discipline-specific l10n files-->
+                    <!--<str language="ru" country="RU" variant="">
+                    <version>0</version>
+                    <text>Желудок</text>
+                  </str>
+                  <str language="uk" country="UA" variant="">
+                    <version>0</version>
+                    <text>Шлунок</text>
+                  </str>
+                ... non-en removal-->
+                </names>
+                <descs/>
+                <spExportSchemaItems/>
+            </desc>
+            <desc name="text7" isHidden="false" isUIFormatter="false" isRequired="false">
+                <version>0</version>
+                <isSystem>false</isSystem>
+                <names>
+                    <str language="en">
+                        <version>0</version>
+                        <text>Molt</text>
+                    </str>
+                    <!-- DBSetupWiz currently only supports en in discipline-specific l10n files-->
+                    <!--<str language="ru" country="RU" variant="">
+                    <version>0</version>
+                    <text>Плесень</text>
+                  </str>
+                  <str language="uk" country="UA" variant="">
+                    <version>0</version>
+                    <text>Цвіль</text>
+                  </str>
+                ... non-en removal-->
+                </names>
+                <descs/>
+                <spExportSchemaItems/>
+            </desc>
+            <desc name="text4" isHidden="false" isUIFormatter="false" isRequired="false">
+                <version>0</version>
+                <isSystem>false</isSystem>
+                <names>
+                    <str language="en">
+                        <version>0</version>
+                        <text>Body</text>
+                    </str>
+                    <!-- DBSetupWiz currently only supports en in discipline-specific l10n files-->
+                    <!--<str language="ru" country="RU" variant="">
+                    <version>0</version>
+                    <text>Тело</text>
+                  </str>
+                  <str language="uk" country="UA" variant="">
+                    <version>0</version>
+                    <text>Тіло</text>
+                  </str>
+                ... non-en removal-->
+                </names>
+                <descs/>
+                <spExportSchemaItems/>
+            </desc>
+            <desc name="text1" isHidden="false" isUIFormatter="false" pickListName="Age" isRequired="false">
+                <version>0</version>
+                <isSystem>false</isSystem>
+                <names>
+                    <str language="en">
+                        <version>0</version>
+                        <text>Age</text>
+                    </str>
+                    <!-- DBSetupWiz currently only supports en in discipline-specific l10n files-->
+                    <!--<str language="ru" country="RU" variant="">
+                    <version>0</version>
+                    <text>Возраст</text>
+                  </str>
+                  <str language="uk" country="UA" variant="">
+                    <version>0</version>
+                    <text>Вік</text>
+                  </str>
+                ... non-en removal-->
+                </names>
+                <descs/>
+                <spExportSchemaItems/>
+            </desc>
+            <desc name="text8" isHidden="false" isUIFormatter="false" isRequired="false">
+                <version>0</version>
+                <isSystem>false</isSystem>
+                <names>
+                    <str language="en">
+                        <version>0</version>
+                        <text>Weight</text>
+                    </str>
+                    <!-- DBSetupWiz currently only supports en in discipline-specific l10n files-->
+                    <!--<str language="ru" country="RU" variant="">
+                    <version>0</version>
+                    <text>Вес</text>
+                  </str>
+                  <str language="uk" country="UA" variant="">
+                    <version>0</version>
+                    <text>Вага</text>
+                  </str>
+                ... non-en removal-->
+                </names>
+                <descs/>
+                <spExportSchemaItems/>
+            </desc>
+            <desc name="text6" isHidden="false" isUIFormatter="false" isRequired="false">
+                <version>0</version>
+                <isSystem>false</isSystem>
+                <names>
+                    <str language="en">
+                        <version>0</version>
+                        <text>Gonads</text>
+                    </str>
+                    <!-- DBSetupWiz currently only supports en in discipline-specific l10n files-->
+                    <!--<str language="ru" country="RU" variant="">
+                    <version>0</version>
+                    <text>Половы органы</text>
+                  </str>
+                  <str language="uk" country="UA" variant="">
+                    <version>0</version>
+                    <text>Статеві орграни</text>
+                  </str>
+                ... non-en removal-->
+                </names>
+                <descs/>
+                <spExportSchemaItems/>
+            </desc>
+            <desc name="text3" isHidden="false" isUIFormatter="false" isRequired="false">
+                <version>0</version>
+                <isSystem>false</isSystem>
+                <names>
+                    <str language="en">
+                        <version>0</version>
+                        <text>ReproCondition</text>
+                    </str>
+                    <!-- DBSetupWiz currently only supports en in discipline-specific l10n files-->
+                    <!--<str language="ru" country="RU" variant="">
+                    <version>0</version>
+                    <text>ReproCondition</text>
+                  </str>
+                  <str language="uk" country="UA" variant="">
+                    <version>0</version>
+                    <text>ReproCondition</text>
+                  </str>
+                ... non-en removal-->
+                </names>
+                <descs/>
+                <spExportSchemaItems/>
+            </desc>
+        </items>
+        <names/>
         <descs/>
-        <spExportSchemaItems/>
-      </desc>
-      <desc name="text7" isHidden="false" isUIFormatter="false" isRequired="false">
+    </container>
+    <container name="determination" isHidden="false">
         <version>0</version>
         <isSystem>false</isSystem>
-        <names>
-          <str language="en">
-            <version>0</version>
-            <text>Molt</text>
-          </str>
-          <str language="ru" country="RU" variant="">
-            <version>0</version>
-            <text>Плесень</text>
-          </str>
-          <str language="uk" country="UA" variant="">
-            <version>0</version>
-            <text>Цвіль</text>
-          </str>
-        </names>
+        <items>
+            <desc name="typeStatusName" type="java.lang.String" isHidden="false" isUIFormatter="false"
+                  pickListName="TypeStatus" isRequired="false">
+                <version>0</version>
+                <isSystem>false</isSystem>
+                <names>
+                    <str language="en" country="" variant="">
+                        <version>0</version>
+                        <text>Type Status</text>
+                    </str>
+                    <!-- DBSetupWiz currently only supports en in discipline-specific l10n files-->
+                    <!--<str language="ru" country="RU" variant="">
+                    <version>0</version>
+                    <text>Статус типа</text>
+                  </str>
+                  <str language="uk" country="UA" variant="">
+                    <version>0</version>
+                    <text>Статус типу</text>
+                  </str>
+                ... non-en removal-->
+                </names>
+                <descs>
+                    <str language="en" country="" variant="">
+                        <version>0</version>
+                        <text>A pick list of all available type designations; Holotype, Paratype, Neotype. Specify ships
+                            with predetermined values that are editable for users.
+                        </text>
+                    </str>
+                    <!--<str language="ru" country="RU" variant="">
+                        <version>0</version>
+                        <text>Список всех доступных обозначений типов; Голотип, Паратип, Неотип. Specify имеет заранее
+                            определении значения, которые могут быть изменены пользователями.
+                        </text>
+                    </str>
+                    <str language="uk" country="UA" variant="">
+                        <version>0</version>
+                        <text>Список всіх доступних позначень типів; Голотип, Паратіп, Неотіп. Specify має заздалегідь
+                            визначенні значення, які можуть бути змінені користувачами.
+                        </text>
+                    </str>
+                    ... non-en removal-->
+                </descs>
+                <spExportSchemaItems/>
+            </desc>
+        </items>
+        <names/>
         <descs/>
-        <spExportSchemaItems/>
-      </desc>
-      <desc name="text4" isHidden="false" isUIFormatter="false" isRequired="false">
-        <version>0</version>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en">
-            <version>0</version>
-            <text>Body</text>
-          </str>
-          <str language="ru" country="RU" variant="">
-            <version>0</version>
-            <text>Тело</text>
-          </str>
-          <str language="uk" country="UA" variant="">
-            <version>0</version>
-            <text>Тіло</text>
-          </str>
-        </names>
-        <descs/>
-        <spExportSchemaItems/>
-      </desc>
-      <desc name="text1" isHidden="false" isUIFormatter="false" pickListName="Age" isRequired="false">
-        <version>0</version>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en">
-            <version>0</version>
-            <text>Age</text>
-          </str>
-          <str language="ru" country="RU" variant="">
-            <version>0</version>
-            <text>Возраст</text>
-          </str>
-          <str language="uk" country="UA" variant="">
-            <version>0</version>
-            <text>Вік</text>
-          </str>
-        </names>
-        <descs/>
-        <spExportSchemaItems/>
-      </desc>
-      <desc name="text8" isHidden="false" isUIFormatter="false" isRequired="false">
-        <version>0</version>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en">
-            <version>0</version>
-            <text>Weight</text>
-          </str>
-          <str language="ru" country="RU" variant="">
-            <version>0</version>
-            <text>Вес</text>
-          </str>
-          <str language="uk" country="UA" variant="">
-            <version>0</version>
-            <text>Вага</text>
-          </str>
-        </names>
-        <descs/>
-        <spExportSchemaItems/>
-      </desc>
-      <desc name="text6" isHidden="false" isUIFormatter="false" isRequired="false">
-        <version>0</version>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en">
-            <version>0</version>
-            <text>Gonads</text>
-          </str>
-          <str language="ru" country="RU" variant="">
-            <version>0</version>
-            <text>Половы органы</text>
-          </str>
-          <str language="uk" country="UA" variant="">
-            <version>0</version>
-            <text>Статеві орграни</text>
-          </str>
-        </names>
-        <descs/>
-        <spExportSchemaItems/>
-      </desc>
-      <desc name="text3" isHidden="false" isUIFormatter="false" isRequired="false">
-        <version>0</version>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en">
-            <version>0</version>
-            <text>ReproCondition</text>
-          </str>
-          <str language="ru" country="RU" variant="">
-            <version>0</version>
-            <text>ReproCondition</text>
-          </str>
-          <str language="uk" country="UA" variant="">
-            <version>0</version>
-            <text>ReproCondition</text>
-          </str>
-        </names>
-        <descs/>
-        <spExportSchemaItems/>
-      </desc>
-    </items>
-    <names/>
-    <descs/>
-  </container>
-  <container name="determination" isHidden="false">
-    <version>0</version>
-    <isSystem>false</isSystem>
-    <items>
-      <desc name="typeStatusName" type="java.lang.String" isHidden="false" isUIFormatter="false" pickListName="TypeStatus" isRequired="false">
-        <version>0</version>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en" country="" variant="">
-            <version>0</version>
-            <text>Type Status</text>
-          </str>
-          <str language="ru" country="RU" variant="">
-            <version>0</version>
-            <text>Статус типа</text>
-          </str>
-          <str language="uk" country="UA" variant="">
-            <version>0</version>
-            <text>Статус типу</text>
-          </str>
-        </names>
-        <descs>
-          <str language="en" country="" variant="">
-            <version>0</version>
-            <text>A pick list of all available type designations; Holotype, Paratype, Neotype. Specify ships with predetermined values that are editable for users.</text>
-          </str>
-          <str language="ru" country="RU" variant="">
-            <version>0</version>
-            <text>Список всех доступных обозначений типов; Голотип, Паратип, Неотип. Specify имеет заранее определении значения, которые могут быть изменены пользователями.</text>
-          </str>
-          <str language="uk" country="UA" variant="">
-            <version>0</version>
-            <text>Список всіх доступних позначень типів; Голотип, Паратіп, Неотіп. Specify має заздалегідь визначенні значення, які можуть бути змінені користувачами.</text>
-          </str>
-        </descs>
-        <spExportSchemaItems/>
-      </desc>
-    </items>
-    <names/>
-    <descs/>
-  </container>
+    </container>
 </vector>

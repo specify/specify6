@@ -526,7 +526,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                 en = item;
             }
         }
-        if (loc == null) {
+        if (loc == null && itemsSet.size() > 0) {
             if (en == null) {
                 en = itemsSet.iterator().next();
                 log.warn("No English Default Found For Locale Merge.");
@@ -535,10 +535,12 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
             en.setCountry("".equals(countryArg.trim()) ? null : countryArg);
             loc = en;
         }
-        List<SpLocaleItemStr> items = new ArrayList<>(itemsSet);
-        for (SpLocaleItemStr item : items) {
-            if (item != loc) {
-                itemsSet.remove(item);
+        if (loc != null) {
+            List<SpLocaleItemStr> items = new ArrayList<>(itemsSet);
+            for (SpLocaleItemStr item : items) {
+                if (item != loc) {
+                    itemsSet.remove(item);
+                }
             }
         }
     }
@@ -637,18 +639,21 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                     log.error(x);
                 }
 
-                if (discipline != null)
-                {
-                    return containers;
-                }
             }
             
             if (useCurrentLocaleOnly && containers != null && containers.size() > 0)
             {
                 String language = Locale.getDefault().getLanguage();
                 String country = Locale.getDefault().getCountry();
-                addMissingTranslations(language, country, containers);
+                if (discipline == null) {
+                    addMissingTranslations(language, country, containers);
+                }
                 stripToSingleLocale(language, country, containers);
+            }
+
+            if (discipline != null)
+            {
+                return containers;
             }
 
             if (containers != null)
