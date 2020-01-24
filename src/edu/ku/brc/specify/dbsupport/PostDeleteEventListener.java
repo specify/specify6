@@ -65,6 +65,12 @@ public class PostDeleteEventListener implements org.hibernate.event.PostDeleteEv
         }
     }
 
+    /**
+     *
+     * @param colIdx
+     * @param obj
+     * @return
+     */
     private String getPropertyName(int colIdx, PostDeleteEvent obj) {
         String name = obj.getPersister().getPropertyNames()[colIdx];
         if (obj.getEntity() instanceof edu.ku.brc.specify.datamodel.Treeable) {
@@ -77,9 +83,24 @@ public class PostDeleteEventListener implements org.hibernate.event.PostDeleteEv
         return name;
     }
 
+    /**
+     *
+     * @param name
+     * @return
+     */
+    private boolean shouldAuditProperty(String name) {
+        return !"version".equalsIgnoreCase(name);
+    }
+
+    /**
+     *
+     * @param colIdx
+     * @param obj
+     * @return
+     */
     private boolean shouldAuditProperty(int colIdx, PostDeleteEvent obj) {
         String name = obj.getPersister().getPropertyNames()[colIdx];
-        boolean result = obj.getDeletedState()[colIdx] != null && PostUpdateEventListener.shouldAuditProperty(name);
+        boolean result = obj.getDeletedState()[colIdx] != null && shouldAuditProperty(name);
         if (result) {
             if (obj.getDeletedState()[colIdx] instanceof java.util.Set) {
                 result = false;
@@ -90,6 +111,12 @@ public class PostDeleteEventListener implements org.hibernate.event.PostDeleteEv
         }
         return result;
     }
+
+    /**
+     *
+     * @param obj
+     * @return
+     */
     private List<PropertyUpdateInfo> getPropertyUpdates(final PostDeleteEvent obj) {
         List<PropertyUpdateInfo> result = new ArrayList<>();
         for (int i = 0; i < obj.getDeletedState().length; i++) {
