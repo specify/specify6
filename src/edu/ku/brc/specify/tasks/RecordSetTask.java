@@ -1114,27 +1114,7 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
             Object data = cmdAction.getData();
             if (data instanceof RecordSetIFace)
             {
-                // If there is only one item in the RecordSet then the User will most likely want it named the same
-                // as the "identity" of the data object. So this goes and gets the Identity name and
-                // pre-sets the name in the dialog.
-                String intialName = "";
-                RecordSetIFace recordSet = (RecordSetIFace)cmdAction.getData();
-                if (recordSet.getNumItems() == 1)
-                {
-                    RecordSetItemIFace item = recordSet.getOrderedItems().iterator().next();
-                    DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-                    String                   sqlStr  = DBTableIdMgr.getInstance().getQueryForTable(recordSet.getDbTableId(), item.getRecordId());
-                    if (StringUtils.isNotEmpty(sqlStr))
-                    {
-                        Object dataObj = session.getData(sqlStr);
-                        if (dataObj != null)
-                        {
-                            intialName = ((FormDataObjIFace)dataObj).getIdentityTitle();
-                        }
-                    }
-                    session.close();
-                }
-                String rsName  = getUniqueRecordSetName(intialName);
+                String rsName  = getUniqueRecordSetName("");
                 if (isNotEmpty(rsName))
                 {
                     RecordSet rs = (RecordSet)data;
