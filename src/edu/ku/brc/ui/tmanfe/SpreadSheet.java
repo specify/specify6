@@ -541,7 +541,7 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener, R
     @Override
     public boolean editCellAt(int row, int column, EventObject ev)
     {
-        return mouseDown ? false : isReadOnly ? false : super.editCellAt(row, column, ev);
+        return mouseDown ? false : isReadOnly || !isEnabled() ? false : super.editCellAt(row, column, ev);
     }
 
     /**
