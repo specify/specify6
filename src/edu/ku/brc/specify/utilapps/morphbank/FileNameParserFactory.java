@@ -93,29 +93,22 @@ public class FileNameParserFactory
     /**
      * @return list of available parsers
      */
-    public List<FileNameParserIFace> getList()
-    {
+    public List<FileNameParserIFace> getList() {
         indexMap.clear();
         parserList.clear();
-        
+
         Collection coll = AppContextMgr.getInstance().getClassObject(Collection.class);
-        boolean isEmbedded = coll.getIsEmbeddedCollectingEvent();
-        
-        int i      = 0;
+
+        int i = 0;
         int fldInx = 0;
-        for (Class<?> cls : classes)
-        {
-            if (cls != CollectingEvent.class || !isEmbedded)
-            {
-                Class<?>           joinCls = CollectionDataFetcher.getAttachmentClassMap().get(cls);
-                BaseFileNameParser parser  = new BaseFileNameParser(cls, joinCls, fields[fldInx]);
-                if (parser != null)
-                {
-                    indexMap.put(parser, i);
-                    parserList.add(parser);
-                }
-                i++;
+        for (Class<?> cls : classes) {
+            Class<?> joinCls = CollectionDataFetcher.getAttachmentClassMap().get(cls);
+            BaseFileNameParser parser = new BaseFileNameParser(cls, joinCls, fields[fldInx]);
+            if (parser != null) {
+                indexMap.put(parser, i);
+                parserList.add(parser);
             }
+            i++;
             fldInx++;
         }
 
