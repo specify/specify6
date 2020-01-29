@@ -441,6 +441,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             saveBtn.setToolTipText(String.format(isForBatchEdit ? getResourceString("WB_BATCH_EDIT_DONE_TT") : getResourceString("WB_SAVE_DATASET_TT"),
                     new Object[] { workbench.getName() }));
             saveBtn.setEnabled(false);
+            saveBtn.setFocusTraversalKeysEnabled(false);
             saveBtn.addActionListener(new ActionListener() {
                 final boolean uploadAfterSave = isForBatchEdit;
             	public void actionPerformed(ActionEvent ae) {
@@ -453,7 +454,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                     }
                     String msg = isForBatchEdit ? getResourceString("WB_BATCH_EDIT_PREP")
                             : String.format(getResourceString("WB_SAVING"), new Object[] { workbench.getName() });
-                    UIRegistry.writeSimpleGlassPaneMsg(msg, WorkbenchTask.GLASSPANE_FONT_SIZE);
+                    UIRegistry.writeGlassPaneMsg(msg, WorkbenchTask.GLASSPANE_FONT_SIZE);
                     UIRegistry.getStatusBar().setIndeterminate(workbench.getName(), true);
                     final SwingWorker worker = new SwingWorker() {
                         @SuppressWarnings("synthetic-access")
@@ -495,7 +496,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                                         getResourceString("WB_ERROR_SAVING"), ex);
                             }
 
-                            UIRegistry.clearSimpleGlassPaneMsg();
+                            UIRegistry.clearGlassPaneMsg();
                             UIRegistry.getStatusBar().setProgressDone(workbench.getName());
                         }
                     };
@@ -518,7 +519,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                 public void actionPerformed(ActionEvent ae) {
                     UsageTracker.incrUsageCount("WB.RevertEdits");
 
-                    UIRegistry.writeSimpleGlassPaneMsg(String.format(getResourceString("WB_REVERTING"),
+                    UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_REVERTING"),
                             new Object[] { workbench.getName() }),
                             WorkbenchTask.GLASSPANE_FONT_SIZE);
                     UIRegistry.getStatusBar().setIndeterminate(workbench.getName(), true);
@@ -547,7 +548,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                                         getResourceString("WB_ERROR_REVERTING"), ex);
                             }
 
-                            UIRegistry.clearSimpleGlassPaneMsg();
+                            UIRegistry.clearGlassPaneMsg();
                             UIRegistry.getStatusBar().setProgressDone(workbench.getName());
                         }
                     };
@@ -3867,7 +3868,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                 //GlassPane and Progress bar currently don't show up during shutdown
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
-                        UIRegistry.writeSimpleGlassPaneMsg(String.format(
+                        UIRegistry.writeGlassPaneMsg(String.format(
                                 getResourceString("WB_SAVING"),
                                 new Object[] { workbench.getName() }),
                                 WorkbenchTask.GLASSPANE_FONT_SIZE);
@@ -3906,7 +3907,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                     @Override
                     public void finished()
                     {
-                        UIRegistry.clearSimpleGlassPaneMsg();
+                        UIRegistry.clearGlassPaneMsg();
                         UIRegistry.getStatusBar().setProgressDone(wbName);
                         shutdownLock.decrementAndGet();
                         shutdown();
@@ -5053,7 +5054,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 		private final int startRow;
 		private final int endRow;
 		private final boolean useGlassPane;
-		private AtomicReference<SimpleGlassPane> glassPane = new AtomicReference<>(null);
+		private AtomicReference<ProgressGlassPane> glassPane = new AtomicReference<>(null);
 		private final boolean allowCancel;
 		private final AtomicBoolean cancelledByUser = new AtomicBoolean(false);
 		
@@ -5080,103 +5081,104 @@ public class WorkbenchPaneSS extends BaseSubPane
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        ValidationWorker.this.glassPane.set(UIRegistry.writeSimpleGlassPaneMsg(
+                        ValidationWorker.this.glassPane.set(UIRegistry.writeGlassPaneMsg(
                                 String.format(getResourceString("WorkbenchPaneSS.Validating"),
                                         new Object[] {isUpdateDataSet() ? "" : workbench.getName()}),
-                                WorkbenchTask.GLASSPANE_FONT_SIZE, true));
+                                WorkbenchTask.GLASSPANE_FONT_SIZE/*, allowCancel*/));
                         if (allowCancel)
                         {
-                            UIRegistry.displayStatusBarText(getResourceString("WorkbenchPaneSS.CancelValidationHint"));
-                            ValidationWorker.this.glassPane.get().addMouseListener(new MouseListener() {
-
-                                /*
-                                 * (non-Javadoc)
-                                 *
-                                 * @see
-                                 * java.awt.event.MouseListener#mouseClicked(java.awt
-                                 * .event.MouseEvent)
-                                 */
-                                @Override
-                                public void mouseClicked(MouseEvent arg0) {
-                                    if (!arg0.isConsumed())
-                                    {
-                                        if (arg0.getClickCount() == 2)
-                                        {
-                                            SwingUtilities.invokeLater(new Runnable() {
-
-                                                /* (non-Javadoc)
-                                                 * @see java.lang.Runnable#run()
-                                                 */
-                                                @Override
-                                                public void run() {
-                                                    if (UIRegistry.displayConfirmLocalized(
-                                                            "WorkbenchPaneSS.CancelValidationConfirmTitle",
-                                                            "WorkbenchPaneSS.CancelValidationConfirmMsg", "YES", "NO",
-                                                            JOptionPane.QUESTION_MESSAGE))
-                                                    {
-                                                        cancelledByUser.set(true);
-                                                    }
-                                                }
-
-
-                                            });
-                                        }
-                                    }
-                                }
-
-                                /*
-                                 * (non-Javadoc)
-                                 *
-                                 * @see
-                                 * java.awt.event.MouseListener#mouseEntered(java.awt
-                                 * .event.MouseEvent)
-                                 */
-                                @Override
-                                public void mouseEntered(MouseEvent arg0) {
-                                    // TODO Auto-generated method stub
-
-                                }
-
-                                /*
-                                 * (non-Javadoc)
-                                 *
-                                 * @see
-                                 * java.awt.event.MouseListener#mouseExited(java.awt
-                                 * .event.MouseEvent)
-                                 */
-                                @Override
-                                public void mouseExited(MouseEvent arg0) {
-                                    // TODO Auto-generated method stub
-
-                                }
-
-                                /*
-                                 * (non-Javadoc)
-                                 *
-                                 * @see
-                                 * java.awt.event.MouseListener#mousePressed(java.awt
-                                 * .event.MouseEvent)
-                                 */
-                                @Override
-                                public void mousePressed(MouseEvent arg0) {
-                                    // TODO Auto-generated method stub
-
-                                }
-
-                                /*
-                                 * (non-Javadoc)
-                                 *
-                                 * @see
-                                 * java.awt.event.MouseListener#mouseReleased(java.awt
-                                 * .event.MouseEvent)
-                                 */
-                                @Override
-                                public void mouseReleased(MouseEvent arg0) {
-                                    // TODO Auto-generated method stub
-
-                                }
-
-                            });
+                            log.warn("cancel no longer supported for WB validation");
+//                            UIRegistry.displayStatusBarText(getResourceString("WorkbenchPaneSS.CancelValidationHint"));
+//                            ValidationWorker.this.glassPane.get().addMouseListener(new MouseListener() {
+//
+//                                /*
+//                                 * (non-Javadoc)
+//                                 *
+//                                 * @see
+//                                 * java.awt.event.MouseListener#mouseClicked(java.awt
+//                                 * .event.MouseEvent)
+//                                 */
+//                                @Override
+//                                public void mouseClicked(MouseEvent arg0) {
+//                                    if (!arg0.isConsumed())
+//                                    {
+//                                        if (arg0.getClickCount() == 2)
+//                                        {
+//                                            SwingUtilities.invokeLater(new Runnable() {
+//
+//                                                /* (non-Javadoc)
+//                                                 * @see java.lang.Runnable#run()
+//                                                 */
+//                                                @Override
+//                                                public void run() {
+//                                                    if (UIRegistry.displayConfirmLocalized(
+//                                                            "WorkbenchPaneSS.CancelValidationConfirmTitle",
+//                                                            "WorkbenchPaneSS.CancelValidationConfirmMsg", "YES", "NO",
+//                                                            JOptionPane.QUESTION_MESSAGE))
+//                                                    {
+//                                                        cancelledByUser.set(true);
+//                                                    }
+//                                                }
+//
+//
+//                                            });
+//                                        }
+//                                    }
+//                                }
+//
+//                                /*
+//                                 * (non-Javadoc)
+//                                 *
+//                                 * @see
+//                                 * java.awt.event.MouseListener#mouseEntered(java.awt
+//                                 * .event.MouseEvent)
+//                                 */
+//                                @Override
+//                                public void mouseEntered(MouseEvent arg0) {
+//                                    // TODO Auto-generated method stub
+//
+//                                }
+//
+//                                /*
+//                                 * (non-Javadoc)
+//                                 *
+//                                 * @see
+//                                 * java.awt.event.MouseListener#mouseExited(java.awt
+//                                 * .event.MouseEvent)
+//                                 */
+//                                @Override
+//                                public void mouseExited(MouseEvent arg0) {
+//                                    // TODO Auto-generated method stub
+//
+//                                }
+//
+//                                /*
+//                                 * (non-Javadoc)
+//                                 *
+//                                 * @see
+//                                 * java.awt.event.MouseListener#mousePressed(java.awt
+//                                 * .event.MouseEvent)
+//                                 */
+//                                @Override
+//                                public void mousePressed(MouseEvent arg0) {
+//                                    // TODO Auto-generated method stub
+//
+//                                }
+//
+//                                /*
+//                                 * (non-Javadoc)
+//                                 *
+//                                 * @see
+//                                 * java.awt.event.MouseListener#mouseReleased(java.awt
+//                                 * .event.MouseEvent)
+//                                 */
+//                                @Override
+//                                public void mouseReleased(MouseEvent arg0) {
+//                                    // TODO Auto-generated method stub
+//
+//                                }
+//
+//                            });
                         }
 
                     }
@@ -5271,7 +5273,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 			UIRegistry.displayStatusBarText(null);
 			if (useGlassPane)
 			{
-				UIRegistry.clearSimpleGlassPaneMsg();
+				UIRegistry.clearGlassPaneMsg();
 			}
 			if (isCancelled())
 			{
