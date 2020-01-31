@@ -1,6 +1,9 @@
 language: java
 jdk: openjdk8
 
+# The encrypted environment variables below are the passwords and
+# decryption keys for the install4j license and code signing certs.
+
 env:
   global:
   - secure: Qjz4NvuWa+YqhXgHPHXjkNOU7CHsrZM2j6JaLoCeU8iJlg+vq4OhRoceZKAwTRGTKB6bCRhoMlMN11U5KCVOYHzKFtPgmEuC0yrqSRtmFOtASQsi3b5ShK/bOtZhDhba9gF9dNHoLgPZQbOWweMzkXr84HbGMmlV3CIib4Enl3SMzDOZvZh9D3p4u5CSbutpTDHze6UfPDNmW9BmnZYHZIixdZa9z7C3E97yEYoBjmRQi+kKPfJgBnSq6dokdEpLvgZCZ0/59VG7b+gVt7yXAKzQCYG7oWutIZWEyizfAFggmESLDW8k6PYF6xckivsvSl3jovzdlCnyQuOYGDgiJDJWt4aL9i2coDnxjMVheA9olTAPwYWAvgJyk21Mb3qEStqa7j16BQffwPFcqVopbp1gOl1wD8x3ZX89CY0GafbVoML54uEvTOtNW2XBU9cL160SzfUJUlEe/K/t9XSmEynt+p8sNhFxrNiSIIwcT42nwaVlQk4migVTaU4O9qi7UJbmZxDOHrmnxmReWkgf0CprahCvTxGrWQQSmIQiIj6bRzPGOr0UifhxbGNbFbfK0VVoFsdAjOrXvOk0N1twrwtjtDjiF6xFvGPmfVLwaI88obLDpr97LgK0+DZjy1qKOxlXOTjkI9qfy+fHqsDzTyYq/wf77qXFDCXDMBEfOlg=
@@ -9,14 +12,24 @@ env:
   - secure: RXeBuK/KwMTceoPSdbm71O92DDik+wZ0EsKXKknKBVfXIy5QtSR19oTUQ9rcNSFZT9a4WGgnxWa1tw/POEz6rCPMVStf0ISsgUDSJA8/oY77jhx7gJry1KWXN5e86p4WTbKPfdOIUFHg8Qd1bJYyp4tv/9z1EJrsgo49rGJ8TPiQDV4R1J2KAWRzz76XcrMlfa04eGncBZKDuYq7BNi7zEzSAFaAFc6bvrk5N5Chf4G/FXvUVSuNrzcAn6yMERu+3Ef7R0A4TgnQ/0nBIbJckIWr446FDtE4LD9I98v31sV1SJKMi1+/NQj2Kdv6V7miI5W38S/68uRT7Vbh4M0BlQ0NpYGjkJAPp9BIORrHh2J/r4oQw6Ov2nyWId2LL08Psz14V8dA5iLuYfMuJf9Fhu9wBGuorCHf0r9+6rxvle605pqvGAejhbOyf8JSABjgA8X11jOyD9v0X+XiTJ5Xu7LUFkFJv2w+tO12YRc4pQiyi3ZKoa9ZkZ7mhDLjkyEYsDu1ptoXewo7of+uyj1Zrc1muH7J/BghtCYvga4eM9Un35NgI2JqFh7L4GF4I4Z1vNWnfmxgIw7w0KR1yymAHLny59X0cdM3s5tH+BlVoAtHe9lhoSjIUJAY7l/f3ZrISSG1Xt6w52HUzgb1NgDntBGZL4HDJQ8g9b611xx5lrY=
   - secure: Vl3Akxo31ms0VdXc3M8QYz2FIov63UEn0K43yry0QxYA5U1jEF4yh4Cc0Req385ljS8SP/2hEEDMJioOxPWRUO0ReVxZJ7tzt3VYDchIpXNYgGW+ieLpsxllv+B26SVLuNwdhZjiAo6i3tPs4hS+VqCJRzvojqoXpKRbH/5Sob2OwV8qCsgIMJg6rL5E7RnKFg1j5oJnOZeTHoQGtN4fD7EcS1a7nAOeLbuDPsX89/f+PR7pStnxf07dY62zZxSP3sb2yYpfefFkbEFTAmh/HU1ZQ/6aJEHbcfrfidnQjDCqIWaBNCpZp7R7h7NlJoG7ZvFWByVF+cGLYk6trg0SE86M2g6LqN2eMuT/dMYO7vOvgLWgOFXGJJb88JMnM07gUPhncqlnuZSnpnSA/tNOp3mjQnr7uNMhZ2YdmzEHz8sGtSzGNFtUFazfvaz0i+LOxD/+dUOkKV+fioD8fi+K6KCl4/C2aQsaw4SEk85m66shSWahWHBLV5JMMeqSKdV7ciVFtYBZ3H2yP4r6cS74JXuLHaDJGB/TZg9xf/LyJFVpiaO/swXKZaQlQaxqBjJkg7+5w93mtPYMDnof6xiYvVD/+AaFK34nWyhJFcpWOM2sYRlul7HHx58UBbLmAXiLlT6MSAyWz/qTh10GdcYtrBraZsc2e5r5UzyzJ6MQO/o=
 
+
+# The install4j directory is cached so that it isn't download anew for
+# each build.
+
 cache:
   directories:
   - install4j7.0.7
+
+
+# Install ant for building and decrypt code signing certs.
 
 before_install:
   - sudo apt-get install -y ant
   - echo $win_pkcs_password | gpg --output packaging/certwithroot.pfx --passphrase-fd 0 packaging/certwithroot.pfx.gpg
   - echo $mac_pkcs_password | gpg --output packaging/expdevidapp.p12 --passphrase-fd 0 packaging/expdevidapp.p12.gpg
+
+
+# The install stage will download and unpack install4j.
 
 install:
 - |
@@ -26,11 +39,21 @@ install:
     tar -zxvf install4j_unix_7_0_7.tar.gz;
   fi
 
+
+# Tell install4j where its license is.
+
 before_script:
 - install4j7.0.7/bin/install4jc --license=$INSTALL4J_LICENSE
 
+
+# This is the actual Specify build and packaging directive.
+
 script:
 - ant package-all -Dinstall4j.dir=./install4j7.0.7 -Dwin-keystore-password=$win_keystore_password -Dmac-keystore-password=$mac_keystore_password -Dwin.pkcs12=certwithroot.pfx -Dmac.pkcs12=expdevidapp.p12 -Dcode.signing=true
+
+
+# The deploy stage uploads the Specify packages and the update.xml file as
+# a Github prerelease whenever a tag is pushed to the specify6 repo.
 
 deploy:
   provider: releases
