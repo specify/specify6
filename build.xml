@@ -179,7 +179,7 @@
 
 
 
-  <target name="installer-common">
+  <target name="installer-common" depends="generate-datamodel">
     <delete dir="${installer.dir}"/>
     <mkdir dir="${installer.dir}" />
     <mkdir dir="${installer.dir}/demo_files"/>
@@ -400,7 +400,7 @@
     <move file="tmp.xml" tofile="${packages.dir}/updates.xml"/>
   </target>
 
-  <target name="run-specify-nonmac" depends="make-jar-nonmac">
+  <target name="run-specify-nonmac" depends="make-jar-nonmac, generate-datamodel">
     <java classname="edu.ku.brc.specify.Specify" fork="true" failonerror="true">
       <classpath>
         <path refid="compile.classpath.nonmac"/>
@@ -409,7 +409,7 @@
     </java>
   </target>
 
-  <target name="run-specify-mac" depends="make-jar-mac">
+  <target name="run-specify-mac" depends="make-jar-mac, generate-datamodel">
     <java classname="edu.ku.brc.specify.Specify" fork="true" failonerror="true">
       <classpath>
         <path refid="compile.classpath.mac"/>
@@ -418,6 +418,15 @@
     </java>
   </target>
 
+  <target name="generate-datamodel" depends="make-jar-nonmac">
+    <java classname="edu.ku.brc.specify.tools.datamodelgenerator.DatamodelGenerator" fork="true" failonerror="true">
+      <classpath>
+        <path refid="compile.classpath.nonmac"/>
+        <pathelement location="${build.root}/${jar.name}-nonmac.jar"/>
+      </classpath>
+    </java>
+  </target>
+  
   <!-- *************************************************************
        Schema Export (Doesn't work at the moment)
        ************************************************************* -->

@@ -35,13 +35,20 @@ The following build targets are available:
 
 * `ant make-jar-mac` - Assemble JAR file for Mac targets.
 
+* `ant generate-datamodel` - Generate
+  `config/specify_datamodel.xml`. This target is depended upon by the
+  packaging targets and will be run automatically for packaging. It
+  needs to be run manually, however, to permit Specify to run from
+  within an IDE.
+
 * `ant run-specify-nonmac` - Execute the main Specify application for
   non Mac systems.
 
 * `ant run-specify-mac` - Execute the main Specify application on Mac
   systems.
 
-All build outputs will be found in the `build/` directory.
+All build outputs will be found in the `build/` directory except for
+`config/specify_datamodel.xml`.
 
 ## Packaging Specify 6
 
