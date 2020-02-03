@@ -35,27 +35,29 @@ The following build targets are available:
 
 * `ant make-jar-mac` - Assemble JAR file for Mac targets.
 
+* `ant generate-datamodel` - Generate
+  `config/specify_datamodel.xml`. This target is depended upon by the
+  packaging targets and will be run automatically for packaging. It
+  needs to be run manually, however, to permit Specify to run from
+  within an IDE.
+
 * `ant run-specify-nonmac` - Execute the main Specify application for
   non Mac systems.
 
 * `ant run-specify-mac` - Execute the main Specify application on Mac
   systems.
 
-All build outputs will be found in the `build/` directory.
+All build outputs will be found in the `build/` directory except for
+`config/specify_datamodel.xml`.
 
 ## Packaging Specify 6
 
-Packaging Specify 6 requires **Install4J  v5.1** (evaluation or
+Packaging Specify 6 requires **Install4J  v7.0** (evaluation or
 licensed).
-
-Developers within the Biodiversity Institute network should
-use the floating license on *specify6-prod.nhm.ku.edu* by running
-`/path/to/install4j/bin/install4jc
---license=FLOAT:specify6-prod.nhm.ku.edu` after installing Install4J.
 
 The path to Install4J must be provided to the Ant
 build through the `-Dinstall4j.dir=/path/to/install4j` parameter unless
-Install4J is at the default location `$HOME/install4j5`.
+Install4J is at the default location `$HOME/install4j7.0.7`.
 
 The following Ant build targets are available for packaging:
 
