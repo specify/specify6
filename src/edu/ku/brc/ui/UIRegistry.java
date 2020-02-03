@@ -1763,7 +1763,14 @@ public class UIRegistry
         {
             glassPane.finishDnD();
         }
-        
+
+        //creating new glass pane to avoid having to write repaint code to clear progress bar which, once used, remained
+        //visible for all succeeding calls to this method.
+        glassPane = new GhostGlassPane();
+        unregister(UIRegistry.GLASSPANE);
+        register(UIRegistry.GLASSPANE, glassPane);
+        ((JFrame)getTopWindow()).setGlassPane(glassPane);
+
         glassPane.setMaskingEvents(true);
         
         Component mainComp = get(MAINPANE);

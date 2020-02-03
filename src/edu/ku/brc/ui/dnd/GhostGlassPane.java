@@ -62,7 +62,7 @@ public class GhostGlassPane extends ProgressGlassPane
     public enum ImagePaintMode {CENTERED, DRAG, ABSOLUTE}
     private static final boolean DEBUG = false;
     
-    private static GhostGlassPane instance = new GhostGlassPane();
+    private static GhostGlassPane instance = null;
 
     private final int   ANIMATION_DELAY = 500;
     private final float STD_ALPHA       = 0.7f;
@@ -94,7 +94,7 @@ public class GhostGlassPane extends ProgressGlassPane
     /**
      * Default Constructor
      */
-    protected GhostGlassPane()
+    public GhostGlassPane()
     {
         setOpaque(false);
         
@@ -148,6 +148,9 @@ public class GhostGlassPane extends ProgressGlassPane
      */
     public static GhostGlassPane getInstance()
     {
+        if (instance == null) {
+            instance = new GhostGlassPane();
+        }
         return instance;
     }
 

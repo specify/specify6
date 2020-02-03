@@ -153,8 +153,6 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
     protected DatabaseLoginPanel dbLoginPanel        = null;
     protected String             databaseName        = null;
     protected String             userName            = null;
-    //DatabaseLoginPanel dbLoginPanel
-    protected GhostGlassPane     glassPane;
 
     private boolean              isWorkbenchOnly     = false;
     
@@ -696,7 +694,8 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         topFrame.setIconImage(IconManager.getImage(getIconName()).getImage()); //$NON-NLS-1$
         //topFrame.setAlwaysOnTop(true);
         
-        topFrame.setGlassPane(glassPane = GhostGlassPane.getInstance());
+        GhostGlassPane glassPane = new GhostGlassPane();
+        topFrame.setGlassPane(glassPane);
         topFrame.setLocationRelativeTo(null);
         Toolkit.getDefaultToolkit().setDynamicLayout(true);
         UIRegistry.register(UIRegistry.GLASSPANE, glassPane);

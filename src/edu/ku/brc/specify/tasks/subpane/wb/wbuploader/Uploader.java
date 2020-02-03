@@ -80,6 +80,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
@@ -261,8 +262,8 @@ public class Uploader implements ActionListener, KeyListener
 
     private List<UploadTable> uploadedTablesForCurrentRow;
 
-    protected boolean wasCommitted = false;
-    protected boolean wasRolledBack = false;
+    protected AtomicBoolean wasCommitted = new AtomicBoolean(false);
+    protected AtomicBoolean wasRolledBack = new AtomicBoolean(false);
 
     protected DataProviderSessionIFace theUploadBatchEditSession;
 
@@ -3592,6 +3593,42 @@ public class Uploader implements ActionListener, KeyListener
         new Thread(sleeper).start();
     }
 
+    protected void closeIfShutDown(final WorkbenchPaneSS shuttingDownSS, final String action, boolean force) {
+        final UploaderTask aboutToShutTask = new UploaderTask(false, "") {
+            boolean success = false;
+            public Object doInBackground() {
+                boolean commited = wasCommitted.get();
+                boolean rolled = wasRolledBack.get();
+                start();
+                wasCommitted.set(commited);
+                wasRolledBack.set(rolled);
+                success = aboutToShutdown(shuttingDownSS, action, force);
+                return success;
+            }
+
+            @Override
+            public void done() {
+
+                super.done();
+                if (!success) {
+                    //Uh oh.
+                }
+                UIRegistry.clearGlassPaneMsg();
+                if (success) {
+                    closeMainForm(true, action);
+                }
+            }
+
+        };
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                UIRegistry.writeGlassPaneMsg(getResourceString("WB_BATCH_EDIT_CLOSING"), WorkbenchTask.GLASSPANE_FONT_SIZE);
+            }
+        });
+        aboutToShutTask.execute();
+    }
+
     protected void rollBackOrCommitBatchEdit(final String action, boolean force, boolean closeUploadPanel) {
         int rv = force ? JOptionPane.YES_OPTION : showShutDownDlg(true, action);
         if (rv == JOptionPane.YES_OPTION) {
@@ -3607,7 +3644,7 @@ public class Uploader implements ActionListener, KeyListener
                             SwingUtilities.invokeLater(new Runnable() {
                                 @Override
                                 public void run() {
-                                    UIRegistry.writeSimpleGlassPaneMsg(getResourceString(rollBack ? "WB_BATCH_EDIT_ROLLING_BACK" : "WB_BATCH_EDIT_COMMITTING"),
+                                    UIRegistry.writeGlassPaneMsg(getResourceString(rollBack ? "WB_BATCH_EDIT_ROLLING_BACK" : "WB_BATCH_EDIT_COMMITTING"),
                                             WorkbenchTask.GLASSPANE_FONT_SIZE);
                                 }
                             });
@@ -3628,7 +3665,7 @@ public class Uploader implements ActionListener, KeyListener
                                 @Override
                                 public void run() {
                                     //progDlg.setVisible(false);
-                                    UIRegistry.clearSimpleGlassPaneMsg();
+                                    UIRegistry.clearGlassPaneMsg();
                                 }
                             });
                             if (closeUploadPanel && aboutToShutdown(null, action, true))
@@ -3639,8 +3676,9 @@ public class Uploader implements ActionListener, KeyListener
 
                 }
             } else {
-                if (closeUploadPanel && aboutToShutdown(null, action, true)) {
-                    closeMainForm(true, action);
+                if (closeUploadPanel) {
+                    closeIfShutDown(null, action, true);
+                    return;
                 }
             }
             if (!closeUploadPanel) {
@@ -3683,7 +3721,7 @@ public class Uploader implements ActionListener, KeyListener
         if (shuttingDownSS != null && shuttingDownSS != wbSS) {
             return true;
         }
-        if (!(wasCommitted || wasRolledBack) && currentTask.get() != null ||
+        if (!(wasCommitted.get() || wasRolledBack.get()) && currentTask.get() != null ||
         		(shuttingDownSS != null && (currentOp.equals(Uploader.SUCCESS)  || currentOp.equals(Uploader.SUCCESS_PARTIAL)) && getUploadedObjects() > 0)) {
             JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(), getResourceString(isUpdateUpload() ? "WB_BATCH_EDIT_PENDING_EDITS" :"WB_UPLOAD_BUSY_CANNOT_CLOSE"));
             return false;
@@ -3698,13 +3736,13 @@ public class Uploader implements ActionListener, KeyListener
         if (result && shuttingDownSS == null
                 && (currentOp.equals(Uploader.SUCCESS)
                         || currentOp.equals(Uploader.SUCCESS_PARTIAL)
-                        || wasCommitted)
+                        || wasCommitted.get())
                 && getUploadedObjects() > 0) {
             result = false;
             boolean isUpdate = isUpdateUpload();
             int rv = force ? JOptionPane.YES_OPTION : showShutDownDlg(isUpdate, action);
             if (rv == JOptionPane.YES_OPTION) {
-                if (!isUpdate || (wasCommitted && !wasRolledBack)) {
+                if (!isUpdate || (wasCommitted.get() && !wasRolledBack.get())) {
                     saveRecordSets();
                 }
                 result = true;
@@ -4585,7 +4623,7 @@ public class Uploader implements ActionListener, KeyListener
                                 theUploadBatchEditSession.commit();
                                 theUploadBatchEditSession.close();
                                 theUploadBatchEditSession = null;
-                                wasCommitted = true;
+                                wasCommitted.set(true);
                                 SwingUtilities.invokeLater(() -> progDlg.commitSuccess());
                             } catch (Exception ex) {
                                 //Oh no.
@@ -4593,7 +4631,7 @@ public class Uploader implements ActionListener, KeyListener
                                 ex.printStackTrace();
                                 theUploadBatchEditSession.close();
                                 theUploadBatchEditSession = null;
-                                wasRolledBack = true;
+                                wasRolledBack.set(true);
                                 SwingUtilities.invokeLater(() -> progDlg.commitFail());
                             }
                         } else {
@@ -4622,7 +4660,7 @@ public class Uploader implements ActionListener, KeyListener
                             }
                             theUploadBatchEditSession.close();
                             theUploadBatchEditSession = null;
-                            wasRolledBack = true;
+                            wasRolledBack.set(true);
                             final boolean timedOut = wasTimeout;
                             SwingUtilities.invokeLater(() -> progDlg.cancelCompleted(timedOut, crashed));
                         }
@@ -5232,7 +5270,7 @@ public class Uploader implements ActionListener, KeyListener
                 if (shuttingDown) {
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
-                            UIRegistry.clearSimpleGlassPaneMsg();
+                            UIRegistry.clearGlassPaneMsg();
 
                         }
                     });
@@ -5276,7 +5314,7 @@ public class Uploader implements ActionListener, KeyListener
         if (shuttingDown) {
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
-                    UIRegistry.writeSimpleGlassPaneMsg(String.format(
+                    UIRegistry.writeGlassPaneMsg(String.format(
                             getResourceString("WB_UPLOAD_CLEANING_UP") + "...", theWb
                                     .getName()), WorkbenchTask.GLASSPANE_FONT_SIZE);
 
@@ -5337,8 +5375,8 @@ public class Uploader implements ActionListener, KeyListener
         {
             startTime = System.nanoTime();
             uploadedTablesForCurrentRow = new ArrayList<UploadTable>();
-            wasCommitted = false;
-            wasRolledBack = false;
+            wasCommitted.set(false);
+            wasRolledBack.set(false);
         }
                 
         @Override
@@ -5795,73 +5833,22 @@ public class Uploader implements ActionListener, KeyListener
     /**
      * Saves recordSets to the database.
      */
-    protected void saveRecordSets()  {
-        if (recordSets == null || recordSets.size() == 0)  {
+    protected void saveRecordSets() {
+        if (recordSets == null || recordSets.size() == 0) {
             createRecordSets();
         }
 
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        try  {
+        try {
             UploadTable root = getRootTable();
-            RecordSetTask rsTsk = (RecordSetTask)ContextMgr.getTaskByClass(RecordSetTask.class);
-        	for (RecordSet rs : recordSets)  {
-			    rsTsk.saveNewRecordSet(rs, rs.getType() == RecordSet.GLOBAL && rs.getDbTableId() == root.getTable().getTableInfo().getTableId());
-
-//                BusinessRulesIFace busRule = DBTableIdMgr.getInstance()
-//						.getBusinessRule(RecordSet.class);
-//				if (busRule != null)  {
-//					busRule.beforeSave(rs, session);
-//				}
-//				rs.setModifiedByAgent(rs.getCreatedByAgent());
-//				session.beginTransaction();
-//				try {
-//					session.save(rs);
-//					if (busRule != null)  {
-//						if (!busRule.beforeSaveCommit(rs, session))  {
-//							session.rollback();
-//							throw new Exception(
-//									"Business rules processing failed");
-//						}
-//					}
-//					session.commit();
-//					if (busRule != null)  {
-//						busRule.afterSaveCommit(rs, session);
-//					}
-//					if (rs.getType() == RecordSet.GLOBAL && rs.getDbTableId() == root.getTable().getTableInfo().getTableId())  {
-//						final RecordSet mergedRs = session.merge(rs);
-//		        		SwingUtilities.invokeLater(new Runnable() {
-//
-//							/* (non-Javadoc)
-//							 * @see java.lang.Runnable#run()
-//							 */
-//							@Override
-//							public void run() {
-//							    /*RecordSetTask rsTsk = (RecordSetTask)ContextMgr.getTaskByClass(RecordSetTask.class);
-//							    if (rsTsk != null) {
-//							        rsTsk.addRecordSetToNavBox(mergedRs);
-//                                } else*/ {
-//                                    CommandAction cmd = new CommandAction(RecordSetTask.RECORD_SET, RecordSetTask.ADD_TO_NAV_BOX);
-//                                    cmd.setData(mergedRs);
-//                                    CommandDispatcher.dispatch(cmd);
-//                                }
-//							}
-//
-//		        		});
-//					}
-//				} catch (Exception ex)  {
-//					edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-//					edu.ku.brc.exceptions.ExceptionTracker.getInstance()
-//							.capture(Uploader.class, ex);
-//					session.rollback();
-//				}
-			}
-        }
-        catch (Exception ex)  {
+            RecordSetTask rsTsk = (RecordSetTask) ContextMgr.getTaskByClass(RecordSetTask.class);
+            for (RecordSet rs : recordSets) {
+                rsTsk.saveNewRecordSet(rs, rs.getType() == RecordSet.GLOBAL && rs.getDbTableId() == root.getTable().getTableInfo().getTableId());
+            }
+        } catch (Exception ex) {
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, ex);
-            throw new RuntimeException(ex);
-        }
-        finally {
+        } finally {
             session.close();
         }
     }
