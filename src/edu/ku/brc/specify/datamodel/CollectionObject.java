@@ -1593,6 +1593,11 @@ public void setReservedText3(String reservedText3) {
         	
         	prj.getProjectName();
         }
+
+        dnaSequences.size();
+        for (DNASequence dnaS : dnaSequences) {
+            dnaS.forceLoad();
+        }
     }
     
     
