@@ -70,6 +70,7 @@ import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
+import edu.ku.brc.specify.ui.db.ResultSetTableModel;
 
 /**
  * A task to handle RecordSet data exporting.  This task provides a pluggable
@@ -695,9 +696,13 @@ public class PluginsTask extends BaseTask
             } else if (cmdAction.isAction(EXPORT_JTABLE))
             {
                 JTable table = (JTable)cmdAction.getProperty("jtable");
-                if (table != null)
-                {
-                    exportTable(table);
+                if (table != null) {
+                    if (table.getModel() instanceof ResultSetTableModel && ((ResultSetTableModel) table.getModel()).isLoadingCells()) {
+                        UIRegistry.writeTimedSimpleGlassPaneMsg(UIRegistry.getResourceString("NO_ACTION_WHILE_LOADING_RESULTS"),
+                                5000, null, null, true);
+                    } else {
+                        exportTable(table);
+                    }
                 }
             }
         } else if (cmdAction.isType(PreferencesDlg.PREFERENCES))

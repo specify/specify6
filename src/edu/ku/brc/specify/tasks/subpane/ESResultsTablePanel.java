@@ -1077,27 +1077,23 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         /* (non-Javadoc)
          * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
          */
-        public void actionPerformed(ActionEvent e)
-        {
+        public void actionPerformed(ActionEvent e) {
             UIRegistry.getStatusBar().setText(msg);
-            
             SwingUtilities.invokeLater(new Runnable() {
-                public void run()
-                {
-                    try
-                    {
-                        CommandAction cmdAction = (CommandAction)cmd.clone();
+                public void run() {
+                    try {
+                        CommandAction cmdAction = (CommandAction) cmd.clone();
                         //cmdAction.setData(null);
-                        
+
                         boolean doSetCmdData = cmdAction.getData() == null;
-                        if (doSetCmdData)
-                        {
+                        if (doSetCmdData) {
                             cmdAction.setData(getRecordSet(false));
                         }
                         cmdAction.addProperties(props);
                         CommandDispatcher.dispatch(cmdAction);
-                        
-                    } catch (CloneNotSupportedException ex) {}
+
+                    } catch (CloneNotSupportedException ex) {
+                    }
                 }
             });
         }
