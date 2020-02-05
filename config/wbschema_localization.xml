@@ -15408,7 +15408,7 @@
           </str>
           <str language="pt" country="" variant="">
             <version>0</version>
-            <text>Superordem G U I D</text>
+            <text>Superordem GUID</text>
             <itemName reference="../../.."/>
           </str>
           <str language="ru" country="RU" variant="">
@@ -15703,7 +15703,7 @@
         <names>
           <str language="pt" country="" variant="">
             <version>0</version>
-            <text>Filo G U I D</text>
+            <text>Filo GUID</text>
             <itemName reference="../../.."/>
           </str>
           <str language="en">
@@ -15777,7 +15777,7 @@
         <names>
           <str language="pt" country="" variant="">
             <version>0</version>
-            <text>Superfamília G U I D</text>
+            <text>Superfamília GUID</text>
             <itemName reference="../../.."/>
           </str>
           <str language="en">
@@ -15899,7 +15899,7 @@
         <names>
           <str language="pt" country="" variant="">
             <version>0</version>
-            <text>Reino G U I D</text>
+            <text>Reino GUID</text>
             <itemName reference="../../.."/>
           </str>
           <str language="en">
@@ -15999,7 +15999,7 @@
           </str>
           <str language="pt" country="" variant="">
             <version>0</version>
-            <text>Infraordem G U I D</text>
+            <text>Infraordem GUID</text>
             <itemName reference="../../.."/>
           </str>
           <str language="ru" country="RU" variant="">
@@ -16067,7 +16067,7 @@
         <names>
           <str language="pt" country="" variant="">
             <version>0</version>
-            <text>Parvordem G U I D</text>
+            <text>Parvordem GUID</text>
             <itemName reference="../../.."/>
           </str>
           <str language="en">
@@ -16217,7 +16217,7 @@
         <names>
           <str language="pt" country="" variant="">
             <version>0</version>
-            <text>Subfamília G U I D</text>
+            <text>Subfamília GUID</text>
             <itemName reference="../../.."/>
           </str>
           <str language="en">
@@ -16343,7 +16343,7 @@
           </str>
           <str language="pt" country="" variant="">
             <version>0</version>
-            <text>Subtribo G U I D</text>
+            <text>Subtribo GUID</text>
             <itemName reference="../../.."/>
           </str>
           <str language="ru" country="RU" variant="">
@@ -16483,7 +16483,7 @@
         <names>
           <str language="pt" country="" variant="">
             <version>0</version>
-            <text>Tribo G U I D</text>
+            <text>Tribo GUID</text>
             <itemName reference="../../.."/>
           </str>
           <str language="en">
@@ -16561,7 +16561,7 @@
           </str>
           <str language="pt" country="" variant="">
             <version>0</version>
-            <text>Divisão G U I D</text>
+            <text>Divisão GUID</text>
             <itemName reference="../../.."/>
           </str>
           <str language="ru" country="RU" variant="">
@@ -16683,7 +16683,7 @@
           </str>
           <str language="pt" country="" variant="">
             <version>0</version>
-            <text>Ordem G U I D</text>
+            <text>Ordem GUID</text>
             <itemName reference="../../.."/>
           </str>
           <str language="ru" country="RU" variant="">
@@ -16924,7 +16924,7 @@
         <names>
           <str language="pt" country="" variant="">
             <version>0</version>
-            <text>Infraclasse G U I D</text>
+            <text>Infraclasse GUID</text>
             <itemName reference="../../.."/>
           </str>
           <str language="en">
@@ -17002,7 +17002,7 @@
           </str>
           <str language="pt" country="" variant="">
             <version>0</version>
-            <text>Classe G U I D</text>
+            <text>Classe GUID</text>
             <itemName reference="../../.."/>
           </str>
           <str language="ru" country="RU" variant="">
@@ -17193,7 +17193,7 @@
           </str>
           <str language="pt" country="" variant="">
             <version>0</version>
-            <text>Subreino G U I D</text>
+            <text>Subreino GUID</text>
             <itemName reference="../../.."/>
           </str>
           <str language="ru" country="RU" variant="">
@@ -17264,7 +17264,7 @@
         <names>
           <str language="pt" country="" variant="">
             <version>0</version>
-            <text>Subfilo G U I D</text>
+            <text>Subfilo GUID</text>
             <itemName reference="../../.."/>
           </str>
           <str language="en">
@@ -17289,7 +17289,7 @@
         <names>
           <str language="pt" country="" variant="">
             <version>0</version>
-            <text>Subordem G U I D</text>
+            <text>Subordem GUID</text>
             <itemName reference="../../.."/>
           </str>
           <str language="en">
@@ -17318,7 +17318,7 @@
           </str>
           <str language="pt" country="" variant="">
             <version>0</version>
-            <text>Subdivisão G U I D</text>
+            <text>Subdivisão GUID</text>
             <itemName reference="../../.."/>
           </str>
           <str language="ru" country="RU" variant="">
@@ -17386,7 +17386,7 @@
         <names>
           <str language="pt" country="" variant="">
             <version>0</version>
-            <text>Subclasse G U I D</text>
+            <text>Subclasse GUID</text>
             <itemName reference="../../.."/>
           </str>
           <str language="en">
@@ -17512,7 +17512,7 @@
           </str>
           <str language="pt" country="" variant="">
             <version>0</version>
-            <text>Família G U I D</text>
+            <text>Família GUID</text>
             <itemName reference="../../.."/>
           </str>
           <str language="ru" country="RU" variant="">
@@ -17703,7 +17703,7 @@
         <names>
           <str language="pt" country="" variant="">
             <version>0</version>
-            <text>Superclasse G U I D</text>
+            <text>Superclasse GUID</text>
             <itemName reference="../../.."/>
           </str>
           <str language="en">
@@ -20241,7 +20241,7 @@
           </str>
           <str language="pt" country="" variant="">
             <version>0</version>
-            <text>Subespécie G U I D</text>
+            <text>Subespécie GUID</text>
             <itemName reference="../../.."/>
           </str>
           <str language="ru" country="RU" variant="">
@@ -20712,7 +20712,7 @@
           </str>
           <str language="pt" country="" variant="">
             <version>0</version>
-            <text>Superfamília G U I D</text>
+            <text>Superfamília GUID</text>
             <itemName reference="../../.."/>
           </str>
           <str language="ru" country="RU" variant="">
@@ -20757,7 +20757,7 @@
         <names>
           <str language="pt" country="" variant="">
             <version>0</version>
-            <text>Subgénero G U I D</text>
+            <text>Subgénero GUID</text>
             <itemName reference="../../.."/>
           </str>
           <str language="en">
@@ -20807,7 +20807,7 @@
         <names>
           <str language="pt" country="" variant="">
             <version>0</version>
-            <text>Subclasse G U I D</text>
+            <text>Subclasse GUID</text>
             <itemName reference="../../.."/>
           </str>
           <str language="en">
@@ -20932,7 +20932,7 @@
           </str>
           <str language="pt" country="" variant="">
             <version>0</version>
-            <text>Reino G U I D</text>
+            <text>Reino GUID</text>
             <itemName reference="../../.."/>
           </str>
           <str language="ru" country="RU" variant="">
@@ -21247,7 +21247,7 @@
           </str>
           <str language="pt" country="" variant="">
             <version>0</version>
-            <text>Divisão G U I D</text>
+            <text>Divisão GUID</text>
             <itemName reference="../../.."/>
           </str>
           <str language="ru" country="RU" variant="">
@@ -21272,7 +21272,7 @@
           </str>
           <str language="pt" country="" variant="">
             <version>0</version>
-            <text>Género G U I D</text>
+            <text>Género GUID</text>
             <itemName reference="../../.."/>
           </str>
           <str language="ru" country="RU" variant="">
@@ -21394,7 +21394,7 @@
           </str>
           <str language="pt" country="" variant="">
             <version>0</version>
-            <text>Espécie G U I D</text>
+            <text>Espécie GUID</text>
             <itemName reference="../../.."/>
           </str>
           <str language="ru" country="RU" variant="">
@@ -21488,7 +21488,7 @@
         <names>
           <str language="pt" country="" variant="">
             <version>0</version>
-            <text>Família G U I D</text>
+            <text>Família GUID</text>
             <itemName reference="../../.."/>
           </str>
           <str language="en">
@@ -21513,7 +21513,7 @@
         <names>
           <str language="pt" country="" variant="">
             <version>0</version>
-            <text>Infraclasse G U I D</text>
+            <text>Infraclasse GUID</text>
             <itemName reference="../../.."/>
           </str>
           <str language="en">
@@ -21542,7 +21542,7 @@
           </str>
           <str language="pt" country="" variant="">
             <version>0</version>
-            <text>Forma G U I D</text>
+            <text>Forma GUID</text>
             <itemName reference="../../.."/>
           </str>
           <str language="ru" country="RU" variant="">
@@ -21660,7 +21660,7 @@
         <names>
           <str language="pt" country="" variant="">
             <version>0</version>
-            <text>Superclasse G U I D</text>
+            <text>Superclasse GUID</text>
             <itemName reference="../../.."/>
           </str>
           <str language="en">
@@ -21932,7 +21932,7 @@
         <names>
           <str language="pt" country="" variant="">
             <version>0</version>
-            <text>Subvariedade G U I D</text>
+            <text>Subvariedade GUID</text>
             <itemName reference="../../.."/>
           </str>
           <str language="en">
@@ -22055,7 +22055,7 @@
         <names>
           <str language="pt" country="" variant="">
             <version>0</version>
-            <text>Variedade G U I D</text>
+            <text>Variedade GUID</text>
             <itemName reference="../../.."/>
           </str>
           <str language="en">
@@ -22207,7 +22207,7 @@
           </str>
           <str language="pt" country="" variant="">
             <version>0</version>
-            <text>Subreino G U I D</text>
+            <text>Subreino GUID</text>
             <itemName reference="../../.."/>
           </str>
           <str language="ru" country="RU" variant="">
@@ -22381,7 +22381,7 @@
           </str>
           <str language="pt" country="" variant="">
             <version>0</version>
-            <text>Seção G U I D</text>
+            <text>Seção GUID</text>
             <itemName reference="../../.."/>
           </str>
           <str language="ru" country="RU" variant="">
@@ -22454,7 +22454,7 @@
           </str>
           <str language="pt" country="" variant="">
             <version>0</version>
-            <text>Subdivisão G U I D</text>
+            <text>Subdivisão GUID</text>
             <itemName reference="../../.."/>
           </str>
           <str language="ru" country="RU" variant="">
@@ -22551,7 +22551,7 @@
           </str>
           <str language="pt" country="" variant="">
             <version>0</version>
-            <text>Subforma G U I D</text>
+            <text>Subforma GUID</text>
             <itemName reference="../../.."/>
           </str>
           <str language="ru" country="RU" variant="">
@@ -22597,7 +22597,7 @@
         <names>
           <str language="pt" country="" variant="">
             <version>0</version>
-            <text>Subseção G U I D</text>
+            <text>Subseção GUID</text>
             <itemName reference="../../.."/>
           </str>
           <str language="en">
@@ -22622,7 +22622,7 @@
         <names>
           <str language="pt" country="" variant="">
             <version>0</version>
-            <text>Superordem G U I D</text>
+            <text>Superordem GUID</text>
             <itemName reference="../../.."/>
           </str>
           <str language="en">
@@ -22747,7 +22747,7 @@
           </str>
           <str language="pt" country="" variant="">
             <version>0</version>
-            <text>Tribo G U I D</text>
+            <text>Tribo GUID</text>
             <itemName reference="../../.."/>
           </str>
           <str language="ru" country="RU" variant="">
@@ -22820,7 +22820,7 @@
           </str>
           <str language="pt" country="" variant="">
             <version>0</version>
-            <text>Subfilo G U I D</text>
+            <text>Subfilo GUID</text>
             <itemName reference="../../.."/>
           </str>
           <str language="ru" country="RU" variant="">
@@ -22938,7 +22938,7 @@
         <names>
           <str language="pt" country="" variant="">
             <version>0</version>
-            <text>Subtribo G U I D</text>
+            <text>Subtribo GUID</text>
             <itemName reference="../../.."/>
           </str>
           <str language="en">
@@ -23011,7 +23011,7 @@
         <names>
           <str language="pt" country="" variant="">
             <version>0</version>
-            <text>Subordem G U I D</text>
+            <text>Subordem GUID</text>
             <itemName reference="../../.."/>
           </str>
           <str language="en">
@@ -23060,7 +23060,7 @@
         <names>
           <str language="pt" country="" variant="">
             <version>0</version>
-            <text>Ordem G U I D</text>
+            <text>Ordem GUID</text>
             <itemName reference="../../.."/>
           </str>
           <str language="en">
@@ -23283,7 +23283,7 @@
           </str>
           <str language="pt" country="" variant="">
             <version>0</version>
-            <text>Classe G U I D</text>
+            <text>Classe GUID</text>
             <itemName reference="../../.."/>
           </str>
           <str language="ru" country="RU" variant="">
@@ -23304,7 +23304,7 @@
         <names>
           <str language="pt" country="" variant="">
             <version>0</version>
-            <text>Filo G U I D</text>
+            <text>Filo GUID</text>
             <itemName reference="../../.."/>
           </str>
           <str language="en">
@@ -23357,7 +23357,7 @@
           </str>
           <str language="pt" country="" variant="">
             <version>0</version>
-            <text>Infraordem G U I D</text>
+            <text>Infraordem GUID</text>
             <itemName reference="../../.."/>
           </str>
           <str language="ru" country="RU" variant="">
@@ -23382,7 +23382,7 @@
           </str>
           <str language="pt" country="" variant="">
             <version>0</version>
-            <text>Subfamília G U I D</text>
+            <text>Subfamília GUID</text>
             <itemName reference="../../.."/>
           </str>
           <str language="ru" country="RU" variant="">
