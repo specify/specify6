@@ -32,6 +32,8 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.Window;
+import java.awt.Dimension;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EventObject;
@@ -1321,6 +1323,9 @@ public class TableViewObj implements Viewable,
         Window w = UIHelper.getWindow(orderablePanel);
         if (w instanceof CustomDialog) {
             w.pack();
+            Dimension d = w.getSize();
+            //this probably only needs to be done for macs, because the vertical scroll bars are made always visible, for some reason
+            d.setSize(d.getWidth() + upDownPanel.getPanel().getWidth(), d.getHeight());
             w.setLocationRelativeTo(w.getOwner());
         }
     }
