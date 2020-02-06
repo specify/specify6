@@ -2398,6 +2398,22 @@ public class WorkbenchPaneSS extends BaseSubPane
             {
             	geoRefConvertDlg = null;
             	super.cancelButtonPressed();
+                int[] selection = spreadSheet.getSelectedRowModelIndexes();
+                if (selection.length == 0) {
+                    // if none are selected, map all of them
+                    int rowCnt = spreadSheet.getRowCount();
+                    selection = new int[rowCnt];
+                    for (int i = 0; i < rowCnt; ++i) {
+                        selection[i] = spreadSheet.convertRowIndexToModel(i);
+                    }
+                }
+                if (selection.length > 0) {
+                    validateRows(selection);
+
+                } else {
+                    //validateRows(0, spreadSheet.getRowCount() - 1);
+                    validateAll(null);
+                }
             }
             
             @Override
@@ -2521,13 +2537,6 @@ public class WorkbenchPaneSS extends BaseSubPane
                             false, CustomDialog.OKHELP, innerPane);
                     cd.setHelpContext("UnconvertableGeoCoords");
                     UIHelper.centerAndShow(cd);
-                }
-                if (selection.length > 0) {
-                    validateRows(selection);
-
-                } else {
-                    //validateRows(0, spreadSheet.getRowCount() - 1);
-                    validateAll(null);
                 }
                 getOkBtn().setEnabled(true);
 
