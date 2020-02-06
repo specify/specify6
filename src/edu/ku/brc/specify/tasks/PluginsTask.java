@@ -464,14 +464,22 @@ public class PluginsTask extends BaseTask
             statusBar.setErrorMessage(e.getLocalizedMessage(), e);
         }
     }
-    
+
+
+    /**
+     *
+     * @return
+     */
+    protected String getDefaultExcelExt() {
+        return "xls";
+    }
 
     /**
      * @param table
      */
     protected void exportTable(final JTable table)
     {
-        Hashtable<String, String> values = new Hashtable<String, String>();
+        Hashtable<String, String> values = new Hashtable<>();
         ViewBasedDisplayDialog dlg = new ViewBasedDisplayDialog((Frame) UIRegistry.getTopWindow(), "SystemSetup", "ExcelExportInfo", null,
                  getResourceString("EXCEL_EXPORT_INFO_TITLE"), getResourceString("Export"), null, // className,
                  null, // idFieldName,
@@ -483,7 +491,11 @@ public class PluginsTask extends BaseTask
          if (dlg.getBtnPressed() == ViewBasedDisplayIFace.OK_BTN)
          {
              dlg.getMultiView().getDataFromUI();
-             File file = new File(values.get("FilePath"));
+             String fileName = values.get("FilePath");
+             if (!fileName.toLowerCase().endsWith("." + getDefaultExcelExt().toLowerCase())) {
+                 fileName += "." + getDefaultExcelExt();
+             }
+             File file = new File(fileName);
              TableModel2Excel.convertToExcel(file, values.get("Title"), table.getModel());
          }
     }
