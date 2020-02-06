@@ -1728,75 +1728,55 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
      * @param altName
      * @return
      */
-    protected boolean fillInWorkbenchNameAndAttrs(final Workbench workbench, final String wbName, final boolean skipFirstCheck, final boolean alwaysAskForName)
-    {
+    protected boolean fillInWorkbenchNameAndAttrs(final Workbench workbench, final String wbName, final boolean skipFirstCheck, final boolean alwaysAskForName) {
         boolean skip = skipFirstCheck;
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        
-        try
-        {
+        try {
             String newWorkbenchName = wbName;
-            
-            boolean   alwaysAsk   = alwaysAskForName;
-            Workbench foundWB     = null;
-            boolean   shouldCheck = false;
-            //boolean canEdit = !AppContextMgr.isSecurityOn() || getPermissions().canAdd(); //XXX OK to require Add permission to modify props and structure?
+            boolean alwaysAsk = alwaysAskForName;
+            Workbench foundWB = null;
+            boolean shouldCheck = false;
             boolean canEdit = isPermitted();
-            do
-            {
-                if (StringUtils.isEmpty(newWorkbenchName))
-                {
+            do {
+                boolean error = false;
+                if (StringUtils.isEmpty(newWorkbenchName)) {
                     alwaysAsk = true;
-                    
-                } else
-                {
+                } else {
                     foundWB = session.getData(Workbench.class, "name", newWorkbenchName, DataProviderSessionIFace.CompareType.Equals);
-                    if (foundWB != null && !skip)
-                    {
-                        UIRegistry.getStatusBar().setErrorMessage(String.format(getResourceString("WB_DATASET_EXISTS"), new Object[] { newWorkbenchName}));
-                        UIRegistry.displayErrorDlg(String.format(getResourceString("WB_DATASET_EXISTS"), new Object[] { newWorkbenchName}));
-                        //workbench.setName("");
+                    if (foundWB != null && !skip) {
+                        UIRegistry.getStatusBar().setErrorMessage(String.format(getResourceString("WB_DATASET_EXISTS"), new Object[]{newWorkbenchName}));
+                        UIRegistry.displayErrorDlg(String.format(getResourceString("WB_DATASET_EXISTS"), new Object[]{newWorkbenchName}));
+                        error = true;
                     }
                     skip = false;
                 }
-                
                 String oldName = workbench.getName();
-                if ((foundWB != null || (StringUtils.isNotEmpty(newWorkbenchName) && newWorkbenchName.length() > 64)) || alwaysAsk)
-                {
+                if ((foundWB != null || (StringUtils.isNotEmpty(newWorkbenchName) && newWorkbenchName.length() > 64)) || alwaysAsk) {
                     alwaysAsk = false;
-                    
-                    // We found the same name and it must be unique
-                    if (askUserForInfo("Workbench", getResourceString("WB_DATASET_INFO"), workbench, canEdit) && canEdit)
-                    {
+                    if (askUserForInfo("Workbench", getResourceString("WB_DATASET_INFO"), workbench, canEdit) && canEdit) {
                         newWorkbenchName = workbench.getName();
                         // length is enforced on the data form so this is unnecessary...
-                        if (StringUtils.isNotEmpty(newWorkbenchName) && newWorkbenchName.length() > 64)
-                        {
+                        if (StringUtils.isNotEmpty(newWorkbenchName) && newWorkbenchName.length() > 64) {
                             UIRegistry.getStatusBar().setErrorMessage(getResourceString("WB_NAME_TOO_LONG"));
                             UIRegistry.displayErrorDlg(getResourceString("WB_NAME_TOO_LONG"));
+                            error = true;
                         }
                         foundWB = workbench;
-                    } else
-                    {
+                    } else {
                         UIRegistry.getStatusBar().setText("");
                         return false;
                     }
-                    
                 }
-                
-                shouldCheck = oldName == null || !oldName.equals(newWorkbenchName);
-                
+                shouldCheck = oldName == null || !oldName.equals(newWorkbenchName) || error;
             } while (shouldCheck);
-            
-        } catch (Exception ex)
-        {
+
+        } catch (Exception ex) {
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
             log.error(ex);
-            
-        } finally
-        {
-            session.close();    
+
+        } finally {
+            session.close();
         }
         UIRegistry.getStatusBar().setText("");
         return true;
