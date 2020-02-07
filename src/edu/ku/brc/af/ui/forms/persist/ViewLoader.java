@@ -67,6 +67,7 @@ import edu.ku.brc.af.ui.forms.validation.TypeSearchForQueryFactory;
 import edu.ku.brc.ui.CustomFrame;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.helpers.XMLHelper;
 
 /**
  * Factory that creates Views from ViewSet files. This class uses the singleton ViewSetMgr to verify the View Set Name is unique.
@@ -1181,7 +1182,8 @@ public class ViewLoader
                                                    final boolean useResourceLabels,
                                                    final DBTableInfo tableinfo)
     {
-        FormViewDef formViewDef = new FormViewDef(type, name, className, gettableClassName, settableClassName, desc, useResourceLabels);
+        FormViewDef formViewDef = new FormViewDef(type, name, className, gettableClassName, settableClassName, desc,
+                useResourceLabels, XMLHelper.getAttr(element, "editableDlg", true));
         
         fldVerTableInfo = null;
 
@@ -1240,16 +1242,14 @@ public class ViewLoader
         } else
         {
             Node defNode = element.selectSingleNode("definition");
-            if (defNode != null)
-            {
+            if (defNode != null) {
                 String defName = defNode.getText();
-                if (StringUtils.isNotEmpty(defName))
-                {
+                if (StringUtils.isNotEmpty(defName)) {
                     formViewDef.setDefinitionName(defName);
                     return formViewDef;
                 }
             }
-            
+
             String msg = "formtable is missing or has empty <defintion> node";
             log.error(msg);
             FormDevHelper.appendFormDevError(msg);

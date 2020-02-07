@@ -993,59 +993,50 @@ public class TableViewObj implements Viewable,
      */
     protected void editRow(final int rowIndex, final boolean isNew)
     {
-        FormDataObjIFace origObj = null;
-        FormDataObjIFace dObj    = null;
-        if (isNew)
-        {
-            // Check to see if the business rules will be creating the object
-            // if so the BR will then call setNewObject
-            if (businessRules != null && businessRules.canCreateNewDataObject())
-            {
-                businessRules.createNewObj(true, null);
-                
-            } else
-            {
-                if (businessRules != null && mvParent != null) // Bug 9370
-                {
-                    if (mvParent.getMultiViewParent() != null && mvParent.getMultiViewParent().getData() != null)
+        if ((formViewDef != null && formViewDef.getIsEditableDlg()) || (!isNew && !isEditing)) {
+            FormDataObjIFace origObj = null;
+            FormDataObjIFace dObj = null;
+            if (isNew) {
+                // Check to see if the business rules will be creating the object
+                // if so the BR will then call setNewObject
+                if (businessRules != null && businessRules.canCreateNewDataObject()) {
+                    businessRules.createNewObj(true, null);
+
+                } else {
+                    if (businessRules != null && mvParent != null) // Bug 9370
                     {
-                        if (!businessRules.isOkToAddSibling(mvParent.getMultiViewParent().getData()))
-                        {
-                            return;
+                        if (mvParent.getMultiViewParent() != null && mvParent.getMultiViewParent().getData() != null) {
+                            if (!businessRules.isOkToAddSibling(mvParent.getMultiViewParent().getData())) {
+                                return;
+                            }
                         }
                     }
+
+                    // OK, we need to create it locally
+
+                    if (classToCreate != null) {
+                        dObj = FormHelper.createAndNewDataObj(classToCreate, businessRules);
+                    } else {
+                        dObj = FormHelper.createAndNewDataObj(view.getClassName(), businessRules);
+                    }
+
+                    dObj = editRow(dObj, rowIndex, isNew);
                 }
-                
-                // OK, we need to create it locally
-                
-                if (classToCreate != null)
-                {
-                    dObj = FormHelper.createAndNewDataObj(classToCreate, businessRules);
-                } else
-                {
-                    dObj = FormHelper.createAndNewDataObj(view.getClassName(), businessRules);
+            } else {
+                dObj = (FormDataObjIFace) dataObjList.get(rowIndex);
+                if (dObj == null) {
+                    return;
                 }
-                
+                origObj = dObj;
                 dObj = editRow(dObj, rowIndex, isNew);
             }
-        } else
-        {
-            dObj = (FormDataObjIFace)dataObjList.get(rowIndex);
-            if (dObj == null)
-            {
-                return;
-            }
-            origObj = dObj;
-            dObj = editRow(dObj, rowIndex, isNew);
-        }
-        
-        if (origObj != null && origObj != dObj)
-        {
-            int inx = dataObjList.indexOf(origObj);
-            if (inx > -1)
-            {
-                dataObjList.removeElementAt(inx);
-                dataObjList.insertElementAt(dObj, inx);
+
+            if (origObj != null && origObj != dObj) {
+                int inx = dataObjList.indexOf(origObj);
+                if (inx > -1) {
+                    dataObjList.removeElementAt(inx);
+                    dataObjList.insertElementAt(dObj, inx);
+                }
             }
         }
     }

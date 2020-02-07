@@ -695,7 +695,17 @@ public class SpUIViewDef extends DataModelObjBase implements ViewDefIFace, Table
     {
         return null;
     }
-    
+
+    @Override
+    public boolean getIsEditableDlg() {
+        return true;
+    }
+
+    @Override
+    public void setIsEditableDlg(boolean arg) {
+
+    }
+
     //-----------------------------------------------------
     //-- TableViewDefIFace
     //-----------------------------------------------------

@@ -80,10 +80,23 @@ public interface FormViewDefIFace extends ViewDefIFace
      */
     public abstract Hashtable<String, String> getEnableRules();
 
+
     /**
      * @param enableRules 
      */
     public abstract void setEnableRules(Hashtable<String, String> enableRules);
+
+    /**
+     *
+     * @return
+     */
+    public abstract boolean getIsEditableDlg();
+
+    /**
+     *
+     * @param arg
+     */
+    public abstract void setIsEditableDlg(boolean arg);
 
     /**
      * @return the name of the ViewDef it should use for it's definition

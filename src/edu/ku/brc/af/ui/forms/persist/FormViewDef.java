@@ -41,6 +41,8 @@ public class FormViewDef extends ViewDef implements Cloneable, FormViewDefIFace
     protected JGDefItem            rowDef         = new JGDefItem();
     protected Vector<FormRowIFace> rows           = new Vector<FormRowIFace>(); 
     protected String               definitionName = null;
+    private boolean              isEditableDlg  = true;
+    private String guid = null;
     
     protected Hashtable<String, String>  enableRules = null;
 
@@ -59,12 +61,21 @@ public class FormViewDef extends ViewDef implements Cloneable, FormViewDefIFace
                        final String  gettableClassName, 
                        final String  settableClassName, 
                        final String  desc,
-                       final boolean useResourceLabels)
+                       final boolean useResourceLabels,
+                       final boolean editableDlg)
     {
         super(type, name, className, gettableClassName, settableClassName, desc, useResourceLabels);
-        
+        this.isEditableDlg = editableDlg;
     }
-    
+
+    public boolean getIsEditableDlg() {
+        return this.isEditableDlg;
+    }
+
+    public void setIsEditableDlg(boolean value) {
+        this.isEditableDlg = value;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.ViewDefIFace#getDerivedInterface()
      */
