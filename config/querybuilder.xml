@@ -40,6 +40,16 @@
         	<alias name="Agent" field="modifiedByAgent" />
 			<table name="DNAPrimer" field="dnaPrimer" />
 		</table>
+        <table name="Extractor" field="extractors">
+            <alias name="Agent"/>
+            <alias name="Agent" field="createdByAgent" />
+            <alias name="Agent" field="modifiedByAgent" />
+        </table>
+        <table name="Sequencer" field="sequencers">
+            <alias name="Agent"/>
+            <alias name="Agent" field="createdByAgent" />
+            <alias name="Agent" field="modifiedByAgent" />
+        </table>
         <alias name="Agent" field="createdByAgent" />
         <alias name="Agent" field="modifiedByAgent" />
         <table name="DNASequenceAttachment" field="attachments">
