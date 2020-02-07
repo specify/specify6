@@ -62,6 +62,7 @@
     <dialog type="display" view="ExchangeInPrep"     name="ExchangeInPrepDisplay"    class="edu.ku.brc.specify.datamodel.ExchangeInPrep" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="Exsiccata"          name="ExsiccataDisplay"         class="edu.ku.brc.specify.datamodel.Exsiccata" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="ExchangeOutPrep"    name="ExchangeOutPrepDisplay"   class="edu.ku.brc.specify.datamodel.ExchangeOutPrep" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="Extractor"          name="ExtractorDisplay"         class="edu.ku.brc.specify.datamodel.Extractor" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="FieldNotebookPage"  name="FieldNotebookPageDisplay" class="edu.ku.brc.specify.datamodel.FieldNotebookPage" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="FundingAgent"       name="FundingAgentDisplay"      class="edu.ku.brc.specify.datamodel.FundingAgent" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="ChronosStrat"       name="ChronosStratDisplay"      class="edu.ku.brc.specify.datamodel.GeologicTimePeriod" helpcontext="CBXQViewEdit"/>
@@ -84,6 +85,7 @@
     <dialog type="display" view="ProjectSub"         name="ProjectSubDisplay"        class="edu.ku.brc.specify.datamodel.Project" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="ReferenceWork"      name="ReferenceWorkDisplay"     class="edu.ku.brc.specify.datamodel.ReferenceWork" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="RepositoryAgreement" name="RepositoryAgreementDisplay" class="edu.ku.brc.specify.datamodel.RepositoryAgreement" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="Sequencer"          name="SequencerDisplay"         class="edu.ku.brc.specify.datamodel.Sequencer" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="Storage"            name="StorageDisplay"           class="edu.ku.brc.specify.datamodel.Storage" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="Taxon"              name="TaxonDisplay"             class="edu.ku.brc.specify.datamodel.Taxon" helpcontext="CBXQViewEdit"/>
 

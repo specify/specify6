@@ -2,7 +2,7 @@
 
 <!-- 
 
-    Last used ID is 159 or 533
+    Last used ID is 161 or 533
     
     [0] are available
     
@@ -204,6 +204,10 @@
             <display view="Exsiccata" newobjdlg="ExsiccataDisplay" searchdlg="ExsiccataSearch"/>
         </table>
         <table name="edu.ku.brc.specify.datamodel.ExsiccataItem" abbrev="exsicit" id="104" searchable="true"/>
+        <table name="edu.ku.brc.specify.datamodel.Extractor" abbrev="extr" id="160" searchable="true">
+            <display view="Extractor" dataobjformatter="Extractor"  searchdlg="" newobjdlg="ExtractorDisplay"/>
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.ExtractorBusRules</businessrule>
+        </table>
         <table name="edu.ku.brc.specify.datamodel.FieldNotebook" abbrev="fnb" id="83" searchable="true">
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.FieldNotebookBusRules</businessrule>
         </table>
@@ -392,6 +396,10 @@
         <table name="edu.ku.brc.specify.datamodel.RepositoryAgreementAttachment" abbrev="raat" id="118" searchable="true">
         	<display view="ObjectAttachment" newobjdlg="RepositoryAgreementAttachmentDisplay"/>
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentReferenceBaseBusRules</businessrule>
+        </table>
+        <table name="edu.ku.brc.specify.datamodel.Sequencer" abbrev="seqr" id="161" searchable="true">
+            <display view="Sequencer" dataobjformatter="Sequencer"  searchdlg="" newobjdlg="SequencerDisplay"/>
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.SequencerBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.Shipment" abbrev="sh" id="71" searchable="true">
             <businessrule>edu.ku.brc.specify.datamodel.busrules.ShipmentBusRules</businessrule>                                    

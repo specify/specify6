@@ -114,6 +114,7 @@
         <mapping class="edu.ku.brc.specify.datamodel.ExchangeOutPrep"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Exsiccata"/>
 		<mapping class="edu.ku.brc.specify.datamodel.ExsiccataItem"/>
+		<mapping class="edu.ku.brc.specify.datamodel.Extractor"/>
 		<mapping class="edu.ku.brc.specify.datamodel.FieldNotebook"/>
 		<mapping class="edu.ku.brc.specify.datamodel.FieldNotebookAttachment"/>
 		<mapping class="edu.ku.brc.specify.datamodel.FieldNotebookPageSet"/>
@@ -174,6 +175,7 @@
         <mapping class="edu.ku.brc.specify.datamodel.ReferenceWorkAttachment"/>
 		<mapping class="edu.ku.brc.specify.datamodel.RepositoryAgreement"/>
 		<mapping class="edu.ku.brc.specify.datamodel.RepositoryAgreementAttachment"/>
+		<mapping class="edu.ku.brc.specify.datamodel.Sequencer"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Shipment"/>
 
 		<mapping class="edu.ku.brc.specify.datamodel.SpAppResourceDir"/>

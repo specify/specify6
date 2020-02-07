@@ -6019,7 +6019,7 @@ public class BuildSampleDatabase
                 //dna.setGeneName("COI5'");
                 int agentInx = rand.nextInt(agents.size());
                 dna.setCreatedByAgent(agents.get(agentInx));
-                dna.setSequencer(agents.get(agentInx));
+                //dna.setSequencer(agents.get(agentInx));
                 StringBuilder sb = new StringBuilder();
                 for (int j=0;j<((8*75)+52);j++)
                 {

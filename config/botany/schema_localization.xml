@@ -2,71 +2,38 @@
   <container name="collectingevent" isHidden="false">
     <version>0</version>
     <isSystem>false</isSystem>
+    <schemaType>0</schemaType>
     <items>
       <desc name="stationFieldNumber" type="java.lang.String" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
-          <str language="en" country="" variant="">
+          <str language="en">
             <version>0</version>
             <text>Collector Number</text>
+            <itemDesc reference="../../.."/>
+            <itemName reference="../../.."/>
           </str>
-          <!--str language="uk" country="UA" variant="">
-            <version>0</version>
-            <text>Номер Коллектора</text>
-          </str>
-          <str language="ru" country="RU" variant="">
-            <version>0</version>
-            <text>Номер Коллектора</text>
-          </str>
-        --></names>
+        </names>
         <descs>
-          <str language="en" country="" variant="">
-            <version>0</version>
-            <text>Collector Number</text>
-          </str>
-          <!--str language="uk" country="UA" variant="">
-            <version>0</version>
-            <text>Номер Коллектора</text>
-          </str>
-          <str language="ru" country="RU" variant="">
-            <version>0</version>
-            <text>Номер Коллектора</text>
-          </str>
-        --></descs>
+          <str reference="../../names/str"/>
+        </descs>
         <spExportSchemaItems/>
       </desc>
       <desc name="remarks" type="text" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
-          <str language="en" country="" variant="">
+          <str language="en">
             <version>0</version>
             <text>Locality and\n Habitat Notes</text>
+            <itemDesc reference="../../.."/>
+            <itemName reference="../../.."/>
           </str>
-          <!--str language="uk" country="UA" variant="">
-            <version>0</version>
-            <text>Примітки про місцевість і\nзамітки до середовища перебування</text>
-          </str>
-          <str language="ru" country="RU" variant="">
-            <version>0</version>
-            <text>Примечания о местности и\nпримечания к среде обитания</text>
-          </str>
-        --></names>
+        </names>
         <descs>
-          <str language="en" country="" variant="">
-            <version>0</version>
-            <text>Field to record information on locality and habitat where the specimen was collected.</text>
-          </str>
-          <!--str language="uk" country="UA" variant="">
-            <version>0</version>
-            <text>Поле для запису інформації про місцевість і середовища проживання, де був зібраний зразок.</text>
-          </str>
-          <str language="ru" country="RU" variant="">
-            <version>0</version>
-            <text>Поле для записи информации о местности и среде обитания, где был собран образец.</text>
-          </str>
-        --></descs>
+          <str reference="../../names/str"/>
+        </descs>
         <spExportSchemaItems/>
       </desc>
     </items>
@@ -76,107 +43,70 @@
   <container name="collectionobject" isHidden="false">
     <version>0</version>
     <isSystem>false</isSystem>
+    <schemaType>0</schemaType>
     <items>
-      <desc name="collectionObjectAttribute" type="ManyToOne" isHidden="true" isUIFormatter="false" isRequired="false">
+      <desc name="text1" type="java.lang.String" isHidden="false" isUIFormatter="false" pickListName="Phenology" isRequired="false">
         <version>0</version>
+        <isSystem>false</isSystem>
         <names>
           <str language="en">
             <version>0</version>
-            <text>Col Obj Attribute</text>
+            <text>Phenology</text>
+            <itemDesc reference="../../.."/>
+            <itemName reference="../../.."/>
           </str>
-          <!--str language="uk" country="UA" variant="">
+        </names>
+        <descs>
+          <str reference="../../names/str"/>
+        </descs>
+        <spExportSchemaItems/>
+      </desc>
+      <desc name="exsiccataItems" isHidden="false" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
             <version>0</version>
-            <text>Атрибут об'єкту колекції</text>
+            <text>Exsiccata Items</text>
+            <itemDesc reference="../../.."/>
+            <itemName reference="../../.."/>
           </str>
-          <str language="ru" country="RU" variant="">
-            <version>0</version>
-            <text>Атрибут Объекта коллекции</text>
-          </str>
-        --></names>
-        <descs/>
+        </names>
+        <descs>
+          <str reference="../../names/str"/>
+        </descs>
+        <spExportSchemaItems/>
       </desc>
       <desc name="description" type="java.lang.String" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
-          <str language="en" country="" variant="">
-            <version>0</version>
-            <text>Specimen\nDescription</text>
-          </str>
-          <!--str language="uk" country="UA" variant="">
-            <version>0</version>
-            <text>Зразок\nОпис</text>
-          </str>
-          <str language="ru" country="RU" variant="">
-            <version>0</version>
-            <text>Образец\nОписание</text>
-          </str>
-        --></names>
-        <descs>
-          <str language="en" country="" variant="">
-            <version>0</version>
-            <text>Image, Sound, Preparation, Container(Container Label?).</text>
-          </str>
-          <!--str language="uk" country="UA" variant="">
-            <version>0</version>
-            <text>Зображення, звук, підготовка, контейнер (ярлик контейнера?).</text>
-          </str>
-          <str language="ru" country="RU" variant="">
-            <version>0</version>
-            <text>Изображение, звук, подготовка, контейнер (ярлык контейнера?).</text>
-          </str>
-        --></descs>
-        <spExportSchemaItems/>
-      </desc>
-      <desc name="exsiccataItems" isHidden="false" isUIFormatter="false" isRequired="false">
-        <version>0</version>
-        <names>
           <str language="en">
             <version>0</version>
-            <text>Exsiccata Items</text>
+            <text>Specimen\nDescription</text>
+            <itemDesc reference="../../.."/>
+            <itemName reference="../../.."/>
           </str>
-          <!--str language="uk" country="UA" variant="">
-            <version>0</version>
-            <text>Елементи Exsiccata</text>
-          </str>
-          <str language="ru" country="RU" variant="">
-            <version>0</version>
-            <text>Элементы Exsiccata</text>
-          </str>
-        --></names>
-        <descs/>
+        </names>
+        <descs>
+          <str reference="../../names/str"/>
+        </descs>
+        <spExportSchemaItems/>
       </desc>
-      <desc name="text1" type="java.lang.String" isHidden="false" isUIFormatter="false" pickListName="Phenology" isRequired="false">
+      <desc name="collectionObjectAttribute" type="ManyToOne" isHidden="true" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
-          <str language="en" country="" variant="">
+          <str language="en">
             <version>0</version>
-            <text>Phenology</text>
+            <text>Col Obj Attribute</text>
+            <itemDesc reference="../../.."/>
+            <itemName reference="../../.."/>
           </str>
-          <!--str language="uk" country="UA" variant="">
-            <version>0</version>
-            <text>Фенологія</text>
-          </str>
-          <str language="ru" country="RU" variant="">
-            <version>0</version>
-            <text>Фенология</text>
-          </str>
-        --></names>
+        </names>
         <descs>
-          <str language="en" country="" variant="">
-            <version>0</version>
-            <text>User-definable.</text>
-          </str>
-          <!--str language="uk" country="UA" variant="">
-            <version>0</version>
-            <text>Визначається користувачем.</text>
-          </str>
-          <str language="ru" country="RU" variant="">
-            <version>0</version>
-            <text>Определяемый пользователем.</text>
-          </str>
-        --></descs>
+          <str reference="../../names/str"/>
+        </descs>
         <spExportSchemaItems/>
       </desc>
     </items>

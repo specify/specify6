@@ -2,265 +2,215 @@
   <container name="collectionobjectattribute" isHidden="false">
     <version>0</version>
     <isSystem>false</isSystem>
+    <schemaType>0</schemaType>
     <items>
       <desc name="text8" isHidden="true" isUIFormatter="false" isRequired="false">
         <version>0</version>
+        <isSystem>false</isSystem>
         <names>
           <str language="en">
             <version>0</version>
             <text>Text8</text>
-          </str>
-          <!--str language="uk" country="UA" variant="">
-            <version>0</version>
-            <text>Текст8</text>
-          </str>
-          <str language="ru" country="RU" variant="">
-            <version>0</version>
-            <text>Текст8</text>
-          </str>
-        --></names>
-        <descs/>
-      </desc>
-      <desc name="bottomDistance" isHidden="false" isRequired="false">
-        <version>0</version>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en">
-            <version>0</version>
-            <text>Bottom Distance</text>
+            <itemDesc reference="../../.."/>
             <itemName reference="../../.."/>
           </str>
-          <!--str language="uk" country="UA" variant="">
-            <version>0</version>
-            <text>Відстань внизу</text>
-            <itemName reference="../../.."/>
-          </str>
-          <str language="ru" country="RU" variant="">
-            <version>0</version>
-            <text>Нижнее расстояние</text>
-            <itemName reference="../../.."/>
-          </str>
-        --></names>
-        <descs/>
+        </names>
+        <descs>
+          <str reference="../../names/str"/>
+        </descs>
         <spExportSchemaItems/>
       </desc>
       <desc name="text7" isHidden="true" isUIFormatter="false" isRequired="false">
         <version>0</version>
+        <isSystem>false</isSystem>
         <names>
           <str language="en">
             <version>0</version>
             <text>Text7</text>
-          </str>
-          <!--str language="uk" country="UA" variant="">
-            <version>0</version>
-            <text>Текст7</text>
-          </str>
-          <str language="ru" country="RU" variant="">
-            <version>0</version>
-            <text>Текст7</text>
-          </str>
-        --></names>
-        <descs/>
-      </desc>
-      <desc name="topDistance" isHidden="false" isRequired="false">
-        <version>0</version>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en">
-            <version>0</version>
-            <text>Top Distance</text>
+            <itemDesc reference="../../.."/>
             <itemName reference="../../.."/>
           </str>
-          <!--str language="uk" country="UA" variant="">
-            <version>0</version>
-            <text>Верхня відстань</text>
-            <itemName reference="../../.."/>
-          </str>
-          <str language="ru" country="RU" variant="">
-            <version>0</version>
-            <text>Максимальное расстояние</text>
-            <itemName reference="../../.."/>
-          </str>
-        --></names>
-        <descs/>
-        <spExportSchemaItems/>
-      </desc>
-      <desc name="text1" isHidden="true" isUIFormatter="false" isRequired="false">
-        <version>0</version>
-        <names>
-          <str language="en">
-            <version>0</version>
-            <text>Text1</text>
-          </str>
-          <!--str language="uk" country="UA" variant="">
-            <version>0</version>
-            <text>Текст1</text>
-          </str>
-          <str language="ru" country="RU" variant="">
-            <version>0</version>
-            <text>Текст1</text>
-          </str>
-        --></names>
-        <descs/>
-      </desc>
-      <desc name="direction" isHidden="false" isRequired="false">
-        <version>0</version>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en">
-            <version>0</version>
-            <text>Direction</text>
-            <itemName reference="../../.."/>
-          </str>
-          <!--str language="uk" country="UA" variant="">
-            <version>0</version>
-            <text>Напрямок</text>
-            <itemName reference="../../.."/>
-          </str>
-          <str language="ru" country="RU" variant="">
-            <version>0</version>
-            <text>Направление</text>
-            <itemName reference="../../.."/>
-          </str>
-        --></names>
-        <descs/>
+        </names>
+        <descs>
+          <str reference="../../names/str"/>
+        </descs>
         <spExportSchemaItems/>
       </desc>
       <desc name="text2" isHidden="true" isUIFormatter="false" isRequired="false">
         <version>0</version>
+        <isSystem>false</isSystem>
         <names>
           <str language="en">
             <version>0</version>
             <text>Text2</text>
+            <itemDesc reference="../../.."/>
+            <itemName reference="../../.."/>
           </str>
-          <!--str language="uk" country="UA" variant="">
-            <version>0</version>
-            <text>Текст2</text>
-          </str>
-          <str language="ru" country="RU" variant="">
-            <version>0</version>
-            <text>Текст2</text>
-          </str>
-        --></names>
-        <descs/>
+        </names>
+        <descs>
+          <str reference="../../names/str"/>
+        </descs>
+        <spExportSchemaItems/>
       </desc>
-      <desc name="text5" isHidden="true" isUIFormatter="false" isRequired="false">
-        <version>0</version>
-        <names>
-          <str language="en">
-            <version>0</version>
-            <text>Text5</text>
-          </str>
-          <!--str language="uk" country="UA" variant="">
-            <version>0</version>
-            <text>Текст5</text>
-          </str>
-          <str language="ru" country="RU" variant="">
-            <version>0</version>
-            <text>Текст5</text>
-          </str>
-        --></names>
-        <descs/>
-      </desc>
-      <desc name="text4" isHidden="true" isUIFormatter="false" isRequired="false">
-        <version>0</version>
-        <names>
-          <str language="en">
-            <version>0</version>
-            <text>Text4</text>
-          </str>
-          <!--str language="uk" country="UA" variant="">
-            <version>0</version>
-            <text>Текст4</text>
-          </str>
-          <str language="ru" country="RU" variant="">
-            <version>0</version>
-            <text>Текст4</text>
-          </str>
-        --></names>
-        <descs/>
-      </desc>
-      <desc name="positionState" isHidden="false" isRequired="false">
+      <desc name="positionState" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
           <str language="en">
             <version>0</version>
             <text>Position State</text>
+            <itemDesc reference="../../.."/>
             <itemName reference="../../.."/>
           </str>
-          <!--str language="uk" country="UA" variant="">
-            <version>0</version>
-            <text>Позиція держави</text>
-            <itemName reference="../../.."/>
-          </str>
-          <str language="ru" country="RU" variant="">
-            <version>0</version>
-            <text>Положение Государство</text>
-            <itemName reference="../../.."/>
-          </str>
-        --></names>
-        <descs/>
+        </names>
+        <descs>
+          <str reference="../../names/str"/>
+        </descs>
         <spExportSchemaItems/>
       </desc>
-      <desc name="distanceUnits" isHidden="false" isRequired="false">
+      <desc name="text1" isHidden="true" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>Text1</text>
+            <itemDesc reference="../../.."/>
+            <itemName reference="../../.."/>
+          </str>
+        </names>
+        <descs>
+          <str reference="../../names/str"/>
+        </descs>
+        <spExportSchemaItems/>
+      </desc>
+      <desc name="distanceUnits" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
           <str language="en">
             <version>0</version>
             <text>Distance Units</text>
+            <itemDesc reference="../../.."/>
             <itemName reference="../../.."/>
           </str>
-          <!--str language="uk" country="UA" variant="">
+        </names>
+        <descs>
+          <str reference="../../names/str"/>
+        </descs>
+        <spExportSchemaItems/>
+      </desc>
+      <desc name="text4" isHidden="true" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
             <version>0</version>
-            <text>Відстані одиниці</text>
+            <text>Text4</text>
+            <itemDesc reference="../../.."/>
             <itemName reference="../../.."/>
           </str>
-          <str language="ru" country="RU" variant="">
+        </names>
+        <descs>
+          <str reference="../../names/str"/>
+        </descs>
+        <spExportSchemaItems/>
+      </desc>
+      <desc name="text5" isHidden="true" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
             <version>0</version>
-            <text>Единицы расстояния</text>
+            <text>Text5</text>
+            <itemDesc reference="../../.."/>
             <itemName reference="../../.."/>
           </str>
-        --></names>
-        <descs/>
+        </names>
+        <descs>
+          <str reference="../../names/str"/>
+        </descs>
+        <spExportSchemaItems/>
+      </desc>
+      <desc name="bottomDistance" isHidden="false" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>Bottom Distance</text>
+            <itemDesc reference="../../.."/>
+            <itemName reference="../../.."/>
+          </str>
+        </names>
+        <descs>
+          <str reference="../../names/str"/>
+        </descs>
+        <spExportSchemaItems/>
+      </desc>
+      <desc name="topDistance" isHidden="false" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>Top Distance</text>
+            <itemDesc reference="../../.."/>
+            <itemName reference="../../.."/>
+          </str>
+        </names>
+        <descs>
+          <str reference="../../names/str"/>
+        </descs>
         <spExportSchemaItems/>
       </desc>
       <desc name="text3" isHidden="true" isUIFormatter="false" isRequired="false">
         <version>0</version>
+        <isSystem>false</isSystem>
         <names>
           <str language="en">
             <version>0</version>
             <text>Text3</text>
+            <itemDesc reference="../../.."/>
+            <itemName reference="../../.."/>
           </str>
-          <!--str language="uk" country="UA" variant="">
-            <version>0</version>
-            <text>Текст3</text>
-          </str>
-          <str language="ru" country="RU" variant="">
-            <version>0</version>
-            <text>Текст3</text>
-          </str>
-        --></names>
-        <descs/>
+        </names>
+        <descs>
+          <str reference="../../names/str"/>
+        </descs>
+        <spExportSchemaItems/>
       </desc>
       <desc name="text6" isHidden="true" isUIFormatter="false" isRequired="false">
         <version>0</version>
+        <isSystem>false</isSystem>
         <names>
           <str language="en">
             <version>0</version>
             <text>Text6</text>
+            <itemDesc reference="../../.."/>
+            <itemName reference="../../.."/>
           </str>
-          <!--str language="uk" country="UA" variant="">
+        </names>
+        <descs>
+          <str reference="../../names/str"/>
+        </descs>
+        <spExportSchemaItems/>
+      </desc>
+      <desc name="direction" isHidden="false" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
             <version>0</version>
-            <text>Текст6</text>
+            <text>Direction</text>
+            <itemDesc reference="../../.."/>
+            <itemName reference="../../.."/>
           </str>
-          <str language="ru" country="RU" variant="">
-            <version>0</version>
-            <text>Текст6</text>
-          </str>
-        --></names>
-        <descs/>
+        </names>
+        <descs>
+          <str reference="../../names/str"/>
+        </descs>
+        <spExportSchemaItems/>
       </desc>
     </items>
     <names/>
@@ -269,24 +219,23 @@
   <container name="collectionobject" isHidden="false">
     <version>0</version>
     <isSystem>false</isSystem>
+    <schemaType>0</schemaType>
     <items>
       <desc name="collectionObjectAttribute" type="ManyToOne" isHidden="true" isUIFormatter="false" isRequired="false">
         <version>0</version>
+        <isSystem>false</isSystem>
         <names>
           <str language="en">
             <version>0</version>
             <text>Col Obj Attribute</text>
+            <itemDesc reference="../../.."/>
+            <itemName reference="../../.."/>
           </str>
-          <!--str language="uk" country="UA" variant="">
-            <version>0</version>
-            <text>Атрибут об'єкта колекції</text>
-          </str>
-          <str language="ru" country="RU" variant="">
-            <version>0</version>
-            <text>Атрибут объекта коллекции</text>
-          </str>
-        --></names>
-        <descs/>
+        </names>
+        <descs>
+          <str reference="../../names/str"/>
+        </descs>
+        <spExportSchemaItems/>
       </desc>
     </items>
     <names/>

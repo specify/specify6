@@ -2,87 +2,8 @@
   <container name="collectionobjectattribute" isHidden="false">
     <version>0</version>
     <isSystem>false</isSystem>
+    <schemaType>0</schemaType>
     <items>
-      <desc name="text2" isHidden="false" isUIFormatter="false" isRequired="false">
-        <version>0</version>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en">
-            <version>0</version>
-            <text>Weight</text>
-          </str>
-          <!--str language="uk" country="UA" variant="">
-            <version>0</version>
-            <text>Вага</text>
-          </str>
-          <str language="ru" country="RU" variant="">
-            <version>0</version>
-            <text>Вес</text>
-          </str>
-        --></names>
-        <descs/>
-        <spExportSchemaItems/>
-      </desc>
-      <desc name="text6" isHidden="false" isUIFormatter="false" isRequired="false">
-        <version>0</version>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en">
-            <version>0</version>
-            <text>Tail Length</text>
-          </str>
-          <!--str language="uk" country="UA" variant="">
-            <version>0</version>
-            <text>Довжина хвоста</text>
-          </str>
-          <str language="ru" country="RU" variant="">
-            <version>0</version>
-            <text>Длина хвоста</text>
-          </str>
-        --></names>
-        <descs/>
-        <spExportSchemaItems/>
-      </desc>
-      <desc name="text1" isHidden="false" isUIFormatter="false" pickListName="Sex" isRequired="false">
-        <version>0</version>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en">
-            <version>0</version>
-            <text>Sex</text>
-          </str>
-          <!--str language="uk" country="UA" variant="">
-            <version>0</version>
-            <text>Стать</text>
-          </str>
-          <str language="ru" country="RU" variant="">
-            <version>0</version>
-            <text>Пол</text>
-          </str>
-        --></names>
-        <descs/>
-        <spExportSchemaItems/>
-      </desc>
-      <desc name="text8" isHidden="false" isUIFormatter="false" isRequired="false">
-        <version>0</version>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en">
-            <version>0</version>
-            <text>Color in Life</text>
-          </str>
-          <!--str language="uk" country="UA" variant="">
-            <version>0</version>
-            <text>Колір в житті</text>
-          </str>
-          <str language="ru" country="RU" variant="">
-            <version>0</version>
-            <text>Цвет в жизни</text>
-          </str>
-        --></names>
-        <descs/>
-        <spExportSchemaItems/>
-      </desc>
       <desc name="text5" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
@@ -90,17 +11,13 @@
           <str language="en">
             <version>0</version>
             <text>SVL</text>
+            <itemDesc reference="../../.."/>
+            <itemName reference="../../.."/>
           </str>
-          <!--str language="uk" country="UA" variant="">
-            <version>0</version>
-            <text>SVL</text>
-          </str>
-          <str language="ru" country="RU" variant="">
-            <version>0</version>
-            <text>SVL</text>
-          </str>
-        --></names>
-        <descs/>
+        </names>
+        <descs>
+          <str reference="../../names/str"/>
+        </descs>
         <spExportSchemaItems/>
       </desc>
       <desc name="text7" isHidden="false" isUIFormatter="false" isRequired="false">
@@ -110,37 +27,29 @@
           <str language="en">
             <version>0</version>
             <text>Total Length</text>
+            <itemDesc reference="../../.."/>
+            <itemName reference="../../.."/>
           </str>
-          <!--str language="uk" country="UA" variant="">
-            <version>0</version>
-            <text>Загальна довжина</text>
-          </str>
-          <str language="ru" country="RU" variant="">
-            <version>0</version>
-            <text>Общая длина</text>
-          </str>
-        --></names>
-        <descs/>
+        </names>
+        <descs>
+          <str reference="../../names/str"/>
+        </descs>
         <spExportSchemaItems/>
       </desc>
-      <desc name="text3" isHidden="false" isUIFormatter="false" isRequired="false">
+      <desc name="text8" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
           <str language="en">
             <version>0</version>
-            <text>ReproCondition</text>
+            <text>Color in Life</text>
+            <itemDesc reference="../../.."/>
+            <itemName reference="../../.."/>
           </str>
-          <!--str language="uk" country="UA" variant="">
-            <version>0</version>
-            <text>ReproCondition</text>
-          </str>
-          <str language="ru" country="RU" variant="">
-            <version>0</version>
-            <text>ReproCondition</text>
-          </str>
-        --></names>
-        <descs/>
+        </names>
+        <descs>
+          <str reference="../../names/str"/>
+        </descs>
         <spExportSchemaItems/>
       </desc>
       <desc name="text4" isHidden="false" isUIFormatter="false" pickListName="Stage" isRequired="false">
@@ -150,17 +59,77 @@
           <str language="en">
             <version>0</version>
             <text>Stage</text>
+            <itemDesc reference="../../.."/>
+            <itemName reference="../../.."/>
           </str>
-          <!--str language="uk" country="UA" variant="">
+        </names>
+        <descs>
+          <str reference="../../names/str"/>
+        </descs>
+        <spExportSchemaItems/>
+      </desc>
+      <desc name="text3" isHidden="false" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
             <version>0</version>
-            <text>Стадія</text>
+            <text>ReproCondition</text>
+            <itemDesc reference="../../.."/>
+            <itemName reference="../../.."/>
           </str>
-          <str language="ru" country="RU" variant="">
+        </names>
+        <descs>
+          <str reference="../../names/str"/>
+        </descs>
+        <spExportSchemaItems/>
+      </desc>
+      <desc name="text6" isHidden="false" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
             <version>0</version>
-            <text>Стадия</text>
+            <text>Tail Length</text>
+            <itemDesc reference="../../.."/>
+            <itemName reference="../../.."/>
           </str>
-        --></names>
-        <descs/>
+        </names>
+        <descs>
+          <str reference="../../names/str"/>
+        </descs>
+        <spExportSchemaItems/>
+      </desc>
+      <desc name="text2" isHidden="false" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>Weight</text>
+            <itemDesc reference="../../.."/>
+            <itemName reference="../../.."/>
+          </str>
+        </names>
+        <descs>
+          <str reference="../../names/str"/>
+        </descs>
+        <spExportSchemaItems/>
+      </desc>
+      <desc name="text1" isHidden="false" isUIFormatter="false" pickListName="Sex" isRequired="false">
+        <version>0</version>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>Sex</text>
+            <itemDesc reference="../../.."/>
+            <itemName reference="../../.."/>
+          </str>
+        </names>
+        <descs>
+          <str reference="../../names/str"/>
+        </descs>
         <spExportSchemaItems/>
       </desc>
     </items>

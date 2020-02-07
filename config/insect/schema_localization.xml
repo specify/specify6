@@ -1,178 +1,139 @@
 <vector>
-    <container name="collectionobjectattribute" isHidden="false">
+  <container name="collectionobjectattribute" isHidden="false">
+    <version>0</version>
+    <isSystem>false</isSystem>
+    <schemaType>0</schemaType>
+    <items>
+      <desc name="text1" isHidden="false" isUIFormatter="false" pickListName="Sex" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
-        <items>
-            <desc name="text3" isHidden="false" isUIFormatter="false" isRequired="false">
-                <version>0</version>
-                <isSystem>false</isSystem>
-                <names>
-                    <str language="en">
-                        <version>0</version>
-                        <text>Length</text>
-                    </str>
-                    <!-- DBSetupWiz currently only supports en in discipline-specific l10n files
-                        <str language="uk" country="UA" variant="">
-                        <version>0</version>
-                        <text>Довжина</text>
-                    </str>
-                    <str language="ru" country="RU" variant="">
-                        <version>0</version>
-                        <text>Длина</text>
-                    </str>
-                ... non-en removal-->
-                </names>
-                <descs/>
-                <spExportSchemaItems/>
-            </desc>
-            <desc name="text1" isHidden="false" isUIFormatter="false" pickListName="Sex" isRequired="false">
-                <version>0</version>
-                <isSystem>false</isSystem>
-                <names>
-                    <str language="en">
-                        <version>0</version>
-                        <text>Sex</text>
-                    </str>
-                    <!-- DBSetupWiz currently only supports en in discipline-specific l10n files
-                        <str language="uk" country="UA" variant="">
-                        <version>0</version>
-                        <text>Стать</text>
-                    </str>
-                    <str language="ru" country="RU" variant="">
-                        <version>0</version>
-                        <text>Пол</text>
-                    </str>
-                ... non-en removal-->
-                </names>
-                <descs/>
-                <spExportSchemaItems/>
-            </desc>
-            <desc name="text8" isHidden="true" isUIFormatter="false" isRequired="false">
-                <version>0</version>
-                <names>
-                    <str language="en">
-                        <version>0</version>
-                        <text>Text8</text>
-                    </str>
-                    <!-- DBSetupWiz currently only supports en in discipline-specific l10n files
-                        <str language="uk" country="UA" variant="">
-                        <version>0</version>
-                        <text>Текст8</text>
-                    </str>
-                    <str language="ru" country="RU" variant="">
-                        <version>0</version>
-                        <text>Текст8</text>
-                    </str>
-                ... non-en removal-->
-                </names>
-                <descs/>
-            </desc>
-            <desc name="text7" isHidden="true" isUIFormatter="false" isRequired="false">
-                <version>0</version>
-                <names>
-                    <str language="en">
-                        <version>0</version>
-                        <text>Text7</text>
-                    </str>
-                    <!-- DBSetupWiz currently only supports en in discipline-specific l10n files
-                        <str language="uk" country="UA" variant="">
-                        <version>0</version>
-                        <text>Текст7</text>
-                    </str>
-                    <str language="ru" country="RU" variant="">
-                        <version>0</version>
-                        <text>Текст7</text>
-                    </str>
-                ... non-en removal-->
-                </names>
-                <descs/>
-            </desc>
-            <desc name="text6" isHidden="true" isUIFormatter="false" isRequired="false">
-                <version>0</version>
-                <names>
-                    <str language="en">
-                        <version>0</version>
-                        <text>Text6</text>
-                    </str>
-                    <!-- DBSetupWiz currently only supports en in discipline-specific l10n files
-                        <str language="uk" country="UA" variant="">
-                        <version>0</version>
-                        <text>Текст6</text>
-                    </str>
-                    <str language="ru" country="RU" variant="">
-                        <version>0</version>
-                        <text>Текст6</text>
-                    </str>
-                ... non-en removal-->
-                </names>
-                <descs/>
-            </desc>
-            <desc name="text5" isHidden="true" isUIFormatter="false" isRequired="false">
-                <version>0</version>
-                <names>
-                    <str language="en">
-                        <version>0</version>
-                        <text>Text5</text>
-                    </str>
-                    <!-- DBSetupWiz currently only supports en in discipline-specific l10n files
-                        <str language="uk" country="UA" variant="">
-                        <version>0</version>
-                        <text>Текст5</text>
-                    </str>
-                    <str language="ru" country="RU" variant="">
-                        <version>0</version>
-                        <text>Текст5</text>
-                    </str>
-                ... non-en removal-->
-                </names>
-                <descs/>
-            </desc>
-            <desc name="text4" isHidden="false" isUIFormatter="false" pickListName="Stage" isRequired="false">
-                <version>0</version>
-                <isSystem>false</isSystem>
-                <names>
-                    <str language="en">
-                        <version>0</version>
-                        <text>Stage</text>
-                    </str>
-                    <!-- DBSetupWiz currently only supports en in discipline-specific l10n files
-                        <str language="uk" country="UA" variant="">
-                        <version>0</version>
-                        <text>Етап</text>
-                    </str>
-                    <str language="ru" country="RU" variant="">
-                        <version>0</version>
-                        <text>Стадия</text>
-                    </str>
-                ... non-en removal-->
-                </names>
-                <descs/>
-                <spExportSchemaItems/>
-            </desc>
-            <desc name="text2" isHidden="false" isUIFormatter="false" isRequired="false">
-                <version>0</version>
-                <isSystem>false</isSystem>
-                <names>
-                    <str language="en">
-                        <version>0</version>
-                        <text>Weight</text>
-                    </str>
-                    <!-- DBSetupWiz currently only supports en in discipline-specific l10n files
-                        <str language="uk" country="UA" variant="">
-                        <version>0</version>
-                        <text>Вага</text>
-                    </str>
-                    <str language="ru" country="RU" variant="">
-                        <version>0</version>
-                        <text>Вес</text>
-                    </str>
-                ... non-en removal-->
-                </names>
-                <descs/>
-                <spExportSchemaItems/>
-            </desc>
-        </items>
-        <names/>
-        <descs/>
-    </container>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>Sex</text>
+            <itemDesc reference="../../.."/>
+            <itemName reference="../../.."/>
+          </str>
+        </names>
+        <descs>
+          <str reference="../../names/str"/>
+        </descs>
+        <spExportSchemaItems/>
+      </desc>
+      <desc name="text2" isHidden="false" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>Weight</text>
+            <itemDesc reference="../../.."/>
+            <itemName reference="../../.."/>
+          </str>
+        </names>
+        <descs>
+          <str reference="../../names/str"/>
+        </descs>
+        <spExportSchemaItems/>
+      </desc>
+      <desc name="text5" isHidden="true" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>Text5</text>
+            <itemDesc reference="../../.."/>
+            <itemName reference="../../.."/>
+          </str>
+        </names>
+        <descs>
+          <str reference="../../names/str"/>
+        </descs>
+        <spExportSchemaItems/>
+      </desc>
+      <desc name="text3" isHidden="false" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>Length</text>
+            <itemDesc reference="../../.."/>
+            <itemName reference="../../.."/>
+          </str>
+        </names>
+        <descs>
+          <str reference="../../names/str"/>
+        </descs>
+        <spExportSchemaItems/>
+      </desc>
+      <desc name="text6" isHidden="true" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>Text6</text>
+            <itemDesc reference="../../.."/>
+            <itemName reference="../../.."/>
+          </str>
+        </names>
+        <descs>
+          <str reference="../../names/str"/>
+        </descs>
+        <spExportSchemaItems/>
+      </desc>
+      <desc name="text7" isHidden="true" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>Text7</text>
+            <itemDesc reference="../../.."/>
+            <itemName reference="../../.."/>
+          </str>
+        </names>
+        <descs>
+          <str reference="../../names/str"/>
+        </descs>
+        <spExportSchemaItems/>
+      </desc>
+      <desc name="text4" isHidden="false" isUIFormatter="false" pickListName="Stage" isRequired="false">
+        <version>0</version>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>Stage</text>
+            <itemDesc reference="../../.."/>
+            <itemName reference="../../.."/>
+          </str>
+        </names>
+        <descs>
+          <str reference="../../names/str"/>
+        </descs>
+        <spExportSchemaItems/>
+      </desc>
+      <desc name="text8" isHidden="true" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>Text8</text>
+            <itemDesc reference="../../.."/>
+            <itemName reference="../../.."/>
+          </str>
+        </names>
+        <descs>
+          <str reference="../../names/str"/>
+        </descs>
+        <spExportSchemaItems/>
+      </desc>
+    </items>
+    <names/>
+    <descs/>
+  </container>
 </vector>
