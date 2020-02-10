@@ -52,7 +52,7 @@ import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploaderException;
 import edu.ku.brc.specify.tools.schemalocale.SchemaLocalizerXMLHelper;
 import edu.ku.brc.specify.ui.ChooseRecordSetDlg;
 import edu.ku.brc.ui.*;
-import edu.ku.brc.ui.dnd.SimpleGlassPane;
+import edu.ku.brc.ui.dnd.GhostGlassPane;
 import edu.ku.brc.util.Pair;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -66,8 +66,6 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.SoftBevelBorder;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.lang.ref.SoftReference;
 import java.sql.Connection;
@@ -1968,77 +1966,56 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     }
 
     /**
+     *
      * Creates the Pane for editing a Workbench.
-     * @param workbench the workbench to be edited
-     * @param session a session to use to load the workbench (can be null)
-     * @param showImageView shows image window when first showing the window
+     *
+     * @param workbench
+     * @param session
+     * @param showImageView
+     * @param doInbackground
+     * @param isUpdate
+     * @param srcTask
      */
-    protected void createEditorForWorkbench(final Workbench workbench, 
+    protected void createEditorForWorkbench(final Workbench workbench,
                                             final DataProviderSessionIFace session,
                                             final boolean showImageView,
                                             final boolean doInbackground,
                                             final boolean isUpdate,
-                                            final Taskable srcTask)
-    {
-    	//Hack for IN-HOUSE ONLY batch uploading
-//    	if (testingJUNK)
-//    	{
-//    		Vector<Integer> wbIds = new Vector<Integer>();
-//    		for (int i = 1; i <= 3; i++)
-//    		{
-//    			wbIds.add(i);
-//    		}
-//    		
-//    		uploadWorkbenches(wbIds);
-//    	} 
-//    	else 
-//    	{
+                                            final Taskable srcTask) {
         if (workbench == null) return;
 
-        final SimpleGlassPane glassPane = doInbackground ? 
-        		UIRegistry.writeSimpleGlassPaneMsg(String.format(getResourceString("WB_LOADING_DATASET"), isUpdate ? "" : workbench.getName()), GLASSPANE_FONT_SIZE) :
-        		null;
-        
-
+        final GhostGlassPane glassPane = doInbackground ?
+                UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_LOADING_DATASET"), isUpdate ? "" : workbench.getName()), GLASSPANE_FONT_SIZE) :
+                null;
         WorkbenchEditorCreator wbec = new WorkbenchEditorCreator(workbench,
-                session, showImageView, this, !isPermitted(), srcTask, isUpdate)
-        {
+                session, showImageView, this, !isPermitted(), srcTask, isUpdate) {
             @Override
-            public void progressUpdated(java.util.List<Integer> chunks) 
-            {
+            public void progressUpdated(java.util.List<Integer> chunks) {
                 if (glassPane != null)
                     glassPane.setProgress(chunks.get(chunks.size() - 1));
             }
-            
+
             @Override
-            public void completed(WorkbenchPaneSS workbenchPane)
-            {
-                if (workbenchPane != null)
-                {
-                	addSubPaneToMgr(workbenchPane);
-                
-                	if (glassPane != null)
-                	{
-                		UIRegistry.clearSimpleGlassPaneMsg();
-                	}
-                
-                	if (workbenchPane != null && workbenchPane.isDoIncremental() && !workbenchPane.isUpdateDataSet())
-                	{
-                		workbenchPane.validateAll(null);
-                	}
-                	if (workbenchPane.isUpdateDataSet()) {
-                	    NavBoxMgr.getInstance().closeSplitter();
+            public void completed(WorkbenchPaneSS workbenchPane) {
+                if (workbenchPane != null) {
+                    addSubPaneToMgr(workbenchPane);
+                    if (glassPane != null) {
+                        UIRegistry.clearGlassPaneMsg();
                     }
-                } //else something went wrong during the creation. Assume/hope execptions or warnings have already occurred. Better than hanging.
-                {
-                	if (glassPane != null)
-                	{
-                		UIRegistry.clearSimpleGlassPaneMsg();
-                	}
+                    if (workbenchPane != null && workbenchPane.isDoIncremental() && !workbenchPane.isUpdateDataSet()) {
+                        workbenchPane.validateAll();
+                    }
+                    if (workbenchPane.isUpdateDataSet()) {
+                        NavBoxMgr.getInstance().closeSplitter();
+                    }
+                }
+                //else something went wrong during the creation. Assume/hope execptions or warnings have already occurred. Better than hanging.
+                if (glassPane != null) {
+                    UIRegistry.clearGlassPaneMsg();
                 }
             }
         };
-        
+
         if (doInbackground)
             wbec.runInBackground();
         else
@@ -2867,150 +2844,127 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
      */
     protected void updateGeoRefInfoAfterTemplateEdit(final WorkbenchTemplate wbTemplate,
                                                      final Collection<WorkbenchTemplateMappingItem> deletedItems,
-                                                     final Collection<WorkbenchTemplateMappingItem> newItems)
-    {
-    	final SimpleGlassPane glassPane = UIRegistry.writeSimpleGlassPaneMsg(getResourceString("WB_SAVING_TEMPLATE_CHANGES"), GLASSPANE_FONT_SIZE);
-    	javax.swing.SwingWorker<Object, Object> sw = new javax.swing.SwingWorker<Object, Object>()
-    	{
+                                                     final Collection<WorkbenchTemplateMappingItem> newItems) {
+        final GhostGlassPane glassPane = UIRegistry.writeGlassPaneMsg(getResourceString("WB_SAVING_TEMPLATE_CHANGES"), GLASSPANE_FONT_SIZE);
+        javax.swing.SwingWorker<Object, Object> sw = new javax.swing.SwingWorker<Object, Object>() {
 
-			/* (non-Javadoc)
-			 * @see javax.swing.SwingWorker#doInBackground()
-			 */
-			@Override
-			protected Object doInBackground() throws Exception 
-			{
-	            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-	            try
-	            {
-	                //Collection<WorkbenchTemplateMappingItem> deletedItems = dlg.getDeletedItems();
-	                //Collection<WorkbenchTemplateMappingItem> newItems     = dlg.updateAndGetNewItems();
-	                
-	                for (WorkbenchTemplateMappingItem item : newItems)
-	                {
-	                    log.error(item.getFieldName());
-	                }
-	                //Collection<WorkbenchTemplateMappingItem> updatedItems = dlg.getUpdatedItems();
-	                
-	                session.beginTransaction();
-	                
-	                // Merge with current session
-	                WorkbenchTemplate workbenchTemplate = session.merge(wbTemplate);
-	                
-	                Set<WorkbenchTemplateMappingItem> items = workbenchTemplate.getWorkbenchTemplateMappingItems();
-	                for (WorkbenchTemplateMappingItem delItem : deletedItems)
-	                {
-	                    for (WorkbenchTemplateMappingItem wbtmi : items)
-	                    {
-	                    	if (delItem.getWorkbenchTemplateMappingItemId().longValue() == wbtmi.getWorkbenchTemplateMappingItemId().longValue())
-	                        {
-	                            //log.debug("del ["+wbtmi.getCaption()+"]["+wbtmi.getWorkbenchTemplateMappingItemId().longValue()+"]");
-	                            //wbtmi.setWorkbenchTemplate(null);
-	                    		
-	                    		items.remove(wbtmi);
-	                    		wbtmi.setWorkbenchTemplate(null);
-	                            if (wbtmi.getWorkbenchDataItems() != null)
-	                            {
-	                              
-	                            	for (WorkbenchDataItem wbdi : wbtmi.getWorkbenchDataItems())
-	                                {
-	                                    wbdi.getWorkbenchRow().getWorkbenchDataItems().remove(wbdi);
-	                                    wbdi.setWorkbenchRow(null);
-	                            		session.delete(wbdi);
-	                            		wbdi.setWorkbenchTemplateMappingItem(null);
-	                                }
-	                            	wbtmi.getWorkbenchDataItems().clear();
-	                            }
-	                            session.delete(wbtmi);
-	                            break;
-	                        }
-	                    }
-	                }
-	                
-	                for (WorkbenchTemplateMappingItem wbtmi : newItems)
-	                {
-	                    wbtmi.setWorkbenchTemplate(workbenchTemplate);
-	                    items.add(wbtmi);
-	                    //log.debug("new ["+wbtmi.getCaption()+"]["+wbtmi.getViewOrder().shortValue()+"]");
-	                    session.saveOrUpdate(wbtmi) ;
-	                }
-	                                
-	                //Check to see if geo/ref data needs to be updated
-	                //This is actually only necessary if lat/long mappings have been switched - lat mapping changed to a long mapping or vice-versa.
-	                //XXX Surely it is possible to tell if a lat/long switch has been made and not do this after every template change??
-	                WorkbenchTemplateMappingItem aGeoRefMapping = null;
-	                for (WorkbenchTemplateMappingItem wbtmi : workbenchTemplate.getWorkbenchTemplateMappingItems())
-	                {
-	                    if (aGeoRefMapping == null && wbtmi.getTableName().equals("locality"))
-	                    {
-	                        if (wbtmi.getFieldName().equalsIgnoreCase("latitude1") || wbtmi.getFieldName().equalsIgnoreCase("latitude2")
-	                                || wbtmi.getFieldName().equalsIgnoreCase("longitude1") || wbtmi.getFieldName().equalsIgnoreCase("longitude2"))
-	                        {
-	                        	aGeoRefMapping = wbtmi;
-	                        	break;
-	                        }
-	                    }
-	                }
-	                if (aGeoRefMapping != null)
-	                {
-	                	for (Workbench wb : workbenchTemplate.getWorkbenches())
-	                	{
-	                		wb.forceLoad();
-	                		int rowCount = wb.getWorkbenchRows().size();
-	                		int count = 0;
-	                		for (WorkbenchRow wbRow : wb.getWorkbenchRows())
-	                		{
-	                			wbRow.updateGeoRefTextFldsIfNecessary(aGeoRefMapping);
-	                			glassPane.setProgress((int)( (100.0 * count++) / rowCount));
-	                		}
-	                		//session.saveOrUpdate(wb);
-	                	}
-	                }
+            /* (non-Javadoc)
+             * @see javax.swing.SwingWorker#doInBackground()
+             */
+            @Override
+            protected Object doInBackground() throws Exception {
+                DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+                try {
+                    //Collection<WorkbenchTemplateMappingItem> deletedItems = dlg.getDeletedItems();
+                    //Collection<WorkbenchTemplateMappingItem> newItems     = dlg.updateAndGetNewItems();
 
-	                session.saveOrUpdate(workbenchTemplate);
-	                for (Workbench wb : workbenchTemplate.getWorkbenches())
-	                {
-	                	session.saveOrUpdate(wb);
-	                }
-	                
-	                session.commit();
-	                session.flush();
-	                
-	                UIRegistry.getStatusBar().setText(getResourceString("WB_SAVED_MAPPINGS"));
-	                
-	            } catch (Exception ex)
-	            {
-	                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-	                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
-	                log.error(ex);
-	                ex.printStackTrace();
-	                
-	            } finally
-	            {
-	                try
-	                {
-	                    session.close();
-	                } catch (Exception ex)
-	                {
-	                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-	                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
-	                    log.error(ex);
-	                }  
-	            }
-	            return null;
-			}
+                    for (WorkbenchTemplateMappingItem item : newItems) {
+                        log.error(item.getFieldName());
+                    }
+                    //Collection<WorkbenchTemplateMappingItem> updatedItems = dlg.getUpdatedItems();
 
-			/* (non-Javadoc)
-			 * @see javax.swing.SwingWorker#done()
-			 */
-			@Override
-			protected void done() 
-			{
-				super.done();
-				UIRegistry.clearSimpleGlassPaneMsg();
-			}
-    		
+                    session.beginTransaction();
 
-    	};
+                    // Merge with current session
+                    WorkbenchTemplate workbenchTemplate = session.merge(wbTemplate);
+
+                    Set<WorkbenchTemplateMappingItem> items = workbenchTemplate.getWorkbenchTemplateMappingItems();
+                    for (WorkbenchTemplateMappingItem delItem : deletedItems) {
+                        for (WorkbenchTemplateMappingItem wbtmi : items) {
+                            if (delItem.getWorkbenchTemplateMappingItemId().longValue() == wbtmi.getWorkbenchTemplateMappingItemId().longValue()) {
+                                //log.debug("del ["+wbtmi.getCaption()+"]["+wbtmi.getWorkbenchTemplateMappingItemId().longValue()+"]");
+                                //wbtmi.setWorkbenchTemplate(null);
+
+                                items.remove(wbtmi);
+                                wbtmi.setWorkbenchTemplate(null);
+                                if (wbtmi.getWorkbenchDataItems() != null) {
+
+                                    for (WorkbenchDataItem wbdi : wbtmi.getWorkbenchDataItems()) {
+                                        wbdi.getWorkbenchRow().getWorkbenchDataItems().remove(wbdi);
+                                        wbdi.setWorkbenchRow(null);
+                                        session.delete(wbdi);
+                                        wbdi.setWorkbenchTemplateMappingItem(null);
+                                    }
+                                    wbtmi.getWorkbenchDataItems().clear();
+                                }
+                                session.delete(wbtmi);
+                                break;
+                            }
+                        }
+                    }
+
+                    for (WorkbenchTemplateMappingItem wbtmi : newItems) {
+                        wbtmi.setWorkbenchTemplate(workbenchTemplate);
+                        items.add(wbtmi);
+                        //log.debug("new ["+wbtmi.getCaption()+"]["+wbtmi.getViewOrder().shortValue()+"]");
+                        session.saveOrUpdate(wbtmi);
+                    }
+
+                    //Check to see if geo/ref data needs to be updated
+                    //This is actually only necessary if lat/long mappings have been switched - lat mapping changed to a long mapping or vice-versa.
+                    //XXX Surely it is possible to tell if a lat/long switch has been made and not do this after every template change??
+                    WorkbenchTemplateMappingItem aGeoRefMapping = null;
+                    for (WorkbenchTemplateMappingItem wbtmi : workbenchTemplate.getWorkbenchTemplateMappingItems()) {
+                        if (aGeoRefMapping == null && wbtmi.getTableName().equals("locality")) {
+                            if (wbtmi.getFieldName().equalsIgnoreCase("latitude1") || wbtmi.getFieldName().equalsIgnoreCase("latitude2")
+                                    || wbtmi.getFieldName().equalsIgnoreCase("longitude1") || wbtmi.getFieldName().equalsIgnoreCase("longitude2")) {
+                                aGeoRefMapping = wbtmi;
+                                break;
+                            }
+                        }
+                    }
+                    if (aGeoRefMapping != null) {
+                        for (Workbench wb : workbenchTemplate.getWorkbenches()) {
+                            wb.forceLoad();
+                            int rowCount = wb.getWorkbenchRows().size();
+                            int count = 0;
+                            for (WorkbenchRow wbRow : wb.getWorkbenchRows()) {
+                                wbRow.updateGeoRefTextFldsIfNecessary(aGeoRefMapping);
+                                glassPane.setProgress((int) ((100.0 * count++) / rowCount));
+                            }
+                            //session.saveOrUpdate(wb);
+                        }
+                    }
+
+                    session.saveOrUpdate(workbenchTemplate);
+                    for (Workbench wb : workbenchTemplate.getWorkbenches()) {
+                        session.saveOrUpdate(wb);
+                    }
+
+                    session.commit();
+                    session.flush();
+
+                    UIRegistry.getStatusBar().setText(getResourceString("WB_SAVED_MAPPINGS"));
+
+                } catch (Exception ex) {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
+                    log.error(ex);
+                    ex.printStackTrace();
+
+                } finally {
+                    try {
+                        session.close();
+                    } catch (Exception ex) {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
+                        log.error(ex);
+                    }
+                }
+                return null;
+            }
+
+            /* (non-Javadoc)
+             * @see javax.swing.SwingWorker#done()
+             */
+            @Override
+            protected void done() {
+                super.done();
+                UIRegistry.clearGlassPaneMsg();
+            }
+
+
+        };
         sw.execute();
     }
     /**

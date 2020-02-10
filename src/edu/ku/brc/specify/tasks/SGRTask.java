@@ -701,7 +701,7 @@ public class SGRTask extends BaseTask
                 
                 if (workbenchPane != null && workbenchPane.isDoIncremental())
                 {
-                    workbenchPane.validateAll(null);
+                    workbenchPane.validateAll();
                 }
              }
         };
