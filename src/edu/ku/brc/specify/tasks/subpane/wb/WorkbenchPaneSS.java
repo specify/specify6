@@ -2382,7 +2382,8 @@ public class WorkbenchPaneSS extends BaseSubPane
         pane.add(symbolCkBx, BorderLayout.SOUTH);
         geoRefConvertDlg = new CustomDialog(mainFrame, title, false, CustomDialog.OKCANCEL, pane)
         {
-            
+            boolean converted = false;
+
             @Override
             public void setVisible(boolean visible)
             {
@@ -2398,21 +2399,23 @@ public class WorkbenchPaneSS extends BaseSubPane
             {
             	geoRefConvertDlg = null;
             	super.cancelButtonPressed();
-                int[] selection = spreadSheet.getSelectedRowModelIndexes();
-                if (selection.length == 0) {
-                    // if none are selected, map all of them
-                    int rowCnt = spreadSheet.getRowCount();
-                    selection = new int[rowCnt];
-                    for (int i = 0; i < rowCnt; ++i) {
-                        selection[i] = spreadSheet.convertRowIndexToModel(i);
+            	if (converted) {
+                    int[] selection = spreadSheet.getSelectedRowModelIndexes();
+                    if (selection.length == 0) {
+                        // if none are selected, map all of them
+                        int rowCnt = spreadSheet.getRowCount();
+                        selection = new int[rowCnt];
+                        for (int i = 0; i < rowCnt; ++i) {
+                            selection[i] = spreadSheet.convertRowIndexToModel(i);
+                        }
                     }
-                }
-                if (selection.length > 0) {
-                    validateRows(selection);
+                    if (selection.length > 0) {
+                        validateRows(selection);
 
-                } else {
-                    //validateRows(0, spreadSheet.getRowCount() - 1);
-                    validateAll(null);
+                    } else {
+                        //validateRows(0, spreadSheet.getRowCount() - 1);
+                        validateAll(null);
+                    }
                 }
             }
             
@@ -2539,7 +2542,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                     UIHelper.centerAndShow(cd);
                 }
                 getOkBtn().setEnabled(true);
-
+                converted = true;
             }
         };
         geoRefConvertDlg.setModal(true);
