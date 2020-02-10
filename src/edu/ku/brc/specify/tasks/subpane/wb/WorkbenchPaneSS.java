@@ -68,7 +68,6 @@ import edu.ku.brc.specify.ui.LengthInputVerifier;
 import edu.ku.brc.specify.ui.db.PickListDBAdapterFactory;
 import edu.ku.brc.ui.*;
 import edu.ku.brc.ui.ToggleButtonChooserPanel.Type;
-import edu.ku.brc.ui.dnd.SimpleGlassPane;
 import edu.ku.brc.ui.tmanfe.SearchReplacePanel;
 import edu.ku.brc.ui.tmanfe.SpreadSheet;
 import edu.ku.brc.util.GeoRefConverter;
@@ -1285,7 +1284,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 		}
 		//XXX If incremental matching is already turned on it would save lots
 		//of time if validateAll could be called without matching all.
-		validateAll(null);
+		validateAll();
 		
 		AppPreferences.getLocalPrefs().putBoolean(wbAutoValidatePrefName + "." + workbench.getId(), doIncrementalValidation);
 	}
@@ -1316,7 +1315,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 		if (workbenchValidator != null) {
 			//XXX If incremental matching is already turned on it would save lots
 			//of time if validateAll could be called without matching all.
-			validateAll(null);
+			validateAll();
 			
 			AppPreferences.getLocalPrefs().putBoolean(wbAutoEditCheckPrefName + "." + workbench.getId(), doIncrementalEditChecking);
 		}
@@ -1437,7 +1436,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 		if (workbenchValidator != null)
 		{
 			setMatchStatusForUploadTables();
-			validateAll(null);
+			validateAll();
 		
 			AppPreferences.getLocalPrefs().putBoolean(wbAutoMatchPrefName + "." + workbench.getId(), doIncrementalMatching);
 		}
@@ -1933,7 +1932,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         */
     	if (getIncremental())
     	{
-    		validateAll(null);
+    		validateAll();
     	}
         adjustSelectionAfterAdd(model.getRowCount()-1);
     }
@@ -2414,7 +2413,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 
                     } else {
                         //validateRows(0, spreadSheet.getRowCount() - 1);
-                        validateAll(null);
+                        validateAll();
                     }
                 }
             }
@@ -3381,7 +3380,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                             if (selection.length > 0) {
                             	validateRows(selection);
                             } else  {
-                            	validateAll(null);
+                            	validateAll();
                             }
                             model.fireDataChanged();
                             spreadSheet.repaint();
@@ -4909,7 +4908,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     {
     	if (getIncremental())
 		{
-			validateRows(null, startRow, endRow, true, null, false);
+			validateRows(null, startRow, endRow, true, false);
 			return true;
 		}
     	return false;
@@ -4926,7 +4925,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     {
     	if (getIncremental())
 		{
-			validateRows(rows, -1, -1, rows.length <= 17, null, false);
+			validateRows(rows, -1, -1, rows.length <= 17, false);
 			//validateRows(rows, -1, -1, true, null);
     		return true;
 		}
@@ -5357,21 +5356,17 @@ public class WorkbenchPaneSS extends BaseSubPane
     }
     
     /**
-     * @param glassPane
      */
-    public void validateAll(final SimpleGlassPane glassPane)
-    {
-    	//System.out.println("validating all " + spreadSheet.getRowCount() + " rows.");
-    	if (catNumChecker != null)
-    	{
-    		//apparently this is pretty quick, but it might be necessary to have a glass pane for this step...
-    		catNumChecker.clear();
-    		for (int r = 0; r < spreadSheet.getRowCount(); r++)
-    		{
-    			catNumChecker.setValue(r, spreadSheet.getStringAt(r, catNumCol), false);
-    		}
-    	}
-    	validateRows(null, 0, spreadSheet.getRowCount()-1, false, glassPane, glassPane == null);
+    public void validateAll() {
+        //System.out.println("validating all " + spreadSheet.getRowCount() + " rows.");
+        if (catNumChecker != null) {
+            //apparently this is pretty quick, but it might be necessary to have a glass pane for this step...
+            catNumChecker.clear();
+            for (int r = 0; r < spreadSheet.getRowCount(); r++) {
+                catNumChecker.setValue(r, spreadSheet.getStringAt(r, catNumCol), false);
+            }
+        }
+        validateRows(null, 0, spreadSheet.getRowCount() - 1, false, true);
     }
     
     /**
@@ -5379,43 +5374,19 @@ public class WorkbenchPaneSS extends BaseSubPane
      * @param startRow
      * @param endRow
      * @param doSecretly
-     * @param glassPane
      * @param allowCancel
      */
-    public void validateRows(final int[] rows, final int startRow, final int endRow, boolean doSecretly, final SimpleGlassPane glassPane, final boolean allowCancel)
-    {
-    	
-    	ValidationWorker newWorker = new ValidationWorker(rows, startRow, endRow, !doSecretly, allowCancel);
-//    	if (doSecretly)
-    	{
-    		//System.out.println("validateRows(): adding worker to queue");
-    		validationWorkerQueue.add(newWorker);
-    		if (validationWorkerQueue.peek() == newWorker)
-    		{
-    			//System.out.println("validateRows(): executing new worker");
-    			newWorker.execute();
-    		}
-    		SwingUtilities.invokeLater(new Runnable(){
-    			@Override
-    			public void run() {
-    				if (addRowsBtn != null) addRowsBtn.setEnabled(false);
-    				if (deleteRowsBtn != null) deleteRowsBtn.setEnabled(false);
-    			}
-    		});
-    	} //else
-//    	if (!doSecretly)
-//    	{
-//    		try
-//    		{
-//    			//newWorker.execute();
-//    			newWorker.get();
-//    		} catch (Exception ex)
-//    		{
-//                UsageTracker.incrHandledUsageCount();
-//                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchPaneSS.class, ex);
-//                log.error(ex);
-//    		}
-//    	}
+    public void validateRows(final int[] rows, final int startRow, final int endRow, boolean doSecretly, final boolean allowCancel) {
+
+        ValidationWorker newWorker = new ValidationWorker(rows, startRow, endRow, !doSecretly, allowCancel);
+        validationWorkerQueue.add(newWorker);
+        if (validationWorkerQueue.peek() == newWorker) {
+            newWorker.execute();
+        }
+        SwingUtilities.invokeLater(() -> {
+            if (addRowsBtn != null) addRowsBtn.setEnabled(false);
+            if (deleteRowsBtn != null) deleteRowsBtn.setEnabled(false);
+        });
     }
     
 	/**
