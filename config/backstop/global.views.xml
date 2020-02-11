@@ -2683,7 +2683,7 @@
                     <cell type="field" id="4" name="description" uitype="text" />
                 </row>
                 <row>
-                    <cell type="label" labelfor="3"/>
+                    <cell type="label" labelfor="3" label="Remarks"/>
                     <cell type="field" id="3" name="remarks" uitype="textareabrief" rows="3"/>
                 </row>
             </rows>
