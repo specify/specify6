@@ -1383,7 +1383,8 @@
             name="AccessionItems Table"
             class="edu.ku.brc.specify.datamodel.CollectionObject"
             gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj"
+            editableDlg="false">
             
             <desc><![CDATA[Accession Items]]></desc>
             <definition>AccessionItems</definition>
@@ -1394,7 +1395,8 @@
               name="AccessionItems"
               class="edu.ku.brc.specify.datamodel.CollectionObject"
               gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
-              settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+              settable="edu.ku.brc.af.ui.forms.DataSetterForObj"
+              editableDlg="false">
               
               <desc><![CDATA[The Collection Object Subform for Accessions.]]></desc>
               <enableRules/>
@@ -1519,7 +1521,6 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="11"/>
-                    <cell type="field" id="11" name="timestampModified" uitype="label" readonly="true"/>
                     <cell type="label" labelfor="12"/>
                     <cell type="field" id="12" name="timestampCreated" uitype="label" readonly="true"/>
                 </row>-->
@@ -4363,7 +4364,7 @@
                 <row>
                     <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="descriptionOfMaterial" uitype="text" colspan="11"/>
-                    <cell type="field" id="8" name="isResolved" uitype="checkbox" readonly="true"//>
+                    <cell type="field" id="8" name="isResolved" uitype="checkbox" readonly="true"/>
                 </row>
                 <!--<row>
                     <cell type="label" labelfor="ic"/>
