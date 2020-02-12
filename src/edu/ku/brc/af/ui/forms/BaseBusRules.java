@@ -742,6 +742,11 @@ public class BaseBusRules implements BusinessRulesIFace
         // do nothing
     }
 
+    @Override
+    public void afterMergeFailure(Object dataObj, DataProviderSessionIFace session) {
+        // do nothing
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#beforeSave(java.lang.Object)
      */

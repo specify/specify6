@@ -2857,7 +2857,12 @@ public class FormViewObj implements Viewable,
                     businessRules.beforeMerge(dataObjArg, session);
                 }
     
-                dObj = session.merge(dataObjArg);
+                try {
+                    dObj = session.merge(dataObjArg);
+                } catch (Exception x) {
+                    businessRules.afterMergeFailure(dataObjArg, session);
+                    throw x;
+                }
                 
                 if (businessRules != null)
                 {

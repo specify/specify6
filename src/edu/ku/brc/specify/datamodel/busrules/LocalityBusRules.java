@@ -24,6 +24,7 @@ import java.awt.Component;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import edu.ku.brc.specify.datamodel.CollectionObject;
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.core.AppContextMgr;
@@ -128,22 +129,6 @@ public class LocalityBusRules extends AttachmentOwnerBaseBusRules implements Lis
             	}
             }
         }
-    	//this code seems to be obsolete. Apparently form designers don't know anything about the special meaning of id=23
-    	//And there are now 3 potential'bgmComp's. At least one of them, GeoLocate, enables/disables itself.
-        //bug 10069.
-//        if (viewable instanceof FormViewObj)
-//        {
-//            Locality locality = (Locality)dataObj;
-//            if (locality  != null)
-//            {
-//                boolean   enable   = locality.getGeography() != null && StringUtils.isNotEmpty(locality.getLocalityName());
-//                Component bgmComp  = formViewObj.getCompById("23");
-//                if (bgmComp != null)
-//                {
-//                    bgmComp.setEnabled(enable);
-//                }
-//            }
-//        }
     }
 
     /* (non-Javadoc)
@@ -253,46 +238,58 @@ public class LocalityBusRules extends AttachmentOwnerBaseBusRules implements Lis
         }
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.ku.brc.specify.datamodel.busrules.AttachmentOwnerBaseBusRules#beforeSave(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
-	 */
-	@Override
-	public void beforeSave(Object dataObj, DataProviderSessionIFace session) {
-		super.beforeSave(dataObj, session);
-        if (AppContextMgr.getInstance().getClassObject(Discipline.class).getIsPaleoContextEmbedded())
-        {
-            if (cachedPalCon != null)
-            {
-                try
-                {
-                    if (cachedPalCon != null && cachedPalCon.getId() != null)
-                    {
-                    	cachedPalCon = session.merge(cachedPalCon);
-                    } else
-                    {
+    /**
+     *
+     * @param dataObj
+     * @param session
+     */
+    @Override
+    public void afterMergeFailure(Object dataObj, DataProviderSessionIFace session) {
+        super.afterMergeFailure(dataObj, session);
+        mergeAndHookUpEmbeddedThings((Locality)dataObj, session, false);
+    }
+
+    /**
+     *
+     * @param lObj
+     * @param session
+     * @param doMerge
+     */
+    protected void mergeAndHookUpEmbeddedThings(Locality lObj, DataProviderSessionIFace session, boolean doMerge) {
+        if (AppContextMgr.getInstance().getClassObject(Discipline.class).getIsPaleoContextEmbedded()) {
+            if (doMerge && cachedPalCon != null) {
+                try {
+                    if (cachedPalCon != null && cachedPalCon.getId() != null) {
+                        cachedPalCon = session.merge(cachedPalCon);
+                    } else {
                         session.save(cachedPalCon);
                     }
-                    
-                } catch (Exception ex)
-                {
+
+                } catch (Exception ex) {
                     ex.printStackTrace();
                     edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                     edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(LocalityBusRules.class, ex);
                 }
             }
-            
             // Hook back up
-            Locality lObj = Locality.class.cast(dataObj);
-            if (cachedPalCon != null && lObj != null)
-            {
+            if (cachedPalCon != null && lObj != null) {
                 lObj.setPaleoContext(cachedPalCon);
                 cachedPalCon.getLocalities().add(lObj);
                 cachedPalCon = null;
-            } else
-            {
-                log.error("The PC "+cachedPalCon+" was null or the Locality "+lObj+" was null");
-            }     
+            } else {
+                log.error("The PC " + cachedPalCon + " was null or the Locality " + lObj + " was null");
+            }
         }
+
+    }
+
+        /* (non-Javadoc)
+	 * @see edu.ku.brc.specify.datamodel.busrules.AttachmentOwnerBaseBusRules#beforeSave(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+	 */
+	@Override
+	public void beforeSave(Object dataObj, DataProviderSessionIFace session) {
+		super.beforeSave(dataObj, session);
+		mergeAndHookUpEmbeddedThings((Locality)dataObj, session, true);
 	}
 
 	/* (non-Javadoc)
@@ -325,21 +322,4 @@ public class LocalityBusRules extends AttachmentOwnerBaseBusRules implements Lis
 		return result;
 	}
 
-    
-//    /* (non-Javadoc)
-//     * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#addChildrenToNewDataObjects(java.lang.Object)
-//     */
-//    @Override
-//    public void addChildrenToNewDataObjects(final Object newDataObj)
-//    {
-//        super.addChildrenToNewDataObjects(newDataObj);
-//        
-//        if (newDataObj instanceof GeoCoordDetail)
-//        {
-//            if ()
-//        } else if (newDataObj instanceof LocalityDetail)
-//        {
-//            
-//        }
-//    }
 }

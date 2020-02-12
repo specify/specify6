@@ -88,49 +88,57 @@ public class CollectingEventBusRules extends AttachmentOwnerBaseBusRules
         }
 	}
 
-	
-	
+    /**
+     *
+     * @param dataObj
+     * @param session
+     */
+    @Override
+    public void afterMergeFailure(Object dataObj, DataProviderSessionIFace session) {
+        super.afterMergeFailure(dataObj, session);
+        mergeAndHookUpEmbeddedThings((CollectingEvent) dataObj, session, false);
+    }
 
-	/* (non-Javadoc)
-	 * @see edu.ku.brc.specify.datamodel.busrules.AttachmentOwnerBaseBusRules#beforeSave(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
-	 */
-	@Override
-	public void beforeSave(Object dataObj, DataProviderSessionIFace session) {
-		super.beforeSave(dataObj, session);
-        if (AppContextMgr.getInstance().getClassObject(Discipline.class).getIsPaleoContextEmbedded())
-        {
-            if (cachedPalCon != null)
-            {
-                try
-                {
-                    if (cachedPalCon != null && cachedPalCon.getId() != null)
-                    {
-                    	cachedPalCon = session.merge(cachedPalCon);
-                    } else
-                    {
+    /**
+     *
+     * @param ceObj
+     * @param session
+     * @param doMerge
+     */
+    protected void mergeAndHookUpEmbeddedThings(CollectingEvent ceObj, DataProviderSessionIFace session, boolean doMerge) {
+        if (AppContextMgr.getInstance().getClassObject(Discipline.class).getIsPaleoContextEmbedded()) {
+            if (doMerge && cachedPalCon != null) {
+                try {
+                    if (cachedPalCon != null && cachedPalCon.getId() != null) {
+                        cachedPalCon = session.merge(cachedPalCon);
+                    } else {
                         session.save(cachedPalCon);
                     }
-                    
-                } catch (Exception ex)
-                {
+
+                } catch (Exception ex) {
                     ex.printStackTrace();
                     edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                     edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(CollectingEventBusRules.class, ex);
                 }
             }
-            
             // Hook back up
-            CollectingEvent ceObj = CollectingEvent.class.cast(dataObj);
-            if (cachedPalCon != null && ceObj != null)
-            {
+            if (cachedPalCon != null && ceObj != null) {
                 ceObj.setPaleoContext(cachedPalCon);
                 cachedPalCon.getCollectingEvents().add(ceObj);
                 cachedPalCon = null;
-            } else
-            {
-                log.error("The PC "+cachedPalCon+" was null or the CE "+ceObj+" was null");
-            }     
+            } else {
+                log.error("The PC " + cachedPalCon + " was null or the CE " + ceObj + " was null");
+            }
         }
+    }
+
+    /* (non-Javadoc)
+	 * @see edu.ku.brc.specify.datamodel.busrules.AttachmentOwnerBaseBusRules#beforeSave(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+	 */
+	@Override
+	public void beforeSave(Object dataObj, DataProviderSessionIFace session) {
+		super.beforeSave(dataObj, session);
+		mergeAndHookUpEmbeddedThings((CollectingEvent) dataObj, session, true);
 	}
 
 	
