@@ -33,11 +33,23 @@ jobs:
         env:
           INSTALL4J_LICENSE: ${{ secrets.INSTALL4J_LICENSE }}
 
-      - name: Compile Specify 6
-        run: ant -noinput -buildfile build.xml -Dinstall4j.dir=./install4j7.0.7 compile-nonmac compile-mac
+      - name: Unbase64 code signing certs
+        run: |
+          echo $WIN_PKCS12 | base64 -d > certwithroot.pfx
+          echo $MAC_PKCS12 | base64 -d > expdevidapp.p12
+        env:
+          WIN_PKCS12: ${{ secrets.WIN_PKCS12 }}
+          MAC_PKCS12: ${{ secrets.MAC_PKCS12 }}
 
-      - name: Package Specify 6
-        run: ant -noinput -buildfile build.xml -Dinstall4j.dir=./install4j7.0.7 package-all
+      - name: Build and package Specify 6
+        run: >
+          ant -noinput -buildfile build.xml -Dinstall4j.dir=./install4j7.0.7
+          -Dwin-keystore-password=$WIN_KEYSTORE_PASSWORD -Dmac-keystore-password=$MAC_KEYSTORE_PASSWORD
+          -Dwin.pkcs12=certwithroot.pfx -Dmac.pkcs12=expdevidapp.p12 -Dcode.signing=true
+          package-all
+        env:
+          WIN_KEYSTORE_PASSWORD: ${{ secrets.$WIN_KEYSTORE_PASSWORD }}
+          MAC_KEYSTORE_PASSWORD: ${{ secrets.$MAC_KEYSTORE_PASSWORD }}
 
       - name: Upload Specify 6 packages as artifact
         uses: actions/upload-artifact@v1
