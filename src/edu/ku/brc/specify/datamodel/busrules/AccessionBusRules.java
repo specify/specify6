@@ -110,17 +110,23 @@ public class AccessionBusRules extends AttachmentOwnerBaseBusRules implements Co
         }
     }
 
+    /**
+     *
+     * @return
+     */
+    private Component getCollectionObjectsControl() {
+        return null;
+    }
+
     /* (non-Javadoc)
 	 * @see edu.ku.brc.af.ui.forms.BaseBusRules#initialize(edu.ku.brc.af.ui.forms.Viewable)
 	 */
 	@Override
     public void initialize(Viewable viewableArg) {
-        // TODO Auto-generated method stub
         super.initialize(viewableArg);
         if (formViewObj != null && formViewObj.isEditing()) {
             Component comp = formViewObj.getControlByName("collectionObjects");
             if (comp != null) {
-                //System.out.println("collectionObjecs comp:" + comp);
                 for (Viewable v : ((MultiView) comp).getViewables()) {
                     if (v instanceof TableViewObj) {
                         if (v.getViewDef() instanceof FormViewDefIFace) {
@@ -135,14 +141,9 @@ public class AccessionBusRules extends AttachmentOwnerBaseBusRules implements Co
                         for (ActionListener al : srchBtn.getActionListeners()) {
                             srchBtn.removeActionListener(al);
                         }
-                        srchBtn.addActionListener(new ActionListener() {
-                            @Override
-                            public void actionPerformed(ActionEvent e) {
-                                CommandDispatcher.dispatch(new CommandAction(AccessionBusRules.CMDTYPE,
-                                        AccessionBusRules.ADD_TO_ACCESSION,
-                                        formViewObj.getCurrentDataObj()));
-                            }
-                        });
+                        srchBtn.addActionListener(e -> CommandDispatcher.dispatch(new CommandAction(AccessionBusRules.CMDTYPE,
+                                AccessionBusRules.ADD_TO_ACCESSION,
+                                formViewObj.getCurrentDataObj())));
                     }
                 }
             }
