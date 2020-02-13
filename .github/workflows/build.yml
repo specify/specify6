@@ -9,8 +9,8 @@ jobs:
     steps:
       - name: Unbase64 code signing certs
         run: |
-          echo $MAC_PKCS12 | base64 -d > expdevidapp.p12
-          echo $WIN_PKCS12 | base64 -d > certwithroot.pfx
+          echo $MAC_PKCS12 | base64 -d > packaging/expdevidapp.p12
+          echo $WIN_PKCS12 | base64 -d > packaging/certwithroot.pfx
 
         env:
           WIN_PKCS12: ${{ secrets.WIN_PKCS12 }}
