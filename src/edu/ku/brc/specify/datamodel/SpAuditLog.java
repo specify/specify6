@@ -322,7 +322,7 @@ public class SpAuditLog extends DataModelObjBase implements java.io.Serializable
         List<DBTableInfo> tbls = DBTableIdMgr.getInstance().getTables();
         stats = new Vector<PickListItemIFace>(tbls.size());
         for (DBTableInfo tbl : tbls) {
-            stats.add(new TypeCodeItem(tbl.getTitle() + " {" + tbl.getTableId() + "}", Integer.valueOf(tbl.getTableId()).shortValue()));
+            stats.add(new TypeCodeItem(tbl.getTitle(), Integer.valueOf(tbl.getTableId()).shortValue()));
         }
         result.add(new TypeCode(stats, "tableNum"));
         result.add(new TypeCode(stats, "parentTableNum"));

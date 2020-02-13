@@ -190,9 +190,9 @@ public class ERTICaptionInfoRecId extends ERTICaptionInfoQB {
             Object dataObj = lookupInfo[1];
             String formatter = getDataObjFormatter(ti);
             if (formatter != null && dataObj != null) {
-                return cache(ti.getTableId(),(Integer)lookupInfo[2], DataObjFieldFormatMgr.getInstance().format(dataObj, formatter) + " {" + lookupInfo[2] + "}");
+                return cache(ti.getTableId(),(Integer)lookupInfo[2], DataObjFieldFormatMgr.getInstance().format(dataObj, formatter));
             } else {
-                return cache(ti.getTableId(), (Integer)lookupInfo[2], ti.getTitle() + " {" + lookupInfo[2] + "}");
+                return cache(ti.getTableId(), (Integer)lookupInfo[2], ti.getTitle() + " [" + lookupInfo[2] + "]");
             }
         }
         return null;
