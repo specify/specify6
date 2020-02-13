@@ -57,8 +57,69 @@ jobs:
           WIN_KEYSTORE_PASSWORD: ${{ secrets.WIN_KEYSTORE_PASSWORD }}
           MAC_KEYSTORE_PASSWORD: ${{ secrets.MAC_KEYSTORE_PASSWORD }}
 
-      - name: Upload Specify 6 packages as artifact
+      - name: Upload Specify_windows_64.exe as artifact
         uses: actions/upload-artifact@v1
         with:
-          name: specify6-packages
-          path: packages
+          name: Specify_windows_64.exe
+            path: packages/external/Specify_windows_64.exe
+
+      - name: Upload Specify_windows.exe as artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: Specify_windows.exe
+            path: packages/external/Specify_windows.exe
+
+      - name: Upload Specify_unix_64.sh as artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: Specify_unix_64.sh
+            path: packages/external/Specify_unix_64.sh
+
+      - name: Upload Specify_unix.sh as artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: Specify_unix.sh
+            path: packages/external/Specify_unix.sh
+
+      - name: Upload Specify_macos.dmg as artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: Specify_macos.dmg
+            path: packages/external/Specify_macos.dmg
+
+      - name: Upload Specify_windows_Internal_64.exe as artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: Specify_windows_Internal_64.exe
+            path: packages/internal/Specify_windows_Internal_64.exe
+
+      - name: Upload Specify_windows_Internal.exe as artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: Specify_windows_Internal.exe
+            path: packages/internal/Specify_windows_Internal.exe
+
+      - name: Upload Specify_unix_Internal.sh as artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: Specify_unix_Internal.sh
+            path: packages/internal/Specify_unix_Internal.sh
+
+      - name: Upload Specify_macos_Internal.dmg as artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: Specify_macos_Internal.dmg
+            path: packages/internal/Specify_macos_Internal.dmg
+
+      - name: Upload Specify_unix_Internal_64.sh as artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: Specify_unix_Internal_64.sh
+            path: packages/internal/Specify_unix_Internal_64.sh
+
+      - name: Upload updates.xml as artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: updates.xml
+            path: packages/external/updates.xml
+
