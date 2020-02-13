@@ -48,8 +48,8 @@ jobs:
           -Dwin.pkcs12=certwithroot.pfx -Dmac.pkcs12=expdevidapp.p12 -Dcode.signing=true
           package-all
         env:
-          WIN_KEYSTORE_PASSWORD: ${{ secrets.$WIN_KEYSTORE_PASSWORD }}
-          MAC_KEYSTORE_PASSWORD: ${{ secrets.$MAC_KEYSTORE_PASSWORD }}
+          WIN_KEYSTORE_PASSWORD: ${{ secrets.WIN_KEYSTORE_PASSWORD }}
+          MAC_KEYSTORE_PASSWORD: ${{ secrets.MAC_KEYSTORE_PASSWORD }}
 
       - name: Upload Specify 6 packages as artifact
         uses: actions/upload-artifact@v1
