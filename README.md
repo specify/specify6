@@ -116,7 +116,7 @@ ant package-all \
 ```
 ## Automated Builds
 
-This repository is equiped with automated builds using *GitHub
+This repository is equipped with automated builds using *GitHub
 actions*. All commits pushed to the repository will result in test
 builds that can be found under the [actions
 tab](https://github.com/specify/specify6/actions) with downloadable
