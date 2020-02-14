@@ -1,6 +1,5 @@
 # Specify 6
-
-[![Build Status](https://travis-ci.org/specify/specify6.svg?branch=master)](https://travis-ci.org/specify/specify6)
+![Build Status](https://github.com/specify/specify6/workflows/Specify%206%20CI/badge.svg)
 
 The Specify Software Project is funded by the Advances in
 Biological Informatics Program, U.S. National Science Foundation
@@ -117,13 +116,16 @@ ant package-all \
 ```
 ## Automated Builds
 
-This repository is equiped with automated builds using *Travis
-CI*. All commits pushed to the repository will result in test
-builds. If a commit is tagged and pushed the repository, a GitHub
-*prerelease* with the name of the tag will be automatically created
-and have the build output packages attached. These include both the
-internal (filenames ending with `BETA`) and external (plain filenames)
-installer packages.
+This repository is equiped with automated builds using *GitHub
+actions*. All commits pushed to the repository will result in test
+builds that can be found under the [actions
+tab](https://github.com/specify/specify6/actions) with downloadable
+package artifacts for testing that persist for 90 days. If a commit is
+tagged and pushed the repository, a GitHub *draft prerelease* with the
+name of the tag will be automatically created and have the build
+output packages attached. These include both the internal (filenames
+ending with `Internal`) and external (plain filenames) installer
+packages.
 
 ## Proposed Release Process (starting with v6.7.00)
 
