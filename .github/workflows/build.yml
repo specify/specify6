@@ -123,3 +123,16 @@ jobs:
           name: updates.xml
           path: packages/external/updates.xml
 
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          draft: true
+          prerelease: true
+          files: |
+            packages/internal/Specify*
+            packages/external/Specify*
+            packages/external/updates.xml
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
