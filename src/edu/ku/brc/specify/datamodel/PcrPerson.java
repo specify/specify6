@@ -32,9 +32,7 @@ import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
 import org.apache.commons.lang.StringUtils;
-import org.hibernate.annotations.Index;
 
-import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.util.Orderable;
 
 /**
@@ -43,16 +41,16 @@ import edu.ku.brc.util.Orderable;
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
-@Table(name = "sequencer", uniqueConstraints = { @UniqueConstraint(columnNames = {"AgentID", "DNASequenceID"}) })
-public class Sequencer extends DataModelObjBase implements java.io.Serializable,
+@Table(name = "pcrperson", uniqueConstraints = { @UniqueConstraint(columnNames = {"AgentID", "DNASequenceID"}) })
+public class PcrPerson extends DataModelObjBase implements java.io.Serializable,
         Orderable,
-        Comparable<Sequencer>,
+        Comparable<PcrPerson>,
         Cloneable
 {
 
     // Fields
 
-    protected Integer         sequencerId;
+    protected Integer         pcrPersonId;
     protected Integer         orderNumber;
     protected String          remarks;
     protected String text1;
@@ -66,15 +64,15 @@ public class Sequencer extends DataModelObjBase implements java.io.Serializable,
     // Constructors
 
     /** default constructor */
-    public Sequencer()
+    public PcrPerson()
     {
         //
     }
 
     /** constructor with id */
-    public Sequencer(Integer sequencerId)
+    public PcrPerson(Integer pcrPersonId)
     {
-        this.sequencerId = sequencerId;
+        this.pcrPersonId = pcrPersonId;
     }
 
     // Initializer
@@ -82,7 +80,7 @@ public class Sequencer extends DataModelObjBase implements java.io.Serializable,
     public void initialize()
     {
         super.init();
-        sequencerId     = null;
+        pcrPersonId     = null;
         orderNumber     = null;
         remarks         = null;
         text1 = null;
@@ -142,10 +140,10 @@ public class Sequencer extends DataModelObjBase implements java.io.Serializable,
      */
     @Id
     @GeneratedValue
-    @Column(name = "SequencerID")
-    public Integer getSequencerId()
+    @Column(name = "PcrPersonID")
+    public Integer getPcrPersonId()
     {
-        return this.sequencerId;
+        return this.pcrPersonId;
     }
 
     /**
@@ -156,7 +154,7 @@ public class Sequencer extends DataModelObjBase implements java.io.Serializable,
     @Override
     public Integer getId()
     {
-        return this.sequencerId;
+        return this.pcrPersonId;
     }
 
     /* (non-Javadoc)
@@ -166,11 +164,11 @@ public class Sequencer extends DataModelObjBase implements java.io.Serializable,
     @Override
     public Class<?> getDataClass()
     {
-        return Sequencer.class;
+        return PcrPerson.class;
     }
 
-    public void setSequencerId(Integer sequencerId) {
-        this.sequencerId = sequencerId;
+    public void setPcrPersonId(Integer pcrPersonId) {
+        this.pcrPersonId = pcrPersonId;
     }
 
     /**
@@ -214,7 +212,7 @@ public class Sequencer extends DataModelObjBase implements java.io.Serializable,
     }
 
     /**
-     *      * Link to Sequencer's record in Agent table
+     *      * Link to PcrPerson's record in Agent table
      */
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
     @JoinColumn(name = "AgentID", nullable = false)
@@ -307,7 +305,7 @@ public class Sequencer extends DataModelObjBase implements java.io.Serializable,
     /* (non-Javadoc)
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
-    public int compareTo(Sequencer obj)
+    public int compareTo(PcrPerson obj)
     {
         return orderNumber != null && obj != null && obj.orderNumber != null ? orderNumber.compareTo(obj.orderNumber) : 0;
     }
@@ -318,8 +316,8 @@ public class Sequencer extends DataModelObjBase implements java.io.Serializable,
     @Override
     public Object clone() throws CloneNotSupportedException
     {
-        Sequencer obj = (Sequencer)super.clone();
-        obj.setSequencerId(null);
+        PcrPerson obj = (PcrPerson)super.clone();
+        obj.setPcrPersonId(null);
         return obj;
     }
 

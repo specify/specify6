@@ -85,7 +85,7 @@
     <dialog type="display" view="ProjectSub"         name="ProjectSubDisplay"        class="edu.ku.brc.specify.datamodel.Project" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="ReferenceWork"      name="ReferenceWorkDisplay"     class="edu.ku.brc.specify.datamodel.ReferenceWork" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="RepositoryAgreement" name="RepositoryAgreementDisplay" class="edu.ku.brc.specify.datamodel.RepositoryAgreement" helpcontext="CBXQViewEdit"/>
-    <dialog type="display" view="Sequencer"          name="SequencerDisplay"         class="edu.ku.brc.specify.datamodel.Sequencer" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="PcrPerson" name="PcrPersonDisplay" class="edu.ku.brc.specify.datamodel.PcrPerson" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="Storage"            name="StorageDisplay"           class="edu.ku.brc.specify.datamodel.Storage" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="Taxon"              name="TaxonDisplay"             class="edu.ku.brc.specify.datamodel.Taxon" helpcontext="CBXQViewEdit"/>
 

@@ -94,7 +94,7 @@ public class DNASequence extends CollectionMember implements AttachmentOwnerIFac
     protected Agent	extractor;
     protected Agent							sequencer;
 	protected Set<Extractor>	extractors;
-	protected Set<Sequencer>							sequencers;
+	protected Set<PcrPerson>							pcrPersons;
 	protected CollectionObject				collectionObject;
 	protected MaterialSample				materialSample;
     protected Set<DNASequenceAttachment>    attachments;
@@ -149,7 +149,7 @@ public class DNASequence extends CollectionMember implements AttachmentOwnerIFac
 		extractor = null;
 		sequencer = null;
 		extractors = new HashSet<Extractor>();
-        sequencers = new HashSet<Sequencer>();
+        pcrPersons = new HashSet<PcrPerson>();
         collectionObject = null;
         materialSample = null;
         attachments = new TreeSet<DNASequenceAttachment>();
@@ -745,12 +745,12 @@ public class DNASequence extends CollectionMember implements AttachmentOwnerIFac
 	@OneToMany(mappedBy = "dnaSequence")
 	@Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
 	@OrderBy("orderNumber ASC")
-	public Set<Sequencer> getSequencers() {
-		return sequencers;
+	public Set<PcrPerson> getPcrPersons() {
+		return pcrPersons;
 	}
 
-	public void setSequencers(Set<Sequencer> sequencers) {
-		this.sequencers = sequencers;
+	public void setPcrPersons(Set<PcrPerson> pcrPersons) {
+		this.pcrPersons = pcrPersons;
 	}
 
     /**

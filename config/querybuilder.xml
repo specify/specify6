@@ -45,7 +45,7 @@
             <alias name="Agent" field="createdByAgent" />
             <alias name="Agent" field="modifiedByAgent" />
         </table>
-        <table name="Sequencer" field="sequencers">
+        <table name="PcrPerson" field="pcrPersons">
             <alias name="Agent"/>
             <alias name="Agent" field="createdByAgent" />
             <alias name="Agent" field="modifiedByAgent" />

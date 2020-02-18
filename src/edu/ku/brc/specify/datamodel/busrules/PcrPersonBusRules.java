@@ -19,20 +19,20 @@
  */
 
 import edu.ku.brc.af.ui.forms.BaseBusRules;
-import edu.ku.brc.specify.datamodel.Sequencer;
+import edu.ku.brc.specify.datamodel.PcrPerson;
 import edu.ku.brc.specify.datamodel.DNASequence;
 
 import java.util.Hashtable;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
-public class SequencerBusRules extends BaseBusRules {
+public class PcrPersonBusRules extends BaseBusRules {
 
     /**
      * @param dataClasses
      */
-    public SequencerBusRules() {
-        super(Sequencer.class);
+    public PcrPersonBusRules() {
+        super(PcrPerson.class);
     }
 
     /* (non-Javadoc)
@@ -45,16 +45,16 @@ public class SequencerBusRules extends BaseBusRules {
         // isEdit is false when the data object is new, true when editing an existing object.
         if (isExistingObject &&
                 parentDataObj instanceof DNASequence &&
-                dataObj instanceof Sequencer) {
+                dataObj instanceof PcrPerson) {
             DNASequence ds = (DNASequence) parentDataObj;
-            Sequencer col = (Sequencer) dataObj;
+            PcrPerson col = (PcrPerson) dataObj;
 
             Hashtable<Integer, Boolean> hash = new Hashtable<Integer, Boolean>();
-            for (Sequencer sequencer : ds.getSequencers()) {
-                Integer id = sequencer.getAgent().getAgentId();
+            for (PcrPerson pcrPerson : ds.getPcrPersons()) {
+                Integer id = pcrPerson.getAgent().getAgentId();
                 boolean isBad = false;
                 if (hash.get(id) == null) {
-                    if (sequencer.getId() != null && id.equals(col.getAgent().getAgentId())) {
+                    if (pcrPerson.getId() != null && id.equals(col.getAgent().getAgentId())) {
                         isBad = true;
                     }
                     hash.put(id, true);

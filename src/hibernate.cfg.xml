@@ -175,7 +175,7 @@
         <mapping class="edu.ku.brc.specify.datamodel.ReferenceWorkAttachment"/>
 		<mapping class="edu.ku.brc.specify.datamodel.RepositoryAgreement"/>
 		<mapping class="edu.ku.brc.specify.datamodel.RepositoryAgreementAttachment"/>
-		<mapping class="edu.ku.brc.specify.datamodel.Sequencer"/>
+		<mapping class="edu.ku.brc.specify.datamodel.PcrPerson"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Shipment"/>
 
 		<mapping class="edu.ku.brc.specify.datamodel.SpAppResourceDir"/>

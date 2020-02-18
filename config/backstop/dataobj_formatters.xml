@@ -669,9 +669,9 @@
     </format>
 
     <format
-            name="Sequencer"
-            title="Sequencer"
-            class="edu.ku.brc.specify.datamodel.Sequencer"
+            name="PcrPerson"
+            title="PcrPerson"
+            class="edu.ku.brc.specify.datamodel.PcrPerson"
             default="true"
     >
         <switch single="true">
@@ -1140,14 +1140,14 @@
                 orderfieldname="ordinal"
                />
 
-      <aggregator name="Sequencer"
-                  title="Sequencer"
-                  class="edu.ku.brc.specify.datamodel.Sequencer"
+      <aggregator name="PcrPerson"
+                  title="PcrPerson"
+                  class="edu.ku.brc.specify.datamodel.PcrPerson"
                   default="true"
                   separator="; "
                   ending=""
                   count=""
-                  format="Sequencer"
+                  format="PcrPerson"
                   orderfieldname="orderNumber"
       />
 

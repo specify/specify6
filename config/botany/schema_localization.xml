@@ -4,13 +4,13 @@
     <isSystem>false</isSystem>
     <schemaType>0</schemaType>
     <items>
-      <desc name="stationFieldNumber" type="java.lang.String" isHidden="false" isUIFormatter="false" isRequired="false">
+      <desc name="remarks" type="text" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
           <str language="en">
             <version>0</version>
-            <text>Collector Number</text>
+            <text>Locality and\n Habitat Notes</text>
             <itemDesc reference="../../.."/>
             <itemName reference="../../.."/>
           </str>
@@ -20,13 +20,13 @@
         </descs>
         <spExportSchemaItems/>
       </desc>
-      <desc name="remarks" type="text" isHidden="false" isUIFormatter="false" isRequired="false">
+      <desc name="stationFieldNumber" type="java.lang.String" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
           <str language="en">
             <version>0</version>
-            <text>Locality and\n Habitat Notes</text>
+            <text>Collector Number</text>
             <itemDesc reference="../../.."/>
             <itemName reference="../../.."/>
           </str>
@@ -77,13 +77,13 @@
         </descs>
         <spExportSchemaItems/>
       </desc>
-      <desc name="description" type="java.lang.String" isHidden="false" isUIFormatter="false" isRequired="false">
+      <desc name="collectionObjectAttribute" type="ManyToOne" isHidden="true" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
           <str language="en">
             <version>0</version>
-            <text>Specimen\nDescription</text>
+            <text>Col Obj Attribute</text>
             <itemDesc reference="../../.."/>
             <itemName reference="../../.."/>
           </str>
@@ -93,13 +93,13 @@
         </descs>
         <spExportSchemaItems/>
       </desc>
-      <desc name="collectionObjectAttribute" type="ManyToOne" isHidden="true" isUIFormatter="false" isRequired="false">
+      <desc name="description" type="java.lang.String" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
           <str language="en">
             <version>0</version>
-            <text>Col Obj Attribute</text>
+            <text>Specimen\nDescription</text>
             <itemDesc reference="../../.."/>
             <itemName reference="../../.."/>
           </str>

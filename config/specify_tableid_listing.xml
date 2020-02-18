@@ -344,6 +344,10 @@
             <display view="PaleoContext" dataobjformatter="PaleoContext"  searchdlg="PaleoContextSearch" newobjdlg="PaleoContextDisplay"/>            
             <businessrule>edu.ku.brc.specify.datamodel.busrules.PaleoContextBusRules</businessrule>
         </table>
+        <table name="edu.ku.brc.specify.datamodel.PcrPerson" abbrev="pcrp" id="161" searchable="true">
+            <display view="PcrPerson" dataobjformatter="PcrPerson"  searchdlg="" newobjdlg="PcrPersonDisplay"/>
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.SequencerBusRules</businessrule>
+        </table>
         <table name="edu.ku.brc.specify.datamodel.Permit" abbrev="pr" id="6" searchable="true">
             <display view="Permit" dataobjformatter="Permit" searchdlg="PermitSearch" newobjdlg="PermitDisplay"/>
             <businessrule>edu.ku.brc.specify.datamodel.busrules.PermitBusRules</businessrule>            
@@ -396,10 +400,6 @@
         <table name="edu.ku.brc.specify.datamodel.RepositoryAgreementAttachment" abbrev="raat" id="118" searchable="true">
         	<display view="ObjectAttachment" newobjdlg="RepositoryAgreementAttachmentDisplay"/>
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentReferenceBaseBusRules</businessrule>
-        </table>
-        <table name="edu.ku.brc.specify.datamodel.Sequencer" abbrev="seqr" id="161" searchable="true">
-            <display view="Sequencer" dataobjformatter="Sequencer"  searchdlg="" newobjdlg="SequencerDisplay"/>
-            <businessrule>edu.ku.brc.specify.datamodel.busrules.SequencerBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.Shipment" abbrev="sh" id="71" searchable="true">
             <businessrule>edu.ku.brc.specify.datamodel.busrules.ShipmentBusRules</businessrule>                                    
