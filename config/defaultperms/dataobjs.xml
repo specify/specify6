@@ -3464,4 +3464,46 @@
       </entry>
     </hashtable>
   </entry>
+  <entry>
+    <string>extractor</string>
+    <hashtable>
+      <entry>
+        <string>Manager</string>
+        <tp name="extractor" type="Manager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>LimitedAccess</string>
+        <tp name="extractor" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>Guest</string>
+        <tp name="extractor" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>FullAccess</string>
+        <tp name="extractor" type="FullAccess" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>pcrperson</string>
+    <hashtable>
+      <entry>
+        <string>Manager</string>
+        <tp name="pcrperson" type="Manager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>LimitedAccess</string>
+        <tp name="pcrperson" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>Guest</string>
+        <tp name="pcrperson" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>FullAccess</string>
+        <tp name="pcrperson" type="FullAccess" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
 </hashtable>
