@@ -492,6 +492,7 @@
     <field table="Determination" name="tribe1" onetomanysequence="0" treename="taxon" maptofield="name" rankid="160"/>
     <field table="Determination" name="subtribe1" onetomanysequence="0" treename="taxon" maptofield="name" rankid="170"/>
     <field table="Determination" name="genus1" onetomanysequence="0" treename="taxon" maptofield="name" rankid="180"/>
+    <field table="Determination" name="morpho1Text1" onetomanysequence="0" treename="taxon" actualtable="taxonattribute" actualname="text1" relationshipname="taxonAttribute" maptofield="taxonattribute.text1" rankid="180"/>
     <field table="Determination" name="subgenus1" onetomanysequence="0" treename="taxon" maptofield="name" rankid="190"/>
     <field table="Determination" name="species1" onetomanysequence="0" treename="taxon" maptofield="name" rankid="220"/>
     <field table="Determination" name="subspecies1" onetomanysequence="0" treename="taxon" maptofield="name" rankid="230"/>

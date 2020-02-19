@@ -189,6 +189,8 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
 	protected Set<TaxonCitation>   taxonCitations;
     protected Set<CommonNameTx>    commonNames;
 
+    protected TaxonAttribute taxonAttribute;
+
     // non-user fields
     protected Integer              nodeNumber;
     protected Integer              highestChildNodeNumber;
@@ -279,6 +281,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
         ancestors                     = null;
         taxonAttachments              = new HashSet<TaxonAttachment>();
         collectingEventAttributes     = new HashSet<CollectingEventAttribute>();
+        taxonAttribute = null;
 
         isAccepted                    = true; // null for isAccepted means the same as true.  true is more clear.  So, I put true in here.
         acceptedTaxon                 = null;
@@ -339,7 +342,18 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
         //setGUID();
 	}
 
-    
+
+    @ManyToOne(cascade = {javax.persistence.CascadeType.ALL}, fetch = FetchType.LAZY)
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @JoinColumn(name = "TaxonAttributeID", unique = false, nullable = true, insertable = true, updatable = true)
+    public TaxonAttribute getTaxonAttribute() {
+        return this.taxonAttribute;
+    }
+
+    public void setTaxonAttribute(TaxonAttribute taxonAttribute) {
+        this.taxonAttribute = taxonAttribute;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#forceLoad()
      */

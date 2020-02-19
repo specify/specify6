@@ -458,7 +458,8 @@ public class UploadTable implements Comparable<UploadTable>
         return tblClass.equals(CollectionObjectAttribute.class)
                 || tblClass.equals(PreparationAttribute.class)
                 || tblClass.equals(CollectingEventAttribute.class)
-                || tblClass.equals(CollectingTripAttribute.class);
+                || tblClass.equals(CollectingTripAttribute.class)
+                || tblClass.equals(TaxonAttribute.class);
     }
     
     public boolean isZeroToOneMany()
@@ -3056,6 +3057,49 @@ public class UploadTable implements Comparable<UploadTable>
                 }
 
             }
+        } else if (tblClass.equals(Taxon.class)) {
+            for (UploadTable child : specialChildren) {
+                logDebug(child.getTable().getName());
+                if (child.getTblClass().equals(TaxonAttribute.class)) {
+                    Pair<DataProviderSessionIFace, Boolean> sessObj = getSession();
+                    DataProviderSessionIFace matchSession = sessObj.getFirst();
+                    try {
+                        String hql = "from TaxonAttribute where taxonAttributeId ";
+                        Taxon txMatch = (Taxon) match;
+                        if (txMatch.getTaxonAttribute() == null) {
+                            hql += "is null";
+                        } else {
+                            hql += "= " + ((Taxon) match).getTaxonAttribute().getId();
+                        }
+                        QueryIFace matchesQ = matchSession.createQuery(hql, false);
+                        List<?> matches = matchesQ.list();
+                        try {
+                            child.loadFromDataSet(wbCurrentRow);
+                            TaxonAttribute txa2 = (TaxonAttribute) child.getCurrentRecord(0);
+                            if (txa2 == null && matches.size() == 0) {
+                                continue;
+                            }
+                            if (txa2 == null && matches.size() != 0) {
+                                return false;
+                            }
+                            if (txa2 != null && matches.size() == 0) {
+                                return false;
+                            }
+                            TaxonAttribute txa1 = (TaxonAttribute) matches.get(0);
+                            result = txa1.matches(txa2);
+                            if (result) {
+                                //need to delete already-created "child" (due to weird hibernate 1-1 config requirements)
+                                deletes.add(child);
+                            }
+                        } finally {
+                            child.loadFromDataSet(child.wbCurrentRow);
+                        }
+                    } finally {
+                        getRidOfSession(sessObj);
+                    }
+
+                }
+            }
         }
         else //if (!updateMatches) //XXX Updates!!!!
         // Oh no!!
@@ -3149,6 +3193,9 @@ public class UploadTable implements Comparable<UploadTable>
         if (tblClass.equals(ReferenceWork.class))
         {
         	return childClass.equals(Author.class);
+        }
+        if (tblClass.equals(Taxon.class)) {
+            return childClass.equals(TaxonAttribute.class);
         }
         return false;
     }
@@ -3625,7 +3672,8 @@ public class UploadTable implements Comparable<UploadTable>
 						|| getTable().getTableInfo().getTableId() == CollectionObjectAttribute.getClassTableId()
 						|| getTable().getTableInfo().getTableId() == CollectingEventAttribute.getClassTableId()
                         || getTable().getTableInfo().getTableId() == CollectingTripAttribute.getClassTableId()
-						|| getTable().getTableInfo().getTableId() == PreparationAttribute.getClassTableId()) {
+						|| getTable().getTableInfo().getTableId() == PreparationAttribute.getClassTableId()
+                        || getTable().getTableInfo().getTableId() == TaxonAttribute.getClassTableId()) {
 					addRestriction(critter, "id", exportedRecordId, true);
 				} else {
 					//must be a child of a table for which matchRecordid is true.
