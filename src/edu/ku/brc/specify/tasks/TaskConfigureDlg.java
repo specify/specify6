@@ -165,11 +165,12 @@ public class TaskConfigureDlg extends CustomDialog
         mainPanel.add(contentPanel, BorderLayout.CENTER);
         
 
+        pack();
         Dimension size = getSize();
         size.width  = Math.max(size.width, 500);
         size.height = Math.max(size.height, 350);
         setPreferredSize(size);
-        pack();
+        //pack();
 
         stdPanel.getOrderList().addMouseListener(new MouseAdapter() {
             @Override
