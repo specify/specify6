@@ -238,50 +238,15 @@
     <copy file="./demo_files/my.cnf" todir="${installer.dir}/demo_files" />
   </target>
 
-
-  <target name="package-all" description="Generate install4j packages"
-          depends="package-internal, package-external">
-  </target>
-
-  <target name="package-internal" depends="clean-packages, package-internal-mac, package-internal-nonmac">
-    <antcall target="generate-updates-xml">
-      <param name="packages.dir" value="${packages.dir}/internal"/>
-      <param name="ext-frag" value=""/>
-    </antcall>
-  </target>
-
-  <target name="package-external" depends="clean-packages, package-external-mac, package-external-nonmac">
-    <antcall target="generate-updates-xml">
-      <param name="packages.dir" value="${packages.dir}/external"/>
-      <param name="ext-frag" value="-ext"/>
-    </antcall>
+  <target name="package-all" depends="clean-packages, package-mac, package-nonmac">
+    <antcall target="generate-updates-xml" />
   </target>
 
   <target name="clean-packages">
     <delete dir="${packages.dir}" />
   </target>
 
-  <target name="package-internal-mac" depends="installer-common, make-jar-mac">
-    <package-mac packages.dir="${packages.dir}/internal" ext-frag=""/>
-  </target>
-
-  <target name="package-external-mac" depends="installer-common, make-jar-mac">
-    <package-mac packages.dir="${packages.dir}/external" ext-frag="-ext"/>
-  </target>
-
-  <target name="package-internal-nonmac" depends="installer-common, make-jar-nonmac">
-    <package-winlin packages.dir="${packages.dir}/internal" ext-frag=""/>
-  </target>
-
-  <target name="package-external-nonmac" depends="installer-common, make-jar-nonmac">
-    <package-winlin packages.dir="${packages.dir}/external" ext-frag="-ext"/>
-  </target>
-
-
-  <macrodef name="package-mac">
-    <attribute name="packages.dir"/>
-    <attribute name="ext-frag"/>
-    <sequential>
+  <target name="package-mac" depends="installer-common, make-jar-mac">
       <delete file="${installer.dir}/non-mac-application-adapter.jar" />
       <copy overwrite="true" file="${build.root}/${jar.name}-mac.jar" tofile="${installer.dir}/${jar.name}.jar" />
 
@@ -296,20 +261,15 @@
         <arg value="macPkcs12File=${mac.pkcs12},windowsPkcs12File=${win.pkcs12}" />
 
         <arg value="--release=${specify.SPECIFY_VERSION}" />
-        <arg value="--destination=@{packages.dir}" />
+        <arg value="--destination=${packages.dir}" />
         <arg value="--build-ids=24" />
-        <arg value="${packaging.dir}/5-mac-full@{ext-frag}.install4j" />
+        <arg value="${packaging.dir}/5-mac-full-ext.install4j" />
       </exec>
-      <move file="@{packages.dir}/updates.xml" tofile="@{packages.dir}/updates.xml.macfull"/>
-    </sequential>
-  </macrodef>
+      <move file="${packages.dir}/updates.xml" tofile="${packages.dir}/updates.xml.macfull"/>
+  </target>
 
 
-
-  <macrodef name="package-winlin">
-    <attribute name="packages.dir"/>
-    <attribute name="ext-frag"/>
-    <sequential>
+  <target name="package-nonmac" depends="installer-common, make-jar-nonmac">
       <copy file="${system.dep.libs.dir}/non-mac-application-adapter.jar" todir="${installer.dir}" />
       <copy overwrite="true" file="${build.root}/${jar.name}-nonmac.jar" tofile="${installer.dir}/${jar.name}.jar" />
 
@@ -324,11 +284,11 @@
         <arg value="macPkcs12File=${mac.pkcs12},windowsPkcs12File=${win.pkcs12}" />
 
         <arg value="--release=${specify.SPECIFY_VERSION}" />
-        <arg value="--destination=@{packages.dir}" />
+        <arg value="--destination=${packages.dir}" />
         <arg value="--build-ids=176,179" />
-        <arg value="${packaging.dir}/5-winlin-full@{ext-frag}.install4j" />
+        <arg value="${packaging.dir}/5-winlin-full-ext.install4j" />
       </exec>
-      <move file="@{packages.dir}/updates.xml" tofile="@{packages.dir}/updates.xml.winlinfull"/>
+      <move file="${packages.dir}/updates.xml" tofile="${packages.dir}/updates.xml.winlinfull"/>
 
       <exec executable="${install4j.dir}/bin/install4jc">
         <!-- <arg value="-\-quiet"/> -->
@@ -341,18 +301,17 @@
         <arg value="macPkcs12File=${mac.pkcs12},windowsPkcs12File=${win.pkcs12}" />
 
         <arg value="--release=${specify.SPECIFY_VERSION}" />
-        <arg value="--destination=@{packages.dir}" />
+        <arg value="--destination=${packages.dir}" />
         <arg value="--build-ids=1965,1873" />
-        <arg value="${packaging.dir}/5-winlin-full@{ext-frag}-64.install4j" />
+        <arg value="${packaging.dir}/5-winlin-full-ext-64.install4j" />
       </exec>
-      <move file="@{packages.dir}/updates.xml" tofile="@{packages.dir}/updates.xml.winlinfull64"/>
+      <move file="${packages.dir}/updates.xml" tofile="${packages.dir}/updates.xml.winlinfull64"/>
 
-      <move todir="@{packages.dir}">
-        <fileset dir="@{packages.dir}"/>
+      <move todir="${packages.dir}">
+        <fileset dir="${packages.dir}"/>
         <mapper type="regexp" from="^(.*)-x64(.*)$" to="\1\2" />
       </move>
-    </sequential>
-  </macrodef>
+  </target>
 
 
   <target name="generate-updates-xml">
