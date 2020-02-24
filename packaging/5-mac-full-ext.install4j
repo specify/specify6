@@ -8,7 +8,13 @@
         <language id="pt" customLocalizationFile="./localization_pt.utf8" />
       </additionalLanguages>
     </languages>
-    <codeSigning macEnabled="true" macPkcs12File="${compiler:macPkcs12File}" windowsEnabled="true" windowsPkcs12File="${compiler:windowsPkcs12File}" />
+    <codeSigning macEnabled="true" macPkcs12File="${compiler:macPkcs12File}" windowsEnabled="true" windowsPkcs12File="${compiler:windowsPkcs12File}">
+      <macSearchedJars>
+        <entry>jna-*</entry>
+        <entry>swt-*</entry>
+        <entry>jogl-all-natives-macosx-*</entry>
+      </macSearchedJars>
+    </codeSigning>
   </application>
   <files>
     <mountPoints>
