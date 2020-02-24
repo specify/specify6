@@ -550,7 +550,6 @@
     <field column="Tribe 1"                 	name="tribe1" type="java.lang.String" length="64"/>
     <field column="Subtribe 1"                 	name="subtribe1" type="java.lang.String" length="64"/>
     <field column="Genus 1"                 	name="genus1" type="java.lang.String" length="64"/>
-    <field column="Morpho1Text1"                name="morpho1Text1" type="java.lang.String" />
     <field column="Subgenus 1"                 	name="subgenus1" type="java.lang.String" length="64"/>
     <field column="Species 1"               	name="species1" type="java.lang.String" length="64"/>
     <field column="Subspecies 1"            	name="subspecies1" type="java.lang.String" length="64"/>
@@ -1566,7 +1565,7 @@
     <field column="Genus CommonName" name="genusCommonName" type="java.lang.String" length="128"/>
     <field column="Genus Source" name="genusSource" type="java.lang.String" length="64"/>
     <field column="Genus GUID" name="genusGUID" type="java.lang.String" length="128"/>
-
+    
     <field column="Subgenus" name="subgenus" type="java.lang.String" length="64"/>
     <field column="Subgenus Author" name="subgenusAuthor" type="java.lang.String" length="128"/>
     <field column="Subgenus CommonName" name="subgenusCommonName" type="java.lang.String" length="128"/>
