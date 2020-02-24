@@ -4,10 +4,10 @@ on: [push]
 
 jobs:
   build:
+    name: Build and Package Specify 6
     runs-on: ubuntu-latest
 
     steps:
-
       - uses: actions/checkout@v2
 
       - name: Unbase64 code signing certs
@@ -60,31 +60,31 @@ jobs:
       - name: Upload Specify_windows_64.exe as artifact
         uses: actions/upload-artifact@v1
         with:
-          name: Specify_windows_64.exe
+          name: Specify_windows_64
           path: packages/Specify_windows_64.exe
 
       - name: Upload Specify_windows.exe as artifact
         uses: actions/upload-artifact@v1
         with:
-          name: Specify_windows.exe
+          name: Specify_windows
           path: packages/Specify_windows.exe
 
       - name: Upload Specify_unix_64.sh as artifact
         uses: actions/upload-artifact@v1
         with:
-          name: Specify_unix_64.sh
+          name: Specify_unix_64
           path: packages/Specify_unix_64.sh
 
       - name: Upload Specify_unix.sh as artifact
         uses: actions/upload-artifact@v1
         with:
-          name: Specify_unix.sh
+          name: Specify_unix
           path: packages/Specify_unix.sh
 
       - name: Upload Specify_macos.dmg as artifact
         uses: actions/upload-artifact@v1
         with:
-          name: Specify_macos.dmg
+          name: Specify_macos
           path: packages/Specify_macos.dmg
 
       - name: Upload updates.xml as artifact
@@ -93,15 +93,98 @@ jobs:
           name: updates.xml
           path: packages/updates.xml
 
-      - name: Release
+  notarize:
+    name: Notarize the Specify 6 Mac package
+    needs: build
+    runs-on: macos-latest
+
+    steps:
+      - name: Download Specify_macos artifact
+        uses: actions/download-artifact@v1
+        with:
+          name: Specify_macos
+
+      - name: Upload the Mac package for notarization
+        run: >
+          xcrun altool --notarize-app --primary-bundle-id org.specifysoftware
+          --username beach@ku.edu --password $AC_PASSWORD
+          --file Specify_macos/Specify_macos.dmg | tee notarize-app-output.txt
+        env:
+          AC_PASSWORD: ${{ secrets.AC_PASSWORD }}
+
+      - name: Get the request UUID
+        run: sed -En 's/RequestUUID = (.*)$/\1/p' notarize-app-output.txt | tee request-uuid.txt
+
+      - name: Check the notarization status
+        run: >
+          for i in {1..60}; do
+          sleep 120;
+          xcrun altool --notarization-info $(< request-uuid.txt)
+          --username beach@ku.edu --password $AC_PASSWORD
+          | tee notarization-info.txt;
+          grep -q "Status: in progress" notarization-info.txt || break;
+          done;
+          grep -q "Status: success" notarization-info.txt || { echo "Notarization failed!"; exit 1; }
+        env:
+          AC_PASSWORD: ${{ secrets.AC_PASSWORD }}
+
+      - name: Staple the notarization ticket to the installer
+        run: xcrun stapler staple Specify_macos/Specify_macos.dmg
+
+      - name: Upload the stapled Specify_macos.dmg as artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: Specify_macos_with_ticket
+          path: Specify_macos/Specify_macos.dmg
+
+  release:
+    name: Create a Specify 6 release
+    needs: [build, notarize]
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download Specify_windows_64 artifact
+        uses: actions/download-artifact@v1
+        with:
+          name: Specify_windows_64
+
+      - name: Download Specify_windows artifact
+        uses: actions/download-artifact@v1
+        with:
+          name: Specify_windows
+
+      - name: Download Specify_unix_64 artifact
+        uses: actions/download-artifact@v1
+        with:
+          name: Specify_unix_64
+
+      - name: Download Specify_unix artifact
+        uses: actions/download-artifact@v1
+        with:
+          name: Specify_unix
+
+      - name: Download Specify_macos_with_ticket artifact
+        uses: actions/download-artifact@v1
+        with:
+          name: Specify_macos_with_ticket
+
+      - name: Download updates.xml artifact
+        uses: actions/download-artifact@v1
+        with:
+          name: updates.xml
+
+      - name: Create release
         uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
         with:
           draft: true
           prerelease: true
           files: |
-            packages/Specify*
-            packages/updates.xml
+            Specify_windows_64/*
+            Specify_windows/*
+            Specify_unix_64/*
+            Specify_unix/*
+            Specify_macos_with_ticket/*
+            updates.xml/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
