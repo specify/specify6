@@ -33,23 +33,23 @@ jobs:
         id: cache-install4j
         uses: actions/cache@v1
         with:
-          path: install4j7.0.7
-          key: install4j7.0.7-cache
+          path: install4j8.0.4
+          key: install4j8.0.4-cache
 
       - name: Download Install4j
         if: steps.cache-install4j.outputs.cache-hit != 'true'
         run: |
-          wget https://download-keycdn.ej-technologies.com/install4j/install4j_unix_7_0_7.tar.gz
-          tar -zxvf install4j_unix_7_0_7.tar.gz
+          wget https://download-gcdn.ej-technologies.com/install4j/install4j_unix_8_0_4.tar.gz
+          tar -zxvf install4j_unix_8_0_4.tar.gz
 
       - name: Set Install4j license
-        run: install4j7.0.7/bin/install4jc --license=$INSTALL4J_LICENSE
+        run: install4j8.0.4/bin/install4jc --license=$INSTALL4J_LICENSE
         env:
-          INSTALL4J_LICENSE: ${{ secrets.INSTALL4J_LICENSE }}
+          INSTALL4J_LICENSE: ${{ secrets.INSTALL4J8_LICENSE }}
 
       - name: Package Specify 6
         run: >
-          ant -noinput -buildfile build.xml -Dinstall4j.dir=./install4j7.0.7
+          ant -noinput -buildfile build.xml -Dinstall4j.dir=./install4j8.0.4
           -Dwin-keystore-password=$WIN_KEYSTORE_PASSWORD -Dmac-keystore-password=$MAC_KEYSTORE_PASSWORD
           -Dwin.pkcs12=certwithroot.pfx -Dmac.pkcs12=expdevidapp.p12 -Dcode.signing=true
           package-all
