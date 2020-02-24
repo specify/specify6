@@ -219,6 +219,7 @@
 		<mapping class="edu.ku.brc.specify.datamodel.StorageTreeDefItem"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Taxon"/>
 		<mapping class="edu.ku.brc.specify.datamodel.TaxonAttachment"/>
+		<mapping class="edu.ku.brc.specify.datamodel.TaxonAttribute"/>
 		<mapping class="edu.ku.brc.specify.datamodel.TaxonCitation"/>
 
 		<mapping class="edu.ku.brc.specify.datamodel.TaxonTreeDef"/>

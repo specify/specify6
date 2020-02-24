@@ -3130,6 +3130,27 @@
     </hashtable>
   </entry>
   <entry>
+    <string>taxonattribute</string>
+    <hashtable>
+      <entry>
+        <string>Manager</string>
+        <tp name="taxonattribute" type="Manager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>LimitedAccess</string>
+        <tp name="taxonattribute" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>Guest</string>
+        <tp name="taxonattribute" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>FullAccess</string>
+        <tp name="taxonattribute" type="FullAccess" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
     <string>splocalecontaineritem</string>
     <hashtable>
       <entry>

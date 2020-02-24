@@ -2,7 +2,7 @@
 
 <!-- 
 
-    Last used ID is 161 or 533
+    Last used ID is 162 or 533
     
     [0] are available
     
@@ -477,6 +477,7 @@
         	<display view="ObjectAttachment" newobjdlg="TaxonAttachmentDisplay"/>
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentReferenceBaseBusRules</businessrule>
         </table>
+        <table name="edu.ku.brc.specify.datamodel.TaxonAttribute" abbrev="txa" id="162" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.TaxonCitation" abbrev="txc" id="75" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.TaxonTreeDef" abbrev="txtd" id="76"/>
         <table name="edu.ku.brc.specify.datamodel.TaxonTreeDefItem" abbrev="txtdi" id="77" searchable="true">
