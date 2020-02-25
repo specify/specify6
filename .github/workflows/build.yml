@@ -1,0 +1,138 @@
+name: Specify 6 CI
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - uses: actions/checkout@v2
+
+      - name: Unbase64 code signing certs
+        run: |
+          echo $MAC_PKCS12 | base64 -d > packaging/expdevidapp.p12
+          echo $WIN_PKCS12 | base64 -d > packaging/certwithroot.pfx
+        env:
+          WIN_PKCS12: ${{ secrets.WIN_PKCS12 }}
+          MAC_PKCS12: ${{ secrets.MAC_PKCS12 }}
+
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+
+      - name: Compile Specify 6
+        run: ant -noinput -buildfile build.xml compile-nonmac
+
+      - name: Compile Specify 6 for Mac
+        run: ant -noinput -buildfile build.xml compile-mac
+
+      - name: Get Install4j from cache
+        id: cache-install4j
+        uses: actions/cache@v1
+        with:
+          path: install4j7.0.7
+          key: install4j7.0.7-cache
+
+      - name: Download Install4j
+        if: steps.cache-install4j.outputs.cache-hit != 'true'
+        run: |
+          wget https://download-keycdn.ej-technologies.com/install4j/install4j_unix_7_0_7.tar.gz
+          tar -zxvf install4j_unix_7_0_7.tar.gz
+
+      - name: Set Install4j license
+        run: install4j7.0.7/bin/install4jc --license=$INSTALL4J_LICENSE
+        env:
+          INSTALL4J_LICENSE: ${{ secrets.INSTALL4J_LICENSE }}
+
+      - name: Package Specify 6
+        run: >
+          ant -noinput -buildfile build.xml -Dinstall4j.dir=./install4j7.0.7
+          -Dwin-keystore-password=$WIN_KEYSTORE_PASSWORD -Dmac-keystore-password=$MAC_KEYSTORE_PASSWORD
+          -Dwin.pkcs12=certwithroot.pfx -Dmac.pkcs12=expdevidapp.p12 -Dcode.signing=true
+          package-all
+        env:
+          WIN_KEYSTORE_PASSWORD: ${{ secrets.WIN_KEYSTORE_PASSWORD }}
+          MAC_KEYSTORE_PASSWORD: ${{ secrets.MAC_KEYSTORE_PASSWORD }}
+
+      - name: Upload Specify_windows_64.exe as artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: Specify_windows_64.exe
+          path: packages/external/Specify_windows_64.exe
+
+      - name: Upload Specify_windows.exe as artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: Specify_windows.exe
+          path: packages/external/Specify_windows.exe
+
+      - name: Upload Specify_unix_64.sh as artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: Specify_unix_64.sh
+          path: packages/external/Specify_unix_64.sh
+
+      - name: Upload Specify_unix.sh as artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: Specify_unix.sh
+          path: packages/external/Specify_unix.sh
+
+      - name: Upload Specify_macos.dmg as artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: Specify_macos.dmg
+          path: packages/external/Specify_macos.dmg
+
+      - name: Upload Specify_windows_Internal_64.exe as artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: Specify_windows_Internal_64.exe
+          path: packages/internal/Specify_windows_Internal_64.exe
+
+      - name: Upload Specify_windows_Internal.exe as artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: Specify_windows_Internal.exe
+          path: packages/internal/Specify_windows_Internal.exe
+
+      - name: Upload Specify_unix_Internal.sh as artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: Specify_unix_Internal.sh
+          path: packages/internal/Specify_unix_Internal.sh
+
+      - name: Upload Specify_macos_Internal.dmg as artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: Specify_macos_Internal.dmg
+          path: packages/internal/Specify_macos_Internal.dmg
+
+      - name: Upload Specify_unix_Internal_64.sh as artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: Specify_unix_Internal_64.sh
+          path: packages/internal/Specify_unix_Internal_64.sh
+
+      - name: Upload updates.xml as artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: updates.xml
+          path: packages/external/updates.xml
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          draft: true
+          prerelease: true
+          files: |
+            packages/internal/Specify*
+            packages/external/Specify*
+            packages/external/updates.xml
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
