@@ -22,7 +22,7 @@
   <fail unless="specify.SPECIFY_VERSION">Specify version not set.</fail>
 
   <property name="packages.dir" value="packages" />
-  <property name="install4j.dir" value="${user.home}/install4j7.0.7" />
+  <property name="install4j.dir" value="${user.home}/install4j8.0.4" />
   <property name="packaging.dir" value="packaging"/>
 
   <!-- Needed for building help search index -->
@@ -309,7 +309,7 @@
 
       <move todir="${packages.dir}">
         <fileset dir="${packages.dir}"/>
-        <mapper type="regexp" from="^(.*)-x64(.*)$" to="\1\2" />
+        <mapper type="regexp" from="^(.*)(?:-x64|-x32)(.*)$" to="\1\2" />
       </move>
   </target>
 
