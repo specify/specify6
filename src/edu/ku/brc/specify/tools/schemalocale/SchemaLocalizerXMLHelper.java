@@ -645,6 +645,9 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
             {
                 String language = Locale.getDefault().getLanguage();
                 String country = Locale.getDefault().getCountry();
+                if ("en".equals(language)) {
+                    country = "";
+                }
                 if (discipline == null) {
                     addMissingTranslations(language, country, containers);
                 }
