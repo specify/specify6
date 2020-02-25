@@ -54,11 +54,11 @@ public class MiscPrefsPanel extends GenericPrefsPanel implements PrefsSavable, P
         createForm("Preferences", "Misc");
         
         originals.put("1", setCheckbox("1", "Interactions.Using.Interactions", true));
-        originals.put("1", setCheckbox("2", "ExportTask.OnTaskbar", false));
-        originals.put("1", setCheckbox("3", "StartupTask.OnTaskbar", true));
-        originals.put("1", setCheckbox("4", "AttachmentsTask.OnTaskbar", true, "ATTACHMENTS"));
+        originals.put("2", setCheckbox("2", "ExportTask.OnTaskbar", false));
+        originals.put("3", setCheckbox("3", "StartupTask.OnTaskbar", true));
+        originals.put("4", setCheckbox("4", "AttachmentsTask.OnTaskbar", true, "ATTACHMENTS"));
         //setCheckbox("5", "CleanupToolsTask.OnTaskbar", false, "CLEANUP");
-        originals.put("1", setCheckbox("6", SymbiotaTask.IS_USING_SYMBIOTA_PREFNAME, false));
+        originals.put("6", setCheckbox("6", SymbiotaTask.IS_USING_SYMBIOTA_PREFNAME, false));
         //setCheckbox("7", SGRTask.IS_USING_SGR_PREFNAME, true);
     }
     
