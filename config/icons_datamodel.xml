@@ -55,6 +55,7 @@
     <icon name="exchangeinprep"       file="exchange_in.png" sizes="all"/>
     <icon name="exchangeout"          file="exchange_out.png" sizes="all"/>
     <icon name="exchangeoutprep"      file="exchange_out.png" sizes="all"/>
+    <icon name="extractor"            file="extractor.png" sizes="all"/>
     <icon name="fieldnotebook"        file="field_notebook.png" sizes="all"/>
     <icon name="fieldnotebookpage"    file="field_notebook_page.png" sizes="all"/>
     <icon name="fieldnotebookpageset" file="field_notebook_page_set.png" sizes="all"/>
@@ -76,9 +77,10 @@
     <icon name="materialsample"       file="material_sample.png" sizes="all"/>
     <icon name="otheridentifier"      file="other_identifier.png" sizes="all"/>
     <icon name="paleocontext"         file="paleocontext.png" sizes="all"/>
+    <icon name="pcrperson"            file="pcrperson.png" sizes="all"/>
     <icon name="permit"               file="permit.png" sizes="all"/>
     <icon name="preparation"          file="preparation.png" sizes="all"/>
-    <icon name="preparationproperty"          file="preparationproperty.png" sizes="all"/>
+    <icon name="preparationproperty"  file="preparationproperty.png" sizes="all"/>
     <icon name="preptype"             file="prep_type.png" sizes="all"/>
     <icon name="picklist"             file="pick_list.png" sizes="all"/>
     <icon name="project"              file="project.png" sizes="all"/>
@@ -89,6 +91,7 @@
     <icon name="spauditlogfield"      file="audit_log_field_32.png" sizes="all"/>
     <icon name="storage"              file="storage.png" sizes="all"/>
     <icon name="taxon"                file="taxon.png" sizes="all"/>
+    <icon name="taxonattribute"       file="taxonattribute.png" sizes="all"/>
     <icon name="treatmentevent"       file="treatment_event.png" sizes="all"/>
     <icon name="voucherrelationship"       file="voucherrelationship.png" sizes="all"/>
 
@@ -276,6 +279,7 @@
     <icon name="ExsiccataItem"          alias="exsiccataitem"/>
     <icon name="ExchangeIn"             alias="exchangein"/>
     <icon name="ExchangeOut"            alias="exchangeout"/>
+    <icon name="Extractor"              alias="extractor"/>
     <icon name="FieldNotebookPage"      alias="fieldnotebookpage"/>
     <icon name="FieldNotebookPageSet"   alias="fieldnotebookpageset"/>
     <icon name="FieldNotebook"          alias="fieldnotebook"/>
@@ -296,6 +300,7 @@
     <icon name="LocalityNameAlias"      alias="localitynamealias"/>
     <icon name="MaterialSample"         alias="materialsample"/>
     <icon name="OtherIdentifier"        alias="otheridentifier"/>
+    <icon name="PcrPerson"              alias="pcrperson"/>
     <icon name="Permit"                 alias="permit"/>
     <icon name="PaleoContext"           alias="paleocontext"/>
     <icon name="Preparation"            alias="preparation"/>
@@ -309,6 +314,7 @@
     <icon name="SpAuditLogField"      alias="spauditlogfield"/>
     <icon name="Storage"                alias="storage"/>
     <icon name="Taxon"                  alias="taxon"/>
+    <icon name="TaxonAttribute"         alias="taxonattribute"/>
     <icon name="TreatmentEvent"         alias="treatmentevent"/>
     <icon name="VoucherRelationship"         alias="voucherrelationship"/>
 
