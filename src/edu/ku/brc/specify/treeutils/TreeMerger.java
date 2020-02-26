@@ -148,28 +148,31 @@ public class TreeMerger<N extends Treeable<N,D,I>,
 	 * @param toMergeId
 	 * @param mergeIntoId
 	 */
-	protected void mergeTreeIntoTree(final Integer toMergeId, final Integer mergeIntoId) throws Exception
-	{		
-		for (TreeMergerUIIFace<N,D,I> face : listeners)
-		{
+	protected void mergeTreeIntoTree(final Integer toMergeId, final Integer mergeIntoId) throws Exception {
+		for (TreeMergerUIIFace<N, D, I> face : listeners) {
 			face.merging(toMergeId, mergeIntoId);
 		}
 		List<Object[]> children = getChildren(toMergeId);
-		for (Object[] child : children)
-		{
+		for (Object[] child : children) {
 			Integer matchingChildId = getMatch(child, mergeIntoId);
-			if (matchingChildId == null)
-			{
-				move((Integer )child[0], mergeIntoId);
-			}	
-			else
-			{
-				mergeTreeIntoTree((Integer )child[0], matchingChildId);
+			if (matchingChildId == null) {
+				move((Integer) child[0], mergeIntoId);
+			} else {
+				mergeTreeIntoTree((Integer) child[0], matchingChildId);
 			}
 		}
 		mergeNodes(toMergeId, mergeIntoId);
-		for (TreeMergerUIIFace<N,D,I> face : listeners)
-		{
+		if (nodeTable.getName().equalsIgnoreCase("taxon")) {
+			Statement stmt = connection.createStatement();
+			try {
+				stmt.execute("delete from taxonattribute where taxonattributeid not in(select distinct taxonattributeid from taxon where taxonattributeid is not null)");
+			} catch (Exception x) {
+				throw new TreeMergeException(this, null, null);
+			} finally {
+				stmt.close();
+			}
+		}
+		for (TreeMergerUIIFace<N, D, I> face : listeners) {
 			face.merged(toMergeId, mergeIntoId);
 		}
 	}
