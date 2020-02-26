@@ -666,6 +666,11 @@
         <table name="TaxonAttachment" field="taxonAttachments">
            	<alias name="Attachment"/>
         </table>
+        <table name="TaxonAttribute" >
+            <alias name="Agent" field="agent1" />
+            <alias name="Agent" field="createdByAgent" />
+            <alias name="Agent" field="modifiedByAgent" />
+        </table>
         <table name="TaxonCitation" field="taxonCitations">
            	<alias name="ReferenceWork"/>
         </table>
