@@ -1598,6 +1598,11 @@ public void setReservedText3(String reservedText3) {
         for (DNASequence dnaS : dnaSequences) {
             dnaS.forceLoad();
         }
+
+        conservDescriptions.size();
+        for (ConservDescription cd : conservDescriptions) {
+            cd.forceLoad();
+        }
     }
     
     

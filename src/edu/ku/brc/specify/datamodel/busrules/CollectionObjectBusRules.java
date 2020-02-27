@@ -485,6 +485,12 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules {
                 super.addExtraObjectForProcessing(dnar);
             }
         }
+        for (ConservDescription cd : colObj.getConservDescriptions()) {
+            super.addExtraObjectForProcessing(cd);
+            for (ConservEvent ce : cd.getEvents()) {
+                super.addExtraObjectForProcessing(ce);
+            }
+        }
     }
 
     /**

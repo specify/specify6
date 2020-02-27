@@ -427,6 +427,7 @@ public class ConservDescription extends DataModelObjBase implements AttachmentOw
         this.determinedDatePrecision = determinedDatePrecision;
     }
 
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentTableId()
      */
@@ -545,6 +546,10 @@ public class ConservDescription extends DataModelObjBase implements AttachmentOw
 		// TODO Auto-generated method stub
 		super.forceLoad();
 		events.size();
+		for (ConservEvent ce : events) {
+		    ce.forceLoad();
+        }
+        conservDescriptionAttachments.size();
 	}
     
     
