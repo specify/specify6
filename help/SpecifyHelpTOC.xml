@@ -50,6 +50,7 @@
 		</tocitem>
 		<tocitem text="Setting Specify Preferences" target="PreferencesOverview">
 			<tocitem text="Attachments" target="PrefsAttachments" />
+			<tocitem text="Auditing" target="PrefsAudits" />
 			<tocitem text="EMail" target="PrefsEMail" />
 			<tocitem text="Formatting" target="PrefsFormatting" />
 			<tocitem text="GoogleEarth" target="PrefsGoogleEarth" />
@@ -58,6 +59,7 @@
 			<tocitem text="Login" target="PrefsLogin" />
 			<tocitem text="MySQL" target="PrefsMySQL" />
 			<tocitem text="Network" target="PrefsNetwork" />
+			<tocitem text="Web Portal" target="PrefsWebPortal" />
 			<tocitem text="System" target="PrefsSystem" />
 			<tocitem text="Symbiota" target="PrefsSymbiota" />
 			<tocitem text="Task Bar" target="PrefsMisc" />

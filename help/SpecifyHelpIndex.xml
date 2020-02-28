@@ -107,6 +107,7 @@
 		<indexitem text="Google Earth" target="GE" mergetype="javax.help.SortMerge" />
 	</indexitem>
 	<indexitem text="Preferences" target="PreferencesOverview" mergetype="javax.help.SortMerge">
+		<indexitem text="Auditing" target="PrefsAudits" mergetype="javax.help.SortMerge" />
 		<indexitem text="Backup (MySQL)" target="PrefsMySQL" mergetype="javax.help.SortMerge" />
 		<indexitem text="Email" target="PrefsEMail" mergetype="javax.help.SortMerge" />
 		<indexitem text="Formatting" target="PrefsFormatting" mergetype="javax.help.SortMerge" />
@@ -115,6 +116,7 @@
 		<indexitem text="Loans" target="PrefsLoan" mergetype="javax.help.SortMerge" />
 		<indexitem text="Login" target="PrefsLogin" mergetype="javax.help.SortMerge" />
 		<indexitem text="Network" target="PrefsNetwork" mergetype="javax.help.SortMerge" />
+		<indexitem text="Web Portal" target="PrefsWebPortal" mergetype="javax.help.SortMerge" />
 		<indexitem text="System" target="PrefsSystem" mergetype="javax.help.SortMerge" />
 		<indexitem text="Tree" target="PrefsTree" mergetype="javax.help.SortMerge" />
 		<indexitem text="MySQL" target="PrefsMySQL" />
