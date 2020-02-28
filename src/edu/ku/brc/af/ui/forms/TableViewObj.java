@@ -1331,7 +1331,7 @@ public class TableViewObj implements Viewable,
         if (dObj != null)
         {
             Object[] delBtnLabels = {getResourceString(addSearch ? "Remove" : "Delete"), getResourceString("CANCEL")};
-            int rv = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), UIRegistry.getLocalizedMessage(addSearch ? "ASK_REMOVE" : "ASK_DELETE", dObj.getIdentityTitle()),
+            int rv = JOptionPane.showOptionDialog(UIRegistry.getMostRecentWindow(), UIRegistry.getLocalizedMessage(addSearch ? "ASK_REMOVE" : "ASK_DELETE", dObj.getIdentityTitle()),
                                                   getResourceString(addSearch ? "Remove" : "Delete"),
                                                   JOptionPane.YES_NO_OPTION,
                                                   JOptionPane.QUESTION_MESSAGE,

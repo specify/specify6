@@ -221,7 +221,7 @@ public class GeoCoordGeoLocateProvider implements GeoCoordServiceProviderIFace, 
                     // ask the user if they want to review the results
                     String message = withResults.size() == 1 ? getResourceString("GEOLOC_RES_VIEW_CONFIRM_ONE") :
                         String.format(getResourceString("GEOLOC_RES_VIEW_CONFIRM"), String.valueOf(withResults.size())); //$NON-NLS-1$
-                    int userChoice = JOptionPane.showConfirmDialog(UIRegistry.getTopWindow(), message,
+                    int userChoice = JOptionPane.showConfirmDialog(UIRegistry.getMostRecentWindow(), message,
                             getResourceString("GeoCoordGeoLocateProvider.GEO_CONTINUE"), JOptionPane.YES_NO_OPTION); //$NON-NLS-1$
 
                     if (userChoice != JOptionPane.YES_OPTION)
