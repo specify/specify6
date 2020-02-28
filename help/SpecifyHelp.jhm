@@ -395,4 +395,6 @@
 	<mapID target="GeoCleanUpFindISOCode" url="SpecifyHelp/Cleanup/iso_assign_main.html#iso_find_code"/>
 	<mapID target="iPadConfig" url="SpecifyHelp/iPadExporter/ipad_exporter.html#configure_export"/>
 	<mapID target="iPadConfig" url="SpecifyHelp/iPadExporter/ipad_exporter.html#configure_export"/>
+	<mapID target="PrefsAudits" url="SpecifyHelp/Prefs/PrefsAudits.html"/>
+	<mapID target="PrefsWebPortal" url="SpecifyHelp/Prefs/PrefsWebPortal.html"/>
 </map>
