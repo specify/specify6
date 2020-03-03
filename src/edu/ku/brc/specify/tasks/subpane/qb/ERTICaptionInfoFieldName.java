@@ -132,7 +132,7 @@ public class ERTICaptionInfoFieldName extends ERTICaptionInfoQB {
             if (fi == null) {
                 fi = ti.getRelationshipByName(fieldName);
             }
-            if (fi == null || f1.getTitle() == null) {
+            if (fi == null || fi.getTitle() == null) {
                 return fieldName;
             } else {
                 return fi.getTitle();
