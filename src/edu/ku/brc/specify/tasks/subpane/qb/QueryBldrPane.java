@@ -2357,98 +2357,75 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      * @return ERTICaptionInfo for the visible columns returned by a query.
      */
     public static List<ERTICaptionInfoQB> getColumnInfo(final Vector<QueryFieldPanel> queryFieldItemsArg, final boolean fixLabels,
-            final DBTableInfo rootTbl, boolean forSchemaExport, boolean formatAuditIds)
-    {
+                                                        final DBTableInfo rootTbl, boolean forSchemaExport, boolean formatAuditIds) {
         List<ERTICaptionInfoQB> result = new Vector<ERTICaptionInfoQB>();
         Vector<ERTICaptionInfoTreeLevelGrp> treeGrps = new Vector<ERTICaptionInfoTreeLevelGrp>(5);
-        for (QueryFieldPanel qfp : queryFieldItemsArg)
-        {
-            if (qfp.getFieldQRI() == null)
-            {
-            	continue;
+        for (QueryFieldPanel qfp : queryFieldItemsArg) {
+            if (qfp.getFieldQRI() == null) {
+                continue;
             }
-            
+
             //System.out.println(qfp.getFieldQRI().getFieldName());
-            
-        	DBFieldInfo fi = qfp.getFieldInfo();
+
+            DBFieldInfo fi = qfp.getFieldInfo();
             DBTableInfo ti = null;
-            if (fi != null)
-            {
-               ti = fi.getTableInfo();
+            if (fi != null) {
+                ti = fi.getTableInfo();
             }
             String colName = qfp.getFieldName();
-            if (ti != null && fi != null)
-            {
+            if (ti != null && fi != null) {
                 colName = ti.getAbbrev() + '.' + fi.getColumn();
             }
-            if (qfp.isForDisplay())
-            {
+            if (qfp.isForDisplay()) {
                 String lbl = qfp.getSchemaItem() == null ? (qfp.getItemMapping() == null ? qfp.getLabel() : qfp.getExportedFieldName()) : qfp.getSchemaItem().getFieldName();
-                if (fixLabels)
-                {
+                if (fixLabels) {
                     lbl = fixFldNameForJR(lbl);
                 }
                 ERTICaptionInfoQB erti = null;
-                
+
                 //Test to see if it is actually necessary to use a ERTICaptionInfoRel for the field.
                 boolean buildRelERTI = false;
-                if (qfp.getFieldQRI() instanceof RelQRI)
-                {
+                if (qfp.getFieldQRI() instanceof RelQRI) {
                     //Test to see if it is actually necessary to use a ERTICaptionInfoRel for the field.
-                    RelationshipType relType = ((RelQRI )qfp.getFieldQRI()).getRelationshipInfo().getType();
+                    RelationshipType relType = ((RelQRI) qfp.getFieldQRI()).getRelationshipInfo().getType();
                     //XXX Formatter.getSingleField() checks for ZeroOrOne and OneToOne rels.
-                    if (relType != RelationshipType.ManyToOne /*&& relType != RelationshipType.ZeroOrOne && relType != RelationshipType.OneToOne*/)
-                    {
+                    if (relType != RelationshipType.ManyToOne /*&& relType != RelationshipType.ZeroOrOne && relType != RelationshipType.OneToOne*/) {
                         buildRelERTI = true;
-                    }
-                    else
-                    {
-                        DataObjDataFieldFormatIFace formatter = ((RelQRI )qfp.getFieldQRI()).getDataObjFormatter(qfp.getFormatName());
-                        if (formatter != null)
-                        {
+                    } else {
+                        DataObjDataFieldFormatIFace formatter = ((RelQRI) qfp.getFieldQRI()).getDataObjFormatter(qfp.getFormatName());
+                        if (formatter != null) {
                             buildRelERTI = formatter.getSingleField() == null || (formatter.getSingleField() != null && formatter.getFields()[0].getSep() != null);
-                        }
-                        else
-                        {
+                        } else {
                             buildRelERTI = true;
                         }
                     }
                 }
-                
-                if (buildRelERTI)
-                {
-                    RelQRI rqri = (RelQRI )qfp.getFieldQRI();
+
+                if (buildRelERTI) {
+                    RelQRI rqri = (RelQRI) qfp.getFieldQRI();
                     RelationshipType relType = rqri.getRelationshipInfo().getType();
                     boolean useCache;
-                    if (relType == RelationshipType.ManyToOne || relType == RelationshipType.ManyToMany)
-                    {
+                    if (relType == RelationshipType.ManyToOne || relType == RelationshipType.ManyToMany) {
                         useCache = true;
-                    }
-                    else 
-                    {
+                    } else {
                         //XXX actually need to be sure that this rel's table has a many-to-one relationship (direct or indirect) to the root.
                         useCache = rootTbl != null && rootTbl.getTableId() != rqri.getTableInfo().getTableId();
                     }
                     erti = new ERTICaptionInfoRel(colName, lbl, true, qfp.getFieldQRI().getFormatter(), 0,
                             qfp.getStringId(),
-                            ((RelQRI)qfp.getFieldQRI()).getRelationshipInfo(),
+                            ((RelQRI) qfp.getFieldQRI()).getRelationshipInfo(),
                             useCache,
                             null, qfp.getFormatName());
-                }
-                else if (qfp.getFieldQRI() instanceof TreeLevelQRI)
-                {
-                    TreeLevelQRI tqri = (TreeLevelQRI )qfp.getFieldQRI();
-                    for (ERTICaptionInfoTreeLevelGrp tg : treeGrps)
-                    {
-                        erti = tg.addRank((TreeLevelQRI )qfp.getFieldQRI(), colName, lbl, qfp.getStringId(), tqri.getRealFieldName());
-                        if (erti != null)
-                        {
+                } else if (qfp.getFieldQRI() instanceof TreeLevelQRI) {
+                    TreeLevelQRI tqri = (TreeLevelQRI) qfp.getFieldQRI();
+                    for (ERTICaptionInfoTreeLevelGrp tg : treeGrps) {
+                        erti = tg.addRank((TreeLevelQRI) qfp.getFieldQRI(), colName, lbl, qfp.getStringId(), tqri.getRealFieldName());
+                        if (erti != null) {
                             break;
                         }
                     }
-                    if (erti == null)
-                    {
-                        ERTICaptionInfoTreeLevelGrp newTg = new ERTICaptionInfoTreeLevelGrp(tqri.getTreeDataClass(), 
+                    if (erti == null) {
+                        ERTICaptionInfoTreeLevelGrp newTg = new ERTICaptionInfoTreeLevelGrp(tqri.getTreeDataClass(),
                                 tqri.getTreeDefId(), tqri.getTableAlias(), true, null);
                         erti = newTg.addRank(tqri, colName, lbl, qfp.getStringId(), tqri.getRealFieldName());
                         treeGrps.add(newTg);
@@ -2457,7 +2434,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                         && ti.getName().equalsIgnoreCase("SpAuditLog")
                         && (fi.getName().equalsIgnoreCase("RecordId") || fi.getName().equalsIgnoreCase("ParentRecordId"))
                         && formatAuditIds) {
-                    erti = new ERTICaptionInfoRecId(colName, lbl, qfp.getStringId(),fi);
+                    erti = new ERTICaptionInfoRecId(colName, lbl, qfp.getStringId(), fi);
                     String tblNumFld = fi.getName().equalsIgnoreCase("ParentRecordId") ? "parentTableNum" : "tableNum";
                     Vector<ColInfo> colInfoList = new Vector<>();
                     ColInfo columnInfo = erti.new ColInfo(StringUtils.capitalize(tblNumFld), tblNumFld);
@@ -2468,49 +2445,47 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     colInfoList.add(columnInfo);
                     erti.setColInfoList(colInfoList);
                     erti.setColName(null);
-                } else if (fi != null && ti.getName().equalsIgnoreCase("SpAuditLogField") && formatAuditIds) {
-                    if (fi.getName().equalsIgnoreCase("NewValue") || fi.getName().equalsIgnoreCase("OldValue")) {
-                        erti = new ERTICaptionInfoAuditVal(colName, lbl, qfp.getStringId(), fi);
-                        Vector<ColInfo> colInfoList = new Vector<>();
-                        ColInfo columnInfo = erti.new ColInfo("TableNum", "tableNum");
-                        columnInfo.setPosition(0);
-                        colInfoList.add(columnInfo);
-                        columnInfo = erti.new ColInfo("FieldName", "FieldName");
-                        columnInfo.setPosition(1);
-                        colInfoList.add(columnInfo);
-                        columnInfo = erti.new ColInfo(fi.getColumn(), fi.getName());
-                        columnInfo.setPosition(2);
-                        colInfoList.add(columnInfo);
-                        erti.setColInfoList(colInfoList);
-                        erti.setColName(null);
-                    } else if (fi.getName().equalsIgnoreCase("FieldName")) {
-                        erti = new ERTICaptionInfoFieldName(colName, lbl, qfp.getStringId(), fi);
-                        Vector<ColInfo> colInfoList = new Vector<>();
-                        ColInfo columnInfo = erti.new ColInfo("TableNum", "tableNum");
-                        columnInfo.setPosition(0);
-                        colInfoList.add(columnInfo);
-                        columnInfo = erti.new ColInfo(fi.getColumn(), fi.getName());
-                        columnInfo.setPosition(1);
-                        colInfoList.add(columnInfo);
-                        erti.setColInfoList(colInfoList);
-                        erti.setColName(null);
-                    }
-                }
-
-                else
-                {
-                	erti = new ERTICaptionInfoQB(colName, lbl, true, getColumnFormatter(qfp, forSchemaExport), 0, qfp.getStringId(), qfp.getPickList(), fi);
+                } else if (fi != null && ti.getName().equalsIgnoreCase("SpAuditLogField")
+                        && (fi.getName().equalsIgnoreCase("NewValue") || fi.getName().equalsIgnoreCase("OldValue"))
+                        && formatAuditIds) {
+                    erti = new ERTICaptionInfoAuditVal(colName, lbl, qfp.getStringId(), fi);
+                    Vector<ColInfo> colInfoList = new Vector<>();
+                    ColInfo columnInfo = erti.new ColInfo("TableNum", "tableNum");
+                    columnInfo.setPosition(0);
+                    colInfoList.add(columnInfo);
+                    columnInfo = erti.new ColInfo("FieldName", "FieldName");
+                    columnInfo.setPosition(1);
+                    colInfoList.add(columnInfo);
+                    columnInfo = erti.new ColInfo(fi.getColumn(), fi.getName());
+                    columnInfo.setPosition(2);
+                    colInfoList.add(columnInfo);
+                    erti.setColInfoList(colInfoList);
+                    erti.setColName(null);
+                } else if (fi != null && ti.getName().equalsIgnoreCase("SpAuditLogField")
+                        && fi.getName().equalsIgnoreCase("FieldName")
+                        && formatAuditIds) {
+                    erti = new ERTICaptionInfoFieldName(colName, lbl, qfp.getStringId(), fi);
+                    Vector<ColInfo> colInfoList = new Vector<>();
+                    ColInfo columnInfo = erti.new ColInfo("TableNum", "tableNum");
+                    columnInfo.setPosition(0);
+                    colInfoList.add(columnInfo);
+                    columnInfo = erti.new ColInfo(fi.getColumn(), fi.getName());
+                    columnInfo.setPosition(1);
+                    colInfoList.add(columnInfo);
+                    erti.setColInfoList(colInfoList);
+                    erti.setColName(null);
+                } else {
+                    erti = new ERTICaptionInfoQB(colName, lbl, true, getColumnFormatter(qfp, forSchemaExport), 0, qfp.getStringId(), qfp.getPickList(), fi);
                 }
                 erti.setColClass(qfp.getFieldQRI().getDataClass());
-                if (qfp.getFieldInfo() != null && !(qfp.getFieldQRI() instanceof DateAccessorQRI) && qfp.getFieldQRI().getFieldInfo().isPartialDate())
-                {
+                if (qfp.getFieldInfo() != null && !(qfp.getFieldQRI() instanceof DateAccessorQRI) && qfp.getFieldQRI().getFieldInfo().isPartialDate()) {
                     String precName = qfp.getFieldQRI().getFieldInfo().getDatePrecisionName();
-                    
+
                     Vector<ColInfo> colInfoList = new Vector<ColInfo>();
                     ColInfo columnInfo = erti.new ColInfo(StringUtils.capitalize(precName), precName);
                     columnInfo.setPosition(0);
                     colInfoList.add(columnInfo);
-                    
+
                     columnInfo = erti.new ColInfo(qfp.getFieldQRI().getFieldInfo().getColumn(), qfp.getFieldQRI().getFieldInfo().getName());
                     columnInfo.setPosition(1);
                     colInfoList.add(columnInfo);
@@ -2519,20 +2494,16 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     // XXX We need to get this from the SchemaConfig
                     //erti.setUiFieldFormatter(UIFieldFormatterMgr.getInstance().getFormatter("PartialDate"));
                 }
-                if (forSchemaExport)
-                {
-                	erti.setVisible(qfp.getQueryField().getIsDisplay());
+                if (forSchemaExport) {
+                    erti.setVisible(qfp.getQueryField().getIsDisplay());
                 }
                 result.add(erti);
             }
         }
-        for (ERTICaptionInfoTreeLevelGrp tg : treeGrps)
-        {
-            try 
-            {
-            	tg.setUp();
-            } catch (SQLException ex)
-            {
+        for (ERTICaptionInfoTreeLevelGrp tg : treeGrps) {
+            try {
+                tg.setUp();
+            } catch (SQLException ex) {
                 UsageTracker.incrHandledUsageCount();
                 edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryBldrPane.class, ex);
                 ex.printStackTrace();
