@@ -346,7 +346,7 @@
         </table>
         <table name="edu.ku.brc.specify.datamodel.PcrPerson" abbrev="pcrp" id="161" searchable="true">
             <display view="PcrPerson" dataobjformatter="PcrPerson"  searchdlg="" newobjdlg="PcrPersonDisplay"/>
-            <businessrule>edu.ku.brc.specify.datamodel.busrules.SequencerBusRules</businessrule>
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.PcrPersonBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.Permit" abbrev="pr" id="6" searchable="true">
             <display view="Permit" dataobjformatter="Permit" searchdlg="PermitSearch" newobjdlg="PermitDisplay"/>
