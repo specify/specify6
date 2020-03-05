@@ -527,6 +527,26 @@
                 <altview name="ExchangeOutPrep Edit" viewdef="ExchangeOutPrep" mode="edit"/>
             </altviews>
         </view>
+
+        <view name="Extractor"
+              class="edu.ku.brc.specify.datamodel.Extractor"
+              busrules="edu.ku.brc.specify.datamodel.busrules.ExtractorBusRules">            
+            <desc><![CDATA[The Collectors Form.]]></desc>
+            <altviews>
+                <altview name="Extractor View" viewdef="Extractor" mode="view" validated="false" default="true"/>                
+                <altview name="Extractor Edit" viewdef="Extractor" mode="edit" validated="true"/>                
+            </altviews>
+        </view>
+        
+        <view name="Extractors"
+              class="edu.ku.brc.specify.datamodel.Extractor"
+              busrules="edu.ku.brc.specify.datamodel.busrules.ExtractorBusRules">
+            <desc><![CDATA[DNA SequencingRun]]> </desc>
+            <altviews>
+                <altview name="Extractors Table View" viewdef="Extractors Table" mode="view"/>
+                <altview name="Extractors Table Edit" viewdef="Extractors Table" mode="edit" default="true"/>
+            </altviews>
+        </view>
         
         <view name="FieldNotebook"
             class="edu.ku.brc.specify.datamodel.FieldNotebook"
@@ -769,14 +789,24 @@
                 <altview name="PaleoContext Edit" viewdef="PaleoContext" mode="edit" default="true"/>
             </altviews>
         </view>
-        
+
         <view name="PcrPerson"
+              class="edu.ku.brc.specify.datamodel.PcrPerson"
+              busrules="edu.ku.brc.specify.datamodel.busrules.PcrPersonBusRules">            
+            <desc><![CDATA[The Collectors Form.]]></desc>
+            <altviews>
+                <altview name="PcrPerson View" viewdef="PcrPerson" mode="view" validated="false" default="true"/>                
+                <altview name="PcrPerson Edit" viewdef="PcrPerson" mode="edit" validated="true"/>                
+            </altviews>
+        </view>
+        
+        <view name="PcrPersons"
               class="edu.ku.brc.specify.datamodel.PcrPerson"
               busrules="edu.ku.brc.specify.datamodel.busrules.PcrPersonBusRules">
             <desc><![CDATA[DNA SequencingRun]]> </desc>
             <altviews>
-                <altview name="PcrPerson View" viewdef="PcrPerson" mode="view"/>
-                <altview name="PcrPerson Edit" viewdef="PcrPerson" mode="edit" default="true"/>
+                <altview name="PcrPersons Table View" viewdef="PcrPersons Table" mode="view"/>
+                <altview name="PcrPersons Table Edit" viewdef="PcrPersons Table" mode="edit" default="true"/>
             </altviews>
         </view>
         
@@ -2964,9 +2994,6 @@
                     <cell type="subview" id="attachments" viewname="ObjectAttachment" name="attachments" initialize="btn=true;icon=DNASequenceAttachment;align=right"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="PcrPerson" id="12" name="pcrPersons" colspan="13" rows="3"/>
-                </row>
-                <row>
                     <cell type="separator" label="Nucleotide Sequence" colspan="15"/>
                 </row>
                 <row>
@@ -3006,10 +3033,16 @@
                 </row>
                 <row>
                     <cell type="field" id="8" name="this" uitype="plugin" initialize="name=IllustrativeBarCodeUI" readonly="true" colspan="8"/>
-                </row>-->
-                <!-- <row>
+                </row>
+                <row>
                     <cell type="panel" id="20" name="outerPanel2" coldef="f:p:g,0px,p,10px,p,f:p:g" rowdef="p" colspan="8">
                 <rows>
+                <row>
+                    <cell type="subview" viewname="PcrPersons" id="12" name="pcrPersons" colspan="13" rows="3"/>
+                </row>
+                <row>
+                    <cell type="subview" viewname="Extractors" id="12" name="extractors" colspan="13" rows="3"/>
+                </row>
                 <row>
                     <cell type="label" label=" "/>
                     <cell type="command" id="SearchBold" name="SearchBold" label="Search Bold" ignore="true"/>
@@ -3017,8 +3050,8 @@
                 </row>
                 </rows>
                      </cell>
-                </row> -->               
-                <!--<row>
+                </row>              
+                <row>
                     <cell type="label" labelfor="btm"/>
                     <cell type="field" id="btm" name="boldTranslationMatrix" uitype="text"/>
                 </row>
@@ -3598,7 +3631,98 @@
                 </row>-->
             </rows>
         </viewdef>
+
+        <viewdef
+            type="form"
+            name="Extractor"
+            class="edu.ku.brc.specify.datamodel.Extractor"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The Extractor form.]]></desc>
+            <enableRules/>
+            
+            <columnDef>105px,2px,210px,5px,100px,2px,98px,300px,p:g</columnDef>
+            <columnDef os="lnx">135px,2px,230px,5px,120px,2px,118px,325px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,215px,5px,140px,2px,138px,395px,p:g</columnDef>
+            <columnDef os="exp">p,2px,p:g,5px:g,p,2px,p:g,p:g(2),p:g</columnDef>
+            <rowDef>p,2dlu,p:g,2dlu,p:g</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="agent" uitype="querycbx" initialize="name=Agent;title=Agent"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="3"/>
+                    <cell type="field" id="3" name="remarks" uitype="textareabrief" rows="2" colspan="6"/>
+                </row>
+                <!--<row>
+                    <cell type="label" labelfor="9"/>
+                    <cell type="field" id="9" name="createdByAgent" uitype="label" readonly="true"  uifieldformatter="Agent"/>
+                    <cell type="label" labelfor="10"/>
+                    <cell type="field" id="10" name="modifiedByAgent" uitype="label" readonly="true"  uifieldformatter="Agent"/>
+                    <cell type="label" id="divLabel" label=" " initialize="align=right"/>
+                    <cell type="field" id="4" name="divisionCBX" uitype="combobox" ignore="true"/>
+                </row>
+                <row>
+                	<cell type="field" id="34" uitype="checkbox" name="isPrimary"/>                	
+                </row>
+                <row>
+                    <cell type="label" labelfor="11"/>
+                    <cell type="field" id="11" name="timestampModified" uitype="label" readonly="true"/>
+                    <cell type="label" labelfor="12"/>
+                    <cell type="field" id="12" name="timestampCreated" uitype="label" readonly="true"/>
+                </row>-->
+            </rows>
+        </viewdef>
+
+        <viewdef
+            type="formtable"
+            name="Extractors Table"
+            class="edu.ku.brc.specify.datamodel.Extractor"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            <desc><![CDATA[Collectors grid view for CollectingEvent form.]]></desc>
+            <definition>PcrPersons</definition>
+        </viewdef>
         
+        <viewdef
+            type="iconview"
+            name="ExtractorsIconView"
+            class="edu.ku.brc.specify.datamodel.Extractor"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The Extractors Icon Viewer]]></desc>
+        </viewdef>
+
+        <viewdef
+            type="form"
+            name="Extractors"
+            class="edu.ku.brc.specify.datamodel.Extractor"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The Extractors form]]></desc>
+            <enableRules/>
+
+            <columnDef>p,5dlu,p:g,5dlu,p</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+
+            <rows>
+                <row>
+                    <cell type="label" labelfor="3"/>
+                    <cell type="field" id="3" name="agent.lastName" uitype="text" colspan="3"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="5"/>
+                    <cell type="field" id="5" name="agent.firstName" uitype="text" colspan="3"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="7"/>
+                    <cell type="field" id="7" name="remarks" uitype="text" colspan="3"/>
+                </row>
+            </rows>
+        </viewdef>
+                 
         <viewdef 
             type="form" 
             name="FieldNotebook" 
@@ -5102,8 +5226,52 @@
         </viewdef>
 
         <viewdef
+            type="form"
+            name="PcrPerson"
+            class="edu.ku.brc.specify.datamodel.PcrPerson"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The PcrPerson form.]]></desc>
+            <enableRules/>
+            
+            <columnDef>105px,2px,210px,5px,100px,2px,98px,300px,p:g</columnDef>
+            <columnDef os="lnx">135px,2px,230px,5px,120px,2px,118px,325px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,215px,5px,140px,2px,138px,395px,p:g</columnDef>
+            <columnDef os="exp">p,2px,p:g,5px:g,p,2px,p:g,p:g(2),p:g</columnDef>
+            <rowDef>p,2dlu,p:g,2dlu,p:g</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="agent" uitype="querycbx" initialize="name=Agent;title=Agent"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="3"/>
+                    <cell type="field" id="3" name="remarks" uitype="textareabrief" rows="2" colspan="6"/>
+                </row>
+                <!--<row>
+                    <cell type="label" labelfor="9"/>
+                    <cell type="field" id="9" name="createdByAgent" uitype="label" readonly="true"  uifieldformatter="Agent"/>
+                    <cell type="label" labelfor="10"/>
+                    <cell type="field" id="10" name="modifiedByAgent" uitype="label" readonly="true"  uifieldformatter="Agent"/>
+                    <cell type="label" id="divLabel" label=" " initialize="align=right"/>
+                    <cell type="field" id="4" name="divisionCBX" uitype="combobox" ignore="true"/>
+                </row>
+                <row>
+                	<cell type="field" id="34" uitype="checkbox" name="isPrimary"/>                	
+                </row>
+                <row>
+                    <cell type="label" labelfor="11"/>
+                    <cell type="field" id="11" name="timestampModified" uitype="label" readonly="true"/>
+                    <cell type="label" labelfor="12"/>
+                    <cell type="field" id="12" name="timestampCreated" uitype="label" readonly="true"/>
+                </row>-->
+            </rows>
+        </viewdef>
+
+        <viewdef
             type="formtable"
-            name="PcrPerson Table"
+            name="PcrPersons Table"
             class="edu.ku.brc.specify.datamodel.PcrPerson"
             gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
@@ -5113,7 +5281,7 @@
         
         <viewdef
             type="iconview"
-            name="PcrPersonIconView"
+            name="PcrPersonsIconView"
             class="edu.ku.brc.specify.datamodel.PcrPerson"
             gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
@@ -5122,7 +5290,7 @@
 
         <viewdef
             type="form"
-            name="PcrPerson"
+            name="PcrPersons"
             class="edu.ku.brc.specify.datamodel.PcrPerson"
             gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
