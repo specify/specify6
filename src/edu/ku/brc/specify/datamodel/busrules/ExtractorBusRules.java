@@ -18,6 +18,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+package edu.ku.brc.specify.datamodel.busrules;
+
 import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.specify.datamodel.Extractor;
 import edu.ku.brc.specify.datamodel.DNASequence;
