@@ -3528,4 +3528,46 @@
       </entry>
     </hashtable>
   </entry>
+  <entry>
+    <string>spauditlog</string>
+    <hashtable>
+      <entry>
+        <string>Manager</string>
+        <tp name="spauditlog" type="Manager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>LimitedAccess</string>
+        <tp name="spauditlog" type="LimitedAccess" view="false" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>Guest</string>
+        <tp name="spauditlog" type="Guest" view="false" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>FullAccess</string>
+        <tp name="spauditlog" type="FullAccess" view="false" modify="false" del="false" add="false"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>spauditlogfield</string>
+    <hashtable>
+      <entry>
+        <string>Manager</string>
+        <tp name="spauditlogfield" type="Manager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>LimitedAccess</string>
+        <tp name="spauditlogfield" type="LimitedAccess" view="false" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>Guest</string>
+        <tp name="spauditlogfield" type="Guest" view="false" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>FullAccess</string>
+        <tp name="spauditlogfield" type="FullAccess" view="false" modify="false" del="false" add="false"/>
+      </entry>
+    </hashtable>
+  </entry>
 </hashtable>

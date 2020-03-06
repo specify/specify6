@@ -28,15 +28,7 @@ import edu.ku.brc.af.auth.SecurityOptionIFace;
 import edu.ku.brc.af.core.PermissionIFace;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
-import edu.ku.brc.specify.datamodel.AttributeDef;
-import edu.ku.brc.specify.datamodel.AutoNumberingScheme;
-import edu.ku.brc.specify.datamodel.CollectingEventAttr;
-import edu.ku.brc.specify.datamodel.CollectionObjectAttr;
-import edu.ku.brc.specify.datamodel.CollectionRelType;
-import edu.ku.brc.specify.datamodel.CollectionRelationship;
-import edu.ku.brc.specify.datamodel.PreparationAttr;
-import edu.ku.brc.specify.datamodel.RecordSet;
-import edu.ku.brc.specify.datamodel.TreeDefItemIface;
+import edu.ku.brc.specify.datamodel.*;
 import edu.ku.brc.specify.tasks.BaseTask;
 import edu.ku.brc.specify.tasks.PermissionOptionPersist;
 
@@ -122,7 +114,7 @@ public class TablePermissionEnumerator extends PermissionEnumerator
                 }
             }
         }
-        return false;
+        return tblInfo.getTableId() == SpAuditLog.getClassTableId() || tblInfo.getTableId() == SpAuditLogField.getClassTableId();
     }
 
     /* (non-Javadoc)
