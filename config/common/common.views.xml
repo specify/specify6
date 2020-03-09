@@ -2962,10 +2962,10 @@
             <desc><![CDATA[DNA Sequence Form]]></desc>
             <enableRules/>
         
-            <columnDef>100px,2px,86px,2px,115px,5px,103px,2px,190px,5px,110px,2px,130px,0px,p:g</columnDef>
-            <columnDef os="lnx">115px,2px,76px,2px,123px,2px,140px,2px,163px,5px,135px,2px,150px,0px,p:g</columnDef>
-            <columnDef os="mac">130px,2px,96px,2px,133px,2px,160px,2px,173px,5px,155px,2px,170px,0px,p:g</columnDef>
-            <columnDef os="exp">p,2px,max(100px;p),2px,p:g(2),5px,p:g,2px,p:g,5px:g,p,2px,p:g,0px,p:g</columnDef>
+            <columnDef>100px,2px,86px,2px,115px,5px,103px,2px,190px,5px,110px,2px,130px,0px,15px,p:g</columnDef>
+            <columnDef os="lnx">115px,2px,76px,2px,123px,2px,140px,2px,163px,5px,135px,2px,150px,0px,15px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,96px,2px,133px,2px,160px,2px,173px,5px,155px,2px,170px,0px,15px,p:g</columnDef>
+            <columnDef os="exp">p,2px,max(100px;p),2px,p:g(2),5px,p:g,2px,p:g,5px:g,p,2px,p:g,0px,15px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
             
             <rows>
@@ -2986,8 +2986,8 @@
                     <cell type="field" id="3" name="boldLastUpdateDate" uitype="formattedtext" uifieldformatter="Date" default="Today"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="22"/>
-                    <cell type="field" id="22" name="pcrPerson" uitype="querycbx" initialize="name=Agent" colspan="3"/>
+                    <cell type="label" labelfor="sd"/>
+                    <cell type="field" id="sd" uitype="plugin" name="this" initialize="name=PartialDateUI;df=sequenceDate;tp=sequenceDatePrecision" uifieldformatter="Date" colspan="3"/>
                     <cell type="label" labelfor="7"/>
                     <cell type="field" id="7" name="collectionObject" uitype="querycbx" initialize="name=CollectionObject;editbtn=false;newbtn=false"/>
                     <cell type="subview" viewname="DNASequenceRun" id="21" name="dnaSequencingRuns" initialize="btn=true;align=right"/>
@@ -3032,17 +3032,23 @@
                     <cell type="separator" label="Illustrative Barcode" colspan="8"/>
                 </row>
                 <row>
+                    <cell type="subview" viewname="PcrPersons" id="12" name="pcrPersons" colspan="13" rows="3"/>
+                </row>
+                <row>
+                    <cell type="subview" viewname="Extractors" id="exts" name="extractors" colspan="13" rows="3"/>
+                    <cell type="label" labelfor="ed"/>
+                    <cell type="field" id="ed" uitype="plugin" name="this" initialize="name=PartialDateUI;df=extractionDate;tp=extractionDatePrecision" uifieldformatter="Date"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="ext"/>
+                    <cell type="field" id="ext" name="extractor" uitype="querycbx" initialize="name=Agent" colspan="3"/>
+                </row>
+                <row>
                     <cell type="field" id="8" name="this" uitype="plugin" initialize="name=IllustrativeBarCodeUI" readonly="true" colspan="8"/>
                 </row>
                 <row>
                     <cell type="panel" id="20" name="outerPanel2" coldef="f:p:g,0px,p,10px,p,f:p:g" rowdef="p" colspan="8">
                 <rows>
-                <row>
-                    <cell type="subview" viewname="PcrPersons" id="12" name="pcrPersons" colspan="13" rows="3"/>
-                </row>
-                <row>
-                    <cell type="subview" viewname="Extractors" id="12" name="extractors" colspan="13" rows="3"/>
-                </row>
                 <row>
                     <cell type="label" label=" "/>
                     <cell type="command" id="SearchBold" name="SearchBold" label="Search Bold" ignore="true"/>
@@ -4285,10 +4291,10 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Loan viewing form.]]></desc>
-            <columnDef>105px,2px,110px,5px,90px,2px,110px,15px,120px,5px,156px,2px,110px,0px,15px,p,p:g</columnDef>
-            <columnDef os="lnx">115px,2px,137px,5px,105px,2px,110px,15px,148px,5px,161px,2px,110px,0px,15px,p,p:g</columnDef>
-            <columnDef os="mac">130px,2px,160px,5px,105px,2px,150px,5px,155px,5px,160px,2px,150px,0px,15px,p,p:g</columnDef>
-            <columnDef os="exp">p,2px,min(p;150px),5px:g,p,2px,p:g(2),5px,p,5px:g,p,2px,p:g(2),0px,p,p:g</columnDef>
+            <columnDef>105px,2px,90px,5px,90px,2px,90px,5px,134px,2px,90px,5px,130px,2px,80px,0px,15px,p,p:g</columnDef>
+            <columnDef os="lnx">115px,2px,100px,5px,100px,2px,100px,5px,141px,2px,100px,5px,138px,2px,100px,0px,15px,p,p:g</columnDef>
+            <columnDef os="mac">130px,2px,115px,5px,105px,2px,115px,5px,160px,2px,115px,5px,153px,2px,115px,0px,15px,p,p:g</columnDef>
+            <columnDef os="exp">p,2px,min(p;150px),5px:g,p,2px,p:g(2),5px:g,p,2px,p:g(2),5px,p:g,2px,p:g(2),0px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="1dlu"/>
             
             <rows>
@@ -4297,34 +4303,44 @@
                     <cell type="field" id="1" name="loanNumber" uitype="formattedtext"/>
                     <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="loanDate" uitype="formattedtext" uifieldformatter="Date" default="today"/>
-                    <cell type="field" id="2" name="isClosed" uitype="checkbox" initialize="editable=true"/>
                     <cell type="label" labelfor="12"/>
                     <cell type="field" id="12" name="currentDueDate" uitype="formattedtext" uifieldformatter="Date"/>
+                    <cell type="field" id="2" name="isClosed" uitype="checkbox" initialize="editable=true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="21"/>
                     <cell type="field" id="21" name="originalDueDate" uitype="formattedtext" uifieldformatter="Date"/>
                     <cell type="label" labelfor="4"/>
                     <cell type="field" id="4" name="dateClosed" uitype="formattedtext" uifieldformatter="Date"/>
-                    <cell type="field" id="20" name="yesNo1" uitype="checkbox" initialize="editable=true"/>
                     <cell type="label" labelfor="6"/>
                     <cell type="field" id="6" name="overdueNotiSentDate" uitype="formattedtext" uifieldformatter="Date"/>
+                    <cell type="field" id="20" name="yesNo1" uitype="checkbox" initialize="editable=true"/>
+                </row>
+                <row>
+                    <cell type="label" label="Total Items:" initialize="align=right"/>
+                    <cell type="field" id="ti" name="totalItems" uitype="spinner" readonly="true"/>
+                    <cell type="label" label="Total Quantities:" initialize="align=right"/>
+                    <cell type="field" id="tq" name="totalQuantities" uitype="spinner" readonly="true"/>
+                    <cell type="label" label="Unresolved Items:" initialize="align=right"/>
+                    <cell type="field" id="ui" name="unresolvedItems" uitype="spinner" readonly="true"/>
+                    <cell type="label" label="Unresolved Quantities:" initialize="align=right"/>
+                    <cell type="field" id="uq" name="unresolvedQuantities" uitype="spinner" readonly="true"/>
                 </row>
                 <row>
                      <cell type="label" labelfor="5"/>
-                     <cell type="field" id="5" name="remarks" uitype="textareabrief" rows="2" colspan="12"/>
+                     <cell type="field" id="5" name="remarks" uitype="textareabrief" rows="2" colspan="14"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="LoanAgent" id="8" name="loanAgents" colspan="15" rows="3"/>
+                    <cell type="subview" viewname="LoanAgent" id="8" name="loanAgents" colspan="17" rows="3"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="Shipment" id="11" name="shipments" colspan="15"/>
+                    <cell type="subview" viewname="Shipment" id="11" name="shipments" colspan="17"/>
                 </row>
                 <row>
-                     <cell type="subview" viewname="LoanItems" id="10" name="loanPreparations" defaulttype="table" colspan="15" rows="4"/>
+                     <cell type="subview" viewname="LoanItems" id="10" name="loanPreparations" defaulttype="table" colspan="17" rows="4"/>
                 </row>
                 <row>
-                    <cell type="panel" id="17" name="srcPanel" coldef="130px,2px,p:g,5px,130px,2px,p:g" rowdef="p" colspan="14">
+                    <cell type="panel" id="17" name="srcPanel" coldef="130px,2px,p:g,5px,130px,2px,p:g" rowdef="p" colspan="17">
                         <rows>
                             <row>
 			                    <cell type="label" labelfor="18"/>
@@ -4336,7 +4352,7 @@
                     </cell>
                 </row>
                 <row>
-                    <cell type="panel" id="16" name="outerPanel" coldef="100px,f:480px,p,5px,p," rowdef="p,4px,p" colspan="15">
+                    <cell type="panel" id="16" name="outerPanel" coldef="100px,f:480px,p,5px,p," rowdef="p,4px,p" colspan="17">
                         <rows>
 			                <row>
 			                    <cell type="separator" label="Attachments" colspan="5"/>
