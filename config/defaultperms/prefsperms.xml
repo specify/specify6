@@ -25,7 +25,7 @@
     <hashtable>
       <entry>
         <string>Manager</string>
-        <tp name="AUDITS" type="Manager" view="true" modify="true" del="true" add="true"/>
+        <tp name="AUDITS" type="Manager" view="false" modify="false" del="false" add="false"/>
       </entry>
       <entry>
         <string>LimitedAccess</string>
