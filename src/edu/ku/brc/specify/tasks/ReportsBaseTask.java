@@ -1189,7 +1189,7 @@ public class ReportsBaseTask extends BaseTask
             String colName = model.getColumnName(i);
             
             Class<?> dataClass = model.getColumnClass(i);
-            if (dataClass == Object.class)
+            if (dataClass == Object.class || dataClass.equals(java.sql.Timestamp.class))
             {
                 if (model.getRowCount() > 0)
                 {
