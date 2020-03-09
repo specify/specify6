@@ -42,7 +42,7 @@ import javax.persistence.Basic;
 import javax.swing.JEditorPane;
 import javax.swing.JTextArea;
 
-import edu.ku.brc.af.core.db.DBRelationshipInfo;
+import edu.ku.brc.af.core.db.*;
 import edu.ku.brc.specify.dbsupport.SpecifySchemaUpdateService;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -52,9 +52,6 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.af.core.db.DBFieldInfo;
-import edu.ku.brc.af.core.db.DBTableIdMgr;
-import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.forms.persist.AltViewIFace;
 import edu.ku.brc.af.ui.forms.persist.FormCellFieldIFace;
@@ -391,33 +388,81 @@ public class CheckDBAfterLogin
         return updated == toFix;
     }
 
+    private static String[] auditFldSettings = {
+            //Title is no longer changed, so value following visible is always blank
+            //"table|field|hidden|title|description"
+            "spauditlog|action|false||The addition, update, or deletion action that was taken on the data field.",
+            "spauditlog|createdbyagent|false||A foreign key link to the Agent table and to the name of the logged-in user who made a change.",
+            "spauditlog|fields|false||The SpAuditlogField records associated with the change.",
+            "spauditlog|modifiedbyagent|true||This is the same data as in the CreatedByAgent field.",
+            "spauditlog|parentrecordid|false||The unique record ID of the record in the parent table to which the changed record is linked.",
+            "spauditlog|parentTableNum|false||The number ID or name of the parent table of the record that has been modified.  For example if the changed record is in the Collection Object table, this value points to the 'Collection' table.",
+            "spauditlog|recordId|false||The unique record ID of the record that was created, changed, or deleted.",
+            "spauditlog|recordVersion|false||The internal number used by Hibernate within Specify to keep track of the version of the changed record.",
+            "spauditlog|tableNum|false||The table of the new, changed, or deleted record.",
+            "spauditlog|timestampcreated|false||The date and time the record change, addition, or deletion was made.",
+            "spauditlog|timestampmodified|true||Same information as the TimestampCreated field.",
+            "spauditlog|version|true||Internal number, always = 0. No reporting value.",
+            "spauditlogfield|createdbyagent|true||Same information as CreatedByAgent in the SpAuditlog table.",
+            "spauditlogfield|fieldName|false||Name of the data field which had a changed or deleted value.",
+            "spauditlogfield|modifiedByAgent|true||Same information as CreatedByAgent in the SpAuditlog table.",
+            "spauditlogfield|newValue|false||Resulting value of changed field.",
+            "spauditlogfield|oldValue|false||Original value of the field before the change or deletion.",
+            "spauditlogfield|spAuditLog|true||Primary key value for linking to SpAuditlog table.",
+            "spauditlogfield|timestampcreated|true||Same information as timestampCreated in the spAuditLog table.",
+            "spauditlogfield|timestampmodified|true||Same information as timestampCreated in the spAuditLog table.",
+            "spauditlogfield|version|true||Internal number, always = 0. No reporting value."
+    };
+    private static List<String[]> loadAuditFldSettings() {
+        List<String[]> result = new ArrayList<>();
+        for (String sets : auditFldSettings) {
+            result.add(sets.split("\\|"));
+        }
+        return result;
+    }
+    private static String getUpdateSqlForAudLogFld(String[] setting) {
+        String result = "update splocalecontainer c inner join splocalecontaineritem i on i.splocalecontainerid = c.splocalecontainerid inner join splocaleitemstr lis on lis.splocalecontainerItemNameID = i.splocalecontaineritemid set ";
+        result += "i.ishidden = " + setting[2] + (StringUtils.isNotEmpty(setting[3]) ? ", lis.text = '" + setting[3]  + "'" : "") +" where lis.language = 'en' and c.name = '" + setting[0] + "' and i.name = '" + setting[1] + "'";
+        return result;
+    }
+    private static String getUpdateSQLForAudLogFldDesc(String[] setting) {
+        String result = "update splocalecontainer c inner join splocalecontaineritem i on i.splocalecontainerid = c.splocalecontainerid inner join splocaleitemstr lis on lis.splocalecontainerItemDescID = i.splocalecontaineritemid set ";
+        result += "lis.text = '" + BasicSQLUtils.escapeStringLiterals(setting[4]) + "' where lis.language = 'en' and c.name = '" + setting[0] + "' and i.name = '" + setting[1] + "'";
+        return result;
+    }
     public static boolean fixSpAuditLogVisibility() {
-        String sql = "update splocalecontainer c inner join splocalecontaineritem i on i.splocalecontainerid = c.splocalecontainerid set i.ishidden = false where c.name in('spauditlog','spauditlogfield') and i.ishidden";
-        String countSql = "select count(*) from splocalecontainer c inner join splocalecontaineritem i on i.splocalecontainerid = c.splocalecontainerid where c.name in('spauditlog','spauditlogfield') and i.ishidden";
+        List<String[]> settings = loadAuditFldSettings();
+        boolean result = true;
         Connection conn = DBConnection.getInstance().getConnection();
-        int toFix = BasicSQLUtils.getCountAsInt(countSql);
-        int updated = 0;
-        if (toFix > 0) {
-            updated = BasicSQLUtils.update(conn, sql);
-            //DBTableIdMgr is already loaded so changes above aren't visible in current Sp instance,
-            // so update the loaded fields...
-            if (updated == toFix) {
-                List<DBTableInfo> audTbls = new ArrayList<>();
-                audTbls.add(DBTableIdMgr.getInstance().getInfoByTableName("spauditlog"));
-                audTbls.add(DBTableIdMgr.getInstance().getInfoByTableName("spauditlogfield"));
-                for (DBTableInfo tbl : audTbls) {
-                    if (tbl != null) {
-                        for (DBFieldInfo fld : tbl.getFields()) {
-                            fld.setHidden(false);
-                        }
-                        for (DBRelationshipInfo rel : tbl.getRelationships()) {
-                            rel.setHidden(false);
-                        }
+        List<String> sqls = new ArrayList<>();
+        for (String[] s : settings) {
+            String sql = getUpdateSqlForAudLogFld(s);
+            sqls.add(sql);
+            int up1 = BasicSQLUtils.update(conn, sql);
+            int up2 = 0;
+            if (s.length > 4 && StringUtils.isNotEmpty(s[4])) {
+                sql = getUpdateSQLForAudLogFldDesc(s);
+                sqls.add(sql);
+                up2 = BasicSQLUtils.update(conn, sql);
+            }
+            if (up1 >= 0 && up2 >= 0) {
+                DBTableInfo tbl = DBTableIdMgr.getInstance().getInfoByTableName(s[0]);
+                DBInfoBase obj = tbl.getFieldByName(s[1]);
+                if (obj == null) {
+                    obj = tbl.getRelationshipByName(s[1]);
+                }
+                if (obj != null) {
+                    obj.setHidden("true".equalsIgnoreCase(s[2]));
+                    obj.setTitle(s[3]);
+                    if (s.length > 4 && StringUtils.isNotEmpty(s[4])) {
+                        obj.setDescription(s[4]);
                     }
                 }
+            } else {
+                result = false;
             }
         }
-        return updated == toFix;
+        return result;
     }
 
 
