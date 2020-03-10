@@ -453,7 +453,9 @@ public class CheckDBAfterLogin
                 }
                 if (obj != null) {
                     obj.setHidden("true".equalsIgnoreCase(s[2]));
-                    obj.setTitle(s[3]);
+                    if (StringUtils.isNotEmpty(s[3])) {
+                        obj.setTitle(s[3]);
+                    }
                     if (s.length > 4 && StringUtils.isNotEmpty(s[4])) {
                         obj.setDescription(s[4]);
                     }
