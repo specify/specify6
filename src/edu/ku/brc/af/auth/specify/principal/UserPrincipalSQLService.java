@@ -153,19 +153,20 @@ public class UserPrincipalSQLService
 
     /**
      * @param principalId
-     * @return
+     * @return true if principalId represents a user principal of an administrator
      */
     public static boolean isPrincipalAdmin(final Integer principalId)
     {
-        String sql = "SELECT count(up.SpPrincipalID) as ct" //$NON-NLS-1$
-                        + " FROM specifyuser_spprincipal as up" //$NON-NLS-1$
-                        + " INNER JOIN spprincipal as p on (up.SpPrincipalID=p.SpPrincipalID)" //$NON-NLS-1$
-                        + " WHERE p.GroupSubClass='" + AdminPrincipal.class.getCanonicalName() + "'"
-                        + " AND up.SpecifyUserID=" + principalId;
+        String sql = "select count(*) from spprincipal p inner join specifyuser_spprincipal up on up.spprincipalid = "
+            + "p.spprincipalid inner join specifyuser_spprincipal up2 on up2.specifyuserid = up.specifyuserid inner join "
+            + "spprincipal p2 on p2.spprincipalid = up2.spprincipalid where p2.groupsubclass = '"
+            + AdminPrincipal.class.getCanonicalName() + "' and p.groupsubclass = '" + UserPrincipal.class.getCanonicalName()
+            + "' and p.spprincipalid = " + principalId;
         Integer count = BasicSQLUtils.getCount(sql);
         return count != null && count > 0;
     }
-    
+
+
     /**
      * @param msg
      * @param sql
