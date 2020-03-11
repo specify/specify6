@@ -467,10 +467,6 @@ public class CheckDBAfterLogin
         return result;
     }
 
-
-    /**
-     * 
-     */
     public void fixLatLongUnit()
     {
         int     fixed = 0;
