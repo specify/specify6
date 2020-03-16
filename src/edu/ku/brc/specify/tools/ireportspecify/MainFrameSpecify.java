@@ -882,7 +882,7 @@ public class MainFrameSpecify extends MainFrame
         SpAppResource match = null;
         CustomDialog cd = CustomDialog.create(
                 UIRegistry.getResourceString("REP_PROPS_DLG_TITLE"),
-                true,
+                true, CustomDialog.OKCANCEL,
                 propPanel);
         propPanel.setCanceller(cd.getCancelBtn());
         while (!goodProps)
