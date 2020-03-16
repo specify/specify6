@@ -101,7 +101,7 @@ public class MorphBankPanel extends UIPluginBase
 	protected JButton viewMBBtn; //opens web browser 
 	protected JButton putBtn; //inserts, updates sp data to mb
 	protected JButton getBtn; //gets annotations etc from mb
-	protected JButton detailsBtn; //view details - last update, ..
+	protected JButton detailsBtn; //view details - last update, ...
 	//protected JLabel morphBankIdLbl;
 	protected JLabel morphBankStatusLbl;
 

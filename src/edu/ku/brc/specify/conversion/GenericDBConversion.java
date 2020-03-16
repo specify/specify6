@@ -6110,7 +6110,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
             if (BasicSQLUtils.mySourceServerType == BasicSQLUtils.SERVERTYPE.MS_SQLServer)
             {
-                log.debug("FIXING select statement to run against SQL Server.......");
+                log.debug("FIXING select statement to run against SQL Server...");
                 log.debug("old string: " + sql.toString());
                 String currentSQL = sql.toString();
                 currentSQL = currentSQL.replaceAll("Current", "[" + "Current" + "]");

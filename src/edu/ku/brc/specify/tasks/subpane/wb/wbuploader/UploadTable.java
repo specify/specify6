@@ -113,7 +113,7 @@ public class UploadTable implements Comparable<UploadTable>
     protected final Table                               table;
     /**
      * A vector containing, for each 'sequence', a vector of the fields in table that are present in
-     * the dataset being uploaded. 'sequence' - e.g Collector1, Collector2 ....
+     * the dataset being uploaded. 'sequence' - e.g Collector1, Collector2 ...
      */
     protected Vector<Vector<UploadField>>               uploadFields;
     /**
@@ -6061,7 +6061,7 @@ public class UploadTable implements Comparable<UploadTable>
                                     //of this method, else use the changed fields to make the rest more efficient???.
                                     //
                                     //XXX But HEY!!! getChangedFields does not check parents. It was originally designed
-                                    //to be run for all tables during getChangedFields(row)..
+                                    //to be run for all tables during getChangedFields(row).
                                     if (freshlyCreatedRec || !updateMatches) {
                                         rec.initialize();
                                     }

@@ -687,7 +687,7 @@ public class DataObjFieldFormatMgr
     }
     
     /**
-     * Tries to get the value and if it gets a lazy exception .
+     * Tries to get the value and if it gets a lazy exception.
      * @param fieldNames
      * @param dataObj
      * @param getter

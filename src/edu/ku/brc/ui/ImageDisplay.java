@@ -374,7 +374,7 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace, ImageLoade
 	        status = kError;
             return;
 	    }
-	    //System.err.println("Starting load.... "+url);
+	    //System.err.println("Starting load... "+url);
 	    
 	    status = kImageOK;
 		if (isNotEmpty(url))

@@ -134,7 +134,7 @@ public class UIFileFilter extends FileFilter
     }
 
     /**
-     * Return the extension portion of the file's name .
+     * Return the extension portion of the file's name.
      * 
      * @param f the file to get the extension of
      * @see #getExtension

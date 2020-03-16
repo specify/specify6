@@ -246,7 +246,7 @@ public class BorrowMaterial extends CollectionMember implements java.io.Serializ
     }
 
     /**
-     *      * Quantity resolved (Returned, Accessioned, Lost, Discarded, Destroyed ...)
+     *      * Quantity resolved (Returned, Accessioned, Lost, Discarded, Destroyed, ...)
      */
     @Column(name = "QuantityResolved", unique = false, nullable = true, insertable = true, updatable = true)
     public Short getQuantityResolved() {

@@ -239,7 +239,7 @@ public class AppPrefsCache
     //--------------------------------------------------------------------
 
     /**
-     * Creates or gets the pref node, creates an entry and then hooks it up as a listener .
+     * Creates or gets the pref node, creates an entry and then hooks it up as a listener.
      * The current value of the color because the default.
      * @param colorWrapper the color object wrapper
      * @param section the section or category of the pref

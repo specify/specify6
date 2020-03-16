@@ -380,7 +380,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
         
         if (reconnect)
         {
-            log.debug("Reconnecting and rebuilding session factory....");
+            log.debug("Reconnecting and rebuilding session factory...");
             if (session != null && session.isOpen())
             {
                 session.close();

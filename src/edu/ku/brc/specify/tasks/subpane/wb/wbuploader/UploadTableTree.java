@@ -812,7 +812,7 @@ protected List<java.lang.reflect.Field> getFldsForJSON() {
     
     /**
      * @param fldName
-     * @return true if a field named fldname is in the uploading dataset, or if it is set programmitically..
+     * @return true if a field named fldname is in the uploading dataset, or if it is set programmitically.
      */
     @Override
     protected boolean fldInDataset(final String fldName)

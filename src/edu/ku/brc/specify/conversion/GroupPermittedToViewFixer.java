@@ -237,7 +237,7 @@ public class GroupPermittedToViewFixer extends AppBase
         long startTime = System.currentTimeMillis();
 
         
-        progressFrame = new ProgressFrame("Checking Catalog Objects....");
+        progressFrame = new ProgressFrame("Checking Catalog Objects...");
         progressFrame.adjustProgressFrame();
         
         progressFrame.setOverall(0);

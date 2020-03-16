@@ -85,7 +85,7 @@ public class UploadCmdLine extends CmdAppBase {
 				result += lock[0];
 			}
 		}
-		//tree locks .
+		//tree locks.
 		sql = "select taskname from sptasksemaphore s inner join discipline d on d.disciplineid = s.disciplineid inner join collection c on c.disciplineid = d.disciplineid"
 				+ " where c.collectionname = '" + this.collection.replaceAll("'","''") + "' and islocked and (taskname like 'BadNodes%' or taskname like 'UpdateNodes%' or taskname like '%TreeDef')";
 		locks = BasicSQLUtils.query(sql);

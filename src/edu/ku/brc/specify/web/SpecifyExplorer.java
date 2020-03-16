@@ -502,7 +502,7 @@ public class SpecifyExplorer extends HttpServlet
                                  final DisciplineType  disciplineType)
     {
         
-        log.info("Logging into "+dbName+"....");
+        log.info("Logging into "+dbName+"...");
         
         //String connStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Create, hostName, dbName);
         //if (connStr == null)
@@ -559,7 +559,7 @@ public class SpecifyExplorer extends HttpServlet
         
         queryHandler = new QueryReportHandler();
 
-        log.info("Creating database "+dbName+"....");
+        log.info("Creating database "+dbName+"...");
         
         /*
         try

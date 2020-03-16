@@ -234,7 +234,7 @@ public class TaskSemaphoreMgr
         return false;
     }
     /**
-     * Find the semaphore for a task and return it..
+     * Find the semaphore for a task and return it.
      * @param title The human (localized) title of the task 
      * @param name the unique name
      * @param scope the scope of the lock
