@@ -126,7 +126,7 @@ public class FeedBackDlg extends FeedBackSender
         taskCBX.setSelectedItem(currTask != null ? currTask : TaskMgr.getDefaultTaskable());
         
         pb.setDefaultDialogBorder();
-        CustomDialog dlg = CustomDialog.create(UIRegistry.getResourceString("FeedBackDlg.TITLE"), true, pb.getPanel());
+        CustomDialog dlg = CustomDialog.create(UIRegistry.getResourceString("FeedBackDlg.TITLE"), true, CustomDialog.OKCANCEL, pb.getPanel());
         
         centerAndShow(dlg);
         

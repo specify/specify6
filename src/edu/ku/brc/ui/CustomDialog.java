@@ -188,7 +188,7 @@ public class CustomDialog extends JDialog
     public static CustomDialog create(final String title,
                                       final boolean isModal,
                                       final Component contentPanel) throws HeadlessException {
-        return create(title, isModal, -1, contentPanel, -1);
+        return create(title, isModal, OKCANCEL, contentPanel, -1);
     }
 
     public static CustomDialog create(final String title,
