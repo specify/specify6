@@ -124,7 +124,7 @@
             accesskey="u">Log in</a>
           </li>
         </ul>
-        <div id="portal-breadcrumbs">You are here: 
+        <div id="portal-breadcrumbs">You are here:
         <a href="http://www.specifysoftware.org/Specify/">Home</a>
         <span class="breadcrumbSeparator">&#187;</span>
         <span>
@@ -447,99 +447,99 @@
                     acknowledge the use of his software.</p>
                     <h5>Index to Specify Data Tables</h5>
                     <p>
-                    <a href="#EntAccession">Accession</a>, 
+                    <a href="#EntAccession">Accession</a>,
                     <a href="#EntAccessionAgents">
-                    AccessionAgents</a>, 
+                    AccessionAgents</a>,
                     <a href="#EntAccessionAuthorizations">
-                    AccessionAuthorizations</a>, 
-                    <a href="#EntAddress">Address</a>, 
-                    <a href="#EntAgent">Agent</a>, 
-                    <a href="#EntAgentAddress">AgentAddress</a>, 
-                    <a href="#EntAuthors">Authors</a>, 
+                    AccessionAuthorizations</a>,
+                    <a href="#EntAddress">Address</a>,
+                    <a href="#EntAgent">Agent</a>,
+                    <a href="#EntAgentAddress">AgentAddress</a>,
+                    <a href="#EntAuthors">Authors</a>,
                     <a href="#EntBiologicalObjectAttributes">
-                    BiologicalObjectAttributes</a>, 
+                    BiologicalObjectAttributes</a>,
                     <a href="#EntBiologicalObjectRelation">
-                    BiologicalObjectRelation</a>, 
+                    BiologicalObjectRelation</a>,
                     <a href="#EntBiologicalObjectRelationType">
-                    BiologicalObjectRelationType</a>, 
-                    <a href="#EntBorrow">Borrow</a>, 
-                    <a href="#EntBorrowAgents">BorrowAgents</a>, 
+                    BiologicalObjectRelationType</a>,
+                    <a href="#EntBorrow">Borrow</a>,
+                    <a href="#EntBorrowAgents">BorrowAgents</a>,
                     <a href="#EntBorrowMaterial">
-                    BorrowMaterial</a>, 
+                    BorrowMaterial</a>,
                     <a href="#EntBorrowReturnMaterial">
-                    BorrowReturnMaterial</a>, 
+                    BorrowReturnMaterial</a>,
                     <a href="#EntBorrowShipments">
-                    BorrowShipments</a>, 
-                    <a href="#EntCatalogSeries">CatalogSeries</a>, 
+                    BorrowShipments</a>,
+                    <a href="#EntCatalogSeries">CatalogSeries</a>,
                     <a href="#EntCatalogSeriesDefinition">
-                    CatalogSeriesDefinition</a>, 
+                    CatalogSeriesDefinition</a>,
                     <a href="#EntCollectingEvent">
-                    CollectingEvent</a>, 
-                    <a href="#EntCollection">Collection</a>, 
+                    CollectingEvent</a>,
+                    <a href="#EntCollection">Collection</a>,
                     <a href="#EntCollectionObject">
-                    CollectionObject</a>, 
+                    CollectionObject</a>,
                     <a href="#EntCollectionObjectCatalog">
-                    CollectionObjectCatalog</a>, 
+                    CollectionObjectCatalog</a>,
                     <a href="#EntCollectionObjectCitation">
-                    CollectionObjectCitation</a>, 
+                    CollectionObjectCitation</a>,
                     <a href="#EntCollectionObjectType">
-                    CollectionObjectType</a>, 
+                    CollectionObjectType</a>,
                     <a href="#EntCollectionTaxonomyTypes">
-                    CollectionTaxonomyTypes</a>, 
-                    <a href="#EntCollectors">Collectors</a>, 
-                    <a href="#EntDATAVIEWS">DATAVIEWS</a>, 
-                    <a href="#EntDeaccession">Deaccession</a>, 
+                    CollectionTaxonomyTypes</a>,
+                    <a href="#EntCollectors">Collectors</a>,
+                    <a href="#EntDATAVIEWS">DATAVIEWS</a>,
+                    <a href="#EntDeaccession">Deaccession</a>,
                     <a href="#EntDeaccessionAgents">
-                    DeaccessionAgents</a>, 
+                    DeaccessionAgents</a>,
                     <a href="#EntDeaccessionCollectionObject">
-                    DeaccessionCollectionObject</a>, 
-                    <a href="#EntDetermination">Determination</a>, 
+                    DeaccessionCollectionObject</a>,
+                    <a href="#EntDetermination">Determination</a>,
                     <a href="#EntDeterminationCitation">
-                    DeterminationCitation</a>, 
-                    <a href="#EntExchangeIn">ExchangeIn</a>, 
-                    <a href="#EntExchangeOut">ExchangeOut</a>, 
-                    <a href="#EntGeography">Geography</a>, 
+                    DeterminationCitation</a>,
+                    <a href="#EntExchangeIn">ExchangeIn</a>,
+                    <a href="#EntExchangeOut">ExchangeOut</a>,
+                    <a href="#EntGeography">Geography</a>,
                     <a href="#EntGeologicTimeBoundary">
-                    GeologicTimeBoundary</a>, 
+                    GeologicTimeBoundary</a>,
                     <a href="#EntGeologicTimePeriod">
-                    GeologicTimePeriod</a>, 
-                    <a href="#EntGroupPersons">GroupPersons</a>, 
-                    <a href="#EntHabitat">Habitat</a>, 
-                    <a href="#EntImage">Image</a>, 
-                    <a href="#EntImageAgents">ImageAgents</a>, 
+                    GeologicTimePeriod</a>,
+                    <a href="#EntGroupPersons">GroupPersons</a>,
+                    <a href="#EntHabitat">Habitat</a>,
+                    <a href="#EntImage">Image</a>,
+                    <a href="#EntImageAgents">ImageAgents</a>,
                     <a href="#EntImageCollectionObjects">
-                    ImageCollectionObjects</a>, 
+                    ImageCollectionObjects</a>,
                     <a href="#EntImageLocalities">
-                    ImageLocalities</a>, 
-                    <a href="#EntJournal">Journal</a>, 
-                    <a href="#EntLoan">Loan</a>, 
-                    <a href="#EntLoanAgents">LoanAgents</a>, 
+                    ImageLocalities</a>,
+                    <a href="#EntJournal">Journal</a>,
+                    <a href="#EntLoan">Loan</a>,
+                    <a href="#EntLoanAgents">LoanAgents</a>,
                     <a href="#EntLoanPhysicalObject">
-                    LoanPhysicalObject</a>, 
+                    LoanPhysicalObject</a>,
                     <a href="#EntLoanReturnPhysicalObject">
-                    LoanReturnPhysicalObject</a>, 
-                    <a href="#EntLocality">Locality</a>, 
+                    LoanReturnPhysicalObject</a>,
+                    <a href="#EntLocality">Locality</a>,
                     <a href="#EntLocalityCitation">
-                    LocalityCitation</a>, 
-                    <a href="#EntObservation">Observation</a>, 
+                    LocalityCitation</a>,
+                    <a href="#EntObservation">Observation</a>,
                     <a href="#EntOtherIdentifier">
-                    OtherIdentifier</a>, 
-                    <a href="#EntPermit">Permit</a>, 
-                    <a href="#EntPreparation">Preparation</a>, 
-                    <a href="#EntProject">Project</a>, 
+                    OtherIdentifier</a>,
+                    <a href="#EntPermit">Permit</a>,
+                    <a href="#EntPreparation">Preparation</a>,
+                    <a href="#EntProject">Project</a>,
                     <a href="#EntProjectCollectionObjects">
-                    ProjectCollectionObjects</a>, 
-                    <a href="#EntReferenceWork">ReferenceWork</a>, 
-                    <a href="#EntREPORTS">REPORTS</a>, 
-                    <a href="#EntShipment">Shipment</a>, 
-                    <a href="#EntSound">Sound</a>, 
+                    ProjectCollectionObjects</a>,
+                    <a href="#EntReferenceWork">ReferenceWork</a>,
+                    <a href="#EntREPORTS">REPORTS</a>,
+                    <a href="#EntShipment">Shipment</a>,
+                    <a href="#EntSound">Sound</a>,
                     <a href="#EntSoundEventStorage">
-                    SoundEventStorage</a>, 
-                    <a href="#EntStratigraphy">Stratigraphy</a>, 
-                    <a href="#EntTaxonCitation">TaxonCitation</a>, 
-                    <a href="#EntTaxonName">TaxonName</a>, 
+                    SoundEventStorage</a>,
+                    <a href="#EntStratigraphy">Stratigraphy</a>,
+                    <a href="#EntTaxonCitation">TaxonCitation</a>,
+                    <a href="#EntTaxonName">TaxonName</a>,
                     <a href="#EntTaxonomicUnitType">
-                    TaxonomicUnitType</a>, 
+                    TaxonomicUnitType</a>,
                     <a href="#EntTaxonomyType">
                     TaxonomyType</a>.</p>
                     <h2>
@@ -651,7 +651,7 @@
                         </td>
                         <td>Text&#160;(30)</td>
                         <td>Status of Accession, e.g. 'In process',
-                        'Complete' ...
+                        'Complete', ...
                         <br />
                         <em>validation message: List.</em></td>
                         <td align="center">-</td>
@@ -665,7 +665,7 @@
                         </td>
                         <td>Text&#160;(30)</td>
                         <td>Source of Accession, e.g. 'Collecting',
-                        'Gift', 'Bequest' ...
+                        'Gift', 'Bequest', ...
                         <br />
                         <em>validation message: List.</em></td>
                         <td align="center">-</td>
@@ -5601,7 +5601,7 @@
                         </td>
                         <td>Integer</td>
                         <td>Quantity resolved (Returned,
-                        Accessioned, Lost, Discarded, Destroyed
+                        Accessioned, Lost, Discarded, Destroyed,
                         ...).</td>
                         <td align="center">-</td>
                         <td align="center">-</td>
@@ -13714,7 +13714,7 @@
                         </td>
                         <td>Integer</td>
                         <td>Members position in group; i.e. 1st,
-                        2nd, 3rd ...</td>
+                        2nd, 3rd, ...</td>
                         <td align="center">
                           <a href="#FootNoteRqrd"
                           style="text-decoration:none;color:#000000;background:transparent;">
@@ -17201,7 +17201,7 @@
                         </td>
                         <td>Long</td>
                         <td>Link to Country, State, County,
-                        WaterBody, Island, IslandGroup ...
+                        WaterBody, Island, IslandGroup, ...
                         info.</td>
                         <td align="center">-</td>
                         <td align="center">
@@ -22204,7 +22204,7 @@
                         </td>
                         <td>Text&#160;(100)</td>
                         <td>i.e. Tape side, tape counter start,
-                        tape counter end ...</td>
+                        tape counter end, ...</td>
                         <td align="center">-</td>
                         <td align="center">-</td>
                       </tr>
@@ -24257,23 +24257,23 @@
                     </table>
                     <p>
                     <strong>Footnotes:</strong>The following
-                    abbreviations have been used in the tables: 
+                    abbreviations have been used in the tables:
                     <strong>
                       <a name="FootNoteRqrd">R:</a>
                     </strong>It is required to enter data in this
-                    field. 
+                    field.
                     <strong>
                       <a name="FootNoteIdx">I:</a>
                     </strong>The field is indexed to enable faster
                     searching. Different types of indices are
-                    denoted by additional letters in parentheses: 
-                    <strong>U</strong>= unique index, 
+                    denoted by additional letters in parentheses:
+                    <strong>U</strong>= unique index,
                     <strong>N</strong>= Null values are ignored in
-                    the index, 
+                    the index,
                     <strong>M</strong>= the index contains more
                     than one attribute. In the first column the
                     names of attributes that are part of the
-                    primary key are 
+                    primary key are
                     <strong>
                       <u>underlined</u>
                     </strong>.</p>
@@ -24288,7 +24288,7 @@
                     formulated. 255 characters should be read as a
                     proposed technical maximum limit, that can be
                     changed if required by the database management
-                    system. In contrast, 
+                    system. In contrast,
                     <strong>
                       <a name="TypeMemo">'Memo'</a>
                     </strong>is explicitly defined as text of
@@ -24396,7 +24396,7 @@ by
 </span> -->
         <!-- <br /> -->
         <!-- <span i18n:translate="installer_copyright">
-Installed using the Plone Windows installer by 
+Installed using the Plone Windows installer by
 <span i18n:name="enfold"><a href="http://www.enfoldtechnology.com">Enfold</a></span>.
 </span> -->
       </div>

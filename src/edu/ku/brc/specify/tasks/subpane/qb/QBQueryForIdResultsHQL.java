@@ -242,7 +242,7 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL
         {
             cancelled.set(true);
             queryTask.get().cancel(true);
-            //and what else needs to be done???....
+            //and what else needs to be done???...
         }
         else if (isDisplaying())
         {

@@ -1272,7 +1272,7 @@ public class DataImportDialog extends JDialog implements ActionListener
     
     /**
      * If the user does not provide "first row contains headers", this creates
-     * as set of headers of notation "Column 1"....
+     * as set of headers of notation "Column 1"...
      * @param count
      * @return
      * String[]
@@ -1289,7 +1289,7 @@ public class DataImportDialog extends JDialog implements ActionListener
     
     /**
      * If the user does not provide "first row contains headers", this creates
-     * as set of headers of notation "Column 1"....
+     * as set of headers of notation "Column 1"...
      * @param count
      * @return
      * String[]

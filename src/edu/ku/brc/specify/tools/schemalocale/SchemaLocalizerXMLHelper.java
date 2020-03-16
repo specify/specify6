@@ -690,7 +690,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                 
                 Collections.sort(tableDisplayItems);
                 
-                log.info("Syncing with Datamodel.... (ignore errors)");
+                log.info("Syncing with Datamodel... (ignore errors)");
                 changesBuffer.append("<Center><table border=\"1\">");
                 
                 String lang = SchemaI18NService.getCurrentLocale().getLanguage();
@@ -732,7 +732,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                     }
                 }
                 
-                log.info("Adding New Tables and fields....");
+                log.info("Adding New Tables and fields...");
                 for (DBTableInfo ti : tableMgr.getTables())
                 {
                     DisciplineBasedContainer container = (DisciplineBasedContainer)tableHash.get(ti.getName());
@@ -906,7 +906,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                     }
                 }
                 
-                log.info("Removing Old Tables and fields....");
+                log.info("Removing Old Tables and fields...");
                 for (SpLocaleContainer container : new Vector<DisciplineBasedContainer>(containers))
                 {
                     DBTableInfo ti = tableMgr.getInfoByTableName(container.getName());

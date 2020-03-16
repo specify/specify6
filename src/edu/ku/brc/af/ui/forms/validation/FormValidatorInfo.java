@@ -65,7 +65,7 @@ public class FormValidatorInfo extends JPanel
     }
     
     /**
-     * Unregisters the panel from the validator .
+     * Unregisters the panel from the validator.
      */
     public void cleanUp()
     {

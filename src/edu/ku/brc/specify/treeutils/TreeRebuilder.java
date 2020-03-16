@@ -37,7 +37,7 @@ import edu.ku.brc.specify.datamodel.Treeable;
  *This class combines the functions of the NodeNumber and FullNameRebuilder classes.
  *(And practically makes them obsolete).
  *It traverses a tree and updates fullnames and/or node numbers - depending on the doNodeNumbers and doFullNames 
- *arguments to the constructor..
+ *arguments to the constructor.
  */
 public class TreeRebuilder<T extends Treeable<T, D, I>, 
 				D extends TreeDefIface<T, D, I>, 

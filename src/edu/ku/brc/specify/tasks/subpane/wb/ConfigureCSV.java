@@ -415,7 +415,7 @@ public class ConfigureCSV extends ConfigureExternalDataBase
      */
     private ImportColumnInfo.ColumnType getCellType(final int colIndex)
     {
-        return ImportColumnInfo.ColumnType.String; // hmmmm....
+        return ImportColumnInfo.ColumnType.String; // hmmmm...
     }
 
     /*

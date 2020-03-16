@@ -53,7 +53,7 @@ import java.util.HashMap;
  * with an opacity of 50%:
  * <pre>
  * ShadowFactory factory = new ShadowFactory(10, 0.5f, Color.GREEN);
- * // ..
+ * //
  * factory = new ShadowFactory();
  * factory.setSize(10);
  * factory.setOpacity(0.5f);

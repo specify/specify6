@@ -180,7 +180,7 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
                 }
             });
             popup.add(getDeters, true);
-/* Removing lifemapper due to worldwind Java8 issues..
+/* Removing lifemapper due to worldwind Java8 issues.
             JMenuItem lifeMapperDisplay = new JMenuItem("Lifemapper");
             lifeMapperDisplay.addActionListener(new ActionListener()
             {

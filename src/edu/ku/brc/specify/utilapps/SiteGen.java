@@ -176,7 +176,7 @@ public class SiteGen
                                  final DisciplineType  disciplineType)
     {
         
-        log.info("Logging into "+dbName+"....");
+        log.info("Logging into "+dbName+"...");
         
         String connStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Create, hostName, dbName);
         if (connStr == null)
@@ -198,7 +198,7 @@ public class SiteGen
         
         session = HibernateUtil.getCurrentSession();
 
-        log.info("Creating database "+dbName+"....");
+        log.info("Creating database "+dbName+"...");
         
         try
         {

@@ -596,7 +596,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
         {
             log.error("Couldn't find pane named["+pane.getPaneName()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
             
-            // Note: We should never get here, but if we do....
+            // Note: We should never get here, but if we do...
             //
             // At this point we should bail but remove the current tab manually
             // it wasn't found in the panes list

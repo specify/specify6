@@ -337,7 +337,7 @@ public class ERTICaptionInfoRel extends ERTICaptionInfoQB
     {
         if (value instanceof Integer)
         {
-            //assume it's a key..
+            //assume it's a key.
             return getObjectFromKey(value);
         }
         //else

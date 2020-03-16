@@ -2910,7 +2910,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     }
     
     /**
-     * Export to XLS .
+     * Export to XLS.
      */
     protected void doExcelCsvExport()
     {

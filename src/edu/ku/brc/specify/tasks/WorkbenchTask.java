@@ -2739,7 +2739,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     }
     
     /**
-     * Show the dialog to allow the user to edit a template and then updates the data rows and columns..
+     * Show the dialog to allow the user to edit a template and then updates the data rows and columns.
      * @param workbenchTemplate the template to be edited
      */
     protected void editTemplate(final WorkbenchTemplate wbTemplate)

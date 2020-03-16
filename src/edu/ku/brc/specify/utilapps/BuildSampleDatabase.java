@@ -3268,10 +3268,10 @@ public class BuildSampleDatabase
         persist(dataObjects);
         dataObjects.clear();
         
-        frame.setDesc("Intermediate save....");
+        frame.setDesc("Intermediate save...");
         commitTx();
         
-        frame.setDesc("Creating Localities....");
+        frame.setDesc("Creating Localities...");
         startTx();
         
         frame.setProcess(++createStep);
@@ -4483,10 +4483,10 @@ public class BuildSampleDatabase
         persist(dataObjects);
         dataObjects.clear();
         
-        frame.setDesc("Intermediate save....");
+        frame.setDesc("Intermediate save...");
         commitTx();
         
-        frame.setDesc("Creating Localities....");
+        frame.setDesc("Creating Localities...");
         startTx();
         
         frame.setProcess(++createStep);
@@ -7742,7 +7742,7 @@ public class BuildSampleDatabase
                 {
                     frame.getProcessProgress().setIndeterminate(true);
                     frame.getProcessProgress().setString("");
-                    frame.setDesc("Logging into "+dbName+"....");
+                    frame.setDesc("Logging into "+dbName+"...");
                     frame.setOverall(steps++);
                 }
             });
@@ -7792,7 +7792,7 @@ public class BuildSampleDatabase
                 {
                     frame.getProcessProgress().setIndeterminate(true);
                     frame.getProcessProgress().setString("");
-                    frame.setDesc("Creating database "+dbName+"....");
+                    frame.setDesc("Creating database "+dbName+"...");
                     frame.setOverall(steps++);
                 }
             });
@@ -7819,7 +7819,7 @@ public class BuildSampleDatabase
                 {
                     frame.getProcessProgress().setIndeterminate(true);
                     frame.getProcessProgress().setString("");
-                    frame.setDesc("Saving data into "+dbName+"....");
+                    frame.setDesc("Saving data into "+dbName+"...");
                     frame.setOverall(steps++);
                 }
             });

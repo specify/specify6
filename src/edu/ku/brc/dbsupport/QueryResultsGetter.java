@@ -62,7 +62,7 @@ public class QueryResultsGetter implements QRCProcessorListener
     }
     
     /**
-     * Adds a QueryResultsContainer and starts its execution on a separate thread .
+     * Adds a QueryResultsContainer and starts its execution on a separate thread.
      * @param qrcsArg the collection of containers to be executed
      */
     public void add(final List<QueryResultsContainerIFace> qrcsArg)

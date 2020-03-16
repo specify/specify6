@@ -64,7 +64,7 @@ public class QueryResultsDataObj
     }
 
     /**
-     * Constructs with object with a format..
+     * Constructs with object with a format.
      * @param result the value of the object
      * @param formatStr the string format
      */

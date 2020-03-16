@@ -745,7 +745,7 @@ public class SpecifyDBConverter extends AppBase
         boolean doCEAttrFIx = false;
         if (doCEAttrFIx)
         {
-            frame.setDesc("Fixing Scope....");
+            frame.setDesc("Fixing Scope...");
             IdMapperMgr.getInstance().setDBs(oldDBConn, newDBConn);
             convLogger.initialize(convOutputPath, dbNameDest);
             TableWriter tblWriter = convLogger.getWriter("ScopeUpdater.html", "Updating Scope Summary");
@@ -759,7 +759,7 @@ public class SpecifyDBConverter extends AppBase
         boolean doImagesToWebLinks = false;
         if (doImagesToWebLinks)
         {
-            frame.setDesc("Fixing Scope....");
+            frame.setDesc("Fixing Scope...");
             IdMapperMgr.getInstance().setDBs(oldDBConn, newDBConn);
             ConvertMiscData.convertImagesToWebLinks(oldDBConn, newDBConn);
             oldDBConn.close();
@@ -1693,7 +1693,7 @@ public class SpecifyDBConverter extends AppBase
                 }
                 //checkDisciplines();
 
-                frame.setDesc("Fixing Scope....");
+                frame.setDesc("Fixing Scope...");
                 TableWriter tblWriter = convLogger.getWriter("ScopeUpdater.html", "Updating Scope Summary");
                 ConvScopeFixer convScopeFixer = new ConvScopeFixer(oldDBConn, newDBConn, dbNameDest, tblWriter);
                 convScopeFixer.doFixTables();
@@ -2462,7 +2462,7 @@ public class SpecifyDBConverter extends AppBase
      */
     protected void checkDisciplines()
     {
-        System.out.println("Checking Disciplines....");
+        System.out.println("Checking Disciplines...");
         int count = 0;
         for (Object obj : BasicSQLUtils.querySingleCol("SELECT TaxonTreeDefID FROM discipline"))
         {

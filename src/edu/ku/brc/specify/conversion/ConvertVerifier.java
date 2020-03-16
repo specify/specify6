@@ -335,7 +335,7 @@ public class ConvertVerifier extends AppBase
             verifyTableCounts(tableNames[i].toLowerCase(), tableNames[i+1].toLowerCase());
         }
         
-        progressFrame = new ProgressFrame("Checking Catalog Objects....");
+        progressFrame = new ProgressFrame("Checking Catalog Objects...");
         progressFrame.adjustProgressFrame();
         
         String cntSQL = compareTo6DBs ? "SELECT COUNT(*) FROM collectionobject" :
@@ -343,7 +343,7 @@ public class ConvertVerifier extends AppBase
         Integer numColObjs = BasicSQLUtils.getCount(oldDBConn, cntSQL);
         
         progressFrame.setProcess(0, numColObjs);
-        //progressFrame.setDesc("Checking Catalog Objects....");
+        //progressFrame.setDesc("Checking Catalog Objects...");
         
         progressFrame.setOverall(0, numColObjs*4);
         progressFrame.setOverall(0);

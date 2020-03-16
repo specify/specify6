@@ -1739,7 +1739,7 @@ public class InteractionsTask extends BaseTask
     }
     
     /**
-     * Delete a InfoRequest..
+     * Delete a InfoRequest.
      * @param infoRequest the infoRequest to be deleted
      */
     protected InfoRequest deleteInfoRequest(final int infoReqId)

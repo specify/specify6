@@ -160,7 +160,7 @@ public class TestAutoNumbering extends TestCase
             }
         }
         
-        log.info("Logging into "+dbName+"....");
+        log.info("Logging into "+dbName+"...");
         
         String connStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Create, hostName, dbName);
         if (connStr == null)
@@ -182,7 +182,7 @@ public class TestAutoNumbering extends TestCase
         
         session = HibernateUtil.getCurrentSession();
 
-        log.info("Creating database "+dbName+"....");
+        log.info("Creating database "+dbName+"...");
         
         try
         {
@@ -229,7 +229,7 @@ public class TestAutoNumbering extends TestCase
             //bsd.createEmptyDiscipline(config, null);
             
     
-            log.info("Saving data into "+dbName+"....");
+            log.info("Saving data into "+dbName+"...");
             log.info("Persisting Data...");
             //HibernateUtil.beginTransaction();
             //persist(dataObjects);

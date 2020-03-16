@@ -3387,7 +3387,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
           @SuppressWarnings("synthetic-access") //$NON-NLS-1$
         public void run()
           {
-              log.debug("Checking for update....");
+              log.debug("Checking for update...");
               try
               {
                   try
