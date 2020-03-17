@@ -30,6 +30,7 @@ import java.text.SimpleDateFormat;
 
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.SpAuditLog;
+import edu.ku.brc.specify.datamodel.SpAuditLogField;
 import edu.ku.brc.specify.ui.treetables.TreeNode;
 import org.apache.log4j.Logger;
 import org.hibernate.event.PostInsertEvent;
@@ -323,7 +324,10 @@ public class PostInsertEventListener implements org.hibernate.event.PostInsertEv
         } else if (val instanceof Calendar) {
             return new SimpleDateFormat("yyyy-MM-dd").format(((Calendar)val).getTime());
         } else {
-            return val.toString();
+            String result = val.toString();
+            return result.length() > SpAuditLogField.MAX_AUDIT_VAL_LEN ?
+                    result.substring(0, SpAuditLogField.MAX_AUDIT_VAL_LEN) :
+                    result;
         }
     }
     /**
