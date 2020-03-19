@@ -2171,7 +2171,27 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         
         UIHelper.centerAndShow(aboutDlg);
     }
-    
+
+    /* Copyright (C) 2020, Specify Collections Consortium
+     *
+     * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+     * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
+     *
+     * This program is free software; you can redistribute it and/or
+     * modify it under the terms of the GNU General Public License
+     * as published by the Free Software Foundation; either version 2
+     * of the License, or (at your option) any later version.
+     *
+     * This program is distributed in the hope that it will be useful,
+     * but WITHOUT ANY WARRANTY; without even the implied warranty of
+     * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     * GNU General Public License for more details.
+     *
+     * You should have received a copy of the GNU General Public License
+     * along with this program; if not, write to the Free Software
+     * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+     */
+
     /**
      * Returns a standard String for the about box
      * @param appNameArg the application name  
@@ -2188,7 +2208,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         "<p>The Specify Software Project is "+ //$NON-NLS-1$
         "funded by the Advances in Biological Informatics Program, " + //$NON-NLS-1$
         "U.S. National Science Foundation  (Grant NSF/BIO: 1565098 and earlier awards).<br><br>" + //$NON-NLS-1$
-        "Specify 6 Copyright \u00A9 2019 University of Kansas Center for Research. " +
+        "Specify 6 Copyright \u00A9 2020 Specify Collections Consortium. " +
         "Specify comes with ABSOLUTELY NO WARRANTY.<br><br>" + //$NON-NLS-1$
         "This is free software licensed under GNU General Public License 2 (GPL2).</P></font></html>"; //$NON-NLS-1$
 
