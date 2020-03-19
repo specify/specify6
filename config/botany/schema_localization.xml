@@ -45,29 +45,13 @@
     <isSystem>false</isSystem>
     <schemaType>0</schemaType>
     <items>
-      <desc name="exsiccataItems" isHidden="false" isUIFormatter="false" isRequired="false">
+      <desc name="collectionObjectAttribute" type="ManyToOne" isHidden="true" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
           <str language="en">
             <version>0</version>
-            <text>Exsiccata Items</text>
-            <itemDesc reference="../../.."/>
-            <itemName reference="../../.."/>
-          </str>
-        </names>
-        <descs>
-          <str reference="../../names/str"/>
-        </descs>
-        <spExportSchemaItems/>
-      </desc>
-      <desc name="text1" type="java.lang.String" isHidden="false" isUIFormatter="false" pickListName="Phenology" isRequired="false">
-        <version>0</version>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en">
-            <version>0</version>
-            <text>Phenology</text>
+            <text>Col Obj Attribute</text>
             <itemDesc reference="../../.."/>
             <itemName reference="../../.."/>
           </str>
@@ -93,13 +77,29 @@
         </descs>
         <spExportSchemaItems/>
       </desc>
-      <desc name="collectionObjectAttribute" type="ManyToOne" isHidden="true" isUIFormatter="false" isRequired="false">
+      <desc name="text1" type="java.lang.String" isHidden="false" isUIFormatter="false" pickListName="Phenology" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
           <str language="en">
             <version>0</version>
-            <text>Col Obj Attribute</text>
+            <text>Phenology</text>
+            <itemDesc reference="../../.."/>
+            <itemName reference="../../.."/>
+          </str>
+        </names>
+        <descs>
+          <str reference="../../names/str"/>
+        </descs>
+        <spExportSchemaItems/>
+      </desc>
+      <desc name="exsiccataItems" isHidden="false" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>Exsiccata Items</text>
             <itemDesc reference="../../.."/>
             <itemName reference="../../.."/>
           </str>
