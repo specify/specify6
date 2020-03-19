@@ -490,7 +490,7 @@ public class CollectingTrip extends DisciplineMember implements java.io.Serializ
     /**
      * @return the collectingTripName
      */
-    @Column(name = "CollectingTripName", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+    @Column(name = "CollectingTripName", unique = false, nullable = true, insertable = true, updatable = true, length = 250)
     public String getCollectingTripName()
     {
         return collectingTripName;
