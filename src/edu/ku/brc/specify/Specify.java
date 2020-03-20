@@ -2148,7 +2148,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         
         // for some strange reason I can't get the dialog to size itself correctly
         Dimension size = aboutDlg.getSize();
-        size.height += 120;
+        size.height += 200;
         aboutDlg.setSize(size);
         
         txtPane.addHyperlinkListener(new HyperlinkListener() {
@@ -2185,9 +2185,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         "Biodiversity Institute<br>University of Kansas<br>1345 Jayhawk Blvd.<br>Lawrence, KS  USA 66045<br><br>" +  //$NON-NLS-1$
         "<a href=\"http://www.specifysoftware.org\">www.specifysoftware.org</a>"+ //$NON-NLS-1$
         "<br><a href=\"mailto:support@specifysoftware.org\">support@specifysoftware.org</a><br>" +  //$NON-NLS-1$
-        "<p>The Specify Software Project is "+ //$NON-NLS-1$
-        "funded by the Advances in Biological Informatics Program, " + //$NON-NLS-1$
-        "U.S. National Science Foundation  (Grant NSF/BIO: 1565098 and earlier awards).<br><br>" + //$NON-NLS-1$
+        "<p>Specify Software is a product of the Specify Collections Consortium that is funded by its member institutions. Consortium Founding Members include: University of Michigan, University of Florida, Denmark Consortium of Museums, and the University of Kansas. The Consortium operates under the non-profit U.S. tax status of the University of Kansas Center for Research. Specify was supported previously by multiple awards from the U.S. National Science Foundation.<br><br>" + //$NON-NLS-1$
         "Specify 6 Copyright \u00A9 2020 Specify Collections Consortium. " +
         "Specify comes with ABSOLUTELY NO WARRANTY.<br><br>" + //$NON-NLS-1$
         "This is free software licensed under GNU General Public License 2 (GPL2).</P></font></html>"; //$NON-NLS-1$
