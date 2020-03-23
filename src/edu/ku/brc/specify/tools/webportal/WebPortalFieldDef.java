@@ -31,6 +31,7 @@ public class WebPortalFieldDef
 	private String treeId;
 	private Integer treeRank;
 	private final int colIdx; //col idx in db table
+	private final boolean linkify;
 	private final ExportMappingInfo mapInfo;
 
 	private boolean advancedSearch; //include in advanced search
@@ -49,6 +50,7 @@ public class WebPortalFieldDef
 		this.concept = mapInfo.getConcept();
 		this.conceptUrl = mapInfo.getConceptSchema();
 		this.spFld = mapInfo.getSpFldName();
+		this.linkify = true;
 
 		DBTableChildIFace dbInfo = mapInfo.getInfo();
 		
@@ -237,7 +239,10 @@ public class WebPortalFieldDef
 		return solrName;
 	}
 
-	
+	public boolean getLinkify() {
+		return linkify;
+	}
+
 	/**
 	 * @return the solrType
 	 */
