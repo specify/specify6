@@ -2148,7 +2148,6 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         
         // for some strange reason I can't get the dialog to size itself correctly
         Dimension size = aboutDlg.getSize();
-        size.height += 200;
         aboutDlg.setSize(size);
         
         txtPane.addHyperlinkListener(new HyperlinkListener() {
@@ -2192,11 +2191,14 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
 
     }
 
+    public boolean doExit(boolean doAppExit) {
+        return doExit(doAppExit, false);
+    }
     /**
      * Checks to see if cache has changed before exiting.
      *
      */
-    public boolean doExit(boolean doAppExit)
+    public boolean doExit(boolean doAppExit, boolean isForced)
     {
         boolean okToShutdown = true;
         try
@@ -2210,48 +2212,40 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             if (okToShutdown)
             {
                 UsageTracker.save();
-                
-                try
-                {
-                    DataProviderSessionIFace session     = null;
-                    SpecifyUser              currentUser = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
-                    if (currentUser != null)
-                    {
+
+                try {
+                    DataProviderSessionIFace session = null;
+                    SpecifyUser currentUser = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
+                    if (currentUser != null) {
                         session = DataProviderFactory.getInstance().createSession();
-                        
+
                         SpecifyUser user = session.getData(SpecifyUser.class, "id", currentUser.getId(), DataProviderSessionIFace.CompareType.Equals);
                         user.setIsLoggedIn(false);
                         user.setLoginDisciplineName(null);
                         user.setLoginCollectionName(null);
                         user.setLoginOutTime(new Timestamp(System.currentTimeMillis()));
-                        
-                        try
-                        {
+
+                        try {
                             session.beginTransaction();
                             session.saveOrUpdate(user);
                             session.commit();
-                            
-                        } catch (Exception ex)
-                        {
+
+                        } catch (Exception ex) {
                             log.error(ex);
-                            
-                        } finally
-                        {
-                            if (session != null)
-                            {
+
+                        } finally {
+                            if (session != null) {
                                 session.close();
                             }
                         }
                     }
-                    
-                } catch (Exception ex)
-                {
+
+                } catch (Exception ex) {
                     log.error(ex);
                 }
-                
                 // Returns false if it isn't doing a backup.
                 // passing true tells it to send an App exit command
-                if (!BackupServiceFactory.getInstance().checkForBackUp(true))
+                if (!isForced && !BackupServiceFactory.getInstance().checkForBackUp(true))
                 {
                 
             		log.info("Application shutdown"); //$NON-NLS-1$
@@ -2271,32 +2265,26 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             
                     AppPreferences.getLocalPrefs().flush();
                     
-             		// save the long term cache mapping info
-            		try
-            		{
-            			UIRegistry.getLongTermFileCache().saveCacheMapping();
-            			log.info("Successfully saved long term cache mapping"); //$NON-NLS-1$
-            		}
-            		catch( IOException ioe )
-            		{
-            			log.warn("Error while saving long term cache mapping.",ioe); //$NON-NLS-1$
-            		}
-                    
-                    // clear the contents of the short term cache
-                    log.info("Clearing the short term cache"); //$NON-NLS-1$
-                    UIRegistry.getShortTermFileCache().clear();
-            
-                    // save the forms cache mapping info
-                    try
-                    {
-                        UIRegistry.getFormsCache().saveCacheMapping();
-                        log.info("Successfully saved forms cache mapping"); //$NON-NLS-1$
+             		if (!isForced) {                    // save the long term cache mapping info
+                        try {
+                            UIRegistry.getLongTermFileCache().saveCacheMapping();
+                            log.info("Successfully saved long term cache mapping"); //$NON-NLS-1$
+                        } catch (IOException ioe) {
+                            log.warn("Error while saving long term cache mapping.", ioe); //$NON-NLS-1$
+                        }
+
+                        // clear the contents of the short term cache
+                        log.info("Clearing the short term cache"); //$NON-NLS-1$
+                        UIRegistry.getShortTermFileCache().clear();
+
+                        // save the forms cache mapping info
+                        try {
+                            UIRegistry.getFormsCache().saveCacheMapping();
+                            log.info("Successfully saved forms cache mapping"); //$NON-NLS-1$
+                        } catch (IOException ioe) {
+                            log.warn("Error while saving forms cache mapping.", ioe); //$NON-NLS-1$
+                        }
                     }
-                    catch( IOException ioe )
-                    {
-                        log.warn("Error while saving forms cache mapping.",ioe); //$NON-NLS-1$
-                    }
-                    
                     if (topFrame != null)
                     {
                         topFrame.setVisible(false);
@@ -2314,7 +2302,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             ex.printStackTrace();
             
         } finally {
-            if (okToShutdown && doAppExit) {
+            if (okToShutdown && doAppExit && !isForced) {
                 Boolean canSendStats = true;
                 if (AppContextMgr.getInstance().hasContext()) {
                     canSendStats = AppPreferences.getRemote().getBoolean(hiddenSendStatsPrefName, true); //$NON-NLS-1$
@@ -3090,7 +3078,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                 
             } else if (cmdAction.isAction(BaseTask.APP_REQ_EXIT))
             {
-                doExit(true);
+                doExit(true, true);
                 
             } else if (cmdAction.isAction("CheckForUpdates"))
             {
