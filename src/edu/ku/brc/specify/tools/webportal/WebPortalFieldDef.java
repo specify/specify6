@@ -50,7 +50,6 @@ public class WebPortalFieldDef
 		this.concept = mapInfo.getConcept();
 		this.conceptUrl = mapInfo.getConceptSchema();
 		this.spFld = mapInfo.getSpFldName();
-		this.linkify = true;
 
 		DBTableChildIFace dbInfo = mapInfo.getInfo();
 		
@@ -129,7 +128,9 @@ public class WebPortalFieldDef
 			this.treeId = null;
 			this.treeRank = null;
 		}
-	}
+        this.linkify = ("java.lang.String".equals(this.type) || "text".equals(this.type)) && !this.solrType.startsWith("p");
+
+    }
 
 	/**
 	 * @param val
