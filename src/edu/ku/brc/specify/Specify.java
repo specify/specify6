@@ -2291,13 +2291,13 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             ex.printStackTrace();
 
         } finally {
-            if (okToShutdown && doAppExit && !isForced) {
+            if (okToShutdown && doAppExit) {
                 Boolean canSendStats = true;
                 if (AppContextMgr.getInstance().hasContext()) {
                     canSendStats = AppPreferences.getRemote().getBoolean(hiddenSendStatsPrefName, true); //$NON-NLS-1$
                 }
                 StatsTrackerTask statsTrackerTask = (StatsTrackerTask) TaskMgr.getTask(StatsTrackerTask.STATS_TRACKER);
-                if (statsTrackerTask != null && canSendStats) {
+                if (!isForced && statsTrackerTask != null && canSendStats) {
                     UIRegistry.getTopWindow().setVisible(false);
                     statsTrackerTask.setSendSecondaryStatsAllowed(true);
                     statsTrackerTask.sendStats(false, false, true); // don't exit, show progress and send done event
