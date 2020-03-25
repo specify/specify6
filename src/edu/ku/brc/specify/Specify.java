@@ -2198,19 +2198,15 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
      * Checks to see if cache has changed before exiting.
      *
      */
-    public boolean doExit(boolean doAppExit, boolean isForced)
-    {
+    public boolean doExit(boolean doAppExit, boolean isForced) {
         boolean okToShutdown = true;
-        try
-        {
-            if (AttachmentUtils.getAttachmentManager() != null)
-            {
+        try {
+            if (AttachmentUtils.getAttachmentManager() != null) {
                 AttachmentUtils.getAttachmentManager().cleanup();
             }
-            
+
             okToShutdown = SubPaneMgr.getInstance().aboutToShutdown();
-            if (okToShutdown)
-            {
+            if (okToShutdown) {
                 UsageTracker.save();
 
                 try {
@@ -2245,27 +2241,23 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                 }
                 // Returns false if it isn't doing a backup.
                 // passing true tells it to send an App exit command
-                if (!isForced && !BackupServiceFactory.getInstance().checkForBackUp(true))
-                {
-                
-            		log.info("Application shutdown"); //$NON-NLS-1$
-            		
-            		if (topFrame != null)
-            		{
+                if (!isForced && !BackupServiceFactory.getInstance().checkForBackUp(true)) {
+                    log.info("Application shutdown"); //$NON-NLS-1$
+
+                    if (topFrame != null) {
                         Rectangle r = topFrame.getBounds();
                         AppPreferences.getLocalPrefs().putInt("APP.X", r.x);
                         AppPreferences.getLocalPrefs().putInt("APP.Y", r.y);
                         AppPreferences.getLocalPrefs().putInt("APP.W", r.width);
                         AppPreferences.getLocalPrefs().putInt("APP.H", r.height);
-                        if (UIHelper.isMacOS())
-                        {
-                        	AppPreferences.getLocalPrefs().putBoolean("APP.MAXIMIZED", topFrame.getExtendedState() == Frame.MAXIMIZED_BOTH);
+                        if (UIHelper.isMacOS()) {
+                            AppPreferences.getLocalPrefs().putBoolean("APP.MAXIMIZED", topFrame.getExtendedState() == Frame.MAXIMIZED_BOTH);
                         }
-            		}
-            
+                    }
+
                     AppPreferences.getLocalPrefs().flush();
-                    
-             		if (!isForced) {                    // save the long term cache mapping info
+
+                    if (!isForced) {                    // save the long term cache mapping info
                         try {
                             UIRegistry.getLongTermFileCache().saveCacheMapping();
                             log.info("Successfully saved long term cache mapping"); //$NON-NLS-1$
@@ -2285,43 +2277,41 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                             log.warn("Error while saving forms cache mapping.", ioe); //$NON-NLS-1$
                         }
                     }
-                    if (topFrame != null)
-                    {
-                        topFrame.setVisible(false);
-                    }
-                    QueryExecutor.getInstance().shutdown();
-                    
-                } else
-                {
-                    okToShutdown = false;
                 }
+                if (topFrame != null) {
+                    topFrame.setVisible(false);
+                }
+                QueryExecutor.getInstance().shutdown();
+
+            } else {
+                okToShutdown = false;
             }
-            
-        } catch (Exception ex)
-        {
+        } catch (
+                Exception ex) {
             ex.printStackTrace();
-            
+
         } finally {
             if (okToShutdown && doAppExit && !isForced) {
                 Boolean canSendStats = true;
                 if (AppContextMgr.getInstance().hasContext()) {
                     canSendStats = AppPreferences.getRemote().getBoolean(hiddenSendStatsPrefName, true); //$NON-NLS-1$
                 }
-                StatsTrackerTask statsTrackerTask = (StatsTrackerTask)TaskMgr.getTask(StatsTrackerTask.STATS_TRACKER);
+                StatsTrackerTask statsTrackerTask = (StatsTrackerTask) TaskMgr.getTask(StatsTrackerTask.STATS_TRACKER);
                 if (statsTrackerTask != null && canSendStats) {
                     UIRegistry.getTopWindow().setVisible(false);
                     statsTrackerTask.setSendSecondaryStatsAllowed(true);
                     statsTrackerTask.sendStats(false, false, true); // don't exit, show progress and send done event
                     return false;
                 } else {
-                    // Fake like we sent stats, needs to  to be placed into the event queue 
+                    // Fake like we sent stats, needs to  to be placed into the event queue
                     // so any other events can be processed.
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
                             try {
                                 Thread.sleep(500); // wait half second before sending 'faked' done event.
-                            } catch (Exception ex) {}
+                            } catch (Exception ex) {
+                            }
                             CommandDispatcher.dispatch(new CommandAction(BaseTask.APP_CMD_TYPE, STATS_SEND_DONE, null));
                         }
                     });
