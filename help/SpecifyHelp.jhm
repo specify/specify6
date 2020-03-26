@@ -397,4 +397,7 @@
 	<mapID target="iPadConfig" url="SpecifyHelp/iPadExporter/ipad_exporter.html#configure_export"/>
 	<mapID target="PrefsAudits" url="SpecifyHelp/Prefs/PrefsAudits.html"/>
 	<mapID target="PrefsWebPortal" url="SpecifyHelp/Prefs/PrefsWebPortal.html"/>
+	<mapID target="Auditing" url="SpecifyHelp/QueryBuilder/Auditing.html"/>
+	<mapID target="configure Query Creators" url="SpecifyHelp/images/configure Query Creators.png"/>
+	<mapID target="loan_uncataloged" url="SpecifyHelp/Interactions/Interactions.html#loan_uncataloged"/>
 </map>

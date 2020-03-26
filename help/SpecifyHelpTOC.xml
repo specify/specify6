@@ -59,11 +59,11 @@
 			<tocitem text="Login" target="PrefsLogin" />
 			<tocitem text="MySQL" target="PrefsMySQL" />
 			<tocitem text="Network" target="PrefsNetwork" />
-			<tocitem text="Web Portal" target="PrefsWebPortal" />
 			<tocitem text="System" target="PrefsSystem" />
 			<tocitem text="Symbiota" target="PrefsSymbiota" />
 			<tocitem text="Task Bar" target="PrefsMisc" />
 			<tocitem text="Tree" target="PrefsTree" />
+			<tocitem text="Web Portal" target="PrefsWebPortal" />
 		</tocitem>
 		<tocitem text="Introduction to Specify" target="Intro">
 			<tocitem text="Components in Specify" target="intro_components" />
@@ -135,6 +135,7 @@
 			</tocitem>
 		</tocitem>
 		<tocitem text="Searching Data" target="SS">
+			<tocitem text="Auditing " target="Auditing" />
 			<tocitem text="Simple Search" target="Simple_Search">
 				<tocitem text="Using Simple Search" target="SS_Execute" />
 				<tocitem text="Simple Search Wild Cards" target="SS_Cards" />
@@ -157,6 +158,7 @@
 				<tocitem text="Saved Query Menu" target="Q_Saved" />
 				<tocitem text="Import and Export Queries" target="QBImport" />
 				<tocitem text="Delete a Query" target="Q_Delete" />
+				<tocitem text="Auditing" target="Auditing" />
 			</tocitem>
 		</tocitem>
 		<tocitem text="Record Sets" target="RecordSet">
