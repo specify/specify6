@@ -102,6 +102,7 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
     protected String                        fieldNumber;
     protected String                        description;
     protected String                        projectNumber;
+    protected Integer numberOfDuplicates;
     protected String                        text1;
     protected String                        text2;
     protected String                        text3;
@@ -201,6 +202,7 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
         collectionObjectId    = null;
         fieldNumber           = null;
         description           = null;
+        numberOfDuplicates = null;
         text1                 = null;
         text2                 = null;
         text3                 = null;
@@ -445,6 +447,15 @@ public void setReservedText3(String reservedText3) {
 
     public void setNumber2(Float number2) {
         this.number2 = number2;
+    }
+
+    @Column(name = "NumberOfDuplicates", unique = false, nullable = true, insertable = true, updatable = true)
+    public Integer getNumberOfDuplicates() {
+        return numberOfDuplicates;
+    }
+
+    public void setNumberOfDuplicates(Integer numberOfDuplicates) {
+        this.numberOfDuplicates = numberOfDuplicates;
     }
 
     /**

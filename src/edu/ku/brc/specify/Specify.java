@@ -2148,7 +2148,6 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         
         // for some strange reason I can't get the dialog to size itself correctly
         Dimension size = aboutDlg.getSize();
-        size.height += 120;
         aboutDlg.setSize(size);
         
         txtPane.addHyperlinkListener(new HyperlinkListener() {
@@ -2171,7 +2170,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         
         UIHelper.centerAndShow(aboutDlg);
     }
-    
+
     /**
      * Returns a standard String for the about box
      * @param appNameArg the application name  
@@ -2185,157 +2184,134 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         "Biodiversity Institute<br>University of Kansas<br>1345 Jayhawk Blvd.<br>Lawrence, KS  USA 66045<br><br>" +  //$NON-NLS-1$
         "<a href=\"http://www.specifysoftware.org\">www.specifysoftware.org</a>"+ //$NON-NLS-1$
         "<br><a href=\"mailto:support@specifysoftware.org\">support@specifysoftware.org</a><br>" +  //$NON-NLS-1$
-        "<p>The Specify Software Project is "+ //$NON-NLS-1$
-        "funded by the Advances in Biological Informatics Program, " + //$NON-NLS-1$
-        "U.S. National Science Foundation  (Grant NSF/BIO: 1565098 and earlier awards).<br><br>" + //$NON-NLS-1$
-        "Specify 6 Copyright \u00A9 2019 University of Kansas Center for Research. " +
+        "<p>Specify Software is a product of the Specify Collections Consortium that is funded by its member institutions. Consortium Founding Members include: University of Michigan, University of Florida, Denmark Consortium of Museums, and the University of Kansas. The Consortium operates under the non-profit U.S. tax status of the University of Kansas Center for Research. Specify was supported previously by multiple awards from the U.S. National Science Foundation.<br><br>" + //$NON-NLS-1$
+        "Specify 6 Copyright \u00A9 2020 Specify Collections Consortium. " +
         "Specify comes with ABSOLUTELY NO WARRANTY.<br><br>" + //$NON-NLS-1$
         "This is free software licensed under GNU General Public License 2 (GPL2).</P></font></html>"; //$NON-NLS-1$
 
     }
 
+    public boolean doExit(boolean doAppExit) {
+        return doExit(doAppExit, false);
+    }
     /**
      * Checks to see if cache has changed before exiting.
      *
      */
-    public boolean doExit(boolean doAppExit)
-    {
+    public boolean doExit(boolean doAppExit, boolean isForced) {
         boolean okToShutdown = true;
-        try
-        {
-            if (AttachmentUtils.getAttachmentManager() != null)
-            {
+        try {
+            if (AttachmentUtils.getAttachmentManager() != null) {
                 AttachmentUtils.getAttachmentManager().cleanup();
             }
-            
+
             okToShutdown = SubPaneMgr.getInstance().aboutToShutdown();
-            if (okToShutdown)
-            {
+            if (okToShutdown) {
                 UsageTracker.save();
-                
-                try
-                {
-                    DataProviderSessionIFace session     = null;
-                    SpecifyUser              currentUser = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
-                    if (currentUser != null)
-                    {
+
+                try {
+                    DataProviderSessionIFace session = null;
+                    SpecifyUser currentUser = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
+                    if (currentUser != null) {
                         session = DataProviderFactory.getInstance().createSession();
-                        
+
                         SpecifyUser user = session.getData(SpecifyUser.class, "id", currentUser.getId(), DataProviderSessionIFace.CompareType.Equals);
                         user.setIsLoggedIn(false);
                         user.setLoginDisciplineName(null);
                         user.setLoginCollectionName(null);
                         user.setLoginOutTime(new Timestamp(System.currentTimeMillis()));
-                        
-                        try
-                        {
+
+                        try {
                             session.beginTransaction();
                             session.saveOrUpdate(user);
                             session.commit();
-                            
-                        } catch (Exception ex)
-                        {
+
+                        } catch (Exception ex) {
                             log.error(ex);
-                            
-                        } finally
-                        {
-                            if (session != null)
-                            {
+
+                        } finally {
+                            if (session != null) {
                                 session.close();
                             }
                         }
                     }
-                    
-                } catch (Exception ex)
-                {
+
+                } catch (Exception ex) {
                     log.error(ex);
                 }
-                
                 // Returns false if it isn't doing a backup.
                 // passing true tells it to send an App exit command
-                if (!BackupServiceFactory.getInstance().checkForBackUp(true))
-                {
-                
-            		log.info("Application shutdown"); //$NON-NLS-1$
-            		
-            		if (topFrame != null)
-            		{
+                if (!isForced && !BackupServiceFactory.getInstance().checkForBackUp(true)) {
+                    log.info("Application shutdown"); //$NON-NLS-1$
+
+                    if (topFrame != null) {
                         Rectangle r = topFrame.getBounds();
                         AppPreferences.getLocalPrefs().putInt("APP.X", r.x);
                         AppPreferences.getLocalPrefs().putInt("APP.Y", r.y);
                         AppPreferences.getLocalPrefs().putInt("APP.W", r.width);
                         AppPreferences.getLocalPrefs().putInt("APP.H", r.height);
-                        if (UIHelper.isMacOS())
-                        {
-                        	AppPreferences.getLocalPrefs().putBoolean("APP.MAXIMIZED", topFrame.getExtendedState() == Frame.MAXIMIZED_BOTH);
+                        if (UIHelper.isMacOS()) {
+                            AppPreferences.getLocalPrefs().putBoolean("APP.MAXIMIZED", topFrame.getExtendedState() == Frame.MAXIMIZED_BOTH);
                         }
-            		}
-            
+                    }
+
                     AppPreferences.getLocalPrefs().flush();
-                    
-             		// save the long term cache mapping info
-            		try
-            		{
-            			UIRegistry.getLongTermFileCache().saveCacheMapping();
-            			log.info("Successfully saved long term cache mapping"); //$NON-NLS-1$
-            		}
-            		catch( IOException ioe )
-            		{
-            			log.warn("Error while saving long term cache mapping.",ioe); //$NON-NLS-1$
-            		}
-                    
-                    // clear the contents of the short term cache
-                    log.info("Clearing the short term cache"); //$NON-NLS-1$
-                    UIRegistry.getShortTermFileCache().clear();
-            
-                    // save the forms cache mapping info
-                    try
-                    {
-                        UIRegistry.getFormsCache().saveCacheMapping();
-                        log.info("Successfully saved forms cache mapping"); //$NON-NLS-1$
+
+                    if (!isForced) {                    // save the long term cache mapping info
+                        try {
+                            UIRegistry.getLongTermFileCache().saveCacheMapping();
+                            log.info("Successfully saved long term cache mapping"); //$NON-NLS-1$
+                        } catch (IOException ioe) {
+                            log.warn("Error while saving long term cache mapping.", ioe); //$NON-NLS-1$
+                        }
+
+                        // clear the contents of the short term cache
+                        log.info("Clearing the short term cache"); //$NON-NLS-1$
+                        UIRegistry.getShortTermFileCache().clear();
+
+                        // save the forms cache mapping info
+                        try {
+                            UIRegistry.getFormsCache().saveCacheMapping();
+                            log.info("Successfully saved forms cache mapping"); //$NON-NLS-1$
+                        } catch (IOException ioe) {
+                            log.warn("Error while saving forms cache mapping.", ioe); //$NON-NLS-1$
+                        }
                     }
-                    catch( IOException ioe )
-                    {
-                        log.warn("Error while saving forms cache mapping.",ioe); //$NON-NLS-1$
-                    }
-                    
-                    if (topFrame != null)
-                    {
-                        topFrame.setVisible(false);
-                    }
-                    QueryExecutor.getInstance().shutdown();
-                    
-                } else
-                {
-                    okToShutdown = false;
                 }
+                if (topFrame != null) {
+                    topFrame.setVisible(false);
+                }
+                QueryExecutor.getInstance().shutdown();
+
+            } else {
+                okToShutdown = false;
             }
-            
-        } catch (Exception ex)
-        {
+        } catch (
+                Exception ex) {
             ex.printStackTrace();
-            
+
         } finally {
             if (okToShutdown && doAppExit) {
                 Boolean canSendStats = true;
                 if (AppContextMgr.getInstance().hasContext()) {
                     canSendStats = AppPreferences.getRemote().getBoolean(hiddenSendStatsPrefName, true); //$NON-NLS-1$
                 }
-                StatsTrackerTask statsTrackerTask = (StatsTrackerTask)TaskMgr.getTask(StatsTrackerTask.STATS_TRACKER);
-                if (statsTrackerTask != null && canSendStats) {
+                StatsTrackerTask statsTrackerTask = (StatsTrackerTask) TaskMgr.getTask(StatsTrackerTask.STATS_TRACKER);
+                if (!isForced && statsTrackerTask != null && canSendStats) {
                     UIRegistry.getTopWindow().setVisible(false);
                     statsTrackerTask.setSendSecondaryStatsAllowed(true);
                     statsTrackerTask.sendStats(false, false, true); // don't exit, show progress and send done event
                     return false;
                 } else {
-                    // Fake like we sent stats, needs to  to be placed into the event queue 
+                    // Fake like we sent stats, needs to  to be placed into the event queue
                     // so any other events can be processed.
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
                             try {
                                 Thread.sleep(500); // wait half second before sending 'faked' done event.
-                            } catch (Exception ex) {}
+                            } catch (Exception ex) {
+                            }
                             CommandDispatcher.dispatch(new CommandAction(BaseTask.APP_CMD_TYPE, STATS_SEND_DONE, null));
                         }
                     });
@@ -3092,7 +3068,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                 
             } else if (cmdAction.isAction(BaseTask.APP_REQ_EXIT))
             {
-                doExit(true);
+                doExit(true, true);
                 
             } else if (cmdAction.isAction("CheckForUpdates"))
             {

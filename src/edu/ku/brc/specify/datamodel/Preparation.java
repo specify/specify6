@@ -65,7 +65,8 @@ import edu.ku.brc.dbsupport.DBConnection;
     {   @Index (name="PreparedDateIDX", columnNames={"preparedDate"}),
         @Index (name="PrepColMemIDX", columnNames={"CollectionMemberID"}),
     	@Index (name="PrepGuidIDX", columnNames={"GUID"}),
-        @Index (name="PrepSampleNumIDX", columnNames={"SampleNumber"})
+        @Index (name="PrepSampleNumIDX", columnNames={"SampleNumber"}),
+            @Index (name="PrepBarCodeIDX", columnNames={"BarCode"})
     })
 @SuppressWarnings("serial")
 public class Preparation extends CollectionMember implements AttachmentOwnerIFace<PreparationAttachment>, 
@@ -105,6 +106,7 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
     protected String                      sampleNumber;
     protected String                      description;             // from Specify 5
     protected String                      guid;
+    protected String barCode;
     
     protected Float                       number1;
     protected Float                       number2;
@@ -188,7 +190,8 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
         sampleNumber = null;
         description  = null;
         guid         = null;
-        
+        barCode      = null;
+
         number1      = null;
         number2      = null;
         integer1			  = null;
@@ -822,6 +825,15 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
     public void setSampleNumber(String sampleNumber)
     {
         this.sampleNumber = sampleNumber;
+    }
+
+    @Column(name = "BarCode", unique = false, nullable = true, insertable = true, updatable = true, length = 256)
+    public String getBarCode() {
+        return barCode;
+    }
+
+    public void setBarCode(String barCode) {
+        this.barCode = barCode;
     }
 
     /**

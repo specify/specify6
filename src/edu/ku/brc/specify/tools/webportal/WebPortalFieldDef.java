@@ -31,6 +31,7 @@ public class WebPortalFieldDef
 	private String treeId;
 	private Integer treeRank;
 	private final int colIdx; //col idx in db table
+	private final boolean linkify;
 	private final ExportMappingInfo mapInfo;
 
 	private boolean advancedSearch; //include in advanced search
@@ -127,7 +128,9 @@ public class WebPortalFieldDef
 			this.treeId = null;
 			this.treeRank = null;
 		}
-	}
+        this.linkify = ("java.lang.String".equals(this.type) || "text".equals(this.type)) && !this.solrType.startsWith("p");
+
+    }
 
 	/**
 	 * @param val
@@ -237,7 +240,10 @@ public class WebPortalFieldDef
 		return solrName;
 	}
 
-	
+	public boolean getLinkify() {
+		return linkify;
+	}
+
 	/**
 	 * @return the solrType
 	 */
