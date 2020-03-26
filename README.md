@@ -51,12 +51,12 @@ All build outputs will be found in the `build/` directory except for
 
 ## Packaging Specify 6
 
-Packaging Specify 6 requires **Install4J  v7.0** (evaluation or
+Packaging Specify 6 requires **Install4J  v8.0** (evaluation or
 licensed).
 
 The path to Install4J must be provided to the Ant
 build through the `-Dinstall4j.dir=/path/to/install4j` parameter unless
-Install4J is at the default location `$HOME/install4j7.0.7`.
+Install4J is at the default location `$HOME/install4j8.0.4`.
 
 The following Ant build targets are available for packaging:
 
