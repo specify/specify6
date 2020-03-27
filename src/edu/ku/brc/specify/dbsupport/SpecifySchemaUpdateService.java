@@ -2509,7 +2509,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     frame.incOverall();
 
                     frame.setDesc("Increasing length of TreatmentEvent.type");
-                    sql = "alter table treatmentevent modify column `type` varchar(128)";
+                    sql = "alter table treatmentevent modify column `Type` varchar(128)";
                     if (-1 == update(conn, sql)) {
                         errMsgList.add("update error: " + sql);
                         return false;
@@ -2517,7 +2517,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     frame.incOverall();
 
                     frame.setDesc("Increasing length of Geography.Name");
-                    sql = "alter table geography modify column `name` varchar(128)";
+                    sql = "alter table geography modify column `Name` varchar(128)";
                     if (-1 == update(conn, sql)) {
                         errMsgList.add("update error: " + sql);
                         return false;
@@ -2525,7 +2525,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     frame.incOverall();
 
                     frame.setDesc("Increasing length of Geography.FullName");
-                    sql = "alter table geography modify column `fullname` varchar(500)";
+                    sql = "alter table geography modify column `FullName` varchar(500)";
                     if (-1 == update(conn, sql)) {
                         errMsgList.add("update error: " + sql);
                         return false;
@@ -2533,7 +2533,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     frame.incOverall();
 
                     frame.setDesc("Increasing length of Agent.LastName");
-                    sql = "alter table agent modify column `lastname` varchar(256)";
+                    sql = "alter table agent modify column `LastName` varchar(256)";
                     if (-1 == update(conn, sql)) {
                         errMsgList.add("update error: " + sql);
                         return false;
