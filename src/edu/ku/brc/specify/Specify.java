@@ -2148,6 +2148,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         
         // for some strange reason I can't get the dialog to size itself correctly
         Dimension size = aboutDlg.getSize();
+        size.height += 180;
         aboutDlg.setSize(size);
         
         txtPane.addHyperlinkListener(new HyperlinkListener() {

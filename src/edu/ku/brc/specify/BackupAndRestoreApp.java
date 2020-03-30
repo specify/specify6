@@ -348,7 +348,7 @@ public class BackupAndRestoreApp extends JPanel implements DatabaseLoginListener
         aboutDlg.pack();
         // for some strange reason I can't get the dialog to size itself correctly
         Dimension size = aboutDlg.getSize();
-        size.height += 160;
+        size.height += 180;
         aboutDlg.setSize(size);
         UIHelper.centerAndShow(aboutDlg);
     }
