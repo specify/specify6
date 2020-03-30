@@ -42,6 +42,8 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.swing.ImageIcon;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.LazyInitializationException;
@@ -499,7 +501,7 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
     {
         setCardImage(new File(imgFilePath));
     }
-    
+
     /**
      * @param imageFile
      * @return
@@ -540,7 +542,8 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
 
 			if (scale) 
 			{
-				imgBytes = GraphicsUtils.scaleImage("jpeg", bytes, this.maxHeight,
+				String ext = FilenameUtils.getExtension(imageFile.getName());
+			    imgBytes = GraphicsUtils.scaleImage(ext, bytes, this.maxHeight,
 						this.maxWidth, true, false);
 			} else 
 			{

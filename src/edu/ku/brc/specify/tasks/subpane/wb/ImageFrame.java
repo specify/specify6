@@ -1012,7 +1012,7 @@ public class ImageFrame extends JFrame implements PropertyChangeListener
             byte[] origData = GraphicsUtils.readImage(orig);
             if (origData != null)
             {
-                byte[] thumbData = thumbnailer.generateThumbnail("jpeg", origData, true);
+                byte[] thumbData = thumbnailer.generateThumbnail(FilenameUtils.getExtension(orig.getName()), origData, true);
                 return new ImageIcon(thumbData);
             }
         }
