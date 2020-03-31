@@ -742,8 +742,8 @@ public class QueryFieldPanel extends JPanel implements ActionListener
         				operatorCBX.setSelectedIndex(0);
         			}
         			setCriteriaText(queryField.getStartValue(), queryField.getEndValue(), (OperatorType )operatorCBX.getSelectedItem());
-        			sortCheckbox.setState(queryField.getSortType());
         			sortCheckbox.setEnabled(queryField.getIsDisplay());
+                    sortCheckbox.setState(sortCheckbox.isEnabled() ? queryField.getSortType() : SpQueryField.SORT_NONE);
         			if (!ownerQuery.isPromptMode())
         			{
         				isDisplayedCkbx.setSelected(queryField.getIsDisplay());
@@ -1891,7 +1891,12 @@ public class QueryFieldPanel extends JPanel implements ActionListener
 						@Override
 						public void run()
 						{
-							sortCheckbox.setEnabled(isDisplayedCkbx.isSelected());
+							if (!isDisplayedCkbx.isSelected()) {
+                                sortCheckbox.setEnabled(false);
+                                sortCheckbox.setState(SpQueryField.SORT_NONE);
+                            } else {
+							    sortCheckbox.setEnabled(true);
+                            }
 							ownerQuery.changeNotification(QueryFieldPanel.this);
                             if (!isDisplayedCkbx.isSelected()) {
                                 schemaItemCBX.setSelectedIndex(0);
