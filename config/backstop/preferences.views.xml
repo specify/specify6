@@ -482,7 +482,7 @@
                 </row>
                 <row>
                     <cell type="label" id="audit_lifespan_lbl" labelfor="AUDIT_LIFESPAN_MONTHS" label="AUDIT_LIFESPAN_MONTHS"/>
-                    <cell type="field" id="AUDIT_LIFESPAN_MONTHS" name="AUDIT_LIFESPAN_MONTHS" uitype="spinner" ignore="true" initialize="max=60;min=0"/>
+                    <cell type="field" id="AUDIT_LIFESPAN_MONTHS" name="AUDIT_LIFESPAN_MONTHS" uitype="spinner" ignore="true" initialize="max=120;min=0"/>
                 </row>
             </rows>
 
