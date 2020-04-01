@@ -1910,7 +1910,7 @@ public class TaxonAttribute extends DataModelObjBase implements Cloneable {
     }
 
     @Lob
-    @Column(name = "Remarks", length = 4096)
+    @Column(name = "Remarks", length = 65535)
     public String getRemarks() {
         return remarks;
     }
