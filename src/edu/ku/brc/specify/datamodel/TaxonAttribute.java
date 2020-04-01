@@ -177,8 +177,14 @@ public class TaxonAttribute extends DataModelObjBase implements Cloneable {
     protected Float number16;
     protected Float number17;
     protected Float number18;
-    protected Integer number19;
-    protected Integer number20;
+    protected Float number19;
+    protected Float number20;
+
+    protected Integer integer1;
+    protected Integer integer2;
+    protected Integer integer3;
+    protected Integer integer4;
+    protected Integer integer5;
 
     protected Agent agent1;
     protected Calendar date1;
@@ -373,6 +379,12 @@ public class TaxonAttribute extends DataModelObjBase implements Cloneable {
         number18 = null;
         number19 = null;
         number20 = null;
+
+        integer1 = null;
+        integer2 = null;
+        integer3 = null;
+        integer4 = null;
+        integer5 = null;
 
         agent1 = null;
         date1 = null;
@@ -652,7 +664,7 @@ public class TaxonAttribute extends DataModelObjBase implements Cloneable {
         this.text26 = text26;
     }
 
-    @Column(name = "Text27", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    @Column(name = "Text27", unique = false, nullable = true, insertable = true, updatable = true, length = 256)
     public String getText27() {
         return text27;
     }
@@ -661,7 +673,7 @@ public class TaxonAttribute extends DataModelObjBase implements Cloneable {
         this.text27 = text27;
     }
 
-    @Column(name = "Text28", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    @Column(name = "Text28", unique = false, nullable = true, insertable = true, updatable = true, length = 256)
     public String getText28() {
         return text28;
     }
@@ -670,7 +682,7 @@ public class TaxonAttribute extends DataModelObjBase implements Cloneable {
         this.text28 = text28;
     }
 
-    @Column(name = "Text29", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    @Column(name = "Text29", unique = false, nullable = true, insertable = true, updatable = true, length = 256)
     public String getText29() {
         return text29;
     }
@@ -679,7 +691,7 @@ public class TaxonAttribute extends DataModelObjBase implements Cloneable {
         this.text29 = text29;
     }
 
-    @Column(name = "Text30", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    @Column(name = "Text30", unique = false, nullable = true, insertable = true, updatable = true, length = 256)
     public String getText30() {
         return text30;
     }
@@ -688,7 +700,7 @@ public class TaxonAttribute extends DataModelObjBase implements Cloneable {
         this.text30 = text30;
     }
 
-    @Column(name = "Text31", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    @Column(name = "Text31", unique = false, nullable = true, insertable = true, updatable = true, length = 256)
     public String getText31() {
         return text31;
     }
@@ -697,7 +709,7 @@ public class TaxonAttribute extends DataModelObjBase implements Cloneable {
         this.text31 = text31;
     }
 
-    @Column(name = "Text32", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    @Column(name = "Text32", unique = false, nullable = true, insertable = true, updatable = true, length = 256)
     public String getText32() {
         return text32;
     }
@@ -706,7 +718,7 @@ public class TaxonAttribute extends DataModelObjBase implements Cloneable {
         this.text32 = text32;
     }
 
-    @Column(name = "Text33", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    @Column(name = "Text33", unique = false, nullable = true, insertable = true, updatable = true, length = 256)
     public String getText33() {
         return text33;
     }
@@ -715,7 +727,7 @@ public class TaxonAttribute extends DataModelObjBase implements Cloneable {
         this.text33 = text33;
     }
 
-    @Column(name = "Text34", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    @Column(name = "Text34", unique = false, nullable = true, insertable = true, updatable = true, length = 256)
     public String getText34() {
         return text34;
     }
@@ -724,7 +736,7 @@ public class TaxonAttribute extends DataModelObjBase implements Cloneable {
         this.text34 = text34;
     }
 
-    @Column(name = "Text35", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    @Column(name = "Text35", unique = false, nullable = true, insertable = true, updatable = true, length = 256)
     public String getText35() {
         return text35;
     }
@@ -733,7 +745,7 @@ public class TaxonAttribute extends DataModelObjBase implements Cloneable {
         this.text35 = text35;
     }
 
-    @Column(name = "Text36", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    @Column(name = "Text36", unique = false, nullable = true, insertable = true, updatable = true, length = 256)
     public String getText36() {
         return text36;
     }
@@ -742,7 +754,7 @@ public class TaxonAttribute extends DataModelObjBase implements Cloneable {
         this.text36 = text36;
     }
 
-    @Column(name = "Text37", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    @Column(name = "Text37", unique = false, nullable = true, insertable = true, updatable = true, length = 256)
     public String getText37() {
         return text37;
     }
@@ -751,7 +763,7 @@ public class TaxonAttribute extends DataModelObjBase implements Cloneable {
         this.text37 = text37;
     }
 
-    @Column(name = "Text38", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    @Column(name = "Text38", unique = false, nullable = true, insertable = true, updatable = true, length = 256)
     public String getText38() {
         return text38;
     }
@@ -760,7 +772,7 @@ public class TaxonAttribute extends DataModelObjBase implements Cloneable {
         this.text38 = text38;
     }
 
-    @Column(name = "Text39", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    @Column(name = "Text39", unique = false, nullable = true, insertable = true, updatable = true, length = 256)
     public String getText39() {
         return text39;
     }
@@ -769,7 +781,7 @@ public class TaxonAttribute extends DataModelObjBase implements Cloneable {
         this.text39 = text39;
     }
 
-    @Column(name = "Text40", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    @Column(name = "Text40", unique = false, nullable = true, insertable = true, updatable = true, length = 256)
     public String getText40() {
         return text40;
     }
@@ -778,7 +790,7 @@ public class TaxonAttribute extends DataModelObjBase implements Cloneable {
         this.text40 = text40;
     }
 
-    @Column(name = "Text41", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    @Column(name = "Text41", unique = false, nullable = true, insertable = true, updatable = true, length = 256)
     public String getText41() {
         return text41;
     }
@@ -787,7 +799,7 @@ public class TaxonAttribute extends DataModelObjBase implements Cloneable {
         this.text41 = text41;
     }
 
-    @Column(name = "Text42", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    @Column(name = "Text42", unique = false, nullable = true, insertable = true, updatable = true, length = 256)
     public String getText42() {
         return text42;
     }
@@ -796,7 +808,7 @@ public class TaxonAttribute extends DataModelObjBase implements Cloneable {
         this.text42 = text42;
     }
 
-    @Column(name = "Text43", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    @Column(name = "Text43", unique = false, nullable = true, insertable = true, updatable = true, length = 256)
     public String getText43() {
         return text43;
     }
@@ -805,7 +817,7 @@ public class TaxonAttribute extends DataModelObjBase implements Cloneable {
         this.text43 = text43;
     }
 
-    @Column(name = "Text44", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    @Column(name = "Text44", unique = false, nullable = true, insertable = true, updatable = true, length = 256)
     public String getText44() {
         return text44;
     }
@@ -814,7 +826,7 @@ public class TaxonAttribute extends DataModelObjBase implements Cloneable {
         this.text44 = text44;
     }
 
-    @Column(name = "Text45", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    @Column(name = "Text45", unique = false, nullable = true, insertable = true, updatable = true, length = 256)
     public String getText45() {
         return text45;
     }
@@ -823,7 +835,7 @@ public class TaxonAttribute extends DataModelObjBase implements Cloneable {
         this.text45 = text45;
     }
 
-    @Column(name = "Text46", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    @Column(name = "Text46", unique = false, nullable = true, insertable = true, updatable = true, length = 256)
     public String getText46() {
         return text46;
     }
@@ -832,7 +844,7 @@ public class TaxonAttribute extends DataModelObjBase implements Cloneable {
         this.text46 = text46;
     }
 
-    @Column(name = "Text47", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    @Column(name = "Text47", unique = false, nullable = true, insertable = true, updatable = true, length = 256)
     public String getText47() {
         return text47;
     }
@@ -841,7 +853,7 @@ public class TaxonAttribute extends DataModelObjBase implements Cloneable {
         this.text47 = text47;
     }
 
-    @Column(name = "Text48", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    @Column(name = "Text48", unique = false, nullable = true, insertable = true, updatable = true, length = 256)
     public String getText48() {
         return text48;
     }
@@ -850,7 +862,8 @@ public class TaxonAttribute extends DataModelObjBase implements Cloneable {
         this.text48 = text48;
     }
 
-    @Column(name = "Text49", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    @Lob
+    @Column(name = "Text49", unique = false, nullable = true, insertable = true, updatable = true, length = 65535)
     public String getText49() {
         return text49;
     }
@@ -859,7 +872,8 @@ public class TaxonAttribute extends DataModelObjBase implements Cloneable {
         this.text49 = text49;
     }
 
-    @Column(name = "Text50", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    @Lob
+    @Column(name = "Text50", unique = false, nullable = true, insertable = true, updatable = true, length = 65535)
     public String getText50() {
         return text50;
     }
@@ -868,7 +882,8 @@ public class TaxonAttribute extends DataModelObjBase implements Cloneable {
         this.text50 = text50;
     }
 
-    @Column(name = "Text51", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    @Lob
+    @Column(name = "Text51", unique = false, nullable = true, insertable = true, updatable = true, length = 65535)
     public String getText51() {
         return text51;
     }
@@ -877,7 +892,8 @@ public class TaxonAttribute extends DataModelObjBase implements Cloneable {
         this.text51 = text51;
     }
 
-    @Column(name = "Text52", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    @Lob
+    @Column(name = "Text52", unique = false, nullable = true, insertable = true, updatable = true, length = 65535)
     public String getText52() {
         return text52;
     }
@@ -886,7 +902,8 @@ public class TaxonAttribute extends DataModelObjBase implements Cloneable {
         this.text52 = text52;
     }
 
-    @Column(name = "Text53", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    @Lob
+    @Column(name = "Text53", unique = false, nullable = true, insertable = true, updatable = true, length = 65535)
     public String getText53() {
         return text53;
     }
@@ -895,7 +912,8 @@ public class TaxonAttribute extends DataModelObjBase implements Cloneable {
         this.text53 = text53;
     }
 
-    @Column(name = "Text54", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    @Lob
+    @Column(name = "Text54", unique = false, nullable = true, insertable = true, updatable = true, length = 65535)
     public String getText54() {
         return text54;
     }
@@ -904,7 +922,8 @@ public class TaxonAttribute extends DataModelObjBase implements Cloneable {
         this.text54 = text54;
     }
 
-    @Column(name = "Text55", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    @Lob
+    @Column(name = "Text55", unique = false, nullable = true, insertable = true, updatable = true, length = 65535)
     public String getText55() {
         return text55;
     }
@@ -913,7 +932,8 @@ public class TaxonAttribute extends DataModelObjBase implements Cloneable {
         this.text55 = text55;
     }
 
-    @Column(name = "Text56", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    @Lob
+    @Column(name = "Text56", unique = false, nullable = true, insertable = true, updatable = true, length = 65535)
     public String getText56() {
         return text56;
     }
@@ -922,7 +942,8 @@ public class TaxonAttribute extends DataModelObjBase implements Cloneable {
         this.text56 = text56;
     }
 
-    @Column(name = "Text57", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    @Lob
+    @Column(name = "Text57", unique = false, nullable = true, insertable = true, updatable = true, length = 65535)
     public String getText57() {
         return text57;
     }
@@ -931,7 +952,8 @@ public class TaxonAttribute extends DataModelObjBase implements Cloneable {
         this.text57 = text57;
     }
 
-    @Column(name = "Text58", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    @Lob
+    @Column(name = "Text58", unique = false, nullable = true, insertable = true, updatable = true, length = 65535)
     public String getText58() {
         return text58;
     }
@@ -1841,20 +1863,20 @@ public class TaxonAttribute extends DataModelObjBase implements Cloneable {
     }
 
     @Column(name = "Number19", unique = false, nullable = true, insertable = true, updatable = true)
-    public Integer getNumber19() {
+    public Float getNumber19() {
         return number19;
     }
 
-    public void setNumber19(Integer number19) {
+    public void setNumber19(Float number19) {
         this.number19 = number19;
     }
 
     @Column(name = "Number20", unique = false, nullable = true, insertable = true, updatable = true)
-    public Integer getNumber20() {
+    public Float getNumber20() {
         return number20;
     }
 
-    public void setNumber20(Integer number20) {
+    public void setNumber20(Float number20) {
         this.number20 = number20;
     }
 
