@@ -4956,7 +4956,7 @@ public class UploadTable implements Comparable<UploadTable>
     		return true;
     	}
     	
-    	if (seq == 0 && parentTableIsNonBlank(row, uploadData, true, seq))
+    	if (parentTableIsNonBlank(row, uploadData, true, seq))
     	{
     		return true;
     	}
