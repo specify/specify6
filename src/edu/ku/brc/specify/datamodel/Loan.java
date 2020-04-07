@@ -723,6 +723,16 @@ public class Loan extends DisciplineMember implements AttachmentOwnerIFace<LoanA
         return countContents(true, true);
     }
 
+    @Transient
+    public Integer getResolvedItems() {
+        return getTotalItems() - getUnresolvedItems();
+    }
+
+    @Transient
+    public Integer getResolvedQuantities() {
+        return getTotalQuantities() - getUnresolvedQuantities();
+    }
+
     protected Integer countContents(Boolean countQuantity, Boolean countUnresolved) {
         String select = countQuantity ? " sum(quantity" + (countUnresolved ? "-ifnull(quantityresolved,0)" : "") + ")"
                 : " count(*) ";
