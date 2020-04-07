@@ -734,8 +734,12 @@ public class Loan extends DisciplineMember implements AttachmentOwnerIFace<LoanA
     }
 
     protected Integer countContents(Boolean countQuantity, Boolean countUnresolved) {
+        if (getId() == null) {
+            return null;
+        }
         String select = countQuantity ? " sum(quantity" + (countUnresolved ? "-ifnull(quantityresolved,0)" : "") + ")"
                 : " count(*) ";
+
         String sql = "select " + select + " from loanpreparation where loanid = " + getId();
         if (countUnresolved) {
             sql += " and (not isresolved";

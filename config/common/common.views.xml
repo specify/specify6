@@ -4318,13 +4318,13 @@
                 </row>
                 <row>
                     <cell type="label" label="Total Items:" initialize="align=right"/>
-                    <cell type="field" id="ti" name="totalItems" uitype="spinner" readonly="true"/>
+                    <cell type="field" id="ti" name="totalItems" uitype="text" readonly="true"/>
                     <cell type="label" label="Total Quantities:" initialize="align=right"/>
-                    <cell type="field" id="tq" name="totalQuantities" uitype="spinner" readonly="true"/>
+                    <cell type="field" id="tq" name="totalQuantities" uitype="text" readonly="true"/>
                     <cell type="label" label="Unresolved Items:" initialize="align=right"/>
-                    <cell type="field" id="ui" name="unresolvedItems" uitype="spinner" readonly="true"/>
+                    <cell type="field" id="ui" name="unresolvedItems" uitype="text" readonly="true"/>
                     <cell type="label" label="Unresolved Quantities:" initialize="align=right"/>
-                    <cell type="field" id="uq" name="unresolvedQuantities" uitype="spinner" readonly="true"/>
+                    <cell type="field" id="uq" name="unresolvedQuantities" uitype="text" readonly="true"/>
                 </row>
                 <row>
                      <cell type="label" labelfor="5"/>
