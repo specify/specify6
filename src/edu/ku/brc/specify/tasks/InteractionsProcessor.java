@@ -24,6 +24,7 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -31,6 +32,7 @@ import java.util.Vector;
 
 import javax.swing.JOptionPane;
 
+import edu.ku.brc.dbsupport.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -40,10 +42,6 @@ import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.tasks.BaseTask.ASK_TYPE;
 import edu.ku.brc.af.ui.forms.Viewable;
-import edu.ku.brc.dbsupport.DataProviderFactory;
-import edu.ku.brc.dbsupport.DataProviderSessionIFace;
-import edu.ku.brc.dbsupport.RecordSetIFace;
-import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.CollectionObject;
@@ -515,6 +513,24 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
             return sql;
         }
 
+        /**
+         * 
+         * @return
+         */
+        protected java.sql.Connection getConnForAvailableCounts() {
+            Connection result = DBConnection.getInstance().createConnection();
+            int updated = BasicSQLUtils.update(result, "set sql_mode = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION'");
+            if (updated < 0) {
+                log.warn("error setting sql_mode");
+            }
+            return result;
+        }
+
+        /**
+         *
+         * @param collectionObjectIds
+         * @return
+         */
         protected List<Object[]> getAvailableCounts(List<String> collectionObjectIds) {
             String sql = "select p.collectionobjectid, p.preparationid, coalesce(p.CountAmt,0), pt.Name, pt.PrepTypeID, avail.available from preparation p";
             //assuming there aren't 10s of 1000s of items in collectionObjectIds
@@ -527,7 +543,13 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
             if (isFor == forLoan) {
                 sql += " where pt.isloanable";
             }
-            List<Object[]> rows = BasicSQLUtils.query(sql);
+            Connection conn = getConnForAvailableCounts();
+            List<Object[]> rows = BasicSQLUtils.query(conn, sql);
+            try {
+                conn.close();
+            } catch (Exception x) {
+                log.error(x);
+            }
             return rows;
         }
 

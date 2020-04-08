@@ -775,7 +775,7 @@ public class BasicSQLUtils
                 {
                     return list;
                 }
-    
+
                 tries++;
                 stmt = connection.createStatement();
                 ResultSet         rs       = stmt.executeQuery(sql);
@@ -812,6 +812,7 @@ public class BasicSQLUtils
             } catch (com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException e)
             {
                 e.printStackTrace();
+                log.error(e);
                 if (!skipTrackExceptions)
                 {
                     edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
@@ -821,7 +822,7 @@ public class BasicSQLUtils
             } catch (SQLException ex)
             {
                 ex.printStackTrace();
-                
+                log.error(ex);
                 if (!skipTrackExceptions)
                 {
                     edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
