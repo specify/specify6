@@ -819,7 +819,7 @@ public class BasicSQLUtils
                     edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BasicSQLUtils.class, e);
                 }
 
-            } catch (SQLException ex)
+            } catch (Exception ex)
             {
                 ex.printStackTrace();
                 log.error(ex);

@@ -484,7 +484,7 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
                     "INNER JOIN taxon as tx ON dt.TaxonID = tx.TaxonID WHERE isCurrent <> 0 AND dt.CollectionMemberID = COLMEMID " +
                     "AND co.CollectionObjectID " + DBTableIdMgr.getInstance().getInClause(recordSet);
             sql = QueryAdjusterForDomain.getInstance().adjustSQL(sql);
-            log.debug(sql);
+            log.debug("-------------- " + sql);
 
             Vector<Object[]> fullItems = BasicSQLUtils.query(sql);
             if (fullItems.size() != recordSet.getNumItems())
@@ -493,8 +493,10 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
                         "AND CollectionObjectID " + DBTableIdMgr.getInstance().getInClause(recordSet);
                 Vector<Object[]> partialItems = BasicSQLUtils.query(QueryAdjusterForDomain.getInstance().adjustSQL(sql));
                 partialItems.addAll(fullItems);
+                log.debug("-------------- " + "partialItems: " + partialItems.size());
                 return partialItems;
             }
+            log.debug("-------------- " + "fullItems: " + fullItems.size());
             return fullItems;
         }
 
@@ -514,15 +516,19 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
         }
 
         /**
-         * 
+         *
          * @return
          */
         protected java.sql.Connection getConnForAvailableCounts() {
+            String sqlMode = BasicSQLUtils.querySingleObj("select @@sql_mode");
+            log.debug("-------------- " + sqlMode);
             Connection result = DBConnection.getInstance().createConnection();
             int updated = BasicSQLUtils.update(result, "set sql_mode = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION'");
             if (updated < 0) {
                 log.warn("error setting sql_mode");
             }
+            sqlMode = BasicSQLUtils.querySingleObj(result,"select @@sql_mode");
+            log.debug("-------------- " + sqlMode);
             return result;
         }
 
@@ -544,12 +550,14 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
                 sql += " where pt.isloanable";
             }
             Connection conn = getConnForAvailableCounts();
+            log.debug("-------------- " + sql);
             List<Object[]> rows = BasicSQLUtils.query(conn, sql);
             try {
                 conn.close();
             } catch (Exception x) {
                 log.error(x);
             }
+            log.debug("--------------rows: " + rows.size());
             return rows;
         }
 
