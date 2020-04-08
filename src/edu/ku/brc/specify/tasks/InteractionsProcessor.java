@@ -343,7 +343,6 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
      * @param prepTypeHash
      * @param prepProvider
      * @param infoRequest
-     * @param session
      */
     protected void prepsLoaded(final Hashtable<Integer, ColObjInfo> coToPrepHash,
                                final Hashtable<Integer, String>     prepTypeHash,
@@ -493,10 +492,10 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
                         "AND CollectionObjectID " + DBTableIdMgr.getInstance().getInClause(recordSet);
                 Vector<Object[]> partialItems = BasicSQLUtils.query(QueryAdjusterForDomain.getInstance().adjustSQL(sql));
                 partialItems.addAll(fullItems);
-                log.debug("-------------- " + "partialItems: " + partialItems.size());
+                //log.debug("-------------- " + "partialItems: " + partialItems.size());
                 return partialItems;
             }
-            log.debug("-------------- " + "fullItems: " + fullItems.size());
+            //log.debug("-------------- " + "fullItems: " + fullItems.size());
             return fullItems;
         }
 
@@ -549,14 +548,14 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
             if (isFor == forLoan) {
                 sql += " where pt.isloanable";
             }
-            Connection conn = getConnForAvailableCounts();
+            //Connection conn = getConnForAvailableCounts();
             log.debug("-------------- " + sql);
-            List<Object[]> rows = BasicSQLUtils.query(conn, sql);
-            try {
-                conn.close();
-            } catch (Exception x) {
-                log.error(x);
-            }
+            List<Object[]> rows = BasicSQLUtils.query(sql);
+//            try {
+//                conn.close();
+//            } catch (Exception x) {
+//                log.error(x);
+//            }
             log.debug("--------------rows: " + rows.size());
             return rows;
         }
@@ -570,7 +569,7 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
                 if (rows.size() > 0) {
                     for (Object[] row : rows) {
                         int prepId = (Integer) row[1];
-                        int prepQty = (Integer) row[2];
+                        int prepQty = Integer.valueOf(row[2].toString());
                         String prepType = (String) row[3];
                         int prepTypeId = (Integer) row[4];
                         int coId = (Integer) row[0];
