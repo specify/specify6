@@ -7,7 +7,7 @@
 
 <helenProject version="1.0">
     <documents>
-		<directory title="C:/Users/n962s382/Documents/SpecifyInHelen">
+		<directory title="/Users/rods/Documents/Norine/SpecifyInHelen">
 			<directory title=".settings">
 				<file title="org.eclipse.jdt.core.prefs"/>
 			</directory>
@@ -702,7 +702,6 @@
 					<file title="permissions.html"/>
 					<file title="Security_Wizard.html"/>
 					<file title="Wizard.html"/>
-					<file title="Wizard_EZDB.html"/>
 				</directory>
 				<directory title="Simple_Search">
 					<file title="Simple_Search.html"/>
@@ -750,7 +749,6 @@
 					<file title="Reports.html"/>
 					<file title="ReuseDataSet.html"/>
 					<file title="SpecialTools.html"/>
-					<file title="TechnicalNotes.html"/>
 					<file title="top10.html"/>
 					<file title="WorkingWithImages.html"/>
 				</directory>

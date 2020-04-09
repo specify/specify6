@@ -31,15 +31,15 @@
       "../images/batch_editing_32x32.png">Batch Editor
     </h2>
     <p>
-       NEW in the 6.7 release of the Specify desktop application, we offer the ability to edit a
-      'batch' of data using an interface very similar to the WorkBench. Batch Editing is a powerful
-      method to improve data quality -- it can potentially change thousands of data records with
-      just a few mouse clicks. Once edits are made and confirmed, changes will be permanent and
-      they cannot be rolled back. We enthusiastically recommend you take the following precautions:
+       NEW in the 6 offers the ability to edit a 'batch' of data using an interface very similar to
+      the Specify WorkBench. Batch Editing is a powerful method to improve data quality -- it can
+      potentially change thousands of data records with just a few mouse clicks. Once edits are
+      made and confirmed, changes will be permanent and they cannot be rolled back. We
+      enthusiastically recommend you take the following precautions before a Batch Edit session:
     </p>
     <ol>
       <li>
-        Make a backup of your data before using the Batch Editor.
+        Make a fresh, full backup of your database.
       </li>
       <li>
         Ensure that you understand the relationships represented by the fields and tables you wish
@@ -57,7 +57,7 @@
       </li>
       <li>
         It is best, when possible, not to edit multiple fields from multiple tables during a single
-        Batch Editing session, but to limit the edits to fields in a single table.
+        Batch Editing session, but to limit the edits to fields within in a single table.
       </li>
     </ol>
     <p>
@@ -65,10 +65,10 @@
     </p>
     <ul>
       <li>
-        There is a limit of 7000 records that can be edited at one time. If you wish to edit more
-        data you will need to split your data into batches of 7000 and edit each batch
-        individually. It may be useful to first split your data into saved Record Sets prior to
-        starting the batch edit process.
+        Only 7000 records that can be edited at one time. If you wish to edit more data you will
+        need to split your data into batches of 7000 and edit each batch seperately. It may be
+        useful to first split your data into saved Record Sets prior to starting the Batch Edit
+        process.
       </li>
       <li>
         Batch editing is only available to users with an&nbsp;<em>Admin, Manager,</em> or <i>Full
@@ -95,20 +95,22 @@
         chance,&nbsp;other users are also accessing and editing the same data records, this can
         result in&nbsp;a different version of data in the database when your Batch Editing session
         is attempting to validate them. In this instance Specify will not commit the change and
-        will alert you to this action in a status dialog.
+        will alert you to this action in a dialog window.
       </li>
       <li>
         When more than one collection resides in a single database changes made in any of the
         shared tables will affect other collections. For instance, Locality information is shared
-        at the Discipline level; therefore, changes made to Locality records in one collection are
-        reflected in all other collections within the same Discipline in the database.
+        at the Discipline level; therefore, changes made to Locality records used in more than one
+        collection and changed in a single collection will reflected in all other collections
+        within the same Discipline in the database.
       </li>
     </ul>
     <p>
-       The following documentation for the Batch Editor is meant only as a basic overview. To
-      better explain the changes that will be made to records in related tables&nbsp;when using the
-      Batch Editing tool the Project has&nbsp;created a video which demonstrates these changes
-      using real workflows. That video can be found on our website:<a href=
+       The following documentation for the Batch Editor is intended as a basic overview. To better
+      explain the changes that will be made to records in related tables&nbsp;when using the Batch
+      Editing tool the Project has&nbsp;created a video which demonstrates these changes using real
+      workflows. That video can be found on the Specify Collections Consortium&nbsp;website:<a
+      href=
       "http://www.sustain.specifysoftware.org/support/helpcasts/">&nbsp;sustain.specifysoftware.org/support/helpcasts</a>
     </p>
     <p>
@@ -263,7 +265,7 @@
       categories. The adjacent triangles can be used to find the next affected data field.
     </p>
     <p>
-       <em><strong>Note:</strong></em> Changes made in the Batch Editor can not be applied when
+       <em><strong>Note:</strong></em> Changes made in the Batch Editor cannot be applied when
       invalid data are entered.
     </p>
     <p>

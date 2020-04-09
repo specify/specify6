@@ -1,4 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
   <head>
     <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
@@ -137,15 +137,15 @@ table.box {
          <u><a id="container" name="container"></a>Containers</u>
       </h4>
       <p>
-         New in Specify 6.3! Containers allow collection objects to be permanently 'grouped'
-        together. Containers can be substrates or physical containment objects within a collection.
-        For example, a microscope slide upon which one or more algal specimens (collection objects)
-        are mounted can now be assigned a catalog number and be linked to the algal collection
-        object records. Containers can hold specimens or other containers. A lichen specimen on the
-        bark of a wood sample, might need to be cataloged as a collection object, with the piece of
-        wood cataloged as a Container. A Container might also be a box of specimens (Collection
-        Objects) that needs to be cataloged as a traceable collection artifact. A container must be
-        linked to a collection object to be cataloged in a collection.
+         Containers allow collection objects to be permanently 'grouped' together. Containers can
+        be substrates or physical containment objects within a collection. For example, a
+        microscope slide upon which one or more algal specimens (collection objects) are mounted
+        can now be assigned a catalog number and be linked to the algal collection object records.
+        Containers can hold specimens or other containers. A lichen specimen on the bark of a wood
+        sample, might need to be cataloged as a collection object, with the piece of wood cataloged
+        as a Container. A Container might also be a box of specimens (Collection Objects) that
+        needs to be cataloged as a traceable collection artifact. A container must be linked to a
+        collection object to be cataloged in a collection.
       </p>
       <p>
          Containers can be either physical or logical. The above examples are all physical
@@ -191,7 +191,7 @@ table.box {
          Containers are created using a container form or a collection object form. The collection
         object form must be edited to include the container controls before containers can be
         created or associated through it. Members of the Specify Collections Consortium may contact
-        our help desk at <b>support@specifysoftware.org</b> for&nbsp;additional informatino or help
+        the help desk at <b>support@specifysoftware.org</b> for&nbsp;additional information or help
         editing their forms.
       </p>
       <p align="center">
@@ -745,7 +745,7 @@ table.box {
     </blockquote>
     <ul>
       <li>
-        Latitude North or Logitude West
+        Latitude North or Longitude West
       </li>
       <li>
         Point, Line or Triangle
@@ -763,15 +763,11 @@ table.box {
       </p>
       <blockquote>
         <p>
-           The GEOLocate project has created software and services for translating textual locality
+           The GEOLocate Project has created software and services for translating textual locality
           descriptions associated with biodiversity collections data into geographic coordinates.
           It uses a description of a Locality and geography fields, such as County, State and
           Country, to find Latitude and Longitude coordinate values. This is referred to as
-          georeferencing.
-        </p>
-        <p>
-           The Specify and GEOLocate teams have collaborated to create a GEOLocate module inside
-          Specify. In Specify 6.4 and newer GEOLocate has been upgraded to plugin version 2.0.
+          georeferencing. GEOLocate is a web services-based plugin in Specify.
         </p>
         <h4>
            Requirements for Georeferencing US localities:
@@ -1291,7 +1287,7 @@ table.box {
         </p>
         <p>
            More information about GEOLocate can be found at <a href=
-          "http://www.museum.tulane.edu/geolocate/">http://www.museum.tulane.edu/geolocate/</a>.
+          "https://www.geo-locate.org/./">https://www.geo-locate.org/.</a>.
         </p>
         <p>
            &nbsp;
@@ -1883,15 +1879,15 @@ table.box {
     </h3>
     <blockquote>
       <p>
-         New in Specify 6.5.05, paleo data table relationships have been revised and collections
-        can now link specimens to PaleoContext via the relationship which best fits their
-        conceptualization and linking preferences. Specify has the default relationship of Paleo
-        Context linked to the Collecting Event table as a 1-to-Many relationship, but this
-        relationship can be altered to a 1-to-1 relationship through manipulation of the form
-        structure. Paleo Context can, in much the same way, can also be linked to the Collection
-        Object and Locality tables with either a 1-to-Many or 1-to-1 relationship using a similar
-        form and database schema modification. The Paleo Context relationship is required to be the
-        same for each collection that resides in the same Discipline and database.&nbsp;
+         Paleo data table relationships can link specimens to PaleoContext via the relationship
+        which best fits their conceptualization and linking preferences. Specify has the default
+        relationship of Paleo Context linked to the Collecting Event table as a 1-to-Many
+        relationship, but this relationship can be altered to a 1-to-1 relationship through
+        manipulation of the form structure. Paleo Context can, in much the same way, can also be
+        linked to the Collection Object and Locality tables with either a 1-to-Many or 1-to-1
+        relationship using a similar form and database schema modification. The Paleo Context
+        relationship is required to be the same for each collection that resides in the same
+        Discipline and database.&nbsp;
       </p>
       <p>
          Collections using a 1-to-1 relationship require Paleo Context information to be entered
@@ -1921,14 +1917,10 @@ table.box {
     </h3>
     <blockquote>
       <p>
-         As of Specify 6.5, GUIDs are generated using a 128-bit Universally Unique Identifier, or
-        UUID (example: bf3066d2-c088-47c8-b279-e7941463a65f0). The Specify 6.5 update does not
-        overwrite any existing data in Specify's GUID fields.&nbsp;The update checks for data in
-        GUID fields and if it finds some in any record, it passes over the data table and no UUIDs
-        are assigned to it. However, new collection data records will be assigned UUID values in
-        all tables with GUID fields (except for Geography and Taxon) when they are created.
-        Collections which previously utilized Specify's GUID data fields for other purposes should
-        contact the Project for assistance to accommodate that data.<br>
+         GUIDs in Specify are generated using a 128-bit Universally Unique Identifier, or UUID
+        (example: bf3066d2-c088-47c8-b279-e7941463a65f0). Newly created collection data records
+        will be assigned UUID values in all tables with GUID fields (except for Geography and
+        Taxon) when they are created.
       </p>
       <p>
          Specify automatically creates GUIDs in the GUID field of the following tables:<br>
@@ -1973,15 +1965,14 @@ table.box {
       </ul>
       <blockquote>
         <p>
-           <strong>Note:</strong> GUID's are unique for each database instance; therefore,
-          institutions storing their collection data in more than one database will also acquire
-          unique GUID's for each database.
+           <strong>Note:</strong> GUID's are unique for each database instance; institutions
+          storing their collection data in more than one database will also acquire unique GUID's
+          for each database.
         </p>
       </blockquote>
       <p>
-         Using a GUID to identify information allows it to be shared and recognized globally. As
-        more biological information systems use GUID/UUID's it will become possible to instantly
-        recognize when globally exchanged information has been updated or duplicated.<br>
+         Using a GUID to identify information allows it to be shared and recognized as being unique
+        globally.<br>
       </p>
       <p>
         <br>

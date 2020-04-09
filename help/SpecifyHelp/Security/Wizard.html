@@ -1,4 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
@@ -33,18 +33,19 @@
        <img src="../../images/spwizard32.png" height="32" width="32">&nbsp;Specify Setup Wizard
     </h2>
     <p>
-       The Specify Setup Wizard is required to customize and create a Specify database in MySQL.
-      The Wizard walks you through the creation of a database including; the insertion of a schema
-      in MySQL, and the initialization of the Specify database structure. The Specify Wizard also
-      enables you to download authority files for Taxa (for some disciplines) and for Geography, as
-      starting points for building and customizing your taxon and geography data.
+       The Specify Setup Wizard is required to customize and create a Specify database in MySQL or
+      MariaDB. The Wizard walks you through the creation of a database including; the insertion of
+      a schema in MySQL or Maria DB, and the initialization of the Specify database structure. The
+      Specify Wizard also enables you to download authority files for Taxa (for some disciplines)
+      and for Geography, as starting points for building and customizing your taxon and geography
+      data.
     </p>
     <p>
-       Before running the Specify 6.5 Setup Wizard, MySQL must have been previously installed on
-      either the workstation on which Specify will be run, or on a shared network server computer
-      for access from two or more workstations. User accounts must also exist within MySQL with the
-      necessary permissions for Specify to communicate with MySQL. The creation of these accounts
-      varies depending on your Specify setup.
+       Before running the Specify 6.5 Setup Wizard, MySQL or MariaDB, must have been previously
+      installed on either the workstation on which Specify will be run, or on a shared network
+      server computer for access from two or more workstations. User accounts must also exist
+      within MySQL or MariaDB with the necessary permissions for Specify to communicate with the
+      data manager. The creation of these accounts varies depending on your Specify setup.
     </p>
     <p>
       <br>
@@ -597,8 +598,8 @@
               page.
             </p>
             <p align="left">
-               <strong>Accession Number</strong> (2009-AA-###) The year will appear automatically
-              in the first section (2009) of the format, and can be manually edited. The 'AA'
+               <strong>Accession Number</strong> (2020-AA-###) The year will appear automatically
+              in the first section (2020) of the format, and can be manually edited. The 'AA'
               section of the format is alphanumeric and accepts both characters <em>a</em> through
               <em>z</em> and numbers. The ### section of the format is a number that is
               automatically incremented when Auto Numbering is turned on in Specify and manually
@@ -606,8 +607,8 @@
               characters and three incremented numbers.
             </p>
             <p align="left">
-               <strong>AccessionNumberByYear</strong> (2009-AA-AAA) The year will appear
-              automatically in the first section (2009) of the format, and can also be manually
+               <strong>AccessionNumberByYear</strong> (2020-AA-AAA) The year will appear
+              automatically in the first section (2020) of the format, and can also be manually
               edited. The 'A' sections of the format are alphanumeric and accept both characters
               <em>a</em> through <em>z</em> and numbers. This format offers two alphanumeric
               sections, the first is two characters in length and the second is three characters in
@@ -1118,8 +1119,8 @@
             <br>
              
             <p>
-               <strong>CatalogNumber</strong> (2009-######) The year will appear automatically in
-              the first section (2009) of the format, and can also be manually edited inside
+               <strong>CatalogNumber</strong> (2020-######) The year will appear automatically in
+              the first section (2020) of the format, and can also be manually edited inside
               Specify. The '###' section of the format is a number that is six digits in length.
               This section can be automatically incremented when Auto Numbering is turned on in
               Specify or manually entered when Auto Numbering is turned off. These two sections are
@@ -1128,8 +1129,8 @@
             <br>
              
             <p>
-               <strong>CatalogNumberAlphaNumByYear</strong> (2009-######) The year will appear
-              automatically in the first section (2009) of the format, and can also be manually
+               <strong>CatalogNumberAlphaNumByYear</strong> (2020-######) The year will appear
+              automatically in the first section (2020) of the format, and can also be manually
               edited from within Specify. The '###' section of the format is a number that is six
               digits in length. This section can be automatically incremented when Auto Numbering
               is turned on in Specify or manually entered when Auto Numbering is turned off. These
@@ -1219,8 +1220,8 @@
             <br>
              
             <p align="left">
-               <strong>Accession Number</strong> (2009-AA-###) The year will appear automatically
-              in the first section (2009) of the format, and can also be manually edited. The 'AA'
+               <strong>Accession Number</strong> (2020-AA-###) The year will appear automatically
+              in the first section (2020) of the format, and can also be manually edited. The 'AA'
               section of the format is alphanumeric and accepts both characters <em>a</em> through
               <em>z</em> and numbers. The ### section of the format is a number that is
               automatically incremented when Auto Numbering is turned on in Specify and manually
@@ -1230,8 +1231,8 @@
             <br>
              
             <p align="left">
-               <strong>AccessionNumberByYear</strong> (2009-AA-AAA) The year will appear
-              automatically in the first section (2009) of the format, and can also be manually
+               <strong>AccessionNumberByYear</strong> (2020-AA-AAA) The year will appear
+              automatically in the first section (2020) of the format, and can also be manually
               edited. The 'A' sections of the format are alphanumeric and accept both characters
               <em>a</em> through <em>z</em> and numbers. This format offers two alphanumeric
               sections, the first is two characters in length and the second is three characters in
@@ -1248,15 +1249,13 @@
         </li>
         <li>
           <strong>Pattern</strong> displays the pattern used to create each format (these are
-          explained in further detail above).
+          explained in further detail above)
         </li>
-      </ul>
-      <blockquote>
-        <p>
-          <br>
-        </p>
-      </blockquote>
-      <ul>
+        <li style=" list-style-type: none; list-style-image: none;">
+          <p>
+             &nbsp;
+          </p>
+        </li>
         <li>
           <strong>Is Auto Incremented</strong> displays a 'yes' if the format is automatically
           incremented.
