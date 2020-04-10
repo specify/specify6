@@ -225,7 +225,7 @@ ErrorInstallService=Не удалось установить службу "{0}"
 ErrorUninstallService=Не удалось удалить службу "{0}"
 ErrorInstallIcons=Не удалось установить значки.
 # {0} is a version number, {1} is an application name
-AppleJavaMinVersionError=Для установки {1} требуется {0} виртуальная машина Java.\nПожалуйста, загрузите ее с http:\\www.apple.com
+AppleJavaMinVersionError=Для установки и использования {1} требуется {0} виртуальная машина Java.\nПожалуйста, загрузите ее с http:\\www.apple.com
 # {0} is a file name
 AskContinue=Не удалось установить файл\n{0}\nПродолжить установку?
 UninstallFailureTitle=Результаты деинсталлятора
