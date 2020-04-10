@@ -1330,6 +1330,11 @@ public class DatabaseLoginPanel extends JTiledPanel
                         //UIRegistry.displayInfoMsgDlg("doLoginContinuing(): isReleasedManagedGlobally=" + isReleaseManagedGlobally + ", local update pref=" + localChk4VersionUpdate);
                         if ((isReleaseManagedGlobally == null || !isReleaseManagedGlobally) && localChk4VersionUpdate) {
                             try {
+                                try {
+                                    Thread.sleep(2100);
+                                } catch (Exception x) {
+                                    log.error(x);
+                                }
                                 com.install4j.api.launcher.SplashScreen.hide();
                             }  catch (SplashScreen.ConnectionException e) {
                                 log.error(e);
