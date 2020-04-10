@@ -503,7 +503,7 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
         protected String getAvailableCountForPrepSQL(String where) {
             String sql = "select p.preparationid, coalesce(p.countamt, 0) - (coalesce(sum(lp.unavailable), 0) + coalesce(sum(gp.unavailable), 0) + coalesce(sum(ep.unavailable), 0) + coalesce(sum(dp.unavailable), 0)) available "
                 + "from preparation p left join "
-                + "(select preparationid, sum(coalesce(quantity, 0) - coalesce(quantityreturned, 0)) unavailable from loanpreparation group by 1) lp on lp.preparationid = p.preparationid left join "
+                + "(select preparationid, sum(coalesce(quantity, 0) - coalesce(quantityresolved, 0)) unavailable from loanpreparation group by 1) lp on lp.preparationid = p.preparationid left join "
                 + "(select preparationid, sum(coalesce(quantity, 0)) unavailable from giftpreparation group by 1) gp on gp.preparationid = p.preparationid left join "
                 + "(select preparationid, sum(coalesce(quantity, 0)) unavailable from exchangeoutprep group by 1) ep on ep.preparationid = p.preparationid left join "
                 + "(select preparationid, sum(coalesce(quantity, 0)) unavailable from deaccessionpreparation group by 1) dp on dp.preparationid = p.preparationid ";
