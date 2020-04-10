@@ -510,6 +510,7 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
             if (where != null) {
                 sql += "where " + where;
             }
+            sql += " group by 1";
             return sql;
         }
         /**
@@ -546,14 +547,14 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
             if (isFor == forLoan) {
                 sql += " where pt.isloanable";
             }
-            //Connection conn = getConnForAvailableCounts();
+            Connection conn = getConnForAvailableCounts();
             log.debug("-------------- " + sql);
-            List<Object[]> rows = BasicSQLUtils.query(sql);
-//            try {
-//                conn.close();
-//            } catch (Exception x) {
-//                log.error(x);
-//            }
+            List<Object[]> rows = BasicSQLUtils.query(conn, sql);
+            try {
+                conn.close();
+            } catch (Exception x) {
+                log.error(x);
+            }
             log.debug("--------------rows: " + rows.size());
             return rows;
         }
