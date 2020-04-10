@@ -225,7 +225,7 @@ ErrorInstallService=Could not install service "{0}"
 ErrorUninstallService=Could not uninstall service "{0}"
 ErrorInstallIcons=Could not install icons.
 # {0} is a version number, {1} is an application name
-AppleJavaMinVersionError=You need a {0} Java Virtual Machine to install {1}.\nPlease download it from http://www.apple.com
+AppleJavaMinVersionError=You need a {0} Java Virtual Machine to install or run {1}.\nPlease download it from http://www.apple.com
 # {0} is a file name
 AskContinue=Could not install file \n{0}\nDo you want to continue the installation?
 UninstallFailureTitle=Results of Uninstaller
