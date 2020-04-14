@@ -113,6 +113,11 @@ public class StorageTreeTask extends BaseTreeTask<Storage, StorageTreeDef, Stora
         Vector<Integer> idList = new Vector<Integer>();
         
         fillListWithIds(sql, idList);
+        // Get the Collection Objects from the Preparations
+        for (Integer id : idList)
+        {
+            duplicateHash.put(id, true);
+        }
 
         sql = "SELECT p.CollectionObjectID FROM storage as st INNER JOIN preparation as p ON st.StorageID = p.alternateStorageID " +
                 "WHERE st.StorageID = "+storage.getStorageId()+" AND p.CollectionMemberID = COLMEMID";
