@@ -95,7 +95,7 @@ public class StorageTreeTask extends BaseTreeTask<Storage, StorageTreeDef, Stora
         // it only initializes the immediate links, not objects that are multiple hops away
         ttv.initializeNodeAssociations(storage);
         
-        if (storage.getPreparations().size() == 0)
+        if (storage.getPreparations().size() + storage.getAlternateStoragePreparations().size() == 0)
         {
             UIRegistry.getStatusBar().setText(getResourceString("TTV_TAXON_NO_COS_FOR_NODE"));
             return;
@@ -113,7 +113,11 @@ public class StorageTreeTask extends BaseTreeTask<Storage, StorageTreeDef, Stora
         Vector<Integer> idList = new Vector<Integer>();
         
         fillListWithIds(sql, idList);
-        
+
+        sql = "SELECT p.CollectionObjectID FROM storage as st INNER JOIN preparation as p ON st.StorageID = p.alternateStorageID " +
+                "WHERE st.StorageID = "+storage.getStorageId()+" AND p.CollectionMemberID = COLMEMID";
+        fillListWithIds(sql, idList);
+
         // Get the Collection Objects from the Preparations
         for (Integer id : idList)
         {
