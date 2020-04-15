@@ -4318,19 +4318,19 @@
                 </row>
                 <row>
                     <cell type="label" label="Total Preps:" initialize="align=right"/>
-                    <cell type="field" id="ti" name="totalItems" uitype="text" readonly="true"/>
+                    <cell type="field" id="ti" name="totalPreps" uitype="text" readonly="true"/>
                     <cell type="label" label="Total Items:" initialize="align=right"/>
-                    <cell type="field" id="tq" name="totalQuantities" uitype="text" readonly="true"/>
+                    <cell type="field" id="tq" name="totalItems" uitype="text" readonly="true"/>
                 </row>
                 <row>
-                    <cell type="label" label="Returned Preps:" initialize="align=right"/>
-                    <cell type="field" id="ri" name="returnedItems" uitype="text" readonly="true"/>
-                    <cell type="label" label="Returned Items:" initialize="align=right"/>
-                    <cell type="field" id="rq" name="returnedQuantities" uitype="text" readonly="true"/>
+                    <cell type="label" label="Resolved Preps:" initialize="align=right"/>
+                    <cell type="field" id="ri" name="resolvedPreps" uitype="text" readonly="true"/>
+                    <cell type="label" label="Resolved Items:" initialize="align=right"/>
+                    <cell type="field" id="rq" name="resolvedItems" uitype="text" readonly="true"/>
                     <cell type="label" label="Unresolved Preps:" initialize="align=right"/>
-                    <cell type="field" id="ui" name="unresolvedItems" uitype="text" readonly="true"/>
+                    <cell type="field" id="ui" name="unresolvedPreps" uitype="text" readonly="true"/>
                     <cell type="label" label="Unresolved Items:" initialize="align=right"/>
-                    <cell type="field" id="uq" name="unresolvedQuantities" uitype="text" readonly="true"/>
+                    <cell type="field" id="uq" name="unresolvedItems" uitype="text" readonly="true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="5"/>

@@ -704,33 +704,33 @@ public class Loan extends DisciplineMember implements AttachmentOwnerIFace<LoanA
 //    }
     
     @Transient
-    public Integer getTotalItems() {
+    public Integer getTotalPreps() {
         return countContents(false, false);
     }
 
     @Transient
-    public Integer getTotalQuantities() {
+    public Integer getTotalItems() {
         return countContents(true, false);
     }
 
     @Transient
-    public Integer getUnresolvedItems() {
+    public Integer getUnresolvedPreps() {
         return countContents(false, true);
     }
 
     @Transient
-    public Integer getUnresolvedQuantities() {
+    public Integer getUnresolvedItems() {
         return countContents(true, true);
+    }
+
+    @Transient
+    public Integer getResolvedPreps() {
+        return getTotalPreps() - getUnresolvedPreps();
     }
 
     @Transient
     public Integer getResolvedItems() {
         return getTotalItems() - getUnresolvedItems();
-    }
-
-    @Transient
-    public Integer getResolvedQuantities() {
-        return getTotalQuantities() - getUnresolvedQuantities();
     }
 
     protected Integer countContents(Boolean countQuantity, Boolean countUnresolved) {
