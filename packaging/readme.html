@@ -1,28 +1,28 @@
-<html><head><meta content="text/html; charset=UTF-8" http-equiv="content-type"><style type="text/css">
-.c29.c41 .c10 .c16.c1.c22 strong {
-    font-family: Gill Sans, Gill Sans MT, Myriad Pro, DejaVu Sans Condensed, Helvetica, Arial, sans-serif;
-}
-.c29.c41 .c10 .c16.c1.c22 strong {
-    font-family: Gotham, Helvetica Neue, Helvetica, Arial, sans-serif;
-}
-.c29.c41 .c6 .c16.c1.c22 strong {
-    font-family: Gotham, Helvetica Neue, Helvetica, Arial, sans-serif;
-}
-</style></head><body class="c29 c41">
-<h4 class="c10"><span class="c16 c1 c22"><strong>Specify Collections Consortium<br>
-</strong></span><span class="c16 c1 c22"><strong>Release Notes</strong></span><br>
-<span class="c16 c1 c22"><strong>Specify 6.8.0</strong></span><br>
-<span class="c16 c1 c22"><strong>16 April 2020</strong></span></h4>
-<p class="c6 c17" id="h.wu0sxnvlt49t"><span class="c16 c1 c22"><strong>Overview and New Capabilities</strong></span></p>
-Database administrators note that with this update: (1) the Specify 6 updater modifies the Specify database schema and (2) it creates new dependencies among the three packages (Specify 6, 7, and Web Portal). Each platform currently in use will need to be updated to interoperate with the others— these updates are not backward compatible with existing releases of the three platforms. This Specify 6 update will require a concurrent update to the Specify 6 Web Portal to support new export/import methods between them. If Specify 6 and are being used at the same time they will both need to be updated to run on a common database.</span></p> 
-<p class="c42"><span class="c16 c14">A
- significant new module in Specify 6 and 7 provides support for 
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+  <meta content="text/html; charset=UTF-8" http-equiv="content-type">
+  <title>Release Notes</title>
+</head>
+<body>
+<h3>Release Notes<br>
+Specify 6.8.00<br>
+16 April 2020<br>
+Specify Collections Consortium</h3>
+<br>
+
+<strong>Overview and New Capabilities</strong></p>
+<p>Database administrators note that with this update: (1) the Specify 6 updater modifies the Specify database schema and (2) it creates new dependencies among the three packages (Specify 6, 7, and Web Portal). Each platform currently in use will need to be updated to interoperate with the others— these updates are not backward compatible with existing releases of the three platforms. This Specify 6 update will require a concurrent update to the Specify 6 Web Portal to support new export/import methods between them. If Specify 6 and are being used at the same time they will both need to be updated to run on a common database.</span></p> 
+
+<p>A significant new module in Specify 6 and 7 provides support for 
 recording all changes made to a database, including record additions, 
 edits, and deletions. “Audit Logging” is a background process that 
 records every change to data along with metadata on who made it and 
 when. The Audit Log is configurable to retain change data records for a 
-specified period, and records can be queried, exported, and printed.</span></p><p class="c25"><span class="c14 c16">Specify 6.8 has been Apple “Notarized” -- authorized by Apple to run on macOS 10.14 (Mojave), and 10.15 (Catalina).</span></p><p class="c26 c43"><span class="c16 c14">Specify
- 6.8 adds tables to the database and updates others (see list below). 
+specified period, and records can be queried, exported, and printed.</p>
+
+<p>Specify 6.8 has been Apple “Notarized” -- authorized by Apple to run on macOS 10.14 (Mojave), and 10.15 (Catalina). 
+
+<p>Specify 6.8 adds tables to the database and updates others (see list below). 
 ‘Taxon Attribute’ is a new table linked (many-to-one) to the Taxon table
  for a flexible and extensible way to handle trait or ‘character’ data 
 that describe the properties of a taxa or morphotypes. We also added 
@@ -30,17 +30,19 @@ tables to support multiple ‘Extractor’ and ‘PCR Person’ Agent
 assignments in the DNA Sequence table for documenting DNA workflows. 
 ‘Accession Citation’ is a new table to enable Accession records to 
 reference publications. These tables were added as the result of member 
-requests for additional capabilities.</span></p>
-<p class="c43 c45"><span class="c14">In
- this Specify 6 and 7 update, the status of Loans can be tracked more 
+requests for additional capabilities.</p>
+
+<p>In this Specify 6 and 7 update, the status of Loans can be tracked more 
 efficiently using new data fields that summarize the disposition of 
-loaned items (cataloged or uncatalogued). The field</span><span class="c14">s provide information on Loan resolution status and are included</span><span class="c16 c14"> on the default Loan forms in this Specify 6.8 
+loaned items (cataloged or uncatalogued). The fields provide information on Loan resolution status and are included on the default Loan forms in this Specify 6.8 
 distribution. Sites that use previously customized Loan forms can 
-contact SCC staff to have the new fields added to their interface.</span></p><p class="c9"><span class="c16 c14">We
- exercised Specify’s Unicode infrastructure to implement two Cyrillic 
+contact SCC staff to have the new fields added to their interface.</p>
+
+<p>We exercised Specify’s Unicode infrastructure to implement two Cyrillic 
 language translations, Ukrainian and Russian. Contact us for setup 
-information if you are interested in using them.</span></p><p class="c18"><span class="c16 c14">We
- added a second link connecting the Storage Tree and the Preparation 
+information if you are interested in using them.</p>
+
+<p>We added a second link connecting the Storage Tree and the Preparation 
 table in order to provide the possibility for designating a second or 
 alternate storage location for a Preparation. This capability is useful 
 when Preparations are moved temporarily, e.g. for an exhibit, 
@@ -51,8 +53,9 @@ of the object. The alternate location field serves to record the objects
 Right clicking on Storage Tree nodes only shows a count of Preparations 
 that are recorded at that location in the Current Storage Location data 
 field on the Preparation form. Alternate Storage Locations are not 
-counted in the Storage Tree.</span></p><p class="c18 c17"><span class="c16 c14"></span><span class="c16 c14">In
- a previous Specify 6 release, we added two new tables, Collection 
+counted in the Storage Tree.</p>
+
+<p>In a previous Specify 6 release, we added two new tables, Collection 
 Object Properties and Preparation Properties, to handle attribute or 
 trait data for Collection Objects and Preparations, respectively. These 
 new Specify Properties data tables will allow a researcher to choose the
@@ -71,13 +74,15 @@ accessible for querying and export. The value field in key
 values can be represented in the database as logical, text, integer or 
 floating point data types. We will provide more information on the 
 Specify web site about how to configure and use the two Properties 
-tables for trait data. </span></p>
-<p class="c2"><span class="c16 c14">With
-  the Specify 6.8 and 7.4 we confirm compatibility and support 
+tables for trait data. </p>
+
+<p>With the Specify 6.8 and 7.4 we confirm compatibility and support 
   for MariaDB, a popular open-source, relational database platform and 
   alternative to MySQL. MariaDB is designed to be compatible with MySQL 
   applications. We did side-by-side testing of Specify with MySQL and 
-MariaDB and found performance differences that we will describe soon.</span></p><p class="c43 c46"><span class="c16 c14">The
+MariaDB and found performance differences that we will describe soon.</p>
+
+<p>The
  Specify Web Portal can now ingest, search, and display Collection 
 Object records from multiple Specify collections. If you manage two or 
 more collections, you can combine their exported records to make them 
@@ -87,7 +92,9 @@ data export files are now indexed by Solr in the Portal and not in
 Specify. We improved search behavior in the portal when using quoted 
 phrases. Additionally, by setting a preference, web link URLs in Specify
  data fields displayed by the Portal can now be made active, enabling 
-public web users to click and retrieve the linked remote resource.</span></p><p class="c36"><span class="c16 c14">The
+public web users to click and retrieve the linked remote resource.</p>
+
+<p>The
  next planned Specify 6 update will support Preparation-level processing
  for transactions like Accessions, Cataloging, Loans, and Exchanges. 
 This will allow institutions that treat Preparations as primary data 
@@ -103,14 +110,20 @@ container treatment, and finally curating and publishing catalog data
 associated with long-term storage. If you are interested in managing 
 biorepository sample data and curatorial workflows in Specify and have 
 suggestions or requirements to offer, please contact us, we would like 
-to know about them.</span></p><p class="c7"><span class="c8"></span></p>
-<p class="c19"><span class="c16 c1 c22"><strong>Bugs Fixed</strong></span></p><p class="c19 c17"><span class="c16 c1 c22"></span><span class="c14">Specify 6.8.0 addresses over 135 issues, about 50 user-facing. The list is at:</span><span class="c14"><a class="c3" href="https://www.google.com/url?q=https://github.com/specify/specify6/milestone/5&amp;sa=D&amp;ust=1586990881613000">&nbsp;</a></span><span class="c33 c14"><a class="c3" href="https://www.google.com/url?q=https://github.com/specify/specify6/milestone/5&amp;sa=D&amp;ust=1586990881614000">https://github.com/specify/specify6/milestone/5</a></span></p>
-<p class="c7"><span class="c15"></span><span class="c14">Specify 7.4.0 bug fixes include:</span><span class="c14"><a class="c3" href="https://www.google.com/url?q=https://github.com/specify/specify7/milestone/16&amp;sa=D&amp;ust=1586990881614000">&nbsp;</a></span><span class="c33 c14"><a class="c3" href="https://www.google.com/url?q=https://github.com/specify/specify7/milestone/16&amp;sa=D&amp;ust=1586990881614000">https://github.com/specify/specify7/milestone/16</a></span></p>
-<p class="c7"><span class="c15"></span><span class="c16 c14">Specify Web Portal 2.0 fixed bugs are here:</span> <span class="c33 c14"><a class="c3" href="https://www.google.com/url?q=https://github.com/specify/webportal-installer/issues?q%3Dis%253Aopen%2Bis%253Aissue%2Blabel%253A%2522Confirmed%2BFixed%2522&amp;sa=D&amp;ust=1586990881615000">https://github.com/specify/webportal-installer/issues?q=is%3Aopen+is%3Aissue+label%3A%22Confirmed+Fixed%22</a></span></p>
-<p class="c7"><span class="c15"></span></p>
-<p class="c18"><span class="c16 c1 c22"><strong>Specify 6.8.0 and 7.4.0: New tables and  fields, field changes</strong></span></p><p class="c17 c18"><strong><span class="c1 c24">Data Tables Added</span></strong></p>
+to know about them.</p>
+<p><br><br>
+  <strong>Bugs Fixed</strong> 
+  &nbsp;</p>
+
+<p>Specify 6.8.0 addresses over 135 issues, about 50 user-facing. The list is at: <a href="https://www.google.com/url?q=https://github.com/specify/specify6/milestone/5&sa=D&ust=1586990881614000">https://github.com/specify/specify6/milestone/5</a></p>
+<p>Specify 7.4.0 bug fixes include: <a href="https://www.google.com/url?q=https://github.com/specify/specify7/milestone/16&sa=D&ust=1586990881614000">https://github.com/specify/specify7/milestone/16</a></p>
+<p>Specify Web Portal 2.0 fixed bugs are here: 
+<a href="https://www.google.com/url?q=https://github.com/specify/webportal-installer/issues?q%3Dis%253Aopen%2Bis%253Aissue%2Blabel%253A%2522Confirmed%2BFixed%2522&sa=D&ust=1586990881615000">https://github.com/specify/webportal-installer/issues?q=is%3Aopen+is%3Aissue+label%3A%22Confirmed+Fixed%22</a></p>
+<br>
+<strong>Specify 6.8.0 and 7.4.0: New tables and  fields, field changes</strong></span></p>
+<p class="c17 c18"><strong><span class="c1 c24">Data Tables Added</span></strong></p>
 <p class="c0 c17"><span class="c24 c34"><strong>AccessionCitation</strong></span></p>
-<p class="c18 c17 c29"><span class="c5 c1"></span><span class="c5 c34">AccessionCitation is a table that enables Accession records to include published citations. (Denmark Museums of Natural History)</span><span class="c5 c1"></span></p>
+<p class="c18 c17 c29"><span class="c5 c34"><strong>AccessionCitation is a table that enables Accession records to include published citations. (Denmark Museums of Natural History)</strong></span></p>
 <ul>
   <li><span class="c0">AccessionCitationID int(11) &nbsp; &nbsp;</span></li>
   <li><span class="c0">AccessionID int(11) &nbsp; &nbsp;</span></li>
@@ -126,11 +139,11 @@ to know about them.</span></p><p class="c7"><span class="c8"></span></p>
   <li><span class="c0">TimestampCreated datetime &nbsp; </span></li>
   <li><span class="c0">TimestampModified </span><span class="c20 c1">datetime</span><span class="c5 c1">&nbsp;</span></li>
 </ul>
-<p class="c0 c17"><span class="c5 c30"></span></p><p class="c18 c31 c29"><span class="c24 c34"><strong>Extractor</strong></span></p><p class="c0 c17"><span class="c5 c30"></span><span class="c5 c34">Extractor
+<p class="c0 c17"><span class="c5 c30"></span></p><p class="c18 c31 c29"><span class="c24 c34"><strong>Extractor</strong></span></p><p class="c0 c17"><span class="c5 c34"><strong>Extractor
  is a join table linking the Agent and DNASequence tables in a 
 many-to-many relationship to enable multiple Agents to be recorded in 
 the role of extracting DNA from samples. (South Dakota School of Mines 
-and Technology)</span><span class="c5 c1"></span></p>
+and Technology)</strong></span></p>
 <ul>
   <li><span class="c0">ExtractorID int(11) </span></li>
   <li><span class="c0">Version int(11) </span></li>
@@ -149,11 +162,11 @@ and Technology)</span><span class="c5 c1"></span></p>
 </ul>
 <p class="c0 c17"><span class="c5 c30"></span></p>
 <p class="c0 c17"><span class="c24 c34"><strong>PCRperson</strong></span></p>
-<p class="c18 c17 c29"><span class="c5 c34"></span><span class="c5 c34">PCRPerson
+<p class="c18 c17 c29"><span class="c5 c34"><strong>PCRPerson
  is a join table between the Agent and DNASequence tables in a 
 many-to-many relationship to allow the association of multiple Agents in
  the role of persons performing PCR steps in DNA amplification. (South 
-Dakota School of Mines and Technology)</span><span class="c5 c1"></span></p>
+Dakota School of Mines and Technology)</strong></span></p>
 <ul>
   <li><span class="c0">PcrPersonID int(11) </span></li>
   <li><span class="c0">Version int(11) </span></li>
@@ -170,9 +183,9 @@ Dakota School of Mines and Technology)</span><span class="c5 c1"></span></p>
   <li><span class="c0">TimestampCreated datetime</span></li>
   <li><span class="c0">TimestampModified </span><span class="c20 c1">datetime</span></li>
 </ul>
-<p class="c0 c17"><span class="c5 c1"></span></p><p class="c18 c29 c31"><span class="c24 c34"><strong>TaxonAttribute</strong></span></p><p class="c18 c17 c29"><span class="c5 c34"></span><span class="c5 c34">The TaxonAttribute table is related 1:1 with Taxon to accommodate 
+<p class="c0 c17"><span class="c5 c1"></span></p><p class="c18 c29 c31"><span class="c24 c34"><strong>TaxonAttribute</strong></span></p><p class="c18 c17 c29"><span class="c5 c34"><strong>The TaxonAttribute table is related 1:1 with Taxon to accommodate 
 semi-structured data attributes (traits) describing morphotypes. (U. 
-Wyoming, Paleobotany)</span></p>
+Wyoming, Paleobotany)</strong></span></p>
 <ul>
   <li><span class="c0">TaxonAttributeID, int(11) &nbsp; &nbsp; </span></li>
   <li><span class="c0">Version, int(11) &nbsp; &nbsp; </span></li>
@@ -188,7 +201,8 @@ Wyoming, Paleobotany)</span></p>
   <li><span class="c0">CreatedByAgentID, int(11) &nbsp; &nbsp; </span></li>
   <li><span class="c0">ModifiedByAgentID, int(11) &nbsp; &nbsp; </span></li>
 </ul>
-<p class="c18 c17"><span class="c13 c1"></span></p><p class="c27 c29"><span class="c24 c1"><strong>Changes to Existing Data Fields (table.field, change)</strong></span></p>
+	</a>
+<p><strong>Changes to Existing Data Fields (table.field, change)</strong></span></p>
 <ul>
   <li><span class="c0">agent.LastName 128 -&gt; 256</span></li>
   <li><span class="c0">collectingtrip.CollectingTripName 64 -&gt; 250</span></li>
@@ -212,25 +226,24 @@ Wyoming, Paleobotany)</span></p>
   <li><span class="c0">preparation.BarCode varchar(256)</span></li>
   <li><span class="c0">taxon.taxonattributeid link to taxonattribute</span></li>
 </ul>
-<p class="c18 c17"><span class="c13 c1"></span></p><p class="c38"><span class="c1"><strong>New Calculated fields added for Loans (scoped over an entire Loan)</strong></span></p>
+	<br></a>
+<strong>New Calculated fields added for Loans (scoped over an entire Loan)</strong></span></p>
 <ul>
-  <li><span class="c10">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;</span><span class="c16 c1 c28">totalPreps: number of Loan records or Loan lines (usually distinct Cat #/Prep Type combinations)</span></li>
-  <li><span class="c10">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;totalItems:
+  <li>totalPreps: number of Loan records or lines (usually distinct Cat #/PrepType combos)</span></li>
+  <li>totalItems:
     number of loaned items (Preparations = biological artifacts) in a Loan</span></li>
-  <li><span class="c10">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;resolvedPreps:
-    number of Loan Preparations (Loan record = line items) that are 
+  <li>resolvedPreps: number of Loan Preparations (Loan record = line items) that are 
     resolved</span></li>
-  <li><span class="c10">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;resolvedItems:
-    number of resolved Preparations or artifacts, scoped to entire Loan</span></li>
-  <li><span class="c10">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;unresolvedPreps:
-    number of unresolved Loan Preparations (Loan record = line items)</span></li>
-  <li><span class="c10">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;unresolvedItems: number of unresolved Loan items (Preparations = artifacts)</span></li>
+  <li>resolvedItems: number of resolved Preparations or artifacts, scoped to entire Loan</span></li>
+  <li>unresolvedPreps: number of unresolved Loan Preparations </li>
+  <li>unreolvedItems: number of unresolved Loan items (=Preparations)</span></li>
+</li>
 </ul>
-<p class="c7"><span class="c4 c1"></span></p><p class="c7"><span class="c4 c1"></span></p>
+</a>
+<br>
 <h3 class="c23"><span class="c13 c1">Specify Collections Consortium</span><br>
   <span class="c13 c1">Biodiversity Institute</span><br>
   <span class="c13 c1">University of Kansas</span><br>
 <span class="c1 c13">Lawrence, KS 66045, USA</span></h3>
- <h3 class="c23"><span class="c33 c1"><a class="c3" href="mailto:support@specifysoftware.org">support@specifysoftware.org</a></span><br>
- <span class="c1 c33"><a class="c3" href="https://www.google.com/url?q=http://www.specifysoftware.org&amp;sa=D&amp;ust=1586990881621000">www.specifysoftware.org</a><a class="c3" href="https://www.google.com/url?q=http://www.specifysoftware.org&amp;sa=D&amp;ust=1586990881621000"></a></span></h3>
+ <h3 class="c23"><a href="http://www.specifysoftware.org">www.specifysoftware.org</a></h3>
 </body></html>
