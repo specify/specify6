@@ -83,6 +83,7 @@
 			<tocitem text="Data Forms" target="Data_Entry">
 				<tocitem text="Side Bar Configuration" target="Data_Entry_Sidebar" />
 				<tocitem text="Working with Forms and Trees" target="Data_Entry_Trees" />
+				<tocitem text="Alternate Storage Location" target="Data_Entry_Preparations" />
 				<tocitem text="Container" target="Forms_Container" />
 				<tocitem text="Taxon Form" target="Data_Entry_Taxon" />
 				<tocitem text="Determinations Form" target="Data_Entry_Determinations" />
@@ -91,6 +92,7 @@
 				<tocitem text="Agent Form" target="Data_Entry_Agent" />
 				<tocitem text="Preparations Form" target="Data_Entry_Preparations" />
 				<tocitem text="Attachments Form" target="Data_Entry_Attachments" />
+				<tocitem text="Properties" target="Properties Tables" />
 				<tocitem text="Paleo Context" target="paleo_context" />
 				<tocitem text="GUID" target="GUID" />
 			</tocitem>
