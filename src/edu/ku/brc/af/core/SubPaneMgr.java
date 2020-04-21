@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -596,7 +596,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
         {
             log.error("Couldn't find pane named["+pane.getPaneName()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
             
-            // Note: We should never get here, but if we do....
+            // Note: We should never get here, but if we do...
             //
             // At this point we should bail but remove the current tab manually
             // it wasn't found in the panes list

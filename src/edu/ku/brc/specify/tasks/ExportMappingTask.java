@@ -182,6 +182,11 @@ public class ExportMappingTask extends QueryTask
 
 	}
 
+	@Override
+	protected void checkForOtherNavBtn() {
+		//no other nav btn for ExportMappingTask
+	}
+
 	/**
 	 * @param map
 	 * @return true if everything is OK.
@@ -583,7 +588,7 @@ public class ExportMappingTask extends QueryTask
         chooser.setMultiSelectionEnabled(false);
         chooser.setFileFilter(new UIFileFilter("xsd", getResStr("SCHEMA_DEFS")));
         
-        if (chooser.showOpenDialog(UIRegistry.get(UIRegistry.FRAME)) != JFileChooser.APPROVE_OPTION)
+        if (chooser.showOpenDialog(UIRegistry.getMostRecentWindow()) != JFileChooser.APPROVE_OPTION)
         {
             UIRegistry.getStatusBar().setText("");
             return;

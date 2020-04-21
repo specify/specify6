@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -1291,7 +1291,39 @@ public class BuildSampleDatabase
         loadSchemaLocalization(discipline, SpLocaleContainer.WORKBENCH_SCHEMA, wbTableMgr, null, null, UpdateType.eBuildNew, null);//hSession);
         
         frame.setProcess(++createStep);
-        
+
+//        System.out.println("Persisting Discipline---------------------------------------------------------------------------------------------------------------");
+//        HashMap<String,Integer> l10nStrs = new HashMap<>();
+//        for (SpLocaleContainer c : discipline.getSpLocaleContainers()) {
+//            for (SpLocaleContainerItem ci : c.getItems()) {
+//                for (SpLocaleItemStr s : ci.getNames()) {
+//                    String loc = s.getLanguage();
+//                    if (s.getCountry() != null) {
+//                        loc += "_" + s.getCountry();
+//                    }
+//                    Integer cnt = l10nStrs.get(loc);
+//                    if (cnt == null) {
+//                        cnt = 0;
+//                    }
+//                    l10nStrs.put(loc,cnt+1);
+//                }
+//                for (SpLocaleItemStr s : ci.getNames()) {
+//                    String loc = s.getLanguage();
+//                    if (s.getCountry() != null) {
+//                        loc += "_" + s.getCountry();
+//                    }
+//                    Integer cnt = l10nStrs.get(loc);
+//                    if (cnt == null) {
+//                        cnt = 0;
+//                    }
+//                    l10nStrs.put(loc,cnt+1);
+//                }
+//            }
+//        }
+//        for (Map.Entry<String,Integer> e : l10nStrs.entrySet()) {
+//            System.out.println(e.getKey() + " : " + e.getValue());
+//        }
+
         persist(discipline);
         
         frame.setProcess(++createStep);
@@ -3236,10 +3268,10 @@ public class BuildSampleDatabase
         persist(dataObjects);
         dataObjects.clear();
         
-        frame.setDesc("Intermediate save....");
+        frame.setDesc("Intermediate save...");
         commitTx();
         
-        frame.setDesc("Creating Localities....");
+        frame.setDesc("Creating Localities...");
         startTx();
         
         frame.setProcess(++createStep);
@@ -4451,10 +4483,10 @@ public class BuildSampleDatabase
         persist(dataObjects);
         dataObjects.clear();
         
-        frame.setDesc("Intermediate save....");
+        frame.setDesc("Intermediate save...");
         commitTx();
         
-        frame.setDesc("Creating Localities....");
+        frame.setDesc("Creating Localities...");
         startTx();
         
         frame.setProcess(++createStep);
@@ -5987,7 +6019,7 @@ public class BuildSampleDatabase
                 //dna.setGeneName("COI5'");
                 int agentInx = rand.nextInt(agents.size());
                 dna.setCreatedByAgent(agents.get(agentInx));
-                dna.setSequencer(agents.get(agentInx));
+                //dna.setSequencer(agents.get(agentInx));
                 StringBuilder sb = new StringBuilder();
                 for (int j=0;j<((8*75)+52);j++)
                 {
@@ -7710,7 +7742,7 @@ public class BuildSampleDatabase
                 {
                     frame.getProcessProgress().setIndeterminate(true);
                     frame.getProcessProgress().setString("");
-                    frame.setDesc("Logging into "+dbName+"....");
+                    frame.setDesc("Logging into "+dbName+"...");
                     frame.setOverall(steps++);
                 }
             });
@@ -7760,7 +7792,7 @@ public class BuildSampleDatabase
                 {
                     frame.getProcessProgress().setIndeterminate(true);
                     frame.getProcessProgress().setString("");
-                    frame.setDesc("Creating database "+dbName+"....");
+                    frame.setDesc("Creating database "+dbName+"...");
                     frame.setOverall(steps++);
                 }
             });
@@ -7787,7 +7819,7 @@ public class BuildSampleDatabase
                 {
                     frame.getProcessProgress().setIndeterminate(true);
                     frame.getProcessProgress().setString("");
-                    frame.setDesc("Saving data into "+dbName+"....");
+                    frame.setDesc("Saving data into "+dbName+"...");
                     frame.setOverall(steps++);
                 }
             });

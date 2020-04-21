@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -714,11 +714,11 @@ public class MissingDataResolver implements ActionListener
         CustomDialog cwin;
         if (!readOnly)
         {
-            cwin = new CustomDialog(null, "Missing Data", true, mainPane); // i18n
+            cwin = new CustomDialog((java.awt.Frame)null, "Missing Data", true, mainPane); // i18n
         }
         else
         {
-            cwin = new CustomDialog(null, "Missing Data", true, CustomDialog.OK_BTN, mainPane, CustomDialog.OK_BTN); // i18n
+            cwin = new CustomDialog((java.awt.Frame)null, "Missing Data", true, CustomDialog.OK_BTN, mainPane, CustomDialog.OK_BTN); // i18n
         }
             
         cwin.setModal(true);

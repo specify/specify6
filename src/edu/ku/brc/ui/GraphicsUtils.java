@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -228,7 +228,7 @@ public class GraphicsUtils
      * @return the byte array of the scaled image
      * @throws IOException an error occurred while loading the input bytes as a BufferedImage or while encoding the output as a JPEG
      */
-    public static ImageIcon scaleImageToIconImage(final BufferedImage img, 
+    public static ImageIcon scaleImageToIconImage(final String formatName, final BufferedImage img,
                                                   final int maxHeight, 
                                                   final int maxWidth, 
                                                   final boolean preserveAspectRatio,
@@ -236,7 +236,7 @@ public class GraphicsUtils
     {
         
         
-        byte[] bytes = scaleImage(img, maxHeight, maxWidth, preserveAspectRatio, doHighQuality);
+        byte[] bytes = scaleImage(formatName, img, maxHeight, maxWidth, preserveAspectRatio, doHighQuality);
         if (bytes != null && bytes.length > 0)
         {
             return new ImageIcon(bytes);
@@ -254,7 +254,7 @@ public class GraphicsUtils
      * @return the byte array of the scaled image
      * @throws IOException an error occurred while loading the input bytes as a BufferedImage or while encoding the output as a JPEG
      */
-    public static byte[] scaleImage(final byte[] imgData, 
+    public static byte[] scaleImage(final String formatName, final byte[] imgData,
                                     final int maxHeight, 
                                     final int maxWidth, 
                                     final boolean preserveAspectRatio,
@@ -263,7 +263,7 @@ public class GraphicsUtils
         ByteArrayInputStream inputStr = new ByteArrayInputStream(imgData);
         BufferedImage orig = ImageIO.read(inputStr);
         
-        return scaleImage(orig, maxHeight, maxWidth, preserveAspectRatio, doHighQuality);
+        return scaleImage(formatName, orig, maxHeight, maxWidth, preserveAspectRatio, doHighQuality);
     }
     
     /**
@@ -275,7 +275,7 @@ public class GraphicsUtils
      * @return the byte array of the scaled image
      * @throws IOException an error occurred while encoding the result as a JPEG image
      */
-    public static byte[] scaleImage(final BufferedImage orig, 
+    public static byte[] scaleImage(final String formatName, final BufferedImage orig,
                                     final int maxHeight, 
                                     final int maxWidth, 
                                     final boolean preserveAspectRatio,
@@ -313,7 +313,7 @@ public class GraphicsUtils
 
         ByteArrayOutputStream output = new ByteArrayOutputStream(8192);
         
-        ImageIO.write(scaled, "jpeg", output);
+        ImageIO.write(scaled, formatName, output);
 
         byte[] outputBytes = output.toByteArray();
         output.close();

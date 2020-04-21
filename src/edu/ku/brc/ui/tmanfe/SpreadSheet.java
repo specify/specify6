@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -541,7 +541,7 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener, R
     @Override
     public boolean editCellAt(int row, int column, EventObject ev)
     {
-        return mouseDown ? false : isReadOnly ? false : super.editCellAt(row, column, ev);
+        return mouseDown ? false : isReadOnly || !isEnabled() ? false : super.editCellAt(row, column, ev);
     }
 
     /**
@@ -845,7 +845,7 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener, R
         if (numcols == 0 || numrows == 0 || !((numrows - 1 == rowsselected[rowsselected.length - 1] - rowsselected[0] && numrows == rowsselected.length) && 
               (numcols - 1 == colsselected[colsselected.length - 1] - colsselected[0] && numcols == colsselected.length)))
         {
-            //JOptionPane.showMessageDialog(null, "Invalid Copy Selection",
+            //JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(), "Invalid Copy Selection",
             //        "Invalid Copy Selection", JOptionPane.ERROR_MESSAGE);
             return false;
         }

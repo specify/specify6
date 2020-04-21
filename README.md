@@ -1,18 +1,20 @@
 # Specify 6
+![Build Status](https://github.com/specify/specify6/workflows/Specify%206%20CI/badge.svg)
 
-[![Build Status](https://travis-ci.org/specify/specify6.svg?branch=master)](https://travis-ci.org/specify/specify6)
+Specify Software is a product of the Specify Collections Consortium
+that is funded by its member institutions. Consortium Founding Members
+include: University of Michigan, University of Florida, Denmark
+Consortium of Museums, and the University of Kansas. The Consortium
+operates under the non-profit U.S. tax status of the University of
+Kansas Center for Research. Specify was supported previously by
+multiple awards from the U.S. National Science Foundation.
 
-The Specify Software Project is funded by the Advances in
-Biological Informatics Program, U.S. National Science Foundation
-(NSF/BIO: 1565098).
-
-Specify 6 Copyright © 2018 University of Kansas Center for
-Research. Specify comes with ABSOLUTELY NO WARRANTY.  This is
-free software licensed under GNU General Public License 2
-(GPL2).
+Specify 6 Copyright © 2020 University of Kansas Center for
+Research. Specify comes with ABSOLUTELY NO WARRANTY.  This is free
+software licensed under GNU General Public License 2 (GPL2).
 
 
-    Specify Software Project
+    Specify Collections Consortium
     Biodiversity Institute
     University of Kansas
     1345 Jayhawk Blvd.
@@ -35,57 +37,42 @@ The following build targets are available:
 
 * `ant make-jar-mac` - Assemble JAR file for Mac targets.
 
+* `ant generate-datamodel` - Generate
+  `config/specify_datamodel.xml`. This target is depended upon by the
+  packaging targets and will be run automatically for packaging. It
+  needs to be run manually, however, to permit Specify to run from
+  within an IDE.
+
 * `ant run-specify-nonmac` - Execute the main Specify application for
   non Mac systems.
 
 * `ant run-specify-mac` - Execute the main Specify application on Mac
   systems.
 
-All build outputs will be found in the `build/` directory.
+All build outputs will be found in the `build/` directory except for
+`config/specify_datamodel.xml`.
 
 ## Packaging Specify 6
 
-Packaging Specify 6 requires **Install4J  v5.1** (evaluation or
+Packaging Specify 6 requires **Install4J  v8.0** (evaluation or
 licensed).
-
-Developers within the Biodiversity Institute network should
-use the floating license on *specify6-prod.nhm.ku.edu* by running
-`/path/to/install4j/bin/install4jc
---license=FLOAT:specify6-prod.nhm.ku.edu` after installing Install4J.
 
 The path to Install4J must be provided to the Ant
 build through the `-Dinstall4j.dir=/path/to/install4j` parameter unless
-Install4J is at the default location `$HOME/install4j5`.
+Install4J is at the default location `$HOME/install4j8.0.4`.
 
 The following Ant build targets are available for packaging:
 
-* `ant package-internal-nonmac` - Produce internal style installers
-  and updaters for Windows and Linux 64 and 32 bit systems.
+* `ant package-nonmac` - Produce installers
+  for Windows and Linux 64 and 32 bit systems.
 
-* `ant package-internal-mac` - Produce internal style installers and
-  updaters for Mac systems.
+* `ant package-mac` - Produce installers for Mac systems.
 
-* `ant package-external-nonmac` - Produce release style installers
-  and updaters for Windows and Linux 64 and 32 bit systems.
-
-* `ant package-external-mac` - Produce release style installers and
-  updaters for Mac systems.
-
-* `ant package-internal` - Produce internal style installers and
-  updaters for all systems including *updates.xml* auto-updating
-  information.
-
-* `ant package-external` - Produce release style installers and
-  updaters for all systems including *updates.xml* auto-updating
-  information.
-
-* `ant package-all` - Produce internal and release style installers and
-  updaters for all systems including *updates.xml* auto-updating
-  information.
+* `ant package-all` - Produce installers for all systems 
+  plus the *updates.xml* auto-updating information.
 
 All packaging products will be found in the `packages/`
-directory. Internal style packages will be in `packages/internal`, and
-release style packages will be in `packages/external`.
+directory.
 
 ### Code Signing
 
@@ -115,13 +102,14 @@ ant package-all \
 ```
 ## Automated Builds
 
-This repository is equiped with automated builds using *Travis
-CI*. All commits pushed to the repository will result in test
-builds. If a commit is tagged and pushed the repository, a GitHub
-*prerelease* with the name of the tag will be automatically created
-and have the build output packages attached. These include both the
-internal (filenames ending with `BETA`) and external (plain filenames)
-installer packages.
+This repository is equipped with automated builds using *GitHub
+actions*. All commits pushed to the repository will result in test
+builds that can be found under the [actions
+tab](https://github.com/specify/specify6/actions) with downloadable
+package artifacts for testing that persist for 90 days. If a commit is
+tagged and pushed the repository, a GitHub *draft prerelease* with the
+name of the tag will be automatically created and have the build
+output packages attached.
 
 ## Proposed Release Process (starting with v6.7.00)
 
@@ -146,7 +134,7 @@ A process for producing final releases could be as follows:
    directory named `XYZ` where *X*, *Y*, and *Z* come from the version
    number `X.Y.Z`.
 
-1. Upload the external installer packages and `updates.xml` to the
+1. Upload the installer packages and `updates.xml` to the
    newly created directory.
 
 1. Upload the `readme.html` for the new version to the new directory

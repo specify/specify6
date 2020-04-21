@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -176,7 +176,7 @@ public class SiteGen
                                  final DisciplineType  disciplineType)
     {
         
-        log.info("Logging into "+dbName+"....");
+        log.info("Logging into "+dbName+"...");
         
         String connStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Create, hostName, dbName);
         if (connStr == null)
@@ -198,7 +198,7 @@ public class SiteGen
         
         session = HibernateUtil.getCurrentSession();
 
-        log.info("Creating database "+dbName+"....");
+        log.info("Creating database "+dbName+"...");
         
         try
         {

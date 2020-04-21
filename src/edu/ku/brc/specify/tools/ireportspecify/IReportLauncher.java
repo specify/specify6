@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -95,7 +95,7 @@ public class IReportLauncher implements DatabaseLoginListener
             {
                 
                 // TODO This is really bad because there is a Database Login with no Specify login
-                JOptionPane.showMessageDialog(null, 
+                JOptionPane.showMessageDialog(null,
                                               getResourceString("Specify.LOGIN_USER_MISMATCH"),  //$NON-NLS-1$
                                               getResourceString("Specify.LOGIN_USER_MISMATCH_TITLE"),  //$NON-NLS-1$
                                               JOptionPane.ERROR_MESSAGE);

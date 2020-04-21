@@ -1,7 +1,7 @@
-/* Copyright (C) 2017, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  *
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -190,9 +190,9 @@ public class ERTICaptionInfoRecId extends ERTICaptionInfoQB {
             Object dataObj = lookupInfo[1];
             String formatter = getDataObjFormatter(ti);
             if (formatter != null && dataObj != null) {
-                return cache(ti.getTableId(),(Integer)lookupInfo[2], DataObjFieldFormatMgr.getInstance().format(dataObj, formatter) + " {" + lookupInfo[2] + "}");
+                return cache(ti.getTableId(),(Integer)lookupInfo[2], DataObjFieldFormatMgr.getInstance().format(dataObj, formatter));
             } else {
-                return cache(ti.getTableId(), (Integer)lookupInfo[2], ti.getTitle() + " {" + lookupInfo[2] + "}");
+                return cache(ti.getTableId(), (Integer)lookupInfo[2], ti.getTitle() + " [" + lookupInfo[2] + "]");
             }
         }
         return null;

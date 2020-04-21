@@ -420,6 +420,27 @@
     </hashtable>
   </entry>
   <entry>
+    <string>accessioncitation</string>
+    <hashtable>
+      <entry>
+        <string>Manager</string>
+        <tp name="accessioncitation" type="Manager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>LimitedAccess</string>
+        <tp name="accessioncitation" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>Guest</string>
+        <tp name="accessioncitation" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>FullAccess</string>
+        <tp name="accessioncitation" type="FullAccess" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
     <string>collectionobjectcitation</string>
     <hashtable>
       <entry>
@@ -3108,6 +3129,27 @@
     </hashtable>
   </entry>
   <entry>
+    <string>taxonattribute</string>
+    <hashtable>
+      <entry>
+        <string>Manager</string>
+        <tp name="taxonattribute" type="Manager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>LimitedAccess</string>
+        <tp name="taxonattribute" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>Guest</string>
+        <tp name="taxonattribute" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>FullAccess</string>
+        <tp name="taxonattribute" type="FullAccess" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
     <string>splocalecontaineritem</string>
     <hashtable>
       <entry>
@@ -3440,6 +3482,90 @@
       <entry>
         <string>FullAccess</string>
         <tp name="repositoryagreementattachment" type="FullAccess" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>extractor</string>
+    <hashtable>
+      <entry>
+        <string>Manager</string>
+        <tp name="extractor" type="Manager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>LimitedAccess</string>
+        <tp name="extractor" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>Guest</string>
+        <tp name="extractor" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>FullAccess</string>
+        <tp name="extractor" type="FullAccess" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>pcrperson</string>
+    <hashtable>
+      <entry>
+        <string>Manager</string>
+        <tp name="pcrperson" type="Manager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>LimitedAccess</string>
+        <tp name="pcrperson" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>Guest</string>
+        <tp name="pcrperson" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>FullAccess</string>
+        <tp name="pcrperson" type="FullAccess" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>spauditlog</string>
+    <hashtable>
+      <entry>
+        <string>Manager</string>
+        <tp name="spauditlog" type="Manager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>LimitedAccess</string>
+        <tp name="spauditlog" type="LimitedAccess" view="false" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>Guest</string>
+        <tp name="spauditlog" type="Guest" view="false" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>FullAccess</string>
+        <tp name="spauditlog" type="FullAccess" view="false" modify="false" del="false" add="false"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>spauditlogfield</string>
+    <hashtable>
+      <entry>
+        <string>Manager</string>
+        <tp name="spauditlogfield" type="Manager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>LimitedAccess</string>
+        <tp name="spauditlogfield" type="LimitedAccess" view="false" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>Guest</string>
+        <tp name="spauditlogfield" type="Guest" view="false" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>FullAccess</string>
+        <tp name="spauditlogfield" type="FullAccess" view="false" modify="false" del="false" add="false"/>
       </entry>
     </hashtable>
   </entry>

@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,9 +19,7 @@
 */
 package edu.ku.brc.af.ui.db;
 
-import java.awt.Dialog;
-import java.awt.Dimension;
-import java.awt.Frame;
+import java.awt.*;
 
 import javax.swing.BorderFactory;
 import javax.swing.JScrollBar;
@@ -218,7 +216,64 @@ public class ViewBasedDisplayDialog extends CustomDialog implements ViewBasedDis
             this.setOkLabel(closeBtnTitle);
         }
     }
-    
+
+    public ViewBasedDisplayDialog(Dialog parentDlg,
+                                  final String    viewSetName,
+                                  final String    viewName,
+                                  final String    displayName,
+                                  final String    title,
+                                  final String    closeBtnTitle,
+                                  final String    className,
+                                  final String    idFieldName,
+                                  final boolean   isEdit,
+                                  final boolean   doRegOKBtn,
+                                  final String    cellName,
+                                  final MultiView mvParent,
+                                  final int       options,
+                                  final int       dlgBtnOptions)
+    {
+        super(parentDlg, title, true, dlgBtnOptions, null);
+
+        viewBasedPanel = new ViewBasedDisplayPanel(this,
+                viewSetName,
+                viewName,
+                displayName,
+                className,
+                idFieldName,
+                isEdit,
+                doRegOKBtn,
+                cellName,
+                mvParent,
+                options | MultiView.NO_SCROLLBARS);
+
+        if (StringUtils.isNotEmpty(closeBtnTitle))
+        {
+            this.setOkLabel(closeBtnTitle);
+        }
+    }
+
+    public static ViewBasedDisplayDialog create(final String    viewSetName,
+                                                final String    viewName,
+                                                final String    displayName,
+                                                final String    title,
+                                                final String    closeBtnTitle,
+                                                final String    className,
+                                                final String    idFieldName,
+                                                final boolean   isEdit,
+                                                final boolean   doRegOKBtn,
+                                                final String    cellName,
+                                                final MultiView mvParent,
+                                                final int       options,
+                                                final int       dlgBtnOptions) {
+        Window parentDlg = UIRegistry.getMostRecentWindow();
+        if (parentDlg instanceof Dialog) {
+            return new ViewBasedDisplayDialog((Dialog)parentDlg, viewSetName, viewName, displayName, title, closeBtnTitle, className,
+                    idFieldName, isEdit, doRegOKBtn, cellName, mvParent, options, dlgBtnOptions);
+        } else {
+            return new ViewBasedDisplayDialog((Frame)UIRegistry.getTopWindow(), viewSetName, viewName, displayName, title, closeBtnTitle, className,
+                    idFieldName, isEdit, doRegOKBtn, cellName, mvParent, options, dlgBtnOptions);
+        }
+    }
     /**
      * Enables the caller to have the UI pre-created before the setVisible 
      */

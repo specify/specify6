@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,9 +22,7 @@ package edu.ku.brc.specify.tools.schemalocale;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static edu.ku.brc.ui.UIRegistry.getTopWindow;
 
-import java.awt.BorderLayout;
-import java.awt.Frame;
-import java.awt.HeadlessException;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -104,23 +102,47 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
     protected Vector<PickList>   newPickLists = new Vector<PickList>();
     
     /**
+     * @param owner
      * @param localizableIO
      * @param doAddRemoveArg indicates whether to add the 'Add' and 'Remove' picklist btns
      * @param doAddImpExp indicates whether to add the import/export buttons
      * @throws HeadlessException
      */
-    public PickListEditorDlg(final LocalizableIOIFace localizableIO,
+    public PickListEditorDlg(final Dialog owner,
+                             final LocalizableIOIFace localizableIO,
                              final boolean doAddRemoveArg,
                              final boolean doAddImpExp) throws HeadlessException
     {
-        super((Frame)getTopWindow(), 
-              getResourceString("PICKLIST_EDITOR"), true, doAddRemoveArg ? OKCANCELAPPLYHELP : OKHELP, null, OK_BTN);
-        
+        super(owner, getResourceString("PICKLIST_EDITOR"), true,
+                doAddRemoveArg ? OKCANCELAPPLYHELP : OKHELP, null, OK_BTN);
+        construct(localizableIO, doAddRemoveArg, doAddImpExp);
+    }
+
+    /**
+     * @param owner
+     * @param localizableIO
+     * @param doAddRemoveArg indicates whether to add the 'Add' and 'Remove' picklist btns
+     * @param doAddImpExp indicates whether to add the import/export buttons
+     * @throws HeadlessException
+     */
+    public PickListEditorDlg(final Frame owner,
+                             final LocalizableIOIFace localizableIO,
+                             final boolean doAddRemoveArg,
+                             final boolean doAddImpExp) throws HeadlessException
+    {
+        super(owner, getResourceString("PICKLIST_EDITOR"), true,
+                doAddRemoveArg ? OKCANCELAPPLYHELP : OKHELP, null, OK_BTN);
+        construct(localizableIO, doAddRemoveArg, doAddImpExp);
+    }
+
+    private void construct(final LocalizableIOIFace localizableIO,
+                           final boolean doAddRemoveArg,
+                           final boolean doAddImpExp) throws HeadlessException {
         this.localizableIO = localizableIO;
         this.helpContext   = "PL_HELP_CONTEXT";
         this.okLabel       = getResourceString("CLOSE");
         this.doAddRemove   = doAddRemoveArg;
-        
+
         if (doAddImpExp)
         {
             this.cancelLabel = getResourceString("Export");
@@ -444,7 +466,7 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
         
         dlg.setData(pickList);
         dlg.setModal(true);
-        UIHelper.centerAndShow(dlg);
+        dlg.setVisible(true);
         
         if (dlg.getBtnPressed() == ViewBasedDisplayIFace.OK_BTN)
         {

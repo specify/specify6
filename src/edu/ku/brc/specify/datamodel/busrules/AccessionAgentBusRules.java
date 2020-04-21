@@ -175,23 +175,22 @@ public class AccessionAgentBusRules extends BaseBusRules
             } 
         }
         
-        String key = agent.getId() + "_";
-        hash.remove(key);
-        key += (role == null ? "" : role);
-        
-        if (hash.get(key) != null)
-        {
-            UIRegistry.showLocalizedError("ACCESSION_DUP_AGENTROLE", agent.getIdentityTitle(), role);
-            
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run()
-                {
-                    roleCBX.setValue(null, null);
-                }
-            });
+        if (agent != null && agent.getId() != null) {
+            String key = agent.getId() + "_";
+            hash.remove(key);
+            key += (role == null ? "" : role);
+
+            if (hash.get(key) != null) {
+                UIRegistry.showLocalizedError("ACCESSION_DUP_AGENTROLE", agent.getIdentityTitle(), role);
+
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        roleCBX.setValue(null, null);
+                    }
+                });
+            }
         }
-        
     }
 
     /* (non-Javadoc)

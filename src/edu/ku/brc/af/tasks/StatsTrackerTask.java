@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -416,21 +416,21 @@ public class StatsTrackerTask extends BaseTask
      * @param sql the SQL statement to be executed
      * @return the value of the count query
      */
-    protected int addStat(final String statName, final Vector<NameValuePair> statsList, final String sql)
+    protected long addStat(final String statName, final Vector<NameValuePair> statsList, final String sql)
     {
-        Integer count = 0;
+        Number count = Long.valueOf(0L);
         if (sql != null)
         {
             count = BasicSQLUtils.getCount(sql);
             if (count != null)
             {
-                statsList.add(new NameValuePair(statName, Integer.toString(count)));
+                statsList.add(new NameValuePair(statName, count.toString()));
             } else
             {
-                return 0;
+                return 0L;
             }
         }
-        return count;
+        return count.longValue();
     }
     
     /**

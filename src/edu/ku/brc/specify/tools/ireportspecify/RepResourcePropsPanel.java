@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -427,7 +427,7 @@ public class RepResourcePropsPanel extends JPanel
     
     public static void main(String args[])
     {
-        CustomDialog tcd = new CustomDialog(null, "Testing", false, 
+        CustomDialog tcd = new CustomDialog((java.awt.Frame)null, "Testing", false,
                 new RepResourcePropsPanel(null, null, true, null));
         centerAndShow(tcd);
     }

@@ -4,62 +4,11 @@
 package edu.ku.brc.specify.tools.export;
 
 
-import static edu.ku.brc.ui.UIHelper.createButton;
-import static edu.ku.brc.ui.UIRegistry.getResourceString;
-
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Frame;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Locale;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
-import java.util.Vector;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextArea;
-import javax.swing.ListSelectionModel;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.table.DefaultTableModel;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.apache.tools.ant.util.FileUtils;
-
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.ExperienceBlue;
-
 import edu.ku.brc.af.auth.UserAndMasterPasswordMgr;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.ContextMgr;
@@ -81,24 +30,11 @@ import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Collection;
-import edu.ku.brc.specify.datamodel.SpExportSchemaItemMapping;
-import edu.ku.brc.specify.datamodel.SpExportSchemaMapping;
-import edu.ku.brc.specify.datamodel.SpQuery;
-import edu.ku.brc.specify.datamodel.SpQueryField;
-import edu.ku.brc.specify.datamodel.SpSymbiotaInstance;
-import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.specify.datamodel.*;
 import edu.ku.brc.specify.tasks.ExportMappingTask;
 import edu.ku.brc.specify.tasks.QueryTask;
 import edu.ku.brc.specify.tasks.StartUpTask;
-import edu.ku.brc.specify.tasks.subpane.qb.ERTICaptionInfoQB;
-import edu.ku.brc.specify.tasks.subpane.qb.HQLSpecs;
-import edu.ku.brc.specify.tasks.subpane.qb.QBDataSource;
-import edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace;
-import edu.ku.brc.specify.tasks.subpane.qb.QueryBldrPane;
-import edu.ku.brc.specify.tasks.subpane.qb.QueryFieldPanel;
-import edu.ku.brc.specify.tasks.subpane.qb.QueryParameterPanel;
-import edu.ku.brc.specify.tasks.subpane.qb.TableQRI;
-import edu.ku.brc.specify.tasks.subpane.qb.TableTree;
+import edu.ku.brc.specify.tasks.subpane.qb.*;
 import edu.ku.brc.specify.tools.webportal.BuildSearchIndex2;
 import edu.ku.brc.specify.ui.AppBase;
 import edu.ku.brc.specify.ui.HelpMgr;
@@ -111,6 +47,28 @@ import edu.ku.brc.util.AttachmentManagerIface;
 import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.Pair;
 import edu.ku.brc.util.WebStoreAttachmentMgr;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.apache.tools.ant.util.FileUtils;
+
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.sql.*;
+import java.util.*;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static edu.ku.brc.ui.UIHelper.createButton;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 
 /**
@@ -361,7 +319,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 							new JFileChooser(new File(defPath));
 						save.setFileSelectionMode(JFileChooser.FILES_ONLY);
                         save.setFileFilter(new UIFileFilter("zip"));
-						int result = save.showSaveDialog(null);
+						int result = save.showSaveDialog(UIHelper.getWindow(ExportPanel.this));
 	    				if (result != JFileChooser.APPROVE_OPTION)
 						{	
 							return;
@@ -451,12 +409,28 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 					}
 					AppPreferences localPrefs =  AppPreferences.getLocalPrefs();
 					String defPath = localPrefs.get(EXPORT_TEXT_PATH, null);
-					JFileChooser save = defPath == null ? new JFileChooser() :
-						new JFileChooser(new File(defPath));
-					int result = save.showSaveDialog(null);
-    				if (result != JFileChooser.APPROVE_OPTION)
-					{	
-						return;
+					JFileChooser save = defPath == null ? new JFileChooser() : new JFileChooser(new File(defPath));
+					save.setFileFilter(new FileNameExtensionFilter("csv files", "csv"));
+					boolean choosing = true;
+					File file = null;
+					while (choosing) {
+						int result = save.showSaveDialog(UIHelper.getWindow(ExportPanel.this));
+						if (result != JFileChooser.APPROVE_OPTION) {
+							return;
+						} else {
+							String fileText = save.getSelectedFile().getAbsolutePath();
+							if (!fileText.toLowerCase().endsWith(".csv")) {
+								fileText += ".csv";
+							}
+							file = new File(fileText);
+							if (file.exists()) {
+								choosing = !UIRegistry.displayConfirm(getResourceString("ExportPanel.FileExists"),
+										String.format(getResourceString("ExportPanel.OverwriteExistingFile"), file.getName()),
+										getResourceString("YES"), getResourceString("No"), JOptionPane.WARNING_MESSAGE);
+							} else {
+								choosing = false;
+							}
+						}
 					}
     				localPrefs.put(EXPORT_TEXT_PATH, save.getCurrentDirectory().getPath());
 					mapUpdating.set(row);
@@ -466,8 +440,6 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 						.getQueryField().getQuery();
 					Vector<QBDataSourceListenerIFace> ls = new Vector<QBDataSourceListenerIFace>();
 					ls.add(ExportPanel.this);
-					//File file = new File(UIRegistry.getDefaultWorkingPath() + File.separator + q.getName() + ".txt");
-					File file = save.getSelectedFile();
 					exportToDbTblBtn.setEnabled(false);
 					exportToTabDelimBtn.setEnabled(false);
 					dumper = ExportToMySQLDB.exportRowsToTabDelimitedText(file, null, getCacheTableName(q.getName()), ls);
@@ -602,7 +574,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
         exportToDbTblBtn.setEnabled(false);
         setupWebPortalBtn.setEnabled(false);
         quitBtn.setEnabled(false);
-        
+        AppPreferences.shutdownLocalPrefs();
         // Need for proper UI feedback
         SwingUtilities.invokeLater(new Runnable()
         {

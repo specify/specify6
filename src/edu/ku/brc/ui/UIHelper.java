@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -474,7 +474,6 @@ public final class UIHelper
                                      final Integer height)
     {
         centerWindow(window, width, height);
-
         window.setVisible(true);
     }
 
@@ -484,7 +483,11 @@ public final class UIHelper
      */
     public static void centerAndShow(java.awt.Window window)
     {
-        centerAndShow(window, null, null);
+        if (window instanceof CustomDialog) {
+            window.setVisible(true);
+        } else {
+            centerAndShow(window, null, null);
+        }
     }
 
     /**
@@ -493,7 +496,11 @@ public final class UIHelper
      */
     public static void centerWindow(final java.awt.Window window)
     {
-        centerWindow(window, null, null);
+        if (window instanceof CustomDialog) {
+            window.setLocationRelativeTo(window.getOwner());
+        } else {
+            centerWindow(window, null, null);
+        }
     }
 
     /**
@@ -509,7 +516,7 @@ public final class UIHelper
         JFrame topFrame = (JFrame)UIRegistry.getTopWindow();
         Insets    screenInsets = null;
         Rectangle screenRect   = null;
-        
+
         if (width != null || height != null)
         {
             Dimension s = window.getSize();
@@ -517,7 +524,7 @@ public final class UIHelper
             if (height != null) s.height = height;
             window.setSize(s);
         }
-        
+
         // if there is a registered TOPFRAME, and it's not the same as the window being passed in...
         if (topFrame != null && topFrame != window)
         {
@@ -529,7 +536,7 @@ public final class UIHelper
             screenRect = window.getGraphicsConfiguration().getBounds();
             screenInsets = Toolkit.getDefaultToolkit().getScreenInsets(window.getGraphicsConfiguration());
         }
-        
+
         // Make sure we don't place the demo off the screen.
         int centerWidth = screenRect.width < window.getSize().width ? screenRect.x : screenRect.x
             + screenRect.width / 2 - window.getSize().width / 2;

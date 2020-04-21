@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -881,11 +881,11 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
                             String msg = String.format(getResourceString("RecordSetTask.MERGE_SUCCESS"), new Object[] {srcTI.getShortClassName(), dstTI.getShortClassName()});
                             UIRegistry.displayStatusBarText(msg);
                         } else {
-                            JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), mergeErrStr, getResourceString("Error"), JOptionPane.ERROR_MESSAGE);
+                            JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(), mergeErrStr, getResourceString("Error"), JOptionPane.ERROR_MESSAGE);
                         }
                     }
                 } else {
-                    JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), mergeErrStr, getResourceString("Error"), JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(), mergeErrStr, getResourceString("Error"), JOptionPane.ERROR_MESSAGE);
                 }
             } else {
                 log.error("The src or the dst RecordSet were null src["+srcRecordSet+"]  dst["+dstRecordSet+"]");
@@ -1114,27 +1114,7 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
             Object data = cmdAction.getData();
             if (data instanceof RecordSetIFace)
             {
-                // If there is only one item in the RecordSet then the User will most likely want it named the same
-                // as the "identity" of the data object. So this goes and gets the Identity name and
-                // pre-sets the name in the dialog.
-                String intialName = "";
-                RecordSetIFace recordSet = (RecordSetIFace)cmdAction.getData();
-                if (recordSet.getNumItems() == 1)
-                {
-                    RecordSetItemIFace item = recordSet.getOrderedItems().iterator().next();
-                    DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-                    String                   sqlStr  = DBTableIdMgr.getInstance().getQueryForTable(recordSet.getDbTableId(), item.getRecordId());
-                    if (StringUtils.isNotEmpty(sqlStr))
-                    {
-                        Object dataObj = session.getData(sqlStr);
-                        if (dataObj != null)
-                        {
-                            intialName = ((FormDataObjIFace)dataObj).getIdentityTitle();
-                        }
-                    }
-                    session.close();
-                }
-                String rsName  = getUniqueRecordSetName(intialName);
+                String rsName  = getUniqueRecordSetName("");
                 if (isNotEmpty(rsName))
                 {
                     RecordSet rs = (RecordSet)data;

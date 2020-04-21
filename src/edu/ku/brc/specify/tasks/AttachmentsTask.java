@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -34,6 +34,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
+import edu.ku.brc.af.auth.BasicPermisionPanel;
+import edu.ku.brc.af.auth.PermissionEditorIFace;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -346,7 +348,7 @@ public class AttachmentsTask extends BaseTask implements ImageLoaderListener
             String       usrHome = System.getProperty("user.home");
             JFileChooser dlg     = new JFileChooser(usrHome);
             dlg.setSelectedFile(new File(origFilePath));
-            int rv = dlg.showSaveDialog((Frame)UIRegistry.getTopWindow());
+            int rv = dlg.showSaveDialog(UIRegistry.getMostRecentWindow());
             if (rv == JFileChooser.APPROVE_OPTION)
             {
                 File file = dlg.getSelectedFile();
@@ -463,6 +465,11 @@ public class AttachmentsTask extends BaseTask implements ImageLoaderListener
         //adminNavBox  = new NavBox("Admin");
     }
 
+    public PermissionEditorIFace getPermEditorPanel()
+    {
+        return new BasicPermisionPanel("ATTACHMENTS", "ENABLE", null,
+                null, null);
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.core.BaseTask#getStarterPane()

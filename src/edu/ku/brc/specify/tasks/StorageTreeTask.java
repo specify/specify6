@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -95,7 +95,7 @@ public class StorageTreeTask extends BaseTreeTask<Storage, StorageTreeDef, Stora
         // it only initializes the immediate links, not objects that are multiple hops away
         ttv.initializeNodeAssociations(storage);
         
-        if (storage.getPreparations().size() == 0)
+        if (storage.getPreparations().size() + storage.getAlternateStoragePreparations().size() == 0)
         {
             UIRegistry.getStatusBar().setText(getResourceString("TTV_TAXON_NO_COS_FOR_NODE"));
             return;
@@ -113,7 +113,16 @@ public class StorageTreeTask extends BaseTreeTask<Storage, StorageTreeDef, Stora
         Vector<Integer> idList = new Vector<Integer>();
         
         fillListWithIds(sql, idList);
-        
+        // Get the Collection Objects from the Preparations
+        for (Integer id : idList)
+        {
+            duplicateHash.put(id, true);
+        }
+
+        sql = "SELECT p.CollectionObjectID FROM storage as st INNER JOIN preparation as p ON st.StorageID = p.alternateStorageID " +
+                "WHERE st.StorageID = "+storage.getStorageId()+" AND p.CollectionMemberID = COLMEMID";
+        fillListWithIds(sql, idList);
+
         // Get the Collection Objects from the Preparations
         for (Integer id : idList)
         {

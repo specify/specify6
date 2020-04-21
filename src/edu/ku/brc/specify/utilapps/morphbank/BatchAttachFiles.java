@@ -297,36 +297,8 @@ public class BatchAttachFiles
         dlg.setHelpContext(helpContext);
         //dlg.setHelpContext("NEED_HELP_CONTEXT");
         dlg.createUI();
-        
-//        dlg.getList().addListSelectionListener(new ListSelectionListener()
-//        {
-//            @Override
-//            public void valueChanged(ListSelectionEvent e)
-//            {
-//                JList<?> list = (JList<?>)e.getSource();
-//                int selIndex = list.getSelectedIndex();
-//                if (selIndex > -1)
-//                {
-//                    final FileNameParserIFace fnp = items.get(selIndex);
-//                    
-//                    if (fnp.getTableId() == CollectingEvent.getClassTableId() && 
-//                        fnp.getFieldName().equals("stationFieldNumber"))
-//                    {
-//                        SwingUtilities.invokeLater(new Runnable()
-//                        {
-//                            @Override
-//                            public void run()
-//                            {
-//                                UIRegistry.showLocalizedError(JOptionPane.WARNING_MESSAGE, "ATTCH_UNIQUE_FIELD", fnp.getFieldTitle());
-//                            }
-//                        });
-//                    }
-//                }
-//            }
-//        });
-        
-        
-        UIHelper.centerAndShow(dlg);
+
+        dlg.setVisible(true);
         if (dlg.isNotCancelled())
         {
             return (FileNameParserIFace)dlg.getSelectedObject();
@@ -351,7 +323,7 @@ public class BatchAttachFiles
             //fileChooser.setFileHidingEnabled(true);
     
             File indexFile      = null;
-            int    returnVal = fileChooser.showOpenDialog(getTopWindow());
+            int    returnVal = fileChooser.showOpenDialog(UIRegistry.getMostRecentWindow());
             if (returnVal == JFileChooser.APPROVE_OPTION)
             {
                 indexFile = fileChooser.getSelectedFile();
@@ -387,7 +359,7 @@ public class BatchAttachFiles
                     chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             
                     File indexFile      = null;
-                    int    returnVal = chooser.showOpenDialog(getTopWindow());
+                    int    returnVal = chooser.showOpenDialog(getMostRecentWindow());
                     if (returnVal == JFileChooser.APPROVE_OPTION)
                     {
                         indexFile = chooser.getSelectedFile();
@@ -404,7 +376,7 @@ public class BatchAttachFiles
                 } else
                 {
                     String title = "title";
-                    FileDialog dialog = new FileDialog((Frame)null, title, FileDialog.LOAD);
+                    FileDialog dialog = new FileDialog((Frame)UIRegistry.getTopWindow(), title, FileDialog.LOAD);
                     dialog.setMultipleMode(true);
                     
                     // FILE FILTER!!!!!!!!!

@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -335,7 +335,7 @@ public class ConvertVerifier extends AppBase
             verifyTableCounts(tableNames[i].toLowerCase(), tableNames[i+1].toLowerCase());
         }
         
-        progressFrame = new ProgressFrame("Checking Catalog Objects....");
+        progressFrame = new ProgressFrame("Checking Catalog Objects...");
         progressFrame.adjustProgressFrame();
         
         String cntSQL = compareTo6DBs ? "SELECT COUNT(*) FROM collectionobject" :
@@ -343,7 +343,7 @@ public class ConvertVerifier extends AppBase
         Integer numColObjs = BasicSQLUtils.getCount(oldDBConn, cntSQL);
         
         progressFrame.setProcess(0, numColObjs);
-        //progressFrame.setDesc("Checking Catalog Objects....");
+        //progressFrame.setDesc("Checking Catalog Objects...");
         
         progressFrame.setOverall(0, numColObjs*4);
         progressFrame.setOverall(0);
@@ -2958,7 +2958,7 @@ public class ConvertVerifier extends AppBase
 	                		
 	                	} else
 	                	{
-	                	    JOptionPane.showMessageDialog(null, "The ConvertVerifier was unable to login", "Not Logged In", JOptionPane.ERROR_MESSAGE);
+	                	    JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(), "The ConvertVerifier was unable to login", "Not Logged In", JOptionPane.ERROR_MESSAGE);
 	                	    System.exit(0);
 	                	}
                 	} catch (Exception ex)
@@ -3018,9 +3018,9 @@ public class ConvertVerifier extends AppBase
         panel.add(new JLabel(IconManager.getIcon("SpecifyLargeIcon")), cc.xy(1, 1));
         panel.add(pb.getPanel(), cc.xy(3, 1));
 
-        CustomDialog dlg = new CustomDialog(null, "Database Info", true, panel.getPanel());
+        CustomDialog dlg = new CustomDialog((java.awt.Frame)null, "Database Info", true, panel.getPanel());
         ((JPanel)dlg.getContentPanel()).setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        UIHelper.centerAndShow(dlg);
+        dlg.setVisible(true);
         
         dlg.dispose();
         if (dlg.isCancelled())
@@ -3254,7 +3254,7 @@ public class ConvertVerifier extends AppBase
                 
                 pb.setDefaultDialogBorder();
                 
-                final CustomDialog dlg = new CustomDialog(null, "Select a DB to Verify", true, pb.getPanel());
+                final CustomDialog dlg = new CustomDialog((java.awt.Frame)null, "Select a DB to Verify", true, pb.getPanel());
                 
                 ListSelectionListener lsl = new ListSelectionListener() {
                     @Override

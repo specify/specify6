@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -94,7 +94,7 @@ public class TrayImageIcon implements Trayable
             hsvDbl = RGBtoHSV(0, 0, 255);
             System.out.println(hsvDbl[0]+","+hsvDbl[1]+","+hsvDbl[2]+"   ");
             
-            imgIcon = GraphicsUtils.scaleImageToIconImage(destImage, 120, 120, true, true);
+            imgIcon = GraphicsUtils.scaleImageToIconImage("jpeg", destImage, 120, 120, true, true);
         } catch (IOException e)
         {
             e.printStackTrace();

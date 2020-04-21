@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -215,7 +215,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	/**
 	 *
 	 */
-    @Column(name = "Name", nullable=false, length = 64)
+    @Column(name = "Name", nullable=false, length = 128)
 	public String getName()
 	{
 		return this.name;
@@ -255,7 +255,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	/**
 	 * @return the fullName
 	 */
-    @Column(name = "FullName", length = 255)
+    @Column(name = "FullName", length = 500)
 	public String getFullName()
 	{
 		return fullName;

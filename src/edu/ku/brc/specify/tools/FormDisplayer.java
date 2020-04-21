@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -202,7 +202,7 @@ public class FormDisplayer
         PanelBuilder pb = new PanelBuilder(new FormLayout("p", "p"));
         pb.add(stopBtn, (new CellConstraints()).xy(1, 1));
         pb.setDefaultDialogBorder();
-        cancelDlg = new CustomDialog((Frame)null, "Stop Image Generation", false, CustomDialog.OK_BTN, pb.getPanel());
+        cancelDlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), "Stop Image Generation", false, CustomDialog.OK_BTN, pb.getPanel());
         cancelDlg.setOkLabel(getResourceString("CLOSE"));
         
         cancelDlg.setAlwaysOnTop(true);
@@ -535,7 +535,7 @@ public class FormDisplayer
             {
                 if (!dstDirFile.mkdirs())
                 {
-                    JOptionPane.showMessageDialog(null, "Error creating the site directory.");
+                    JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(), "Error creating the site directory.");
                 }
             }
             
@@ -594,7 +594,7 @@ public class FormDisplayer
         } catch (Exception ex)
         {
             ex.printStackTrace();
-            JOptionPane.showMessageDialog(null, "You are missing the template that is needed to run this tool.");
+            JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(), "You are missing the template that is needed to run this tool.");
         }
         return null;
     }
@@ -648,7 +648,7 @@ public class FormDisplayer
         } catch (IOException ex)
         {
             ex.printStackTrace();
-            JOptionPane.showMessageDialog(null, "You are missing the template that is needed to run this tool.");
+            JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(), "You are missing the template that is needed to run this tool.");
             return false;
         }
         

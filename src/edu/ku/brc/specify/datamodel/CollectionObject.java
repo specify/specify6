@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -102,6 +102,7 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
     protected String                        fieldNumber;
     protected String                        description;
     protected String                        projectNumber;
+    protected Integer numberOfDuplicates;
     protected String                        text1;
     protected String                        text2;
     protected String                        text3;
@@ -201,6 +202,7 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
         collectionObjectId    = null;
         fieldNumber           = null;
         description           = null;
+        numberOfDuplicates = null;
         text1                 = null;
         text2                 = null;
         text3                 = null;
@@ -445,6 +447,15 @@ public void setReservedText3(String reservedText3) {
 
     public void setNumber2(Float number2) {
         this.number2 = number2;
+    }
+
+    @Column(name = "NumberOfDuplicates", unique = false, nullable = true, insertable = true, updatable = true)
+    public Integer getNumberOfDuplicates() {
+        return numberOfDuplicates;
+    }
+
+    public void setNumberOfDuplicates(Integer numberOfDuplicates) {
+        this.numberOfDuplicates = numberOfDuplicates;
     }
 
     /**
@@ -1267,7 +1278,7 @@ public void setReservedText3(String reservedText3) {
     /**
      *
      */
-    @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "collectionObject")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "collectionObject")
     @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<OtherIdentifier> getOtherIdentifiers() {
         return this.otherIdentifiers;
@@ -1613,6 +1624,16 @@ public void setReservedText3(String reservedText3) {
         	//prj.getCollectionObjects().size();
         	
         	prj.getProjectName();
+        }
+
+        dnaSequences.size();
+        for (DNASequence dnaS : dnaSequences) {
+            dnaS.forceLoad();
+        }
+
+        conservDescriptions.size();
+        for (ConservDescription cd : conservDescriptions) {
+            cd.forceLoad();
         }
     }
     

@@ -1,22 +1,22 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
- * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
- * 
+/* Copyright (C) 2020, Specify Collections Consortium
+ *
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-*/
+ */
 package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
@@ -25,12 +25,15 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 
 import javax.swing.JOptionPane;
 
+import edu.ku.brc.dbsupport.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -80,11 +83,11 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
     protected int              isFor;
     protected int              tableId;
     protected Viewable         viewable = null;
-    
+
     /**
-     * 
+     *
      */
-    public InteractionsProcessor(final InteractionsTask task, 
+    public InteractionsProcessor(final InteractionsTask task,
                                  final int          isFor,
                                  final int              tableId)
     {
@@ -92,8 +95,8 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
         this.isFor  = isFor;
         this.tableId = tableId;
     }
-    
-    
+
+
     /**
      * Asks where the source of the Loan Preps should come from.
      * @return the source enum
@@ -104,7 +107,7 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
         if (hasInfoReqs && hasColObjRS)
         {
             label = getResourceString("NEW_INTER_USE_RS_IR");
-            
+
         } else if (hasInfoReqs)
         {
             label = getResourceString("NEW_INTER_USE_IR");
@@ -112,49 +115,49 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
         {
             label = getResourceString("NEW_INTER_USE_RS");
         }
-        
+
         boolean isForAcc = isFor == forAcc;
         Object[] options = new Object[!isForAcc || (isForAcc && ((!hasInfoReqs && !hasColObjRS) || currPrepProvider != null)) ? 2 : 3];
-        Integer dosOpt = null; 
-        Integer rsOpt = null; 
-        Integer noneOpt = null; 
+        Integer dosOpt = null;
+        Integer rsOpt = null;
+        Integer noneOpt = null;
         if (!isForAcc || currPrepProvider != null) {
-        	options[0] = label;
-        	options[1] = getResourceString("NEW_INTER_ENTER_CATNUM");
-        	rsOpt = JOptionPane.YES_OPTION;
-        	dosOpt = JOptionPane.NO_OPTION;
+            options[0] = label;
+            options[1] = getResourceString("NEW_INTER_ENTER_CATNUM");
+            rsOpt = JOptionPane.YES_OPTION;
+            dosOpt = JOptionPane.NO_OPTION;
         } else {
-        	if (options.length == 2) {
-        		options[0] = getResourceString("NEW_INTER_ENTER_CATNUM");
-        		options[1] = getResourceString("NEW_INTER_EMPTY");
-        		dosOpt = JOptionPane.YES_OPTION;
-        		noneOpt = JOptionPane.NO_OPTION;
-        	} else {
-            	options[0] = label;
-            	options[1] = getResourceString("NEW_INTER_ENTER_CATNUM");
-            	options[2] = getResourceString("NEW_INTER_EMPTY");
-            	rsOpt = JOptionPane.YES_OPTION;
-            	dosOpt = JOptionPane.NO_OPTION;
-            	noneOpt = JOptionPane.CANCEL_OPTION;
-        	}
+            if (options.length == 2) {
+                options[0] = getResourceString("NEW_INTER_ENTER_CATNUM");
+                options[1] = getResourceString("NEW_INTER_EMPTY");
+                dosOpt = JOptionPane.YES_OPTION;
+                noneOpt = JOptionPane.NO_OPTION;
+            } else {
+                options[0] = label;
+                options[1] = getResourceString("NEW_INTER_ENTER_CATNUM");
+                options[2] = getResourceString("NEW_INTER_EMPTY");
+                rsOpt = JOptionPane.YES_OPTION;
+                dosOpt = JOptionPane.NO_OPTION;
+                noneOpt = JOptionPane.CANCEL_OPTION;
+            }
         }
 
-        int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
-                                                     getResourceString("NEW_INTER_CHOOSE_RSOPT"), 
-                                                     getResourceString("NEW_INTER_CHOOSE_RSOPT_TITLE"), 
-                                                     JOptionPane.YES_NO_CANCEL_OPTION,
-                                                     JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+        int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(),
+                getResourceString("NEW_INTER_CHOOSE_RSOPT"),
+                getResourceString("NEW_INTER_CHOOSE_RSOPT_TITLE"),
+                JOptionPane.YES_NO_CANCEL_OPTION,
+                JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
         if (userChoice == dosOpt) {
             return ASK_TYPE.EnterDataObjs;
         } else if (rsOpt != null && userChoice == rsOpt) {
             return ASK_TYPE.ChooseRS;
         } else if (noneOpt != null && userChoice == noneOpt) {
-        	return ASK_TYPE.None;
+            return ASK_TYPE.None;
         }
-        
+
         return ASK_TYPE.Cancel;
     }
-    
+
     /**
      * Creates a new loan/gift.
      */
@@ -163,7 +166,7 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
         this.viewable = null;
         createOrAdd(null, null, null);
     }
-    
+
     /**
      * Creates a new loan/gift and will set the new data object back into the Viewable.
      * @param viewableArg
@@ -174,7 +177,7 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
 
         createOrAdd(null, null, null);
     }
-    
+
     /**
      * @param recordSetArg
      */
@@ -183,7 +186,7 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
         this.viewable = null;
         createOrAdd(null, null, recordSetArg);
     }
-    
+
     /**
      * @param currPrepProvider
      */
@@ -192,15 +195,15 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
         this.viewable = null;
         createOrAdd(currPrepProvider, null, null);
     }
-    
+
     /**
      * Creates a new loan from a RecordSet.
      * @param currPrepProvider an existing loan that needs additional Preps
      * @param infoRequest a info request
      * @param recordSetArg the recordset to use to create the loan
      */
-    public void createOrAdd(final T              currPrepProvider, 
-                            final InfoRequest    infoRequest, 
+    public void createOrAdd(final T              currPrepProvider,
+                            final InfoRequest    infoRequest,
                             final RecordSetIFace recordSetArg)
     {
         RecordSetIFace recordSet = recordSetArg;
@@ -208,31 +211,31 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
         if (infoRequest == null && recordSet == null)
         {
             String catNumField = "catalogNumber";
-            
+
             // Get a List of InfoRequest RecordSets
             Vector<RecordSetIFace> rsList       = task.getInfoReqRecordSetsFromSideBar();
             RecordSetTask          rsTask       = (RecordSetTask)TaskMgr.getTask(RecordSetTask.RECORD_SET);
             List<RecordSetIFace>   colObjRSList = rsTask.getRecordSets(CollectionObject.getClassTableId());
-            
+
             // If the List is empty then
             if (rsList.size() == 0 && colObjRSList.size() == 0 && (isFor != forAcc || currPrepProvider != null))
             {
                 recordSet = task.askForDataObjRecordSet(CollectionObject.class, catNumField, isFor == forAcc);
-                
-            } else 
+
+            } else
             {
                 ASK_TYPE rv = askSourceOfPreps(rsList.size() > 0, colObjRSList.size() > 0, currPrepProvider);
                 if (rv == ASK_TYPE.ChooseRS)
                 {
                     recordSet = RecordSetTask.askForRecordSet(CollectionObject.getClassTableId(), rsList);
-                    
+
                 } else if (rv == ASK_TYPE.EnterDataObjs)
                 {
                     recordSet = task.askForDataObjRecordSet(CollectionObject.class, catNumField, isFor == forAcc);
-                    
+
                 } else if (rv == ASK_TYPE.None) {
-                	recordSet = null;
-                	isEmptyAcc = true;
+                    recordSet = null;
+                    isEmptyAcc = true;
                 } else if (rv == ASK_TYPE.Cancel)
                 {
                     if (viewable != null)
@@ -243,15 +246,15 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
                 }
             }
         }
-        
+
         if (recordSet == null && !isEmptyAcc)
         {
             return;
         }
-        
+
         if (isEmptyAcc) {
-        	PrepLoaderSQL prepLoaderSQL = new PrepLoaderSQL(null, recordSet, infoRequest, isFor);
-        	prepLoaderSQL.execute();
+            PrepLoaderSQL prepLoaderSQL = new PrepLoaderSQL(null, recordSet, infoRequest, isFor);
+            prepLoaderSQL.execute();
         } else {
             if (recordSet.getNumItems() == 0 && isFor != forAcc) {
                 if (isFor == forLoan) {
@@ -338,8 +341,8 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
      * @param prepProvider
      */
     protected void cosLoaded(final RecordSetIFace rs, final T prepProvider) {
-    	//System.out.println("Adding cos to accession...");
-    	task.addCosToAcc(prepProvider, rs, viewable);
+        //System.out.println("Adding cos to accession...");
+        task.addCosToAcc(prepProvider, rs, viewable);
     }
     /**
      * @param coToPrepHash
@@ -402,27 +405,27 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
             worker.start();
         }
     }
-    
+
     /**
      * Creates a new loan from a InfoRequest.
      * @param infoRequest the infoRequest to use to create the loan
      */
     public void createFromInfoRequest(final InfoRequest infoRequest)
-    {   
+    {
         RecordSetIFace rs = null;
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         try
         {
             session.attach(infoRequest);
             rs = infoRequest.getRecordSets().iterator().next();
-            
+
         } catch (Exception ex)
         {
             ex.printStackTrace();
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(InteractionsProcessor.class, ex);
             // Error Dialog
-            
+
         } finally
         {
             if (session != null)
@@ -430,21 +433,21 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
                 session.close();
             }
         }
-        
+
         if (rs != null)
         {
             createOrAdd(null, infoRequest, rs);
         }
     }
-    
+
     //--------------------------------------------------------------
     // Background loader class for loading a large number of loan preparations
     //--------------------------------------------------------------
     class PrepLoaderSQL extends javax.swing.SwingWorker<Integer, Integer>
     {
         private final String PROGRESS = "progress";
-        
-        
+
+
         private RecordSetIFace recordSet;
         private T              prepsProvider;
         private InfoRequest    infoRequest;
@@ -452,7 +455,7 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
 
         private Hashtable<Integer, String>     prepTypeHash = new Hashtable<Integer, String>();
         private Hashtable<Integer, ColObjInfo> coToPrepHash = new Hashtable<Integer, ColObjInfo>();
-        
+
         /**
          * @param prepsProvider
          * @param recordSet
@@ -477,45 +480,68 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
         {
             return val == null ? 0 : (Integer)val;
         }
-        
+
         /**
          * @return a List of rows that have the CollectionObject info from the rcordset
          */
         protected Vector<Object[]> getColObjsFromRecordSet()
         {
             String sql = "SELECT co.CollectionObjectID, co.CatalogNumber, tx.FullName FROM determination as dt INNER JOIN collectionobject as co ON dt.CollectionObjectID = co.CollectionObjectID " +
-                         "INNER JOIN taxon as tx ON dt.TaxonID = tx.TaxonID WHERE isCurrent <> 0 AND dt.CollectionMemberID = COLMEMID " + 
-                         "AND co.CollectionObjectID " + DBTableIdMgr.getInstance().getInClause(recordSet);
+                    "INNER JOIN taxon as tx ON dt.TaxonID = tx.TaxonID WHERE isCurrent <> 0 AND dt.CollectionMemberID = COLMEMID " +
+                    "AND co.CollectionObjectID " + DBTableIdMgr.getInstance().getInClause(recordSet);
             sql = QueryAdjusterForDomain.getInstance().adjustSQL(sql);
-            log.debug(sql);
-            
+            log.debug("-------------- " + sql);
+
             Vector<Object[]> fullItems = BasicSQLUtils.query(sql);
             if (fullItems.size() != recordSet.getNumItems())
             {
-                sql = "SELECT CollectionObjectID, CatalogNumber FROM collectionobject WHERE CollectionMemberID = COLMEMID " + 
-                      "AND CollectionObjectID " + DBTableIdMgr.getInstance().getInClause(recordSet);
+                sql = "SELECT CollectionObjectID, CatalogNumber FROM collectionobject WHERE CollectionMemberID = COLMEMID " +
+                        "AND CollectionObjectID " + DBTableIdMgr.getInstance().getInClause(recordSet);
                 Vector<Object[]> partialItems = BasicSQLUtils.query(QueryAdjusterForDomain.getInstance().adjustSQL(sql));
                 partialItems.addAll(fullItems);
+                //log.debug("-------------- " + "partialItems: " + partialItems.size());
                 return partialItems;
             }
+            //log.debug("-------------- " + "fullItems: " + fullItems.size());
             return fullItems;
         }
 
+        //see git issue #730
         protected String getAvailableCountForPrepSQL(String where) {
-            String sql = "select p.preparationid, coalesce(p.countamt, 0) - (sum(coalesce(lp.quantity, 0) "
-                    + "- coalesce(lp.quantityresolved,0)) + sum(coalesce(gp.quantity,0)) + sum(coalesce(ep.quantity,0)) "
-                    + "+ sum(coalesce(dp.quantity,0))) available from preparation p "
-                    + "left join loanpreparation lp on lp.preparationid = p.preparationid left join "
-                    + "giftpreparation gp on gp.preparationid = p.preparationid left join exchangeoutprep ep on "
-                    + "ep.preparationid = p.preparationid left join deaccessionpreparation dp on dp.preparationid = "
-                    + "p.preparationid";
+            String sql = "select p.preparationid, coalesce(p.countamt, 0) - (coalesce(sum(lp.unavailable), 0) + coalesce(sum(gp.unavailable), 0) + coalesce(sum(ep.unavailable), 0) + coalesce(sum(dp.unavailable), 0)) available "
+                + "from preparation p left join "
+                + "(select preparationid, sum(coalesce(quantity, 0) - coalesce(quantityresolved, 0)) unavailable from loanpreparation group by 1) lp on lp.preparationid = p.preparationid left join "
+                + "(select preparationid, sum(coalesce(quantity, 0)) unavailable from giftpreparation group by 1) gp on gp.preparationid = p.preparationid left join "
+                + "(select preparationid, sum(coalesce(quantity, 0)) unavailable from exchangeoutprep group by 1) ep on ep.preparationid = p.preparationid left join "
+                + "(select preparationid, sum(coalesce(quantity, 0)) unavailable from deaccessionpreparation group by 1) dp on dp.preparationid = p.preparationid ";
             if (where != null) {
-                sql += " where " + where;
+                sql += "where " + where;
             }
             sql += " group by 1";
             return sql;
         }
+        /**
+         *
+         * @return
+         */
+        protected java.sql.Connection getConnForAvailableCounts() {
+            String sqlMode = BasicSQLUtils.querySingleObj("select @@sql_mode");
+            log.debug("-------------- " + sqlMode);
+            Connection result = DBConnection.getInstance().createConnection();
+            int updated = BasicSQLUtils.update(result, "set sql_mode = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION'");
+            if (updated < 0) {
+                log.warn("error setting sql_mode");
+            }
+            sqlMode = BasicSQLUtils.querySingleObj(result,"select @@sql_mode");
+            log.debug("-------------- " + sqlMode);
+            return result;
+        }
 
+        /**
+         *
+         * @param collectionObjectIds
+         * @return
+         */
         protected List<Object[]> getAvailableCounts(List<String> collectionObjectIds) {
             String sql = "select p.collectionobjectid, p.preparationid, coalesce(p.CountAmt,0), pt.Name, pt.PrepTypeID, avail.available from preparation p";
             //assuming there aren't 10s of 1000s of items in collectionObjectIds
@@ -528,7 +554,15 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
             if (isFor == forLoan) {
                 sql += " where pt.isloanable";
             }
-            List<Object[]> rows = BasicSQLUtils.query(sql);
+            Connection conn = getConnForAvailableCounts();
+            log.debug("-------------- " + sql);
+            List<Object[]> rows = BasicSQLUtils.query(conn, sql);
+            try {
+                conn.close();
+            } catch (Exception x) {
+                log.error(x);
+            }
+            log.debug("--------------rows: " + rows.size());
             return rows;
         }
 
@@ -541,7 +575,7 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
                 if (rows.size() > 0) {
                     for (Object[] row : rows) {
                         int prepId = (Integer) row[1];
-                        int prepQty = (Integer) row[2];
+                        int prepQty = Integer.valueOf(row[2].toString());
                         String prepType = (String) row[3];
                         int prepTypeId = (Integer) row[4];
                         int coId = (Integer) row[0];
@@ -588,22 +622,22 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
         protected void done()
         {
             super.done();
-            
+
             UIRegistry.getStatusBar().setProgressDone(LOAN_LOADR);
-            
+
             if (recordSet != null && recordSet.getNumItems() > 2)
             {
                 UIRegistry.clearSimpleGlassPaneMsg();
             }
-            
+
             if (isFor == forAcc) {
-            	cosLoaded(recordSet, prepsProvider);
+                cosLoaded(recordSet, prepsProvider);
             } else {
-            	prepsLoaded(coToPrepHash, prepTypeHash, prepsProvider, infoRequest);
+                prepsLoaded(coToPrepHash, prepTypeHash, prepsProvider, infoRequest);
             }
         }
-        
+
     }
-    
+
 
 }

@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -108,7 +108,6 @@ public class ToggleButtonChooserDlg<T> extends CustomDialog
         super(parentFrame, UIRegistry.getResourceString(key), true, whichButtons, null);
         
         panel = new ToggleButtonChooserPanel<T>(listItems, UIRegistry.getResourceString(descKey), uiType);
-
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }
 
@@ -189,19 +188,14 @@ public class ToggleButtonChooserDlg<T> extends CustomDialog
     @Override
     public void createUI()
     {
-        super.createUI();
-        
-        panel.setOkBtn(okBtn);
         panel.createUI();
-        
+        contentPanel = panel;
+        super.createUI();
+        panel.setOkBtn(okBtn);
         mainPanel.setBorder(BorderFactory.createEmptyBorder(14, 14, 6, 14));
-        mainPanel.add(panel.getUIComponent(), BorderLayout.CENTER);
-        
-        pack();
-        
         okBtn.setEnabled(false);
-        
-    }
+        pack();
+   }
 
     /**
      * @param addSelectAll

@@ -85,7 +85,7 @@ public class BatchAttachLauncher implements DatabaseLoginListener
             {
                 
                 // TODO This is really bad because there is a Database Login with no Specify login
-                JOptionPane.showMessageDialog(null, 
+                JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(),
                                               getResourceString("Specify.LOGIN_USER_MISMATCH"),  //$NON-NLS-1$
                                               getResourceString("Specify.LOGIN_USER_MISMATCH_TITLE"),  //$NON-NLS-1$
                                               JOptionPane.ERROR_MESSAGE);
@@ -162,7 +162,7 @@ public class BatchAttachLauncher implements DatabaseLoginListener
         }
         else
         {
-            JOptionPane.showMessageDialog(null, getResourceString("SchemaExportLauncher.PERMISSION_DENIED"),
+            JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(), getResourceString("SchemaExportLauncher.PERMISSION_DENIED"),
                         getResourceString("SchemaExportLauncher.PERMISSION_DENIED_TITLE"),
                         JOptionPane.ERROR_MESSAGE);
             System.exit(0);

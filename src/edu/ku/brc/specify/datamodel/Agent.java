@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -114,8 +114,112 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
      
     protected Set<Address>                  addresses;
     protected Set<AgentVariant>             variants;
-    
-    /*
+
+    protected String text1;
+    protected String text2;
+    protected Integer integer1;
+    protected Integer integer2;
+    protected Calendar date1;
+    protected Calendar date2;
+    protected Byte date1Precision;
+    protected Byte date2Precision;
+    protected String verbatimDate1;
+    protected String verbatimDate2;
+
+    @Lob
+    @Column(name = "Text1", unique = false, nullable = true, insertable = true, updatable = true, length = 65535)
+    public String getText1() {
+        return text1;
+    }
+
+    public void setText1(String text1) {
+        this.text1 = text1;
+    }
+
+    @Lob
+    @Column(name = "Text2", unique = false, nullable = true, insertable = true, updatable = true, length = 65535)
+    public String getText2() {
+        return text2;
+    }
+
+    public void setText2(String text2) {
+        this.text2 = text2;
+    }
+
+    @Column(name = "Integer1", unique = false, nullable = true, insertable = true, updatable = true)
+    public Integer getInteger1() {
+        return integer1;
+    }
+
+    public void setInteger1(Integer integer1) {
+        this.integer1 = integer1;
+    }
+
+    @Column(name = "Integer2", unique = false, nullable = true, insertable = true, updatable = true)
+    public Integer getInteger2() {
+        return integer2;
+    }
+
+    public void setInteger2(Integer integer2) {
+        this.integer2 = integer2;
+    }
+
+    @Temporal(TemporalType.DATE)
+    @Column(name = "Date1", unique = false, nullable = true, insertable = true, updatable = true)
+    public Calendar getDate1() {
+        return date1;
+    }
+
+    public void setDate1(Calendar date1) {
+        this.date1 = date1;
+    }
+
+    @Temporal(TemporalType.DATE)
+    @Column(name = "Date2", unique = false, nullable = true, insertable = true, updatable = true)
+    public Calendar getDate2() {
+        return date2;
+    }
+
+    public void setDate2(Calendar date2) {
+        this.date2 = date2;
+    }
+
+    @Column(name = "Date1Precision", unique = false, nullable = true, insertable = true, updatable = true)
+    public Byte getDate1Precision() {
+        return date1Precision;
+    }
+
+    public void setDate1Precision(Byte date1Precision) {
+        this.date1Precision = date1Precision;
+    }
+
+    @Column(name = "Date2Precision", unique = false, nullable = true, insertable = true, updatable = true)
+    public Byte getDate2Precision() {
+        return date2Precision;
+    }
+
+    public void setDate2Precision(Byte date2Precision) {
+        this.date2Precision = date2Precision;
+    }
+
+    @Column(name = "VerbatimDate1", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    public String getVerbatimDate1() {
+        return verbatimDate1;
+    }
+
+    public void setVerbatimDate1(String verbatimDate1) {
+        this.verbatimDate1 = verbatimDate1;
+    }
+
+    @Column(name = "VerbatimDate2", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    public String getVerbatimDate2() {
+        return verbatimDate2;
+    }
+
+    public void setVerbatimDate2(String verbatimDate2) {
+        this.verbatimDate2 = verbatimDate2;
+    }
+/*
     protected Set<Project>                  projects;
     protected Set<Author>                   authors;
     protected Set<LoanReturnPreparation>    loanReturnPreparations;
@@ -221,7 +325,18 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
         groups                    = new HashSet<GroupPerson>();
         members                   = new HashSet<GroupPerson>();
         collectors                = new HashSet<Collector>();
-        
+        text1 = null;
+        integer1 = null;
+        date1 = null;
+        date1Precision = null;
+        verbatimDate1 = null;
+        text2 = null;
+        integer2 = null;
+        date2 = null;
+        date2Precision = null;
+        verbatimDate2 = null;
+
+
         division                  = null;
         instTechContact           = null;
         instContentContact        = null;
@@ -373,7 +488,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
     /**
      *      * of Person
      */
-    @Column(name = "LastName", length = 128)
+    @Column(name = "LastName", length = 256)
     public String getLastName() {
         return this.lastName;
     }

@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -862,9 +862,9 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
                 p.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
                 p.add(UIHelper.createScrollPane(ta, true), BorderLayout.CENTER);
                 
-                CustomDialog dlg = new CustomDialog((Frame)null, "Debug", true, CustomDialog.OK_BTN, p);
+                CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), "Debug", true, CustomDialog.OK_BTN, p);
                 dlg.setOkLabel("Close");
-                UIHelper.centerAndShow(dlg);
+                dlg.setVisible(true);
             }
             
 
@@ -1439,8 +1439,9 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
 		try
 		{
 			if (connection != null) {
-                boolean isMySql8 = connection.getMetaData().getDatabaseProductVersion().startsWith("8.");
-                if (isMySql8) {
+			    String mysqlVersion = connection.getMetaData().getDatabaseProductVersion();
+                boolean isMySql8Or7 = mysqlVersion.startsWith("8.") || mysqlVersion.startsWith("5.7");
+                if (isMySql8Or7) {
                     String sql = String.format("CREATE USER '%s'@'%s' IDENTIFIED BY '%s'", username, hostName, password);
                     stmt = connection.createStatement();
                     int rv = stmt.executeUpdate(sql);
@@ -1450,7 +1451,7 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
                 }
                 StringBuilder sb = new StringBuilder("GRANT ");
                 appendPerms(sb, permissions);
-                if (!isMySql8) {
+                if (!isMySql8Or7) {
                     sb.append(String.format(" ON %s.* TO '%s'@'%s' IDENTIFIED BY '%s'", dbName, username, hostName, password));
                     stmt = connection.createStatement();
                 } else {

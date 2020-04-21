@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -586,12 +586,12 @@ public class DeterminationBusRules extends BaseBusRules
                 pb.add(UIHelper.createLabel(msg1), cc.xy(2, 2));
                 pb.add(UIHelper.createLabel(msg2), cc.xy(2, 4));
                 String formTitle = UIRegistry.getResourceString("DeterminationBusRules.SYNONYM_INFORMATION");
-                CustomDialog cd = new CustomDialog((Frame)UIRegistry.getTopWindow(), formTitle, true, 
+                CustomDialog cd = CustomDialog.create(formTitle, true,
                         CustomDialog.OKCANCELHELP, pb.getPanel());
                 cd.setModal(true);
                 cd.setOkLabel(UIRegistry.getResourceString("DeterminationBusRules.Change"));
                 cd.setCancelLabel(UIRegistry.getResourceString("DeterminationBusRules.Keep"));
-                UIHelper.centerAndShow(cd);
+                cd.setVisible(true);
                 if (cd.getBtnPressed() == CustomDialog.OK_BTN)
                 {
                     taxon = taxon.getAcceptedParent();

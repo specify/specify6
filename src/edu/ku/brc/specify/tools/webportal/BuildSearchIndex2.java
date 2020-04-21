@@ -389,10 +389,10 @@ public class BuildSearchIndex2
 			result = abbr.length() > len ? abbr.substring(0, len) : abbr;
 		}
     	if (used.indexOf(result) != -1) {
-    		if (len <= 0 && mapping.getTblInfo() != null) {
+			int l;
+			if (len <= 0 && mapping.getTblInfo() != null) {
     			result = mapping.getTblInfo().getAbbrev() + "_" + result;
 			} else {
-				int l;
 				if (len > 0) {
 					l = result.length() + 1;
 					while (l < abbr.length()) {
@@ -404,11 +404,11 @@ public class BuildSearchIndex2
 						}
 					}
 				}
-				int numb = 1;
-				l = result.length();
-				while (used.indexOf(result) != -1) {
+			}
+    		int numb = 1;
+			l = result.length();
+			while (used.indexOf(result) != -1) {
 					result = result.substring(0, l) + numb++;
-				}
 			}
     	}
     	return result;
@@ -738,7 +738,7 @@ public class BuildSearchIndex2
         try {
             System.out.println("Exporting to directory '" + INDEX_DIR + "'...");
             ExportMappingHelper map = new ExportMappingHelper(dbConn, mapping.getId());
-            totalRecs = BasicSQLUtils.getCount(dbConn, "SELECT COUNT(*) FROM " + map.getCacheTblName());
+            totalRecs = BasicSQLUtils.getCount(dbConn, "SELECT COUNT(*) FROM " + map.getCacheTblName()).longValue();
             if (progressListener != null) {
                 progressListener.loaded();
                 progressListener.rowCount(totalRecs);

@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -135,42 +135,31 @@ public class ToggleButtonChooserPanel<T> extends JPanel implements ActionListene
         
         setDoubleBuffered(true);
     }
-    
-    protected JToggleButton createBtn(final String label)
-    {
+
+    protected JToggleButton createBtn(final String label) {
         JToggleButton togBtn;
-        if (uiType == Type.Checkbox)
-        {
+        if (uiType == Type.Checkbox) {
             togBtn = createCheckBox(label);
-        } else
-        {
+        } else {
             togBtn = createRadioButton(label);
             group.add(togBtn);
         }
 
-        if (changeListener != null)
-        {
+        if (changeListener != null) {
             togBtn.addChangeListener(changeListener);
         }
-        
-        if (actionListener != null)
-        {
+
+        if (actionListener != null) {
             togBtn.addActionListener(actionListener);
         }
-        
-        if (okBtn != null)
-        {
-            togBtn.addChangeListener(new ChangeListener() {
-                public void stateChanged(ChangeEvent e)
-                {
-                    if (((JToggleButton)e.getSource()).isSelected())
-                    {
-                        okBtn.setEnabled(true);
-                    }
+
+        togBtn.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                if (((JToggleButton) e.getSource()).isSelected() && okBtn != null) {
+                    okBtn.setEnabled(true);
                 }
-            });
-        }
-        
+            }
+        });
         togBtn.setOpaque(false);
         return togBtn;
     }

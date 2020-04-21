@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -40,6 +40,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.event.DocumentEvent;
@@ -92,7 +93,9 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener, 
     protected int MAX_DELAY       = (int)(MILLI_SEC_DELAY * 1.5);
     
     public static final String PREFERENCES = "Preferences"; //$NON-NLS-1$
-    
+
+    private Window prevTopWindow = null;
+
     protected SimpleGlassPane       glassPane;
     protected JAutoCompTextField    searchText;
 
@@ -128,13 +131,25 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener, 
         glassPane.setFillColor(new Color(0,0,0, 96));
         glassPane.setDelegateRenderer(delegateRenderer);
         
-        //delegateRenderer.setIndexVisible(inx, visible);
-        
         createUI();
         initAsToolbar(addSearchUI);
         pack();
         okBtn.setEnabled(false);
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(2,2,2,2));
+
+        int borderHeight = 2;
+        JScrollPane scrollPane = new JScrollPane();
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER); //assuming height is not an issue
+        try {
+            Integer scrollBarHeight = Double.valueOf(scrollPane.getHorizontalScrollBar().getPreferredSize().getHeight()).intValue();
+            borderHeight += scrollBarHeight;
+        } catch (Exception x) {
+            //making room for the scroll bar failed and nobody cared.
+        }
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(2,2,borderHeight,2));
+        scrollPane.setViewportView(mainPanel);
+        setContentPane(scrollPane);
+        pack();
     }
     
     /* (non-Javadoc)
@@ -171,20 +186,17 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener, 
             {
                 skinItem.setupPanel(panel);
             }
-            PanelBuilder    builder    = new PanelBuilder(new FormLayout("f:p:g", "p"), panel); //$NON-NLS-1$ //$NON-NLS-2$
-            CellConstraints cc         = new CellConstraints();
-    
-            builder.add(prefsToolbar, cc.xy(1,1));
             if (addSearchUI)
             {
                 ((ToolbarLayoutManager)prefsToolbar.getLayout()).setAdjustRightLastComp(true);
                 prefsToolbar.add(createSearchPanel());
             }
             
-            mainPanel.add(builder.getPanel(), BorderLayout.NORTH);
-            
-            prefsToolbar.setPreferredSize(prefsToolbar.getPreferredSize());
-            prefsToolbar.setSize(prefsToolbar.getPreferredSize());
+            mainPanel.add(prefsToolbar, BorderLayout.NORTH);
+            Dimension size = prefsToolbar.getLayout().preferredLayoutSize(mainPanel);
+            prefsToolbar.setPreferredSize(size);
+            prefsToolbar.setSize(size);
+            prefsToolbar.setMinimumSize(size);
         }
         
         showPanel(firstPanelName);
@@ -491,8 +503,7 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener, 
             size.width = Math.max(size.width, 400);
             size.height = Math.max(size.height, 250);
             setPreferredSize(size);
-            setSize(size);
-            UIHelper.centerWindow(this);
+
         }
         super.setVisible(visible);
     }

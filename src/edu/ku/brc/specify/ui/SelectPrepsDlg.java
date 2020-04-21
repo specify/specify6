@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -84,6 +84,7 @@ import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.busrules.AccessionBusRules;
+import edu.ku.brc.specify.datamodel.busrules.PreparationBusRules;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.IconManager;
@@ -219,14 +220,13 @@ public class SelectPrepsDlg extends CustomDialog
         contentPanel = tPanel;
         mainPanel.add(contentPanel, BorderLayout.CENTER);
 
-        pack();
-        
         doEnableOKBtn();
 
         Dimension size = getPreferredSize();
         size.width += 20;
         size.height = size.height > 500 ? 500 : size.height;
-        setSize(size);
+        setPreferredSize(size);
+        pack();
     }
     
     /**
@@ -575,14 +575,14 @@ public class SelectPrepsDlg extends CustomDialog
         
         public void actionPerformed(final ActionEvent e)
         {
-            final JStatusBar statusBar = UIRegistry.getStatusBar();
-            statusBar.setIndeterminate("LoanLoader", true);
+            //final JStatusBar statusBar = UIRegistry.getStatusBar();
+            //statusBar.setIndeterminate("LoanLoader", true);
             
-            UIRegistry.writeSimpleGlassPaneMsg(getResourceString("NEW_INTER_LOADING_PREP"), 24);
+            //UIRegistry.writeSimpleGlassPaneMsg(getResourceString("NEW_INTER_LOADING_PREP"), 24);
  
-            LoanLoader loanLoader = new LoanLoader(parent, prepInfo.getPrepId());
-            loanLoader.execute();
-            
+            //LoanLoader loanLoader = new LoanLoader(parent, prepInfo.getPrepId());
+            //loanLoader.execute();
+            PreparationBusRules.showInteractions(prepInfo.getPrepId());
         }
     }
     
@@ -680,26 +680,23 @@ public class SelectPrepsDlg extends CustomDialog
             }
             
             
-            DataProviderSessionIFace session = null;
-            try
-            {
-               session = DataProviderFactory.getInstance().createSession();
-               loans = (List<Loan>)session.getDataList("FROM Loan WHERE loanId in("+sb.toString()+")");
-               
-            } catch (Exception ex)
-            {
-               edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AccessionBusRules.class, ex);
-               ex.printStackTrace();
-               UsageTracker.incrNetworkUsageCount();
-               
-            } finally
-            {
-               if (session != null)
-               {
-                   session.close();
-               }
-            }
+            if (sb.length() > 0) {
+                DataProviderSessionIFace session = null;
+                try {
+                    session = DataProviderFactory.getInstance().createSession();
+                    loans = (List<Loan>) session.getDataList("FROM Loan WHERE loanId in(" + sb.toString() + ")");
 
+                } catch (Exception ex) {
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AccessionBusRules.class, ex);
+                    ex.printStackTrace();
+                    UsageTracker.incrNetworkUsageCount();
+
+                } finally {
+                    if (session != null) {
+                        session.close();
+                    }
+                }
+            }
             return 0;
         }
 

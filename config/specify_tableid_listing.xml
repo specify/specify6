@@ -2,7 +2,7 @@
 
 <!-- 
 
-    Last used ID is 155 or 533
+    Last used ID is 162 or 533
     
     [0] are available
     
@@ -28,6 +28,7 @@
             <display dataobjformatter="AccessionAuthorization"/>
             <businessrule>edu.ku.brc.specify.datamodel.busrules.AccessionAuthorizationBusRules</businessrule>
         </table>
+        <table name="edu.ku.brc.specify.datamodel.AccessionCitation" abbrev="acci" id="159" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.Address" abbrev="ad" id="8" workbench="false" searchable="true">
             <display view="Address" newobjdlg="AddressDisplay"/>
         </table>
@@ -212,6 +213,10 @@
             <display view="Exsiccata" newobjdlg="ExsiccataDisplay" searchdlg="ExsiccataSearch"/>
         </table>
         <table name="edu.ku.brc.specify.datamodel.ExsiccataItem" abbrev="exsicit" id="104" searchable="true"/>
+        <table name="edu.ku.brc.specify.datamodel.Extractor" abbrev="extr" id="160" searchable="true">
+            <display view="Extractor" dataobjformatter="Extractor"  searchdlg="" newobjdlg="ExtractorDisplay"/>
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.ExtractorBusRules</businessrule>
+        </table>
         <table name="edu.ku.brc.specify.datamodel.FieldNotebook" abbrev="fnb" id="83" searchable="true">
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.FieldNotebookBusRules</businessrule>
         </table>
@@ -236,9 +241,6 @@
         </table>
         <table name="edu.ku.brc.specify.datamodel.GeoCoordDetail" abbrev="gcd" id="123" searchable="true">
             <businessrule>edu.ku.brc.specify.datamodel.busrules.GeoCoordDetailBusRules</businessrule>
-        </table>
-        <table name="edu.ku.brc.specify.datamodel.VoucherRelationship" abbrev="vr" id="155" workbench="true" searchable="true">
-            <display view="VoucherRelationship" newobjdlg="VoucherRelationshipDisplay"/>
         </table>
         <table name="edu.ku.brc.specify.datamodel.FundingAgent" abbrev="fa" id="146" searchable="true">
             <display view="FundingAgent" dataobjformatter="" newobjdlg="FundingAgentDisplay"/>
@@ -350,6 +352,10 @@
         <table name="edu.ku.brc.specify.datamodel.PaleoContext" abbrev="pc" id="32" searchable="true">
             <display view="PaleoContext" dataobjformatter="PaleoContext"  searchdlg="PaleoContextSearch" newobjdlg="PaleoContextDisplay"/>            
             <businessrule>edu.ku.brc.specify.datamodel.busrules.PaleoContextBusRules</businessrule>
+        </table>
+        <table name="edu.ku.brc.specify.datamodel.PcrPerson" abbrev="pcrp" id="161" searchable="true">
+            <display view="PcrPerson" dataobjformatter="PcrPerson"  searchdlg="" newobjdlg="PcrPersonDisplay"/>
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.PcrPersonBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.Permit" abbrev="pr" id="6" searchable="true">
             <display view="Permit" dataobjformatter="Permit" searchdlg="PermitSearch" newobjdlg="PermitDisplay"/>
@@ -480,6 +486,7 @@
         	<display view="ObjectAttachment" newobjdlg="TaxonAttachmentDisplay"/>
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentReferenceBaseBusRules</businessrule>
         </table>
+        <table name="edu.ku.brc.specify.datamodel.TaxonAttribute" abbrev="txa" id="162" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.TaxonCitation" abbrev="txc" id="75" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.TaxonTreeDef" abbrev="txtd" id="76"/>
         <table name="edu.ku.brc.specify.datamodel.TaxonTreeDefItem" abbrev="txtdi" id="77" searchable="true">

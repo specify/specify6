@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,55 +19,34 @@
 */
 package edu.ku.brc.specify.tools.schemalocale;
 
-import static edu.ku.brc.specify.config.init.DataBuilder.createPickList;
-
-import java.awt.Dialog;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-import java.util.Vector;
-
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-
 import com.thoughtworks.xstream.XStream;
-
 import edu.ku.brc.af.core.SchemaI18NService;
-import edu.ku.brc.af.core.db.DBFieldInfo;
-import edu.ku.brc.af.core.db.DBRelationshipInfo;
-import edu.ku.brc.af.core.db.DBTableChildIFace;
-import edu.ku.brc.af.core.db.DBTableIdMgr;
-import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.core.db.*;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.config.init.BldrPickList;
 import edu.ku.brc.specify.config.init.BldrPickListItem;
 import edu.ku.brc.specify.config.init.DataBuilder;
-import edu.ku.brc.specify.datamodel.DataModelObjBase;
-import edu.ku.brc.specify.datamodel.PickList;
-import edu.ku.brc.specify.datamodel.SpLocaleBase;
-import edu.ku.brc.specify.datamodel.SpLocaleContainer;
-import edu.ku.brc.specify.datamodel.SpLocaleContainerItem;
-import edu.ku.brc.specify.datamodel.SpLocaleItemStr;
+import edu.ku.brc.specify.datamodel.*;
 import edu.ku.brc.ui.ToggleButtonChooserDlg;
 import edu.ku.brc.ui.ToggleButtonChooserPanel;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.util.Pair;
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.dom4j.Element;
+
+import java.awt.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.*;
+import java.util.*;
+import java.util.List;
+
+import static edu.ku.brc.helpers.XMLHelper.getAttr;
+import static edu.ku.brc.specify.config.init.DataBuilder.createPickList;
 
 /**
  * THis is a helper class for reading and writing the Schema Description XML to a file.
@@ -162,6 +141,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
      */
     public boolean loadWithExternalFile(final File externalFile, final boolean useCurrentLocaleOnly)
     {
+
         tables = load(null, externalFile, useCurrentLocaleOnly);
         
         boolean loadedOk = tables != null;
@@ -170,13 +150,173 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
             for (DisciplineType disciplineType : DisciplineType.getDisciplineList())
             {
                 Vector<DisciplineBasedContainer> dispContainers = load(disciplineType.getName(), null, useCurrentLocaleOnly);
+                //check for non-english texts, which are unsupported and break localization (as of 1/20)
+                //technically just checking for more than one text, assuming existing single text is english
+                if (dispContainers != null) {
+                    for (DisciplineBasedContainer c : dispContainers) {
+                        for (SpLocaleContainerItem i : c.getItems()) {
+                            if (i.getNames().size() > 1 || i.getDescs().size() > 1) {
+                                log.warn(c.getName() + "." + i.getName() + " (" + disciplineType + "): Multiple langs are not supported for discpline-specific l10n schemas.");
+                            }
+                        }
+                    }
+                }
                 addDisplineBasedContainers(disciplineType.getName(), dispContainers);
             }
         }
         
         return loadedOk;
     }
-    
+
+    protected String processText(Element t, String margin) {
+        Element text = (Element)t.selectSingleNode("text");
+        String textStr = text == null ? "NULL" : text.getText();
+        //System.out.println(margin + textStr);
+        return textStr;
+    }
+
+    protected void incrementCnt(String cntKey, Map<String, Integer> cnts) {
+        Integer cnt = cnts.get(cntKey);
+        cnts.put(cntKey, cnt == null ? 1 : cnt + 1);
+    }
+
+    protected SpLocaleItemStr spLocaleItemStrFromXml(Element e) {
+        SpLocaleItemStr result = new SpLocaleItemStr();
+        result.initialize();
+        String lang = getAttr(e, "language", null);
+        String country = getAttr(e, "country", null);
+        String variant = getAttr(e, "variant", null);
+        result.setLanguage("".equals(lang) ? null : lang);
+        result.setCountry("".equals(country) ? null : country);
+        result.setVariant("".equals(variant) ? null : variant);
+        return result;
+    }
+
+    protected SpLocaleItemStr processTextElement(String textType, Element e, String margin, Map<String, Integer> cnts) {
+        String lang = getAttr(e, "language", "");
+        String country = getAttr(e, "country", "");
+        String variant = getAttr(e, "variant", "");
+        String cntKey = textType + "/" + lang + "/" + country + "/" + variant + "/";
+        incrementCnt(cntKey, cnts);
+        String text = processText(e, margin);
+        SpLocaleItemStr result = spLocaleItemStrFromXml(e);
+        result.setText(text);
+        if (text == null) {
+            incrementCnt("null/" + cntKey, cnts);
+        }
+        return result;
+    }
+
+    protected Pair<List<SpLocaleItemStr>, List<SpLocaleItemStr>> processTexts(Element e, String margin, Map<String, Integer> cnts) {
+        List<SpLocaleItemStr> names = new ArrayList<>();
+        List<SpLocaleItemStr> descs = new ArrayList<>();
+        for (Object nameObj : e.selectNodes("names/str")) {
+            names.add(processTextElement("names", (Element)nameObj, margin, cnts));
+        }
+        for (Object descObj : e.selectNodes("descs/str")) {
+            descs.add(processTextElement("descs", (Element)descObj, margin, cnts));
+        }
+        return new Pair<List<SpLocaleItemStr>, List<SpLocaleItemStr>>(names, descs);
+    }
+
+    protected void spLocaleBaseFromXml(SpLocaleBase lb, Element e) {
+        lb.setName(getAttr(e, "name", null));
+        lb.setIsHidden(getAttr(e, "isHidden", false));
+        lb.setType(getAttr(e, "type", null));
+        lb.setFormat(getAttr(e, "format", null));
+        lb.setIsUIFormatter(Boolean.valueOf(getAttr(e, "isUIFormatter", null)));
+        lb.setPickListName(getAttr(e, "pickListName", null));
+    }
+
+    protected DisciplineBasedContainer containerFromXml(Element e) {
+        //SpLocaleContainer c = new SpLocaleContainer();
+        DisciplineBasedContainer c = new DisciplineBasedContainer();
+        c.initialize();
+        spLocaleBaseFromXml(c, e);
+        c.setSchemaType(this.schemaType);
+        Element agg = (Element)e.selectSingleNode("aggregator");
+        if (agg != null) {
+            c.setAggregator(e.getText());
+        }
+        return c;
+    }
+
+    protected SpLocaleContainerItem containerItemFromXml(Element e) {
+        SpLocaleContainerItem ci = new SpLocaleContainerItem();
+        ci.initialize();
+        spLocaleBaseFromXml(ci, e);
+        ci.setIsRequired(getAttr(e, "isRequired", false));
+        ci.setWebLinkName(getAttr(e, "webLinkName", null));
+        return ci;
+    }
+
+    protected void addTextsToContainer(SpLocaleContainer c, Pair<List<SpLocaleItemStr>,List<SpLocaleItemStr>> texts) {
+        for (SpLocaleItemStr i : texts.getFirst()) {
+            c.getNames().add(i);
+            i.setContainerName(c);
+        }
+        for (SpLocaleItemStr i : texts.getFirst()) {
+            c.getDescs().add(i);
+            i.setContainerDesc(c);
+        }
+    }
+
+    protected void addTextsToContainerItem(SpLocaleContainerItem ci, Pair<List<SpLocaleItemStr>,List<SpLocaleItemStr>> texts) {
+        for (SpLocaleItemStr i : texts.getFirst()) {
+            ci.getNames().add(i);
+            i.setItemName(ci);
+        }
+        for (SpLocaleItemStr i : texts.getFirst()) {
+            ci.getDescs().add(i);
+            i.setItemDesc(ci);
+        }
+    }
+
+    public Vector<DisciplineBasedContainer> oldSchoolStepByStep(String prefix) throws Exception {
+        String fName = fileName[this.schemaType];
+        if (prefix != null) {
+            fName = prefix + File.separator + fName;
+        }
+        File file = XMLHelper.getConfigDir(fName);
+        Element e = XMLHelper.readFileToDOM4J(file);
+        int containerCnt = 0;
+        int itemCnt = 0;
+        Map<String, Integer> textCnts = new HashMap<>();
+        Vector<DisciplineBasedContainer> result = new Vector<>();
+        for (Object obj : e.selectNodes("container")) {
+            Element container = (Element)obj;
+            DisciplineBasedContainer c = containerFromXml(container);
+            containerCnt++;
+            //System.out.println(getAttr(container, "name", null));
+            String margin = "  ";
+            Pair<List<SpLocaleItemStr>,List<SpLocaleItemStr>> texts = processTexts(container, margin, textCnts);
+            addTextsToContainer(c, texts);
+            //System.out.println();
+            for (Object itemObj : container.selectNodes("items/desc")) {
+                Element item = (Element)itemObj;
+                SpLocaleContainerItem ci = containerItemFromXml(item);
+                ci.setContainer(c);
+                c.getItems().add(ci);
+                itemCnt++;
+                //System.out.println(margin + getAttr(item, "name", null));
+                margin += "  ";
+                texts = processTexts(item, margin, textCnts);
+                addTextsToContainerItem(ci, texts);
+                margin = margin.substring(2);
+            }
+            result.add(c);
+        }
+        //System.out.println("Done. Containers: " + containerCnt + ", Items: " + itemCnt);
+//        List<String> cnts = new ArrayList<>();
+//        for (Map.Entry<String, Integer> me : textCnts.entrySet()) {
+//            cnts.add("  " + me.getKey() + ": " + me.getValue());
+//        }
+//        Collections.sort(cnts);
+//        for (String cnt : cnts) {
+//            System.out.println(cnt);
+//        }
+        return result;
+    }
     /**
      * Merges a disciplineType set of containers into the baseline.
      * @param disciplineType the disciplineType to be added
@@ -258,12 +398,13 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
      * @param language
      * @param containers
      */
-    public void addMissingTranslations(final String language, 
+    public void addMissingTranslations(final String language, final String countryArg,
                                        final Vector<DisciplineBasedContainer> containers)
     {
         int containerCnt = 0;
         int itemCnt      = 0;
-        
+
+        String country = "".equals(countryArg.trim()) ? null : countryArg;
         for (DisciplineBasedContainer container : containers)
         {
             if (container.getNamesSet().size() == 0)
@@ -272,6 +413,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                 SpLocaleItemStr str = new SpLocaleItemStr();
                 str.initialize();
                 str.setLanguage(language);
+                str.setCountry(country);
                 str.setText(container.getName());
                 str.setContainerDesc(container);
                 container.getNamesSet().add(str);
@@ -293,6 +435,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                 SpLocaleItemStr str = new SpLocaleItemStr();
                 str.initialize();
                 str.setLanguage(language);
+                str.setCountry(country);
                 str.setText(container.getName());
                 str.setContainerDesc(container);
                 container.getDescsSet().add(str);
@@ -317,6 +460,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                     SpLocaleItemStr str = new SpLocaleItemStr();
                     str.initialize();
                     str.setLanguage(language);
+                    str.setCountry(country);
                     str.setText(sci.getName());
                     str.setItemDesc(sci);
                     sci.getNamesSet().add(str);
@@ -338,6 +482,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                     SpLocaleItemStr str = new SpLocaleItemStr();
                     str.initialize();
                     str.setLanguage(language);
+                    str.setCountry(country);
                     str.setText(sci.getName());
                     str.setItemDesc(sci);
                     sci.getDescsSet().add(str);
@@ -367,35 +512,36 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
      * @param language
      * @param itemsSet
      */
-    private void stripMergeLocale(final String language, 
-                                  final Set<SpLocaleItemStr> itemsSet)
+    private void stripMergeLocale(final String language, final String countryArg, final Set<SpLocaleItemStr> itemsSet)
     {
-        if (itemsSet.size() == 1)
-        {
-            SpLocaleItemStr item = itemsSet.iterator().next();
-            if (item.getLanguage().equals("en"))
-            {
-                item.setLanguage(language);
+        String country = countryArg == null ? "" : countryArg;
+        SpLocaleItemStr en = null;
+        SpLocaleItemStr loc = null;
+        for (SpLocaleItemStr item : itemsSet) {
+            String itemCountry = item.getCountry() == null ? "" : item.getCountry();
+            if (item.getLanguage().equals(language) && itemCountry.equals(country)) {
+                loc = item;
+                break;
+            } else if (item.getLanguage().equals("en") && itemCountry.equals("")) {
+                en = item;
             }
-            
-        } else if (itemsSet.size() == 2)
-        {
-            Iterator<SpLocaleItemStr> iter = itemsSet.iterator();
-            SpLocaleItemStr item1 = iter.next();
-            SpLocaleItemStr item2 = iter.next();
-            if (item1.getLanguage().equals(language))
-            {
-                itemsSet.remove(item2);
-            } else
-            {
-                itemsSet.remove(item1);
+        }
+        if (loc == null && itemsSet.size() > 0) {
+            if (en == null) {
+                en = itemsSet.iterator().next();
+                log.warn("No English Default Found For Locale Merge.");
             }
-        } else if (itemsSet.size() > 2)
-        {
-            log.error("The size ["+itemsSet.size()+"] is not on or two!");
-        } else
-        {
-            log.error("The size ["+itemsSet.size()+"] ************** ");
+            en.setLanguage(language);
+            en.setCountry("".equals(countryArg.trim()) ? null : countryArg);
+            loc = en;
+        }
+        if (loc != null) {
+            List<SpLocaleItemStr> items = new ArrayList<>(itemsSet);
+            for (SpLocaleItemStr item : items) {
+                if (item != loc) {
+                    itemsSet.remove(item);
+                }
+            }
         }
     }
     
@@ -403,18 +549,18 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
      * @param language
      * @param containers
      */
-    private void stripToSingleLocale(final String language, 
+    private void stripToSingleLocale(final String language, final String country,
                                      final Vector<DisciplineBasedContainer> containers)
     {
         for (DisciplineBasedContainer container : containers)
         {
-            stripMergeLocale(language, container.getNamesSet());
-            stripMergeLocale(language, container.getDescsSet());
+            stripMergeLocale(language, country, container.getNamesSet());
+            stripMergeLocale(language, country, container.getDescsSet());
             
             for (SpLocaleContainerItem sci : container.getItems())
             {
-                stripMergeLocale(language, sci.getNamesSet());
-                stripMergeLocale(language, sci.getDescsSet());
+                stripMergeLocale(language, country, sci.getNamesSet());
+                stripMergeLocale(language, country, sci.getDescsSet());
             }
             /*for (LocalizableItemIFace sci : container.getContainerItems())
             {
@@ -427,6 +573,36 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
 
 
     /**
+     * a debugging aid
+     */
+//    private void seekSomethingBad() {
+//        for (DisciplineBasedContainer container : containers) {
+//            for (SpLocaleItemStr s : container.getNames()) {
+//                if (!"RU".equals(s.getCountry())) {
+//                    System.out.println("badness");
+//                }
+//            }
+//            for (SpLocaleItemStr s : container.getDescs()) {
+//                if (!"RU".equals(s.getCountry())) {
+//                    System.out.println("badness");
+//                }
+//            }
+//            for (SpLocaleContainerItem i : container.getItems()) {
+//                for (SpLocaleItemStr s : i.getNames()) {
+//                    if (!"RU".equals(s.getCountry())) {
+//                        System.out.println("badness");
+//                    }
+//                }
+//                for (SpLocaleItemStr s : i.getDescs()) {
+//                    if (!"RU".equals(s.getCountry())) {
+//                        System.out.println("badness");
+//                    }
+//                }
+//            }
+//        }
+//
+//    }
+    /**
      * @param discipline
      * @param extFile
      * @param useCurrentLocaleOnly
@@ -438,7 +614,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                                                     final boolean useCurrentLocaleOnly)
     {
         Vector<DisciplineBasedContainer> containers = null;
-        
+
         XStream xstream = new XStream();
         configXStream(xstream);
         
@@ -454,111 +630,34 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                 }
 
                 InputStreamReader inpStrmReader = new InputStreamReader(new FileInputStream(file), "UTF8"); 
-                containers = (Vector<DisciplineBasedContainer>)xstream.fromXML(inpStrmReader);
-                
-                if (discipline != null)
-                {
-                    return containers;
+                //containers = (Vector<DisciplineBasedContainer>)xstream.fromXML(inpStrmReader);
+                try {
+                    containers = oldSchoolStepByStep(discipline);
+                } catch (Exception x) {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SchemaLocalizerXMLHelper.class, x);
+                    log.error(x);
                 }
+
             }
             
             if (useCurrentLocaleOnly && containers != null && containers.size() > 0)
             {
                 String language = Locale.getDefault().getLanguage();
-                addMissingTranslations(language, containers);
-                stripToSingleLocale(language, containers);
-            }
-            
-             // remove non-english locales
-            /*if (false)
-            {
-                if (discipline == null)
-                {
-                    for (DisciplineBasedContainer dbc : containers)
-                    {
-                        for (SpLocaleContainerItem sci : dbc.getItems())
-                        {
-                            for (SpLocaleItemStr n : new Vector<SpLocaleItemStr>(sci.getNames()))
-                            {
-                                if (!n.getLanguage().equals("en"))
-                                {
-                                    sci.getNames().remove(n);
-                                    changesMadeDuringStartup = true;
-                                }
-                            }
-                            for (SpLocaleItemStr d : new Vector<SpLocaleItemStr>(sci.getDescs()))
-                            {
-                                if (!d.getLanguage().equals("en"))
-                                {
-                                    sci.getDescs().remove(d);
-                                    changesMadeDuringStartup = true;
-                                }
-                            }
-                        }
-                        
-                        for (SpLocaleItemStr n : new Vector<SpLocaleItemStr>(dbc.getNames()))
-                        {
-                            if (!n.getLanguage().equals("en"))
-                            {
-                                dbc.getNames().remove(n);
-                                changesMadeDuringStartup = true;
-                            }
-                        }
-                        for (SpLocaleItemStr d : new Vector<SpLocaleItemStr>(dbc.getDescs()))
-                        {
-                            if (!d.getLanguage().equals("en"))
-                            {
-                                dbc.getDescs().remove(d);
-                                changesMadeDuringStartup = true;
-                            }
-                        }
-                    }
+                String country = Locale.getDefault().getCountry();
+                if ("en".equals(language)) {
+                    country = "";
                 }
+                if (discipline == null) {
+                    addMissingTranslations(language, country, containers);
+                }
+                stripToSingleLocale(language, country, containers);
             }
-            
-            if (false)
-            {
-                if (discipline == null)
-                {
-                    Hashtable<String, Boolean> fieldsToHideHash = new Hashtable<String, Boolean>();
-                    String[] fields = { "version", 
-                            "timestampCreated", 
-                            "timestampModified", 
-                            "createdByAgent", 
-                            "modifiedByAgent", 
-                            "collectionMemberId", 
-                            "visibility", 
-                            "visibilitySetBy"};
 
-                    for (String fieldName : fields)
-                    {
-                        fieldsToHideHash.put(fieldName, true);
-                    }
-                    
-                    for (DisciplineBasedContainer dbc : containers)
-                    {
-                        for (SpLocaleContainerItem sci : dbc.getItems())
-                        {
-                            String nm = sci.getName();
-                            if (fieldsToHideHash.get(nm) != null)
-                            {
-                                sci.setIsHidden(true);
-                            } else if (nm.startsWith("yesNo"))
-                            {
-                                sci.setIsHidden(true);
-                            } else if (nm.startsWith("text") && StringUtils.isNumeric(nm.substring(nm.length()-1, nm.length())))
-                            {
-                                //System.out.println(nm);
-                                sci.setIsHidden(true);
-                            } else if (nm.startsWith("number") && StringUtils.isNumeric(nm.substring(nm.length()-1, nm.length())))
-                            {
-                                System.out.println(nm);
-                                sci.setIsHidden(true);
-                            }
-                        }
-                    }
-                }
-            }*/
+            if (discipline != null)
+            {
+                return containers;
+            }
 
             if (containers != null)
             {
@@ -591,16 +690,23 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                 
                 Collections.sort(tableDisplayItems);
                 
-                log.info("Syncing with Datamodel.... (ignore errors)");
+                log.info("Syncing with Datamodel... (ignore errors)");
                 changesBuffer.append("<Center><table border=\"1\">");
                 
                 String lang = SchemaI18NService.getCurrentLocale().getLanguage();
+                String country = SchemaI18NService.getCurrentLocale().getCountry();
+                if ("".equals(country)) {
+                    country = null;
+                }
                 
                 discoverLocalesFromData(containers);
                 if (availLocales.size() == 1)
                 {
                     lang = availLocales.get(0).getLanguage();
-                    
+                    country = availLocales.get(0).getCountry();
+                    if ("".equals(country)) {
+                        country = null;
+                    }
                 } else
                 {
                     Vector<DisplayLocale> list = new Vector<DisplayLocale>();
@@ -626,7 +732,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                     }
                 }
                 
-                log.info("Adding New Tables and fields....");
+                log.info("Adding New Tables and fields...");
                 for (DBTableInfo ti : tableMgr.getTables())
                 {
                     DisciplineBasedContainer container = (DisciplineBasedContainer)tableHash.get(ti.getName());
@@ -640,6 +746,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                         nameStr.initialize();
                         nameStr.setText(UIHelper.makeNamePretty(ti.getShortClassName()));
                         nameStr.setLanguage(lang);
+                        nameStr.setCountry(country);
                         container.addName(nameStr);
                         log.info("Adding Table ["+ti.getName()+"]");
                         changesMadeDuringStartup = true;
@@ -670,6 +777,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                             //nameStr.setText(UIHelper.makeNamePretty(fi.getDataClass().getSimpleName()));
                             nameStr.setText(UIHelper.makeNamePretty(fi.getName()));
                             nameStr.setLanguage(lang);
+                            nameStr.setCountry(country);
                             item.addName(nameStr);
                             log.info("  Adding Field ["+fi.getName()+"]");
                             changesBuffer.append("<tr><td align=\"center\">Added</td>");
@@ -715,6 +823,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                                 nameStr.initialize();
                                 nameStr.setText(UIHelper.makeNamePretty(fi.getName()));
                                 nameStr.setLanguage(lang);
+                                nameStr.setCountry(country);
                                 item.addName(nameStr);
                                 container.addItem(item);
                                 log.info("For Table["+ti.getName()+"] Adding Field ["+fi.getName()+"]");
@@ -766,6 +875,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                                 nameStr.initialize();
                                 nameStr.setText(UIHelper.makeNamePretty(ri.getName()));
                                 nameStr.setLanguage(lang);
+                                nameStr.setCountry(country);
                                 item.addName(nameStr);
                                 
                                 log.info("For Table["+ti.getName()+"] Adding Rel ["+ri.getName()+"]");
@@ -774,8 +884,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                                 changesBuffer.append("<td align=\"center\">"+ti.getName()+"</td><td align=\"center\">");
                                 changesBuffer.append(ri.getName());
                                 changesBuffer.append("</td></tr>");
-                                
-                            } else 
+                            } else
                             {
                                 if (item.getNames().size() == 0)
                                 {
@@ -783,6 +892,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                                     nameStr.initialize();
                                     nameStr.setText(UIHelper.makeNamePretty(ri.getName()));
                                     nameStr.setLanguage(lang);
+                                    nameStr.setCountry(country);
                                     item.addName(nameStr);
                                     
                                     changesMadeDuringStartup = true;
@@ -796,7 +906,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                     }
                 }
                 
-                log.info("Removing Old Tables and fields....");
+                log.info("Removing Old Tables and fields...");
                 for (SpLocaleContainer container : new Vector<DisciplineBasedContainer>(containers))
                 {
                     DBTableInfo ti = tableMgr.getInfoByTableName(container.getName());

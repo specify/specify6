@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -52,7 +52,7 @@ import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploaderException;
 import edu.ku.brc.specify.tools.schemalocale.SchemaLocalizerXMLHelper;
 import edu.ku.brc.specify.ui.ChooseRecordSetDlg;
 import edu.ku.brc.ui.*;
-import edu.ku.brc.ui.dnd.SimpleGlassPane;
+import edu.ku.brc.ui.dnd.GhostGlassPane;
 import edu.ku.brc.util.Pair;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -66,8 +66,6 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.SoftBevelBorder;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.lang.ref.SoftReference;
 import java.sql.Connection;
@@ -752,7 +750,7 @@ public class WorkbenchTask extends BaseTask
         	UIRegistry.showLocalizedMsg("WorkbenchTask.ExportedDatasetTemplateNotEditable");
         	mapper.setReadOnly(true);
         }
-        UIHelper.centerAndShow(mapper);
+        mapper.setVisible(true);
         return mapper;
     }
     
@@ -1017,14 +1015,14 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         // Ask the user to choose an existing template.
         if (matchingTemplates.size() > 0)
         {
-            SelectNewOrExistingDlg<WorkbenchTemplate> dlg = new SelectNewOrExistingDlg<WorkbenchTemplate>((Frame)UIRegistry.get(UIRegistry.FRAME), 
+            SelectNewOrExistingDlg<WorkbenchTemplate> dlg = new SelectNewOrExistingDlg<>((Frame)UIRegistry.getTopWindow(),
                     "WB_CHOOSE_DATASET_REUSE_TITLE", 
                     "WB_CREATE_NEW_MAPPING",
                     "WB_USE_EXISTING_MAPPING",
                     helpContext, 
                     matchingTemplates);
             
-            UIHelper.centerAndShow(dlg);
+            dlg.setVisible(true);
             
             if (dlg.getBtnPressed() == ChooseFromListDlg.OK_BTN)
             {
@@ -1140,7 +1138,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                         ChooseFromListDlg.OKCANCELHELP, 
                         ExportFileConfigurationFactory.getExportList(), "WorkbenchImportCvs");
             dlg.setModal(true);
-            UIHelper.centerAndShow(dlg);
+            dlg.setVisible(true);
     
             if (!dlg.isCancelled())
             {
@@ -1154,12 +1152,6 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             dlg.dispose();
         }
         
-//        FileDialog fileDialog = new FileDialog((Frame) UIRegistry.get(UIRegistry.FRAME),
-//                                               String.format(getResourceString("CHOOSE_WORKBENCH_EXPORT_FILE"), fileTypeCaption), FileDialog.SAVE);
-//        fileDialog.setDirectory(getDefaultDirPath(EXPORT_FILE_PATH));
-//        UIHelper.centerAndShow(fileDialog);
-//        fileDialog.dispose();
-
         JFileChooser chooser = new JFileChooser(getDefaultDirPath(EXPORT_FILE_PATH));
         chooser.setDialogTitle(getResourceString("CHOOSE_WORKBENCH_EXPORT_FILE"));
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -1170,7 +1162,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         	chooser.setSelectedFile(new File(chooser.getCurrentDirectory().getPath() + File.separator + defaultFileName + ".xls"));
         }
         
-        if (chooser.showSaveDialog(UIRegistry.get(UIRegistry.FRAME)) != JFileChooser.APPROVE_OPTION)
+        if (chooser.showSaveDialog(UIRegistry.getMostRecentWindow()) != JFileChooser.APPROVE_OPTION)
         {
             UIRegistry.getStatusBar().setText("");
             return false;
@@ -1220,7 +1212,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             
             CustomDialog confirmer = new CustomDialog((Frame)UIRegistry.get(UIRegistry.FRAME), 
                     getResourceString("WB_FILE_EXISTS_TITLE"), true, CustomDialog.OKCANCEL, builder.getPanel(), CustomDialog.CANCEL_BTN);
-            UIHelper.centerAndShow(confirmer);
+            confirmer.setVisible(true);
             confirmer.dispose();
             if (confirmer.isCancelled())
             {
@@ -1554,31 +1546,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
      */
     protected Workbench createNewWorkbenchFromFile()
     {
-        // For ease of testing
         File file = null;
-//        FileDialog fileDialog = new FileDialog(/*(Frame)UIRegistry.get(UIRegistry.FRAME),*/
-//        										(Frame )UIRegistry.getTopWindow(),
-//                                               getResourceString("CHOOSE_WORKBENCH_IMPORT_FILE"), 
-//                                               FileDialog.LOAD);
-//        fileDialog.setDirectory(getDefaultDirPath(IMPORT_FILE_PATH));
-//        fileDialog.setFilenameFilter(new java.io.FilenameFilter()
-//        {
-//            public boolean accept(File dir, String filename)
-//            {
-//                for (ExportFileConfigurationFactory.ExportableType exportType : ExportFileConfigurationFactory.getExportList())
-//                {
-//                    String ext = FilenameUtils.getExtension(filename);
-//                    if (StringUtils.isNotEmpty(ext) && exportType.getExtension().toLowerCase().equals(ext))
-//                    {
-//                        return true;
-//                    }
-//                }
-//                return false;
-//            }
-//
-//        });
-//        UIHelper.centerAndShow(fileDialog);
-//        fileDialog.dispose();
 
         JFileChooser chooser = new JFileChooser(getDefaultDirPath(IMPORT_FILE_PATH));
         chooser.setDialogTitle(getResourceString("CHOOSE_WORKBENCH_IMPORT_FILE"));
@@ -1596,29 +1564,12 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         	}
         }
         
-        if (chooser.showOpenDialog(UIRegistry.get(UIRegistry.FRAME)) != JFileChooser.APPROVE_OPTION)
+        if (chooser.showOpenDialog(UIRegistry.getMostRecentWindow()) != JFileChooser.APPROVE_OPTION)
         {
             UIRegistry.getStatusBar().setText("");
             return null;
         }
 
-        
-//        String fileName = fileDialog.getFile();
-//        String path     = fileDialog.getDirectory();
-//        if (StringUtils.isNotEmpty(path))
-//        {
-//            AppPreferences localPrefs = AppPreferences.getLocalPrefs();
-//            localPrefs.put(IMPORT_FILE_PATH, path);
-//        }
-//
-//        if (StringUtils.isNotEmpty(fileName) && StringUtils.isNotEmpty(path))
-//        {
-//            file = new File(path + File.separator + fileName);
-//        } else
-//        {
-//            return null;
-//        }
-        
         file = chooser.getSelectedFile();
         
         if (file.exists())
@@ -1775,73 +1726,55 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
      * @param altName
      * @return
      */
-    protected boolean fillInWorkbenchNameAndAttrs(final Workbench workbench, final String wbName, final boolean skipFirstCheck, final boolean alwaysAskForName)
-    {
+    protected boolean fillInWorkbenchNameAndAttrs(final Workbench workbench, final String wbName, final boolean skipFirstCheck, final boolean alwaysAskForName) {
         boolean skip = skipFirstCheck;
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        
-        try
-        {
+        try {
             String newWorkbenchName = wbName;
-            
-            boolean   alwaysAsk   = alwaysAskForName;
-            Workbench foundWB     = null;
-            boolean   shouldCheck = false;
-            //boolean canEdit = !AppContextMgr.isSecurityOn() || getPermissions().canAdd(); //XXX OK to require Add permission to modify props and structure?
+            boolean alwaysAsk = alwaysAskForName;
+            Workbench foundWB = null;
+            boolean shouldCheck = false;
             boolean canEdit = isPermitted();
-            do
-            {
-                if (StringUtils.isEmpty(newWorkbenchName))
-                {
+            do {
+                boolean error = false;
+                if (StringUtils.isEmpty(newWorkbenchName)) {
                     alwaysAsk = true;
-                    
-                } else
-                {
+                } else {
                     foundWB = session.getData(Workbench.class, "name", newWorkbenchName, DataProviderSessionIFace.CompareType.Equals);
-                    if (foundWB != null && !skip)
-                    {
-                        UIRegistry.getStatusBar().setErrorMessage(String.format(getResourceString("WB_DATASET_EXISTS"), new Object[] { newWorkbenchName}));
-                        workbench.setName("");
+                    if (foundWB != null && !skip) {
+                        UIRegistry.getStatusBar().setErrorMessage(String.format(getResourceString("WB_DATASET_EXISTS"), new Object[]{newWorkbenchName}));
+                        UIRegistry.displayErrorDlg(String.format(getResourceString("WB_DATASET_EXISTS"), new Object[]{newWorkbenchName}));
+                        error = true;
                     }
                     skip = false;
                 }
-                
                 String oldName = workbench.getName();
-                if ((foundWB != null || (StringUtils.isNotEmpty(newWorkbenchName) && newWorkbenchName.length() > 64)) || alwaysAsk)
-                {
+                if ((foundWB != null || (StringUtils.isNotEmpty(newWorkbenchName) && newWorkbenchName.length() > 64)) || alwaysAsk) {
                     alwaysAsk = false;
-                    
-                    // We found the same name and it must be unique
-                    if (askUserForInfo("Workbench", getResourceString("WB_DATASET_INFO"), workbench, canEdit) && canEdit)
-                    {
+                    if (askUserForInfo("Workbench", getResourceString("WB_DATASET_INFO"), workbench, canEdit) && canEdit) {
                         newWorkbenchName = workbench.getName();
-                        // This Part here needfs to be moved into an <enablerule/>
-                        if (StringUtils.isNotEmpty(newWorkbenchName) && newWorkbenchName.length() > 64)
-                        {
+                        // length is enforced on the data form so this is unnecessary...
+                        if (StringUtils.isNotEmpty(newWorkbenchName) && newWorkbenchName.length() > 64) {
                             UIRegistry.getStatusBar().setErrorMessage(getResourceString("WB_NAME_TOO_LONG"));
+                            UIRegistry.displayErrorDlg(getResourceString("WB_NAME_TOO_LONG"));
+                            error = true;
                         }
                         foundWB = workbench;
-                    } else
-                    {
+                    } else {
                         UIRegistry.getStatusBar().setText("");
                         return false;
                     }
-                    
                 }
-                
-                shouldCheck = oldName == null || !oldName.equals(newWorkbenchName);
-                
+                shouldCheck = oldName == null || !oldName.equals(newWorkbenchName) || error;
             } while (shouldCheck);
-            
-        } catch (Exception ex)
-        {
+
+        } catch (Exception ex) {
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
             log.error(ex);
-            
-        } finally
-        {
-            session.close();    
+
+        } finally {
+            session.close();
         }
         UIRegistry.getStatusBar().setText("");
         return true;
@@ -2033,77 +1966,56 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     }
 
     /**
+     *
      * Creates the Pane for editing a Workbench.
-     * @param workbench the workbench to be edited
-     * @param session a session to use to load the workbench (can be null)
-     * @param showImageView shows image window when first showing the window
+     *
+     * @param workbench
+     * @param session
+     * @param showImageView
+     * @param doInbackground
+     * @param isUpdate
+     * @param srcTask
      */
-    protected void createEditorForWorkbench(final Workbench workbench, 
+    protected void createEditorForWorkbench(final Workbench workbench,
                                             final DataProviderSessionIFace session,
                                             final boolean showImageView,
                                             final boolean doInbackground,
                                             final boolean isUpdate,
-                                            final Taskable srcTask)
-    {
-    	//Hack for IN-HOUSE ONLY batch uploading
-//    	if (testingJUNK)
-//    	{
-//    		Vector<Integer> wbIds = new Vector<Integer>();
-//    		for (int i = 1; i <= 3; i++)
-//    		{
-//    			wbIds.add(i);
-//    		}
-//    		
-//    		uploadWorkbenches(wbIds);
-//    	} 
-//    	else 
-//    	{
+                                            final Taskable srcTask) {
         if (workbench == null) return;
 
-        final SimpleGlassPane glassPane = doInbackground ? 
-        		UIRegistry.writeSimpleGlassPaneMsg(String.format(getResourceString("WB_LOADING_DATASET"), isUpdate ? "" : workbench.getName()), GLASSPANE_FONT_SIZE) :
-        		null;
-        
-
+        final GhostGlassPane glassPane = doInbackground ?
+                UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_LOADING_DATASET"), isUpdate ? "" : workbench.getName()), GLASSPANE_FONT_SIZE) :
+                null;
         WorkbenchEditorCreator wbec = new WorkbenchEditorCreator(workbench,
-                session, showImageView, this, !isPermitted(), srcTask, isUpdate)
-        {
+                session, showImageView, this, !isPermitted(), srcTask, isUpdate) {
             @Override
-            public void progressUpdated(java.util.List<Integer> chunks) 
-            {
+            public void progressUpdated(java.util.List<Integer> chunks) {
                 if (glassPane != null)
                     glassPane.setProgress(chunks.get(chunks.size() - 1));
             }
-            
+
             @Override
-            public void completed(WorkbenchPaneSS workbenchPane)
-            {
-                if (workbenchPane != null)
-                {
-                	addSubPaneToMgr(workbenchPane);
-                
-                	if (glassPane != null)
-                	{
-                		UIRegistry.clearSimpleGlassPaneMsg();
-                	}
-                
-                	if (workbenchPane != null && workbenchPane.isDoIncremental() && !workbenchPane.isUpdateDataSet())
-                	{
-                		workbenchPane.validateAll(null);
-                	}
-                	if (workbenchPane.isUpdateDataSet()) {
-                	    NavBoxMgr.getInstance().closeSplitter();
+            public void completed(WorkbenchPaneSS workbenchPane) {
+                if (workbenchPane != null) {
+                    addSubPaneToMgr(workbenchPane);
+                    if (glassPane != null) {
+                        UIRegistry.clearGlassPaneMsg();
                     }
-                } //else something went wrong during the creation. Assume/hope execptions or warnings have already occurred. Better than hanging.
-                {
-                	if (glassPane != null)
-                	{
-                		UIRegistry.clearSimpleGlassPaneMsg();
-                	}
+                    if (workbenchPane != null && workbenchPane.isDoIncremental() && !workbenchPane.isUpdateDataSet()) {
+                        workbenchPane.validateAll();
+                    }
+                    if (workbenchPane.isUpdateDataSet()) {
+                        NavBoxMgr.getInstance().closeSplitter();
+                    }
+                }
+                //else something went wrong during the creation. Assume/hope execptions or warnings have already occurred. Better than hanging.
+                if (glassPane != null) {
+                    UIRegistry.clearGlassPaneMsg();
                 }
             }
         };
-        
+
         if (doInbackground)
             wbec.runInBackground();
         else
@@ -2246,6 +2158,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                     UIRegistry.getStatusBar().incrementValue(workbench.getName());
                 }
                 
+
                 backupName = WorkbenchBackupMgr.backupWorkbench(workbench);
                 UIRegistry.getStatusBar().incrementValue(workbench.getName());
                 SwingUtilities.invokeLater(new Runnable() {
@@ -2298,10 +2211,11 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             public void finished()
             {
                 UIRegistry.clearSimpleGlassPaneMsg();
-               if (StringUtils.isNotEmpty(backupName))
-                {
+               if (StringUtils.isNotEmpty(backupName)) {
                     UIRegistry.getStatusBar().setText(String.format(getResourceString("WB_DEL_BACKED_UP"), new Object[] { workbench.getName(), backupName }));
-                }
+               } else {
+                    UIRegistry.getStatusBar().setText(String.format(getResourceString("WB_DEL_NOT_BACKED_UP"), new Object[] { workbench.getName(), backupName }));
+               }
                AppPreferences.getLocalPrefs().remove(WorkbenchPaneSS.wbAutoValidatePrefName + "." + workbench.getId());
                AppPreferences.getLocalPrefs().remove(WorkbenchPaneSS.wbAutoMatchPrefName + "." + workbench.getId());
                
@@ -2562,7 +2476,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                             helpContext);
                 
                 dlg.setModal(true);
-                UIHelper.centerAndShow(dlg);
+                dlg.setVisible(true);
                 if (!dlg.isCancelled())
                 {
                     session   = DataProviderFactory.getInstance().createSession();
@@ -2639,7 +2553,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     {
         Collections.sort(items);
         
-        ToggleButtonChooserDlg<WorkbenchTemplateMappingItem> dlg = new ToggleButtonChooserDlg<WorkbenchTemplateMappingItem>(
+        ToggleButtonChooserDlg<WorkbenchTemplateMappingItem> dlg = new ToggleButtonChooserDlg<>(
                 (Frame)UIRegistry.get(UIRegistry.FRAME),
                 "WB_SELECT_FIELD_TITLE", 
                 "WB_SELECT_FIELD", 
@@ -2825,7 +2739,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     }
     
     /**
-     * Show the dialog to allow the user to edit a template and then updates the data rows and columns..
+     * Show the dialog to allow the user to edit a template and then updates the data rows and columns.
      * @param workbenchTemplate the template to be edited
      */
     protected void editTemplate(final WorkbenchTemplate wbTemplate)
@@ -2930,150 +2844,127 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
      */
     protected void updateGeoRefInfoAfterTemplateEdit(final WorkbenchTemplate wbTemplate,
                                                      final Collection<WorkbenchTemplateMappingItem> deletedItems,
-                                                     final Collection<WorkbenchTemplateMappingItem> newItems)
-    {
-    	final SimpleGlassPane glassPane = UIRegistry.writeSimpleGlassPaneMsg(getResourceString("WB_SAVING_TEMPLATE_CHANGES"), GLASSPANE_FONT_SIZE);
-    	javax.swing.SwingWorker<Object, Object> sw = new javax.swing.SwingWorker<Object, Object>()
-    	{
+                                                     final Collection<WorkbenchTemplateMappingItem> newItems) {
+        final GhostGlassPane glassPane = UIRegistry.writeGlassPaneMsg(getResourceString("WB_SAVING_TEMPLATE_CHANGES"), GLASSPANE_FONT_SIZE);
+        javax.swing.SwingWorker<Object, Object> sw = new javax.swing.SwingWorker<Object, Object>() {
 
-			/* (non-Javadoc)
-			 * @see javax.swing.SwingWorker#doInBackground()
-			 */
-			@Override
-			protected Object doInBackground() throws Exception 
-			{
-	            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-	            try
-	            {
-	                //Collection<WorkbenchTemplateMappingItem> deletedItems = dlg.getDeletedItems();
-	                //Collection<WorkbenchTemplateMappingItem> newItems     = dlg.updateAndGetNewItems();
-	                
-	                for (WorkbenchTemplateMappingItem item : newItems)
-	                {
-	                    log.error(item.getFieldName());
-	                }
-	                //Collection<WorkbenchTemplateMappingItem> updatedItems = dlg.getUpdatedItems();
-	                
-	                session.beginTransaction();
-	                
-	                // Merge with current session
-	                WorkbenchTemplate workbenchTemplate = session.merge(wbTemplate);
-	                
-	                Set<WorkbenchTemplateMappingItem> items = workbenchTemplate.getWorkbenchTemplateMappingItems();
-	                for (WorkbenchTemplateMappingItem delItem : deletedItems)
-	                {
-	                    for (WorkbenchTemplateMappingItem wbtmi : items)
-	                    {
-	                    	if (delItem.getWorkbenchTemplateMappingItemId().longValue() == wbtmi.getWorkbenchTemplateMappingItemId().longValue())
-	                        {
-	                            //log.debug("del ["+wbtmi.getCaption()+"]["+wbtmi.getWorkbenchTemplateMappingItemId().longValue()+"]");
-	                            //wbtmi.setWorkbenchTemplate(null);
-	                    		
-	                    		items.remove(wbtmi);
-	                    		wbtmi.setWorkbenchTemplate(null);
-	                            if (wbtmi.getWorkbenchDataItems() != null)
-	                            {
-	                              
-	                            	for (WorkbenchDataItem wbdi : wbtmi.getWorkbenchDataItems())
-	                                {
-	                                    wbdi.getWorkbenchRow().getWorkbenchDataItems().remove(wbdi);
-	                                    wbdi.setWorkbenchRow(null);
-	                            		session.delete(wbdi);
-	                            		wbdi.setWorkbenchTemplateMappingItem(null);
-	                                }
-	                            	wbtmi.getWorkbenchDataItems().clear();
-	                            }
-	                            session.delete(wbtmi);
-	                            break;
-	                        }
-	                    }
-	                }
-	                
-	                for (WorkbenchTemplateMappingItem wbtmi : newItems)
-	                {
-	                    wbtmi.setWorkbenchTemplate(workbenchTemplate);
-	                    items.add(wbtmi);
-	                    //log.debug("new ["+wbtmi.getCaption()+"]["+wbtmi.getViewOrder().shortValue()+"]");
-	                    session.saveOrUpdate(wbtmi) ;
-	                }
-	                                
-	                //Check to see if geo/ref data needs to be updated
-	                //This is actually only necessary if lat/long mappings have been switched - lat mapping changed to a long mapping or vice-versa.
-	                //XXX Surely it is possible to tell if a lat/long switch has been made and not do this after every template change??
-	                WorkbenchTemplateMappingItem aGeoRefMapping = null;
-	                for (WorkbenchTemplateMappingItem wbtmi : workbenchTemplate.getWorkbenchTemplateMappingItems())
-	                {
-	                    if (aGeoRefMapping == null && wbtmi.getTableName().equals("locality"))
-	                    {
-	                        if (wbtmi.getFieldName().equalsIgnoreCase("latitude1") || wbtmi.getFieldName().equalsIgnoreCase("latitude2")
-	                                || wbtmi.getFieldName().equalsIgnoreCase("longitude1") || wbtmi.getFieldName().equalsIgnoreCase("longitude2"))
-	                        {
-	                        	aGeoRefMapping = wbtmi;
-	                        	break;
-	                        }
-	                    }
-	                }
-	                if (aGeoRefMapping != null)
-	                {
-	                	for (Workbench wb : workbenchTemplate.getWorkbenches())
-	                	{
-	                		wb.forceLoad();
-	                		int rowCount = wb.getWorkbenchRows().size();
-	                		int count = 0;
-	                		for (WorkbenchRow wbRow : wb.getWorkbenchRows())
-	                		{
-	                			wbRow.updateGeoRefTextFldsIfNecessary(aGeoRefMapping);
-	                			glassPane.setProgress((int)( (100.0 * count++) / rowCount));
-	                		}
-	                		//session.saveOrUpdate(wb);
-	                	}
-	                }
+            /* (non-Javadoc)
+             * @see javax.swing.SwingWorker#doInBackground()
+             */
+            @Override
+            protected Object doInBackground() throws Exception {
+                DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+                try {
+                    //Collection<WorkbenchTemplateMappingItem> deletedItems = dlg.getDeletedItems();
+                    //Collection<WorkbenchTemplateMappingItem> newItems     = dlg.updateAndGetNewItems();
 
-	                session.saveOrUpdate(workbenchTemplate);
-	                for (Workbench wb : workbenchTemplate.getWorkbenches())
-	                {
-	                	session.saveOrUpdate(wb);
-	                }
-	                
-	                session.commit();
-	                session.flush();
-	                
-	                UIRegistry.getStatusBar().setText(getResourceString("WB_SAVED_MAPPINGS"));
-	                
-	            } catch (Exception ex)
-	            {
-	                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-	                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
-	                log.error(ex);
-	                ex.printStackTrace();
-	                
-	            } finally
-	            {
-	                try
-	                {
-	                    session.close();
-	                } catch (Exception ex)
-	                {
-	                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-	                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
-	                    log.error(ex);
-	                }  
-	            }
-	            return null;
-			}
+                    for (WorkbenchTemplateMappingItem item : newItems) {
+                        log.error(item.getFieldName());
+                    }
+                    //Collection<WorkbenchTemplateMappingItem> updatedItems = dlg.getUpdatedItems();
 
-			/* (non-Javadoc)
-			 * @see javax.swing.SwingWorker#done()
-			 */
-			@Override
-			protected void done() 
-			{
-				super.done();
-				UIRegistry.clearSimpleGlassPaneMsg();
-			}
-    		
+                    session.beginTransaction();
 
-    	};
+                    // Merge with current session
+                    WorkbenchTemplate workbenchTemplate = session.merge(wbTemplate);
+
+                    Set<WorkbenchTemplateMappingItem> items = workbenchTemplate.getWorkbenchTemplateMappingItems();
+                    for (WorkbenchTemplateMappingItem delItem : deletedItems) {
+                        for (WorkbenchTemplateMappingItem wbtmi : items) {
+                            if (delItem.getWorkbenchTemplateMappingItemId().longValue() == wbtmi.getWorkbenchTemplateMappingItemId().longValue()) {
+                                //log.debug("del ["+wbtmi.getCaption()+"]["+wbtmi.getWorkbenchTemplateMappingItemId().longValue()+"]");
+                                //wbtmi.setWorkbenchTemplate(null);
+
+                                items.remove(wbtmi);
+                                wbtmi.setWorkbenchTemplate(null);
+                                if (wbtmi.getWorkbenchDataItems() != null) {
+
+                                    for (WorkbenchDataItem wbdi : wbtmi.getWorkbenchDataItems()) {
+                                        wbdi.getWorkbenchRow().getWorkbenchDataItems().remove(wbdi);
+                                        wbdi.setWorkbenchRow(null);
+                                        session.delete(wbdi);
+                                        wbdi.setWorkbenchTemplateMappingItem(null);
+                                    }
+                                    wbtmi.getWorkbenchDataItems().clear();
+                                }
+                                session.delete(wbtmi);
+                                break;
+                            }
+                        }
+                    }
+
+                    for (WorkbenchTemplateMappingItem wbtmi : newItems) {
+                        wbtmi.setWorkbenchTemplate(workbenchTemplate);
+                        items.add(wbtmi);
+                        //log.debug("new ["+wbtmi.getCaption()+"]["+wbtmi.getViewOrder().shortValue()+"]");
+                        session.saveOrUpdate(wbtmi);
+                    }
+
+                    //Check to see if geo/ref data needs to be updated
+                    //This is actually only necessary if lat/long mappings have been switched - lat mapping changed to a long mapping or vice-versa.
+                    //XXX Surely it is possible to tell if a lat/long switch has been made and not do this after every template change??
+                    WorkbenchTemplateMappingItem aGeoRefMapping = null;
+                    for (WorkbenchTemplateMappingItem wbtmi : workbenchTemplate.getWorkbenchTemplateMappingItems()) {
+                        if (aGeoRefMapping == null && wbtmi.getTableName().equals("locality")) {
+                            if (wbtmi.getFieldName().equalsIgnoreCase("latitude1") || wbtmi.getFieldName().equalsIgnoreCase("latitude2")
+                                    || wbtmi.getFieldName().equalsIgnoreCase("longitude1") || wbtmi.getFieldName().equalsIgnoreCase("longitude2")) {
+                                aGeoRefMapping = wbtmi;
+                                break;
+                            }
+                        }
+                    }
+                    if (aGeoRefMapping != null) {
+                        for (Workbench wb : workbenchTemplate.getWorkbenches()) {
+                            wb.forceLoad();
+                            int rowCount = wb.getWorkbenchRows().size();
+                            int count = 0;
+                            for (WorkbenchRow wbRow : wb.getWorkbenchRows()) {
+                                wbRow.updateGeoRefTextFldsIfNecessary(aGeoRefMapping);
+                                glassPane.setProgress((int) ((100.0 * count++) / rowCount));
+                            }
+                            //session.saveOrUpdate(wb);
+                        }
+                    }
+
+                    session.saveOrUpdate(workbenchTemplate);
+                    for (Workbench wb : workbenchTemplate.getWorkbenches()) {
+                        session.saveOrUpdate(wb);
+                    }
+
+                    session.commit();
+                    session.flush();
+
+                    UIRegistry.getStatusBar().setText(getResourceString("WB_SAVED_MAPPINGS"));
+
+                } catch (Exception ex) {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
+                    log.error(ex);
+                    ex.printStackTrace();
+
+                } finally {
+                    try {
+                        session.close();
+                    } catch (Exception ex) {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
+                        log.error(ex);
+                    }
+                }
+                return null;
+            }
+
+            /* (non-Javadoc)
+             * @see javax.swing.SwingWorker#done()
+             */
+            @Override
+            protected void done() {
+                super.done();
+                UIRegistry.clearGlassPaneMsg();
+            }
+
+
+        };
         sw.execute();
     }
     /**
@@ -3660,7 +3551,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 true,
                 CustomDialog.OK_BTN,
                 pane);
-        UIHelper.centerAndShow(dlg);
+        dlg.setVisible(true);
         dlg.dispose();
     }
 
@@ -3867,7 +3758,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         chooser.setMultiSelectionEnabled(true);
         chooser.setFileFilter(imageFilter);
         
-        if (chooser.showOpenDialog(UIRegistry.get(UIRegistry.FRAME)) != JFileChooser.APPROVE_OPTION)
+        if (chooser.showOpenDialog(UIRegistry.getMostRecentWindow()) != JFileChooser.APPROVE_OPTION)
         {
             UIRegistry.getStatusBar().setText("");
             return;
@@ -4052,7 +3943,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         {
             return UIRegistry.displayConfirmLocalized("WB_ERROR_LOAD_IMAGE", key,  getResourceString("Continue"), "WB_STOP_LOADING", JOptionPane.ERROR_MESSAGE);
         }
-        JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), getResourceString(key), getResourceString("WB_ERROR_LOAD_IMAGE"), JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(), getResourceString(key), getResourceString("WB_ERROR_LOAD_IMAGE"), JOptionPane.ERROR_MESSAGE);
         return false;
         
     }

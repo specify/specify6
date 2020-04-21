@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -660,7 +660,7 @@ public class TaskMgr implements CommandListener
                     if (StringUtils.isEmpty(prefName))
                     {
                         log.error(ex);
-                        UIRegistry.showError(String.format("The plugin '%s' could not be loaded.\nPlease contact cutomer suppoer.", pi.getPluginName()));
+                        UIRegistry.showError(String.format(UIRegistry.getResourceString("TaskMgr.PluginLoadFail"), pi.getPluginName()));
                         //ex.printStackTrace();
                         //edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                         //edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TaskMgr.class, ex);

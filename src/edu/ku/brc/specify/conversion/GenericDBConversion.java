@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -334,7 +334,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             TaxonTypeHolder selectedTTH = null;
             if (datas.size() > 1)
             {
-                ToggleButtonChooserDlg<TaxonTypeHolder> dlg = new ToggleButtonChooserDlg<TaxonTypeHolder>((Frame)null, 
+                ToggleButtonChooserDlg<TaxonTypeHolder> dlg = new ToggleButtonChooserDlg<TaxonTypeHolder>((Frame)UIRegistry.getTopWindow(),
                         "Choose a Collection Object Type", 
                         datas, 
                         ToggleButtonChooserPanel.Type.RadioButton);
@@ -1020,7 +1020,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             pb.add(UIHelper.createScrollPane(tableBot), cc.xy(1,7));
             
             pb.setDefaultDialogBorder();
-            CustomDialog dlg = new CustomDialog(null, "Taxononic Types", true, pb.getPanel());
+            CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), "Taxononic Types", true, pb.getPanel());
             dlg.createUI();
            
             dlg.setSize(1024, 500);
@@ -2780,10 +2780,10 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             pb.add(bbp, cc.xy(1, 1));
             pb.setDefaultDialogBorder();
             
-            CustomDialog    dlg       = new CustomDialog((Frame)null, "Choose Agent Mapping File", true, pb.getPanel());
+            CustomDialog    dlg       = new CustomDialog((Frame)UIRegistry.getTopWindow(), "Choose Agent Mapping File", true, pb.getPanel());
             dlg.createUI();
             dlg.pack();
-            UIHelper.centerAndShow(dlg, 600, dlg.getHeight());
+            dlg.setVisible(true);
             if (!dlg.isCancelled())
             {
                 String fileName = textField.getText();
@@ -5756,7 +5756,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
                     } else if (newFieldName.equalsIgnoreCase("SampleNumber")
                             || newFieldName.equalsIgnoreCase("Status")
-                            || newFieldName.equalsIgnoreCase("YesNo3"))
+                            || newFieldName.equalsIgnoreCase("YesNo3")
+                            || newFieldName.equalsIgnoreCase("alternateStorageId"))
                     {
                         str.append("NULL");
 
@@ -6109,7 +6110,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
             if (BasicSQLUtils.mySourceServerType == BasicSQLUtils.SERVERTYPE.MS_SQLServer)
             {
-                log.debug("FIXING select statement to run against SQL Server.......");
+                log.debug("FIXING select statement to run against SQL Server...");
                 log.debug("old string: " + sql.toString());
                 String currentSQL = sql.toString();
                 currentSQL = currentSQL.replaceAll("Current", "[" + "Current" + "]");

@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -502,7 +502,7 @@ public class SpecifyExplorer extends HttpServlet
                                  final DisciplineType  disciplineType)
     {
         
-        log.info("Logging into "+dbName+"....");
+        log.info("Logging into "+dbName+"...");
         
         //String connStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Create, hostName, dbName);
         //if (connStr == null)
@@ -559,7 +559,7 @@ public class SpecifyExplorer extends HttpServlet
         
         queryHandler = new QueryReportHandler();
 
-        log.info("Creating database "+dbName+"....");
+        log.info("Creating database "+dbName+"...");
         
         /*
         try
@@ -619,7 +619,7 @@ public class SpecifyExplorer extends HttpServlet
         
                 } else
                 {
-                    //JOptionPane.showMessageDialog(null, 
+                    //JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(),
                     //        getResourceString("USER_NOT_FOUND"), 
                     //        getResourceString("USER_NOT_FOUND_TITLE"), JOptionPane.WARNING_MESSAGE);
                     

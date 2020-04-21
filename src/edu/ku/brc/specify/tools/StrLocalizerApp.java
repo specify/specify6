@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -1489,7 +1489,7 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
         }
     	
     	ChooseFromListDlg<LanguageEntry> ldlg = new ChooseFromListDlg<LanguageEntry>((Frame )getTopWindow(), getResourceString("StrLocalizerApp.ChooseLanguageDlgTitle"), languages);
-        UIHelper.centerAndShow(ldlg);
+        ldlg.setVisible(true);
         if (ldlg.isCancelled() || ldlg.getSelectedObject() == null)
         {
         	return;
@@ -1605,7 +1605,7 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
     	
     	ChooseFromListDlg<StrLocaleFile> ldlg = new ChooseFromListDlg<StrLocaleFile>((Frame )getTopWindow(), 
         		                                   getResourceString("StrLocalizerApp.ChooseFileDlgTitle"), srcFiles);
-        UIHelper.centerAndShow(ldlg);
+        ldlg.setVisible(true);
         if (ldlg.isCancelled() || ldlg.getSelectedObject() == null)
         {
         	return;

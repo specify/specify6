@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -2449,7 +2449,7 @@ public class FormViewObj implements Viewable,
      */
     protected void recoverFromStaleObject(final String msgResStr, final String actualMsg)
     {
-        JOptionPane.showMessageDialog(null, actualMsg != null ? actualMsg : getResourceString(msgResStr), getResourceString("Error"), JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(), actualMsg != null ? actualMsg : getResourceString(msgResStr), getResourceString("Error"), JOptionPane.ERROR_MESSAGE);
         reloadDataObj();
     }
     
@@ -2669,7 +2669,74 @@ public class FormViewObj implements Viewable,
             localSession.saveOrUpdate(obj);
         }
     }
-    
+
+    /**
+     *
+     * @param dataObj
+     * @return
+     */
+    private boolean hasUniqueConstraint(final Object dataObj) {
+        javax.persistence.Table annotation = dataObj.getClass().getAnnotation(javax.persistence.Table.class);
+        if (annotation != null) {
+            return annotation.uniqueConstraints().length > 0;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     *
+     * @param busRuleCls
+     * @param name
+     * @return
+     */
+    private boolean hasDelBusRuleMethod(Class<?> busRuleCls, String name) {
+        try {
+            Method m = busRuleCls.getDeclaredMethod(name, Object.class, DataProviderSessionIFace.class);
+            return true;
+        } catch (Exception x) {
+            return false;
+        }
+    }
+
+    /**
+     *
+     * @param dataObj
+     * @return
+     */
+    private boolean hasDeleteBusinessRules(final Object obj) {
+        BusinessRulesIFace busRules = DBTableIdMgr.getInstance().getBusinessRule(obj);
+        if (busRules != null) {
+            Class<?> cls = busRules.getClass();
+            return hasDelBusRuleMethod(cls, "beforeDelete") || hasDelBusRuleMethod(cls, "beforeDeleteCommit");
+        }
+        return false;
+    }
+
+    /**
+     *
+     * @param dataObj
+     * @return
+     */
+    private boolean needsToBeDeletedManually(final Object dataObj) {
+        return hasUniqueConstraint(dataObj) || hasDeleteBusinessRules(dataObj);
+    }
+
+    /**
+     *
+     * @param objs
+     * @return
+     */
+    private Vector<Object> getItemsToDeleteManually(final Vector<Object> objs) {
+        Vector<Object> result = new Vector<>();
+        for (Object obj: objs) {
+            if (needsToBeDeletedManually(obj)) {
+                result.add(obj);
+            }
+        }
+        return result;
+    }
+
     /**
      * This method enables us to loop when there is a duplicate key
      * @param dataObj the data object to be saved
@@ -2693,6 +2760,7 @@ public class FormViewObj implements Viewable,
         int     numTries         = 0;
         
         Vector<Object> deletedItems   = mvParent != null ? mvParent.getDeletedItems() : null;
+        Vector<Object> deletedItemsForManualDelete = deletedItems == null ? null : getItemsToDeleteManually(deletedItems);
         Vector<Object> toBeSavedItems = mvParent != null ? mvParent.getToBeSavedItems() : null;
 
         Object dObj = null;
@@ -2751,7 +2819,6 @@ public class FormViewObj implements Viewable,
                 traverseToSetModified(getMVParent());
                                 
                 session.beginTransaction();
-                
                 if (numTries == 1 && deletedItems != null && deletedItems.size() > 0)
                 {
                 	
@@ -2763,7 +2830,7 @@ public class FormViewObj implements Viewable,
                    //If not for the merging done by business rules for embedded collectingevents it would be possible
                    //to only delete manually if numTries was 2, i.e. hibernate failed the first try, but the merging generates
                    //exceptions for duplicate keys that are not thrown up to this method but mess up the session.
-                   deleteItemsInDelList(session, deletedItems);
+                   deleteItemsInDelList(session, deletedItemsForManualDelete);
                    try 
                    {
                 	   //need to flush so later actions in the transaction know about the deletes.
@@ -2790,7 +2857,12 @@ public class FormViewObj implements Viewable,
                     businessRules.beforeMerge(dataObjArg, session);
                 }
     
-                dObj = session.merge(dataObjArg);
+                try {
+                    dObj = session.merge(dataObjArg);
+                } catch (Exception x) {
+                    businessRules.afterMergeFailure(dataObjArg, session);
+                    throw x;
+                }
                 
                 if (businessRules != null)
                 {
@@ -3217,7 +3289,7 @@ public class FormViewObj implements Viewable,
         Object[] delBtnLabels = {getResourceString(addSearch ? "Remove" : "Delete"), getResourceString("CANCEL")};
         String title = dataObj instanceof FormDataObjIFace ? ((FormDataObjIFace)dataObj).getIdentityTitle() : tableInfo.getTitle();
         
-        int rv = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), UIRegistry.getLocalizedMessage(addSearch ? "ASK_REMOVE" : "ASK_DELETE", title),
+        int rv = JOptionPane.showOptionDialog(UIRegistry.getMostRecentWindow(), UIRegistry.getLocalizedMessage(addSearch ? "ASK_REMOVE" : "ASK_DELETE", title),
                                               getResourceString(addSearch ? "Remove" : "Delete"),
                                               JOptionPane.YES_NO_OPTION,
                                               JOptionPane.QUESTION_MESSAGE,
@@ -3287,7 +3359,7 @@ public class FormViewObj implements Viewable,
                 sb.append(s);
                 sb.append("\n");
             }
-            JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
+            JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(),
                     sb.toString(), 
                     getResourceString("COULDNT_DELETE_OBJ_TITLE"), JOptionPane.WARNING_MESSAGE);
         }
@@ -4467,7 +4539,7 @@ public class FormViewObj implements Viewable,
                     @Override
                     public void run()
                     {
-                        JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
+                        JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(),
                                 getResourceString("NO_RECORD_FOUND"), 
                                 getResourceString("NO_RECORD_FOUND_TITLE"), JOptionPane.WARNING_MESSAGE);
                     }
@@ -4479,7 +4551,7 @@ public class FormViewObj implements Viewable,
                 @Override
                 public void run()
                 {
-                    JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
+                    JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(),
                             getResourceString("ERROR_LOADING_FORM_DATA"), 
                             getResourceString("ERROR_LOADING_FORM_DATA_TITLE"), JOptionPane.WARNING_MESSAGE);
                 }

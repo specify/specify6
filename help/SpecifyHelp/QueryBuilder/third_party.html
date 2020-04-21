@@ -7,9 +7,6 @@
     <title>Web Publishing</title>
   </head>
   <body bgcolor="#ffffff">
-    <p>
-       &nbsp;
-    </p>
     <table background="../../images/topbar.png" border="0" width="100%">
       <tbody>
       <tr>
@@ -23,21 +20,21 @@
        <a name="third_party"></a>Exporting Data for a Web Portal/Third Party
     </h2>
     <p>
-       The 6.5 release of Specify facilitates the creation of a web portal by using the Apache Solr
-      search platform. Specify data can also be shared with third parties, such as GBIF, FIshnet,
-      HarpNet, Mnis or OBIS. Both instances of data sharing require two steps to create an index
-      file. First, the schema of the web portal/third party must be mapped to the Specify schema
-      using the Schema Mapping Editor inside Specify. Next, the data file needs to be created
-      and/or updated using the Data Exporter stand-alone application (found in the bin directory
-      within the Specify application directory).
+       Specify supports the creation of a public web portal by using the Apache Solr search
+      platform. Specify data can also be shared with third parties, such as GBIF, FIshnet, HarpNet,
+      Mnis or OBIS. Both instances of data sharing require two steps to create an index file.
+      First, the schema of the web portal/third party must be mapped to the Specify schema using
+      the Schema Mapping Editor inside Specify. Next, the data file needs to be created and/or
+      updated using the Data Exporter stand-alone application (found in the bin directory within
+      the Specify application directory).
     </p>
     <h3>
        <a name="web_portal"></a>Creating a Web Portal using exported Specify data and Solr
     </h3>
     <blockquote>
       <p>
-         Specify 6.5 harnesses the search capabilities of Apache Solr to provide a full-featured
-        web interface for public access to specimen data and images.<br>
+         Specify uses the indexing and&nbsp;search capabilities of Apache Solr to provide a
+        full-featured web interface for public access to specimen data and images.<br>
       </p>
       <p>
          Creating a web portal using Specify data and Solr requires several steps:<br>
@@ -52,8 +49,7 @@
           Specify.
         </li>
         <li>
-          Use the Data Exporter, a separate Specify tool, to create (build) an index of the data
-          and other configuration files.
+          Use the Data Exporter, a separate Specify tool, to create a csv file containing the data.
         </li>
         <li>
           Integrate the exported web portal files with Solr
@@ -61,7 +57,13 @@
       </ol>
       <p>
          Each of these steps is explained in a web portal document accessible on the Specify
-        Project website: <a href="http://specifysoftware.org/">specifysoftware.org</a>.<br>
+        Project website: <a href="http://specifysoftware.org/">specifysoftware.org</a>.
+      </p>
+      <p>
+         Note: It is possible to combine several institutional collections in the same public Web
+        Portal if each of the collections uses the same mapping file. The original mapping file
+        must be exported and then idividually&nbsp;imported into each of the collections. See <a
+        href="#export_schema_map">Import/Export a Mapping</a> for more information.<br>
       </p>
     </blockquote>
     <h3>
@@ -117,7 +119,7 @@
        <a name="schema_map" id="schema_map">Schema Mapping Tool</a><br>
     </h3>
     <p>
-       The Schema Mapper is a powerful tool for organizing data which need to be exported. The
+       The Schema Mapper is a powerful tool for organizing data that need to be exported. The
       schema mapping tool is used to create a query, referred to as a map, for exporting data from
       Specify to a web publishing platform, i.e. GBIF, or a Specify Web Portal. When publishing to
       a third party, such as GBIF, the map also creates relationships between the fields in Specify
@@ -166,8 +168,7 @@
         <blockquote>
           <p>
              <strong><em>Note:</em></strong> earlier versions of Specify included other schema
-            files that may also be available in the Import Schema tool when upgrading to Specify
-            6.5.
+            files that may also be available in the Import Schema tool.
           </p>
         </blockquote>
       </blockquote>

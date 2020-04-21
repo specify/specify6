@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -506,7 +506,7 @@ public class UserPanel extends BaseSetupPanel
         final Hashtable<String, String> emailPrefs = new Hashtable<String, String>();
         if (!EMailHelper.isEMailPrefsOK(emailPrefs))
         {
-            JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
+            JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(),
                     getResourceString("NO_EMAIL_PREF_INFO"), 
                     getResourceString("NO_EMAIL_PREF_INFO_TITLE"), JOptionPane.WARNING_MESSAGE);
             return;
@@ -630,7 +630,7 @@ public class UserPanel extends BaseSetupPanel
                 scrollPane.getVerticalScrollBar().setValue(0);
             }
         });
-        UIHelper.centerAndShow(dlg);
+        dlg.setVisible(true);
     }
 
     /**

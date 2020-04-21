@@ -1,0 +1,146 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+    <link type="text/css" href="../../main.css" rel="stylesheet" media="screen">
+    <meta content="Helen" name="generator">
+    <title>Auditing</title>
+  </head>
+  <body bgcolor="#ffffff">
+    <table background="../../images/topbar.png" border="0" width="100%">
+      <tbody>
+      <tr>
+        <td>
+          &nbsp;
+        </td>
+      </tr>
+      </tbody>
+    </table>
+    <h2>
+       <img src="../../images/auditing_5.png">&nbsp;&nbsp;Auditing
+    </h2>
+    <p>
+       Specify version 6.8.00 extends the logging capabilities of the&nbsp;Auditing data&nbsp;table
+      (or "Sp Audit Log") present in each Collection to allow for the capture of value changes at
+      the individual field level. The type of changes, such as insert, edit, and delete, have been
+      captured since the original release of Specify 6.0 but until now it has not been possible to
+      process data in the Audit data table.
+    </p>
+    <p>
+       The ability to query the Auditing table is&nbsp;available to users at the Admin and Manager
+      level by default, permissions for access can&nbsp;be changed in <a href=
+      "../Security/permissions.html">Security Settings</a>.
+    </p>
+    <p>
+       Settings for Auditing can be configured in <a href="../Prefs/PrefsAudits.html">User
+      Preferences</a>.
+    </p>
+    <p>
+       An Audit log can be created by creating a search in the Query Builder. Open the Query
+      builder by clicking the <img src="../../images/query20x20.png" height="20" width=
+      "20">&nbsp;(Query button) on the Taskbar.
+    </p>
+    <p>
+       The Audit table is not available on the Sidebar by default, but must first be added.
+    </p>
+    <p style=" margin-left: 20.0px;">
+       1. Right-click next to Create Query found at the top of the Sidebar. A pop-up will appear
+      with choices to configure the Sidebar.
+    </p>
+    <p align="center">
+       <img src="../../images/Create_Query.png">
+    </p>
+    <p align="center">
+       <i>Configure Query Creators</i>
+    </p>
+    <p style=" margin-left: 20.0px;">
+       2. Choose <i>Configure Query Creators</i>.
+    </p>
+    <p style=" margin-left: 20.0px;">
+       A dialog will open to choose tables to add to the Sidebar. The Sp Audit table will need to
+      be added.
+    </p>
+    <p>
+       &nbsp;
+    </p>
+    <p align="center">
+       <img src="../images/configureQueryCreators2.png">
+    </p>
+    <p align="center">
+       <i>Configure Query Creators</i>
+    </p>
+    <p>
+       &nbsp;
+    </p>
+    <p style=" margin-left: 20.0px;">
+       3. Click the <img src="../images/add.png" style=
+      " margin-left: 20.0px;">&nbsp;(Add)&nbsp;button for more choices. A new dialog will appear
+      with a list of tables in Specify.
+    </p>
+    <p align="center">
+       <img src="../images/available queries.png">
+    </p>
+    <p>
+       &nbsp;
+    </p>
+    <p align="center">
+       <i>Available Queries</i>
+    </p>
+    <p>
+       &nbsp;
+    </p>
+    <p style=" margin-left: 20.0px;">
+       4. Select the Sp Audit Log table and click the OK button.
+    </p>
+    <p style=" margin-left: 20.0px;">
+       The Audit table will now display&nbsp;on the Sidebar. Click the table to view a list
+      of&nbsp;related data tables and fields&nbsp;available for building the query. For information
+      about building a query see the <a href="Query_Builder.html">Query Builder</a> documentation
+      page.
+    </p>
+    <p style=" margin-left: 20.0px;">
+       &nbsp;
+    </p>
+    <p style=" margin-left: 20.0px;">
+       Definitions of the fields in the Auditing tables, and their default Field Name, Caption and
+      status&nbsp;are as follows:
+    </p>
+    <p align="left" style=" margin-left: 20.0px;">
+       <img src="../../images/audit_definitions.png" style=" margin-left: 20.0px;">
+    </p>
+    <p>
+       &nbsp;
+    </p>
+    <p style=" margin-left: 20.0px;">
+       &nbsp;Many of the fields offer record-level ID's in the mySQL database.
+    </p>
+    <p style=" margin-left: 20.0px;">
+       <i>Format Data Objects</i> is a new option found on the bottom of the workspace. When this
+      is&nbsp;selected data objects, such as parentRecordID, RecordID, OldValue and NewValue are
+      displayed using their captions and/or formats rather than their numeric id which is used to
+      store them in the database. We include both of these options because, while the
+      caption/format is more recognizable in the query, the numeric id may be useful to
+      queiry&nbsp;directly in MySQL.
+    </p>
+    <p align="center">
+       <img src="../../images/format_data_objects.png">
+    </p>
+    <p align="center">
+       <i>Format Data Objects</i>
+    </p>
+    <p>
+       &nbsp;
+    </p>
+    <p style=" margin-left: 20.0px;">
+       Choose <i>Format Data Objects</i> to display field captions and field formats in the Query
+      results.
+    </p>
+    <p style=" margin-left: 20.0px;">
+       Once the query is configured click the <i>Search</i> button at the bottom of the Workspace.
+      Query results will display in the Workspace.
+    </p>
+    <p>
+       &nbsp;
+    </p>
+  </body>
+</html>

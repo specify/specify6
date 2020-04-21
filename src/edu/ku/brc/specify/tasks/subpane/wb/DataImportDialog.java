@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -729,7 +729,7 @@ public class DataImportDialog extends JDialog implements ActionListener
             textArea.setCaretPosition(0);
             JScrollPane pane = new JScrollPane(textArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
                                                          ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
-            JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), pane,getResourceString("DATA_IMPORT_ISSUES"),JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(), pane,getResourceString("DATA_IMPORT_ISSUES"),JOptionPane.WARNING_MESSAGE);
             okBtn.setEnabled(false); 	
         }
         else if (listOfErrors.getModel().getSize() > 0)
@@ -749,7 +749,7 @@ public class DataImportDialog extends JDialog implements ActionListener
             textArea.setCaretPosition(0);
             JScrollPane pane = new JScrollPane(textArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
                                                          ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
-            JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), pane,getResourceString("DATA_IMPORT_ISSUES"),JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(), pane,getResourceString("DATA_IMPORT_ISSUES"),JOptionPane.WARNING_MESSAGE);
         }
     }
     
@@ -1272,7 +1272,7 @@ public class DataImportDialog extends JDialog implements ActionListener
     
     /**
      * If the user does not provide "first row contains headers", this creates
-     * as set of headers of notation "Column 1"....
+     * as set of headers of notation "Column 1"...
      * @param count
      * @return
      * String[]
@@ -1289,7 +1289,7 @@ public class DataImportDialog extends JDialog implements ActionListener
     
     /**
      * If the user does not provide "first row contains headers", this creates
-     * as set of headers of notation "Column 1"....
+     * as set of headers of notation "Column 1"...
      * @param count
      * @return
      * String[]

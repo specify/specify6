@@ -317,7 +317,7 @@ public class UploadToolPanel extends JPanel implements TimingTarget
                             AppPreferences.getLocalPrefs().putBoolean(wbAutoFillPrefName + "."
                                     + wbSS.getWorkbench().getId(), autoAssignCatNumChk.isSelected());
                             if (wbSS.isDoIncrementalValidation()) {
-                                wbSS.validateAll(null);
+                                wbSS.validateAll();
                             }
                         }
                     });

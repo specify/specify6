@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -506,25 +506,9 @@ public class UploadField
             }
             if (pickList != null)
             {
-                readOnlyValidValues = pickList.isReadOnly() && !(pickList instanceof PickListTableAdapter);
+                readOnlyValidValues = pickList.isReadOnly() || pickList instanceof PickListTableAdapter;
                 picklistWarn = !readOnlyValidValues && pickList instanceof PickListTableAdapter;
                 
-//                TreeMap<String, PickListItemIFace> pickListItems = picklistWarn ?
-//                		new TreeMap<String, PickListItemIFace>(new Comparator<String>(){
-//
-//							/* (non-Javadoc)
-//							 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-//							 */
-//							@Override
-//							public int compare(String arg0, String arg1) {
-//								if (arg0 == null && arg1 == null) return 0;
-//								if (arg0 == null) return 1;
-//								if (arg1 == null) return -1;
-//								return arg0.compareToIgnoreCase(arg1);
-//							}
-//                			
-//                		})
-//                		: new TreeMap<String, PickListItemIFace>();                
 				TreeMap<String, PickListItemIFace> pickListItems = new TreeMap<String, PickListItemIFace>(
 						new Comparator<String>() {
 

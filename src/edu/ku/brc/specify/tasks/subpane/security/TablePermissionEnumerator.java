@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -28,15 +28,7 @@ import edu.ku.brc.af.auth.SecurityOptionIFace;
 import edu.ku.brc.af.core.PermissionIFace;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
-import edu.ku.brc.specify.datamodel.AttributeDef;
-import edu.ku.brc.specify.datamodel.AutoNumberingScheme;
-import edu.ku.brc.specify.datamodel.CollectingEventAttr;
-import edu.ku.brc.specify.datamodel.CollectionObjectAttr;
-import edu.ku.brc.specify.datamodel.CollectionRelType;
-import edu.ku.brc.specify.datamodel.CollectionRelationship;
-import edu.ku.brc.specify.datamodel.PreparationAttr;
-import edu.ku.brc.specify.datamodel.RecordSet;
-import edu.ku.brc.specify.datamodel.TreeDefItemIface;
+import edu.ku.brc.specify.datamodel.*;
 import edu.ku.brc.specify.tasks.BaseTask;
 import edu.ku.brc.specify.tasks.PermissionOptionPersist;
 
@@ -122,7 +114,7 @@ public class TablePermissionEnumerator extends PermissionEnumerator
                 }
             }
         }
-        return false;
+        return tblInfo.getTableId() == SpAuditLog.getClassTableId() || tblInfo.getTableId() == SpAuditLogField.getClassTableId();
     }
 
     /* (non-Javadoc)

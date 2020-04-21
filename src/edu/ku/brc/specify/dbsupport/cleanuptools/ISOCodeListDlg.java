@@ -1,7 +1,7 @@
 /* Copyright (C) 2012, University of Kansas Center for Research
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -235,6 +235,7 @@ public class ISOCodeListDlg extends CustomDialog
         fillTableFromItem(null); // eEarth doesn't need an item
         
         table.getColumnModel().getColumn(0).setPreferredWidth(260);
+        pack();
     }
 
     /**

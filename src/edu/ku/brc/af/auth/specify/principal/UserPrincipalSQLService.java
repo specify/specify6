@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -153,19 +153,20 @@ public class UserPrincipalSQLService
 
     /**
      * @param principalId
-     * @return
+     * @return true if principalId represents a user principal of an administrator
      */
     public static boolean isPrincipalAdmin(final Integer principalId)
     {
-        String sql = "SELECT count(up.SpPrincipalID) as ct" //$NON-NLS-1$
-                        + " FROM specifyuser_spprincipal as up" //$NON-NLS-1$
-                        + " INNER JOIN spprincipal as p on (up.SpPrincipalID=p.SpPrincipalID)" //$NON-NLS-1$
-                        + " WHERE p.GroupSubClass='" + AdminPrincipal.class.getCanonicalName() + "'"
-                        + " AND up.SpecifyUserID=" + principalId;
+        String sql = "select count(*) from spprincipal p inner join specifyuser_spprincipal up on up.spprincipalid = "
+            + "p.spprincipalid inner join specifyuser_spprincipal up2 on up2.specifyuserid = up.specifyuserid inner join "
+            + "spprincipal p2 on p2.spprincipalid = up2.spprincipalid where p2.groupsubclass = '"
+            + AdminPrincipal.class.getCanonicalName() + "' and p.groupsubclass = '" + UserPrincipal.class.getCanonicalName()
+            + "' and p.spprincipalid = " + principalId;
         Integer count = BasicSQLUtils.getCount(sql);
         return count != null && count > 0;
     }
-    
+
+
     /**
      * @param msg
      * @param sql

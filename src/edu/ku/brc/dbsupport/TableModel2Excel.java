@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -162,51 +162,19 @@ public class TableModel2Excel
                 headerFont.setFontHeightInPoints((short) 12);
                 headerFont.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
                 
-                // create a style for the header cell
-                HSSFCellStyle headerStyle = wb.createCellStyle();
-                headerStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);
-                headerStyle.setFont(headerFont);
-                setBordersOnStyle(headerStyle, HSSFColor.GREY_25_PERCENT.index, HSSFCellStyle.BORDER_THIN);
-
                 short numColumns = (short)tableModel.getColumnCount();
                 
                 HSSFRow  headerRow  = sheet.createRow(0);
                 for (int i=0;i<numColumns;i++)
                 {
                     HSSFCell headerCell = headerRow.createCell((short) i);
-                    headerCell.setCellStyle(headerStyle);
+                    //headerCell.setCellStyle(headerStyle);
                     
                     //add the date to the header cell
                     headerCell.setCellValue(tableModel.getColumnName(i));
                     sheet.setColumnWidth((short)i, (short)(30 * 256));
                 }
                 
-                //--------------------------
-                // done header
-                //--------------------------
-                
-                // create 3 cell styles
-                HSSFCellStyle oddCellStyle  = wb.createCellStyle();
-                HSSFCellStyle evenCellStyle = wb.createCellStyle();
-                
-                setBordersOnStyle(oddCellStyle, HSSFColor.GREY_25_PERCENT.index, HSSFCellStyle.BORDER_THIN);
-                setBordersOnStyle(evenCellStyle, HSSFColor.GREY_25_PERCENT.index, HSSFCellStyle.BORDER_THIN);
-                
-                // create 2 fonts objects
-                HSSFFont cellFont  = wb.createFont();
-                //set font 1 to 12 point type
-                cellFont.setFontHeightInPoints((short) 11);
-                oddCellStyle.setFont(cellFont);
-                evenCellStyle.setFont(cellFont);
-                
-                evenCellStyle.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
-                oddCellStyle.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
-                
-                oddCellStyle.setFillForegroundColor(HSSFColor.WHITE.index);
-                evenCellStyle.setFillForegroundColor(HSSFColor.LIGHT_CORNFLOWER_BLUE.index);
-                
-                oddCellStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);
-                evenCellStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);
 
                 // set the sheet name to HSSF Test
                 wb.setSheetName(0, title);
@@ -224,8 +192,6 @@ public class TableModel2Excel
                         Object dataVal = tableModel.getValueAt(rownum, cellnum);
                         cell.setCellValue(dataVal != null ? dataVal.toString() : "");
 
-                        // on every other row
-                        cell.setCellStyle((rownum % 2) == 0 ? evenCellStyle : oddCellStyle);
                     }
                 }
 

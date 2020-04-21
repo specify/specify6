@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,6 +20,8 @@
 package edu.ku.brc.specify.prefs;
 
 import java.awt.Component;
+import java.util.Map;
+import java.util.HashMap;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.TaskMgr;
@@ -43,7 +45,7 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class MiscPrefsPanel extends GenericPrefsPanel implements PrefsSavable, PrefsPanelIFace
 {
-    
+    Map<String, Boolean> originals = new HashMap<>();
     /**
      * 
      */
@@ -51,12 +53,12 @@ public class MiscPrefsPanel extends GenericPrefsPanel implements PrefsSavable, P
     {
         createForm("Preferences", "Misc");
         
-        setCheckbox("1", "Interactions.Using.Interactions", true);
-        setCheckbox("2", "ExportTask.OnTaskbar", false);
-        setCheckbox("3", "StartupTask.OnTaskbar", true);
-        setCheckbox("4", "AttachmentsTask.OnTaskbar", true, "ATTACHMENTS");
+        originals.put("1", setCheckbox("1", "Interactions.Using.Interactions", true));
+        originals.put("2", setCheckbox("2", "ExportTask.OnTaskbar", false));
+        originals.put("3", setCheckbox("3", "StartupTask.OnTaskbar", true));
+        originals.put("4", setCheckbox("4", "AttachmentsTask.OnTaskbar", true, "ATTACHMENTS"));
         //setCheckbox("5", "CleanupToolsTask.OnTaskbar", false, "CLEANUP");
-        setCheckbox("6", SymbiotaTask.IS_USING_SYMBIOTA_PREFNAME, false);
+        originals.put("6", setCheckbox("6", SymbiotaTask.IS_USING_SYMBIOTA_PREFNAME, false));
         //setCheckbox("7", SGRTask.IS_USING_SGR_PREFNAME, true);
     }
     
@@ -65,14 +67,14 @@ public class MiscPrefsPanel extends GenericPrefsPanel implements PrefsSavable, P
      * @param prefName
      * @param defVal
      */
-    protected void setCheckbox(final String id, 
+    protected boolean setCheckbox(final String id,
                                final String prefName, 
                                final boolean defVal,
                                final String taskName)
     {
         Taskable task = TaskMgr.getTask(taskName);
         boolean enable = !AppContextMgr.isSecurityOn() || (task != null && task.getPermissions().canView());
-        setCheckbox(id, prefName, defVal, enable);
+        return setCheckbox(id, prefName, defVal, enable);
     }
     
     /**
@@ -80,11 +82,11 @@ public class MiscPrefsPanel extends GenericPrefsPanel implements PrefsSavable, P
      * @param prefName
      * @param defVal
      */
-    protected void setCheckbox(final String id, 
+    protected boolean setCheckbox(final String id,
                                final String prefName, 
                                final boolean defVal)
     {
-        setCheckbox(id, prefName, defVal, true);
+        return setCheckbox(id, prefName, defVal, true);
     }
     
     
@@ -93,7 +95,7 @@ public class MiscPrefsPanel extends GenericPrefsPanel implements PrefsSavable, P
      * @param prefName
      * @param defVal
      */
-    protected void setCheckbox(final String id, 
+    protected boolean setCheckbox(final String id,
                                final String prefName, 
                                final boolean defVal,
                                final boolean enable)
@@ -106,7 +108,9 @@ public class MiscPrefsPanel extends GenericPrefsPanel implements PrefsSavable, P
             boolean value = remotePrefs.getBoolean(prefName+"."+ds, defVal);
             ((ValCheckBox)comp).setSelected(value);
             comp.setEnabled(enable);
+            return value;
         }
+        return defVal;
     }
     
     /**
@@ -123,8 +127,9 @@ public class MiscPrefsPanel extends GenericPrefsPanel implements PrefsSavable, P
             String         ds          = AppContextMgr.getInstance().getClassObject(Discipline.class).getType();
             AppPreferences remotePrefs = AppPreferences.getRemote();
             Boolean v = remotePrefs.getBoolean(prefName+"."+ds, null);
-            if (v == null || !v.equals(((ValCheckBox)comp).isSelected())) {
-            	remotePrefs.putBoolean(prefName+"."+ds, ((ValCheckBox)comp).isSelected());
+            boolean isSelected = ((ValCheckBox)comp).isSelected();
+            if ((v == null && isSelected != originals.get(id)) || (v != null && !v.equals(isSelected))) {
+            	remotePrefs.putBoolean(prefName+"."+ds, isSelected);
             	result = true;
             }
         } 

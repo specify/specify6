@@ -5,9 +5,7 @@
 <toc version="2.0">
 	<tocitem text="Specify" target="Welcome">
 		<tocitem text="Welcome to Specify" target="Welcome">
-			<tocitem text="Registration" target="Registration" />
 			<tocitem text="Services and Support" target="Services" />
-			<tocitem text="Usage and Usability Statistics" target="PHUI" />
 			<tocitem text="Updating" target="Updating" />
 			<tocitem text="Using Specify Help" target="Using_Help" />
 			<tocitem text="About Specify" target="about_specify" />
@@ -50,6 +48,7 @@
 		</tocitem>
 		<tocitem text="Setting Specify Preferences" target="PreferencesOverview">
 			<tocitem text="Attachments" target="PrefsAttachments" />
+			<tocitem text="Auditing" target="PrefsAudits" />
 			<tocitem text="EMail" target="PrefsEMail" />
 			<tocitem text="Formatting" target="PrefsFormatting" />
 			<tocitem text="GoogleEarth" target="PrefsGoogleEarth" />
@@ -62,6 +61,7 @@
 			<tocitem text="Symbiota" target="PrefsSymbiota" />
 			<tocitem text="Task Bar" target="PrefsMisc" />
 			<tocitem text="Tree" target="PrefsTree" />
+			<tocitem text="Web Portal" target="PrefsWebPortal" />
 		</tocitem>
 		<tocitem text="Introduction to Specify" target="Intro">
 			<tocitem text="Components in Specify" target="intro_components" />
@@ -83,6 +83,7 @@
 			<tocitem text="Data Forms" target="Data_Entry">
 				<tocitem text="Side Bar Configuration" target="Data_Entry_Sidebar" />
 				<tocitem text="Working with Forms and Trees" target="Data_Entry_Trees" />
+				<tocitem text="Alternate Storage Location" target="alt_storage" />
 				<tocitem text="Container" target="Forms_Container" />
 				<tocitem text="Taxon Form" target="Data_Entry_Taxon" />
 				<tocitem text="Determinations Form" target="Data_Entry_Determinations" />
@@ -91,6 +92,7 @@
 				<tocitem text="Agent Form" target="Data_Entry_Agent" />
 				<tocitem text="Preparations Form" target="Data_Entry_Preparations" />
 				<tocitem text="Attachments Form" target="Data_Entry_Attachments" />
+				<tocitem text="Properties" target="Properties Tables" />
 				<tocitem text="Paleo Context" target="paleo_context" />
 				<tocitem text="GUID" target="GUID" />
 			</tocitem>
@@ -133,6 +135,7 @@
 			</tocitem>
 		</tocitem>
 		<tocitem text="Searching Data" target="SS">
+			<tocitem text="Auditing " target="Auditing" />
 			<tocitem text="Simple Search" target="Simple_Search">
 				<tocitem text="Using Simple Search" target="SS_Execute" />
 				<tocitem text="Simple Search Wild Cards" target="SS_Cards" />
@@ -155,6 +158,7 @@
 				<tocitem text="Saved Query Menu" target="Q_Saved" />
 				<tocitem text="Import and Export Queries" target="QBImport" />
 				<tocitem text="Delete a Query" target="Q_Delete" />
+				<tocitem text="Auditing" target="Auditing" />
 			</tocitem>
 		</tocitem>
 		<tocitem text="Record Sets" target="RecordSet">
@@ -203,7 +207,6 @@
 			<tocitem text="Specify Setup Wizard" target="wizard">
 				<tocitem text="Field Format Editor" target="field_format" />
 			</tocitem>
-			<tocitem text="Specify EZDB Setup Wizard" target="ezdb_wizard" />
 			<tocitem text="Data Exporter" target="schema_tool" />
 			<tocitem text="File Splitter" target="slicer" />
 			<tocitem text="Security Wizard" target="security_wiz" />
@@ -243,9 +246,6 @@
 			<tocitem text="WorkBench Uploader" target="uploading" />
 			<tocitem text="Specify File Slicer" target="slicer" />
 			<tocitem text="WorkBench Schema Configuration" target="wb_schema_config" />
-			<tocitem text="Introducing SGR" target="sgr_intro">
-				<tocitem text="Using SGR" target="SGR" />
-			</tocitem>
 		</tocitem>
 	</tocitem>
 </toc>

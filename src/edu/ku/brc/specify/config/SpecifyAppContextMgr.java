@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -542,17 +542,17 @@ public class SpecifyAppContextMgr extends AppContextMgr
                         do {
                             colDlg = new ChooseCollectionDlg(list);
                             colDlg.setSelectedIndex(selectColInx);
+                            colDlg.setPreferredSize(new Dimension(300, 250));
                             colDlg.createUI();
-                            colDlg.pack();
-                            Dimension size = colDlg.getSize();
-                            size.width  = Math.max(size.width, 300);
-                            if (size.height < 150)
-                            {
-                                size.height += 100;
-                            }
-                            colDlg.setSize(size);
-                            
-                            UIHelper.centerWindow(colDlg);
+
+                            //Dimension size = colDlg.getSize();
+                            //size.width  = Math.max(size.width, 300);
+                            //if (size.height < 150)
+                            //{
+                            //    size.height += 100;
+                            //}
+                            //colDlg.setPreferredSize(size);
+                            //colDlg.pack();
                             colDlg.setVisible(true);
                             
                         } while (colDlg.getSelectedObject() == null || colDlg.isCancelled());
@@ -1341,7 +1341,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
     
             } else
             {
-                //JOptionPane.showMessageDialog(null, 
+                //JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(),
                 //        getResourceString("USER_NOT_FOUND"), 
                 //        getResourceString("USER_NOT_FOUND_TITLE"), JOptionPane.WARNING_MESSAGE);
                 

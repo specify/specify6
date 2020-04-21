@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -51,11 +51,11 @@ import edu.ku.brc.ui.UIRegistry;
 public class SecuritySummaryDlg extends CustomDialog
 {
     /**
-     * @param parentDlg
+     *
      */
-    public SecuritySummaryDlg(final CustomDialog parentDlg) 
+    public SecuritySummaryDlg()
     {
-        super(parentDlg, getResourceString("SecuritySummaryDlg.DLG_TITLE"), true, OKHELP, null);
+        super((java.awt.Frame)UIRegistry.getTopWindow(), getResourceString("SecuritySummaryDlg.DLG_TITLE"), true, OKHELP, null);
         helpContext = "SecuritySummary";
         
         okLabel = getResourceString("CLOSE");
@@ -114,10 +114,9 @@ public class SecuritySummaryDlg extends CustomDialog
 		{
 		    UIRegistry.showError(String.format("The user '%s' doesn't have a User Principal object, which should not happen.\nPlease contact Specify Support.", user.getName()));
 		}
-        
+
+        setPreferredSize(new java.awt.Dimension(600, 500));
         pack();
-        
-        setSize(600, 500);
     }
 }
 

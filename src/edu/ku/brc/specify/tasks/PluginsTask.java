@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -70,6 +70,7 @@ import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
+import edu.ku.brc.specify.ui.db.ResultSetTableModel;
 
 /**
  * A task to handle RecordSet data exporting.  This task provides a pluggable
@@ -463,14 +464,22 @@ public class PluginsTask extends BaseTask
             statusBar.setErrorMessage(e.getLocalizedMessage(), e);
         }
     }
-    
+
+
+    /**
+     *
+     * @return
+     */
+    protected String getDefaultExcelExt() {
+        return "xls";
+    }
 
     /**
      * @param table
      */
     protected void exportTable(final JTable table)
     {
-        Hashtable<String, String> values = new Hashtable<String, String>();
+        Hashtable<String, String> values = new Hashtable<>();
         ViewBasedDisplayDialog dlg = new ViewBasedDisplayDialog((Frame) UIRegistry.getTopWindow(), "SystemSetup", "ExcelExportInfo", null,
                  getResourceString("EXCEL_EXPORT_INFO_TITLE"), getResourceString("Export"), null, // className,
                  null, // idFieldName,
@@ -482,7 +491,11 @@ public class PluginsTask extends BaseTask
          if (dlg.getBtnPressed() == ViewBasedDisplayIFace.OK_BTN)
          {
              dlg.getMultiView().getDataFromUI();
-             File file = new File(values.get("FilePath"));
+             String fileName = values.get("FilePath");
+             if (!fileName.toLowerCase().endsWith("." + getDefaultExcelExt().toLowerCase())) {
+                 fileName += "." + getDefaultExcelExt();
+             }
+             File file = new File(fileName);
              TableModel2Excel.convertToExcel(file, values.get("Title"), table.getModel());
          }
     }
@@ -695,9 +708,13 @@ public class PluginsTask extends BaseTask
             } else if (cmdAction.isAction(EXPORT_JTABLE))
             {
                 JTable table = (JTable)cmdAction.getProperty("jtable");
-                if (table != null)
-                {
-                    exportTable(table);
+                if (table != null) {
+                    if (table.getModel() instanceof ResultSetTableModel && ((ResultSetTableModel) table.getModel()).isLoadingCells()) {
+                        UIRegistry.writeTimedSimpleGlassPaneMsg(UIRegistry.getResourceString("NO_ACTION_WHILE_LOADING_RESULTS"),
+                                5000, null, null, true);
+                    } else {
+                        exportTable(table);
+                    }
                 }
             }
         } else if (cmdAction.isType(PreferencesDlg.PREFERENCES))

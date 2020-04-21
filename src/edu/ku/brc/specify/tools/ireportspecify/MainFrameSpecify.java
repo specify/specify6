@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -676,7 +676,7 @@ public class MainFrameSpecify extends MainFrame
             PermissionIFace permissions = SecurityMgr.getInstance().getPermission("Task.Reports");
             if (!permissions.canModify())
             {
-                JOptionPane.showMessageDialog(null, getResourceString("IReportLauncher.PERMISSION_TO_MODIFY_DENIED"),
+                JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(), getResourceString("IReportLauncher.PERMISSION_TO_MODIFY_DENIED"),
                         getResourceString("IReportLauncher.PERMISSION_DENIED_TITLE"),
                         JOptionPane.ERROR_MESSAGE);
                 return;
@@ -713,7 +713,7 @@ public class MainFrameSpecify extends MainFrame
             }
             else
             {
-                JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), UIRegistry.getResourceString("REP_UNABLE_TO_SAVE_IREPORT"), UIRegistry.getResourceString("Error"), JOptionPane.ERROR_MESSAGE);                        
+                JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(), UIRegistry.getResourceString("REP_UNABLE_TO_SAVE_IREPORT"), UIRegistry.getResourceString("Error"), JOptionPane.ERROR_MESSAGE);
             }
         }
     }
@@ -752,7 +752,7 @@ public class MainFrameSpecify extends MainFrame
             PermissionIFace permissions = SecurityMgr.getInstance().getPermission("Task.Reports");
             if (!permissions.canAdd())
             {
-                JOptionPane.showMessageDialog(null, getResourceString("IReportLauncher.PERMISSION_TO_ADD_DENIED"),
+                JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(), getResourceString("IReportLauncher.PERMISSION_TO_ADD_DENIED"),
                         getResourceString("IReportLauncher.PERMISSION_DENIED_TITLE"),
                         JOptionPane.ERROR_MESSAGE);
                 return null;
@@ -880,14 +880,14 @@ public class MainFrameSpecify extends MainFrame
         boolean goodProps = false;
         boolean overwrite = false;
         SpAppResource match = null;
-        CustomDialog cd = new CustomDialog((Frame)UIRegistry.getTopWindow(), 
+        CustomDialog cd = CustomDialog.create(
                 UIRegistry.getResourceString("REP_PROPS_DLG_TITLE"),
-                true,
+                true, CustomDialog.OKCANCEL,
                 propPanel);
         propPanel.setCanceller(cd.getCancelBtn());
         while (!goodProps)
         {
-            UIHelper.centerAndShow(cd);
+            cd.setVisible(true);
             if (cd.isCancelled())
             {
                 return null;
@@ -897,12 +897,12 @@ public class MainFrameSpecify extends MainFrame
             boolean isNameOK = repName.matches("[a-zA-Z0-9\\-. '`_]*");
             if (StringUtils.isEmpty(repName))
             {
-                JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), String.format(UIRegistry.getResourceString("REP_NAME_MUST_NOT_BE_BLANK"), propPanel.getNameTxt().getText()));
+                JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(), String.format(UIRegistry.getResourceString("REP_NAME_MUST_NOT_BE_BLANK"), propPanel.getNameTxt().getText()));
             }
             else if (!isNameOK)
             {
                 Toolkit.getDefaultToolkit().beep();
-            	JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), UIRegistry.getResourceString("INVALID_CHARS_NAME"));
+            	JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(), UIRegistry.getResourceString("INVALID_CHARS_NAME"));
             }
             else 
             {
@@ -956,7 +956,7 @@ public class MainFrameSpecify extends MainFrame
                     SpReport matchRep = session.getData(SpReport.class, "appResource", match, DataProviderSessionIFace.CompareType.Equals);
                     if (matchRep == null)
                     {
-                        JOptionPane.showMessageDialog(null, String.format(UIRegistry.getResourceString("REP_UNABLE_TO_OVERWRITE"), match.getName()), 
+                        JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(), String.format(UIRegistry.getResourceString("REP_UNABLE_TO_OVERWRITE"), match.getName()),
                                 UIRegistry.getResourceString("Error"), JOptionPane.ERROR_MESSAGE);
                         return null;
                     }
@@ -1101,7 +1101,7 @@ public class MainFrameSpecify extends MainFrame
     		+ " and spa.SpAppResourceID = " + ((SpAppResource )repRes).getId();
     	try 
     	{
-    		return BasicSQLUtils.getCount(sql1) != 0 || BasicSQLUtils.getCount(sql2) != 0; 
+    		return !BasicSQLUtils.getCount(sql1).equals(0) || !BasicSQLUtils.getCount(sql2).equals(0);
     	} catch (Exception ex)
     	{
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
@@ -1198,7 +1198,7 @@ public class MainFrameSpecify extends MainFrame
             }
             else
             {
-                JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), UIRegistry.getResourceString("REP_NO_REPORTS_TO_EDIT"), "", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(), UIRegistry.getResourceString("REP_NO_REPORTS_TO_EDIT"), "", JOptionPane.INFORMATION_MESSAGE);
             }
             return result;
     }
@@ -1550,7 +1550,7 @@ public class MainFrameSpecify extends MainFrame
             PermissionIFace permissions = SecurityMgr.getInstance().getPermission("Task.Reports");
             if (!permissions.canAdd())
             {
-                JOptionPane.showMessageDialog(null, getResourceString("IReportLauncher.PERMISSION_TO_ADD_DENIED"),
+                JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(), getResourceString("IReportLauncher.PERMISSION_TO_ADD_DENIED"),
                         getResourceString("IReportLauncher.PERMISSION_DENIED_TITLE"),
                         JOptionPane.ERROR_MESSAGE);
                 return null;
@@ -1567,7 +1567,7 @@ public class MainFrameSpecify extends MainFrame
         }
         if (spConns.size() == 0)
         {
-            JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), UIRegistry.getResourceString("REP_NO_QUERIES_FOR_DATA_SOURCES"), "", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(), UIRegistry.getResourceString("REP_NO_QUERIES_FOR_DATA_SOURCES"), "", JOptionPane.INFORMATION_MESSAGE);
             return null;
         }
         ChooseFromListDlg<SpJRIReportConnection> dlg = new ChooseFromListDlg<SpJRIReportConnection>(this, 
@@ -1962,8 +1962,8 @@ public class MainFrameSpecify extends MainFrame
                     panel.add(UIHelper.createI18NLabel("MOBILE_SHUTTING_DOWN", SwingConstants.CENTER), BorderLayout.CENTER);
                     processDlg = new CustomDialog((Frame)null, "Shutdown", false, CustomDialog.NONE_BTN, panel);
                     processDlg.setAlwaysOnTop(true);
-                    
-                    UIHelper.centerAndShow(processDlg);
+
+                    processDlg.setVisible(true);
                     
                 }
             });

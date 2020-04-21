@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -2412,61 +2412,11 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         boolean isMoveOK      = isMoveOK(droppedOnNode, draggedNode);
         boolean isMergeOK     = isMergeOK(droppedOnNode, draggedNode);
         
-//        if (treeDef.getSynonymizedLevel() == -1)
-//        {
-//            return NODE_DROPTYPE.MOVE_NODE;
-//        }
-                    
-//            String actionStr = isSynonymizeOK ? getResourceString("TreeTableView.SYNONIMIZE_NODE")
-//            		: getResourceString("TreeTableView.MOVE_NODE");
-//            String descStr = isSynonymizeOK ?
-//            		String.format(getResourceString(getSynonymizeTextKey()),
-//                    		draggedRecord.getFullName(), droppedOnRecord.getFullName(), 
-//                    		droppedOnRecord.getFullName(), draggedRecord.getFullName()) :
-//                    String.format(getResourceString(getMoveTextKey()),
-//                       		draggedRecord.getFullName(), droppedOnNode.getFullName());			
-//            JLabel actionLbl = createLabel("<html><b>" + actionStr + ":</b></html>");
-//            actionLbl.setVerticalAlignment(SwingConstants.BOTTOM);
-//            actionLbl.setVerticalTextPosition(SwingConstants.BOTTOM);
-//            pb.add(actionLbl, cc.xy(1, 1));
-//            JTextArea tab = createTextArea();
-//            tab.setEditable(false);
-//            tab.setLineWrap(true);
-//            tab.setWrapStyleWord(true);
-//            int big = treeDef.getNodeClass().equals(Taxon.class) ? (numOptions > 3 ? 11 : 16) : 2;
-//            int small = treeDef.getNodeClass().equals(Taxon.class) ? 5 : 2;
-//            tab.setRows(numOptions > 3 ? small : isMoveOK ? big : small);
-//            tab.setText(descStr);
-//        	pb.add(tab, cc.xy(3, 1));
-//            if (numOptions == 4)
-//            {
-//            	JLabel lbl = createLabel("<html><b>" + getResourceString("TreeTableView.MOVE_NODE") + ":</b></html>");
-//            	lbl.setVerticalAlignment(SwingConstants.BOTTOM);
-//            	lbl.setVerticalTextPosition(SwingConstants.BOTTOM);
-//            	pb.add(lbl, cc.xy(1, 3));
-//            	JTextArea tac = createTextArea();
-//            	tac.setEditable(false);
-//            	tac.setLineWrap(true);
-//            	tac.setWrapStyleWord(true);
-//            	tac.setRows(big);
-//            	tac.setText(String.format(getResourceString(getMoveTextKey()),
-//            		draggedRecord.getFullName(), droppedOnNode.getFullName()));
-//            	pb.add(tac, cc.xy(3, 3));
-//            }
-//            pb.setDefaultDialogBorder();
-            DropDialog dlg = new DropDialog((Frame)getTopWindow(), 
+            DropDialog dlg = new DropDialog((Frame)getTopWindow(),
                                                 isMoveOK, isSynonymizeOK, isMergeOK, draggedRecord.getName(),
                                                 droppedOnNode.getName(), getMoveTextKey(), getSynonymizeTextKey(), getMergeTextKey());
             dlg.createUI();
-//            if (treeDef.getNodeClass().equals(Taxon.class))
-//            {
-//            	//Goofy attempt to adapt dialog size to changes in Font preference...
-//            	Dimension ps = dlg.getPreferredSize();
-//            	double newWidth = actionLbl.getWidth()*10 < ps.getWidth() ? ps.getWidth() : actionLbl.getWidth()*10;
-//            	ps.setSize(newWidth, ps.getHeight());
-//            	dlg.setSize(ps);
-//            }
-            UIHelper.centerAndShow(dlg);
+            dlg.setVisible(true);
             
             if (!dlg.isCancelled() && dlg.getBtnPressed() != CustomDialog.HELP_BTN)
             {

@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -175,7 +175,7 @@ public class WorldWindPanel extends JPanel
                         message += "Reason: " + t.getMessage() + "\n";
                         message += "This program will end when you press OK.";
 
-                        JOptionPane.showMessageDialog(null, message, "Unable to Start Program",
+                        JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(), message, "Unable to Start Program",
                             JOptionPane.ERROR_MESSAGE);
                         System.exit(-1);
                     }

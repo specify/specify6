@@ -6,28 +6,28 @@
 	<session-factory>
 
 		<property name="hibernate.use_identifer_rollback">true</property>
-		
+
         <!-- Use JTA for Transactions -->
         <!--
         <property name="transaction.factory_class">org.hibernate.transaction.JTATransactionFactory</property>
         <property name="jta.UserTransaction">java:comp/UserTransaction</property>
         -->
-        
+
 		<!-- Use EHCache -->
 		<!--
 		<property name="cache.provider_class">org.hibernate.cache.EhCacheProvider</property>
 		<property name="cache.use_query_cache">true</property>
 		-->
-		
+
 		<!-- For debugging -->
 		<!--
 		<property name="hibernate.show_sql">true</property>
 		-->
-		
+
 		<!-- c3p0 connection pooling -->
 		<!-- the hibernate.c3p0.max_size property MUST BE EXPLICITLY set for Hibernate to use C3P0 -->
 		<property name="hibernate.c3p0.initialPoolSize">3</property>
-        
+
         <property name="hibernate.c3p0.acquire_increment">3</property>
 		<property name="hibernate.c3p0.idle_test_period">60</property>
 		<property name="hibernate.c3p0.timeout">25200</property>
@@ -36,7 +36,7 @@
 		<property name="hibernate.c3p0.max_statements">100</property>
 		<property name="hibernate.c3p0.preferredTestQuery">select 1;</property>
 		<!--
-		<property name="hibernate.c3p0.maxIdleTime">60</property> 
+		<property name="hibernate.c3p0.maxIdleTime">60</property>
 		-->
 
 		<property name="hibernate.jdbc.batch_size">25</property>
@@ -46,6 +46,7 @@
 		<mapping class="edu.ku.brc.specify.datamodel.AccessionAgent"/>
 		<mapping class="edu.ku.brc.specify.datamodel.AccessionAttachment"/>
 		<mapping class="edu.ku.brc.specify.datamodel.AccessionAuthorization"/>
+		<mapping class="edu.ku.brc.specify.datamodel.AccessionCitation"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Address"/>
 		<mapping class="edu.ku.brc.specify.datamodel.AddressOfRecord"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Agent"/>
@@ -113,6 +114,7 @@
         <mapping class="edu.ku.brc.specify.datamodel.ExchangeOutPrep"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Exsiccata"/>
 		<mapping class="edu.ku.brc.specify.datamodel.ExsiccataItem"/>
+		<mapping class="edu.ku.brc.specify.datamodel.Extractor"/>
 		<mapping class="edu.ku.brc.specify.datamodel.FieldNotebook"/>
 		<mapping class="edu.ku.brc.specify.datamodel.FieldNotebookAttachment"/>
 		<mapping class="edu.ku.brc.specify.datamodel.FieldNotebookPageSet"/>
@@ -173,6 +175,7 @@
         <mapping class="edu.ku.brc.specify.datamodel.ReferenceWorkAttachment"/>
 		<mapping class="edu.ku.brc.specify.datamodel.RepositoryAgreement"/>
 		<mapping class="edu.ku.brc.specify.datamodel.RepositoryAgreementAttachment"/>
+		<mapping class="edu.ku.brc.specify.datamodel.PcrPerson"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Shipment"/>
 
 		<mapping class="edu.ku.brc.specify.datamodel.SpAppResourceDir"/>
@@ -198,9 +201,9 @@
 		<mapping class="edu.ku.brc.specify.datamodel.SpTaskSemaphore"/>
         <mapping class="edu.ku.brc.specify.datamodel.SpVersion"/>
         <mapping class="edu.ku.brc.specify.datamodel.SpViewSetObj"/>
-        
+
         <mapping class="edu.ku.brc.specify.datamodel.SpVisualQuery"/>
-        
+
 		<!--
 		<mapping class="edu.ku.brc.specify.datamodel.SpUIAltView"/>
 		<mapping class="edu.ku.brc.specify.datamodel.SpUICell"/>
@@ -216,8 +219,9 @@
 		<mapping class="edu.ku.brc.specify.datamodel.StorageTreeDefItem"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Taxon"/>
 		<mapping class="edu.ku.brc.specify.datamodel.TaxonAttachment"/>
+		<mapping class="edu.ku.brc.specify.datamodel.TaxonAttribute"/>
 		<mapping class="edu.ku.brc.specify.datamodel.TaxonCitation"/>
-		
+
 		<mapping class="edu.ku.brc.specify.datamodel.TaxonTreeDef"/>
 		<mapping class="edu.ku.brc.specify.datamodel.TaxonTreeDefItem"/>
 		<mapping class="edu.ku.brc.specify.datamodel.TreatmentEvent"/>
@@ -230,29 +234,29 @@
 		<mapping class="edu.ku.brc.specify.datamodel.WorkbenchRowImage"/>
 		<mapping class="edu.ku.brc.specify.datamodel.WorkbenchTemplate"/>
 		<mapping class="edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem"/>
-		
+
 		<!--
 		<event type="post-commit-update">
 			<listener class="edu.ku.brc.specify.dbsupport.DBFlushEventListener"/>
-		</event> 
+		</event>
 		-->
-		
-	    <!--     
+
+	    <!--
 	    <listener type="save"        class="edu.ku.brc.specify.dbsupport.DBSaveEventListener"  />
 	    <listener type="save-update" class="edu.ku.brc.specify.dbsupport.DBSaveEventListener"  />
 	    <listener type="flush"       class="edu.ku.brc.specify.dbsupport.DBFlushEventListener" />
 	    -->
-	    
-	    <!-- 
+
+	    <!--
 		<listener type="post-update" class="edu.ku.brc.specify.dbsupport.PostUpdateEventListener" />
 		<listener type="post-insert" class="edu.ku.brc.specify.dbsupport.PostInsertEventListener" />
 		<listener type="post-delete" class="edu.ku.brc.specify.dbsupport.PostDeleteEventListener" />
 		-->
-		
+
 		<!--
 		<listener type="post-commit-update" class="edu.ku.brc.specify.dbsupport.PostUpdateEventListener"  />
 		<listener type="post-commit-insert" class="edu.ku.brc.specify.dbsupport.PostInsertEventListener"  />
-		<listener type="post-commit-delete" class="edu.ku.brc.specify.dbsupport.PostDeleteEventListener" /> 
+		<listener type="post-commit-delete" class="edu.ku.brc.specify.dbsupport.PostDeleteEventListener" />
 		-->
 	</session-factory>
 

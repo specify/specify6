@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,12 +21,7 @@ package edu.ku.brc.specify.prefs;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
-import java.awt.Component;
-import java.awt.FileDialog;
-import java.awt.Font;
-import java.awt.Frame;
-import java.awt.GraphicsEnvironment;
-import java.awt.Image;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -540,9 +535,11 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
      */
     protected void chooseToolbarIcon(final JLabel appLabel, final JButton clearIconBtn)
     {
-        FileDialog fileDialog = new FileDialog((Frame) UIRegistry.get(UIRegistry.FRAME),
-                                               getResourceString("PREF_CHOOSE_APPICON_TITLE"), 
-                                               FileDialog.LOAD); //$NON-NLS-1$
+        Window window   = UIRegistry.getTopWindow();
+        boolean isDialog = window instanceof Dialog;
+        FileDialog fileDialog = isDialog ?
+                new FileDialog((Dialog)window, getResourceString("PREF_CHOOSE_APPICON_TITLE"), FileDialog.LOAD) :
+                new FileDialog((Frame)window, getResourceString("PREF_CHOOSE_APPICON_TITLE"), FileDialog.LOAD);  //$NON-NLS-1$
         fileDialog.setFilenameFilter(new ImageFilter());
         UIHelper.centerAndShow(fileDialog);
         fileDialog.dispose();

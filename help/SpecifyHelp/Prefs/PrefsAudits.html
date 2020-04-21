@@ -1,0 +1,82 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta content="text/html; charset=Cp1252" http-equiv="Content-Type">
+    <link href="../../main.css" rel="stylesheet" type="text/css" media="screen">
+    <meta name="generator" content="Helen">
+    <title>Login Dialog Preferences</title>
+  </head>
+  <body bgcolor="#ffffff">
+    <table width="100%" border="0" background="../../images/topbar.png">
+      <tr>
+        <td>
+          &nbsp;
+        </td>
+      </tr>
+    </table>
+    <h2>
+       <img src="../../images/auditing_5.png" alt=""><a name="prefs_auditing" id=
+      "prefs_auditing">Auditing</a>
+    </h2>
+    <p>
+       The auditing table in Specify can be configured to track field-level changes in the database
+      and queried to produce a log of database transactions.
+    </p>
+    <p>
+       The Auditing table is accessible to users with Admin and Manager level privileges. It is not
+      accessible in the Specify application by default and must first be enabled and configured in
+      the User Preferences dialog:
+    </p>
+    <ul>
+      <li class="michaelschanges">
+        For Mac: Choose <em>Specify &gt; Preferences &gt; Auditing.</em>
+      </li>
+      <li class="michaelschanges">
+        For Windows and Linux: Choose <em>Edit &gt; Preferences &gt; Auditing</em>.
+      </li>
+    </ul>
+    <p align="center">
+       <img src="../../images/pref_auditing.png" alt="logn">
+    </p>
+    <p align="center" class="imgcaption">
+       Auditing Preferences
+    </p>
+    <p>
+       &nbsp;
+    </p>
+    <ul>
+      <li>
+        <strong>Enable Auditing</strong> allows the table to be accessible/unhidden in the Query
+        Builder tool.
+      </li>
+      <li style=" list-style-type: none; list-style-image: none;">
+        <br>
+      </li>
+      <li>
+        <strong>Audit Field Value Changes</strong> allows changes made at the field level to be
+        accessible. This captures both the original value and the new value within the field.
+        Capturing this data at the field-level will increase the database size and requires some
+        processing, although in performance testing&nbsp;it was not noticeable.
+      </li>
+      <li style=" list-style-type: none; list-style-image: none;">
+        <br>
+      </li>
+      <li>
+        <strong>Months to Save Audits</strong> sets the amount of time changes are saved and
+        therefore accessible.
+      </li>
+    </ul>
+    <p>
+       <strong><em>NOTE:&nbsp;</em></strong>&nbsp;A value of '0' will log changes indefinitely, or
+      until they are deleted within the system.
+    </p>
+    <p>
+       <strong><em>NOTE:</em></strong> Specify has previously shipped with an Audit table and
+      existing databases will have Audit data stored starting at the time of the database creation.
+      Setting the value for <i>Months to Save Audits</i> to a value less than the age of your
+      database will result in the Audit Log deleting records older than the value the next time
+      that Specify is started. This will process in the background and may cause a noticeable lag
+      in&nbsp;the Specify application the first time old records are deleted.
+    </p>
+  </body>
+</html>

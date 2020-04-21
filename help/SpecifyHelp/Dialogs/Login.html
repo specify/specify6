@@ -29,18 +29,27 @@
     </h3>
     <blockquote>
       <p>
-         The security for Specify 6 uses both a Master username and password, which gains access to
-        the MySQL Database, as well as a User username and password, which in return gains access
-        to the Specify application. Specify uses only one Master username and password for all
-        users, but encrypts the Master password with the User information, creating an encrypted
-        string, or key. This allows the Master information to become unique for each user.
+         Application security for Specify 6 has a few layers. First, Specify uses a "Master"
+        account (username and password), which is the only account with access permission to the
+        underlying database manager (MySQL or MariaDB). Second, Specify uses specific User account
+        credentials (username and password), that enables individual access to the Specify
+        application. Specify uses only one Master username and password for all users, but encrypts
+        the Master password with the User credential information, creating an encrypted string, or
+        key. This allows the Master account information to be encrypted and uniquefor each user
+        account.
       </p>
       <p>
-         Some of the administrative tasks in Specify, such as creating new disciplines or
-        divisions, require an IT password. The IT password refers to the password used to login to
-        the MySQL database manager. It has full administrator privileges within the MySQL database
-        manager. Specify is accessing these priviledges when it creates these changes and therefore
-        must login directly to MySQL.
+         Some setup and database administration tasks in Specify, such as creating new Disciplines
+        or Divisions, require a third password, what is referred to as the "IT User" or "IT"
+        password. The IT account and password is used to login directly to the underlying database
+        manager (MySQL or MariaDB). The account has full administrator privileges within the
+        database manager and is typically referred to as a 'root' account, and was
+        created&nbsp;when the database manager was originally installed. When a database
+        administrator makes changes to the Specify database schema, the Specify "IT Account"
+        enables root-level access to the MySQL or MariaDB data manager. IT user account credentials
+        are required whenever there is a published update to Specify that modifies or extends the
+        underlying database structure (schema) of the database. Not all updates modify the database
+        schema but many do and the IT user account credentials are required in those cases.
       </p>
       <p>
          In review, there are four (4) different types of credentials in Specify:
@@ -71,7 +80,7 @@
         username and password to create a new key.
       </p>
       <p>
-         The User credentials are stored on the users machine. This allows the Login tool to
+         The User credentials are stored on the user's machine. This allows the Login tool to
         automatically fill in the Username and Encryption Key for previous users. When opening
         Specify the username will be pre-filled with the username last user to open Specify.
       </p>

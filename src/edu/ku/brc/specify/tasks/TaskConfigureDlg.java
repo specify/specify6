@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -164,13 +164,14 @@ public class TaskConfigureDlg extends CustomDialog
         contentPanel = mainPB.getPanel();
         mainPanel.add(contentPanel, BorderLayout.CENTER);
         
+
         pack();
-        
         Dimension size = getSize();
         size.width  = Math.max(size.width, 500);
         size.height = Math.max(size.height, 350);
-        setSize(size);
-        
+        setPreferredSize(size);
+        pack();
+
         stdPanel.getOrderList().addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e)

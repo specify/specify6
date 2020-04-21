@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -309,7 +309,7 @@ public class SpecifyDBConverter extends AppBase
             rows[i][1] = BasicSQLUtils.getCount(newDBConn, queries[i]);
         }
         JTable table = new JTable(rows, new Object[] {"Description", "Count"});
-        CustomDialog dlg = new CustomDialog((Frame)null, "Destination DB Statistics", true, CustomDialog.OKCANCEL, UIHelper.createScrollPane(table, true));
+        CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), "Destination DB Statistics", true, CustomDialog.OKCANCEL, UIHelper.createScrollPane(table, true));
         dlg.setOkLabel("Continue");
         dlg.setVisible(true);
         return !dlg.isCancelled();
@@ -407,7 +407,7 @@ public class SpecifyDBConverter extends AppBase
             pb.add(UIHelper.createScrollPane(list, true), cc.xy(1,3));
             pb.setDefaultDialogBorder();
             
-            final CustomDialog dlg = new CustomDialog(null, title, true, pb.getPanel());
+            final CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), title, true, pb.getPanel());
             list.addListSelectionListener(new ListSelectionListener() {
                 @Override
                 public void valueChanged(ListSelectionEvent e)
@@ -745,7 +745,7 @@ public class SpecifyDBConverter extends AppBase
         boolean doCEAttrFIx = false;
         if (doCEAttrFIx)
         {
-            frame.setDesc("Fixing Scope....");
+            frame.setDesc("Fixing Scope...");
             IdMapperMgr.getInstance().setDBs(oldDBConn, newDBConn);
             convLogger.initialize(convOutputPath, dbNameDest);
             TableWriter tblWriter = convLogger.getWriter("ScopeUpdater.html", "Updating Scope Summary");
@@ -759,7 +759,7 @@ public class SpecifyDBConverter extends AppBase
         boolean doImagesToWebLinks = false;
         if (doImagesToWebLinks)
         {
-            frame.setDesc("Fixing Scope....");
+            frame.setDesc("Fixing Scope...");
             IdMapperMgr.getInstance().setDBs(oldDBConn, newDBConn);
             ConvertMiscData.convertImagesToWebLinks(oldDBConn, newDBConn);
             oldDBConn.close();
@@ -1693,7 +1693,7 @@ public class SpecifyDBConverter extends AppBase
                 }
                 //checkDisciplines();
 
-                frame.setDesc("Fixing Scope....");
+                frame.setDesc("Fixing Scope...");
                 TableWriter tblWriter = convLogger.getWriter("ScopeUpdater.html", "Updating Scope Summary");
                 ConvScopeFixer convScopeFixer = new ConvScopeFixer(oldDBConn, newDBConn, dbNameDest, tblWriter);
                 convScopeFixer.doFixTables();
@@ -2462,7 +2462,7 @@ public class SpecifyDBConverter extends AppBase
      */
     protected void checkDisciplines()
     {
-        System.out.println("Checking Disciplines....");
+        System.out.println("Checking Disciplines...");
         int count = 0;
         for (Object obj : BasicSQLUtils.querySingleCol("SELECT TaxonTreeDefID FROM discipline"))
         {
@@ -3011,7 +3011,7 @@ public class SpecifyDBConverter extends AppBase
         panel.add(pb.getPanel(), cc.xy(3, 1));
         panel.setDefaultDialogBorder();
 
-        CustomDialog dlg = new CustomDialog(null, "Specify Converter", true, panel.getPanel());
+        CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), "Specify Converter", true, panel.getPanel());
         UIHelper.centerAndShow(dlg);
         
         dlg.dispose();

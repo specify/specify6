@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -1128,7 +1128,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 pb.setDefaultDialogBorder();
                 
                 dirty = qfps.size() > 0;
-                CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), 
+                CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(),
                                                     UIRegistry.getResourceString("QB_FIELD_MISSING_TITLE"), true, 
                                                     CustomDialog.OK_BTN, pb.getPanel());
                 dlg.setOkLabel(UIRegistry.getResourceString("CLOSE"));
@@ -1825,35 +1825,29 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      * NOTE: for large databases this method might take a long time.
      * It probably should be called from a SwingWorker. 
      */
-    public static Pair<Boolean, Long> checkUniqueRecIds(final String hql, final List<Pair<String, Object>> params)
-    {
-    	String distinctHql = getCountDistinctIdHql(hql);
-    	
-    	DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        try
-        {
-        	try
-        	{
-            	QueryIFace q1 = session.createQuery(hql, false);
-        		QueryIFace q2 = session.createQuery(distinctHql, false);
-        		for (Pair<String, Object> param : params)
-        		{
-        			q1.setParameter(param.getFirst(), param.getSecond());
-        			q2.setParameter(param.getFirst(), param.getSecond());
-        		}
-        		Long q1Size = Long.valueOf(q1.list().size());
+    public static Pair<Boolean, Long> checkUniqueRecIds(final String hql, final List<Pair<String, Object>> params) {
+        String distinctHql = getCountDistinctIdHql(hql);
+        String countHql = distinctHql.replace("select count(distinct ", "select count(");
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        try {
+            try {
+                QueryIFace q1 = session.createQuery(countHql, false);
+                QueryIFace q2 = session.createQuery(distinctHql, false);
+                for (Pair<String, Object> param : params) {
+                    q1.setParameter(param.getFirst(), param.getSecond());
+                    q2.setParameter(param.getFirst(), param.getSecond());
+                }
+                Long q1Size = Long.valueOf(q1.list().get(0).toString());
                 Long q2Size = Long.valueOf(q2.list().get(0).toString());
-        		return new Pair<Boolean, Long>(q1Size.equals(q2Size), q1Size);
-        	} catch (Exception ex) 
-        	{
+                return new Pair<Boolean, Long>(q1Size.equals(q2Size), q1Size);
+            } catch (Exception ex) {
                 UsageTracker.incrHandledUsageCount();
                 edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryBldrPane.class, ex);
-        	}
-        } finally
-        {
-        	session.close();
+            }
+        } finally {
+            session.close();
         }
-    	return new Pair<Boolean, Long>(false, 0L);
+        return new Pair<Boolean, Long>(false, 0L);
     }
     /**
      * @param rootAlias
@@ -2363,98 +2357,75 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      * @return ERTICaptionInfo for the visible columns returned by a query.
      */
     public static List<ERTICaptionInfoQB> getColumnInfo(final Vector<QueryFieldPanel> queryFieldItemsArg, final boolean fixLabels,
-            final DBTableInfo rootTbl, boolean forSchemaExport, boolean formatAuditIds)
-    {
+                                                        final DBTableInfo rootTbl, boolean forSchemaExport, boolean formatAuditIds) {
         List<ERTICaptionInfoQB> result = new Vector<ERTICaptionInfoQB>();
         Vector<ERTICaptionInfoTreeLevelGrp> treeGrps = new Vector<ERTICaptionInfoTreeLevelGrp>(5);
-        for (QueryFieldPanel qfp : queryFieldItemsArg)
-        {
-            if (qfp.getFieldQRI() == null)
-            {
-            	continue;
+        for (QueryFieldPanel qfp : queryFieldItemsArg) {
+            if (qfp.getFieldQRI() == null) {
+                continue;
             }
-            
+
             //System.out.println(qfp.getFieldQRI().getFieldName());
-            
-        	DBFieldInfo fi = qfp.getFieldInfo();
+
+            DBFieldInfo fi = qfp.getFieldInfo();
             DBTableInfo ti = null;
-            if (fi != null)
-            {
-               ti = fi.getTableInfo();
+            if (fi != null) {
+                ti = fi.getTableInfo();
             }
             String colName = qfp.getFieldName();
-            if (ti != null && fi != null)
-            {
+            if (ti != null && fi != null) {
                 colName = ti.getAbbrev() + '.' + fi.getColumn();
             }
-            if (qfp.isForDisplay())
-            {
+            if (qfp.isForDisplay()) {
                 String lbl = qfp.getSchemaItem() == null ? (qfp.getItemMapping() == null ? qfp.getLabel() : qfp.getExportedFieldName()) : qfp.getSchemaItem().getFieldName();
-                if (fixLabels)
-                {
+                if (fixLabels) {
                     lbl = fixFldNameForJR(lbl);
                 }
                 ERTICaptionInfoQB erti = null;
-                
+
                 //Test to see if it is actually necessary to use a ERTICaptionInfoRel for the field.
                 boolean buildRelERTI = false;
-                if (qfp.getFieldQRI() instanceof RelQRI)
-                {
+                if (qfp.getFieldQRI() instanceof RelQRI) {
                     //Test to see if it is actually necessary to use a ERTICaptionInfoRel for the field.
-                    RelationshipType relType = ((RelQRI )qfp.getFieldQRI()).getRelationshipInfo().getType();
+                    RelationshipType relType = ((RelQRI) qfp.getFieldQRI()).getRelationshipInfo().getType();
                     //XXX Formatter.getSingleField() checks for ZeroOrOne and OneToOne rels.
-                    if (relType != RelationshipType.ManyToOne /*&& relType != RelationshipType.ZeroOrOne && relType != RelationshipType.OneToOne*/)
-                    {
+                    if (relType != RelationshipType.ManyToOne /*&& relType != RelationshipType.ZeroOrOne && relType != RelationshipType.OneToOne*/) {
                         buildRelERTI = true;
-                    }
-                    else
-                    {
-                        DataObjDataFieldFormatIFace formatter = ((RelQRI )qfp.getFieldQRI()).getDataObjFormatter(qfp.getFormatName());
-                        if (formatter != null)
-                        {
+                    } else {
+                        DataObjDataFieldFormatIFace formatter = ((RelQRI) qfp.getFieldQRI()).getDataObjFormatter(qfp.getFormatName());
+                        if (formatter != null) {
                             buildRelERTI = formatter.getSingleField() == null || (formatter.getSingleField() != null && formatter.getFields()[0].getSep() != null);
-                        }
-                        else
-                        {
+                        } else {
                             buildRelERTI = true;
                         }
                     }
                 }
-                
-                if (buildRelERTI)
-                {
-                    RelQRI rqri = (RelQRI )qfp.getFieldQRI();
+
+                if (buildRelERTI) {
+                    RelQRI rqri = (RelQRI) qfp.getFieldQRI();
                     RelationshipType relType = rqri.getRelationshipInfo().getType();
                     boolean useCache;
-                    if (relType == RelationshipType.ManyToOne || relType == RelationshipType.ManyToMany)
-                    {
+                    if (relType == RelationshipType.ManyToOne || relType == RelationshipType.ManyToMany) {
                         useCache = true;
-                    }
-                    else 
-                    {
+                    } else {
                         //XXX actually need to be sure that this rel's table has a many-to-one relationship (direct or indirect) to the root.
                         useCache = rootTbl != null && rootTbl.getTableId() != rqri.getTableInfo().getTableId();
                     }
                     erti = new ERTICaptionInfoRel(colName, lbl, true, qfp.getFieldQRI().getFormatter(), 0,
                             qfp.getStringId(),
-                            ((RelQRI)qfp.getFieldQRI()).getRelationshipInfo(),
+                            ((RelQRI) qfp.getFieldQRI()).getRelationshipInfo(),
                             useCache,
                             null, qfp.getFormatName());
-                }
-                else if (qfp.getFieldQRI() instanceof TreeLevelQRI)
-                {
-                    TreeLevelQRI tqri = (TreeLevelQRI )qfp.getFieldQRI();
-                    for (ERTICaptionInfoTreeLevelGrp tg : treeGrps)
-                    {
-                        erti = tg.addRank((TreeLevelQRI )qfp.getFieldQRI(), colName, lbl, qfp.getStringId(), tqri.getRealFieldName());
-                        if (erti != null)
-                        {
+                } else if (qfp.getFieldQRI() instanceof TreeLevelQRI) {
+                    TreeLevelQRI tqri = (TreeLevelQRI) qfp.getFieldQRI();
+                    for (ERTICaptionInfoTreeLevelGrp tg : treeGrps) {
+                        erti = tg.addRank((TreeLevelQRI) qfp.getFieldQRI(), colName, lbl, qfp.getStringId(), tqri.getRealFieldName());
+                        if (erti != null) {
                             break;
                         }
                     }
-                    if (erti == null)
-                    {
-                        ERTICaptionInfoTreeLevelGrp newTg = new ERTICaptionInfoTreeLevelGrp(tqri.getTreeDataClass(), 
+                    if (erti == null) {
+                        ERTICaptionInfoTreeLevelGrp newTg = new ERTICaptionInfoTreeLevelGrp(tqri.getTreeDataClass(),
                                 tqri.getTreeDefId(), tqri.getTableAlias(), true, null);
                         erti = newTg.addRank(tqri, colName, lbl, qfp.getStringId(), tqri.getRealFieldName());
                         treeGrps.add(newTg);
@@ -2463,7 +2434,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                         && ti.getName().equalsIgnoreCase("SpAuditLog")
                         && (fi.getName().equalsIgnoreCase("RecordId") || fi.getName().equalsIgnoreCase("ParentRecordId"))
                         && formatAuditIds) {
-                    erti = new ERTICaptionInfoRecId(colName, lbl, qfp.getStringId(),fi);
+                    erti = new ERTICaptionInfoRecId(colName, lbl, qfp.getStringId(), fi);
                     String tblNumFld = fi.getName().equalsIgnoreCase("ParentRecordId") ? "parentTableNum" : "tableNum";
                     Vector<ColInfo> colInfoList = new Vector<>();
                     ColInfo columnInfo = erti.new ColInfo(StringUtils.capitalize(tblNumFld), tblNumFld);
@@ -2474,49 +2445,47 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     colInfoList.add(columnInfo);
                     erti.setColInfoList(colInfoList);
                     erti.setColName(null);
-                } else if (fi != null && ti.getName().equalsIgnoreCase("SpAuditLogField") && formatAuditIds) {
-                    if (fi.getName().equalsIgnoreCase("NewValue") || fi.getName().equalsIgnoreCase("OldValue")) {
-                        erti = new ERTICaptionInfoAuditVal(colName, lbl, qfp.getStringId(), fi);
-                        Vector<ColInfo> colInfoList = new Vector<>();
-                        ColInfo columnInfo = erti.new ColInfo("TableNum", "tableNum");
-                        columnInfo.setPosition(0);
-                        colInfoList.add(columnInfo);
-                        columnInfo = erti.new ColInfo("FieldName", "FieldName");
-                        columnInfo.setPosition(1);
-                        colInfoList.add(columnInfo);
-                        columnInfo = erti.new ColInfo(fi.getColumn(), fi.getName());
-                        columnInfo.setPosition(2);
-                        colInfoList.add(columnInfo);
-                        erti.setColInfoList(colInfoList);
-                        erti.setColName(null);
-                    } else if (fi.getName().equalsIgnoreCase("FieldName")) {
-                        erti = new ERTICaptionInfoFieldName(colName, lbl, qfp.getStringId(), fi);
-                        Vector<ColInfo> colInfoList = new Vector<>();
-                        ColInfo columnInfo = erti.new ColInfo("TableNum", "tableNum");
-                        columnInfo.setPosition(0);
-                        colInfoList.add(columnInfo);
-                        columnInfo = erti.new ColInfo(fi.getColumn(), fi.getName());
-                        columnInfo.setPosition(1);
-                        colInfoList.add(columnInfo);
-                        erti.setColInfoList(colInfoList);
-                        erti.setColName(null);
-                    }
-                }
-
-                else
-                {
-                	erti = new ERTICaptionInfoQB(colName, lbl, true, getColumnFormatter(qfp, forSchemaExport), 0, qfp.getStringId(), qfp.getPickList(), fi);
+                } else if (fi != null && ti.getName().equalsIgnoreCase("SpAuditLogField")
+                        && (fi.getName().equalsIgnoreCase("NewValue") || fi.getName().equalsIgnoreCase("OldValue"))
+                        && formatAuditIds) {
+                    erti = new ERTICaptionInfoAuditVal(colName, lbl, qfp.getStringId(), fi);
+                    Vector<ColInfo> colInfoList = new Vector<>();
+                    ColInfo columnInfo = erti.new ColInfo("TableNum", "tableNum");
+                    columnInfo.setPosition(0);
+                    colInfoList.add(columnInfo);
+                    columnInfo = erti.new ColInfo("FieldName", "FieldName");
+                    columnInfo.setPosition(1);
+                    colInfoList.add(columnInfo);
+                    columnInfo = erti.new ColInfo(fi.getColumn(), fi.getName());
+                    columnInfo.setPosition(2);
+                    colInfoList.add(columnInfo);
+                    erti.setColInfoList(colInfoList);
+                    erti.setColName(null);
+                } else if (fi != null && ti.getName().equalsIgnoreCase("SpAuditLogField")
+                        && fi.getName().equalsIgnoreCase("FieldName")
+                        && formatAuditIds) {
+                    erti = new ERTICaptionInfoFieldName(colName, lbl, qfp.getStringId(), fi);
+                    Vector<ColInfo> colInfoList = new Vector<>();
+                    ColInfo columnInfo = erti.new ColInfo("TableNum", "tableNum");
+                    columnInfo.setPosition(0);
+                    colInfoList.add(columnInfo);
+                    columnInfo = erti.new ColInfo(fi.getColumn(), fi.getName());
+                    columnInfo.setPosition(1);
+                    colInfoList.add(columnInfo);
+                    erti.setColInfoList(colInfoList);
+                    erti.setColName(null);
+                } else {
+                    erti = new ERTICaptionInfoQB(colName, lbl, true, getColumnFormatter(qfp, forSchemaExport), 0, qfp.getStringId(), qfp.getPickList(), fi);
                 }
                 erti.setColClass(qfp.getFieldQRI().getDataClass());
-                if (qfp.getFieldInfo() != null && !(qfp.getFieldQRI() instanceof DateAccessorQRI) && qfp.getFieldQRI().getFieldInfo().isPartialDate())
-                {
+                if (qfp.getFieldInfo() != null && !(qfp.getFieldQRI() instanceof DateAccessorQRI) && qfp.getFieldQRI().getFieldInfo().isPartialDate()) {
                     String precName = qfp.getFieldQRI().getFieldInfo().getDatePrecisionName();
-                    
+
                     Vector<ColInfo> colInfoList = new Vector<ColInfo>();
                     ColInfo columnInfo = erti.new ColInfo(StringUtils.capitalize(precName), precName);
                     columnInfo.setPosition(0);
                     colInfoList.add(columnInfo);
-                    
+
                     columnInfo = erti.new ColInfo(qfp.getFieldQRI().getFieldInfo().getColumn(), qfp.getFieldQRI().getFieldInfo().getName());
                     columnInfo.setPosition(1);
                     colInfoList.add(columnInfo);
@@ -2525,20 +2494,16 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     // XXX We need to get this from the SchemaConfig
                     //erti.setUiFieldFormatter(UIFieldFormatterMgr.getInstance().getFormatter("PartialDate"));
                 }
-                if (forSchemaExport)
-                {
-                	erti.setVisible(qfp.getQueryField().getIsDisplay());
+                if (forSchemaExport) {
+                    erti.setVisible(qfp.getQueryField().getIsDisplay());
                 }
                 result.add(erti);
             }
         }
-        for (ERTICaptionInfoTreeLevelGrp tg : treeGrps)
-        {
-            try 
-            {
-            	tg.setUp();
-            } catch (SQLException ex)
-            {
+        for (ERTICaptionInfoTreeLevelGrp tg : treeGrps) {
+            try {
+                tg.setUp();
+            } catch (SQLException ex) {
                 UsageTracker.incrHandledUsageCount();
                 edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryBldrPane.class, ex);
                 ex.printStackTrace();
@@ -2999,7 +2964,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     }
     
     
-    protected void launchPartialResultDisplayMsg(final String hql)
+    protected void launchPartialResultDisplayMsg(final String hql, final List<Pair<String, Object>> params)
     {
     	new SwingWorker()
     	{
@@ -3011,10 +2976,15 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 			public Object construct() 
 			{
 				String countHql = QueryBldrPane.getCountHql(hql);
-                DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+				DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
             	try
             	{
             		QueryIFace q = session.createQuery(countHql, false);
+            		if (params != null) {
+            		    for (Pair<String, Object> param : params) {
+            		        q.setParameter(param.getFirst(), param.getSecond());
+                        }
+                    }
             		count = (Integer )q.list().get(0);
             	} finally
             	{
@@ -3057,7 +3027,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 
                 if (results == ExpressSearchTask.RESULTS_THRESHOLD)
                 {
-                	launchPartialResultDisplayMsg(runningResults.get().getHQL());
+                	launchPartialResultDisplayMsg(runningResults.get().getHQL(), runningResults.get().getParams());
                 }
                 
                 String msg = "";
@@ -3358,7 +3328,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     	//not worrying about multi-user issues
     	String baseName = exportSchema.getSchemaName() + exportSchema.getSchemaVersion();
     	String result = baseName;
-    	int cnt = BasicSQLUtils.getCount("select count(*) from spquery where name = '" + result + "'");
+    	long cnt = BasicSQLUtils.getCount("select count(*) from spquery where name = '" + result + "'");
     	int suffix = 2;
     	while (cnt > 0)
     	{
@@ -3394,7 +3364,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         //If the query's timestampModified is not modified the schema export tool doesn't know the 
         //export schema needs to be rebuilt.
         if (!saveAs && query.getId() != null) {
-        	int origCount = BasicSQLUtils.getCountAsInt("select count(*) from spqueryfield where spqueryid=" + query.getId());
+        	long origCount = BasicSQLUtils.getCountAsInt("select count(*) from spqueryfield where spqueryid=" + query.getId());
         	if (origCount > query.getFields().size()) {
         		query.setTimestampModified(new Timestamp(System.currentTimeMillis()));
         	}
@@ -3595,7 +3565,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 CellConstraints cc = new CellConstraints();
                 pane.add(nameLbl, cc.xy(2, 2));
                 pane.add(nameText, cc.xy(4, 2));
-                CustomDialog cd = new CustomDialog((Frame)UIRegistry.getTopWindow(), 
+                CustomDialog cd = new CustomDialog((Frame)UIRegistry.getTopWindow(),
                         getSaveDlgTitle(saveAs), 
                         true, CustomDialog.OKCANCELHELP, pane.getPanel());
                 cd.setHelpContext("QBSave");

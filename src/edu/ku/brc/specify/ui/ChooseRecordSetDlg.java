@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -167,51 +167,44 @@ public class ChooseRecordSetDlg extends CustomDialog
         	}
         }
     }
-    
+
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.CustomDialog#createUI()
      */
     @Override
-    public void createUI()
-    {
-        super.createUI();
-        
-        okBtn.setEnabled(false);
-        
-        ListModel listModel = new AbstractListModel()
-        {
-            public int getSize() { return recordSets == null ? 0 : recordSets.size(); }
-            public Object getElementAt(int index) { return recordSets == null ? null : recordSets.get(index); }
+    public void createUI() {
+
+        ListModel listModel = new AbstractListModel() {
+            public int getSize() {
+                return recordSets == null ? 0 : recordSets.size();
+            }
+
+            public Object getElementAt(int index) {
+                return recordSets == null ? null : recordSets.get(index);
+            }
         };
 
         list = new JList(listModel);
         list.setCellRenderer(new RecordSetListCellRenderer());
         list.setVisibleRowCount(10);
         list.setCellRenderer(new PairListRenderer());
-        
-        list.addMouseListener(new MouseAdapter() 
-        {
-            public void mouseClicked(MouseEvent e) 
-            {
+
+        list.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
                 okBtn.setEnabled(list.getSelectedIndex() > -1);
-                
-                if (e.getClickCount() == 2) 
-                {
+
+                if (e.getClickCount() == 2) {
                     okBtn.doClick(); //emulate button click
                     return;
                 }
             }
         });
-        
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.add(UIHelper.createScrollPane(list), BorderLayout.CENTER);
-        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        
-        contentPanel = panel;
-        mainPanel.add(contentPanel, BorderLayout.CENTER);
-
-        pack();
+        contentPanel = new JPanel(new BorderLayout());
+        ((JPanel)contentPanel).add(UIHelper.createScrollPane(list), BorderLayout.CENTER);
+        ((JPanel)contentPanel).setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        super.createUI();
+        okBtn.setEnabled(false);
     }
 
     /* (non-Javadoc)

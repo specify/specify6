@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,11 +24,16 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import static org.apache.commons.lang.StringUtils.split;
 
+import edu.ku.brc.ui.CustomDialog;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.Window;
+import java.awt.Dimension;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EventObject;
@@ -988,59 +993,50 @@ public class TableViewObj implements Viewable,
      */
     protected void editRow(final int rowIndex, final boolean isNew)
     {
-        FormDataObjIFace origObj = null;
-        FormDataObjIFace dObj    = null;
-        if (isNew)
-        {
-            // Check to see if the business rules will be creating the object
-            // if so the BR will then call setNewObject
-            if (businessRules != null && businessRules.canCreateNewDataObject())
-            {
-                businessRules.createNewObj(true, null);
-                
-            } else
-            {
-                if (businessRules != null && mvParent != null) // Bug 9370
-                {
-                    if (mvParent.getMultiViewParent() != null && mvParent.getMultiViewParent().getData() != null)
+        if ((formViewDef != null && formViewDef.getIsEditableDlg()) || (!isNew && !isEditing)) {
+            FormDataObjIFace origObj = null;
+            FormDataObjIFace dObj = null;
+            if (isNew) {
+                // Check to see if the business rules will be creating the object
+                // if so the BR will then call setNewObject
+                if (businessRules != null && businessRules.canCreateNewDataObject()) {
+                    businessRules.createNewObj(true, null);
+
+                } else {
+                    if (businessRules != null && mvParent != null) // Bug 9370
                     {
-                        if (!businessRules.isOkToAddSibling(mvParent.getMultiViewParent().getData()))
-                        {
-                            return;
+                        if (mvParent.getMultiViewParent() != null && mvParent.getMultiViewParent().getData() != null) {
+                            if (!businessRules.isOkToAddSibling(mvParent.getMultiViewParent().getData())) {
+                                return;
+                            }
                         }
                     }
+
+                    // OK, we need to create it locally
+
+                    if (classToCreate != null) {
+                        dObj = FormHelper.createAndNewDataObj(classToCreate, businessRules);
+                    } else {
+                        dObj = FormHelper.createAndNewDataObj(view.getClassName(), businessRules);
+                    }
+
+                    dObj = editRow(dObj, rowIndex, isNew);
                 }
-                
-                // OK, we need to create it locally
-                
-                if (classToCreate != null)
-                {
-                    dObj = FormHelper.createAndNewDataObj(classToCreate, businessRules);
-                } else
-                {
-                    dObj = FormHelper.createAndNewDataObj(view.getClassName(), businessRules);
+            } else {
+                dObj = (FormDataObjIFace) dataObjList.get(rowIndex);
+                if (dObj == null) {
+                    return;
                 }
-                
+                origObj = dObj;
                 dObj = editRow(dObj, rowIndex, isNew);
             }
-        } else
-        {
-            dObj = (FormDataObjIFace)dataObjList.get(rowIndex);
-            if (dObj == null)
-            {
-                return;
-            }
-            origObj = dObj;
-            dObj = editRow(dObj, rowIndex, isNew);
-        }
-        
-        if (origObj != null && origObj != dObj)
-        {
-            int inx = dataObjList.indexOf(origObj);
-            if (inx > -1)
-            {
-                dataObjList.removeElementAt(inx);
-                dataObjList.insertElementAt(dObj, inx);
+
+            if (origObj != null && origObj != dObj) {
+                int inx = dataObjList.indexOf(origObj);
+                if (inx > -1) {
+                    dataObjList.removeElementAt(inx);
+                    dataObjList.insertElementAt(dObj, inx);
+                }
             }
         }
     }
@@ -1314,6 +1310,15 @@ public class TableViewObj implements Viewable,
         orderablePanel.validate();
         orderablePanel.invalidate(); 
         orderablePanel.doLayout();
+        //resize window
+        Window w = UIHelper.getWindow(orderablePanel);
+        if (w instanceof CustomDialog) {
+            w.pack();
+            Dimension d = w.getSize();
+            //this probably only needs to be done for macs, because the vertical scroll bars are made always visible, for some reason
+            d.setSize(d.getWidth() + upDownPanel.getPanel().getWidth(), d.getHeight());
+            w.setLocationRelativeTo(w.getOwner());
+        }
     }
     
     /**
@@ -1326,7 +1331,7 @@ public class TableViewObj implements Viewable,
         if (dObj != null)
         {
             Object[] delBtnLabels = {getResourceString(addSearch ? "Remove" : "Delete"), getResourceString("CANCEL")};
-            int rv = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), UIRegistry.getLocalizedMessage(addSearch ? "ASK_REMOVE" : "ASK_DELETE", dObj.getIdentityTitle()),
+            int rv = JOptionPane.showOptionDialog(UIRegistry.getMostRecentWindow(), UIRegistry.getLocalizedMessage(addSearch ? "ASK_REMOVE" : "ASK_DELETE", dObj.getIdentityTitle()),
                                                   getResourceString(addSearch ? "Remove" : "Delete"),
                                                   JOptionPane.YES_NO_OPTION,
                                                   JOptionPane.QUESTION_MESSAGE,

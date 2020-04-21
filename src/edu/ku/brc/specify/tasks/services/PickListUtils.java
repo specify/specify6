@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -178,8 +178,12 @@ public class PickListUtils
                                           final Collection collection)
     {
         // Apply is Import All PickLists
-        
-        FileDialog dlg = new FileDialog(((Frame)UIRegistry.getTopWindow()), getResourceString(getI18n("PL_IMPORT")), FileDialog.LOAD);
+
+        Window  window   = UIRegistry.getTopWindow();
+        boolean isDialog = window instanceof Dialog;
+        FileDialog dlg = isDialog ?
+                new FileDialog((Dialog)window, getResourceString(getI18n("PL_IMPORT")), FileDialog.LOAD) :
+                new FileDialog((Frame)window, getResourceString(getI18n("PL_IMPORT")), FileDialog.LOAD);
         dlg.setDirectory(UIRegistry.getUserHomeDir());
         dlg.setFile(getPickListXMLName());
         UIHelper.centerAndShow(dlg);
@@ -426,7 +430,7 @@ public class PickListUtils
         pickDlg.setAddSelectAll(true);
         pickDlg.createUI();
         pickDlg.setSelectedObjects(selectedItems);
-        UIHelper.centerAndShow(pickDlg);
+        pickDlg.setVisible(true);
         
         Integer cnt = null;
         if (!pickDlg.isCancelled())

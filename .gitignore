@@ -1,6 +1,8 @@
 /build
 /InstallerFiles
 /specify.jar
+/config/specify_datamodel.xml
 /packages
 /packaging/certwithroot.pfx
 /packaging/expdevidapp.p12
+.DS_Store

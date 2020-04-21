@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -68,7 +68,6 @@ import edu.ku.brc.specify.ui.LengthInputVerifier;
 import edu.ku.brc.specify.ui.db.PickListDBAdapterFactory;
 import edu.ku.brc.ui.*;
 import edu.ku.brc.ui.ToggleButtonChooserPanel.Type;
-import edu.ku.brc.ui.dnd.SimpleGlassPane;
 import edu.ku.brc.ui.tmanfe.SearchReplacePanel;
 import edu.ku.brc.ui.tmanfe.SpreadSheet;
 import edu.ku.brc.util.GeoRefConverter;
@@ -441,6 +440,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             saveBtn.setToolTipText(String.format(isForBatchEdit ? getResourceString("WB_BATCH_EDIT_DONE_TT") : getResourceString("WB_SAVE_DATASET_TT"),
                     new Object[] { workbench.getName() }));
             saveBtn.setEnabled(false);
+            saveBtn.setFocusTraversalKeysEnabled(false);
             saveBtn.addActionListener(new ActionListener() {
                 final boolean uploadAfterSave = isForBatchEdit;
             	public void actionPerformed(ActionEvent ae) {
@@ -453,7 +453,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                     }
                     String msg = isForBatchEdit ? getResourceString("WB_BATCH_EDIT_PREP")
                             : String.format(getResourceString("WB_SAVING"), new Object[] { workbench.getName() });
-                    UIRegistry.writeSimpleGlassPaneMsg(msg, WorkbenchTask.GLASSPANE_FONT_SIZE);
+                    UIRegistry.writeGlassPaneMsg(msg, WorkbenchTask.GLASSPANE_FONT_SIZE);
                     UIRegistry.getStatusBar().setIndeterminate(workbench.getName(), true);
                     final SwingWorker worker = new SwingWorker() {
                         @SuppressWarnings("synthetic-access")
@@ -495,7 +495,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                                         getResourceString("WB_ERROR_SAVING"), ex);
                             }
 
-                            UIRegistry.clearSimpleGlassPaneMsg();
+                            UIRegistry.clearGlassPaneMsg();
                             UIRegistry.getStatusBar().setProgressDone(workbench.getName());
                         }
                     };
@@ -518,7 +518,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                 public void actionPerformed(ActionEvent ae) {
                     UsageTracker.incrUsageCount("WB.RevertEdits");
 
-                    UIRegistry.writeSimpleGlassPaneMsg(String.format(getResourceString("WB_REVERTING"),
+                    UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_REVERTING"),
                             new Object[] { workbench.getName() }),
                             WorkbenchTask.GLASSPANE_FONT_SIZE);
                     UIRegistry.getStatusBar().setIndeterminate(workbench.getName(), true);
@@ -547,7 +547,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                                         getResourceString("WB_ERROR_REVERTING"), ex);
                             }
 
-                            UIRegistry.clearSimpleGlassPaneMsg();
+                            UIRegistry.clearGlassPaneMsg();
                             UIRegistry.getStatusBar().setProgressDone(workbench.getName());
                         }
                     };
@@ -1284,7 +1284,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 		}
 		//XXX If incremental matching is already turned on it would save lots
 		//of time if validateAll could be called without matching all.
-		validateAll(null);
+		validateAll();
 		
 		AppPreferences.getLocalPrefs().putBoolean(wbAutoValidatePrefName + "." + workbench.getId(), doIncrementalValidation);
 	}
@@ -1315,7 +1315,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 		if (workbenchValidator != null) {
 			//XXX If incremental matching is already turned on it would save lots
 			//of time if validateAll could be called without matching all.
-			validateAll(null);
+			validateAll();
 			
 			AppPreferences.getLocalPrefs().putBoolean(wbAutoEditCheckPrefName + "." + workbench.getId(), doIncrementalEditChecking);
 		}
@@ -1436,7 +1436,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 		if (workbenchValidator != null)
 		{
 			setMatchStatusForUploadTables();
-			validateAll(null);
+			validateAll();
 		
 			AppPreferences.getLocalPrefs().putBoolean(wbAutoMatchPrefName + "." + workbench.getId(), doIncrementalMatching);
 		}
@@ -1932,7 +1932,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         */
     	if (getIncremental())
     	{
-    		validateAll(null);
+    		validateAll();
     	}
         adjustSelectionAfterAdd(model.getRowCount()-1);
     }
@@ -2381,7 +2381,8 @@ public class WorkbenchPaneSS extends BaseSubPane
         pane.add(symbolCkBx, BorderLayout.SOUTH);
         geoRefConvertDlg = new CustomDialog(mainFrame, title, false, CustomDialog.OKCANCEL, pane)
         {
-            
+            boolean converted = false;
+
             @Override
             public void setVisible(boolean visible)
             {
@@ -2397,155 +2398,153 @@ public class WorkbenchPaneSS extends BaseSubPane
             {
             	geoRefConvertDlg = null;
             	super.cancelButtonPressed();
-            	//validation also done in window listener below
-                final int[] selection = spreadSheet.getSelectedRowModelIndexes();
-                SwingUtilities.invokeLater(() -> {
+            	if (converted) {
+                    int[] selection = spreadSheet.getSelectedRowModelIndexes();
+                    if (selection.length == 0) {
+                        // if none are selected, map all of them
+                        int rowCnt = spreadSheet.getRowCount();
+                        selection = new int[rowCnt];
+                        for (int i = 0; i < rowCnt; ++i) {
+                            selection[i] = spreadSheet.convertRowIndexToModel(i);
+                        }
+                    }
                     if (selection.length > 0) {
                         validateRows(selection);
+
                     } else {
                         //validateRows(0, spreadSheet.getRowCount() - 1);
-                        validateAll(null);
+                        validateAll();
                     }
-                });
+                }
             }
             
             @Override
-            protected void okButtonPressed()
-            {
+            protected void okButtonPressed() {
                 checkCurrentEditState();
-
+                getOkBtn().setEnabled(false);
                 // figure out which rows the user is working with
                 int[] selection = spreadSheet.getSelectedRowModelIndexes();
-                if (selection.length==0)
-                {
+                if (selection.length == 0) {
                     // if none are selected, map all of them
                     int rowCnt = spreadSheet.getRowCount();
                     selection = new int[rowCnt];
-                    for (int i = 0; i < rowCnt; ++i)
-                    {
-                        selection[i]=spreadSheet.convertRowIndexToModel(i);
+                    for (int i = 0; i < rowCnt; ++i) {
+                        selection[i] = spreadSheet.convertRowIndexToModel(i);
                     }
                 }
-                
+
                 // since Arrays.copyOf() isn't in Java SE 5...
                 int[] selRows = new int[selection.length];
-                for (int i = 0; i < selection.length; ++i)
-                {
+                for (int i = 0; i < selection.length; ++i) {
                     selRows[i] = selection[i];
                 }
 
 
                 // don't call super.okButtonPressed() b/c it will close the window
                 isCancelled = false;
-                btnPressed  = OK_BTN;
+                btnPressed = OK_BTN;
                 LatLonConverter.DEGREES_FORMAT degFmt = symbolCkBx.isSelected() ?
-                		LatLonConverter.DEGREES_FORMAT.Symbol :
-                		LatLonConverter.DEGREES_FORMAT.None;
+                        LatLonConverter.DEGREES_FORMAT.Symbol :
+                        LatLonConverter.DEGREES_FORMAT.None;
                 Vector<CellPosition> unconverted = new Vector<CellPosition>();
-                switch( toggle.getSelectedIndex() )
-                {
-                    case 0:
-                    {
+                switch (toggle.getSelectedIndex()) {
+                    case 0: {
                         unconverted.addAll(convertColumnContents(latColIndex, selRows, new GeoRefConverter(), GeoRefFormat.D_PLUS_MINUS.name(),
-                        		LatLonConverter.LATLON.Latitude, degFmt));
+                                LatLonConverter.LATLON.Latitude, degFmt));
                         unconverted.addAll(convertColumnContents(lonColIndex, selRows, new GeoRefConverter(), GeoRefFormat.D_PLUS_MINUS.name(),
-                        		LatLonConverter.LATLON.Longitude, degFmt));
+                                LatLonConverter.LATLON.Longitude, degFmt));
                         unconverted.addAll(convertColumnContents(lat2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.D_PLUS_MINUS.name(),
-                        		LatLonConverter.LATLON.Latitude, degFmt));
+                                LatLonConverter.LATLON.Latitude, degFmt));
                         unconverted.addAll(convertColumnContents(lon2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.D_PLUS_MINUS.name(),
-                        		LatLonConverter.LATLON.Longitude, degFmt));
+                                LatLonConverter.LATLON.Longitude, degFmt));
                         break;
                     }
-                    case 1:
-                    {
-                    	unconverted.addAll(convertColumnContents(latColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DM_PLUS_MINUS.name(),
-                    			LatLonConverter.LATLON.Latitude, degFmt));
-                    	unconverted.addAll(convertColumnContents(lonColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DM_PLUS_MINUS.name(),
-                    			LatLonConverter.LATLON.Longitude, degFmt));
-                    	unconverted.addAll(convertColumnContents(lat2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DM_PLUS_MINUS.name(),
-                    			LatLonConverter.LATLON.Latitude, degFmt));
-                    	unconverted.addAll(convertColumnContents(lon2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DM_PLUS_MINUS.name(),
-                    			LatLonConverter.LATLON.Longitude, degFmt));
+                    case 1: {
+                        unconverted.addAll(convertColumnContents(latColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DM_PLUS_MINUS.name(),
+                                LatLonConverter.LATLON.Latitude, degFmt));
+                        unconverted.addAll(convertColumnContents(lonColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DM_PLUS_MINUS.name(),
+                                LatLonConverter.LATLON.Longitude, degFmt));
+                        unconverted.addAll(convertColumnContents(lat2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DM_PLUS_MINUS.name(),
+                                LatLonConverter.LATLON.Latitude, degFmt));
+                        unconverted.addAll(convertColumnContents(lon2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DM_PLUS_MINUS.name(),
+                                LatLonConverter.LATLON.Longitude, degFmt));
                         break;
                     }
-                    case 2:
-                    {
-                    	unconverted.addAll(convertColumnContents(latColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DMS_PLUS_MINUS.name(),
-                    			LatLonConverter.LATLON.Latitude, degFmt));
-                    	unconverted.addAll(convertColumnContents(lonColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DMS_PLUS_MINUS.name(),
-                    			LatLonConverter.LATLON.Longitude, degFmt));
-                    	unconverted.addAll(convertColumnContents(lat2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DMS_PLUS_MINUS.name(),
-                    			LatLonConverter.LATLON.Latitude, degFmt));
-                    	unconverted.addAll(convertColumnContents(lon2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DMS_PLUS_MINUS.name(),
-                    			LatLonConverter.LATLON.Longitude, degFmt));
+                    case 2: {
+                        unconverted.addAll(convertColumnContents(latColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DMS_PLUS_MINUS.name(),
+                                LatLonConverter.LATLON.Latitude, degFmt));
+                        unconverted.addAll(convertColumnContents(lonColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DMS_PLUS_MINUS.name(),
+                                LatLonConverter.LATLON.Longitude, degFmt));
+                        unconverted.addAll(convertColumnContents(lat2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DMS_PLUS_MINUS.name(),
+                                LatLonConverter.LATLON.Latitude, degFmt));
+                        unconverted.addAll(convertColumnContents(lon2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DMS_PLUS_MINUS.name(),
+                                LatLonConverter.LATLON.Longitude, degFmt));
                         break;
                     }
-                    case 3:
-                    {
-                    	unconverted.addAll(convertColumnContents(latColIndex, selRows, new GeoRefConverter(), GeoRefFormat.D_NSEW.name(),
-                    			LatLonConverter.LATLON.Latitude, degFmt));
-                    	unconverted.addAll(convertColumnContents(lonColIndex, selRows, new GeoRefConverter(), GeoRefFormat.D_NSEW.name(),
-                    			LatLonConverter.LATLON.Longitude, degFmt));
-                    	unconverted.addAll(convertColumnContents(lat2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.D_NSEW.name(),
-                    			LatLonConverter.LATLON.Latitude, degFmt));
-                    	unconverted.addAll(convertColumnContents(lon2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.D_NSEW.name(),
-                    			LatLonConverter.LATLON.Longitude, degFmt));
+                    case 3: {
+                        unconverted.addAll(convertColumnContents(latColIndex, selRows, new GeoRefConverter(), GeoRefFormat.D_NSEW.name(),
+                                LatLonConverter.LATLON.Latitude, degFmt));
+                        unconverted.addAll(convertColumnContents(lonColIndex, selRows, new GeoRefConverter(), GeoRefFormat.D_NSEW.name(),
+                                LatLonConverter.LATLON.Longitude, degFmt));
+                        unconverted.addAll(convertColumnContents(lat2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.D_NSEW.name(),
+                                LatLonConverter.LATLON.Latitude, degFmt));
+                        unconverted.addAll(convertColumnContents(lon2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.D_NSEW.name(),
+                                LatLonConverter.LATLON.Longitude, degFmt));
 
                         break;
                     }
-                    case 4:
-                    {
-                    	unconverted.addAll(convertColumnContents(latColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DM_NSEW.name(),
-                    			LatLonConverter.LATLON.Latitude, degFmt));
-                    	unconverted.addAll(convertColumnContents(lonColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DM_NSEW.name(),
-                    			LatLonConverter.LATLON.Longitude, degFmt));
-                    	unconverted.addAll(convertColumnContents(lat2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DM_NSEW.name(),
-                    			LatLonConverter.LATLON.Latitude, degFmt));
-                    	unconverted.addAll(convertColumnContents(lon2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DM_NSEW.name(),
-                    			LatLonConverter.LATLON.Longitude, degFmt));
+                    case 4: {
+                        unconverted.addAll(convertColumnContents(latColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DM_NSEW.name(),
+                                LatLonConverter.LATLON.Latitude, degFmt));
+                        unconverted.addAll(convertColumnContents(lonColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DM_NSEW.name(),
+                                LatLonConverter.LATLON.Longitude, degFmt));
+                        unconverted.addAll(convertColumnContents(lat2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DM_NSEW.name(),
+                                LatLonConverter.LATLON.Latitude, degFmt));
+                        unconverted.addAll(convertColumnContents(lon2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DM_NSEW.name(),
+                                LatLonConverter.LATLON.Longitude, degFmt));
 
                         break;
                     }
-                    case 5:
-                    {
-                    	unconverted.addAll(convertColumnContents(latColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DMS_NSEW.name(),
-                    			LatLonConverter.LATLON.Latitude, degFmt));
-                    	unconverted.addAll(convertColumnContents(lonColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DMS_NSEW.name(),
-                    			LatLonConverter.LATLON.Longitude, degFmt));
-                    	unconverted.addAll(convertColumnContents(lat2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DMS_NSEW.name(),
-                    			LatLonConverter.LATLON.Latitude, degFmt));
-                    	unconverted.addAll(convertColumnContents(lon2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DMS_NSEW.name(),
-                    			LatLonConverter.LATLON.Longitude, degFmt));
+                    case 5: {
+                        unconverted.addAll(convertColumnContents(latColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DMS_NSEW.name(),
+                                LatLonConverter.LATLON.Latitude, degFmt));
+                        unconverted.addAll(convertColumnContents(lonColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DMS_NSEW.name(),
+                                LatLonConverter.LATLON.Longitude, degFmt));
+                        unconverted.addAll(convertColumnContents(lat2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DMS_NSEW.name(),
+                                LatLonConverter.LATLON.Latitude, degFmt));
+                        unconverted.addAll(convertColumnContents(lon2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DMS_NSEW.name(),
+                                LatLonConverter.LATLON.Longitude, degFmt));
 
                         break;
                     }
                 }
-                if (unconverted.size() != 0 )
-                {
-                	UIRegistry.displayLocalizedStatusBarError("WB_UNCONVERTED_GEOREFS", unconverted.size());
-                	final JList<?> unconvertedcells = UIHelper.createList(unconverted);
-                	unconvertedcells.addListSelectionListener(new ListSelectionListener() {
+                if (unconverted.size() != 0) {
+                    UIRegistry.displayLocalizedStatusBarError("WB_UNCONVERTED_GEOREFS", unconverted.size());
+                    final JList<?> unconvertedcells = UIHelper.createList(unconverted);
+                    unconvertedcells.addListSelectionListener(new ListSelectionListener() {
 
-						@Override
-						public void valueChanged(ListSelectionEvent arg0) {
-							CellPosition rowCol = (CellPosition )unconvertedcells.getSelectedValue();
-							spreadSheet.scrollCellToVisible(rowCol.getFirst(), rowCol.getSecond());
-							
-						}
-                		
-                	});
-                	JLabel lbl = UIHelper.createLabel(UIRegistry.getResourceString("WB_UNCONVERTED_GEOREFS_MSG"));
-                	JPanel innerPane = new JPanel(new BorderLayout());
-                	innerPane.add(lbl, BorderLayout.NORTH);
-                	innerPane.add(unconvertedcells, BorderLayout.CENTER);
-                	CustomDialog cd = new CustomDialog((Frame )UIRegistry.getTopWindow(), UIRegistry.getResourceString("WB_UNCONVERTED_GEOREFS_TITLE"),
-                			false, CustomDialog.OKHELP, innerPane);
-                	cd.setHelpContext("UnconvertableGeoCoords");
-                	UIHelper.centerAndShow(cd);
+                        @Override
+                        public void valueChanged(ListSelectionEvent arg0) {
+                            CellPosition rowCol = (CellPosition) unconvertedcells.getSelectedValue();
+                            spreadSheet.scrollCellToVisible(rowCol.getFirst(), rowCol.getSecond());
+
+                        }
+
+                    });
+                    JLabel lbl = UIHelper.createLabel(UIRegistry.getResourceString("WB_UNCONVERTED_GEOREFS_MSG"));
+                    JPanel innerPane = new JPanel(new BorderLayout());
+                    innerPane.add(lbl, BorderLayout.NORTH);
+                    innerPane.add(unconvertedcells, BorderLayout.CENTER);
+                    CustomDialog cd = new CustomDialog((Frame) UIRegistry.getTopWindow(), UIRegistry.getResourceString("WB_UNCONVERTED_GEOREFS_TITLE"),
+                            false, CustomDialog.OKHELP, innerPane);
+                    cd.setHelpContext("UnconvertableGeoCoords");
+                    UIHelper.centerAndShow(cd);
                 }
+                getOkBtn().setEnabled(true);
+                converted = true;
             }
         };
-        geoRefConvertDlg.setModal(false);
+        geoRefConvertDlg.setModal(true);
         toggle.setSelectedIndex(0);
         toggle.setOkBtn(geoRefConvertDlg.getOkBtn());
         toggle.createUI();
@@ -2558,16 +2557,6 @@ public class WorkbenchPaneSS extends BaseSubPane
 			public void windowClosed(WindowEvent e)
 			{
 			    geoRefConvertDlg = null;
-                //validation also cancel handler above
-                final int[] selection = spreadSheet.getSelectedRowModelIndexes();
-			    SwingUtilities.invokeLater(() -> {
-                    if (selection.length > 0) {
-                        validateRows(selection);
-                    } else {
-                        //validateRows(0, spreadSheet.getRowCount() - 1);
-                        validateAll(null);
-                    }
-                });
 			}
 
 			/* (non-Javadoc)
@@ -2921,7 +2910,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     }
     
     /**
-     * Export to XLS .
+     * Export to XLS.
      */
     protected void doExcelCsvExport()
     {
@@ -3391,7 +3380,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                             if (selection.length > 0) {
                             	validateRows(selection);
                             } else  {
-                            	validateAll(null);
+                            	validateAll();
                             }
                             model.fireDataChanged();
                             spreadSheet.repaint();
@@ -3890,7 +3879,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                 //GlassPane and Progress bar currently don't show up during shutdown
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
-                        UIRegistry.writeSimpleGlassPaneMsg(String.format(
+                        UIRegistry.writeGlassPaneMsg(String.format(
                                 getResourceString("WB_SAVING"),
                                 new Object[] { workbench.getName() }),
                                 WorkbenchTask.GLASSPANE_FONT_SIZE);
@@ -3929,7 +3918,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                     @Override
                     public void finished()
                     {
-                        UIRegistry.clearSimpleGlassPaneMsg();
+                        UIRegistry.clearGlassPaneMsg();
                         UIRegistry.getStatusBar().setProgressDone(wbName);
                         shutdownLock.decrementAndGet();
                         shutdown();
@@ -4427,7 +4416,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             pb.add(new JLabel(loginStr), new CellConstraints().xy(2, 4));
             pb.add(new JLabel(UIRegistry.getResourceString("WB_UPLOAD_OTHER_USERS2")), new CellConstraints().xy(2, 6));
             
-            CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(),
+            CustomDialog dlg = CustomDialog.create(
                     UIRegistry.getResourceString("WB_UPLOAD_DENIED_DLG"),
                     true,
                     CustomDialog.OKCANCELAPPLYHELP,
@@ -4449,7 +4438,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             }
             PanelBuilder pb2 = new PanelBuilder(new FormLayout("5dlu, f:p:g, 5dlu", "5dlu, f:p:g, 5dlu"));
             pb2.add(new JLabel(UIRegistry.getResourceString("WB_UPLOAD_CONFIRM_ANNIHILATION")), new CellConstraints().xy(2, 2));
-            CustomDialog dlg2 = new CustomDialog((Frame)UIRegistry.getTopWindow(),
+            CustomDialog dlg2 = CustomDialog.create(
                     UIRegistry.getResourceString("WB_UPLOAD_DANGER"),
                     true,
                     CustomDialog.OKCANCELHELP,
@@ -4919,7 +4908,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     {
     	if (getIncremental())
 		{
-			validateRows(null, startRow, endRow, true, null, false);
+			validateRows(null, startRow, endRow, true, false);
 			return true;
 		}
     	return false;
@@ -4936,7 +4925,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     {
     	if (getIncremental())
 		{
-			validateRows(rows, -1, -1, rows.length <= 17, null, false);
+			validateRows(rows, -1, -1, rows.length <= 17, false);
 			//validateRows(rows, -1, -1, true, null);
     		return true;
 		}
@@ -5076,7 +5065,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 		private final int startRow;
 		private final int endRow;
 		private final boolean useGlassPane;
-		private AtomicReference<SimpleGlassPane> glassPane = new AtomicReference<>(null);
+		private AtomicReference<ProgressGlassPane> glassPane = new AtomicReference<>(null);
 		private final boolean allowCancel;
 		private final AtomicBoolean cancelledByUser = new AtomicBoolean(false);
 		
@@ -5103,103 +5092,104 @@ public class WorkbenchPaneSS extends BaseSubPane
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        ValidationWorker.this.glassPane.set(UIRegistry.writeSimpleGlassPaneMsg(
+                        ValidationWorker.this.glassPane.set(UIRegistry.writeGlassPaneMsg(
                                 String.format(getResourceString("WorkbenchPaneSS.Validating"),
                                         new Object[] {isUpdateDataSet() ? "" : workbench.getName()}),
-                                WorkbenchTask.GLASSPANE_FONT_SIZE, true));
+                                WorkbenchTask.GLASSPANE_FONT_SIZE/*, allowCancel*/));
                         if (allowCancel)
                         {
-                            UIRegistry.displayStatusBarText(getResourceString("WorkbenchPaneSS.CancelValidationHint"));
-                            ValidationWorker.this.glassPane.get().addMouseListener(new MouseListener() {
-
-                                /*
-                                 * (non-Javadoc)
-                                 *
-                                 * @see
-                                 * java.awt.event.MouseListener#mouseClicked(java.awt
-                                 * .event.MouseEvent)
-                                 */
-                                @Override
-                                public void mouseClicked(MouseEvent arg0) {
-                                    if (!arg0.isConsumed())
-                                    {
-                                        if (arg0.getClickCount() == 2)
-                                        {
-                                            SwingUtilities.invokeLater(new Runnable() {
-
-                                                /* (non-Javadoc)
-                                                 * @see java.lang.Runnable#run()
-                                                 */
-                                                @Override
-                                                public void run() {
-                                                    if (UIRegistry.displayConfirmLocalized(
-                                                            "WorkbenchPaneSS.CancelValidationConfirmTitle",
-                                                            "WorkbenchPaneSS.CancelValidationConfirmMsg", "YES", "NO",
-                                                            JOptionPane.QUESTION_MESSAGE))
-                                                    {
-                                                        cancelledByUser.set(true);
-                                                    }
-                                                }
-
-
-                                            });
-                                        }
-                                    }
-                                }
-
-                                /*
-                                 * (non-Javadoc)
-                                 *
-                                 * @see
-                                 * java.awt.event.MouseListener#mouseEntered(java.awt
-                                 * .event.MouseEvent)
-                                 */
-                                @Override
-                                public void mouseEntered(MouseEvent arg0) {
-                                    // TODO Auto-generated method stub
-
-                                }
-
-                                /*
-                                 * (non-Javadoc)
-                                 *
-                                 * @see
-                                 * java.awt.event.MouseListener#mouseExited(java.awt
-                                 * .event.MouseEvent)
-                                 */
-                                @Override
-                                public void mouseExited(MouseEvent arg0) {
-                                    // TODO Auto-generated method stub
-
-                                }
-
-                                /*
-                                 * (non-Javadoc)
-                                 *
-                                 * @see
-                                 * java.awt.event.MouseListener#mousePressed(java.awt
-                                 * .event.MouseEvent)
-                                 */
-                                @Override
-                                public void mousePressed(MouseEvent arg0) {
-                                    // TODO Auto-generated method stub
-
-                                }
-
-                                /*
-                                 * (non-Javadoc)
-                                 *
-                                 * @see
-                                 * java.awt.event.MouseListener#mouseReleased(java.awt
-                                 * .event.MouseEvent)
-                                 */
-                                @Override
-                                public void mouseReleased(MouseEvent arg0) {
-                                    // TODO Auto-generated method stub
-
-                                }
-
-                            });
+                            log.warn("cancel no longer supported for WB validation");
+//                            UIRegistry.displayStatusBarText(getResourceString("WorkbenchPaneSS.CancelValidationHint"));
+//                            ValidationWorker.this.glassPane.get().addMouseListener(new MouseListener() {
+//
+//                                /*
+//                                 * (non-Javadoc)
+//                                 *
+//                                 * @see
+//                                 * java.awt.event.MouseListener#mouseClicked(java.awt
+//                                 * .event.MouseEvent)
+//                                 */
+//                                @Override
+//                                public void mouseClicked(MouseEvent arg0) {
+//                                    if (!arg0.isConsumed())
+//                                    {
+//                                        if (arg0.getClickCount() == 2)
+//                                        {
+//                                            SwingUtilities.invokeLater(new Runnable() {
+//
+//                                                /* (non-Javadoc)
+//                                                 * @see java.lang.Runnable#run()
+//                                                 */
+//                                                @Override
+//                                                public void run() {
+//                                                    if (UIRegistry.displayConfirmLocalized(
+//                                                            "WorkbenchPaneSS.CancelValidationConfirmTitle",
+//                                                            "WorkbenchPaneSS.CancelValidationConfirmMsg", "YES", "NO",
+//                                                            JOptionPane.QUESTION_MESSAGE))
+//                                                    {
+//                                                        cancelledByUser.set(true);
+//                                                    }
+//                                                }
+//
+//
+//                                            });
+//                                        }
+//                                    }
+//                                }
+//
+//                                /*
+//                                 * (non-Javadoc)
+//                                 *
+//                                 * @see
+//                                 * java.awt.event.MouseListener#mouseEntered(java.awt
+//                                 * .event.MouseEvent)
+//                                 */
+//                                @Override
+//                                public void mouseEntered(MouseEvent arg0) {
+//                                    // TODO Auto-generated method stub
+//
+//                                }
+//
+//                                /*
+//                                 * (non-Javadoc)
+//                                 *
+//                                 * @see
+//                                 * java.awt.event.MouseListener#mouseExited(java.awt
+//                                 * .event.MouseEvent)
+//                                 */
+//                                @Override
+//                                public void mouseExited(MouseEvent arg0) {
+//                                    // TODO Auto-generated method stub
+//
+//                                }
+//
+//                                /*
+//                                 * (non-Javadoc)
+//                                 *
+//                                 * @see
+//                                 * java.awt.event.MouseListener#mousePressed(java.awt
+//                                 * .event.MouseEvent)
+//                                 */
+//                                @Override
+//                                public void mousePressed(MouseEvent arg0) {
+//                                    // TODO Auto-generated method stub
+//
+//                                }
+//
+//                                /*
+//                                 * (non-Javadoc)
+//                                 *
+//                                 * @see
+//                                 * java.awt.event.MouseListener#mouseReleased(java.awt
+//                                 * .event.MouseEvent)
+//                                 */
+//                                @Override
+//                                public void mouseReleased(MouseEvent arg0) {
+//                                    // TODO Auto-generated method stub
+//
+//                                }
+//
+//                            });
                         }
 
                     }
@@ -5294,7 +5284,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 			UIRegistry.displayStatusBarText(null);
 			if (useGlassPane)
 			{
-				UIRegistry.clearSimpleGlassPaneMsg();
+				UIRegistry.clearGlassPaneMsg();
 			}
 			if (isCancelled())
 			{
@@ -5366,21 +5356,17 @@ public class WorkbenchPaneSS extends BaseSubPane
     }
     
     /**
-     * @param glassPane
      */
-    public void validateAll(final SimpleGlassPane glassPane)
-    {
-    	//System.out.println("validating all " + spreadSheet.getRowCount() + " rows.");
-    	if (catNumChecker != null)
-    	{
-    		//apparently this is pretty quick, but it might be necessary to have a glass pane for this step...
-    		catNumChecker.clear();
-    		for (int r = 0; r < spreadSheet.getRowCount(); r++)
-    		{
-    			catNumChecker.setValue(r, spreadSheet.getStringAt(r, catNumCol), false);
-    		}
-    	}
-    	validateRows(null, 0, spreadSheet.getRowCount()-1, false, glassPane, glassPane == null);
+    public void validateAll() {
+        //System.out.println("validating all " + spreadSheet.getRowCount() + " rows.");
+        if (catNumChecker != null) {
+            //apparently this is pretty quick, but it might be necessary to have a glass pane for this step...
+            catNumChecker.clear();
+            for (int r = 0; r < spreadSheet.getRowCount(); r++) {
+                catNumChecker.setValue(r, spreadSheet.getStringAt(r, catNumCol), false);
+            }
+        }
+        validateRows(null, 0, spreadSheet.getRowCount() - 1, false, true);
     }
     
     /**
@@ -5388,43 +5374,19 @@ public class WorkbenchPaneSS extends BaseSubPane
      * @param startRow
      * @param endRow
      * @param doSecretly
-     * @param glassPane
      * @param allowCancel
      */
-    public void validateRows(final int[] rows, final int startRow, final int endRow, boolean doSecretly, final SimpleGlassPane glassPane, final boolean allowCancel)
-    {
-    	
-    	ValidationWorker newWorker = new ValidationWorker(rows, startRow, endRow, !doSecretly, allowCancel);
-//    	if (doSecretly)
-    	{
-    		//System.out.println("validateRows(): adding worker to queue");
-    		validationWorkerQueue.add(newWorker);
-    		if (validationWorkerQueue.peek() == newWorker)
-    		{
-    			//System.out.println("validateRows(): executing new worker");
-    			newWorker.execute();
-    		}
-    		SwingUtilities.invokeLater(new Runnable(){
-    			@Override
-    			public void run() {
-    				if (addRowsBtn != null) addRowsBtn.setEnabled(false);
-    				if (deleteRowsBtn != null) deleteRowsBtn.setEnabled(false);
-    			}
-    		});
-    	} //else
-//    	if (!doSecretly)
-//    	{
-//    		try
-//    		{
-//    			//newWorker.execute();
-//    			newWorker.get();
-//    		} catch (Exception ex)
-//    		{
-//                UsageTracker.incrHandledUsageCount();
-//                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchPaneSS.class, ex);
-//                log.error(ex);
-//    		}
-//    	}
+    public void validateRows(final int[] rows, final int startRow, final int endRow, boolean doSecretly, final boolean allowCancel) {
+
+        ValidationWorker newWorker = new ValidationWorker(rows, startRow, endRow, !doSecretly, allowCancel);
+        validationWorkerQueue.add(newWorker);
+        if (validationWorkerQueue.peek() == newWorker) {
+            newWorker.execute();
+        }
+        SwingUtilities.invokeLater(() -> {
+            if (addRowsBtn != null) addRowsBtn.setEnabled(false);
+            if (deleteRowsBtn != null) deleteRowsBtn.setEnabled(false);
+        });
     }
     
 	/**

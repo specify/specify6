@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -877,7 +877,7 @@ public class ReportsBaseTask extends BaseTask
         {
             if (((RecordSetIFace)cmdAction.getData()).getDbTableId() != cmdAction.getTableId())
             {
-                JOptionPane.showMessageDialog(null, getResourceString("ERROR_RECORDSET_TABLEID"), getResourceString("Error"), JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(), getResourceString("ERROR_RECORDSET_TABLEID"), getResourceString("Error"), JOptionPane.ERROR_MESSAGE);
                 return;
             }
         }*/
@@ -1189,7 +1189,7 @@ public class ReportsBaseTask extends BaseTask
             String colName = model.getColumnName(i);
             
             Class<?> dataClass = model.getColumnClass(i);
-            if (dataClass == Object.class)
+            if (dataClass == Object.class || dataClass.equals(java.sql.Timestamp.class))
             {
                 if (model.getRowCount() > 0)
                 {

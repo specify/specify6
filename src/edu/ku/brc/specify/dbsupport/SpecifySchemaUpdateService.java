@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -187,7 +187,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 {
     protected static final Logger  log = Logger.getLogger(SpecifySchemaUpdateService.class);
     
-    private final int OVERALL_TOTAL = 65; //the number of incOverall() calls (+1 or +2)
+    private final int OVERALL_TOTAL = 71; //the number of incOverall() calls (+1 or +2)
 
     private static final String TINYINT4 = "TINYINT(4)";
     private static final String INT11    = "INT(11)";
@@ -391,7 +391,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                                     doSchemaUpdate = true;
                                 } else
                                 {
-                                    CommandDispatcher.dispatch(new CommandAction(APP, APP_REQ_EXIT, null));
+                                    //CommandDispatcher.dispatch(new CommandAction(APP, APP_REQ_EXIT, null));
                                     return SchemaUpdateType.Error;
                                 }
                             }
@@ -431,7 +431,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                             
                             if (!askToUpdateSchema())
                             {
-                                CommandDispatcher.dispatch(new CommandAction(APP, APP_REQ_EXIT, null));
+                                //CommandDispatcher.dispatch(new CommandAction(APP, APP_REQ_EXIT, null));
                                 return SchemaUpdateType.Error;
                             }
                             
@@ -455,7 +455,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                             int opt = UIRegistry.askYesNoLocalized("EXIT", "CONTINUE", msg, "MySQLBackupService.BACKUP_NOW");
                             if (opt == JOptionPane.YES_OPTION)
                             {
-                                CommandDispatcher.dispatch(new CommandAction(APP, APP_REQ_EXIT, null));
+                                //CommandDispatcher.dispatch(new CommandAction(APP, APP_REQ_EXIT, null));
                                 return SchemaUpdateType.Error;  
                             }
                             
@@ -523,7 +523,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                                 
                             } else
                             {
-                                CommandDispatcher.dispatch(new CommandAction(APP, APP_REQ_EXIT, null));
+                                //CommandDispatcher.dispatch(new CommandAction(APP, APP_REQ_EXIT, null));
                                 return SchemaUpdateType.Error;
                             }
                             
@@ -957,19 +957,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
      */
     private static void processUnhandledException(final Throwable throwable)
     {
-        /*if (UIHelper.isExceptionOKToThrow(throwable))
-        {
-            SwingUtilities.invokeLater(new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    String msg = "There was an error while updating the schema.";
-                    UnhandledExceptionDialog dlg = new UnhandledExceptionDialog(msg, throwable);
-                    UIHelper.centerAndShow(dlg);
-                }
-            });
-        }*/
+        //streamlined expedition
     }
     
     /**
@@ -2504,14 +2492,61 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         return false;
                     }
                     frame.incOverall();
-                    //but this still needs to be done. However, it needs to be moved to "fixDbAfterLogin" (or whatever)
-                    sql = "update splocalecontainer c inner join splocalecontaineritem i on i.splocalecontainerid = c.splocalecontainerid set i.ishidden = false where c.name in('spauditlog','spauditlogfield')";
+
+                    //-------------------------------------------------------------------------------
+                    //
+                    // Schema changes for 2.7
+                    //
+                    //-------------------------------------------------------------------------------
+                    frame.setDesc("Adding index for Preparation.SampleNumber");
+                    if (!doesIndexExist("preparation", "PrepSampleNumIDX")) {
+                        sql = "create index PrepSampleNumIDX on preparation(SampleNumber)";
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
+                    }
+                    frame.incOverall();
+
+                    frame.setDesc("Increasing length of TreatmentEvent.type");
+                    sql = "alter table treatmentevent modify column `Type` varchar(128)";
                     if (-1 == update(conn, sql)) {
                         errMsgList.add("update error: " + sql);
                         return false;
                     }
                     frame.incOverall();
 
+                    frame.setDesc("Increasing length of Geography.Name");
+                    sql = "alter table geography modify column `Name` varchar(128)";
+                    if (-1 == update(conn, sql)) {
+                        errMsgList.add("update error: " + sql);
+                        return false;
+                    }
+                    frame.incOverall();
+
+                    frame.setDesc("Increasing length of Geography.FullName");
+                    sql = "alter table geography modify column `FullName` varchar(500)";
+                    if (-1 == update(conn, sql)) {
+                        errMsgList.add("update error: " + sql);
+                        return false;
+                    }
+                    frame.incOverall();
+
+                    frame.setDesc("Increasing length of Agent.LastName");
+                    sql = "alter table agent modify column `LastName` varchar(256)";
+                    if (-1 == update(conn, sql)) {
+                        errMsgList.add("update error: " + sql);
+                        return false;
+                    }
+                    frame.incOverall();
+
+                    frame.setDesc("Increasing length of CollectingTrip.CollectingTripName");
+                    sql = "alter table collectingtrip modify column `CollectingTripName` varchar(250)";
+                    if (-1 == update(conn, sql)) {
+                        errMsgList.add("update error: " + sql);
+                        return false;
+                    }
+                    frame.incOverall();
                     frame.setProcess(0, 100);
 
                     return true;
@@ -4686,7 +4721,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     pb.setDefaultDialogBorder();
                     
                     CustomDialog    dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), getResourceString("SCHEMA_UPDATE_ERROR"), true, pb.getPanel());
-                    UIHelper.centerAndShow(dlg);
+                    dlg.setVisible(true);
                 }
                 
                 dbmsMgr.close();
@@ -5224,14 +5259,14 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         
         String sql = String.format("SELECT COUNT(*) FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE TABLE_SCHEMA = '%s' AND TABLE_NAME = 'geoname'", 
                                     DBConnection.getInstance().getDatabaseName());
-        if (BasicSQLUtils.getCount(sql) == 0)
+        if (BasicSQLUtils.getCount(sql).equals(0))
         {
             AppPreferences.getGlobalPrefs().putBoolean(FIXED_GEO, true);
             return;
         }
         
         final int numRecs = BasicSQLUtils.getCountAsInt("SELECT COUNT(*) FROM geoname ge INNER JOIN geography g ON ge.name = g.Name WHERE ge.Name <> ge.asciiname");
-        if (BasicSQLUtils.getCount(sql) == 0)
+        if (BasicSQLUtils.getCount(sql).equals(0))
         {
             AppPreferences.getGlobalPrefs().putBoolean(FIXED_GEO, true);
             return;

@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -259,7 +259,7 @@ public class MatchHandler
         pane.add(btnPane, BorderLayout.SOUTH);
         
         String tblTitle = DBTableIdMgr.getInstance().getByShortClassName(uploadTable.getTblClass().getSimpleName()).getTitle();
-        matchDlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), getResourceString("WB_UPLOAD_CHOOSE_MATCH") + " - " + tblTitle, true, 
+        matchDlg = CustomDialog.create(getResourceString("WB_UPLOAD_CHOOSE_MATCH") + " - " + tblTitle, true,
                 CustomDialog.OKCANCELAPPLYHELP, pane, CustomDialog.OK_BTN);
         matchDlg.setOkLabel(getResourceString("WB_UPLOAD_MATCH_SELECT_BTN"));
         matchDlg.setCancelLabel(getResourceString("WB_UPLOAD_MATCH_ADD_BTN"));
@@ -316,17 +316,11 @@ public class MatchHandler
         
         try
         {
-            settingDlg = new CustomDialog(null, getResourceString("WB_UPLOAD_SETTINGS"), true,
+            settingDlg = CustomDialog.create(getResourceString("WB_UPLOAD_SETTINGS"), true,
                     CustomDialog.OKCANCELAPPLYHELP, umsbp, CustomDialog.OK_BTN);
             settingDlg.setApplyLabel(getResourceString("WB_UPLOAD_APPLY_TO_ALL"));
             settingDlg.createUI();
-            settingDlg.getApplyBtn().addActionListener(new ActionListener()
-            {
-                public void actionPerformed(ActionEvent e)
-                {
-                    Uploader.currentUpload.applyMatchSettingsToAllTables(umsbp);
-                }
-            });
+            settingDlg.getApplyBtn().addActionListener(e -> Uploader.currentUpload.applyMatchSettingsToAllTables(umsbp));
 
             //settingDlg.pack();
             settingDlg.setAlwaysOnTop(true);

@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -320,14 +320,14 @@ public class MasterLoginPanel extends GenericFormPanel
     {
         List<String> dbList = getSpecifyDatabases(mgr, mgr.getDatabaseList());
         
-        ToggleButtonChooserDlg<String> dlg = new ToggleButtonChooserDlg<String>((Frame)UIRegistry.getTopWindow(), "SEC_SELECT_DBS", 
+        ToggleButtonChooserDlg<String> dlg = new ToggleButtonChooserDlg<String>((Frame)UIRegistry.getTopWindow(), "SEC_SELECT_DBS",
                                                                                 "SEC_SELECT_DBS_DESC", dbList, 
                                                                                 CustomDialog.OKCANCELHELP, ToggleButtonChooserPanel.Type.Checkbox);
         dlg.setHelpContext("security_wizreset");
         dlg.setAddSelectAll(true);
         dlg.setUseScrollPane(true);
         dlg.createUI();
-        UIHelper.centerAndShow(dlg);
+        dlg.setVisible(true);
         if (!dlg.isCancelled())
         {
             return dlg.getSelectedObjects();

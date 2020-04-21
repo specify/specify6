@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -68,7 +68,7 @@ public class WebLinkConfigDlg extends CustomDialog
                             final DBTableInfo tableInfo,
                             final boolean     isTableMode) throws HeadlessException
     {
-        super((Frame)UIRegistry.getTopWindow(), UIRegistry.getResourceString("WebLinkConfigDlg.WEB_LNK_EDT"), true, isTableMode ? OKHELP : OKCANCELHELP, null); // I18N //$NON-NLS-1$
+        super((java.awt.Dialog)UIRegistry.getMostRecentWindow(), UIRegistry.getResourceString("WebLinkConfigDlg.WEB_LNK_EDT"), true, isTableMode ? OKHELP : OKCANCELHELP, null); // I18N //$NON-NLS-1$
         
         this.wlMgr       = wlMgr;
         this.tableInfo   = tableInfo;

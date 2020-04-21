@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -56,12 +56,12 @@ public class DataObjFieldFmtListEdtDlg extends FmtListEditorDlgBase
      * @param uiFieldFormatterMgrCache
      * @throws HeadlessException
      */
-    public DataObjFieldFmtListEdtDlg(final Frame                 frame, 
+    public DataObjFieldFmtListEdtDlg(final java.awt.Dialog                 owner,
                                      final DBTableInfo           tableInfo, 
                                      final DataObjFieldFormatMgr dataObjFieldFormatMgrCache,
                                      final UIFieldFormatterMgr   uiFieldFormatterMgrCache) throws HeadlessException
     {
-        super(frame, 
+        super(owner,
                 "DOF_DLG_AVAIL_TITLE",
                 "DOF_LIST_EDITOR",  // HelpContext
                 tableInfo, 

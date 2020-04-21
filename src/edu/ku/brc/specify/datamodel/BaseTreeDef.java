@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -46,6 +46,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import edu.ku.brc.ui.*;
 import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -65,11 +66,6 @@ import edu.ku.brc.specify.dbsupport.TreeDefStatusMgr;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr.USER_ACTION;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable;
 import edu.ku.brc.specify.treeutils.TreeRebuilder;
-import edu.ku.brc.ui.CustomDialog;
-import edu.ku.brc.ui.JStatusBar;
-import edu.ku.brc.ui.ProgressDialog;
-import edu.ku.brc.ui.ProgressFrame;
-import edu.ku.brc.ui.UIHelper;
 
 /**
  * @author timbo
@@ -414,8 +410,8 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
             dlg.getOkBtn().setVisible(false); 
             dlg.setCancelLabel(dlg.getOkBtn().getText());
             //...Stoopid x-box
-            
-            UIHelper.centerAndShow(dlg);
+
+            dlg.setVisible(true);
             dlg.dispose();
             if (dlg.isCancelled())
             {
@@ -429,7 +425,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
                     CustomDialog.OKCANCELHELP,
                     pb2.getPanel());
             dlg2.setOkLabel(getResourceString("YES"));
-            UIHelper.centerAndShow(dlg2);
+            dlg.setVisible(true);
             dlg2.dispose();
             if (dlg2.isCancelled())
             {
@@ -512,7 +508,8 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
         final TreeRebuilder<N,D,I> treeRebuilder = theSession == null ? new TreeRebuilder<N,D,I>((D )this, minRank, rebuildMode) : new TreeRebuilder<N,D,I>((D)this, minRank, rebuildMode, theSession);
         final JStatusBar nStatusBar = useProgDlg ? null : getStatusBar();      
         final ProgressDialog progDlg =  nStatusBar != null || !isOnUIThread ? null :
-                    new ProgressDialog(getResourceString("BaseTreeDef.UPDATING_TREE_DLG"), false, false);
+                    new ProgressDialog(getResourceString("BaseTreeDef." +
+                            "UPDATING_TREE_DLG"), false, false);
         if (nStatusBar != null)
         {
             nStatusBar.setProgressRange(treeRebuilder.getProgressName(), 0, 100);
@@ -532,7 +529,6 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
             {
             	progDlg.setDesc(String.format(getResourceString("BaseTreeDef.UPDATING_TREE"), getName()));
             }
-            progDlg.setAlwaysOnTop(true);
             treeRebuilder.setProgWin(progDlg);
         }
         
@@ -628,7 +624,9 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
                     
                 if (progDlg != null && isOnUIThread)
                 {
-                    UIHelper.centerAndShow(progDlg);
+                    progDlg.pack();
+                    progDlg.setLocationRelativeTo(progDlg.getOwner());
+                    progDlg.setVisible(true);
                 }
                 setNodeNumbersAreUpToDate(treeRebuilder.get());
                 return true;
@@ -761,7 +759,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
                         CustomDialog.OKCANCELHELP,
                         pb.getPanel());
                 dlg.setCancelLabel(getResourceString("SpecifyAppContextMgr.EXIT"));
-                UIHelper.centerAndShow(dlg);
+                dlg.setVisible(true);
                 if (dlg.getBtnPressed() == CustomDialog.OK_BTN)
                 {
                     updateAllNodes(null, useProgDlg, false);
@@ -783,7 +781,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
                         true,
                         CustomDialog.OKHELP,
                         pb.getPanel());
-                UIHelper.centerAndShow(dlg);
+                dlg.setVisible(true);
                 result = false;               
            }
         }

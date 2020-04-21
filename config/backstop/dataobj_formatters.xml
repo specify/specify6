@@ -343,6 +343,19 @@
     </format>
 
     <format
+            name="Extractor"
+            title="Extractor"
+            class="edu.ku.brc.specify.datamodel.Extractor"
+            default="true"
+    >
+        <switch single="true">
+            <fields>
+                <field formatter="Agent">agent</field>
+            </fields>
+        </switch>
+    </format>
+
+    <format
         name="FieldNotebookPage"
         title="FieldNotebookPage"
         class="edu.ku.brc.specify.datamodel.FieldNotebookPage"
@@ -656,6 +669,19 @@
     </format>
 
     <format
+            name="PcrPerson"
+            title="PcrPerson"
+            class="edu.ku.brc.specify.datamodel.PcrPerson"
+            default="true"
+    >
+        <switch single="true">
+            <fields>
+                <field formatter="Agent">agent</field>
+            </fields>
+        </switch>
+    </format>
+
+    <format
         name="Shipment"
         title="Shipment"
         class="edu.ku.brc.specify.datamodel.Shipment"
@@ -938,6 +964,17 @@
                 orderfieldname=""
                />
 
+      <aggregator name="Extractor"
+                  title="Extractor"
+                  class="edu.ku.brc.specify.datamodel.Extractor"
+                  default="true"
+                  separator="; "
+                  ending=""
+                  count=""
+                  format="Extractor"
+                  orderfieldname="orderNumber"
+      />
+
     <aggregator name="FieldNotebookAttachment"
                 title="FieldNotebookAttachment"
                 class="edu.ku.brc.specify.datamodel.FieldNotebookAttachment"
@@ -1102,6 +1139,17 @@
                 format="identity"
                 orderfieldname="ordinal"
                />
+
+      <aggregator name="PcrPerson"
+                  title="PcrPerson"
+                  class="edu.ku.brc.specify.datamodel.PcrPerson"
+                  default="true"
+                  separator="; "
+                  ending=""
+                  count=""
+                  format="PcrPerson"
+                  orderfieldname="orderNumber"
+      />
 
     <aggregator name="TaxonAttachment"
                 title="TaxonAttachment"

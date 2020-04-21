@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  *
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -96,10 +96,22 @@ public class AuditPrefsPanel extends GenericPrefsPanel implements PrefsSavable, 
 
         AppPreferences gPrefs = AppPreferences.getGlobalPrefs();
         AppPreferences rPrefs = AppPreferences.getRemote();
-        super.savePrefs(); // Gets data from form
-        rPrefs.putBoolean(Specify.hiddenDoAuditPrefName, doAuditsChk.isSelected());
-        rPrefs.putBoolean(Specify.hiddenAuditFldUpdatePrefName, doAuditFieldValsChk.isSelected());
-        gPrefs.putInt(AuditLogCleanupTask.AUDIT_LIFESPAN_MONTHS_PREF, (Integer)lifeSpanSpin.getValue());
+        boolean doAuditChanged = false;
+        Boolean oldDoAudit = rPrefs.getBoolean(Specify.hiddenDoAuditPrefName, true);
+        doAuditChanged = oldDoAudit != doAuditsChk.isSelected();
+        boolean oldDoFields = rPrefs.getBoolean(Specify.hiddenAuditFldUpdatePrefName, true);
+        boolean doFieldsChanged = oldDoFields != doAuditFieldValsChk.isSelected();
+        int oldDuration = gPrefs.getInt(AuditLogCleanupTask.AUDIT_LIFESPAN_MONTHS_PREF, 0);
+        int duration = lifeSpanSpin.getValue() == null ? 0 : (Integer)lifeSpanSpin.getValue();
+        boolean durationChanged = oldDuration != duration;
+        super.savePrefs(); // Gets data from form and saves it to prefs.
+        //but savePrefs() doesn't work for global prefs??
+        if (durationChanged) {
+            gPrefs.putInt(AuditLogCleanupTask.AUDIT_LIFESPAN_MONTHS_PREF, duration);
+        }
+        if (doAuditChanged || doFieldsChanged || durationChanged) {
+            UIRegistry.displayInfoMsgDlg(UIRegistry.getResourceString("MiscPrefsPanel.RestartRequired"));
+        }
     }
 
     /* (non-Javadoc)

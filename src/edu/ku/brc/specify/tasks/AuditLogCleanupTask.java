@@ -3,11 +3,14 @@
  */
 package edu.ku.brc.specify.tasks;
 
+import java.sql.Statement;
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import edu.ku.brc.dbsupport.DBConnection;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.SubPaneIFace;
@@ -75,16 +78,29 @@ public class AuditLogCleanupTask extends BaseTask
                  */
                 @Override
                 public void run() {
+                    Statement statement = null;
+                    Connection connection = DBConnection.getInstance().createConnection();
                     try {
                         if (appIsShuttingDown.get()) {
                             return;
                         }
-                        int count = BasicSQLUtils.update("delete from spauditlogfield where date_sub(curdate(), Interval " + AUDIT_LIFESPAN_MONTHS + " month) > timestampcreated");
+                        statement = connection.createStatement();
+                        int count = statement.executeUpdate("delete from spauditlogfield where date_sub(curdate(), Interval " + AUDIT_LIFESPAN_MONTHS + " month) > timestampcreated");
                         log.info("deleted " + count + " expired spauditlogfield entries");
-                        count = BasicSQLUtils.update("delete from spauditlog where date_sub(curdate(), Interval " + AUDIT_LIFESPAN_MONTHS + " month) > timestampcreated");
+                        count = statement.executeUpdate("delete from spauditlog where date_sub(curdate(), Interval " + AUDIT_LIFESPAN_MONTHS + " month) > timestampcreated");
                         log.info("deleted " + count + " expired spauditlog entries");
+                    } catch (Exception x) {
+                        log.error(x);
                     } finally {
                         taskIsShutDown.set(true);
+                        try {
+                            connection.close();
+                            if (statement != null) {
+                                statement.close();
+                            }
+                        } catch (Exception x) {
+                            log.error(x);
+                        }
                         //if (UIRegistry.getResourceString("AuditLogCleanupTask.RemovingExpiredAuditItems").equals(UIRegistry.getStatusBar().getText())) {
                         //    UIRegistry.displayStatusBarText("");
                         //}

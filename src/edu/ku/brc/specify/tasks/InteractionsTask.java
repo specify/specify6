@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -873,7 +873,7 @@ public class InteractionsTask extends BaseTask
         
         pb.setDefaultDialogBorder();
         
-        CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), 
+        CustomDialog dlg = CustomDialog.create(
                 getResourceString("InteractionsTask.MISSING_DET_TITLE"), 
                 true, 
                 CustomDialog.OK_BTN, 
@@ -1764,7 +1764,7 @@ public class InteractionsTask extends BaseTask
                     final Hashtable<String, String> emailPrefs = new Hashtable<String, String>();
                     if (!EMailHelper.isEMailPrefsOK(emailPrefs))
                     {
-                        JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
+                        JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(),
                                 getResourceString("NO_EMAIL_PREF_INFO"), 
                                 getResourceString("NO_EMAIL_PREF_INFO_TITLE"), JOptionPane.WARNING_MESSAGE);
                         return;
@@ -1849,7 +1849,7 @@ public class InteractionsTask extends BaseTask
     }
     
     /**
-     * Delete a InfoRequest..
+     * Delete a InfoRequest.
      * @param infoRequest the infoRequest to be deleted
      */
     protected InfoRequest deleteInfoRequest(final int infoReqId)

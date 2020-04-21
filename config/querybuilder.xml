@@ -17,6 +17,9 @@
         <alias name="Agent" field="createdByAgent" />
         <alias name="CollectionObject" field="collectionObjects"/>
         <alias name="Deaccession" field="deaccessions" />
+        <table name="AccessionCitation" field="accessionCitations">
+            <alias name="ReferenceWork"/>
+        </table>
         <alias name="Agent" field="modifiedByAgent" />
         <alias name="RepositoryAgreement" field="repositoryAgreement" />
         <alias name="TreatmentEvent" field="treatmentEvents" />
@@ -37,6 +40,16 @@
         	<alias name="Agent" field="modifiedByAgent" />
 			<table name="DNAPrimer" field="dnaPrimer" />
 		</table>
+        <table name="Extractor" field="extractors">
+            <alias name="Agent"/>
+            <alias name="Agent" field="createdByAgent" />
+            <alias name="Agent" field="modifiedByAgent" />
+        </table>
+        <table name="PcrPerson" field="pcrPersons">
+            <alias name="Agent"/>
+            <alias name="Agent" field="createdByAgent" />
+            <alias name="Agent" field="modifiedByAgent" />
+        </table>
         <alias name="Agent" field="createdByAgent" />
         <alias name="Agent" field="modifiedByAgent" />
         <table name="DNASequenceAttachment" field="attachments">
@@ -653,6 +666,11 @@
     	<alias name="Taxon" field="hybridParent2" />
         <table name="TaxonAttachment" field="taxonAttachments">
            	<alias name="Attachment"/>
+        </table>
+        <table name="TaxonAttribute" >
+            <alias name="Agent" field="agent1" />
+            <alias name="Agent" field="createdByAgent" />
+            <alias name="Agent" field="modifiedByAgent" />
         </table>
         <table name="TaxonCitation" field="taxonCitations">
            	<alias name="ReferenceWork"/>

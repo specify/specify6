@@ -1891,12 +1891,13 @@ SELECT cn.ContainerID,
         <table id="107" tableid="4" name="TaxonSearch" priority="1" color="30, 144, 255">
             <detailView icon="">
                 <sql>
-                    <![CDATA[SELECT taxon.TaxonID, taxon.FullName, taxon.CommonName FROM taxon WHERE taxon.TaxonTreeDefID = TAXTREEDEFID AND (%s)]]>
+                    <![CDATA[SELECT taxon.TaxonID, taxon.FullName, taxon.CommonName, taxon.Author FROM taxon WHERE taxon.TaxonTreeDefID = TAXTREEDEFID AND (%s)]]>
                 </sql>
                 <captions>
                     <caption tableid="4" col="taxon.TaxonID" visible="false"/>
                     <caption tableid="4" col="taxon.FullName"/>
                     <caption tableid="4" col="taxon.CommonName"/>
+                    <caption tableid="4" col="taxon.Author"/>
                 </captions>
             </detailView>
         </table>
@@ -1993,13 +1994,14 @@ LEFT JOIN lithostrat ls on ls.LithoStratID = pc.LithoStratID WHERE (pc.Disciplin
         <table id="114" tableid="2" name="LocalitySearch" priority="1" color="30, 144, 255">
             <detailView icon="Locality">
                 <sql>
-                    <![CDATA[SELECT LocalityID, LocalityName,Latitude1,Longitude1 FROM locality WHERE (DisciplineID = DSPLNID) AND (%s)]]>
+                    <![CDATA[SELECT LocalityID, LocalityName,Latitude1,Longitude1,FullName FROM locality LEFT JOIN geography ON geography.geographyid = locality.geographyid WHERE (DisciplineID = DSPLNID) AND (%s)]]>
                 </sql>
                 <captions>
                     <caption tableid="2" col="LocalityID" visible="false"/>
                     <caption tableid="2" col="LocalityName"/>
                     <caption tableid="2" col="Latitude1"/>
                     <caption tableid="2" col="Longitude1"/>
+                    <caption tableid="3" col="FullName"/>
                 </captions>
             </detailView>
         </table>

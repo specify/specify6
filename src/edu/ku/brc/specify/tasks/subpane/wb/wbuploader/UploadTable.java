@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -113,7 +113,7 @@ public class UploadTable implements Comparable<UploadTable>
     protected final Table                               table;
     /**
      * A vector containing, for each 'sequence', a vector of the fields in table that are present in
-     * the dataset being uploaded. 'sequence' - e.g Collector1, Collector2 ....
+     * the dataset being uploaded. 'sequence' - e.g Collector1, Collector2 ...
      */
     protected Vector<Vector<UploadField>>               uploadFields;
     /**
@@ -4233,7 +4233,7 @@ public class UploadTable implements Comparable<UploadTable>
     								} else {
     									//System.out.println("one-to-many count check");
     									String sql = "select count(*) from " + pmi.getTable().getTable().getTableInfo().getName() + " where " + this.getTable().getTableInfo().getPrimaryKeyName() + " = " + mine.getId();
-    									go = pmi.isBlank() ? BasicSQLUtils.getCount(sql) == 0 : false;
+    									go = pmi.isBlank() ? BasicSQLUtils.getCount(sql).equals(0) : false;
     								}
     							} else {
     								for (DataModelObjBase theirs : pmi.getMatches()) {
@@ -4956,7 +4956,7 @@ public class UploadTable implements Comparable<UploadTable>
     		return true;
     	}
     	
-    	if (seq == 0 && parentTableIsNonBlank(row, uploadData, true, seq))
+    	if (parentTableIsNonBlank(row, uploadData, true, seq))
     	{
     		return true;
     	}
@@ -5634,9 +5634,9 @@ public class UploadTable implements Comparable<UploadTable>
 			//and DBFieldInfo to do it generally.
 			if (fldInfo.getName().equalsIgnoreCase("catalognumber")  && tblInfo.getName().equals("collectionobject"))
 			{
-				if (BasicSQLUtils.getCount("select count(*) from collectionobject where CollectionMemberID = " 
+				if (!BasicSQLUtils.getCount("select count(*) from collectionobject where CollectionMemberID = "
 					+ AppContextMgr.getInstance().getClassObject(Collection.class).getId()
-					+ " and CatalogNumber = '" + val[0] + "'") != 0)
+					+ " and CatalogNumber = '" + val[0] + "'").equals(0))
 				{
 					throw new Exception(getResourceString("UploadTable.UniquenessViolation"));
 				}
@@ -6061,7 +6061,7 @@ public class UploadTable implements Comparable<UploadTable>
                                     //of this method, else use the changed fields to make the rest more efficient???.
                                     //
                                     //XXX But HEY!!! getChangedFields does not check parents. It was originally designed
-                                    //to be run for all tables during getChangedFields(row)..
+                                    //to be run for all tables during getChangedFields(row).
                                     if (freshlyCreatedRec || !updateMatches) {
                                         rec.initialize();
                                     }

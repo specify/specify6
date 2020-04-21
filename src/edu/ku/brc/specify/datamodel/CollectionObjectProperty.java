@@ -1,7 +1,7 @@
-/* Copyright (C) 2017, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  *
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -2400,14 +2400,8 @@ public class CollectionObjectProperty extends CollectionMember implements Clonea
      */
     @Override
     @Transient
-    public Integer getParentId()
-    {
-        Vector<Object> ids = BasicSQLUtils.querySingleCol("SELECT CollectionObjectID FROM collectionobject WHERE CollectionObjectID = " + collectionObject.getId());
-        if (ids.size() == 1)
-        {
-            return (Integer)ids.get(0);
-        }
-        return null;
+    public Integer getParentId() {
+        return collectionObject != null ? collectionObject.getId() : null;
     }
 
     /* (non-Javadoc)

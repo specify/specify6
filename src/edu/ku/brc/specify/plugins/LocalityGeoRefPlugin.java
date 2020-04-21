@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -170,7 +170,7 @@ public class LocalityGeoRefPlugin extends JButton implements GetSetValueIFace,
                     }
                 } else
                 {
-                    JOptionPane.showMessageDialog(null, "The LatLonUI is missing the 'geoid' parameter", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(), "The LatLonUI is missing the 'geoid' parameter", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
             }
@@ -195,7 +195,7 @@ public class LocalityGeoRefPlugin extends JButton implements GetSetValueIFace,
                         }
                     } else
                     {
-                        JOptionPane.showMessageDialog(null, "The LatLonUI is missing the 'locid' parameter", "Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(), "The LatLonUI is missing the 'locid' parameter", "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 }
                 GeoCoordData geoCoordData = new GeoCoordData(id,
@@ -380,7 +380,7 @@ public class LocalityGeoRefPlugin extends JButton implements GetSetValueIFace,
            
            if (llId == null)
            {
-               JOptionPane.showMessageDialog(null, "The LatLonUI is missing the 'llid' parameter", "Error", JOptionPane.ERROR_MESSAGE);
+               JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(), "The LatLonUI is missing the 'llid' parameter", "Error", JOptionPane.ERROR_MESSAGE);
                return;
            }
            LatLonUI latLonUI = parent.getCompById(llId);

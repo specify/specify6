@@ -2,21 +2,21 @@
   <container name="collectingevent" isHidden="false">
     <version>0</version>
     <isSystem>false</isSystem>
+    <schemaType>0</schemaType>
     <items>
       <desc name="method" type="java.lang.String" isHidden="false" isUIFormatter="false" pickListName="CollectingMethod" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
-          <str language="en" country="" variant="">
+          <str language="en">
             <version>0</version>
             <text>Method</text>
+            <itemDesc reference="../../.."/>
+            <itemName reference="../../.."/>
           </str>
         </names>
         <descs>
-          <str language="en" country="" variant="">
-            <version>0</version>
-            <text>A method, such as net or trap, which is used to obtain the specimen.</text>
-          </str>
+          <str reference="../../names/str"/>
         </descs>
         <spExportSchemaItems/>
       </desc>
@@ -27,7 +27,24 @@
   <container name="collectionobjectattribute" isHidden="false">
     <version>0</version>
     <isSystem>false</isSystem>
+    <schemaType>0</schemaType>
     <items>
+      <desc name="text8" isHidden="false" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>Range of Size</text>
+            <itemDesc reference="../../.."/>
+            <itemName reference="../../.."/>
+          </str>
+        </names>
+        <descs>
+          <str reference="../../names/str"/>
+        </descs>
+        <spExportSchemaItems/>
+      </desc>
       <desc name="text3" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
@@ -35,45 +52,13 @@
           <str language="en">
             <version>0</version>
             <text>ReproCondition</text>
+            <itemDesc reference="../../.."/>
+            <itemName reference="../../.."/>
           </str>
         </names>
-        <descs/>
-        <spExportSchemaItems/>
-      </desc>
-      <desc name="text1" isHidden="false" isUIFormatter="false" pickListName="BiologicalSex" isRequired="false">
-        <version>0</version>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en">
-            <version>0</version>
-            <text>Sex</text>
-          </str>
-        </names>
-        <descs/>
-        <spExportSchemaItems/>
-      </desc>
-      <desc name="text6" isHidden="false" isUIFormatter="false" isRequired="false">
-        <version>0</version>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en">
-            <version>0</version>
-            <text>Body Width</text>
-          </str>
-        </names>
-        <descs/>
-        <spExportSchemaItems/>
-      </desc>
-      <desc name="text7" isHidden="false" isUIFormatter="false" isRequired="false">
-        <version>0</version>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en">
-            <version>0</version>
-            <text>Total Length</text>
-          </str>
-        </names>
-        <descs/>
+        <descs>
+          <str reference="../../names/str"/>
+        </descs>
         <spExportSchemaItems/>
       </desc>
       <desc name="text2" isHidden="false" isUIFormatter="false" isRequired="false">
@@ -83,33 +68,29 @@
           <str language="en">
             <version>0</version>
             <text>Weight</text>
+            <itemDesc reference="../../.."/>
+            <itemName reference="../../.."/>
           </str>
         </names>
-        <descs/>
+        <descs>
+          <str reference="../../names/str"/>
+        </descs>
         <spExportSchemaItems/>
       </desc>
-      <desc name="text5" isHidden="false" isUIFormatter="false" isRequired="false">
+      <desc name="text1" isHidden="false" isUIFormatter="false" pickListName="BiologicalSex" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
           <str language="en">
             <version>0</version>
-            <text>Head Width</text>
+            <text>Sex</text>
+            <itemDesc reference="../../.."/>
+            <itemName reference="../../.."/>
           </str>
         </names>
-        <descs/>
-        <spExportSchemaItems/>
-      </desc>
-      <desc name="text8" isHidden="false" isUIFormatter="false" isRequired="false">
-        <version>0</version>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en">
-            <version>0</version>
-            <text>Range of Size</text>
-          </str>
-        </names>
-        <descs/>
+        <descs>
+          <str reference="../../names/str"/>
+        </descs>
         <spExportSchemaItems/>
       </desc>
       <desc name="text4" isHidden="false" isUIFormatter="false" pickListName="BiologicalStage" isRequired="false">
@@ -119,9 +100,61 @@
           <str language="en">
             <version>0</version>
             <text>Stage</text>
+            <itemDesc reference="../../.."/>
+            <itemName reference="../../.."/>
           </str>
         </names>
-        <descs/>
+        <descs>
+          <str reference="../../names/str"/>
+        </descs>
+        <spExportSchemaItems/>
+      </desc>
+      <desc name="text7" isHidden="false" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>Total Length</text>
+            <itemDesc reference="../../.."/>
+            <itemName reference="../../.."/>
+          </str>
+        </names>
+        <descs>
+          <str reference="../../names/str"/>
+        </descs>
+        <spExportSchemaItems/>
+      </desc>
+      <desc name="text6" isHidden="false" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>Body Width</text>
+            <itemDesc reference="../../.."/>
+            <itemName reference="../../.."/>
+          </str>
+        </names>
+        <descs>
+          <str reference="../../names/str"/>
+        </descs>
+        <spExportSchemaItems/>
+      </desc>
+      <desc name="text5" isHidden="false" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>Head Width</text>
+            <itemDesc reference="../../.."/>
+            <itemName reference="../../.."/>
+          </str>
+        </names>
+        <descs>
+          <str reference="../../names/str"/>
+        </descs>
         <spExportSchemaItems/>
       </desc>
     </items>

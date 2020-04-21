@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -239,7 +239,7 @@ public class AppPrefsCache
     //--------------------------------------------------------------------
 
     /**
-     * Creates or gets the pref node, creates an entry and then hooks it up as a listener .
+     * Creates or gets the pref node, creates an entry and then hooks it up as a listener.
      * The current value of the color because the default.
      * @param colorWrapper the color object wrapper
      * @param section the section or category of the pref

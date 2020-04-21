@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -152,7 +152,16 @@ public interface BusinessRulesIFace
      * @param session the data provider session
      */
     public abstract void beforeMerge(Object dataObj, DataProviderSessionIFace session);
-    
+    /**
+     * Called AFTER a failed attempt to merge the data object.  This can be called on newly created objects or existing data
+     * objects that have been edited.
+     *
+     * @param dataObj the object that was not merged
+     * @param session the data provider session (it might be null)
+     *
+     */
+    public abstract void afterMergeFailure(Object dataObj, DataProviderSessionIFace session);
+
     /**
      * Called BEFORE saving an object to the DB.  This can be called on newly
      * created objects or existing data objects that have been editted.

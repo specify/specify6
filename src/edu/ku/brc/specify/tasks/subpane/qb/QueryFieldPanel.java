@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -742,8 +742,8 @@ public class QueryFieldPanel extends JPanel implements ActionListener
         				operatorCBX.setSelectedIndex(0);
         			}
         			setCriteriaText(queryField.getStartValue(), queryField.getEndValue(), (OperatorType )operatorCBX.getSelectedItem());
-        			sortCheckbox.setState(queryField.getSortType());
         			sortCheckbox.setEnabled(queryField.getIsDisplay());
+                    sortCheckbox.setState(sortCheckbox.isEnabled() ? queryField.getSortType() : SpQueryField.SORT_NONE);
         			if (!ownerQuery.isPromptMode())
         			{
         				isDisplayedCkbx.setSelected(queryField.getIsDisplay());
@@ -847,9 +847,9 @@ public class QueryFieldPanel extends JPanel implements ActionListener
 				isPromptCkbx.setVisible(false);
 		} else if (!ownerQuery.isPromptMode())
 		{
-				isDisplayedCkbx.setVisible(fieldQRI != null && !isRel);
-				isPromptCkbx.setVisible(fieldQRI != null && !isRel);
-				isEnforcedCkbx.setVisible(fieldQRI != null && !isRel);
+            isDisplayedCkbx.setVisible(fieldQRI != null && (!isRel || getPickList() != null));
+            isPromptCkbx.setVisible(fieldQRI != null && (!isRel || getPickList() != null));
+            isEnforcedCkbx.setVisible(fieldQRI != null && (!isRel || getPickList() != null));
 		}
     	setQueryField(qf);
     }
@@ -1891,7 +1891,12 @@ public class QueryFieldPanel extends JPanel implements ActionListener
 						@Override
 						public void run()
 						{
-							sortCheckbox.setEnabled(isDisplayedCkbx.isSelected());
+							if (!isDisplayedCkbx.isSelected()) {
+                                sortCheckbox.setEnabled(false);
+                                sortCheckbox.setState(SpQueryField.SORT_NONE);
+                            } else {
+							    sortCheckbox.setEnabled(true);
+                            }
 							ownerQuery.changeNotification(QueryFieldPanel.this);
                             if (!isDisplayedCkbx.isSelected()) {
                                 schemaItemCBX.setSelectedIndex(0);
@@ -2060,9 +2065,9 @@ public class QueryFieldPanel extends JPanel implements ActionListener
 			
 			if (!ownerQuery.isPromptMode())
 			{
-				isDisplayedCkbx.setVisible(!isRel);
-				isPromptCkbx.setVisible(!isRel);
-				isEnforcedCkbx.setVisible(!isRel);
+				isDisplayedCkbx.setVisible(!isRel || getPickList() != null);
+				isPromptCkbx.setVisible(!isRel || getPickList() != null);
+				isEnforcedCkbx.setVisible(!isRel || getPickList() != null);
 			}
 		}
         validate();

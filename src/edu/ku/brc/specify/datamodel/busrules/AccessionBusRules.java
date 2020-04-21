@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -45,6 +45,7 @@ import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.TableViewObj;
 import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.af.ui.forms.validation.ValComboBox;
+import edu.ku.brc.af.ui.forms.persist.FormViewDefIFace;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -109,39 +110,45 @@ public class AccessionBusRules extends AttachmentOwnerBaseBusRules implements Co
         }
     }
 
+    /**
+     *
+     * @return
+     */
+    private Component getCollectionObjectsControl() {
+        return null;
+    }
+
     /* (non-Javadoc)
 	 * @see edu.ku.brc.af.ui.forms.BaseBusRules#initialize(edu.ku.brc.af.ui.forms.Viewable)
 	 */
 	@Override
-	public void initialize(Viewable viewableArg) {
-		// TODO Auto-generated method stub
-		super.initialize(viewableArg);
-		if (formViewObj != null && formViewObj.isEditing()) {
-			Component comp = formViewObj.getControlByName("collectionObjects");
-			if (comp != null) {
-				//System.out.println("collectionObjecs comp:" + comp);
-				for (Viewable v : ((MultiView) comp).getViewables()) {
-					JButton srchBtn = v instanceof TableViewObj ? ((TableViewObj)v).getSearchButton()
-							: (v instanceof FormViewObj ? ((FormViewObj)v).getRsController().getSearchRecBtn() 
-							: null);
-					if (srchBtn != null) {
-					// Remove all ActionListeners, there should only be one
-					for (ActionListener al : srchBtn.getActionListeners()) {
-						srchBtn.removeActionListener(al);
-					}
-					srchBtn.addActionListener(new ActionListener() {
-						@Override
-						public void actionPerformed(ActionEvent e) {
-							CommandDispatcher.dispatch(new CommandAction(AccessionBusRules.CMDTYPE,
-									AccessionBusRules.ADD_TO_ACCESSION,
-									formViewObj.getCurrentDataObj()));
-								}
-							});
-					}
-				}
-			}
-		}
-	}
+    public void initialize(Viewable viewableArg) {
+        super.initialize(viewableArg);
+        if (formViewObj != null && formViewObj.isEditing()) {
+            Component comp = formViewObj.getControlByName("collectionObjects");
+            if (comp != null) {
+                for (Viewable v : ((MultiView) comp).getViewables()) {
+                    if (v instanceof TableViewObj) {
+                        if (v.getViewDef() instanceof FormViewDefIFace) {
+                            ((FormViewDefIFace) v.getViewDef()).setIsEditableDlg(false);
+                        }
+                    }
+                    JButton srchBtn = v instanceof TableViewObj ? ((TableViewObj) v).getSearchButton()
+                            : (v instanceof FormViewObj ? ((FormViewObj) v).getRsController().getSearchRecBtn()
+                            : null);
+                    if (srchBtn != null) {
+                        // Remove all ActionListeners, there should only be one
+                        for (ActionListener al : srchBtn.getActionListeners()) {
+                            srchBtn.removeActionListener(al);
+                        }
+                        srchBtn.addActionListener(e -> CommandDispatcher.dispatch(new CommandAction(AccessionBusRules.CMDTYPE,
+                                AccessionBusRules.ADD_TO_ACCESSION,
+                                formViewObj.getCurrentDataObj())));
+                    }
+                }
+            }
+        }
+    }
 
 
 	/* (non-Javadoc)

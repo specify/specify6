@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -1048,7 +1048,7 @@ public class UIRegistry
      */
     public static void showLocalizedMsg(final int iconType, final String titleKey, final String msgKey, final Object ... args)
     {
-        JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
+        JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow(),
                 (args.length == 0 ? getResourceString(msgKey) : String.format(getResourceString(msgKey), args)), 
                 getResourceString(StringUtils.isNotEmpty(titleKey) ? titleKey : "WARNING"), iconType);
     }
@@ -1149,7 +1149,7 @@ public class UIRegistry
         }
         pb.setDefaultDialogBorder();
         
-        final CustomDialog dlg = new CustomDialog((Frame)null, getResourceString(titleKey), true, 
+        final CustomDialog dlg = CustomDialog.create(getResourceString(titleKey), true,
                                                   doMustHaveValue ? CustomDialog.OK_BTN : CustomDialog.OKCANCEL, pb.getPanel());
         dlg.createUI();
         dlg.getOkBtn().setEnabled(false);
@@ -1187,7 +1187,7 @@ public class UIRegistry
         log.error(msg);
         
         String titleKey = dlgType != null && dlgType == JOptionPane.WARNING_MESSAGE ? "WARNING" : "UIRegistry.UNRECOVERABLE_ERROR_TITLE";
-        JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
+        JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow(),
                 msg, 
                 getResourceString(titleKey), dlgType == null ? JOptionPane.ERROR_MESSAGE : dlgType);
     }
@@ -1205,7 +1205,7 @@ public class UIRegistry
         pb.add(UIHelper.createLabel(msg), cc.xy(1,1));
         pb.setDefaultDialogBorder();
         
-        CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), 
+        CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getMostRecentWindow(),
                                    getResourceString("UIRegistry.UNRECOVERABLE_ERROR_TITLE"),
                                    false,
                                    CustomDialog.OK_BTN,
@@ -1763,7 +1763,14 @@ public class UIRegistry
         {
             glassPane.finishDnD();
         }
-        
+
+        //creating new glass pane to avoid having to write repaint code to clear progress bar which, once used, remained
+        //visible for all succeeding calls to this method.
+        glassPane = new GhostGlassPane();
+        unregister(UIRegistry.GLASSPANE);
+        register(UIRegistry.GLASSPANE, glassPane);
+        ((JFrame)getTopWindow()).setGlassPane(glassPane);
+
         glassPane.setMaskingEvents(true);
         
         Component mainComp = get(MAINPANE);

@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -278,7 +278,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
                 int divId = AppContextMgr.getInstance().getClassObject(Division.class).getDivisionId();
                 String sql = "delete from autonumsch_div where divisionid = " + divId;
                 BasicSQLUtils.update(sql);
-                if (0 != BasicSQLUtils.getCount("select count(*) from autonumsch_div where divisionid = " + divId)) {
+                if (!BasicSQLUtils.getCount("select count(*) from autonumsch_div where divisionid = " + divId).equals(0)) {
                     log.error("error executing sql: " + sql);
                 }
             }
@@ -434,12 +434,12 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
             {
                 String  tblName      = rs.getString(2);
                 boolean isAttachment = false;//(tblName.startsWith(ATTACHMENT) || tblName.endsWith(ATTACHMENT)) && !tblName.equals(ATTACHMENT);
-                
+                boolean isAuditLogTbl = "spauditlog".equalsIgnoreCase(tblName) || "spauditlogfield".equalsIgnoreCase(tblName);
                 System.out.println(tblName+" "+isAttachment);
                 
-                if (shouldIncludeAppTables() || 
+                if (shouldIncludeAppTables() || isAuditLogTbl ||
                     !(tblName.startsWith("sp") || 
-                            isAttachment || 
+                            isAttachment ||
                             tblName.startsWith("autonum") || 
                             tblName.equals("picklist") || 
                             tblName.equals("attributedef") || 
@@ -854,36 +854,21 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
      * Return the locales in the database
      * @return the list of locale
      */
-    public static Vector<Locale> getLocalesInUseInDB(final Byte schemaType)
-    {
-        Vector<Locale> locales = new Vector<Locale>();
-        
-        Session session = HibernateUtil.getNewSession();
-        try
-        {
-            String sql = "SELECT DISTINCT nms.language FROM SpLocaleContainer as ctn " +
-            	         "INNER JOIN ctn.items as itm " +
-            	         "INNER JOIN itm.names nms " +
-            	         "INNER JOIN ctn.discipline as d " +
-            	         "WHERE d.userGroupScopeId = DSPLNID AND nms.language IS NOT NULL AND ctn.schemaType = "+ schemaType;
-            sql = QueryAdjusterForDomain.getInstance().adjustSQL(sql);
-            log.debug(sql);
-            Query   query = session.createQuery(sql);
-            List<?> list  = query.list();
-            for (Object lang : list)
-            {
-                locales.add(new Locale(lang.toString(), "", ""));
-            }
-            
-        } catch (Exception ex)
-        {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SchemaLocalizerDlg.class, ex);
-            ex.printStackTrace();
-        } finally
-        {
-            session.close();
+    public static Vector<Locale> getLocalesInUseInDB(final Byte schemaType) {
+        Vector<Locale> locales = new Vector<>();
+        String sql = "SELECT DISTINCT nms.language, trim(ifnull(nms.country,'')) FROM splocalecontainer ctn " +
+                "INNER JOIN splocalecontaineritem itm on itm.splocalecontainerid = ctn.splocalecontainerid " +
+                "INNER JOIN splocaleitemstr nms on nms.splocalecontaineritemnameid = itm.splocalecontaineritemid " +
+                "WHERE ctn.disciplineid = " + AppContextMgr.getInstance().getClassObject(Discipline.class).getId() +
+                " AND nms.language IS NOT NULL AND ctn.schemaType = " + schemaType;
+        log.debug(sql);
+        List<Object[]> list = BasicSQLUtils.query(sql);
+        for (Object[] lang : list) {
+            String language = lang[0].toString();
+            String country = lang[1] == null ? "" : lang[1].toString();
+            locales.add(new Locale(language, country, ""));
         }
+
         return locales;
     }
 

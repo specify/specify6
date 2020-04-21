@@ -119,7 +119,7 @@
        &nbsp;
     </p>
     <h3>
-       <strong><a name="int_gifts_loans" id="int_gifts_loans"></a>Gifts and Loans</strong>
+       <strong>Loans and Gifts</strong>
     </h3>
     <blockquote>
       <p>
@@ -134,8 +134,13 @@
       </ul>
       <p>
          If any record sets have been saved, a dialog appears prompting the user to either
-        <em>Enter Catalog Numbers</em> or use an existing <em>record set</em>. The Record set
-        method would be easiest when using large sets of data.
+        <em>Enter Catalog Numbers</em> or use an existing <em>record set</em>. The Record Set
+        option is the easiest method to us when loaning large numbers of Collection Objects or
+        Preparations.
+      </p>
+      <p>
+         Uncataloged items may also be recorded (See <a href=
+        "../Interactions/Interactions.html#loan_mixed">Loaning Uncataloged and Cataloged Items</a>)
       </p>
       <ul>
         <li>
@@ -191,8 +196,7 @@
         </li>
       </ul>
       <p>
-         All preparations can be selected at once by clicking the <em>Select All</em> button.&nbsp;
-        The number of specimens available to be loaned is indicated next to the arrow keys to
+         The number of specimens available to be loaned is indicated next to the arrow keys to
         select a number.&nbsp; An indication is also given if any additional specimens are
         associated with previous open loans or gifts.&nbsp; In these cases the total number of
         available specimens would be reduced by this number.&nbsp; The <img height="20" src=
@@ -203,30 +207,133 @@
          Click the <em>OK</em> button to accept the preparations and progress to the Loan/Gift form
         where all additional information pertaining to the Loan or Gift can be added.
       </p>
-      <blockquote>
-        <h4>
-           <u>Gift/Loan Invoices</u>
-        </h4>
-        <p>
-           Once preparations have been added to the Loan or Gift, a <em>Generate Invoice on
-          Save</em> check box becomes available on the form.&nbsp; If checked and the necessary
-          query and Report have been constructed, the Report associated with this Loan or Gift will
-          be created automatically once the <em>Save</em> button has been clicked.
-        </p>
-        <p>
-           A sample invoice for each Discipline is included with Specify and will print
-          automatically if a custom invoice has not been created. When creating a custom invoice in
-          SPiReport save the report/invoice as an 'invoice'. Once an invoice has been saved
-          checking the <em>Generate Invoice on Save</em> check box will display your invoice in a
-          list and allow you to print it.
-        </p>
-      </blockquote>
+      <p>
+         &nbsp;
+      </p>
+      <p>
+         <b><u><a name="loan_mixed" id="loan_mixed">Loaning</a> Uncataloged and Cataloged
+        Items</u></b>
+      </p>
+      <p style=" margin-left: 20.0px;">
+         To loan both cataloged and uncataloged items and track the counts choose <i>Loan</i> from
+        the Side Bar.
+      </p>
+      <p>
+         &nbsp;
+      </p>
+      <p align="center">
+         <img src="../../images/loan_choose_source.png">
+      </p>
+      <p align="center">
+         <i>Choose Source for Loan</i>
+      </p>
+      <p align="center">
+         &nbsp;
+      </p>
+      <p align="left" style=" margin-left: 20.0px;">
+         If you have Record Sets to choose from you will immediately see the Choose Source dialog
+        above. Choose <i>Enter Items</i> from the Choose Source dialog.
+      </p>
+      <p align="left" style=" margin-left: 20.0px;">
+         <b><i>Note:</i></b> If you do not have Record Sets you will only see the Enter List dialog
+        below.
+      </p>
+      <p>
+         &nbsp;
+      </p>
+      <p align="center">
+         <img src="../../images/loan_catnum_dialog.png">
+      </p>
+      <p align="center">
+         <i>Create Loan from Preparations</i>
+      </p>
+      <p align="left" style=" margin-left: 20.0px;">
+         Next, choose the&nbsp;<i>Uncataloged</i> button at the bottom of the dialog box.
+      </p>
+      <p align="center" style=" margin-left: 20.0px;">
+         <img src="../../images/loan_form_mixed.png">
+      </p>
+      <p align="left" style=" margin-left: 20.0px;">
+         &nbsp;
+      </p>
+      <p align="left" style=" margin-left: 20.0px;">
+         A Loan form with Preparations opens. Double click the first loaned item with '0' quantity
+        to change the quantity.
+      </p>
+      <p align="left" style=" margin-left: 20.0px;">
+         Click the <img src="../../images/add.png">&nbsp;(add) button to add Cataloged or
+        Uncataloged items.
+      </p>
+      <p align="left" style=" margin-left: 20.0px;">
+         Fields for Total Items, Total Quantities, Unresolved Items and Unresolved Quantities are
+        included&nbsp;on the form by default. These allow total&nbsp;counts to be captured that are
+        not associated with uncataloged items.
+      </p>
     </blockquote>
+    <p style=" margin-left: 20.0px;">
+       <b><u><a name="loan_uncataloged" id="loan_uncataloged">Loan</a>s w/o Preps</u></b>
+    </p>
+    <p style=" margin-left: 20.0px;">
+       To loan items that are uncataloged, choose the Loan w/o Preps table from the Side Bar. If
+      you do not see the Loan w/o Preps table in your sidebar you can configure the Side Bar
+      following the instructions found here: <a href=
+      "../Data_Entry/Data_Entry.html#data_entry_configure">Configure Side Bar</a>
+    </p>
+    <p style=" margin-left: 20.0px;">
+       &nbsp;
+    </p>
+    <p style=" margin-left: 20.0px;">
+       &nbsp;
+    </p>
+    <p align="center">
+       <img src="../../images/loan_sidebar.png">
+    </p>
+    <p align="center">
+       <i>Interactions</i> <i>Side Bar</i>
+    </p>
+    <p style=" margin-left: 20.0px;">
+       &nbsp;
+    </p>
+    <p style=" margin-left: 20.0px;">
+       Once chosen a Loan form will display with no Preparation information included.
+    </p>
+    <p align="center" style=" margin-left: 20.0px;">
+       <img src="../../images/loan_no_preps.png">
+    </p>
+    <p align="center">
+       <i>Uncataloged Item Loan Form</i>
+    </p>
     <p>
        &nbsp;
     </p>
+    <p style=" margin-left: 20.0px;">
+       Fields for Total Items, Total Quantities, Unresolved Items and Unresolved Quantities are
+      included&nbsp;on the form by default. These allow total&nbsp;counts to be captured that are
+      not associated with uncataloged items.
+    </p>
+    <p align="left" style=" margin-left: 20.0px;">
+       &nbsp;
+    </p>
+    <h4>
+       <u>Gift/Loan Invoices</u>
+    </h4>
+    <p style=" margin-left: 20.0px;">
+       Once preparations have been added to the Loan or Gift, a <em>Generate Invoice on Save</em>
+      check box becomes available on the form.&nbsp; If checked and the necessary query and Report
+      have been constructed, the Report associated with this Loan or Gift will be created
+      automatically once the <em>Save</em> button has been clicked.
+    </p>
+    <p style=" margin-left: 20.0px;">
+       A sample invoice for each Discipline is included with Specify and will print automatically
+      if a custom invoice has not been created. When creating a custom invoice in SPiReport save
+      the report/invoice as an 'invoice'. Once an invoice has been saved checking the <em>Generate
+      Invoice on Save</em> check box will display your invoice in a list and allow you to print it.
+    </p>
+    <p>
+       &nbsp;<a name="int_return_loans" id="int_return_loans"></a>
+    </p>
     <h3>
-       <a name="int_return_loans" id="int_return_loans"></a>Returning Loans
+       Returning Loans
     </h3>
     <blockquote>
       <p>
@@ -235,12 +342,13 @@
       </p>
       <blockquote>
         <p>
-           <strong>Quantity</strong> - the number of each preparation lent out.
+           <strong>Quantity</strong> - the number of each Preparation Type for each individual
+          Collection Object lent out.
         </p>
         <p>
-           <strong>Quantity Returned</strong> - the number of preparations returned.&nbsp; This may
-          not equal the quantity sent out in cases of partial returns and/or lost/damaged specimens
-          not returned (see resolved below).
+           <strong>Quantity Returned</strong> - the number of preparations returned for each
+          Quantity.&nbsp; This may not equal the quantity sent out in cases of partial returns
+          and/or lost/damaged specimens not returned (see resolved below).
         </p>
         <p>
            <strong>Quantity Resolved</strong> - used to increase the number resolved to correspond
@@ -273,7 +381,7 @@
       </p>
       <blockquote>
         <p>
-           <strong><em>Note:</em></strong>&nbsp; The quantity, quantity returned and quantity
+           <strong><em>Note:</em></strong>&nbsp; The quantity, quantity returned, and quantity
           resolved cannot be manually edited on the Loan Preparation form.
         </p>
         <p>
@@ -283,21 +391,65 @@
         </p>
       </blockquote>
     </blockquote>
-    <h3>
-       &nbsp;
-    </h3>
-    <h3>
-       Loan w/o Preps
-    </h3>
-    <blockquote>
-      <p>
-         There may be instances when specimens are lent before they are cataloged. To create a loan
-        that is not dependent on a Preparation Type, choose the <em>Loan w/o Preps</em> button on
-        the side bar. These loans function in much the same way as the regular loans described
-        above.
-      </p>
-    </blockquote>
     <p>
+       &nbsp;
+    </p>
+    <h3>
+       Tracking Loans
+    </h3>
+    <p style=" margin-left: 20.0px;">
+       Fields for tracking loans, especially partial returns, are available on the Loan form. The
+      defaul Loan form includes field to track total counts near the top of the form:
+    </p>
+    <p align="center" style=" margin-left: 20.0px;">
+       <img src="../../images/loan_top.png">
+    </p>
+    <p align="center" style=" margin-left: 20.0px;">
+       <i>Loan Counts on Loan Form</i>
+    </p>
+    <p align="center" style=" margin-left: 20.0px;">
+       &nbsp;
+    </p>
+    <p align="left" style=" margin-left: 40.0px;">
+       <b>Total Preps</b> -&nbsp;the number of Preparation Types, for all Catalog
+      Numbers,&nbsp;included in the loan.
+    </p>
+    <p align="left" style=" margin-left: 40.0px;">
+       <b>Total Items</b> - the total number of individual Preparations included in the loan.
+    </p>
+    <p align="left" style=" margin-left: 40.0px;">
+       <b>Resolved Preps</b> - the number of Preparation Types, or all Catalog
+      Numbers,&nbsp;resolved.
+    </p>
+    <p align="left" style=" margin-left: 40.0px;">
+       <b>Resolved Items</b> - the number of individual Preparations resolved.
+    </p>
+    <p align="left" style=" margin-left: 40.0px;">
+       <b>Unresolved Preps</b> - the number of Preparation Types, for all Catalog Numbers,&nbsp;not
+      resolved.
+    </p>
+    <p align="left" style=" margin-left: 40.0px;">
+       <b>Unresolved Items</b> - the number of individual Preparations not resolved.
+    </p>
+    <p align="center" style=" margin-left: 20.0px;">
+       &nbsp;
+    </p>
+    <p align="left" style=" margin-left: 20.0px;">
+       Detailed information is included in the Loan Preparation sub form located near the bottom of
+      the default Loan form:
+    </p>
+    <p align="center" style=" margin-left: 20.0px;">
+       <img src="../../images/loan_bottom.png">
+    </p>
+    <p align="center" style=" margin-left: 20.0px;">
+       <i>Preparation Counts on Loan Form</i>
+    </p>
+    <p dir="ltr" style=
+    " line-height: 1.2; margin-left: -12pt; margin-right: -6pt; text-indent: 39pt; background-color: #ffffff; margin-top: 0pt; margin-bottom: -12pt; padding-top: 3pt; padding-right: 0pt; padding-bottom: 0pt; padding-left: 0pt;">
+       &nbsp;
+    </p>
+    <p dir="ltr" style=
+    " line-height: 1.2; margin-left: -12pt; margin-right: -6pt; text-indent: 39pt; background-color: #ffffff; margin-top: 0pt; margin-bottom: -12pt; padding-top: 3pt; padding-right: 0pt; padding-bottom: 0pt; padding-left: 0pt;">
        &nbsp;
     </p>
     <h3>
@@ -305,11 +457,11 @@
     </h3>
     <blockquote>
       <p>
-         Collection Managers are often called upon to share data records with users of the
-        collection, other collections or in-house staff.&nbsp; In most cases this is accomplished
-        by attaching an Excel spreadsheet to an email message.&nbsp; The information shared is
-        usually in the form of Collection Objects. Specify 6 contains an automated function to
-        handle this type of request electronically.
+         Collection managers are regularly asked to share specific data records with local or
+        remote researchers. In most cases this is easily accomplished by attaching aspreadsheet or
+        .csv file to an email message. The information shared is usually in the form of Collection
+        Objects. Specify 6 has an automated function to handle responses to specimen information
+        requests.
       </p>
       <p>
          Click Information Request in the side bar to start the process.
@@ -399,10 +551,10 @@
         disciplines the facility to track incoming and outgoing specimens against each other.
       </p>
       <p>
-         New is Specify 6.3 - Exchange In / Exchange Out are now connected to preparations for the
-        exchanging of cataloged items. Functionality follows that of Gifts and Loans above. Forms
-        can also be modified or augmented to incorporate the exchanging of non-cataloged items much
-        like in Loans without Preps.
+         The Exchange Out table is connected to preparations for the exchanging of cataloged items.
+        Functionality follows that of Gifts and Loans above. Forms can also be modified or
+        augmented to incorporate the exchanging of non-cataloged items much like in Loans without
+        Preps.
       </p>
       <p>
          &nbsp;
@@ -439,9 +591,6 @@
       </p>
     </blockquote>
     <p>
-       &nbsp;
-    </p>
-    <p class="style2">
        &nbsp;
     </p>
     <p>

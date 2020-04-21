@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -681,8 +681,8 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
         pb.add(email, cc.xy(3, 5));
         
         pb.setDefaultDialogBorder();
-        CustomDialog dlg = new CustomDialog((Dialog)null, "Create Agent", true, CustomDialog.OKCANCEL, pb.getPanel());   
-        UIHelper.centerAndShow(dlg);
+        CustomDialog dlg = new CustomDialog((Dialog)null, "Create Agent", true, CustomDialog.OKCANCEL, pb.getPanel());
+        dlg.setVisible(true);
         
         boolean hasData = StringUtils.isNotEmpty(lName.getText()) && StringUtils.isNotEmpty(fName.getText());
         if (hasData && !dlg.isCancelled())

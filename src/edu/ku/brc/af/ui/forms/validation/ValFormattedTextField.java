@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -1438,58 +1438,4 @@ public class ValFormattedTextField extends JPanel implements ValFormattedTextFie
         }
     }
 
-    /**
-    *
-    */
-    /*
-   public static void main(String[] args)
-   {
-       SwingUtilities.invokeLater(new Runnable() {
-           @SuppressWarnings("synthetic-access")
-         public void run()
-           {
-               try
-               {
-                   UIHelper.OSTYPE osType = UIHelper.getOSType();
-                   if (osType == UIHelper.OSTYPE.Windows )
-                   {
-                       //UIManager.setLookAndFeel(new WindowsLookAndFeel());
-                       UIManager.setLookAndFeel(new PlasticLookAndFeel());
-                       PlasticLookAndFeel.setPlasticTheme(new ExperienceBlue());
-                       
-                   } else if (osType == UIHelper.OSTYPE.Linux )
-                   {
-                       //UIManager.setLookAndFeel(new GTKLookAndFeel());
-                       UIManager.setLookAndFeel(new PlasticLookAndFeel());
-                      
-                   }
-                   
-                   Vector<UIFieldFormatterField> fields = new Vector<UIFieldFormatterField>();
-                   fields.add(new UIFieldFormatterField(FieldType.year,   4, "YYYY", false, true));
-                   fields.add(new UIFieldFormatterField(FieldType.separator, 1, "-", false));
-                   fields.add(new UIFieldFormatterField(FieldType.alpha,   2, "XX", false));
-                   fields.add(new UIFieldFormatterField(FieldType.separator, 1, "-", false));
-                   fields.add(new UIFieldFormatterField(FieldType.numeric,   4, "NNNN", true));
-                   
-                   UIFieldFormatter uif = new UIFieldFormatter("Accession", false, null, Accession.class, true, true, fields);
-
-                   ValFormattedTextField formattedTextField = new ValFormattedTextField(uif, false);
-                   
-                   CustomDialog dlg = new CustomDialog(null, "Test", true, formattedTextField);
-                   formattedTextField.setText("2005-IT-001");
-                   dlg.setVisible(true);
-                   
-                   System.out.println(formattedTextField.getText());
-                   dlg.dispose();
-               }
-               catch (Exception e)
-               {
-                   edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                   edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ValFormattedTextField.class, e);
-                   edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();                   edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ValFormattedTextField.class, e);
-                   log.error("Can't change L&F: ", e);
-               }
-           }
-       });
-   }*/
 }

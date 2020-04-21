@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -237,7 +237,7 @@ public class GroupPermittedToViewFixer extends AppBase
         long startTime = System.currentTimeMillis();
 
         
-        progressFrame = new ProgressFrame("Checking Catalog Objects....");
+        progressFrame = new ProgressFrame("Checking Catalog Objects...");
         progressFrame.adjustProgressFrame();
         
         progressFrame.setOverall(0);
@@ -387,9 +387,9 @@ public class GroupPermittedToViewFixer extends AppBase
         panel.add(new JLabel(IconManager.getIcon("SpecifyLargeIcon")), cc.xy(1, 1));
         panel.add(pb.getPanel(), cc.xy(3, 1));
 
-        CustomDialog dlg = new CustomDialog(null, "Database Info", true, panel.getPanel());
+        CustomDialog dlg = new CustomDialog((java.awt.Frame)null, "Database Info", true, panel.getPanel());
         ((JPanel)dlg.getContentPanel()).setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        UIHelper.centerAndShow(dlg);
+        dlg.setVisible(true);
         
         dlg.dispose();
         if (dlg.isCancelled())
@@ -536,7 +536,7 @@ public class GroupPermittedToViewFixer extends AppBase
     
                 pb.setDefaultDialogBorder();
                 
-                final CustomDialog dlg = new CustomDialog(null, "Select a DB to Verify", true, pb.getPanel());
+                final CustomDialog dlg = new CustomDialog((java.awt.Frame)null, "Select a DB to Verify", true, pb.getPanel());
                 
                 ListSelectionListener lsl = new ListSelectionListener() {
                     @Override
@@ -653,7 +653,7 @@ public class GroupPermittedToViewFixer extends AppBase
                             
                         } else
                         {
-                            JOptionPane.showMessageDialog(null, "The GroupPermittedToViewFixer was unable to login", "Not Logged In", JOptionPane.ERROR_MESSAGE);
+                            JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(), "The GroupPermittedToViewFixer was unable to login", "Not Logged In", JOptionPane.ERROR_MESSAGE);
                             System.exit(0);
                         }
                     } catch (Exception ex)

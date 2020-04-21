@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -91,8 +91,10 @@ public class DNASequence extends CollectionMember implements AttachmentOwnerIFac
 	protected Byte                          sequenceDatePrecision;   // Accurate to Year, Month, Day
 	protected Calendar extractionDate;
 	protected Byte                          extractionDatePrecision;   // Accurate to Year, Month, Day
-	protected Agent	extractor;
-	protected Agent							sequencer;
+    protected Agent	extractor;
+    protected Agent							sequencer;
+	protected Set<Extractor>	extractors;
+	protected Set<PcrPerson>							pcrPersons;
 	protected CollectionObject				collectionObject;
 	protected MaterialSample				materialSample;
     protected Set<DNASequenceAttachment>    attachments;
@@ -145,7 +147,9 @@ public class DNASequence extends CollectionMember implements AttachmentOwnerIFac
 		extractionDate = null;
 		extractionDatePrecision = 1;
 		extractor = null;
-        sequencer = null;
+		sequencer = null;
+		extractors = new HashSet<Extractor>();
+        pcrPersons = new HashSet<PcrPerson>();
         collectionObject = null;
         materialSample = null;
         attachments = new TreeSet<DNASequenceAttachment>();
@@ -626,16 +630,6 @@ public class DNASequence extends CollectionMember implements AttachmentOwnerIFac
 
 
     /**
-     * @param sequencer the sequencer to set
-     */
-    public void setSequencer(Agent sequencer)
-    {
-        this.sequencer = sequencer;
-    }
-
-
-
-    /**
      * @param attachments the attachments to set
      */
     public void setAttachments(Set<DNASequenceAttachment> attachments)
@@ -719,14 +713,45 @@ public class DNASequence extends CollectionMember implements AttachmentOwnerIFac
 	}
 
 	/**
-     * @return the sequencer
-     */
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "AgentID", unique = false, nullable = true, insertable = true, updatable = true)
-    public Agent getSequencer()
-    {
-        return sequencer;
-    }
+	 * @return the sequencer
+	 */
+	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+	@JoinColumn(name = "AgentID", unique = false, nullable = true, insertable = true, updatable = true)
+	public Agent getSequencer()
+	{
+		return sequencer;
+	}
+
+	/**
+	 * @param sequencer the sequencer to set
+	 */
+	public void setSequencer(Agent sequencer)
+	{
+		this.sequencer = sequencer;
+	}
+
+
+	@OneToMany(mappedBy = "dnaSequence")
+	@Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
+	@OrderBy("orderNumber ASC")
+	public Set<Extractor> getExtractors() {
+		return extractors;
+	}
+
+	public void setExtractors(Set<Extractor> extractors) {
+		this.extractors = extractors;
+	}
+
+	@OneToMany(mappedBy = "dnaSequence")
+	@Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
+	@OrderBy("orderNumber ASC")
+	public Set<PcrPerson> getPcrPersons() {
+		return pcrPersons;
+	}
+
+	public void setPcrPersons(Set<PcrPerson> pcrPersons) {
+		this.pcrPersons = pcrPersons;
+	}
 
     /**
      * @return the collectionObject

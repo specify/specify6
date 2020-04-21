@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -704,28 +704,42 @@ public class Loan extends DisciplineMember implements AttachmentOwnerIFace<LoanA
 //    }
     
     @Transient
-    public Integer getTotalItems() {
+    public Integer getTotalPreps() {
         return countContents(false, false);
     }
 
     @Transient
-    public Integer getTotalQuantities() {
+    public Integer getTotalItems() {
         return countContents(true, false);
     }
 
     @Transient
-    public Integer getUnresolvedItems() {
+    public Integer getUnresolvedPreps() {
         return countContents(false, true);
     }
 
     @Transient
-    public Integer getUnresolvedQuantities() {
+    public Integer getUnresolvedItems() {
         return countContents(true, true);
     }
 
+    @Transient
+    public Integer getResolvedPreps() {
+        return getId() == null ? null : getTotalPreps() - getUnresolvedPreps();
+    }
+
+    @Transient
+    public Integer getResolvedItems() {
+        return getId() == null ? null : getTotalItems() - getUnresolvedItems();
+    }
+
     protected Integer countContents(Boolean countQuantity, Boolean countUnresolved) {
+        if (getId() == null) {
+            return null;
+        }
         String select = countQuantity ? " sum(quantity" + (countUnresolved ? "-ifnull(quantityresolved,0)" : "") + ")"
                 : " count(*) ";
+
         String sql = "select " + select + " from loanpreparation where loanid = " + getId();
         if (countUnresolved) {
             sql += " and (not isresolved";

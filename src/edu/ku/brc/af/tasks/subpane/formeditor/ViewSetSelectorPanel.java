@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -1543,7 +1543,7 @@ public class ViewSetSelectorPanel extends JPanel implements PropertyChangeListen
     {
         List<ControlIFace> list = getControlsList(true);
 
-        ToggleButtonChooserDlg<ControlIFace> dlg = new ToggleButtonChooserDlg<ControlIFace>((Frame)UIRegistry.getTopWindow(), 
+        ToggleButtonChooserDlg<ControlIFace> dlg = new ToggleButtonChooserDlg<ControlIFace>((Frame)UIRegistry.getTopWindow(),
                 "ViewSetSelectorPanel.CHOOSE_A_CONTROL", list, ToggleButtonChooserPanel.Type.RadioButton); //$NON-NLS-1$
         dlg.setUseScrollPane(true);
         dlg.setVisible(true);

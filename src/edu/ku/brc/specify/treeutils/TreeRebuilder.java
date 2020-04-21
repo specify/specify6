@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -37,7 +37,7 @@ import edu.ku.brc.specify.datamodel.Treeable;
  *This class combines the functions of the NodeNumber and FullNameRebuilder classes.
  *(And practically makes them obsolete).
  *It traverses a tree and updates fullnames and/or node numbers - depending on the doNodeNumbers and doFullNames 
- *arguments to the constructor..
+ *arguments to the constructor.
  */
 public class TreeRebuilder<T extends Treeable<T, D, I>, 
 				D extends TreeDefIface<T, D, I>, 

@@ -1,7 +1,7 @@
-/* Copyright (C) 2019, University of Kansas Center for Research
+/* Copyright (C) 2020, Specify Collections Consortium
  * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -427,6 +427,7 @@ public class ConservDescription extends DataModelObjBase implements AttachmentOw
         this.determinedDatePrecision = determinedDatePrecision;
     }
 
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentTableId()
      */
@@ -545,6 +546,10 @@ public class ConservDescription extends DataModelObjBase implements AttachmentOw
 		// TODO Auto-generated method stub
 		super.forceLoad();
 		events.size();
+		for (ConservEvent ce : events) {
+		    ce.forceLoad();
+        }
+        conservDescriptionAttachments.size();
 	}
     
     
