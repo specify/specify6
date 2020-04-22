@@ -2409,7 +2409,7 @@ public class InteractionsTask extends BaseTask
             processor = exchProcessor;
         }
         boolean isOKToAdd;
-        if (AppContextMgr.isSecurityOn()) {
+        if (AppContextMgr.isSecurityOn() && tblInfo != null) {
             PermissionSettings perms = tblInfo.getPermissions();
             isOKToAdd = perms == null || perms.canAdd();
         } else {
