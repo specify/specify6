@@ -2252,6 +2252,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                         AppPreferences.getLocalPrefs().putInt("APP.W", r.width);
                         AppPreferences.getLocalPrefs().putInt("APP.H", r.height);
                         if (UIHelper.isMacOS()) {
+                            log.info("MacOS: APP.MAXIMIZED: " + (topFrame.getExtendedState() == Frame.MAXIMIZED_BOTH));
                             AppPreferences.getLocalPrefs().putBoolean("APP.MAXIMIZED", topFrame.getExtendedState() == Frame.MAXIMIZED_BOTH);
                         }
                     }
@@ -2365,10 +2366,12 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         boolean isMacAndMaxed = UIHelper.isMacOS() && AppPreferences.getLocalPrefs().getBoolean("APP.MAXIMIZED", true);
         if (isMacAndMaxed)
         {
+            log.info("IsMacAndMaxed!");
             f.setExtendedState(Frame.MAXIMIZED_BOTH);
         } else
         {
-        	UIHelper.positionAndFitToScreen(f, x, y, w, h);
+        	log.info("positionAndFitToScreen(" + f + ", " + x + ", " + y + ", " + w + ", " + h + ")");
+            UIHelper.positionAndFitToScreen(f, x, y, w, h);
         }
         f.setVisible(true);
     }
