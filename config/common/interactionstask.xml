@@ -30,6 +30,7 @@
       <flavor isdrag="false" classname="edu.ku.brc.specify.tasks.RecordSetTask" humanreadable="Record_Set">
         <tableIds>
           <int>1</int>
+          <int>63</int>
         </tableIds>
       </flavor>
     </droppableFlavors>
@@ -67,6 +68,7 @@
           <!--  <int>52</int> -->
           <int>1</int>
           <int>50</int>
+          <int>63</int>
         </tableIds>
       </flavor>
       <flavor isdrag="false" classname="edu.ku.brc.specify.datamodel.InfoRequest" humanreadable="InfoRequest">
@@ -85,6 +87,7 @@
           <int>52</int>
           <int>1</int>
           <int>50</int>
+          <int>63</int>
         </tableIds>
       </flavor>
     </droppableFlavors>
@@ -103,6 +106,7 @@
           <int>131</int>
           <int>1</int>
           <int>50</int>
+          <int>63</int>
         </tableIds>
       </flavor>
       <flavor isdrag="false" classname="edu.ku.brc.specify.datamodel.InfoRequest" humanreadable="InfoRequest">
@@ -121,6 +125,7 @@
           <int>131</int>
           <int>1</int>
           <int>50</int>
+          <int>63</int>
         </tableIds>
       </flavor>
     </droppableFlavors>
@@ -143,6 +148,7 @@
       <flavor isdrag="false" classname="edu.ku.brc.specify.tasks.RecordSetTask" humanreadable="Record_Set">
         <tableIds>
           <int>1</int>
+          <int>63</int>
         </tableIds>
       </flavor>
     </droppableFlavors>

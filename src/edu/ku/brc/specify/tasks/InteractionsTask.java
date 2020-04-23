@@ -188,6 +188,7 @@ public class InteractionsTask extends BaseTask
     protected static final int    loanTableId;
     protected static final int    infoRequestTableId;
     protected static final int    colObjTableId;
+    protected static final int preparationTableId;
 
     // Data Members
     protected NavBox                  infoRequestNavBox;
@@ -216,7 +217,7 @@ public class InteractionsTask extends BaseTask
         loanTableId        = DBTableIdMgr.getInstance().getIdByClassName(Loan.class.getName());
         infoRequestTableId = DBTableIdMgr.getInstance().getIdByClassName(InfoRequest.class.getName());
         colObjTableId      = DBTableIdMgr.getInstance().getIdByClassName(CollectionObject.class.getName());
-        
+        preparationTableId = DBTableIdMgr.getInstance().getIdByClassName(Preparation.class.getName());
         INFOREQUEST_FLAVOR.addTableId(50);
     }
 
@@ -2441,7 +2442,7 @@ public class InteractionsTask extends BaseTask
 
             } else if (cmdAction.getData() instanceof RecordSetIFace) {
                 RecordSetIFace rs = (RecordSetIFace) cmdAction.getData();
-                if (rs.getDbTableId() == colObjTableId || rs.getDbTableId() == infoRequestTableId) {
+                if (rs.getDbTableId() == colObjTableId || rs.getDbTableId() == infoRequestTableId || rs.getDbTableId() == preparationTableId) {
                     if (isOKToAdd) {
                         processor.createOrAdd(rs);
                     }

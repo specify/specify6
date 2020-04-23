@@ -354,7 +354,8 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
     protected void prepsLoaded(final Hashtable<Integer, ColObjInfo> coToPrepHash,
                                final Hashtable<Integer, String>     prepTypeHash,
                                final T                              prepProvider,
-                               final InfoRequest                    infoRequest) {
+                               final InfoRequest                    infoRequest,
+                               final int objTblId) {
         if (coToPrepHash.size() == 0 || prepTypeHash.size() == 0) {
             UIRegistry.showLocalizedMsg("NEW_INTER_NO_PREPS_TITLE", "NEW_INTER_NO_PREPS");
             return;
@@ -362,7 +363,7 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
 
         final DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(tableId);
 
-        final SelectPrepsDlg loanSelectPrepsDlg = new SelectPrepsDlg(coToPrepHash, prepTypeHash, ti.getTitle());
+        final SelectPrepsDlg loanSelectPrepsDlg = new SelectPrepsDlg(coToPrepHash, prepTypeHash, ti.getTitle(), objTblId);
         loanSelectPrepsDlg.createUI();
         loanSelectPrepsDlg.setModal(true);
 
@@ -481,27 +482,36 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
             return val == null ? 0 : (Integer)val;
         }
 
+        private String getVisibleIdFldForSql() {
+            if (recordSet.getDbTableId() == 1) {
+                return "catalognumber";
+            } else {
+                return "barcode";
+            }
+        }
+
+        private String getIdSelectForSql() {
+            return (recordSet.getDbTableId() == 1 ? "o.CollectionObjectID" : "o.PreparationID") + ", " + getVisibleIdFldForSql();
+        }
+
+        private String getRecordSetFilter() {
+            return (recordSet.getDbTableId() == 1 ? "o.CollectionObjectID" : "o.PreparationID") + DBTableIdMgr.getInstance().getInClause(recordSet);
+        }
+
+        private String getFrom() {
+            return (recordSet.getDbTableId() == 1 ? "collectionobject" : "preparation" ) +
+                    " o left join determination dt ON dt.CollectionObjectID = o.CollectionObjectID " +
+                    "left JOIN taxon tx ON dt.TaxonID = tx.TaxonID";
+        }
         /**
          * @return a List of rows that have the CollectionObject info from the rcordset
          */
-        protected Vector<Object[]> getColObjsFromRecordSet()
-        {
-            String sql = "SELECT co.CollectionObjectID, co.CatalogNumber, tx.FullName FROM determination as dt INNER JOIN collectionobject as co ON dt.CollectionObjectID = co.CollectionObjectID " +
-                    "INNER JOIN taxon as tx ON dt.TaxonID = tx.TaxonID WHERE isCurrent <> 0 AND dt.CollectionMemberID = COLMEMID " +
-                    "AND co.CollectionObjectID " + DBTableIdMgr.getInstance().getInClause(recordSet);
-            sql = QueryAdjusterForDomain.getInstance().adjustSQL(sql);
+        protected Vector<Object[]> getColObjsFromRecordSet() {
+            String sql = "SELECT " + getIdSelectForSql() + ", tx.FullName FROM " + getFrom() + " WHERE (isCurrent is null or isCurrent <> 0) " +
+                    "AND " + getRecordSetFilter();
             log.debug("-------------- " + sql);
 
             Vector<Object[]> fullItems = BasicSQLUtils.query(sql);
-            if (fullItems.size() != recordSet.getNumItems())
-            {
-                sql = "SELECT CollectionObjectID, CatalogNumber FROM collectionobject WHERE CollectionMemberID = COLMEMID " +
-                        "AND CollectionObjectID " + DBTableIdMgr.getInstance().getInClause(recordSet);
-                Vector<Object[]> partialItems = BasicSQLUtils.query(QueryAdjusterForDomain.getInstance().adjustSQL(sql));
-                partialItems.addAll(fullItems);
-                //log.debug("-------------- " + "partialItems: " + partialItems.size());
-                return partialItems;
-            }
             //log.debug("-------------- " + "fullItems: " + fullItems.size());
             return fullItems;
         }
@@ -539,15 +549,16 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
 
         /**
          *
-         * @param collectionObjectIds
+         * @param objectIds
          * @return
          */
-        protected List<Object[]> getAvailableCounts(List<String> collectionObjectIds) {
-            String sql = "select p.collectionobjectid, p.preparationid, coalesce(p.CountAmt,0), pt.Name, pt.PrepTypeID, avail.available from preparation p";
+        protected List<Object[]> getAvailableCounts(List<String> objectIds) {
+            String sql = "select " + (recordSet.getDbTableId() == 1 ? "p.collectionobjectid" : "p.preparationid")
+                    + ", p.preparationid, coalesce(p.CountAmt,0), pt.Name, pt.PrepTypeID, avail.available from preparation p";
             //assuming there aren't 10s of 1000s of items in collectionObjectIds
-            String idStr = collectionObjectIds.toString();
+            String idStr = objectIds.toString();
             idStr = idStr.substring(1, idStr.length()-1);
-            String where = "collectionobjectid in(" + idStr + ")";
+            String where = recordSet.getDbTableId() == 1 ? "p.collectionobjectid" : "p.preparationid" + " in(" + idStr + ")";
             String subSql = getAvailableCountForPrepSQL(where);
             sql = sql + " inner join (" + subSql + ") avail on avail.preparationid = p.preparationid"
                     + " inner join preptype pt on pt.preptypeid = p.preptypeid";
@@ -569,9 +580,9 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
         protected int collect() {
             if (isFor != forAcc) {
                 coToPrepHash = new Hashtable<>();
-                List<String> coIds = new ArrayList<>();
-                processRecordSetForCollect(coIds);
-                List<Object[]> rows = getAvailableCounts(coIds);
+                List<String> objds = new ArrayList<>();
+                processRecordSetForCollect(objds);
+                List<Object[]> rows = getAvailableCounts(objds);
                 if (rows.size() > 0) {
                     for (Object[] row : rows) {
                         int prepId = (Integer) row[1];
@@ -583,8 +594,6 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
                         prepTypeHash.put(prepTypeId, prepType);
                         ColObjInfo colObjInfo = coToPrepHash.get(coId);
                         if (colObjInfo != null) {
-                            PrepInfo prepInfo = colObjInfo.get(prepId);
-                            //stuffing available into existing PrepInfo structure for now
                             colObjInfo.add(new PrepInfo(prepId, prepTypeId, prepQty, available));
                         } else {
                             //what went wrong?
@@ -596,13 +605,13 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
         }
 
 
-        protected void processRecordSetForCollect(List<String> coIds) {
-            List<Object[]> coIdRows = getColObjsFromRecordSet();
-            for (Object[] row : coIdRows) {
-                Integer coId = (Integer)row[0];
-                coIds.add(coId.toString());
+        protected void processRecordSetForCollect(List<String> objIds) {
+            List<Object[]> objIdRows = getColObjsFromRecordSet();
+            for (Object[] row : objIdRows) {
+                Integer objId = (Integer)row[0];
+                objIds.add(objId.toString());
                 if (row[1] != null) {
-                    coToPrepHash.put(coId, new ColObjInfo(coId, row[1].toString(), row.length == 3 ? row[2].toString() : null));
+                    coToPrepHash.put(objId, new ColObjInfo(objId, row[1].toString(), (String)row[2]));
                 }
             }
         }
@@ -633,7 +642,7 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
             if (isFor == forAcc) {
                 cosLoaded(recordSet, prepsProvider);
             } else {
-                prepsLoaded(coToPrepHash, prepTypeHash, prepsProvider, infoRequest);
+                prepsLoaded(coToPrepHash, prepTypeHash, prepsProvider, infoRequest, recordSet.getDbTableId());
             }
         }
 
