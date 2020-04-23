@@ -34,6 +34,7 @@ import java.util.Vector;
 import javax.swing.JOptionPane;
 
 import edu.ku.brc.dbsupport.*;
+import edu.ku.brc.specify.datamodel.Preparation;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -231,8 +232,12 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
 
                 } else if (rv == ASK_TYPE.EnterDataObjs)
                 {
-                    recordSet = task.askForDataObjRecordSet(CollectionObject.class, catNumField, isFor == forAcc);
-
+                    int yesOrNo = UIRegistry.askYesNoLocalized("COs", "Preps", "COs or Preps", "Please");
+                    if (yesOrNo == JOptionPane.YES_OPTION) {
+                        recordSet = task.askForDataObjRecordSet(CollectionObject.class, catNumField, isFor == forAcc);
+                    } else {
+                        recordSet = task.askForDataObjRecordSet(Preparation.class, "BarCode", isFor == forAcc);
+                    }
                 } else if (rv == ASK_TYPE.None) {
                     recordSet = null;
                     isEmptyAcc = true;
