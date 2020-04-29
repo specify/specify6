@@ -1299,7 +1299,8 @@ public class ExportToMySQLDB
 					if (!"".equals(setter)) {
 						setter += ", ";
 					}
-					setter += "t.`" + fldName + "`='" + geocoords.get(i) + "'";
+					String geoc = geocoords.get(i) == null ? "null" : "'" + geocoords.get(i) + "'";
+					setter += "t.`" + fldName + "`=" + geoc;
 				}
 			}
 			if (!"".equals(setter)) {
