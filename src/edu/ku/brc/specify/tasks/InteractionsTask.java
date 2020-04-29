@@ -46,6 +46,7 @@ import javax.swing.JTextArea;
 import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 
+import edu.ku.brc.specify.datamodel.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -98,29 +99,6 @@ import edu.ku.brc.helpers.EMailHelper;
 import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
-import edu.ku.brc.specify.datamodel.Accession;
-import edu.ku.brc.specify.datamodel.Deaccession;
-import edu.ku.brc.specify.datamodel.Agent;
-import edu.ku.brc.specify.datamodel.CollectionObject;
-import edu.ku.brc.specify.datamodel.Discipline;
-import edu.ku.brc.specify.datamodel.Division;
-import edu.ku.brc.specify.datamodel.ExchangeIn;
-import edu.ku.brc.specify.datamodel.ExchangeOut;
-import edu.ku.brc.specify.datamodel.ExchangeOutPrep;
-import edu.ku.brc.specify.datamodel.Gift;
-import edu.ku.brc.specify.datamodel.GiftPreparation;
-import edu.ku.brc.specify.datamodel.InfoRequest;
-import edu.ku.brc.specify.datamodel.Loan;
-import edu.ku.brc.specify.datamodel.LoanPreparation;
-import edu.ku.brc.specify.datamodel.LoanReturnPreparation;
-import edu.ku.brc.specify.datamodel.OneToManyProviderIFace;
-import edu.ku.brc.specify.datamodel.Permit;
-import edu.ku.brc.specify.datamodel.Preparation;
-import edu.ku.brc.specify.datamodel.RecordSet;
-import edu.ku.brc.specify.datamodel.RepositoryAgreement;
-import edu.ku.brc.specify.datamodel.Shipment;
-import edu.ku.brc.specify.datamodel.SpAppResource;
-import edu.ku.brc.specify.datamodel.SpReport;
 import edu.ku.brc.specify.datamodel.busrules.AccessionBusRules;
 import edu.ku.brc.specify.datamodel.busrules.LoanBusRules;
 import edu.ku.brc.specify.datamodel.busrules.LoanPreparationBusRules;
@@ -1321,6 +1299,87 @@ public class InteractionsTask extends BaseTask
             }
         } else {
             CommandDispatcher.dispatch(new CommandAction(INTERACTIONS, "REFRESH_EXCHANGE_PREPS", exchange));
+        }
+    }
+
+    /**
+     *
+     * @param existingDeaccessionArg
+     * @param infoRequest
+     * @param prepsHash
+     * @param srcViewable
+     */
+    protected void addPrepsToDeaccession(final OneToManyProviderIFace existingDeaccessionArg,
+                                  final InfoRequest               infoRequest,
+                                  final Hashtable<Integer, Integer> prepsHash,
+                                  final Viewable                    srcViewable)
+    {
+        Deaccession existingDeaccession = (Deaccession)existingDeaccessionArg;
+        Deaccession deaccession;
+
+        if (existingDeaccession == null) {
+            deaccession = new Deaccession();
+            deaccession.initialize();
+        } else {
+            deaccession = existingDeaccession;
+        }
+
+        Hashtable<Integer, DeaccessionPreparation> prepToDeaccessionPrepHash = null;
+        if (existingDeaccession != null) {
+            prepToDeaccessionPrepHash = new Hashtable<>();
+            for (DeaccessionPreparation lp : existingDeaccession.getDeaccessionPreparations())
+            {
+                prepToDeaccessionPrepHash.put(lp.getPreparation().getId(), lp);
+            }
+        }
+
+        DataProviderSessionIFace session = null;
+        try {
+            session = DataProviderFactory.getInstance().createSession();
+            for (Integer prepId : prepsHash.keySet()) {
+                Preparation prep  = session.get(Preparation.class, prepId);
+                Integer     count = prepsHash.get(prepId);
+                if (prepToDeaccessionPrepHash != null) {
+                    DeaccessionPreparation dp = prepToDeaccessionPrepHash.get(prep.getId());
+                    if (dp != null) {
+                        short dpCnt = dp.getQuantity();
+                        dpCnt += count;
+                        dp.setQuantity(dpCnt);
+                        //System.err.println("Adding "+count+"  to "+lp.hashCode());
+                        continue;
+                    }
+                }
+                DeaccessionPreparation dpo = new DeaccessionPreparation();
+                dpo.initialize();
+                dpo.setPreparation(prep);
+                dpo.setQuantity(count.shortValue());
+                dpo.setDeaccession(deaccession);
+                deaccession.getDeaccessionPreparations().add(dpo);
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(InteractionsTask.class, ex);
+
+        } finally {
+            if (session != null) {
+                session.close();
+            }
+        }
+
+        if (existingDeaccession == null) {
+            if (srcViewable != null) {
+                srcViewable.setNewObject(deaccession);
+            } else {
+                DataEntryTask dataEntryTask = (DataEntryTask)TaskMgr.getTask(DataEntryTask.DATA_ENTRY);
+                if (dataEntryTask != null) {
+                    DBTableInfo deaccessionTableInfo = DBTableIdMgr.getInstance().getInfoById(deaccession.getTableId());
+                    dataEntryTask.openView(this, null, deaccessionTableInfo.getDefaultFormName(), "edit", deaccession, true);
+                }
+            }
+        } else {
+            CommandDispatcher.dispatch(new CommandAction(INTERACTIONS, "REFRESH_DEACCESSION_PREPS", deaccession));
         }
     }
 

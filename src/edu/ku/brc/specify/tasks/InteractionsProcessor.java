@@ -396,6 +396,8 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
                         task.addPrepsToGift(prepProvider, infoRequest, prepsHash, viewable);
                     } else if (isFor == forExchange) {
                         task.addPrepsToExchangeOut(prepProvider, infoRequest, prepsHash, viewable);
+                    } else if (isFor == forDeacc) {
+                        task.addPrepsToDeaccession(prepProvider, infoRequest, prepsHash, viewable);
                     }
                     return null;
                 }
