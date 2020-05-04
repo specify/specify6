@@ -1293,6 +1293,7 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
         preparationAttachments.size();
         preparationAttrs.size();
         preparationProperties.size();
+        deaccessionPreparations.size();
     }
     
     /* (non-Javadoc)
