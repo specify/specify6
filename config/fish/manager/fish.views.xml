@@ -653,7 +653,7 @@
                     <cell type="field" id="4" name="storage" uitype="querycbx" initialize="name=Storage" colspan="3"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="DeaccessionPreparation" id="deaccprep" name="deaccessionPreparations" colspan="12"/>
+                    <cell type="subview" viewname="DeaccessionPreparation2" id="deaccprep" name="deaccessionPreparations" colspan="12"/>
                 </row>
                 <!--<row>
                     <cell type="label" labelfor="desc"/>
