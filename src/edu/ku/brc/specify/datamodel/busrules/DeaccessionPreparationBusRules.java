@@ -18,16 +18,10 @@
 package edu.ku.brc.specify.datamodel.busrules;
 
 import edu.ku.brc.af.ui.forms.BaseBusRules;
-import edu.ku.brc.af.ui.forms.FormViewObj;
-import edu.ku.brc.af.ui.forms.Viewable;
-import edu.ku.brc.af.ui.forms.validation.ValSpinner;
 import edu.ku.brc.specify.datamodel.DeaccessionPreparation;
 import edu.ku.brc.specify.datamodel.LoanReturnPreparation;
-
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import java.awt.*;
-
+import edu.ku.brc.specify.datamodel.Locality;
+import edu.ku.brc.ui.UIRegistry;
 
 public class DeaccessionPreparationBusRules extends BaseBusRules {
 
@@ -59,4 +53,20 @@ public class DeaccessionPreparationBusRules extends BaseBusRules {
     private boolean isOnLoanReturnForm(final Object dataObj) {
         return LoanReturnPreparation.class.equals(getContext(dataObj));
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#isOkToAddSibling(java.lang.Object)
+     */
+    @Override
+    public boolean isOkToAddSibling(Object parentObj) {
+        if (parentObj instanceof LoanReturnPreparation) {
+            if (((LoanReturnPreparation)parentObj).getDeaccessionPreparations().size() > 0) {
+                UIRegistry.showLocalizedError("DeaccessionPreparationBusRules.ONLY_ONE");
+                return false;
+            }
+            return true;
+        }
+        return true;
+    }
+
 }

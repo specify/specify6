@@ -325,7 +325,8 @@
             <display view="LoanItems" dataobjformatter="LoanPreparation" newobjdlg="LoanItemsDisplay"/>
         </table>
         <table name="edu.ku.brc.specify.datamodel.LoanReturnPreparation" abbrev="lrpo" id="55" searchable="true">
-            <!-- <businessrule>edu.ku.brc.specify.datamodel.busrules.LoanReturnPreparationBusRules</businessrule>    -->        
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.LoanReturnPreparationBusRules</businessrule>
+            <relationship relationshipname="deaccessionPreparations" likemanytoone="true"/>
         </table>
         <table name="edu.ku.brc.specify.datamodel.Locality" abbrev="loc" id="2" workbench="true" searchable="true">
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.LocalityBusRules</businessrule>
