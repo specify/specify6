@@ -122,6 +122,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 
     protected static final String EXPORT_TEXT_PATH = "ExportPanel.TabDelimExportPath";
     protected static final String EXPORT_WEBPORTAL_PATH = "ExportPanelExportWebPortalPath";
+	protected static final String EXPORT_DWCA_PATH = "ExportPanelExportDWCAPath";
     protected static final String EXPORT_BLOCK_SIZE = "ExportPanelExportBlockSize";
     protected static long maxExportRowCount;
     
@@ -249,6 +250,41 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 		return result;
 	}
 
+	protected File promptForFile(String ext, String prefName) {
+		AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+		String defPath = prefName == null ? null : localPrefs.get(prefName, null);
+		JFileChooser save = defPath == null ? new JFileChooser() :
+				new JFileChooser(new File(defPath));
+		save.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		if (ext != null) {
+			save.setFileFilter(new UIFileFilter(ext));
+		}
+		boolean done = false;
+		File result = null;
+		while (!done) {
+			int dr = save.showSaveDialog(null);
+			if (dr != JFileChooser.APPROVE_OPTION) {
+				done = true;
+			} else {
+				result = save.getSelectedFile();
+				if (!result.getName().endsWith("." + ext)) {
+					result = new File(result.getPath() + "." + ext);
+				}
+				if (result.exists()) {
+					done = JOptionPane.YES_OPTION == UIRegistry.askYesNoLocalized("YES","NO",
+							String.format(getResourceString("ExportPanel.OverwriteFileMsg"), result.getName()),
+							"ExportPanel.OverwriteFileTitle");
+				} else {
+					done = true;
+				}
+			}
+		}
+		if (prefName != null) {
+			localPrefs.put(prefName, save.getSelectedFile().getPath());
+		}
+		return result;
+	}
+
 	protected void buildDwCArchive(final SpExportSchemaMapping schemaMapping) {
 
 		javax.swing.SwingWorker<Boolean, Object> worker =
@@ -279,12 +315,13 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 
 
 					private File selectArchiveDefinitionFile() {
+						//this needs to require file to exist.
+						//and should be handled through (an improved version of) promptForFile()
 						JFileChooser chooser = new JFileChooser();
 						chooser.setDialogTitle(getResourceString("CHOOSE_DWC_DEF_FILE"));
 						chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 						chooser.setMultiSelectionEnabled(false);
 						chooser.setFileFilter(new UIFileFilter("xml", getResourceString("DWC_DEF_FILES")));
-
 						if (chooser.showOpenDialog(UIRegistry.get(UIRegistry.FRAME)) != JFileChooser.APPROVE_OPTION) {
 							return null;
 						}
@@ -454,12 +491,12 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 
 					private int getRecSrc() {
 						List<String> recsetOptions = new ArrayList<>();
-						recsetOptions.add(getResourceString("DWC_SRC_REC_SET"));
-						recsetOptions.add(getResourceString("DWC_SRC_MAPPING_RESULTS"));
-						recsetOptions.add(getResourceString("DWC_SRC_QUERY"));
-						recsetOptions.add(getResourceString("DWC_SRC_ALL_RECORDS"));
+						recsetOptions.add(getResourceString("ExportPanel.DWC_SRC_REC_SET"));
+						recsetOptions.add(getResourceString("ExportPanel.DWC_SRC_MAPPING_RESULTS"));
+						recsetOptions.add(getResourceString("ExportPanel.DWC_SRC_QUERY"));
+						recsetOptions.add(getResourceString("ExportPanel.DWC_SRC_ALL_RECORDS"));
 						ChooseFromListDlg<String> dog = new ChooseFromListDlg<>((Frame)UIRegistry.get(UIRegistry.FRAME),
-								getResourceString("DWC_SRC_DLG_TITLE"),
+								getResourceString("ExportPanel.DWC_SRC_DLG_TITLE"),
 								ChooseFromListDlg.OKCANCEL, recsetOptions);
 						dog.createUI();
 						dog.getList().setSelectedIndex(0);
@@ -482,7 +519,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 							idMap.put((String)row[1], (Integer)row[0]);
 						}
 						ChooseFromListDlg<String> dog = new ChooseFromListDlg<>((Frame)UIRegistry.get(UIRegistry.FRAME),
-								getResourceString("DWC_SRC_RECSET_TITLE"),
+								getResourceString("ExportPanel.DWC_SRC_RECSET_TITLE"),
 								ChooseFromListDlg.OKCANCEL, names);
 						dog.createUI();
 						dog.getList().setSelectedIndex(0);
@@ -540,13 +577,17 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 							List<Integer> recIds = null;
                             int blk = dwc.getBlockSize();
 							int recSetId = getSrcRecSetId();
+							if (recSetId == -1) {
+								UIRegistry.displayInfoMsgDlg("That option is currently not supported.");
+								return false;
+							}
 							if (schemaMapping.getMappingName().equals("multiqs")) {
                                 //recSetId = 832; //herps
                                 recSetId = 81; //fish with ce and co atts.
                             } else if (schemaMapping.getMappingName().equalsIgnoreCase("dwckui")) {
                                 //recSetId = 832; //herps all
 								//recSetId = 16001; //ento all
-								recSetId = 83; //fish multiple dets
+								//recSetId = 83; //fish multiple dets
 							} else {
 								Pair<Integer, Iterator<?>> ids = getSizeAndIterator();
 								Iterator<?> its = ids.getSecond();
@@ -560,7 +601,11 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 								}
 							}
 							//setProgValue(0);
-
+							File outputFile = promptForFile("zip", EXPORT_DWCA_PATH);
+							if (outputFile == null) {
+								return false;
+							}
+							outputFileName = outputFile.getPath();
                             long cnt = 0;
                             long size = recIds == null ? RecordSet.getUniqueSize(recSetId) : recIds.size();
 							List<Pair<String, List<String>>> csvs = null;
@@ -700,20 +745,8 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 					UIRegistry
 							.displayInfoMsgDlg(getResourceString("ExportPanel.NoWebSetupForCacheNotUpToDate"));
 				} else if (checkLock(map)) {
-					AppPreferences localPrefs = AppPreferences.getLocalPrefs();
-					String defPath = localPrefs.get(EXPORT_WEBPORTAL_PATH, null);
-					JFileChooser save = defPath == null ? new JFileChooser() :
-							new JFileChooser(new File(defPath));
-					save.setFileSelectionMode(JFileChooser.FILES_ONLY);
-					save.setFileFilter(new UIFileFilter("zip"));
-					int result = save.showSaveDialog(null);
-					if (result != JFileChooser.APPROVE_OPTION) {
-						return;
-					}
-					//localPrefs.put(EXPORT_WEBPORTAL_PATH, save.getCurrentDirectory().getPath());
-					localPrefs.put(EXPORT_WEBPORTAL_PATH, save.getSelectedFile().getPath());
-
-					String zipFile = save.getSelectedFile().getPath();
+					File selectedFile = promptForFile("zip", EXPORT_WEBPORTAL_PATH);
+					String zipFile = selectedFile.getPath();
 					if (!zipFile.toLowerCase().endsWith(".zip")) {
 						zipFile += ".zip";
 					}
@@ -785,15 +818,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 					UIRegistry.displayInfoMsgDlgLocalized("ExportPanel.CacheNotCreated");
 					return;
 				}
-				AppPreferences localPrefs = AppPreferences.getLocalPrefs();
-				String defPath = localPrefs.get(EXPORT_TEXT_PATH, null);
-				JFileChooser save = defPath == null ? new JFileChooser() :
-						new JFileChooser(new File(defPath));
-				int result = save.showSaveDialog(null);
-				if (result != JFileChooser.APPROVE_OPTION) {
-					return;
-				}
-				localPrefs.put(EXPORT_TEXT_PATH, save.getCurrentDirectory().getPath());
+				File file = promptForFile(null, EXPORT_TEXT_PATH);
 				mapUpdating.set(row);
 				stupid = 0;
 				SpExportSchemaMapping map = maps.get(row);
@@ -801,8 +826,6 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 						.getQueryField().getQuery();
 				Vector<QBDataSourceListenerIFace> ls = new Vector<QBDataSourceListenerIFace>();
 				ls.add(ExportPanel.this);
-				//File file = new File(UIRegistry.getDefaultWorkingPath() + File.separator + q.getName() + ".txt");
-				File file = save.getSelectedFile();
 				exportToDbTblBtn.setEnabled(false);
 				exportToTabDelimBtn.setEnabled(false);
 				dumper = ExportToMySQLDB.exportRowsToTabDelimitedText(file, null, getCacheTableName(q.getName()), ls);
