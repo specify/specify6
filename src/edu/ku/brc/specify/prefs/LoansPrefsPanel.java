@@ -20,6 +20,9 @@
 package edu.ku.brc.specify.prefs;
 
 import static edu.ku.brc.specify.datamodel.busrules.LoanBusRules.DUEINMONTHS;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
+
+import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.GenericPrefsPanel;
 import edu.ku.brc.af.prefs.PrefsPanelIFace;
@@ -31,7 +34,12 @@ import edu.ku.brc.af.ui.forms.validation.ValSpinner;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Agent;
+import edu.ku.brc.specify.datamodel.CollectionObject;
+import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.busrules.LoanGiftShipmentBusRules;
+import edu.ku.brc.specify.tasks.InteractionsProcessor;
+
+import javax.swing.*;
 
 /**
  * Preference Panel for setting EMail Preferences.
@@ -67,6 +75,7 @@ public class LoansPrefsPanel extends GenericPrefsPanel implements PrefsSavable, 
         Integer dueInMonths      = prefs.getInt(DUEINMONTHS, 6);
         String  shippingMethod   = prefs.get(LoanGiftShipmentBusRules.SHIPMETHOD, null);
         Integer shippedByAgentId = prefs.getInt(LoanGiftShipmentBusRules.SHIPPEDBY, null);
+        Integer defSrcTblId = prefs.getInt(InteractionsProcessor.DEFAULT_SRC_TBL_ID, null);
         
         FormViewObj fvo = (FormViewObj)form;
         
@@ -106,7 +115,19 @@ public class LoansPrefsPanel extends GenericPrefsPanel implements PrefsSavable, 
                 }
             }
         }
-        
+        ValComboBox defSrc = fvo.getCompById("lnDefSrcCBX");
+        ((DefaultComboBoxModel)defSrc.getModel()).addElement(getResourceString("LoanPrefsPanel.AskDefSrc"));
+        ((DefaultComboBoxModel)defSrc.getModel()).addElement(DBTableIdMgr.getInstance().getTitleForId(CollectionObject.getClassTableId()));
+        ((DefaultComboBoxModel)defSrc.getModel()).addElement(DBTableIdMgr.getInstance().getTitleForId(Preparation.getClassTableId()));
+
+
+        if (defSrcTblId == null || defSrcTblId == 0) {
+            defSrc.getComboBox().setSelectedIndex(0);
+        } else if (defSrcTblId == 1) {
+            defSrc.getComboBox().setSelectedIndex(1);
+        } else if (defSrcTblId == 63) {
+            defSrc.getComboBox().setSelectedIndex(2);
+        }
     }
 
     //--------------------------------------------------------------------
@@ -155,5 +176,17 @@ public class LoansPrefsPanel extends GenericPrefsPanel implements PrefsSavable, 
                 prefs.remove(LoanGiftShipmentBusRules.SHIPPEDBY);
             }
         }
+
+        ValComboBox defSrc = fvo.getCompById("lnDefSrcCBX");
+
+        Integer defSrcTblId = 0;
+        if (defSrc.getComboBox().getSelectedIndex() == 0) {
+            defSrcTblId = 0;
+        } else if (defSrc.getComboBox().getSelectedIndex() == 1) {
+            defSrcTblId = 1;
+        }  else if (defSrc.getComboBox().getSelectedIndex() == 2) {
+            defSrcTblId = 63;
+        }
+        prefs.putInt(InteractionsProcessor.DEFAULT_SRC_TBL_ID, defSrcTblId);
     }
 }

@@ -33,6 +33,8 @@ import java.util.Vector;
 
 import javax.swing.JOptionPane;
 
+import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.dbsupport.*;
 import edu.ku.brc.specify.datamodel.Preparation;
 import org.apache.commons.lang.StringUtils;
@@ -73,7 +75,8 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
 {
     private static final Logger log = Logger.getLogger(InteractionsProcessor.class);
     private static final String LOAN_LOADR = "LoanLoader";
- 
+    public static final String DEFAULT_SRC_TBL_ID = "Interactions.DefaultSrcTableId";
+
     protected static final int forLoan = 0;
     protected static final int forGift = 1;
     protected static final int forAcc = 2;
@@ -236,11 +239,25 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
                     recordSet = RecordSetTask.askForRecordSet(tblIds, rsList, true);
                 } else if (rv == ASK_TYPE.EnterDataObjs)
                 {
-                    int yesOrNo = UIRegistry.askYesNoLocalized("COs", "Preps", "COs or Preps", "Please");
-                    if (yesOrNo == JOptionPane.YES_OPTION) {
-                        recordSet = task.askForDataObjRecordSet(CollectionObject.class, catNumField, isFor == forAcc);
-                    } else {
-                        recordSet = task.askForDataObjRecordSet(Preparation.class, "BarCode", isFor == forAcc);
+                    Integer defSrcTblId = AppPreferences.getRemote().getInt(DEFAULT_SRC_TBL_ID, null);
+                    if (isFor == forAcc) {
+                        defSrcTblId = 1;
+                    }
+                    if (defSrcTblId == null || defSrcTblId == 0) {
+                        int yesOrNo = UIRegistry.askYesNoLocalized(DBTableIdMgr.getInstance().getTitleForId(CollectionObject.getClassTableId()),
+                                DBTableIdMgr.getInstance().getTitleForId(Preparation.getClassTableId()),
+                                getResourceString("InteractionsProcessor.ItemIDForTblMsg"),
+                                getResourceString("InteractionsProcessor.ItemIDForTblTitle"));
+                        if (yesOrNo == JOptionPane.YES_OPTION) {
+                            defSrcTblId = CollectionObject.getClassTableId();
+                        } else if (yesOrNo == JOptionPane.NO_OPTION) {
+                            defSrcTblId = Preparation.getClassTableId();
+                        }
+                    }
+                    if (defSrcTblId != null && defSrcTblId != 0) {
+                        String fld = defSrcTblId == CollectionObject.getClassTableId() ? catNumField : "BarCode";
+                        recordSet = task.askForDataObjRecordSet(defSrcTblId == CollectionObject.getClassTableId() ? CollectionObject.class : Preparation.class,
+                                fld, isFor == forAcc);
                     }
                 } else if (rv == ASK_TYPE.None) {
                     recordSet = null;
