@@ -33,6 +33,7 @@ import java.util.Vector;
 import javax.swing.JOptionPane;
 
 import edu.ku.brc.dbsupport.*;
+import edu.ku.brc.specify.datamodel.Preparation;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -221,7 +222,12 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
                 ASK_TYPE rv = askSourceOfPreps(rsList.size() > 0, colObjRSList.size() > 0, currPrepProvider);
                 if (rv == ASK_TYPE.ChooseRS)
                 {
-                    recordSet = RecordSetTask.askForRecordSet(CollectionObject.getClassTableId(), rsList);
+                    Vector<Integer> tblIds = new Vector<>();
+                    tblIds.add(CollectionObject.getClassTableId());
+                    if (isFor != forAcc) {
+                        tblIds.add(Preparation.getClassTableId());
+                    }
+                    recordSet = RecordSetTask.askForRecordSet(tblIds, rsList, true);
 
                 } else if (rv == ASK_TYPE.EnterDataObjs)
                 {
