@@ -227,7 +227,8 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 		//System.out.println("updateUIAfterMapSelection: Row: " + selectedIdx + ", isBuilt: " + isBuilt + ", updating: " + !notUpdating);
 		this.showIPTSQLBtn.setEnabled(notUpdating && isBuilt);
 		this.createDwcaBtn.setEnabled(isDwcaMapping(selectedIdx));
-		this.publishToGbifBtn.setEnabled(hasGbifRegistration(selectedIdx));
+		System.out.println("Skipping publishToGbifBtn state update.");
+		//this.publishToGbifBtn.setEnabled(hasGbifRegistration(selectedIdx));
 		this.exportToTabDelimBtn.setEnabled(notUpdating && isBuilt);
 		this.setupWebPortalBtn.setEnabled(notUpdating && isBuilt);
 		this.exportToDbTblBtn.setEnabled(notUpdating && !isCheckingStatus);
@@ -279,8 +280,8 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 				}
 			}
 		}
-		if (prefName != null) {
-			localPrefs.put(prefName, save.getSelectedFile().getPath());
+		if (prefName != null && result != null) {
+			localPrefs.put(prefName, result.getPath());
 		}
 		return result;
 	}
@@ -479,7 +480,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 							}
 						}
 						ChooseFromListDlg<String> dog = new ChooseFromListDlg<String>((Frame)UIRegistry.get(UIRegistry.FRAME),
-								getResourceString("DWC_UNMAPPED_DLG_TITLE"),
+								getResourceString("ExportPanel.DWC_UNMAPPED_DLG_TITLE"),
 								ChooseFromListDlg.OKCANCEL, descriptions);
 						dog.createUI();
 						dog.getList().setSelectedIndex(0);
@@ -641,7 +642,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 					@Override
 					protected void done() {
 						super.done();
-						ExportPanel.this.showIPTSQLBtn.setEnabled(true);
+						ExportPanel.this.createDwcaBtn.setEnabled(true); //?? OR publishToGbifBtn
 					}
 
 				};
@@ -896,6 +897,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 			publishToGbifBtn.setEnabled(false);
 			buildDwCArchive(map);
 		});
+		publishToGbifBtn.setEnabled(false);
 
 		helpBtn = createButton(getResourceString("HELP"));
 		HelpMgr.registerComponent(helpBtn, "schema_tool");
@@ -1054,6 +1056,9 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
         {
             log.error(ex);
         }
+
+        AppPreferences.shutdownAllPrefs();
+
         DataProviderFactory.getInstance().shutdown();
         DBConnection.shutdown();
         DBConnection.shutdownFinalConnection(true, false); // true means System.exit
