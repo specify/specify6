@@ -2150,14 +2150,22 @@ public class DataEntryTask extends BaseTask
      */
     protected void processRecordSetCommand(final CommandAction cmdAction)
     {
-        if (!processRecordSetCommand(cmdAction, stdViews))
-        {
-            if (!processRecordSetCommand(cmdAction, miscViews) && cmdAction.getDstObj() instanceof RecordSetIFace)
-            {
-                FormPane formPane = createFormFor(this, "", null, null, (RecordSetIFace)cmdAction.getDstObj());
-                if (formPane != null)
-                {
-                    addSubPaneToMgr(formPane);
+        if (!processRecordSetCommand(cmdAction, stdViews)) {
+            if (!processRecordSetCommand(cmdAction, miscViews) && cmdAction.getDstObj() instanceof RecordSetIFace) {
+                RecordSetIFace rs = (RecordSetIFace)cmdAction.getDstObj();
+                if (rs != null) {
+                    FormPane formPane = createFormFor(this, "", null, null, rs);
+                    String tblTitle = DBTableIdMgr.getInstance().getInfoById(rs.getDbTableId()).getTitle();
+                    if (formPane != null) {
+                        boolean r = UIRegistry.displayConfirm(getResourceString("DataEntryTask.DUBIOUS_FORM_MSG_TITLE"),
+                                String.format(getResourceString("DataEntryTask.NO_SUITABLE_DATA_ENTRY_FORM_MSG"), tblTitle),
+                                getResourceString("YES"), getResourceString("NO"), JOptionPane.WARNING_MESSAGE);
+                        if (r) {
+                            addSubPaneToMgr(formPane);
+                        }
+                    } else {
+                        UIRegistry.displayInfoMsgDlg(String.format(getResourceString("DataEntryTask.NO_FORM_AVAILABLE"), tblTitle));
+                    }
                 }
             }
         }
