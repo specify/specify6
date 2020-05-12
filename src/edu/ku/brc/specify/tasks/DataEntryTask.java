@@ -680,6 +680,10 @@ public class DataEntryTask extends BaseTask
                             }
                             cmdAction.setProperty(NavBoxAction.ORGINATING_TASK, task);
                             ContextMgr.registerService(10, dev.getView(), tblId, cmdAction, this, DATA_ENTRY, tableInfo.getTitle(), true); // the Name gets Hashed
+                            if (isColObj) {
+                                cmdAction.setProperty("displayTableId", 1);
+                                ContextMgr.registerService(10, dev.getView(), 63, cmdAction, this, DATA_ENTRY, tableInfo.getTitle(), true); // the Name gets Hashed
+                            }
                         }
                         
                         if (dev.isSideBar())
@@ -1829,7 +1833,7 @@ public class DataEntryTask extends BaseTask
         } else if (cmdAction.isAction(EDIT_DATA))
         {
             Taskable task = (Taskable)cmdAction.getProperty(NavBoxAction.ORGINATING_TASK);
-            editData(task != null ? task : this, cmdAction.getData(), null, cmdAction.getProperty("readonly") != null);
+            editData(task != null ? task : this, getDataForEditing(cmdAction), null, cmdAction.getProperty("readonly") != null);
         } else if (cmdAction.isAction(BATCH_EDIT_DATA)) {
             Object   data      = cmdAction.getData();
             if (data instanceof RecordSetIFace) {
@@ -1875,7 +1879,46 @@ public class DataEntryTask extends BaseTask
             checkToPrintLabel(cmdAction, true);
         }
     }
-    
+
+    private Object getDataForEditing(CommandAction commandAction) {
+        Object result = commandAction.getData();
+        if ("1".equals(commandAction.getPropertyAsString("displayTableId"))) {
+            if ((result instanceof RecordSetIFace) && ((RecordSetIFace) result).getDbTableId() == Preparation.getClassTableId()) {
+                return getRelatedRecordset((RecordSetIFace)result, 1);
+            }
+        }
+        return result;
+    }
+
+    private RecordSetIFace getRelatedRecordset(RecordSetIFace rs, int toTableId) {
+        RecordSetIFace result = rs;
+        if (!(rs.getDbTableId() == Preparation.getClassTableId() && toTableId == CollectionObject.getClassTableId())) {
+            log.warn("Unable to process " + rs.getDbTableId() + " to " + toTableId);
+        } else {
+            String sql;
+            if (result.getRecordSetId() != null) {
+                sql = "select distinct collectionobjectid from preparation p inner join recordsetitem rsi on rsi.recordid = p.preparation" +
+                        " where rsi.recordsetid = " + rs.getRecordSetId();
+            } else {
+                List<Integer> recIds = RecordSet.getIdList(null, rs.getItems());
+                String recIdStr = recIds.toString().replace("[", "").replace("]", "");
+                sql = "select distinct collectionobjectid from preparation where preparationid in(" + recIdStr + ")";
+            }
+            Vector<Integer> ids = BasicSQLUtils.queryForInts(sql);
+            RecordSet resultRS = new RecordSet();
+            resultRS.initialize();
+            resultRS.setDbTableId(toTableId);
+            for (Integer id : ids) {
+                RecordSetItem i = new RecordSetItem();
+                i.initialize();
+                i.setRecordSet(resultRS);
+                i.setRecordId(id);
+                resultRS.getRecordSetItems().add(i);
+            }
+            result = resultRS;
+        }
+        return result;
+    }
     /**
      * @param parentTaxon
      * @return
