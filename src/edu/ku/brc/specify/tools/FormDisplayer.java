@@ -542,7 +542,7 @@ public class FormDisplayer
             String zipFilePath = dstDirPath + File.separator + "site.zip";
             System.out.println("["+zipFilePath+"]");
             
-            String           url    = "http://files.specifysoftware.org/site.zip";
+            String           url    = "https://files.specifysoftware.org/site.zip";
             HTTPGetter       getter = new HTTPGetter();
             InputStream      ins    = getter.beginHTTPRequest(url);
             //DataInputStream  dins   = new DataInputStream(ins);
