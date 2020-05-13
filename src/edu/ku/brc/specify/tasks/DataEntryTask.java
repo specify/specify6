@@ -711,6 +711,9 @@ public class DataEntryTask extends BaseTask
                         
                                 // When something is dropped on it
                                 nbb.addDropDataFlavor(new DataFlavorTableExt(RecordSetTask.class, RecordSetTask.RECORD_SET, tableInfo.getTableId()));//RecordSetTask.RECORDSET_FLAVOR);
+                                if (isColObj) {
+                                    nbb.addDropDataFlavor(new DataFlavorTableExt(RecordSetTask.class, RecordSetTask.RECORD_SET, Preparation.getClassTableId()));
+                                }
                             }
                             viewsNavBox.add(nbi);
                         }
@@ -1811,6 +1814,7 @@ public class DataEntryTask extends BaseTask
             Object   data      = cmdAction.getData();
             if (data instanceof RecordSetIFace)
             {
+                data = getDataForEditing(cmdAction);
                 editData(task != null ? task : this, data, viewName);
                 
             } else if (data instanceof Pair<?, ?>)
@@ -1882,9 +1886,11 @@ public class DataEntryTask extends BaseTask
 
     private Object getDataForEditing(CommandAction commandAction) {
         Object result = commandAction.getData();
-        if ("1".equals(commandAction.getPropertyAsString("displayTableId"))) {
+        if ((commandAction.getProperties().containsKey("tableInfo") && (commandAction.getProperty("tableInfo") instanceof DBTableInfo)
+            &&  ((DBTableInfo)commandAction.getProperty("tableInfo")).getTableId() == CollectionObject.getClassTableId())
+            ||  "1".equals(commandAction.getPropertyAsString("displayTableId"))) {
             if ((result instanceof RecordSetIFace) && ((RecordSetIFace) result).getDbTableId() == Preparation.getClassTableId()) {
-                return getRelatedRecordset((RecordSetIFace)result, 1);
+                result = getRelatedRecordset((RecordSetIFace)result, CollectionObject.getClassTableId());
             }
         }
         return result;
@@ -1897,7 +1903,7 @@ public class DataEntryTask extends BaseTask
         } else {
             String sql;
             if (result.getRecordSetId() != null) {
-                sql = "select distinct collectionobjectid from preparation p inner join recordsetitem rsi on rsi.recordid = p.preparation" +
+                sql = "select distinct collectionobjectid from preparation p inner join recordsetitem rsi on rsi.recordid = p.preparationid" +
                         " where rsi.recordsetid = " + rs.getRecordSetId();
             } else {
                 List<Integer> recIds = RecordSet.getIdList(null, rs.getItems());
@@ -1907,6 +1913,7 @@ public class DataEntryTask extends BaseTask
             Vector<Integer> ids = BasicSQLUtils.queryForInts(sql);
             RecordSet resultRS = new RecordSet();
             resultRS.initialize();
+            resultRS.setName(rs.getName() + " -> " + DBTableIdMgr.getInstance().getInfoById(toTableId).getTitle());
             resultRS.setDbTableId(toTableId);
             for (Integer id : ids) {
                 RecordSetItem i = new RecordSetItem();
