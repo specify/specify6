@@ -19,9 +19,7 @@
  */
 package edu.ku.brc.specify.tasks;
 
-import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
-import static edu.ku.brc.ui.UIRegistry.getResourceString;
-
+import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -31,12 +29,19 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 
-import javax.swing.JOptionPane;
+import javax.swing.*;
+import javax.swing.border.LineBorder;
+import javax.swing.plaf.basic.BasicBorders;
 
+import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.af.prefs.PrefsPanelIFace;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.dbsupport.*;
 import edu.ku.brc.specify.datamodel.Preparation;
+import edu.ku.brc.specify.prefs.LoansPrefsPanel;
+import edu.ku.brc.ui.CustomDialog;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -62,6 +67,11 @@ import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import scala.collection.mutable.HashTable;
+
+import static edu.ku.brc.ui.ToggleButtonChooserPanel.Type.RadioButton;
+import static edu.ku.brc.ui.UIRegistry.*;
+import static java.awt.Color.BLACK;
+import static java.awt.Color.GRAY;
 
 /**
  * @author rod
@@ -200,6 +210,66 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
         createOrAdd(currPrepProvider, null, null);
     }
 
+    private int promptForItemIdTableId() {
+        JPanel mainPane = new JPanel(new BorderLayout());
+        mainPane.add(new Label(getResourceString("InteractionsProcessor.ItemIDForTblMsg")), BorderLayout.NORTH);
+        ButtonGroup buttGrp = new ButtonGroup();
+        JRadioButton coBtn = new JRadioButton(DBTableIdMgr.getInstance().getTitleForId(CollectionObject.getClassTableId()));
+        coBtn.setSelected(true);
+        JRadioButton prepBtn = new JRadioButton(DBTableIdMgr.getInstance().getTitleForId(Preparation.getClassTableId()));
+        buttGrp.add(coBtn);
+        buttGrp.add(prepBtn);
+        JPanel buttGrpPane = new JPanel();
+        buttGrpPane.setLayout(new BoxLayout(buttGrpPane, BoxLayout.Y_AXIS));
+        buttGrpPane.setBorder(BorderFactory.createEmptyBorder(5, 10, 10, 4));
+        buttGrpPane.add(coBtn);
+        buttGrpPane.add(prepBtn);
+        mainPane.add(buttGrpPane, BorderLayout.CENTER);
+        mainPane.setBorder(BorderFactory.createEmptyBorder(12, 5, 12, 5));
+        //TaskMgr.getTask("")
+        JCheckBox remember = null;
+        boolean canSetPref = !AppContextMgr.isSecurityOn();
+        if (!canSetPref) {
+            PrefsPanelIFace loanPrefs = new LoansPrefsPanel(false);
+            canSetPref = loanPrefs.getPermissions().canModify();
+        }
+        if (canSetPref) {
+            remember = new JCheckBox(getResourceString("InteractionsProcessor.DoNotAskAgain"));
+            mainPane.add(remember, BorderLayout.SOUTH);
+        }
+        CustomDialog cwin = new CustomDialog((Frame)getTopWindow(), getResourceString("InteractionsProcessor.ItemIDForTblTitle"), true,
+                mainPane); // i18n
+        cwin.setWhichBtns(CustomDialog.OKCANCEL);
+        cwin.setModal(true);
+        cwin.setVisible(true);
+        int result = cwin.isCancelled() ? 0 :
+                (coBtn.isSelected() ? CollectionObject.getClassTableId() : Preparation.getClassTableId());
+        if (canSetPref && remember.isSelected()) {
+            AppPreferences.getRemote().putInt(DEFAULT_SRC_TBL_ID, result);
+        }
+        cwin.dispose();
+        return result;
+    }
+
+    private String getDefaultInteractionLookupField(int tableId) {
+        if (tableId == CollectionObject.getClassTableId()) {
+            return "CatalogNumber";
+        } else if (tableId == Preparation.getClassTableId()) {
+            return "BarCode";
+        } else {
+            log.error("No default lookup field for " + DBTableIdMgr.getInstance().getInfoById(tableId).getName());
+            return null;
+        }
+    }
+
+    public static String getInteractionItemLookupFieldPref(int tableId) {
+        return "InteractionItemLookupField." + tableId;
+    }
+
+    private String getInteractionItemLookupField(int tableId) {
+        return AppPreferences.getRemote().get(getInteractionItemLookupFieldPref(tableId), getDefaultInteractionLookupField(tableId));
+    }
+
     /**
      * Creates a new loan from a RecordSet.
      * @param currPrepProvider an existing loan that needs additional Preps
@@ -222,50 +292,35 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
             List<RecordSetIFace>   colObjRSList = rsTask.getRecordSets(CollectionObject.getClassTableId());
 
             // If the List is empty then
-            if (rsList.size() == 0 && colObjRSList.size() == 0 && (isFor != forAcc || currPrepProvider != null))
-            {
+            if (rsList.size() == 0 && colObjRSList.size() == 0 && (isFor != forAcc || currPrepProvider != null)) {
                 recordSet = task.askForDataObjRecordSet(CollectionObject.class, catNumField, isFor == forAcc);
 
-            } else
-            {
+            } else {
                 ASK_TYPE rv = askSourceOfPreps(rsList.size() > 0, colObjRSList.size() > 0, currPrepProvider);
-                if (rv == ASK_TYPE.ChooseRS)
-                {
+                if (rv == ASK_TYPE.ChooseRS) {
                     Vector<Integer> tblIds = new Vector<>();
                     tblIds.add(CollectionObject.getClassTableId());
                     if (isFor != forAcc) {
                         tblIds.add(Preparation.getClassTableId());
                     }
                     recordSet = RecordSetTask.askForRecordSet(tblIds, rsList, true);
-                } else if (rv == ASK_TYPE.EnterDataObjs)
-                {
+                } else if (rv == ASK_TYPE.EnterDataObjs) {
                     Integer defSrcTblId = AppPreferences.getRemote().getInt(DEFAULT_SRC_TBL_ID, null);
                     if (isFor == forAcc) {
                         defSrcTblId = 1;
                     }
                     if (defSrcTblId == null || defSrcTblId == 0) {
-                        int yesOrNo = UIRegistry.askYesNoLocalized(DBTableIdMgr.getInstance().getTitleForId(CollectionObject.getClassTableId()),
-                                DBTableIdMgr.getInstance().getTitleForId(Preparation.getClassTableId()),
-                                getResourceString("InteractionsProcessor.ItemIDForTblMsg"),
-                                getResourceString("InteractionsProcessor.ItemIDForTblTitle"));
-                        if (yesOrNo == JOptionPane.YES_OPTION) {
-                            defSrcTblId = CollectionObject.getClassTableId();
-                        } else if (yesOrNo == JOptionPane.NO_OPTION) {
-                            defSrcTblId = Preparation.getClassTableId();
-                        }
+                        defSrcTblId = promptForItemIdTableId();
                     }
                     if (defSrcTblId != null && defSrcTblId != 0) {
-                        String fld = defSrcTblId == CollectionObject.getClassTableId() ? catNumField : "BarCode";
                         recordSet = task.askForDataObjRecordSet(defSrcTblId == CollectionObject.getClassTableId() ? CollectionObject.class : Preparation.class,
-                                fld, isFor == forAcc);
+                                getInteractionItemLookupField(defSrcTblId), isFor == forAcc);
                     }
                 } else if (rv == ASK_TYPE.None) {
                     recordSet = null;
                     isEmptyAcc = true;
-                } else if (rv == ASK_TYPE.Cancel)
-                {
-                    if (viewable != null)
-                    {
+                } else if (rv == ASK_TYPE.Cancel) {
+                    if (viewable != null) {
                         viewable.setNewObject(null);
                     }
                     return;
@@ -273,8 +328,7 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
             }
         }
 
-        if (recordSet == null && !isEmptyAcc)
-        {
+        if (recordSet == null && !isEmptyAcc) {
             return;
         }
 

@@ -2194,7 +2194,22 @@ public class DataEntryTask extends BaseTask
         }
         return false;
     }
-    
+
+    private String getDubiousFormPrefName(int tableId) {
+        return "DubiousFormDisplay." + AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getName() + "." + tableId;
+    }
+
+    private boolean confirmDubiousFormDisplay(int tableId) {
+        boolean confirmed = false;//AppPreferences.getRemote().getBoolean(getDubiousFormPrefName(tableId), false);
+        if (!confirmed) {
+            confirmed = UIRegistry.displayConfirm(getResourceString("DataEntryTask.DUBIOUS_FORM_MSG_TITLE"),
+                    String.format(getResourceString("DataEntryTask.NO_SUITABLE_DATA_ENTRY_FORM_MSG"),
+                            DBTableIdMgr.getInstance().getInfoById(tableId).getTitle()),
+                    getResourceString("YES"), getResourceString("NO"), JOptionPane.WARNING_MESSAGE);
+        }
+        return confirmed;
+    }
+
     /**
      * @param cmdAction
      */
@@ -2207,10 +2222,7 @@ public class DataEntryTask extends BaseTask
                     FormPane formPane = createFormFor(this, "", null, null, rs);
                     String tblTitle = DBTableIdMgr.getInstance().getInfoById(rs.getDbTableId()).getTitle();
                     if (formPane != null) {
-                        boolean r = UIRegistry.displayConfirm(getResourceString("DataEntryTask.DUBIOUS_FORM_MSG_TITLE"),
-                                String.format(getResourceString("DataEntryTask.NO_SUITABLE_DATA_ENTRY_FORM_MSG"), tblTitle),
-                                getResourceString("YES"), getResourceString("NO"), JOptionPane.WARNING_MESSAGE);
-                        if (r) {
+                        if (confirmDubiousFormDisplay(rs.getDbTableId())) {
                             addSubPaneToMgr(formPane);
                         }
                     } else {

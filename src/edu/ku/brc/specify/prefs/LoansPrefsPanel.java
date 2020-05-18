@@ -56,7 +56,7 @@ public class LoansPrefsPanel extends GenericPrefsPanel implements PrefsSavable, 
 {
 
     /**
-     * Constructor of the EMail setting panel.
+     * Constructor of the Loans setting panel.
      */
     public LoansPrefsPanel()
     {
@@ -64,6 +64,9 @@ public class LoansPrefsPanel extends GenericPrefsPanel implements PrefsSavable, 
         createUI();
     }
 
+    public LoansPrefsPanel(boolean createUI) {
+        super();
+    }
     /**
      * Create the UI for the panel
      */
