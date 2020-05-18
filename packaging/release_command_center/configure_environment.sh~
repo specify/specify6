@@ -412,8 +412,8 @@ Resources_en ()	{
 
 #Begin a static listing of possible values
 
-rel_val[1]="http://update.specifysoftware.org/updates.xml"
-rel_val[2]="http://update.specifysoftware.org/updates-embed.xml"
+rel_val[1]="https://update.specifysoftware.org/updates.xml"
+rel_val[2]="https://update.specifysoftware.org/updates-embed.xml"
 rel_val[3]="http://specify6-prod.nhm.ku.edu/spinternal/updates.xml"
 rel_val[4]="http://specify6-prod.nhm.ku.edu/spinternal/updates-embed.xml"
 
