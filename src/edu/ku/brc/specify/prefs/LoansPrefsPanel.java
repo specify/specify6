@@ -79,6 +79,8 @@ public class LoansPrefsPanel extends GenericPrefsPanel implements PrefsSavable, 
         String  shippingMethod   = prefs.get(LoanGiftShipmentBusRules.SHIPMETHOD, null);
         Integer shippedByAgentId = prefs.getInt(LoanGiftShipmentBusRules.SHIPPEDBY, null);
         Integer defSrcTblId = prefs.getInt(InteractionsProcessor.DEFAULT_SRC_TBL_ID, null);
+        String defItemIdFld = prefs.get(InteractionsProcessor.getInteractionItemLookupFieldPref(defSrcTblId),
+                InteractionsProcessor.getDefaultInteractionLookupField(defSrcTblId));
         
         FormViewObj fvo = (FormViewObj)form;
         

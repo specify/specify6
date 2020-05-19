@@ -251,7 +251,7 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
         return result;
     }
 
-    private String getDefaultInteractionLookupField(int tableId) {
+    public static String getDefaultInteractionLookupField(int tableId) {
         if (tableId == CollectionObject.getClassTableId()) {
             return "CatalogNumber";
         } else if (tableId == Preparation.getClassTableId()) {
