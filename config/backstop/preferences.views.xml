@@ -1008,6 +1008,17 @@
                     <cell type="label" labelfor="lnDefSrcCBX" label="LOANS_DEFAULT_SRC_LBL"/>
                     <cell type="field" uitype="combobox" id="lnDefSrcCBX" readonly="false" changesonly="true" />
                 </row>
+                <row>
+                    <cell type="separator" label="LOANS_DEFAULT_ID_FLDS_BAR" colspan="5"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="lnIdFldCoCBX" label="LOANS_DEFAULT_ID_FLDS_BAR"/>
+                    <cell type="field" uitype="combobox" id="lnIdFldCoCBX" readonly="false" changesonly="true" />
+                </row>
+                <row>
+                    <cell type="label" labelfor="lnIdFldPrepCBX" label="LOANS_DEFAULT_ID_FLDS_BAR"/>
+                    <cell type="field" uitype="combobox" id="lnIdFldPrepCBX" readonly="false" changesonly="true" />
+                </row>
             </rows>
         </viewdef>
         
