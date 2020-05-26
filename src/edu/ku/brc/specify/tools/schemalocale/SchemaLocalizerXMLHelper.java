@@ -630,14 +630,14 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                 }
 
                 InputStreamReader inpStrmReader = new InputStreamReader(new FileInputStream(file), "UTF8"); 
-                //containers = (Vector<DisciplineBasedContainer>)xstream.fromXML(inpStrmReader);
-                try {
-                    containers = oldSchoolStepByStep(discipline);
-                } catch (Exception x) {
-                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SchemaLocalizerXMLHelper.class, x);
-                    log.error(x);
-                }
+                containers = (Vector<DisciplineBasedContainer>)xstream.fromXML(inpStrmReader);
+//                try {
+//                    containers = oldSchoolStepByStep(discipline);
+//                } catch (Exception x) {
+//                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+//                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SchemaLocalizerXMLHelper.class, x);
+//                    log.error(x);
+//                }
 
             }
             
