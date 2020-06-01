@@ -2200,13 +2200,13 @@ public class DataEntryTask extends BaseTask
     }
 
     private boolean confirmDubiousFormDisplay(int tableId) {
-        boolean confirmed = false;//AppPreferences.getRemote().getBoolean(getDubiousFormPrefName(tableId), false);
-        if (!confirmed) {
-            confirmed = UIRegistry.displayConfirm(getResourceString("DataEntryTask.DUBIOUS_FORM_MSG_TITLE"),
-                    String.format(getResourceString("DataEntryTask.NO_SUITABLE_DATA_ENTRY_FORM_MSG"),
-                            DBTableIdMgr.getInstance().getInfoById(tableId).getTitle()),
-                    getResourceString("YES"), getResourceString("NO"), JOptionPane.WARNING_MESSAGE);
-        }
+        boolean confirmed = tableId == CollectionObject.getClassTableId();//AppPreferences.getRemote().getBoolean(getDubiousFormPrefName(tableId), false);
+//        if (!confirmed) {
+//            confirmed = UIRegistry.displayConfirm(getResourceString("DataEntryTask.DUBIOUS_FORM_MSG_TITLE"),
+//                    String.format(getResourceString("DataEntryTask.NO_SUITABLE_DATA_ENTRY_FORM_MSG"),
+//                            DBTableIdMgr.getInstance().getInfoById(tableId).getTitle()),
+//                    getResourceString("YES"), getResourceString("NO"), JOptionPane.WARNING_MESSAGE);
+//        }
         return confirmed;
     }
 
@@ -2219,12 +2219,14 @@ public class DataEntryTask extends BaseTask
             if (!processRecordSetCommand(cmdAction, miscViews) && cmdAction.getDstObj() instanceof RecordSetIFace) {
                 RecordSetIFace rs = (RecordSetIFace)cmdAction.getDstObj();
                 if (rs != null) {
+                    if (rs.getDbTableId() == Preparation.getClassTableId()) {
+                        rs = getRelatedRecordset(rs, CollectionObject.getClassTableId());
+                    }
                     FormPane formPane = createFormFor(this, "", null, null, rs);
                     String tblTitle = DBTableIdMgr.getInstance().getInfoById(rs.getDbTableId()).getTitle();
-                    if (formPane != null) {
-                        if (confirmDubiousFormDisplay(rs.getDbTableId())) {
-                            addSubPaneToMgr(formPane);
-                        }
+                    boolean canShow = formPane != null ? confirmDubiousFormDisplay(rs.getDbTableId()) : false;
+                    if (canShow) {
+                        addSubPaneToMgr(formPane);
                     } else {
                         UIRegistry.displayInfoMsgDlg(String.format(getResourceString("DataEntryTask.NO_FORM_AVAILABLE"), tblTitle));
                     }
