@@ -505,7 +505,7 @@ public class ExportMappingTask extends QueryTask
 	protected DBTableInfo chooseBaseTable() {
 		DBTableInfo prepInfo = DBTableIdMgr.getInstance().getInfoById(Preparation.getClassTableId());
 		DBTableInfo coInfo = DBTableIdMgr.getInstance().getInfoById(CollectionObject.getClassTableId());
-		Boolean prepsEnabled = AppPreferences.getRemote().getBoolean(PREP_MAPS_ENABLED_PREF, false);
+		Boolean prepsEnabled = false;//AppPreferences.getRemote().getBoolean(PREP_MAPS_ENABLED_PREF, false);
 		int r = prepsEnabled
 				? UIRegistry.askYesNoLocalized(coInfo.getTitle(), prepInfo.getTitle(), "CANCEL",
 						UIRegistry.getResourceString("ExportMappingTask.ChooseBaseTableMsg"),
