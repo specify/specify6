@@ -191,13 +191,16 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
         SpQuery query = new SpQuery();
         query.initialize();
         query.setSpecifyUser(AppContextMgr.getInstance().getClassObject(SpecifyUser.class));
-        query.setName(String.format(getResourceString("QB_NEW_QUERY_NAME"), tableInfo.getTitle()));
+        query.setName(getDefaultNewQueryName(tableInfo));
         query.setNamed(false);
         query.setContextTableId((short)tableInfo.getTableId());
         query.setContextName(tableInfo.getShortClassName());
         return query;
     }
 
+    protected String getDefaultNewQueryName(DBTableInfo tableInfo) {
+        return String.format(getResourceString("QB_NEW_QUERY_NAME"), tableInfo.getTitle());
+    }
 
     /**
      * Creates pane and executes a query.

@@ -1117,7 +1117,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             //query.forceLoad(true);                	
             qfps = !isExportMapping ? getQueryFieldPanels(this, query.getFields(), tableTree, tableTreeHash, saveBtn, missingFlds)
             		: getQueryFieldPanelsForMapping(this, query.getFields(), tableTree, tableTreeHash, saveBtn, schemaMapping, missingFlds, 
-            				(doAutoMap ? ConceptMapUtils.getDefaultDarwinCoreMappings() : null));
+            				(doAutoMap ? ConceptMapUtils.getDefaultDarwinCoreMappings(query.getContextTableId()) : null));
             if (missingFlds.size() > 0)
             {
                 JList list = new JList(new Vector<String>(missingFlds));

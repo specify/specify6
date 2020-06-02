@@ -29,7 +29,7 @@ public class ConceptMapUtils
 	 * 
 	 * 
 	 */
-	public static Map<String, Vector<MappedFieldInfo>> getDefaultDarwinCoreMappings()
+	public static Map<String, Vector<MappedFieldInfo>> getDefaultDarwinCoreMappings(int tableId)
 	{
 		if (autoMaps == null)
 		{
@@ -37,7 +37,7 @@ public class ConceptMapUtils
 			try
 	        {
 	            Element root       = XMLHelper.readDOMFromConfigDir("dwcdefaultmap.xml");
-	            List<?> mapNodes = root.selectNodes("/default_mappings/default_mapping");
+	            List<?> mapNodes = root.selectNodes("/tables/table[@id='" + tableId + "']default_mappings/default_mapping");
 	            String prevName = "";
 	            Vector<MappedFieldInfo> ams = new Vector<MappedFieldInfo>();
 	            for (Object obj : mapNodes)
