@@ -12,8 +12,8 @@
     <express>
         <table id="60" tableid="63" indexed="false" name="CollObjToPrep" priority="1" color="30, 144, 144">
             <joins>
-                <join tableid="1" primary="true">collectionobject.CollectionObjectID</join>
-                <join tableid="63" >preparation.CollectionObjectID</join>
+                <!--join tableid="1" primary="true">collectionobject.CollectionObjectID</join-->
+                <join tableid="63" >preparation.PreparationID</join>
             </joins>
             <detailView icon="CollectionObject">
                 <sql>
@@ -28,7 +28,7 @@
  WHERE (preparation.CollectionMemberID = COLMEMID) AND %s]]>
                 </sql>
                 <captions>
-                    <caption tableid="63" col="preparation.PreparationID" visible="false"/>
+                    <caption tableid="1" col="collectionobject.CollectionObjectID" visible="false"/>
                     <caption tableid="63" col="BarCode"/>
                     <caption tableid="1" col="CatalogNumber"/>
                 </captions>
