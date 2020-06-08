@@ -828,7 +828,9 @@ public class DNASequence extends CollectionMember implements AttachmentOwnerIFac
     @Transient
     public Integer getParentTableId()
     {
-        return MaterialSample.getClassTableId();
+        //The CO/Prep parent reporting method used here and in getParentId() should be safe as long as this
+		//methods continues to be used only by the logging module
+    	return materialSample != null ? MaterialSample.getClassTableId() : CollectionObject.getClassTableId();
     }
 
     /* (non-Javadoc)
@@ -838,7 +840,8 @@ public class DNASequence extends CollectionMember implements AttachmentOwnerIFac
     @Transient
     public Integer getParentId()
     {
-        return materialSample != null ? materialSample.getId() : null;
+        return materialSample != null ? materialSample.getId() :
+				(collectionObject != null ? collectionObject.getId() : null);
     }
     
 	/* (non-Javadoc)
