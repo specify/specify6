@@ -523,6 +523,41 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
         }
     }
 
+    public static int LOAN_ADJUST_IDX = 0;
+    public static int GIFT_ADJUST_IDX = 1;
+    public static int EXCHANGEOUT_ADJUST_IDX = 2;
+    public static int DEACCESSION_ADJUST_IDX = 3;
+
+    public static String getAdjustedCountForPrepSQL(String where, boolean[] settings) {
+    String sql = "select p.preparationid, coalesce(p.countamt, 0)";
+    String adjusters = "";
+    String joiners = "";
+    if (settings[LOAN_ADJUST_IDX]) {
+        adjusters += "coalesce(sum(lp.unavailable), 0)";
+        joiners += " left join (select preparationid, sum(coalesce(quantity, 0) - coalesce(quantityresolved, 0)) unavailable from loanpreparation group by 1) lp on lp.preparationid = p.preparationid";
+    }
+    if (settings[GIFT_ADJUST_IDX]) {
+        adjusters += (adjusters.length() > 0 ? "+" : "") + "coalesce(sum(gp.unavailable), 0)";
+        joiners += " left join (select preparationid, sum(coalesce(quantity, 0)) unavailable from giftpreparation group by 1) gp on gp.preparationid = p.preparationid";
+    }
+    if (settings[EXCHANGEOUT_ADJUST_IDX]) {
+        adjusters += (adjusters.length() > 0 ? "+" : "") + "coalesce(sum(ep.unavailable), 0)";
+        joiners += " left join (select preparationid, sum(coalesce(quantity, 0)) unavailable from exchangeoutprep group by 1) ep on ep.preparationid = p.preparationid";
+    }
+    if (settings[DEACCESSION_ADJUST_IDX]) {
+        adjusters += (adjusters.length() > 0 ? "+" : "") + "coalesce(sum(dp.unavailable), 0)";
+        joiners += " left join (select preparationid, sum(coalesce(quantity, 0)) unavailable from deaccessionpreparation group by 1) dp on dp.preparationid = p.preparationid";
+    }
+    if (adjusters.length() > 0) {
+        sql += " - (" + adjusters +") available from preparation p " + joiners;
+    }
+    if (where != null) {
+        sql += " where " + where;
+    }
+    sql += " group by 1";
+    return sql;
+}
+
     //--------------------------------------------------------------
     // Background loader class for loading a large number of loan preparations
     //--------------------------------------------------------------
@@ -538,6 +573,7 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
 
         private Hashtable<Integer, String>     prepTypeHash = new Hashtable<Integer, String>();
         private Hashtable<Integer, ColObjInfo> coToPrepHash = new Hashtable<Integer, ColObjInfo>();
+
 
         /**
          * @param prepsProvider
@@ -600,17 +636,19 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
 
         //see git issue #730
         protected String getAvailableCountForPrepSQL(String where) {
-            String sql = "select p.preparationid, coalesce(p.countamt, 0) - (coalesce(sum(lp.unavailable), 0) + coalesce(sum(gp.unavailable), 0) + coalesce(sum(ep.unavailable), 0) + coalesce(sum(dp.unavailable), 0)) available "
-                + "from preparation p left join "
-                + "(select preparationid, sum(coalesce(quantity, 0) - coalesce(quantityresolved, 0)) unavailable from loanpreparation group by 1) lp on lp.preparationid = p.preparationid left join "
-                + "(select preparationid, sum(coalesce(quantity, 0)) unavailable from giftpreparation group by 1) gp on gp.preparationid = p.preparationid left join "
-                + "(select preparationid, sum(coalesce(quantity, 0)) unavailable from exchangeoutprep group by 1) ep on ep.preparationid = p.preparationid left join "
-                + "(select preparationid, sum(coalesce(quantity, 0)) unavailable from deaccessionpreparation group by 1) dp on dp.preparationid = p.preparationid ";
-            if (where != null) {
-                sql += "where " + where;
-            }
-            sql += " group by 1";
-            return sql;
+            boolean[] settings = {true, true, true, true};
+            return getAdjustedCountForPrepSQL(where, settings);
+//            String sql = "select p.preparationid, coalesce(p.countamt, 0) - (coalesce(sum(lp.unavailable), 0) + coalesce(sum(gp.unavailable), 0) + coalesce(sum(ep.unavailable), 0) + coalesce(sum(dp.unavailable), 0)) available "
+//                + "from preparation p left join "
+//                + "(select preparationid, sum(coalesce(quantity, 0) - coalesce(quantityresolved, 0)) unavailable from loanpreparation group by 1) lp on lp.preparationid = p.preparationid left join "
+//                + "(select preparationid, sum(coalesce(quantity, 0)) unavailable from giftpreparation group by 1) gp on gp.preparationid = p.preparationid left join "
+//                + "(select preparationid, sum(coalesce(quantity, 0)) unavailable from exchangeoutprep group by 1) ep on ep.preparationid = p.preparationid left join "
+//                + "(select preparationid, sum(coalesce(quantity, 0)) unavailable from deaccessionpreparation group by 1) dp on dp.preparationid = p.preparationid ";
+//            if (where != null) {
+//                sql += "where " + where;
+//            }
+//            sql += " group by 1";
+//            return sql;
         }
         /**
          *

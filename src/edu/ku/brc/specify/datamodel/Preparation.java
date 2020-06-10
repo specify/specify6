@@ -23,9 +23,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Calendar;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -43,7 +41,9 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.tasks.InteractionsProcessor;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
@@ -76,7 +76,8 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
                                                              Cloneable
 {
 
-    // Fields    
+    private static final Logger log = Logger.getLogger(Preparation.class);
+    // Fields
 
     protected Integer                     preparationId;
     protected String                      text1;
@@ -1347,5 +1348,26 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
         return timestampCreated != null && obj != null && obj.timestampCreated != null ? timestampCreated.compareTo(obj.timestampCreated) : 0;
     }
 
+    @Transient
+    public static List<String> getCalculatedFields() {
+        List<String> result = new ArrayList<>();
+        result.add("ActualCountAmt");
+        return result;
+    }
 
+    protected static Object computeActualCountAmt(Object[] vals) {
+        boolean[] settings = {false, true, true, true};
+        String sql = InteractionsProcessor.getAdjustedCountForPrepSQL("where p.preparationid = " + vals[0], settings);
+        Object[] amt = BasicSQLUtils.querySingleObj(sql);
+        return amt != null ? amt[1] : null;
+    }
+
+    public static Object computeCalculatedField(String fldName, Object[] vals) {
+        if (fldName.equalsIgnoreCase("ActualCountAmt")) {
+            return computeActualCountAmt(vals);
+        } else {
+            log.error("Unknown calculated field: " + fldName);
+            return null;
+        }
+    }
 }
