@@ -2474,7 +2474,15 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     colInfoList.add(columnInfo);
                     erti.setColInfoList(colInfoList);
                     erti.setColName(null);
-                } else {
+                } else if (qfp.getFieldQRI() instanceof CalcQRI) {
+                    DBTableInfo tblInfo = qfp.getFieldQRI().getTableInfo();
+                    erti = new ERTICaptionInfoCalc(qfp.getFieldQRI().getFieldName(), lbl, qfp.getStringId(), tblInfo);
+                    Vector<ColInfo> colInfoList = new Vector<>();
+                    ColInfo columnInfo = erti.new ColInfo(tblInfo.getIdColumnName(), tblInfo.getIdFieldName());
+                    columnInfo.setPosition(0);
+                    colInfoList.add(columnInfo);
+                    erti.setColInfoList(colInfoList);
+                 } else {
                     erti = new ERTICaptionInfoQB(colName, lbl, true, getColumnFormatter(qfp, forSchemaExport), 0, qfp.getStringId(), qfp.getPickList(), fi);
                 }
                 erti.setColClass(qfp.getFieldQRI().getDataClass());

@@ -89,7 +89,15 @@ public class TableQRI extends ExpandableQRI
         	}
         }        		
     }
-    
+
+    /**
+     *
+     * @param calcFld
+     */
+    public void addField(final String calcFld) {
+        fields.add(new CalcQRI(this, calcFld));
+    }
+
     /**
      * @param fieldInfo
      * @return true if Day,Month,Year accessors should be added for the (assumed) date

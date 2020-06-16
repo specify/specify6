@@ -1349,7 +1349,7 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
     }
 
     @Transient
-    public static List<String> getCalculatedFields() {
+    public static List<String> getQueryableTransientFields() {
         List<String> result = new ArrayList<>();
         result.add("ActualCountAmt");
         return result;
@@ -1357,12 +1357,12 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
 
     protected static Object computeActualCountAmt(Object[] vals) {
         boolean[] settings = {false, true, true, true};
-        String sql = InteractionsProcessor.getAdjustedCountForPrepSQL("where p.preparationid = " + vals[0], settings);
-        Object[] amt = BasicSQLUtils.querySingleObj(sql);
+        String sql = InteractionsProcessor.getAdjustedCountForPrepSQL("p.preparationid = " + vals[0], settings);
+        Object[] amt = BasicSQLUtils.queryForRow(sql);
         return amt != null ? amt[1] : null;
     }
 
-    public static Object computeCalculatedField(String fldName, Object[] vals) {
+    public static Object getQueryableTransientFieldValue(String fldName, Object[] vals) {
         if (fldName.equalsIgnoreCase("ActualCountAmt")) {
             return computeActualCountAmt(vals);
         } else {
