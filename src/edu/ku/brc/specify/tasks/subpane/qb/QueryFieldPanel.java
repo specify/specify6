@@ -585,8 +585,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
            
             qField.setStartValue(getCriteriaText(false));
             String lbl = this.getLabel();
-            if (fieldQRI instanceof RelQRI)
-            {
+            if (fieldQRI instanceof RelQRI || fieldQRI instanceof CalcQRI) {
                 lbl = RelQRI.stripDescriptiveStuff(lbl);    
             }
             qField.setContextTableIdent(fieldQRI.getTableInfo().getTableId());
@@ -792,6 +791,9 @@ public class QueryFieldPanel extends JPanel implements ActionListener
         pickList = buildPickList();
     	comparators = getComparatorList(fieldQRI);
         String fieldLabelText = fieldQRI != null ? fieldQRI.getTitle() : null;
+        if (fieldQRI instanceof CalcQRI) {
+            fieldLabelText += " " + UIRegistry.getResourceString("QB_CALCULATED");
+        }
         if (fieldQRI instanceof RelQRI)
         {
             DBRelationshipInfo.RelationshipType relType = ((RelQRI)fieldQRI).getRelationshipInfo().getType();
@@ -822,18 +824,18 @@ public class QueryFieldPanel extends JPanel implements ActionListener
 			}
 		}
 		
-		isNotCheckbox.setVisible(fieldQRI != null && !isRel);
-		operatorCBX.setVisible(fieldQRI != null && !isRel);
-		criteria.setVisible(fieldQRI != null && !isRel && !isBool);
+		isNotCheckbox.setVisible(fieldQRI != null && !isRel && !(fieldQRI instanceof CalcQRI));
+		operatorCBX.setVisible(fieldQRI != null && !isRel && !(fieldQRI instanceof CalcQRI));
+		criteria.setVisible(fieldQRI != null && !isRel && !isBool && !(fieldQRI instanceof CalcQRI));
 		if (schemaMapping != null)
 		{
-			this.sortCheckbox.setVisible(!(isTreeLevel || isRel));
+			this.sortCheckbox.setVisible(!(isTreeLevel || isRel || fieldQRI instanceof CalcQRI));
 		}
 		else
 		{
 			if (!isRel)
 			{
-				this.sortCheckbox.setVisible(fieldQRI != null);
+				this.sortCheckbox.setVisible(fieldQRI != null && !(fieldQRI instanceof CalcQRI));
 			} else
 			{
 				this.sortCheckbox
@@ -844,12 +846,12 @@ public class QueryFieldPanel extends JPanel implements ActionListener
 
 		if (schemaMapping != null)
 		{
-				isPromptCkbx.setVisible(false);
+		    isPromptCkbx.setVisible(false);
 		} else if (!ownerQuery.isPromptMode())
 		{
-            isDisplayedCkbx.setVisible(fieldQRI != null && (!isRel || getPickList() != null));
-            isPromptCkbx.setVisible(fieldQRI != null && (!isRel || getPickList() != null));
-            isEnforcedCkbx.setVisible(fieldQRI != null && (!isRel || getPickList() != null));
+            isDisplayedCkbx.setVisible(fieldQRI != null && (!isRel || getPickList() != null) && !(fieldQRI instanceof CalcQRI));
+            isPromptCkbx.setVisible(fieldQRI != null && (!isRel || getPickList() != null) && !(fieldQRI instanceof CalcQRI));
+            isEnforcedCkbx.setVisible(fieldQRI != null && (!isRel || getPickList() != null) && !(fieldQRI instanceof CalcQRI));
 		}
     	setQueryField(qf);
     }
@@ -1758,6 +1760,9 @@ public class QueryFieldPanel extends JPanel implements ActionListener
         iconLabel = new JLabel(icon);
         iconLabel.addFocusListener(focusListener);
         String fieldLabelText = fieldQRI != null ? fieldQRI.getTitle() : "WXYZ";
+        if (fieldQRI instanceof CalcQRI) {
+            fieldLabelText += " " + UIRegistry.getResourceString("QB_CALCULATED");
+        }
         if (fieldQRI instanceof RelQRI)
         {
             DBRelationshipInfo.RelationshipType relType = ((RelQRI)fieldQRI).getRelationshipInfo().getType();
@@ -2043,31 +2048,32 @@ public class QueryFieldPanel extends JPanel implements ActionListener
 			// for now
 			boolean isRel = fieldQRI != null && fieldQRI instanceof RelQRI;
 			boolean isTreeLevel = fieldQRI instanceof TreeLevelQRI;
-			isNotCheckbox.setVisible(!isRel || pickList != null);
-			operatorCBX.setVisible(!isRel || pickList != null);
-			criteria.setVisible((!isRel && !isBool) || pickList != null);
+			boolean isCalc =  fieldQRI instanceof CalcQRI;
+			isNotCheckbox.setVisible((!isRel && !isCalc) || pickList != null);
+			operatorCBX.setVisible((!isRel && !isCalc) || pickList != null);
+			criteria.setVisible((!isRel && !isBool && !isCalc) || pickList != null);
 			if (schemaMapping != null)
 			{
-				this.sortCheckbox.setVisible(!(isTreeLevel || isRel));
+				this.sortCheckbox.setVisible(!(isTreeLevel || isRel || isCalc));
 			}
 			else
 			{
-				if (!isRel)
+				if (!isRel && !isCalc)
 				{
 					this.sortCheckbox.setVisible(true);
 				} else
 				{
 					this.sortCheckbox
-						.setVisible(((RelQRI) fieldQRI).getRelationshipInfo()
+						.setVisible(!isCalc && ((RelQRI) fieldQRI).getRelationshipInfo()
 								.getType() != RelationshipType.OneToMany);
 				}
 			}
 			
 			if (!ownerQuery.isPromptMode())
 			{
-				isDisplayedCkbx.setVisible(!isRel || getPickList() != null);
-				isPromptCkbx.setVisible(!isRel || getPickList() != null);
-				isEnforcedCkbx.setVisible(!isRel || getPickList() != null);
+				isDisplayedCkbx.setVisible((!isRel && !isCalc) || getPickList() != null);
+				isPromptCkbx.setVisible((!isRel && !isCalc) || getPickList() != null);
+				isEnforcedCkbx.setVisible((!isRel && !isCalc) || getPickList() != null);
 			}
 		}
         validate();
