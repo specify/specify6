@@ -145,4 +145,4 @@ A process for producing final releases could be as follows:
    directory.
 
 1. To make the release live for auto updates, copy the contents of the
-   new version directory to the home directory[![analytics](http://www.google-analytics.com/collect?v=1&t=pageview&dl=https%3A%2F%2Fgithub.com%2Fspecify%2Fsp7-stats&uid=readme&tid=UA-169822764-4)]()
+   new version directory to the home directory[![analytics](http://www.google-analytics.com/collect?v=1&t=pageview&dl=https%3A%2F%2Fgithub.com%2Fspecify%2F/specify6&uid=readme&tid=UA-169822764-4)]()
