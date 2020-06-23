@@ -817,7 +817,7 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
     }
 
     /**
-     * 
+     *
      * @param formatter
      * @param date
      * @return
