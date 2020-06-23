@@ -55,6 +55,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 
+import edu.ku.brc.specify.plugins.PartialDateUI;
 import org.apache.commons.lang.StringUtils;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -1137,14 +1138,14 @@ public class ValFormattedTextField extends JPanel implements ValFormattedTextFie
             {
                 data = (String)value;
 
-            } else if (value instanceof Date)
-            {
-                data = formatter.getDateWrapper().format((Date)value);
-                
-            } else if (value instanceof Calendar)
-            {
-                data = formatter.getDateWrapper().format(((Calendar)value).getTime());
-                
+            } else if (value instanceof Date || value instanceof Calendar) {
+                Date dateValue = value instanceof Calendar ? ((Calendar)value).getTime() : (Date)value;
+                if (formatter.getPartialDateType().equals(UIFieldFormatterIFace.PartialDateEnum.Month)
+                    || formatter.getPartialDateType().equals(UIFieldFormatterIFace.PartialDateEnum.Year)) {
+                    data = PartialDateUI.formatForUI(formatter, dateValue);
+                } else{
+                    data = formatter.getDateWrapper().format(dateValue);
+                }
             } else
             {
                 data = value.toString();

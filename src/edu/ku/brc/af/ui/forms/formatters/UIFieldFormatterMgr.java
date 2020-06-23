@@ -1011,6 +1011,7 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
             formatter.setDateWrapper(dateFormat);
         } else
         {
+            log.info("setting partial date format: " + newFormatStr.toString());
             dateFormat.setSimpleDateFormat(new SimpleDateFormat(newFormatStr.toString()));
             formatter.setDateWrapper(dateFormat);
         }

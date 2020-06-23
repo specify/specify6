@@ -815,4 +815,26 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
     {
         // no op
     }
+
+    /**
+     * 
+     * @param formatter
+     * @param date
+     * @return
+     */
+    public static String formatForUI(UIFieldFormatterIFace formatter, Date date) {
+        String pattern = formatter.getDateWrapper().getSimpleDateFormat().toPattern();
+        String result = formatter.getDateWrapper().format(date);
+        if (result != null) {
+            if (result.length() > pattern.length()) {
+                log.info("truncating result '" + result + "' to match pattern '" + pattern);
+                result = result.substring(0, pattern.length());
+            } else if (result.trim().endsWith(",")) {
+                log.info("truncating trailing comma ");
+                result = result.trim().substring(0, result.length()-1);
+            }
+
+        }
+        return result;
+    }
 }

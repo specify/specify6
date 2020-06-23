@@ -31,6 +31,7 @@ import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.specify.datamodel.SpAuditLog;
 import edu.ku.brc.specify.dbsupport.TypeCode;
+import edu.ku.brc.specify.plugins.PartialDateUI;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -83,49 +84,39 @@ public class ERTICaptionInfoQB extends ERTICaptionInfo
      * @see edu.ku.brc.ui.db.ERTICaptionInfo#processValue(java.lang.Object)
      */
     @Override
-    public Object processValue(Object value)
-    {
+    public Object processValue(Object value) {
         //This is a quick and dirty way to deal with PartialDates formatting.
-    	if (value instanceof Object[])
-        {
-        	if (uiFieldFormatter != null)
-            {
-                return this.uiFieldFormatter.formatToUI((Object[] )value);
+        if (value instanceof Object[]) {
+            if (uiFieldFormatter != null) {
+                return this.uiFieldFormatter.formatToUI((Object[]) value);
             }
-            if (fieldInfo.isPartialDate() && ((Object[])value).length == 2)
-            {
-            	Object date = ((Object[])value)[0];
-            	if (date == null)
-            	{
-            		return "";
-            	}
-            	
-            	Byte precision = (Byte)((Object[])value)[1];
-            	if (precision == null)
-            	{
-            		precision = 1;
-            	}
-            	UIFieldFormatterIFace.PartialDateEnum datePrec = UIFieldFormatterIFace.PartialDateEnum.values()[precision];
-            	boolean isPartial = false;
-            	String formatName = "Date";
-            	if (datePrec.equals(UIFieldFormatterIFace.PartialDateEnum.Month))
-            	{
-            		isPartial = true;
-            		formatName = "PartialDateMonth";
-            	} else if (datePrec.equals(UIFieldFormatterIFace.PartialDateEnum.Year))
-            	{
-            		isPartial = true;
-            		formatName = "PartialDateYear";
-            	}
-            	for (UIFieldFormatterIFace formatter : UIFieldFormatterMgr.getInstance().getDateFormatterList(isPartial))
-            	{
-                    if (formatter.getName().equals(formatName))
-                    {
-                    	//return formatter.formatToUI(date);
-                    	return formatter.getDateWrapper().format(((Calendar)date).getTime());
+            if (fieldInfo.isPartialDate() && ((Object[]) value).length == 2) {
+                Object date = ((Object[]) value)[0];
+                if (date == null) {
+                    return "";
+                }
+
+                Byte precision = (Byte) ((Object[]) value)[1];
+                if (precision == null) {
+                    precision = 1;
+                }
+                UIFieldFormatterIFace.PartialDateEnum datePrec = UIFieldFormatterIFace.PartialDateEnum.values()[precision];
+                boolean isPartial = false;
+                String formatName = "Date";
+                if (datePrec.equals(UIFieldFormatterIFace.PartialDateEnum.Month)) {
+                    isPartial = true;
+                    formatName = "PartialDateMonth";
+                } else if (datePrec.equals(UIFieldFormatterIFace.PartialDateEnum.Year)) {
+                    isPartial = true;
+                    formatName = "PartialDateYear";
+                }
+                for (UIFieldFormatterIFace formatter : UIFieldFormatterMgr.getInstance().getDateFormatterList(isPartial)) {
+                    if (formatter.getName().equals(formatName)) {
+                        return PartialDateUI.formatForUI(formatter, ((Calendar) date).getTime());
+                        //return formatter.getDateWrapper().format(((Calendar) date).getTime());
                     }
 
-            	}
+                }
             }
         }	
     	
