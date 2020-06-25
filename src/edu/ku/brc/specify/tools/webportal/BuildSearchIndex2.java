@@ -776,6 +776,7 @@ public class BuildSearchIndex2
                     contents.setLength(0);
                     sb.setLength(0);
                     lat1 = null; lng1 = null; lat2 = null; lng2 = null; collCode = null;
+					boolean guidPresent = false;
                     for (int c = 1; c <= md.getColumnCount(); c++) {
                         String value = "";
                         try {
@@ -785,10 +786,15 @@ public class BuildSearchIndex2
                         }
                         if (c == 1) {
 							//it's the GUID
-							row.add(value);
+							guidPresent = value != null && !"".equals(value.trim());
+							if (guidPresent) {
+								row.add(value);
+							}
 						} else if (c == 2) {
                         	//its the (CO by default for now) Record ID
-							continue;
+							if (!guidPresent) {
+								row.add(value);
+							}
                         } else {
                         	ExportMappingInfo info = map.getMappingByColIdx(c - 3);
                             row.add(value == null ? null : processValue(value, info)); //will this lead to stupid precision for floats?
