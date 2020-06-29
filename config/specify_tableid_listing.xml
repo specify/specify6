@@ -2,7 +2,7 @@
 
 <!-- 
 
-    Last used ID is 162 or 533
+    Last used ID is 163 or 533
     
     [0] are available
     
@@ -300,7 +300,11 @@
         
         <table name="edu.ku.brc.specify.datamodel.LatLonPolygon" abbrev="svqp" id="136"/>
         <table name="edu.ku.brc.specify.datamodel.LatLonPolygonPnt" abbrev="svqpp" id="137"/>
-        
+
+        <table name="edu.ku.brc.specify.datamodel.LegalDeaccession" abbrev="ldac" id="163" workbench="true" searchable="true">
+            <display view="LegalDeaccession" dataobjformatter="" searchdlg="LegalDeaccessionSearch" newobjdlg="LegalDeaccessionDisplay"/>
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.LegalDeaccessionBusRules</businessrule>
+        </table>
         <table name="edu.ku.brc.specify.datamodel.LithoStrat" abbrev="ls" id="100" workbench="true" searchable="true">
             <display view="LithoStrat" dataobjformatter="" searchdlg="LithoStratSearch" newobjdlg="LithoStratDisplay"/>
             <businessrule>edu.ku.brc.specify.datamodel.busrules.LithoStratBusRules</businessrule>            

@@ -81,6 +81,7 @@ public class ExchangeOut extends DataModelObjBase implements java.io.Serializabl
     protected Set<Shipment>   shipments;
     protected Division        division;
     protected Set<ExchangeOutPrep> exchangeOutPreps;
+    protected LegalDeaccession            legalDeaccession;
 
 
     // Constructors
@@ -124,6 +125,7 @@ public class ExchangeOut extends DataModelObjBase implements java.io.Serializabl
         exchangeOutPreps = new HashSet<ExchangeOutPrep>();
 
         division         = null;
+        legalDeaccession = null;
     }
     // End Initializer
 
@@ -466,7 +468,18 @@ public class ExchangeOut extends DataModelObjBase implements java.io.Serializabl
     {
         this.division = division;
     }
-    
+
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.MERGE, org.hibernate.annotations.CascadeType.LOCK })
+    @JoinColumn(name = "LegalDeaccessionID", unique = false, nullable = true, insertable = true, updatable = true)
+    public LegalDeaccession getLegalDeaccession() {
+        return legalDeaccession;
+    }
+
+    public void setLegalDeaccession(LegalDeaccession legalDeaccession) {
+        this.legalDeaccession = legalDeaccession;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentTableId()
      */

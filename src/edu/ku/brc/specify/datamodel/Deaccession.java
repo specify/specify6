@@ -70,6 +70,7 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
     protected Set<DeaccessionAgent>       deaccessionAgents;
     protected Set<DeaccessionPreparation> deaccessionPreparations;
     protected Accession                   accession;
+    protected LegalDeaccession            legalDeaccession;
 
     // Constructors
 
@@ -102,6 +103,7 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
         deaccessionAgents = new HashSet<DeaccessionAgent>();
         deaccessionPreparations = new HashSet<DeaccessionPreparation>();
         accession = null;
+        legalDeaccession = null;
     }
     // End Initializer
 
@@ -309,6 +311,17 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
     public void setAccession(Accession accession)
     {
         this.accession = accession;
+    }
+
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.MERGE, org.hibernate.annotations.CascadeType.LOCK })
+    @JoinColumn(name = "LegalDeaccessionID", unique = false, nullable = true, insertable = true, updatable = true)
+    public LegalDeaccession getLegalDeaccession() {
+        return legalDeaccession;
+    }
+
+    public void setLegalDeaccession(LegalDeaccession legalDeaccession) {
+        this.legalDeaccession = legalDeaccession;
     }
 
     /* (non-Javadoc)

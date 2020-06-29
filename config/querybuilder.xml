@@ -303,6 +303,7 @@
       	<alias name="Agent"/>
       </table>
       <alias name="DeaccessionPreparation" field="deaccessionPreparations" />
+        <alias name="LegalDeaccession" field="legalDeaccession" />
       	<alias name="Agent" field="createdByAgent" />
       	<alias name="Agent" field="modifiedByAgent" />
     </table>
@@ -345,8 +346,9 @@
     	<alias name="Agent" field="agentCatalogedBy"/>
      	<alias name="Agent" field="agentSentTo"/>
       	<alias name="Agent" field="createdByAgent" />
-      	<alias name="Agent" field="modifiedByAgent" />    	
-     	<alias name="Shipment" field="shipments" />    	
+      	<alias name="Agent" field="modifiedByAgent" />
+        <alias name="LegalDeaccession" field="legalDeaccession" />
+     	<alias name="Shipment" field="shipments" />
         <table name="ExchangeOutPrep" field="exchangeOutPreps">
                 <alias name="Preparation"/>
                 <alias name="Agent" field="createdByAgent" />
@@ -424,6 +426,7 @@
       	<table name="GiftAgent" field="giftAgents">
       		<alias name="Agent"/>
      	</table>
+        <alias name="LegalDeaccession" field="legalDeaccession" />
        	<alias name="GiftPreparation" field="giftPreparations"/>
         <table name="GiftAttachment" field="giftAttachments">
             <alias name="Attachment"/>
@@ -452,6 +455,15 @@
       	<alias name="ReferenceWork" field="referenceWorks"/>
     </table>
  
+    <table name="LegalDeaccession">
+        <alias name="Accession" field="accessions" />
+        <alias name="Deaccession" field="deaccessions"/>
+        <alias name="Gift" field="gifts"/>
+        <alias name="ExchangeOut" field="exchangeOuts"/>
+        <alias name="Agent" field="createdByAgent" />
+        <alias name="Agent" field="modifiedByAgent" />
+    </table>
+
      <table name="LithoStrat" >
       	<alias name="Agent" field="createdByAgent" />
       	<alias name="Agent" field="modifiedByAgent" />

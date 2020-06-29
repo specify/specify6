@@ -190,6 +190,17 @@
             </altviews>
         </view>
 
+        <view
+                name="LegalDeaccessionSearch"
+                class="edu.ku.brc.specify.datamodel.LegalDeaccession"
+                usedefbusrule="false"
+                resourcelabels="false">
+            <desc><![CDATA[The LegalDeaccession Search Form]]></desc>
+            <altviews>
+                <altview name="LegalDeaccessionSearch" viewdef="LegalDeaccessionSearch" mode="edit" validated="true" default="true"/>
+            </altviews>
+        </view>
+
         <view 
             name="LocalitySearch"
             class="edu.ku.brc.specify.datamodel.Locality"
@@ -320,8 +331,8 @@
                 <altview name="ChronosStratSearch" viewdef="ChronosStratSearch" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
-        
-        <view 
+
+        <view
             name="LithoStratSearch"
             class="edu.ku.brc.specify.datamodel.LithoStrat"
             usedefbusrule="false"
@@ -840,6 +851,26 @@ Good: <cell type="field" name="FieldNum" ...>
                 <row>
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="AccessionNumber" initialize="ispartial=true;alledit=true;"/>
+                </row>
+            </rows>
+        </viewdef>
+
+        <viewdef type="form"
+                 name="LegalDeaccessionSearch"
+                 class="edu.ku.brc.specify.datamodel.LegalDeaccession"
+                 gettable="edu.ku.brc.af.ui.forms.DataGetterForHashMap"
+                 settable="edu.ku.brc.af.ui.forms.DataSetterForHashMap">
+
+            <desc><![CDATA[The Legal Deaccession Search Form]]></desc>
+            <enableRules/>
+
+            <columnDef>p,3dlu,p</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p</rowDef>
+
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="LegalDeaccessionNumber" isrequired="true" uitype="text"/>
                 </row>
             </rows>
         </viewdef>

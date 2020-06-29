@@ -677,6 +677,16 @@
             </altviews>
         </view>
 
+        <view name="LegalDeaccession"
+              class="edu.ku.brc.specify.datamodel.LegalDeaccession"
+        >
+            <desc><![CDATA[The Legal Deaccession form.]]></desc>
+            <altviews>
+                <altview name="LegalDeaccession View" viewdef="LegalDeaccession" mode="view" default="true"/>
+                <altview name="LegalDeaccession Edit" viewdef="LegalDeaccession" mode="edit"/>
+            </altviews>
+        </view>
+
         <view name="Loan"
               class="edu.ku.brc.specify.datamodel.Loan"
               busrules="edu.ku.brc.specify.datamodel.busrules.LoanBusRules"
@@ -2722,8 +2732,12 @@
                     <cell type="field" id="5" name="deaccessionDate" uitype="formattedtext" uifieldformatter="Date" default="today"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="accession" uitype="querycbx" initialize="name=AccessionCO;title=Accession;newbtn=false;editbtn=false"/>
+                    <cell type="label" labelfor="ldqx"/>
+                    <cell type="field" id="ldqx" name="legalDeaccession" uitype="querycbx" initialize="name=LegalDeaccession;title=LegalDeaccession"/>
+                </row>
+                <row>
+                    <!--<cell type="label" labelfor="3"/>
+                    <cell type="field" id="3" name="accession" uitype="querycbx" initialize="name=AccessionCO;title=Accession;newbtn=false;editbtn=false"/>-->
                     <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="type" uitype="combobox"/>
                 </row>
@@ -2732,6 +2746,47 @@
                 </row> 
                 <row>
                     <cell type="subview" viewname="DeaccessionPreparation" id="4" name="deaccessionPreparations" colspan="12"/>
+                </row>
+                <row>
+                    <cell type="separator" label="" colspan="12"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="10"/>
+                    <cell type="field" id="10" name="modifiedByAgent" uitype="label" readonly="true"  uifieldformatter="Agent"/>
+
+                    <cell type="label" labelfor="11"/>
+                    <cell type="field" id="11" name="timestampModified" uitype="label" readonly="true" colspan="2"/>
+                </row>
+            </rows>
+        </viewdef>
+
+        <viewdef
+                type="form"
+                name="LegalDeaccession"
+                class="edu.ku.brc.specify.datamodel.Legal Deaccession"
+                gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+                settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The Legal Deaccession form.]]></desc>
+            <enableRules/>
+
+            <columnDef>p,2px,p,80px,p,2px,p,40px,p,2px,p,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="legalDeaccessionNumber" uitype="formattedtext" />
+                    <cell type="label" labelfor="5"/>
+                    <cell type="field" id="5" name="legalDeaccessionDate" uitype="formattedtext" uifieldformatter="Date" default="today"/>
+                </row>
+                <row>
+                    <cell type="subview" viewname="Deaccession" id="4" name="deaccessions" colspan="12"/>
+                </row>
+                <row>
+                    <cell type="subview" viewname="Gift" id="4" name="gifts" colspan="12"/>
+                </row>
+                <row>
+                    <cell type="subview" viewname="ExchangeOut" id="4" name="exchangeOuts" colspan="12"/>
                 </row>
                 <row>
                     <cell type="separator" label="" colspan="12"/>
@@ -3594,6 +3649,10 @@
                     <cell type="field" id="3" name="agentSentTo" uitype="querycbx" initialize="name=Agent" colspan="3"/>
                 </row>
                 <row>
+                    <cell type="label" labelfor="ldqx"/>
+                    <cell type="field" id="ldqx" name="legalDeaccession" uitype="querycbx" initialize="name=LegalDeaccession;title=LegalDeaccession"/>
+                </row>
+                <row>
                     <cell type="label" labelfor="4"/>
                     <cell type="field" id="4" name="descriptionOfMaterial" uitype="text" colspan="9"/>
                 </row>
@@ -4074,6 +4133,10 @@
                 </row>
                 <row>
                     <cell type="subview" viewname="GiftAgent" id="8" name="giftAgents" desc="Agents" colspan="15" rows="2"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="ldqx"/>
+                    <cell type="field" id="ldqx" name="legalDeaccession" uitype="querycbx" initialize="name=LegalDeaccession;title=LegalDeaccession"/>
                 </row>
                 <row>
                     <cell type="subview" viewname="Shipment" id="11" name="shipments" colspan="15"/>
