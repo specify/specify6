@@ -870,7 +870,7 @@ Good: <cell type="field" name="FieldNum" ...>
             <rows>
                 <row>
                     <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="LegalDeaccessionNumber" isrequired="true" uitype="text"/>
+                    <cell type="field" id="1" name="legalDeaccessionNumber" isrequired="true" uitype="text"/>
                 </row>
             </rows>
         </viewdef>

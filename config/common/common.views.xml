@@ -2763,7 +2763,7 @@
         <viewdef
                 type="form"
                 name="LegalDeaccession"
-                class="edu.ku.brc.specify.datamodel.Legal Deaccession"
+                class="edu.ku.brc.specify.datamodel.LegalDeaccession"
                 gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
                 settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The Legal Deaccession form.]]></desc>
@@ -2780,13 +2780,13 @@
                     <cell type="field" id="5" name="legalDeaccessionDate" uitype="formattedtext" uifieldformatter="Date" default="today"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="Deaccession" id="4" name="deaccessions" colspan="12"/>
+                    <cell type="subview" viewname="Deaccession" id="44" name="deaccessions" colspan="12"/>
                 </row>
                 <row>
                     <cell type="subview" viewname="Gift" id="4" name="gifts" colspan="12"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="ExchangeOut" id="4" name="exchangeOuts" colspan="12"/>
+                    <cell type="subview" viewname="ExchangeOut" id="444" name="exchangeOuts" colspan="12"/>
                 </row>
                 <row>
                     <cell type="separator" label="" colspan="12"/>
