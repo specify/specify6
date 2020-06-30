@@ -610,11 +610,13 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
         }
 
         private String getVisibleIdFldForSql() {
+            String def;
             if (recordSet.getDbTableId() == 1) {
-                return "catalognumber";
+                def = "catalognumber";
             } else {
-                return "barcode";
+                def = "barcode";
             }
+            return "o." + AppPreferences.getRemote().get(InteractionsProcessor.getInteractionItemLookupFieldPref(recordSet.getDbTableId()),def);
         }
 
         private String getIdSelectForSql() {
