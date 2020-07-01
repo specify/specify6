@@ -180,7 +180,7 @@ public class LoansPrefsPanel extends GenericPrefsPanel implements PrefsSavable, 
         cb.getComboBox().setSelectedIndex(idx);
     }
 
-    private static String theValidCoItemIdFlds = ",catalogNumber,altCatalogNumber,barCode,fieldNumber,GUID,modifier,name,Project,Text1, Text2, Text3";
+    private static String theValidCoItemIdFlds = ",catalogNumber,altCatalogNumber,barCode,fieldNumber,GUID,modifier,name,projectNumber,Text1,Text2,Text3,";
     private static String theValidPrepItemIdFlds = ",BarCode,GUID,SampleNumber,Text1,Text2,Text3,Text4,Text5,Text6,Text7,Text8,Text9,";
     private boolean isValidIdFld(DBFieldInfo fieldInfo) {
         int tableId = fieldInfo.getTableInfo().getTableId();
