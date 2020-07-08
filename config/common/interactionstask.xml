@@ -23,6 +23,10 @@
     </droppableFlavors>
   </entry>
 
+  <entry name="legaldeaccession" table="legaldeaccession" view="LegalDeaccession" type="Interactions" action="NEW_LEG_DEACC" icon="LegalDeaccession" isonleft="true"
+         issrchsrv="false" order="0" enabled="true" visible="true" tooltip="">
+  </entry>
+
   <entry name="deaccession" table="deaccession" view="Deaccession" type="Interactions" action="NEW_DEACC" icon="Deaccession" isonleft="true"
          issrchsrv="false" order="0" enabled="true" visible="true" tooltip="">
     <draggableFlavors/>

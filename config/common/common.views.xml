@@ -372,7 +372,17 @@
                 <altview name="Deaccession Edit" viewdef="Deaccession" mode="edit"/>
             </altviews>
         </view>
-        
+
+        <view name="DeaccessionSub"
+              class="edu.ku.brc.specify.datamodel.Deaccession"
+        >
+            <desc><![CDATA[The Deaccession form.]]></desc>
+            <altviews>
+                <altview name="DeaccessionSub View" viewdef="DeaccessionSub" mode="view" default="true"/>
+                <altview name="DeaccessionSub Edit" viewdef="DeaccessionSub" mode="edit"/>
+            </altviews>
+        </view>
+
         <view name="DeaccessionAgent"
               objtitle="Deaccession Agent"
               class="edu.ku.brc.specify.datamodel.DeaccessionAgent"
@@ -538,6 +548,16 @@
             </altviews>
         </view>
 
+        <view name="ExchangeOutSub"
+              class="edu.ku.brc.specify.datamodel.ExchangeOut"
+        >
+            <desc><![CDATA[Exchange Out sub form]]></desc>
+            <altviews>
+                <altview name="ExchangeOutSub View" viewdef="ExchangeOutSub" mode="view" default="true"/>
+                <altview name="ExchangeOutSub Edit" viewdef="ExchangeOutSub" mode="edit"/>
+            </altviews>
+        </view>
+
         <view name="ExchangeOutPrep"
               class="edu.ku.brc.specify.datamodel.ExchangeOutPrep"
         >
@@ -648,6 +668,17 @@
             <altviews>
                 <altview name="Gift View" viewdef="Gift" mode="view" default="true"/>
                 <altview name="Gift Edit" viewdef="Gift" mode="edit"/>
+            </altviews>
+        </view>
+
+        <view name="GiftSub"
+              class="edu.ku.brc.specify.datamodel.Gift"
+              busrules="edu.ku.brc.specify.datamodel.busrules.GiftBusRules"
+        >
+            <desc><![CDATA[Gift sub form]]></desc>
+            <altviews>
+                <altview name="GiftSub View" viewdef="GiftSub" mode="view" default="true"/>
+                <altview name="GiftSub Edit" viewdef="GiftSub" mode="edit"/>
             </altviews>
         </view>
 
@@ -2762,6 +2793,47 @@
 
         <viewdef
                 type="form"
+                name="DeaccessionSub"
+                class="edu.ku.brc.specify.datamodel.Deaccession"
+                gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+                settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The Deaccession sub form.]]></desc>
+            <enableRules/>
+
+            <columnDef>p,2px,p,80px,p,2px,p,40px,p,2px,p,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="deaccessionNumber" uitype="formattedtext" />
+                    <cell type="label" labelfor="5"/>
+                    <cell type="field" id="5" name="deaccessionDate" uitype="formattedtext" uifieldformatter="Date" default="today"/>
+                </row>
+                <row>
+                    <!--<cell type="label" labelfor="3"/>
+                    <cell type="field" id="3" name="accession" uitype="querycbx" initialize="name=AccessionCO;title=Accession;newbtn=false;editbtn=false"/>-->
+                    <cell type="label" labelfor="2"/>
+                    <cell type="field" id="2" name="type" uitype="combobox"/>
+                </row>
+                <row>
+                    <cell type="subview" viewname="DeaccessionPreparation" id="4" name="deaccessionPreparations" colspan="12"/>
+                </row>
+                <row>
+                    <cell type="separator" label="" colspan="12"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="10"/>
+                    <cell type="field" id="10" name="modifiedByAgent" uitype="label" readonly="true"  uifieldformatter="Agent"/>
+
+                    <cell type="label" labelfor="11"/>
+                    <cell type="field" id="11" name="timestampModified" uitype="label" readonly="true" colspan="2"/>
+                </row>
+            </rows>
+        </viewdef>
+
+        <viewdef
+                type="form"
                 name="LegalDeaccession"
                 class="edu.ku.brc.specify.datamodel.LegalDeaccession"
                 gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
@@ -2780,13 +2852,13 @@
                     <cell type="field" id="5" name="legalDeaccessionDate" uitype="formattedtext" uifieldformatter="Date" default="today"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="Deaccession" id="44" name="deaccessions" colspan="12"/>
+                    <cell type="subview" viewname="DeaccessionSub" id="44" name="deaccessions" colspan="12"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="Gift" id="4" name="gifts" colspan="12"/>
+                    <cell type="subview" viewname="GiftSub" id="4" name="gifts" colspan="12"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="ExchangeOut" id="444" name="exchangeOuts" colspan="12"/>
+                    <cell type="subview" viewname="ExchangeOutSub" id="444" name="exchangeOuts" colspan="12"/>
                 </row>
                 <row>
                     <cell type="separator" label="" colspan="12"/>
@@ -3711,6 +3783,81 @@
         </viewdef>
 
         <viewdef
+                type="form"
+                name="ExchangeOutSub"
+                class="edu.ku.brc.specify.datamodel.ExchangeOut"
+                gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+                settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            <desc><![CDATA[ExchangeOut sub form.]]></desc>
+
+            <columnDef>105px,2px,170px,5px,125px,2px,150px,5px,96px,2px,170px,0px,15px,p,p:g</columnDef>
+            <columnDef os="lnx">115px,2px,185px,5px,150px,2px,165px,5px,101px,2px,185px,0px,15px,p,p:g</columnDef>
+            <columnDef os="mac">130px,2px,204px,5px,170px,2px,183px,5px,126px,2px,203px,0px,15px,p,p:g</columnDef>
+            <columnDef os="exp">p,2px,p:g(2),5px:g,p,2px,p:g(2),5px,p:g,2px,p:g(2),0px,p,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="1dlu"/>
+
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="exchangeOutNumber" uitype="formattedtext"/>
+                    <cell type="label" labelfor="7"/>
+                    <cell type="field" id="7" name="quantityExchanged" uitype="text"/>
+                    <cell type="label" labelfor="9"/>
+                    <cell type="field" id="9" name="exchangeDate" uitype="formattedtext" uifieldformatter="Date"  default="Today"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="3"/>
+                    <cell type="field" id="3" name="agentSentTo" uitype="querycbx" initialize="name=Agent" colspan="3"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="4"/>
+                    <cell type="field" id="4" name="descriptionOfMaterial" uitype="text" colspan="9"/>
+                </row>
+                <!-- <row>
+                     <cell type="subview" viewname="ExchangeOutPrep" id="10" name="exchangeOutPreps" defaulttype="table" colspan="13" rows="4"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="dom"/>
+                    <cell type="field" id="dom" name="descriptionOfMaterial" uitype="text" colspan="10"/>
+                </row>
+                <row>
+			              <cell type="label" labelfor="18"/>
+			              <cell type="field" id="18" name="srcGeography" uitype="text"/>
+			              <cell type="label" labelfor="19"/>
+			              <cell type="field" id="19" name="srcTaxonomy" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="n1"/>
+                    <cell type="field" id="n1" name="number1" uitype="text"/>
+                    <cell type="label" labelfor="n2"/>
+                    <cell type="field" id="n2" name="number2" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="t1"/>
+                    <cell type="field" id="t1" name="text1" uitype="text"/>
+                    <cell type="label" labelfor="t2"/>
+                    <cell type="field" id="t2" name="text2" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="field" id="20" name="yesNo1" uitype="checkbox" initialize="editable=true"/>
+                    <cell type="field" id="20" name="yesNo2" uitype="checkbox" initialize="editable=true"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="9"/>
+                    <cell type="field" id="9" name="createdByAgent" uitype="label" readonly="true" uifieldformatter="Agent"/>
+                    <cell type="label" labelfor="10"/>
+                    <cell type="field" id="10" name="modifiedByAgent" uitype="label" readonly="true" uifieldformatter="Agent"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="11"/>
+                    <cell type="field" id="11" name="timestampModified" uitype="label" readonly="true"/>
+                    <cell type="label" labelfor="12"/>
+                    <cell type="field" id="12" name="timestampCreated" uitype="label" readonly="true"/>
+                </row>-->
+            </rows>
+        </viewdef>
+
+        <viewdef
                 type="formtable"
                 name="ExchangeOutPrep Table"
                 class="edu.ku.brc.specify.datamodel.ExchangeOutPrep"
@@ -4152,6 +4299,90 @@
                             </row>
                         </rows>
                     </cell>
+                </row>
+                <row>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="giftAttachments" colspan="15" initialize="btn=true;icon=GiftAttachment"/>
+                </row>
+                <!--<row>
+                    <cell type="label" labelfor="2"/>
+                    <cell type="field" id="2" name="dateReceived" uitype="formattedtext" uifieldformatter="Date"/>
+                    <cell type="label" labelfor="pog"/>
+                    <cell type="field" id="pog" name="purposeOfGift" uitype="text"/>
+                    <cell type="label" labelfor="rc"/>
+                    <cell type="field" id="rc" name="receivedComments" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="sc"/>
+                    <cell type="field" id="sc" name="specialConditions" uitype="textareabrief" rows="2" colspan="12"/>
+                </row>
+                <row>
+			              <cell type="label" labelfor="18"/>
+			              <cell type="field" id="18" name="srcGeography" uitype="text"/>
+			              <cell type="label" labelfor="19"/>
+			              <cell type="field" id="19" name="srcTaxonomy" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="n1"/>
+                    <cell type="field" id="n1" name="number1" uitype="text"/>
+                    <cell type="label" labelfor="n2"/>
+                    <cell type="field" id="n2" name="number2" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="t1"/>
+                    <cell type="field" id="t1" name="text1" uitype="text"/>
+                    <cell type="label" labelfor="t2"/>
+                    <cell type="field" id="t2" name="text2" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="field" id="20" name="yesNo1" uitype="checkbox" initialize="editable=true"/>
+                    <cell type="field" id="20" name="yesNo2" uitype="checkbox" initialize="editable=true"/>
+                </row>
+                <row>
+                    <cell type="subview" id="6" name="addressOfRecord" viewname="AddressOfRecord" colspan="13"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="9"/>
+                    <cell type="field" id="9" name="createdByAgent" uitype="label" readonly="true" uifieldformatter="Agent"/>
+                    <cell type="label" labelfor="10"/>
+                    <cell type="field" id="10" name="modifiedByAgent" uitype="label" readonly="true" uifieldformatter="Agent"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="11"/>
+                    <cell type="field" id="11" name="timestampModified" uitype="label" readonly="true"/>
+                    <cell type="label" labelfor="12"/>
+                    <cell type="field" id="12" name="timestampCreated" uitype="label" readonly="true"/>
+                </row>-->
+            </rows>
+        </viewdef>
+
+        <viewdef
+                type="form"
+                name="GiftSub"
+                class="edu.ku.brc.specify.datamodel.Gift"
+                gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+                settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            <desc><![CDATA[Gift viewing form.]]></desc>
+
+            <columnDef>105px,2px,130px,5px,60px,2px,100px,5px,100px,2px,141px,15px,165px,0px,15px,p:g</columnDef>
+            <columnDef os="lnx">115px,2px,146px,5px,75px,2px,100px,5px,115px,2px,155px,15px,180px,0px,15px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,160px,5px,86px,2px,115px,5px,130px,2px,185px,10px,200px,0px,15px,p:g</columnDef>
+            <columnDef os="exp">p,2px,min(p;150px),5px:g,p,2px,p:g(2),5px:g,p,2px,p:g(2),5px,p,0px,p,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="1dlu"/>
+
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="giftNumber" uitype="formattedtext"/>
+                    <cell type="label" labelfor="3"/>
+                    <cell type="field" id="3" name="giftDate" uitype="formattedtext" uifieldformatter="Date"  default="today"/>
+                    <cell type="label" labelfor="4"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="5"/>
+                    <cell type="field" id="5" name="remarks" uitype="textareabrief" rows="2" colspan="12"/>
+                </row>
+                <row>
+                    <cell type="subview" viewname="GiftItems" id="10" name="giftPreparations" defaulttype="table" colspan="15" rows="4"/>
                 </row>
                 <row>
                     <cell type="subview" id="attachments" viewname="ObjectAttachment" name="giftAttachments" colspan="15" initialize="btn=true;icon=GiftAttachment"/>

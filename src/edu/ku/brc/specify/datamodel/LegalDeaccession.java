@@ -17,7 +17,7 @@ import java.util.Set;
                 @Index (name="LegalDeaccessionDateIDX", columnNames={"LegalDeaccessionDate"})
         })
 @SuppressWarnings("serial")
-public class LegalDeaccession extends DataModelObjBase implements java.io.Serializable {
+public class LegalDeaccession extends DataModelObjBase implements java.io.Serializable, OneToManyProviderIFace {
     protected Integer                     legalDeaccessionId;
     protected String                      type;
     protected String                      legalDeaccessionNumber;
@@ -252,4 +252,6 @@ public class LegalDeaccession extends DataModelObjBase implements java.io.Serial
     public void setYesNo2(Boolean yesNo2) {
         this.yesNo2 = yesNo2;
     }
+
+
 }

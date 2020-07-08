@@ -149,6 +149,7 @@ public class InteractionsTask extends BaseTask
     protected static final String NEW_ACCESSION        = "NEW_ACC";
     protected static final String ADD_TO_ACCESSION     = "AddToDeaccession";
     protected static final String NEW_DEACCESSION      = "NEW_DEACC";
+    protected static final String NEW_LEGAL_DEACCESSION= "NEW_LEG_DEACC";
     protected static final String ADD_TO_DEACCESSION   = "AddToDeaccession";
     protected static final String NEW_PERMIT           = "NEW_PERMIT";
     protected static final String NEW_GIFT             = "NEW_GIFT";
@@ -189,6 +190,7 @@ public class InteractionsTask extends BaseTask
     InteractionsProcessor<ExchangeOut> exchProcessor = new InteractionsProcessor<ExchangeOut>(this, InteractionsProcessor.forExchange,  ExchangeOut.getClassTableId());
     InteractionsProcessor<Accession> accProcessor = new InteractionsProcessor<Accession>(this, InteractionsProcessor.forAcc,  Accession.getClassTableId());
     InteractionsProcessor<Deaccession> deaccProcessor = new InteractionsProcessor<>(this, InteractionsProcessor.forDeacc,  Deaccession.getClassTableId());
+    InteractionsProcessor<LegalDeaccession> legalDeaccProcessor = new InteractionsProcessor<>(this, InteractionsProcessor.forLegalDeacc,  LegalDeaccession.getClassTableId());
 
     static 
     {
@@ -2446,6 +2448,10 @@ public class InteractionsTask extends BaseTask
             tblInfo = DBTableIdMgr.getInstance().getInfoById(Accession.getClassTableId());
             isBasicNewInteraction = true;
             processor = accProcessor;
+        } else if (cmdAction.isAction(NEW_LEGAL_DEACCESSION)) {
+            tblInfo = DBTableIdMgr.getInstance().getInfoById(Deaccession.getClassTableId());
+            isBasicNewInteraction = true;
+            processor = legalDeaccProcessor;
         } else if (cmdAction.isAction(NEW_DEACCESSION)) {
             tblInfo = DBTableIdMgr.getInstance().getInfoById(Deaccession.getClassTableId());
             isBasicNewInteraction = true;
