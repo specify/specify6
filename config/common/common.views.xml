@@ -718,6 +718,16 @@
             </altviews>
         </view>
 
+        <view name="LegalDeaccessionDialog"
+              class="edu.ku.brc.specify.datamodel.LegalDeaccession"
+        >
+            <desc><![CDATA[The Legal Deaccession pop up form.]]></desc>
+            <altviews>
+                <altview name="LegalDeaccessionDialog View" viewdef="LegalDeaccessionDialog" mode="view" default="true"/>
+                <altview name="LegalDeaccessionDialog Edit" viewdef="LegalDeaccessionDialog" mode="edit"/>
+            </altviews>
+        </view>
+
         <view name="Loan"
               class="edu.ku.brc.specify.datamodel.Loan"
               busrules="edu.ku.brc.specify.datamodel.busrules.LoanBusRules"
@@ -2817,17 +2827,7 @@
                     <cell type="field" id="2" name="type" uitype="combobox"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="DeaccessionPreparation" id="4" name="deaccessionPreparations" colspan="12"/>
-                </row>
-                <row>
-                    <cell type="separator" label="" colspan="12"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="10"/>
-                    <cell type="field" id="10" name="modifiedByAgent" uitype="label" readonly="true"  uifieldformatter="Agent"/>
-
-                    <cell type="label" labelfor="11"/>
-                    <cell type="field" id="11" name="timestampModified" uitype="label" readonly="true" colspan="2"/>
+                    <cell type="subview" viewname="DeaccessionPreparation" id="4" name="deaccessionPreparations" colspan="10"/>
                 </row>
             </rows>
         </viewdef>
@@ -2852,6 +2852,22 @@
                     <cell type="field" id="5" name="legalDeaccessionDate" uitype="formattedtext" uifieldformatter="Date" default="today"/>
                 </row>
                 <row>
+                    <cell type="label" labelfor="ldtype"/>
+                    <cell type="field" id="ldtype" name="type" uitype="formattedtext" />
+                    <cell type="label" labelfor="ldtext1"/>
+                    <cell type="field" id="ldtext1" name="text1" uitype="formattedtext"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="ldnumber1"/>
+                    <cell type="field" id="ldnumber1" name="number1" uitype="formattedtext" />
+                    <cell type="label" labelfor="ldtext2"/>
+                    <cell type="field" id="ldtext2" name="text2" uitype="formattedtext" />
+                </row>
+                <row>
+                    <cell type="label" labelfor="rem"/>
+                    <cell type="field" id="rem" name="remarks" uitype="textareabrief" rows="2" colspan="5"/>
+                </row>
+                <row>
                     <cell type="subview" viewname="DeaccessionSub" id="44" name="deaccessions" colspan="12"/>
                 </row>
                 <row>
@@ -2861,14 +2877,62 @@
                     <cell type="subview" viewname="ExchangeOutSub" id="444" name="exchangeOuts" colspan="12"/>
                 </row>
                 <row>
-                    <cell type="separator" label="" colspan="12"/>
+                    <cell type="separator" label="" colspan="7"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="10"/>
                     <cell type="field" id="10" name="modifiedByAgent" uitype="label" readonly="true"  uifieldformatter="Agent"/>
 
                     <cell type="label" labelfor="11"/>
-                    <cell type="field" id="11" name="timestampModified" uitype="label" readonly="true" colspan="2"/>
+                    <cell type="field" id="11" name="timestampModified" uitype="label" readonly="true" />
+                </row>
+            </rows>
+        </viewdef>
+
+        <viewdef
+                type="form"
+                name="LegalDeaccessionDialog"
+                class="edu.ku.brc.specify.datamodel.LegalDeaccession"
+                gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+                settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The Legal Deaccession pop up form.]]></desc>
+            <enableRules/>
+
+            <columnDef>p,2px,p,80px,p,2px,p,40px,p,2px,p,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="legalDeaccessionNumber" uitype="text" />
+                    <cell type="label" labelfor="5"/>
+                    <cell type="field" id="5" name="legalDeaccessionDate" uitype="formattedtext" uifieldformatter="Date" default="today"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="ldtype"/>
+                    <cell type="field" id="ldtype" name="type" uitype="text" />
+                    <cell type="label" labelfor="ldtext1"/>
+                    <cell type="field" id="ldtext1" name="text1" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="ldnumber1"/>
+                    <cell type="field" id="ldnumber1" name="number1" uitype="text" />
+                    <cell type="label" labelfor="ldtext2"/>
+                    <cell type="field" id="ldtext2" name="text2" uitype="text" />
+                </row>
+                <row>
+                    <cell type="label" labelfor="rem"/>
+                    <cell type="field" id="rem" name="remarks" uitype="textareabrief" rows="2" colspan="5"/>
+                </row>
+                <row>
+                    <cell type="separator" label="" colspan="7"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="10"/>
+                    <cell type="field" id="10" name="modifiedByAgent" uitype="label" readonly="true"  uifieldformatter="Agent"/>
+
+                    <cell type="label" labelfor="11"/>
+                    <cell type="field" id="11" name="timestampModified" uitype="label" readonly="true" />
                 </row>
             </rows>
         </viewdef>
@@ -3813,10 +3877,10 @@
                     <cell type="label" labelfor="4"/>
                     <cell type="field" id="4" name="descriptionOfMaterial" uitype="text" colspan="9"/>
                 </row>
-                <!-- <row>
+                <row>
                      <cell type="subview" viewname="ExchangeOutPrep" id="10" name="exchangeOutPreps" defaulttype="table" colspan="13" rows="4"/>
                 </row>
-                <row>
+                <!--<row>
                     <cell type="label" labelfor="dom"/>
                     <cell type="field" id="dom" name="descriptionOfMaterial" uitype="text" colspan="10"/>
                 </row>
@@ -4283,7 +4347,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="ldqx"/>
-                    <cell type="field" id="ldqx" name="legalDeaccession" uitype="querycbx" initialize="name=LegalDeaccession;title=LegalDeaccession"/>
+                    <cell type="field" id="ldqx" name="legalDeaccession" uitype="querycbx" initialize="name=LegalDeaccession;title=LegalDeaccession" colspan="5"/>
                 </row>
                 <row>
                     <cell type="subview" viewname="Shipment" id="11" name="shipments" colspan="15"/>
