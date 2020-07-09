@@ -1014,7 +1014,8 @@ public class InteractionsTask extends BaseTask
             CommandDispatcher.dispatch(new CommandAction(INTERACTIONS, LoanPreparationBusRules.REFRESH_PREPS, loan));
         }
     }
-    
+
+
     /**
      * @param existingAccArg
      * @param cos
@@ -1022,7 +1023,7 @@ public class InteractionsTask extends BaseTask
     protected void addCosToAcc(final OneToManyProviderIFace existingAccArg, final RecordSetIFace cos, final Viewable srcViewable) {
     	Accession existingAcc = (Accession)existingAccArg;
     	Accession acc;
-    	
+
     	if (existingAcc == null) {
     		acc = new Accession();
     		acc.initialize();
@@ -1030,12 +1031,12 @@ public class InteractionsTask extends BaseTask
     	} else {
     		acc = existingAcc;
     	}
-    	
+
     	if (cos != null) {
     		DataProviderSessionIFace session = null;
     		try {
     			session = DataProviderFactory.getInstance().createSession();
-            
+
     			for (RecordSetItemIFace coId : cos.getItems()) {
     				CollectionObject co = session.get(CollectionObject.class, coId.getRecordId());
     				if (co != null) {
@@ -1048,7 +1049,7 @@ public class InteractionsTask extends BaseTask
     					co.setAccession(acc);
     				}
     			}
-            
+
     		} catch (Exception ex) {
     			ex.printStackTrace();
     			UsageTracker.incrHandledUsageCount();
@@ -1075,6 +1076,41 @@ public class InteractionsTask extends BaseTask
         }
 
     }
+
+    /**
+     * @param existingAccArg
+     * @param objs
+     */
+    protected void addToLegalDeacc(final OneToManyProviderIFace existingDeaccArg, final RecordSetIFace objs, final Viewable srcViewable) {
+        LegalDeaccession existingLegaldeacc = (LegalDeaccession)existingDeaccArg;
+        LegalDeaccession deacc;
+
+        if (existingLegaldeacc == null) {
+            deacc = new LegalDeaccession();
+            deacc.initialize();
+        } else {
+            deacc = existingLegaldeacc;
+        }
+
+        if (objs != null) {
+            log.error("adding to legaldeaccessions is not implemented");
+        }
+        if (existingLegaldeacc == null) {
+            if (srcViewable != null) {
+                srcViewable.setNewObject(deacc);
+            } else {
+                DataEntryTask dataEntryTask = (DataEntryTask)TaskMgr.getTask(DataEntryTask.DATA_ENTRY);
+                if (dataEntryTask != null) {
+                    DBTableInfo deaccTableInfo = DBTableIdMgr.getInstance().getInfoById(deacc.getTableId());
+                    dataEntryTask.openView(this, null, deaccTableInfo.getDefaultFormName(), "edit", deacc, true);
+                }
+            }
+        } else {
+            CommandDispatcher.dispatch(new CommandAction(INTERACTIONS, AccessionBusRules.REFRESH_COS, deacc));
+        }
+
+    }
+
     /**
      * @param existingLoan
      * @param infoRequest

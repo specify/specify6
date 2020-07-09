@@ -118,6 +118,10 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
      */
     protected ASK_TYPE askSourceOfPreps(final boolean hasInfoReqs, final boolean hasColObjRS, final T currPrepProvider)
     {
+        if (isFor == forLegalDeacc) {
+            return ASK_TYPE.None;
+        }
+
         String label;
         if (hasInfoReqs && hasColObjRS)
         {
@@ -423,7 +427,11 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
      */
     protected void cosLoaded(final RecordSetIFace rs, final T prepProvider) {
         //System.out.println("Adding cos to accession...");
-        task.addCosToAcc(prepProvider, rs, viewable);
+        if (isFor == forAcc) {
+            task.addCosToAcc(prepProvider, rs, viewable);
+        } else {
+            task.addToLegalDeacc(prepProvider, rs, viewable);
+        }
     }
     /**
      * @param coToPrepHash
@@ -699,7 +707,7 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
         }
 
         protected int collect() {
-            if (isFor != forAcc) {
+            if (isFor != forAcc && isFor != forLegalDeacc) {
                 coToPrepHash = new Hashtable<>();
                 List<String> objds = new ArrayList<>();
                 processRecordSetForCollect(objds);
@@ -760,7 +768,7 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
                 UIRegistry.clearSimpleGlassPaneMsg();
             }
 
-            if (isFor == forAcc) {
+            if (isFor == forAcc || isFor == forLegalDeacc) {
                 cosLoaded(recordSet, prepsProvider);
             } else {
                 prepsLoaded(coToPrepHash, prepTypeHash, prepsProvider, infoRequest, recordSet.getDbTableId());
