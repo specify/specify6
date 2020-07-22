@@ -175,11 +175,11 @@ public class TaxonLoadSetupPanel extends BaseSetupPanel
         builder.add(createScrollPane(descTA),          cc.xy(3, row));
         row += 2;
         
-        //othSep = builder.addSeparator(UIRegistry.getResourceString("TFD_SEP_OTH"), cc.xyw(1, row, 3));
+        othSep = builder.addSeparator(UIRegistry.getResourceString("TFD_SEP_OTH"), cc.xyw(1, row, 3));
         row += 2;
         
-        //builder.add(otherLbl = createI18NFormLabel("TFD_OTHER_LBL"), cc.xy(1, row));
-        //builder.add(otherBrw,        cc.xy(3, row));
+        builder.add(otherLbl = createI18NFormLabel("TFD_OTHER_LBL"), cc.xy(1, row));
+        builder.add(otherBrw,        cc.xy(3, row));
         row += 2;
         
         updateBtnUI();
@@ -387,7 +387,7 @@ public class TaxonLoadSetupPanel extends BaseSetupPanel
             } else
             {
                 fileCBX.setEnabled(false);
-                preloadChk.setEnabled(false);
+                //preloadChk.setEnabled(false);
             }
         }
     }
@@ -437,7 +437,7 @@ public class TaxonLoadSetupPanel extends BaseSetupPanel
     @Override
     public void aboutToLeave()
     {
-        if (preloadChk.isSelected())
+        if (preloadChk.isSelected() && properties.get("othertaxonfile") == null)
         {
             TaxonFileDesc tfd = (TaxonFileDesc)fileCBX.getSelectedItem();
             if (tfd != null && FilenameUtils.isExtension(tfd.getFileName().toLowerCase(), XLS))
@@ -562,9 +562,9 @@ public class TaxonLoadSetupPanel extends BaseSetupPanel
         
         if (doAll)
         {
-            //othSep.setEnabled(otherEnabled);
-            //otherLbl.setEnabled(otherEnabled);
-            //otherBrw.setEnabled(otherEnabled);
+            othSep.setEnabled(otherEnabled);
+            otherLbl.setEnabled(otherEnabled);
+            otherBrw.setEnabled(otherEnabled);
         }
     }
     

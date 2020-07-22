@@ -287,7 +287,7 @@ public class BuildSampleDatabase
     public enum UpdateType {eBuildNew, eImport, eMerge, eLocalize}
     
     //                                                  0                   1                  2                 3                   4                     5                   6                   7                     8
-    private static String[] TaxonIndexNames = {"family common name", "species author", "species source", "species guid", "species common name", "subspecies author", "subspecies source", "subspecies lsid", "subspecies common name"};
+    private static String[] TaxonIndexNames = {"family common name", "species author", "species source", "species lsid", "species common name", "subspecies author", "subspecies source", "subspecies lsid", "subspecies common name"};
     private static String[] TaxonFieldNames = {"CommonName",         "Author",         "Source",         "GUID",         "CommonName",          "Author",            "Source",            "GUID",            "CommonName"};
     
     private static int FAMILY_COMMON_NAME     = 0;
@@ -9304,14 +9304,10 @@ public class BuildSampleDatabase
                 
                 HSSFRow row = (HSSFRow) rows.next();
                 Iterator<?> cellsIter = row.cellIterator();
-                int i = 0;
-                while (cellsIter.hasNext() && i < cells.length)
-                {
+                while (cellsIter.hasNext()) {
                     HSSFCell cell = (HSSFCell)cellsIter.next();
-                    if (cell != null)
-                    {
-                        cells[i] = getXLSCellValueAsStr(cell);
-                        i++;
+                    if (cell != null) {
+                        cells[cell.getColumnIndex()] = getXLSCellValueAsStr(cell);
                     }
                 }
 
