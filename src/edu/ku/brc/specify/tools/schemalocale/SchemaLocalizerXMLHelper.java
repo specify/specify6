@@ -33,6 +33,7 @@ import edu.ku.brc.ui.ToggleButtonChooserPanel;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -1196,7 +1197,11 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
      */
     public boolean save(final String basePath)
     {
+//        fixDescriptions(new File("/home/timo/datas/schemadescfix/schema_localization_with_descs.xml"),
+//                new File("/home/timo/datas/schemadescfix/schema_localization_master.xml"),
+//                new File("/home/timo/datas/fixedschema/"));
         boolean savedOk = save(basePath, null, tables);
+
         if (savedOk)
         {
             changesMadeDuringStartup = false;
@@ -1657,6 +1662,235 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
         {
             pcl.propertyChange(new PropertyChangeEvent(this, "count", -1, 100));
         }
+    }
+
+    /**
+     *
+     * @param name
+     * @param descs
+     * @return
+     */
+    private DisciplineBasedContainer getContainerByName(String name, Vector<DisciplineBasedContainer> containers) {
+        for (DisciplineBasedContainer c : containers) {
+            if (c.getName().equals(name)) {
+                return c;
+            }
+        }
+        return null;
+    }
+
+    private SpLocaleContainerItem getContainerItemByName(String name, Set<SpLocaleContainerItem> spLocaleContainerItems) {
+        for (SpLocaleContainerItem c : spLocaleContainerItems) {
+            if (c.getName().equals(name)) {
+                return c;
+            }
+        }
+        return null;
+    }
+
+    private SpLocaleItemStr getStrForLocale(String localeStr, Set<SpLocaleItemStr> strs) {
+        for (SpLocaleItemStr d : strs) {
+            if (getLocaleStr(d).equals(localeStr)) {
+                return d;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * ignores variant
+     * @param item
+     * @return
+     */
+    private String getLocaleStr(SpLocaleItemStr item) {
+        String result = item.getLanguage();
+        String ctry = item.getCountry();
+        if (ctry != null && !"".equals(ctry)) {
+            result += "_" + ctry;
+        }
+        return result;
+    }
+
+    private String correctDesc(SpLocaleItemStr rightDesc, SpLocaleItemStr wrongDesc, SpLocaleItemStr wrongNameItem) {
+        String wrong = wrongDesc.getText();
+        String right = rightDesc.getText();
+        String wrongName = wrongNameItem.getText();
+        if ((wrong == null || "".equals(wrong) || wrong.equals(wrongName)) && right != null && !"".equals(right)) {
+            wrongDesc.setText(rightDesc.getText());
+            return rightDesc.getText();
+        }
+        return null;
+    }
+
+
+    private boolean matchNameInOtherLanguage(SpLocaleItemStr descItemStr, Set<SpLocaleItemStr> itemStrs) {
+        for (SpLocaleItemStr i : itemStrs) {
+            String iLang = i.getLanguage();
+            String dLang = descItemStr.getLanguage();
+            if (descItemStr.getText().replaceAll(" ", "").equalsIgnoreCase(i.getText()) && !dLang.equals(iLang)) {
+                if (!((iLang.equals("ru") && dLang.equals("uk")) || (iLang.equals("uk") && dLang.equals("ru")))) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private void fixDescsThatAreNames(String itemName, Set<SpLocaleItemStr> names, Set<SpLocaleItemStr> descs,
+                                      List<String> fixes, List<String> problems) {
+        boolean doFix = false;
+        for (SpLocaleItemStr d : descs) {
+            if (matchNameInOtherLanguage(d, names)) {
+                doFix = true;
+                break;
+            }
+        }
+        if (doFix) {
+            for (SpLocaleItemStr d : descs) {
+                SpLocaleItemStr newText = getStrForLocale(getLocaleStr(d), names);
+                if (newText == null){
+                    String msg = "Can't replace text for " + itemName + " " + getLocaleStr(d) + " - " + d.getText();
+                    System.out.println(msg);
+                    problems.add(msg);
+                } else if (!d.getText().replaceAll(" ", "").equalsIgnoreCase(newText.getText())) {
+                    fixes.add("[" + d.getText() + " <= " + newText.getText() + "]");
+                    d.setText(newText.getText());
+                }
+            }
+        }
+    }
+
+    private void addMissingNames(DisciplineBasedContainer item, List<String> newNames) {
+        List<String> locales = new ArrayList<>();
+        locales.add("en");
+        //locales.add("pt");
+        //locales.add("pt_BR");
+        //locales.add("ru_RU");
+        //locales.add("uk_UA");
+        for (String locale : locales) {
+            if (getStrForLocale(locale, item.getNames()) == null) {
+                SpLocaleItemStr newItem = new SpLocaleItemStr();
+                newItem.initialize();
+                newItem.setText(UIHelper.makeNamePretty(item.getName()));
+                newItem.setContainerName(item);
+                String[] ls = locale.split("_");
+                newItem.setLanguage(ls[0]);
+                if (ls.length > 1) {
+                    newItem.setCountry(ls[1]);
+                }
+                item.getNames().add(newItem);
+                newNames.add(item.getName() + " for " + locale);
+            }
+            for (SpLocaleContainerItem cItem : item.getItems()) {
+                if (getStrForLocale(locale, cItem.getNames()) == null) {
+                    SpLocaleItemStr newItem = new SpLocaleItemStr();
+                    newItem.initialize();
+                    newItem.setText(UIHelper.makeNamePretty(cItem.getName()));
+                    newItem.setItemName(cItem);
+                    String[] ls = locale.split("_");
+                    newItem.setLanguage(ls[0]);
+                    if (ls.length > 1) {
+                        newItem.setCountry(ls[1]);
+                    }
+                    cItem.getNames().add(newItem);
+                    newNames.add(item.getName()  + "." + cItem.getName() + " for " + locale);
+                }
+
+            }
+        }
+    }
+
+    private void addAllMissingNames(Vector<DisciplineBasedContainer> all) {
+        List<String> newNames = new ArrayList<>();
+        for (DisciplineBasedContainer c : all) {
+            addMissingNames(c, newNames);
+        }
+        try {
+            FileUtils.writeLines(new File("/home/timo/datas/schemadescfix/newNames.txt"), newNames);
+        } catch (IOException x) {
+            System.out.println("error writing new names file.");
+        }
+    }
+
+    private void findDescsWithoutNames(DisciplineBasedContainer item, List<String> descsWoNames) {
+           for (SpLocaleItemStr desc : item.getDescs()) {
+            if (getStrForLocale(getLocaleStr(desc), item.getNames()) == null) {
+                descsWoNames.add(item.getName() + " for " + getLocaleStr(desc));
+            }
+            for (SpLocaleContainerItem cItem : item.getItems()) {
+                for (SpLocaleItemStr cdesc : cItem.getDescs()) {
+                    if (getStrForLocale(getLocaleStr(cdesc), cItem.getNames()) == null) {
+                        descsWoNames.add(item.getName() + "." + cItem.getName() + " for " + getLocaleStr(cdesc));
+                    }
+                }
+            }
+        }
+    }
+    private void findAllDescsWithoutNames(Vector<DisciplineBasedContainer> all) {
+        List<String> newNames = new ArrayList<>();
+        for (DisciplineBasedContainer c : all) {
+            findDescsWithoutNames(c, newNames);
+        }
+        try {
+            FileUtils.writeLines(new File("/home/timo/datas/schemadescfix/descsWoNames.txt"), newNames);
+        } catch (IOException x) {
+            System.out.println("error writing descs w/o names file.");
+        }
+    }
+
+    private void fixDescriptions(File schemaWithDescs, File schemaWithoutDescs, File exportDirectory) {
+        Vector<DisciplineBasedContainer> withDescs = load(null, schemaWithDescs, false);
+        Vector<DisciplineBasedContainer> withoutDescs = load(null, schemaWithoutDescs, false);
+        addAllMissingNames(withoutDescs);
+        List<String> fixes = new ArrayList<>();
+        List<String> problems = new ArrayList<>();
+        for (DisciplineBasedContainer desced : withDescs) {
+            DisciplineBasedContainer unDesced = getContainerByName(desced.getName(), withoutDescs);
+            if (unDesced != null) {
+                for (SpLocaleItemStr desc : desced.getDescs()) {
+                    String localeStr = getLocaleStr(desc);
+                    SpLocaleItemStr woDesc = getStrForLocale(localeStr, unDesced.getDescs());
+                    SpLocaleItemStr woName = getStrForLocale(localeStr, unDesced.getNames());
+                    if (woDesc != null) {
+                        String oldDesc = woDesc.getText();
+                        String correction = correctDesc(desc, woDesc, woName);
+                        if (correction != null) {
+                            System.out.println(oldDesc + " <= " + desc.getText());
+                            fixes.add(oldDesc + " <= " + desc.getText());
+                        }
+                    }
+                }
+                fixDescsThatAreNames(unDesced.getName(), unDesced.getDescs(), unDesced.getNames(), fixes, problems);
+                for (SpLocaleContainerItem descedItem : desced.getItems()) {
+                    SpLocaleContainerItem unDescedItem = getContainerItemByName(descedItem.getName(), unDesced.getItems());
+                    if (unDescedItem != null) {
+                        for (SpLocaleItemStr desc : descedItem.getDescs()) {
+                            String localeStr = getLocaleStr(desc);
+                            SpLocaleItemStr woDesc = getStrForLocale(localeStr, unDescedItem.getDescs());
+                            SpLocaleItemStr woName = getStrForLocale(localeStr, unDescedItem.getNames());
+                            if (woDesc != null) {
+                                String oldDesc = woDesc.getText();
+                                String correction = correctDesc(desc, woDesc, woName);
+                                if (correction != null) {
+                                    System.out.println(oldDesc + " <= " + desc.getText());
+                                    fixes.add(oldDesc + " <= " + desc.getText());
+                                }
+                            }
+                        }
+                        fixDescsThatAreNames(unDesced.getName() + "." + unDescedItem.getName(),
+                                unDescedItem.getDescs(), unDescedItem.getNames(), fixes, problems);
+                    }
+                }
+            }
+        }
+        try {
+            FileUtils.writeLines(new File("/home/timo/datas/schemadescfix/problems.txt"), problems);
+            FileUtils.writeLines(new File("/home/timo/datas/schemadescfix/fixes.txt"), fixes);
+        } catch (IOException x) {
+            System.out.println("error writing log files.");
+        }
+        findAllDescsWithoutNames(withoutDescs);
+        saveContainers(exportDirectory, withoutDescs);
     }
 
     /* (non-Javadoc)
