@@ -1229,12 +1229,12 @@
     <field table="Taxon" name="parvorderSource" treename="taxon" maptofield="source" rankid="125"/>
     <field table="Taxon" name="parvorderGUID" treename="taxon" maptofield="guid" rankid="125"/>
 
-    <!-- for OU PBOT... -->
+    <!-- for OU PBOT... >
     <field table="Taxon" name="domain" treename="taxon" maptofield="name" rankid="5"/>
    	<field table="Taxon" name="infrakingdom" treename="taxon" maptofield="name" rankid="25"/>
    	<field table="Taxon" name="superphylum" treename="taxon" maptofield="name" rankid="27"/>
    	<field table="Taxon" name="infradivision" treename="taxon" maptofield="name" rankid="45"/>
-   	<field table="Taxon" name="cohort" treename="taxon" maptofield="name" rankid="47"/>
+   	<field table="Taxon" name="cohort" treename="taxon" maptofield="name" rankid="47"/-->
     <!-- ...for OU PBOT -->
 
 
