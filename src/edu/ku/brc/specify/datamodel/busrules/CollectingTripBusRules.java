@@ -30,8 +30,7 @@ import edu.ku.brc.specify.datamodel.CollectingTrip;
  * Feb 11, 2008
  *
  */
-public class CollectingTripBusRules extends BaseBusRules
-{
+public class CollectingTripBusRules extends AttachmentOwnerBaseBusRules {
 
     public CollectingTripBusRules()
     {

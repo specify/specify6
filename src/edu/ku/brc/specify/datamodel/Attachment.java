@@ -623,6 +623,7 @@ public class Attachment extends DataModelObjBase implements Serializable
             Borrow.getClassTableId(),  Attachment.COLLECTION_SCOPE,
             CollectionObject.getClassTableId(),  Attachment.COLLECTION_SCOPE,
             CollectingEvent.getClassTableId(),  Attachment.DISCIPLINE_SCOPE,
+            CollectingTrip.getClassTableId(),  Attachment.DISCIPLINE_SCOPE,
             ConservDescription.getClassTableId(), Attachment.DIVISION_SCOPE,
             ConservEvent.getClassTableId(), Attachment.DIVISION_SCOPE,
             DNASequence.getClassTableId(), Attachment.COLLECTION_SCOPE,
