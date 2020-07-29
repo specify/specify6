@@ -437,7 +437,7 @@ public class TaxonLoadSetupPanel extends BaseSetupPanel
     @Override
     public void aboutToLeave()
     {
-        if (preloadChk.isSelected() && properties.get("othertaxonfile") == null)
+        if (preloadChk.isSelected() /*&& properties.get("othertaxonfile") == null*/)
         {
             TaxonFileDesc tfd = (TaxonFileDesc)fileCBX.getSelectedItem();
             if (tfd != null && FilenameUtils.isExtension(tfd.getFileName().toLowerCase(), XLS))
