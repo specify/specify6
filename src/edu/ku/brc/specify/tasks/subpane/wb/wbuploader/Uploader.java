@@ -1514,31 +1514,25 @@ public class Uploader implements ActionListener, KeyListener
      * @param r
      * @return true is r is working
      */
-    protected boolean isRelationshipImplemented(Relationship r, Table t)
-    {
+    protected boolean isRelationshipImplemented(Relationship r, Table t) {
     	boolean result = true;
-    	if (t.getName().equalsIgnoreCase("collectingeventattribute"))
-    	{
-    		if (r.getRelatedField().getName().equalsIgnoreCase("HostTaxonID"))
-    		{
+    	if (t.getName().equalsIgnoreCase("collectingeventattribute")) {
+    		if (r.getRelatedField().getName().equalsIgnoreCase("HostTaxonID")) {
     			result = false;
     		}
-    	}
-    	else if (t.getName().equalsIgnoreCase("paleocontext"))
-    	{
-    		if (r.getRelatedField().getName().equalsIgnoreCase("ChronosStratEndID"))
-    		{
+    	} else if (t.getName().equalsIgnoreCase("preparation")) {
+            if (r.getRelatedField().getName().equalsIgnoreCase("alternateStorageID")) {
+                result = false;
+            }
+    	} else if (t.getName().equalsIgnoreCase("paleocontext")) {
+    		if (r.getRelatedField().getName().equalsIgnoreCase("ChronosStratEndID")) {
     			result = false;
     		}
-    		else if (r.getRelatedField().getName().equalsIgnoreCase("BioStratID"))
-    		{
+    		else if (r.getRelatedField().getName().equalsIgnoreCase("BioStratID")) {
     			result = false;
     		}
-    		
-    	} else if (t.getName().equalsIgnoreCase("determination"))
-    	{
-    		if (r.getRelatedField().getName().equalsIgnoreCase("PreferredTaxonID"))
-    		{
+    	} else if (t.getName().equalsIgnoreCase("determination")) {
+    		if (r.getRelatedField().getName().equalsIgnoreCase("PreferredTaxonID")) {
     			result = false;
     		}
     	} else if (t.getName().equalsIgnoreCase("collectionobject")) {
@@ -1546,8 +1540,7 @@ public class Uploader implements ActionListener, KeyListener
     			result = false;
     		}
     	}
-    	if (!result)
-    	{
+    	if (!result) {
 			log.debug("Ignoring relationship: " + r.getField().getName() + ":" + r.getRelatedField().getName());
     	}
     	return result;

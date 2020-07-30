@@ -359,7 +359,6 @@ public class TreeHelper
     {
         loc.getContainers().size();
         loc.getPreparations().size();
-        loc.getAlternateStoragePreparations().size();
     }
     
     public static void initializeRelatedObjects(GeologicTimePeriod gtp)
