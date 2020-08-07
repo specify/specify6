@@ -38,6 +38,7 @@ commons-beanutils (all-in-one JAR)		1.7.0
 commons-betwixt							0.8
 commons-io								2.4
 commons-validator						1.3.1
+core                                    2.2
 jaxen									1.1
 forms (JGoodies)						1.2.1
 looks (JGoodies)						2.2.1
@@ -60,6 +61,7 @@ junit									4.1
 mysql-connector-java					5.1.35
 itext									2.1.7 (updated for fix for bug #8555 [pdf export of jasper reports] can back up to 2.0.2 if necessary)
 javacsv									2.0
+javase                                  2.2
 jh										2.0_02
 swingx									1.6.1
 swingx-beaninfo							1.6.1
