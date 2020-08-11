@@ -1531,11 +1531,11 @@ public class TemplateEditor extends CustomDialog {
      * @param fld
      * @return FieldInfo where Table is tbl and Field is fld.
      */
-    protected FieldInfo findFieldInfo(final String tbl, final String fld)
+    protected FieldInfo findFieldInfo(final String tblArg, final String fld)
     {
-        if (tbl == null || fld == null)
+        if (tblArg == null || fld == null)
             return null;
-        
+        String tbl = "taxononly".equalsIgnoreCase(tblArg) ? "taxon" : tblArg;
         TableInfo tblInfo = null;
         for (int i=0; i<tableModel.size(); i++)
         {
