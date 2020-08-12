@@ -26,15 +26,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
-import java.util.Vector;
+import java.util.*;
 
 import javax.swing.JOptionPane;
 
@@ -60,6 +52,10 @@ import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import edu.ku.brc.specify.rstools.ExportFileConfigurationFactory;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.RichTextString;
+import org.apache.poi.ss.usermodel.Row;
 
 /**
  * @author timbo
@@ -104,35 +100,25 @@ public class ConfigureXLS extends ConfigureExternalDataBase
         
         // Iterate over each row in the sheet
         Iterator<?> rows = sheet.rowIterator();
-        while (rows.hasNext())
-        {
+        while (rows.hasNext()) {
             HSSFRow row = (HSSFRow) rows.next();
             int maxSize = Math.max(row.getPhysicalNumberOfCells(), row.getLastCellNum());
-            for (int col = 0; col < maxSize; col++)
-            {
-                if (firstRow)
-                {
-                    if (row.getCell(col) == null)
-                    {
+            for (int col = 0; col < maxSize; col++) {
+                if (firstRow) {
+                    if (row.getCell(col) == null) {
                         firstRowCells.add(false);
                     }
-                    else if (row.getCell(col).getCellType() == HSSFCell.CELL_TYPE_STRING)
-                    {
+                    else if (row.getCell(col).getCellType() == CellType.STRING) {
                         firstRowCells.add(true);
                     }
-                    else
-                    {
+                    else {
                         firstRowCells.add(null);
                     }
-                }
-                else
-                {
-                    if (col == restCells.size())
-                    {
+                } else {
+                    if (col == restCells.size()) {
                         restCells.add(false);
                     }
-                    if (!restCells.get(col))
-                    {
+                    if (!restCells.get(col)) {
                         restCells.set(col, row.getCell(col) != null);
                     }
                 }
@@ -232,7 +218,7 @@ public class ConfigureXLS extends ConfigureExternalDataBase
             dis.close();
             result = new DocumentSummaryInformation(ps);
         }
-        catch (FileNotFoundException ex)
+        catch (Exception ex)
         {
             // There is no document summary information. 
             result = null;
@@ -241,7 +227,7 @@ public class ConfigureXLS extends ConfigureExternalDataBase
          * just returning null if anything weird happens. If there is a problem with the xls file,
          * something else will probably blow up later. 
         */
-        catch (IOException ex)
+        /*catch (IOException ex)
         {
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ConfigureXLS.class, ex);
@@ -275,7 +261,7 @@ public class ConfigureXLS extends ConfigureExternalDataBase
             //edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ConfigureXLS.class, ex);
             log.debug(ex);
             result = null;
-        }
+        }*/
         return result;
     }
     
@@ -332,35 +318,39 @@ public class ConfigureXLS extends ConfigureExternalDataBase
     	}
     	return result;
     }
-    
+
+    protected Integer getIdxForPropKey(String propKey) {
+        if (propKey != null) {
+            String sint = propKey.replace(POIFS_COL_KEY_PREFIX, "").trim();
+            try {
+                return Integer.valueOf(sint);
+            } catch (NumberFormatException x) {
+                //oh well
+            }
+        }
+        return null;
+    }
     /**
      * @param props
      * @param cols
      * @return
      */
-    protected boolean doReadMappings(CustomProperties props, List<ImportColumnInfo> cols)
-    {
+    protected boolean doReadMappings(CustomProperties props, List<ImportColumnInfo> cols) {
     	boolean usesViewOrder = usesViewOrderKey(props);
-        if (props != null && ((usesViewOrder && props.size() == cols.size()) || !usesViewOrder))
-        {
-        	if (usesViewOrder)
-        	{
-            	for (ImportColumnInfo col : cols)
-                {
-                    String key = getKeyForCol(col, usesViewOrder);
-                    if (key != null)
-                    {
-                    	String[] mapping = ((String) props.get(key)).split("\t");
-                    	if (!mapping[0].equals(col.getColTitle()))
-                    	{
-                    		return false;
-                    	}
+        if (props != null && ((usesViewOrder && props.size() == cols.size()) || !usesViewOrder)) {
+        	if (usesViewOrder) {
+            	for (Map.Entry p : props.entrySet()) {
+            	    Integer colIdx = getIdxForPropKey(p.getKey().toString());
+            	    if (colIdx != null && colIdx >= 0 && colIdx < cols.size()) {
+                        String[] mapping = ((String)p.getValue()).split("\t");
+                        if (!mapping[0].equals(cols.get(colIdx).getColTitle())) {
+                            return false;
+                        }
                     }
                 }
-        	} 
+        	}
         	return true;
-        } else 
-        {
+        } else {
         	return false;
         }
     }
@@ -370,42 +360,33 @@ public class ConfigureXLS extends ConfigureExternalDataBase
      * 
      * Reads workbench mappings from the XLS file.
     */
-    protected void readMappings(final POIFSFileSystem poifs)
-    {
+    protected void readMappings(final POIFSFileSystem poifs) {
         DocumentSummaryInformation dsi = getDocSummary(poifs);
-        if (dsi != null)
-        {
+        if (dsi != null) {
             CustomProperties props = dsi.getCustomProperties();
-        	List<ImportColumnInfo> sortedCols = new ArrayList<ImportColumnInfo>(colInfo);
-            Collections.sort(sortedCols); 
-            if (doReadMappings(props, sortedCols))
-            {
-            	//Just in case colInfo is not sorted by column index...
-            	boolean usesViewOrder = usesViewOrderKey(props);
-            	int mapIdxOffset = usesViewOrder ? 1 : 0;
-                Set<String> dupedCols = usesViewOrder ? new HashSet<String>() : getDuplicatedColTitles(sortedCols);
-            	for (ImportColumnInfo col : sortedCols)
-                {
-                    if (!dupedCols.contains(col.getColTitle()))
-                    {
-                    	String key = getKeyForCol(col, usesViewOrder);
-                    	if (key != null && props.get(key) != null)
-                    	{
-                    		String[] mapping = ((String) props.get(key)).split("\t");
-                    		col.setMapToTbl(mapping[mapIdxOffset + 0]);
-                    		col.setMapToFld(mapping[mapIdxOffset + 1]);
-                    		if (mapping.length == 7 + mapIdxOffset)
-                    		{
-                    			col.setFormXCoord(Integer.valueOf(mapping[mapIdxOffset + 2]));
-                    			col.setFormYCoord(Integer.valueOf(mapping[mapIdxOffset + 3]));
-                    			if (StringUtils.isNotBlank(mapping[mapIdxOffset + 4]))
-                    			{
-                    				col.setCaption(mapping[mapIdxOffset + 4]);
-                    			}
-                    			col.setFrmFieldType(Integer.valueOf(mapping[mapIdxOffset + 5]));
-                    			col.setFrmMetaData(mapping[mapIdxOffset + 6]);
-                    		}
-                    	}
+            if (doReadMappings(props, colInfo)) {
+                boolean usesViewOrder = usesViewOrderKey(props);
+                int mapIdxOffset = usesViewOrder ? 1 : 0;
+                Set<String> dupedCols = usesViewOrder ? new HashSet<>() : getDuplicatedColTitles(colInfo);
+                int i = 0;
+                for (Map.Entry p : props.entrySet()) {
+                    Integer colIdx = usesViewOrder ? getIdxForPropKey(p.getKey().toString()) : i++;
+                    if (!usesViewOrder || (colIdx != null && colIdx >= 0 && colIdx < colInfo.size())) {
+                        ImportColumnInfo col = colInfo.get(colIdx);
+                        if (!dupedCols.contains(col.getColTitle())) {
+                            String[] mapping = ((String) p.getValue()).split("\t");
+                            col.setMapToTbl(mapping[mapIdxOffset + 0]);
+                            col.setMapToFld(mapping[mapIdxOffset + 1]);
+                            if (mapping.length == 7 + mapIdxOffset) {
+                                col.setFormXCoord(Integer.valueOf(mapping[mapIdxOffset + 2]));
+                                col.setFormYCoord(Integer.valueOf(mapping[mapIdxOffset + 3]));
+                                if (StringUtils.isNotBlank(mapping[mapIdxOffset + 4])) {
+                                    col.setCaption(mapping[mapIdxOffset + 4]);
+                                }
+                                col.setFrmFieldType(Integer.valueOf(mapping[mapIdxOffset + 5]));
+                                col.setFrmMetaData(mapping[mapIdxOffset + 6]);
+                            }
+                        }
                     }
                 }
             }
@@ -448,71 +429,55 @@ public class ConfigureXLS extends ConfigureExternalDataBase
             
             // Iterate over each row in the sheet
             @SuppressWarnings("unchecked")
-            Iterator<HSSFRow> rows =  sheet.rowIterator();
-            while (rows.hasNext())
-            {
-                HSSFRow row = rows.next();
-                if (firstRow || numRows == 1)
-                {
+            Iterator<Row> rows =  sheet.rowIterator();
+            while (rows.hasNext()) {
+                Row row = rows.next();
+                if (firstRow || numRows == 1) {
                     // Iterate over each cell in the row and print out the cell's content
                     int colNum = 0;
                     int maxSize = Math.max(row.getPhysicalNumberOfCells(), row.getLastCellNum());
-                    while (colNum < maxSize)
-                    {
-                        if (emptyCols.indexOf(new Integer(colNum)) == -1)
-                        {
+                    while (colNum < maxSize) {
+                        if (emptyCols.indexOf(new Integer(colNum)) == -1) {
                             ImportColumnInfo.ColumnType disciplinee = ImportColumnInfo.ColumnType.Integer;
                             String value = null;
                             boolean skip = false;
-                            HSSFCell cell = row.getCell(colNum);
-                            if (cell == null)
-                            {
+                            Cell cell = row.getCell(colNum);
+                            if (cell == null) {
                                 //assuming numRows == 1 or not firstRowHasHeaders.
                                 //the call to checkHeadsAndCols would have already blank headers.
                                 value = "";
                                 disciplinee = ImportColumnInfo.ColumnType.String;
                             }
-                            else switch (cell.getCellType())
-                            {
-                                case HSSFCell.CELL_TYPE_NUMERIC:
+                            else {
+                                CellType cellType = cell.getCellType();
+                                if (cellType == CellType.NUMERIC) {
                                     double numeric = cell.getNumericCellValue();
                                     value = Double.toString(numeric);
                                     disciplinee = ImportColumnInfo.ColumnType.Double;
-                                    break;
-                                case HSSFCell.CELL_TYPE_STRING:
-                                    HSSFRichTextString richVal = cell.getRichStringCellValue();
+                                } else if (cellType == CellType.STRING) {
+                                    RichTextString richVal = cell.getRichStringCellValue();
                                     value = richVal.getString().trim();
                                     disciplinee = ImportColumnInfo.ColumnType.String;
-                                    break;
-                                case HSSFCell.CELL_TYPE_BLANK:
+                                } else if (cellType == CellType.BLANK) {
                                     value = "";
                                     disciplinee = ImportColumnInfo.ColumnType.String;
-                                    break;
-                                case HSSFCell.CELL_TYPE_BOOLEAN:
+                                } else if (cellType == CellType.BOOLEAN) {
                                     boolean bool = cell.getBooleanCellValue();
                                     value = Boolean.toString(bool);
                                     disciplinee = ImportColumnInfo.ColumnType.Boolean;
-                                    break;
-                                default:
+                                } else {
                                     skip = true;
-                                    break;
+                                }
                             }
-
-                            if (numRows == 1 && !skip)
-                            {
+                            if (numRows == 1 && !skip) {
                                 colInfo.get(col).setData(value);
                                 col++;
-                            }
-                            else if (!skip)
-                            {
-                                if (firstRowHasHeaders)
-                                {
+                            } else if (!skip) {
+                                if (firstRowHasHeaders) {
                                     colInfo.add(new ImportColumnInfo(colNum, disciplinee, value, value, null, null,
                                             null));
                                     colTracker.put(col, true);
-                                }
-                                else
-                                {
+                                } else {
                                     String colName = getResourceString("DEFAULT_COLUMN_NAME") + " "
                                             + (colNum + 1);
                                     colInfo.add(new ImportColumnInfo(colNum, disciplinee, colName,

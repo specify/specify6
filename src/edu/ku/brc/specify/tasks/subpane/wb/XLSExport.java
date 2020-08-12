@@ -47,6 +47,8 @@ import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.ui.UIRegistry;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 
 /**
  * @author timbo
@@ -115,9 +117,9 @@ public class XLSExport implements DataExport
      * @param row
      * @return HSSFCellTypes for each column in workbench.
      */
-    protected int[] bldColTypes(final WorkbenchTemplate wbt) throws WBUnMappedItemException
+    protected CellType[] bldColTypes(final WorkbenchTemplate wbt) throws WBUnMappedItemException
     {
-        int[] result = new int[wbt.getWorkbenchTemplateMappingItems().size()];
+        CellType[] result = new CellType[wbt.getWorkbenchTemplateMappingItems().size()];
         for (WorkbenchTemplateMappingItem mapItem : wbt.getWorkbenchTemplateMappingItems())
         {
             result[mapItem.getViewOrder()] = getColType(mapItem); 
@@ -128,7 +130,7 @@ public class XLSExport implements DataExport
      * @param colNum - index of a workbench column.
      * @return the excel cell type appropriate for the database field the workbench column maps to.
      */
-    protected int getColType(final WorkbenchTemplateMappingItem mapItem) throws WBUnMappedItemException
+    protected CellType getColType(final WorkbenchTemplateMappingItem mapItem) throws WBUnMappedItemException
     {
         Class<?> dataType = WorkbenchTask.getDataType(mapItem, false);
         // These are the classes currently returned by getDataType():
@@ -152,16 +154,16 @@ public class XLSExport implements DataExport
                 || dataType == java.lang.Double.class
                 || dataType == java.math.BigDecimal.class)
         {
-            return HSSFCell.CELL_TYPE_NUMERIC;
+            return CellType.NUMERIC;
         }
         else if (dataType == java.lang.Boolean.class)
         {
             // XXX still need to test if this type allows "don't know"
-            return HSSFCell.CELL_TYPE_BOOLEAN;
+            return CellType.BOOLEAN;
         }
         else
         {
-            return HSSFCell.CELL_TYPE_STRING;
+            return CellType.STRING;
         }
     }
     
@@ -262,7 +264,7 @@ public class XLSExport implements DataExport
         boolean hasRows = hasTemplate ? data.size() > 1 : data.size() > 0;
         if (hasRows)
 		{
-			int[] disciplinees;
+			CellType[] disciplinees;
 			
 			WorkbenchRow wbRow = (WorkbenchRow) data.get(hasTemplate ? 1 : 0);
 			Workbench workBench = wbRow.getWorkbench();
@@ -298,7 +300,7 @@ public class XLSExport implements DataExport
 					geoDataCol = colNum;
 					rowHasGeoData = true;
 					HSSFCell cell = hssfRow.createCell(colNum++);
-					cell.setCellType(HSSFCell.CELL_TYPE_STRING);
+					cell.setCellType(CellType.STRING);
 					setCellValue(cell, row.getBioGeomancerResults());
 				}
 
@@ -318,11 +320,10 @@ public class XLSExport implements DataExport
 							imgCols.add(colNum);
 						}
 						HSSFCell cell = hssfRow.createCell(colNum++);
-						cell.setCellType(HSSFCell.CELL_TYPE_STRING);
+						cell.setCellType(CellType.STRING);
 						String cellValue = img.getCardImageFullPath();
 						String attachToTbl = img.getAttachToTableName();
-						if (attachToTbl != null)
-						{
+						if (attachToTbl != null) {
 							cellValue += "\t" + attachToTbl;
 						}
 						setCellValue(cell, cellValue);

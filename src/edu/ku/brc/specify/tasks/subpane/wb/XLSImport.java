@@ -51,6 +51,7 @@ import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.LatLonConverter;
+import org.apache.poi.ss.usermodel.CellType;
 
 /**
  * @author timbo
@@ -188,68 +189,49 @@ public class XLSImport extends DataImport implements DataImportIFace
                         {
                             continue;
                         }
-                        int      type    = cell.getCellType();
-                        if (type == HSSFCell.CELL_TYPE_FORMULA)
+                        CellType      type    = cell.getCellType();
+                        if (type == CellType.FORMULA)
                         {
                         	type = cell.getCachedFormulaResultType();
                         }
                         String   value   = "";
                         boolean  skip    = false;
     
-                        switch (type)
-                        {
-                            case HSSFCell.CELL_TYPE_NUMERIC:
-                            {
-                                if (HSSFDateUtil.isCellDateFormatted(cell))
-                                {
+                            if (type == CellType.NUMERIC) {
+                                if (HSSFDateUtil.isCellDateFormatted(cell)) {
                                     //even if WorkbenchTask.getDataType(wbtmi) is not Calendar or Date. Hmmmm.
                                     value = scrDateFormat.getSimpleDateFormat().format(cell.getDateCellValue());
-                                } else
-                                {
+                                } else {
                                     Class<?> classObj = WorkbenchTask.getDataType(wbtmi, false);
-                                    if (classObj.equals(Integer.class))
-                                    {
+                                    if (classObj.equals(Integer.class)) {
                                         double numeric = cell.getNumericCellValue();
                                         value = Integer.toString((int) numeric);
-        
-                                    } else if (classObj.equals(Calendar.class) || classObj.equals(Date.class))
-                                    {
+                                    } else if (classObj.equals(Calendar.class) || classObj.equals(Date.class)) {
                                         Date d = cell.getDateCellValue();
-                                        if (d != null)
-                                        {
+                                        if (d != null) {
                                         	value = scrDateFormat.getSimpleDateFormat().format(cell.getDateCellValue());
-                                        } else
-                                        {
+                                        } else {
                                         	value = null;
                                         }
-                                    } else 
-                                    {
+                                    } else {
                                         double numeric = cell.getNumericCellValue();
                                         value = nf.format(numeric);
-                                        if (isGeoCoordinate(wbtmi))
-                                        {
+                                        if (isGeoCoordinate(wbtmi)) {
                                             int sepInx = value.indexOf(decSep);
-                                        	if (sepInx > -1 && value.substring(sepInx).length() > nfGeoCoord.getMaximumFractionDigits())
-                                        	{
+                                        	if (sepInx > -1 && value.substring(sepInx).length() > nfGeoCoord.getMaximumFractionDigits()) {
                                         		String value2 = nfGeoCoord.format(numeric);
                                         		int maxlen = wbtmi.getFieldName().startsWith("latitude") 
                                         			? nfGeoCoord.getMaximumFractionDigits() + 3 
                                         			: nfGeoCoord.getMaximumFractionDigits() + 4;
-                                        		if (numeric < 0)
-                                        		{
+                                        		if (numeric < 0) {
                                         			maxlen++;
                                         		}
-                                        		//System.out.println(value + " " + trackTrunc(value, numRows, wbtmi.getViewOrder(), wbtmi.getCaption(), 
-                                        		//		maxlen) + " " + value2);
                                         		value = value2;
                                         	}
                                         }    
                                     }
                                 }
-                                break;
-                            }
-    
-                            case HSSFCell.CELL_TYPE_STRING:
+                            } else if (type == CellType.STRING) {
                                 HSSFHyperlink hl = checkHyperlinks(cell, activeHyperlinks);
                                 if (hl == null /*|| (hl != null && hl.getType() == HSSFHyperlink.LINK_EMAIL)*/)
                                 {
@@ -260,21 +242,14 @@ public class XLSImport extends DataImport implements DataImportIFace
                                     //value = hl.getAddress();
                                 	value = hl.getLabel();
                                 }
-                                break;
-    
-                            case HSSFCell.CELL_TYPE_BLANK:
+                            } else if (type == CellType.BLANK) {
                                 value = "";
-                                type = HSSFCell.CELL_TYPE_STRING;
-                                break;
-    
-                            case HSSFCell.CELL_TYPE_BOOLEAN:
+                                type = CellType.STRING;
+                            } else if (type == CellType.BOOLEAN) {
                                 boolean bool = cell.getBooleanCellValue();
                                 value = Boolean.toString(bool);
-                                break;
-    
-                            default:
+                            } else {
                                 skip = true;
-                                break;
                         }
     
                         if (!skip && value != null && !value.trim().equals(""))

@@ -141,6 +141,7 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+import org.apache.poi.ss.usermodel.*;
 import org.dom4j.Element;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -3951,8 +3952,8 @@ public class BuildSampleDatabase
             
             String[]        cells    = new String[4];
             InputStream     input    = new FileInputStream(file);
-            POIFSFileSystem fs       = new POIFSFileSystem(input);
-            HSSFWorkbook    workBook = new HSSFWorkbook(fs);
+            //POIFSFileSystem fs       = new POIFSFileSystem(input);
+            HSSFWorkbook    workBook = new HSSFWorkbook(input);
             HSSFSheet       sheet    = workBook.getSheetAt(0);
             Iterator<?>     rows     = sheet.rowIterator();
             
@@ -8989,13 +8990,13 @@ public class BuildSampleDatabase
         try
         {
             ResourceBundle.getBundle("resources", Locale.getDefault()); //$NON-NLS-1$
-            
+
         } catch (MissingResourceException ex)
         {
             Locale.setDefault(Locale.ENGLISH);
             setResourceLocale(Locale.ENGLISH);
         }
-        
+
         new HiddenTableMgr();
         try
         {
@@ -9009,12 +9010,12 @@ public class BuildSampleDatabase
         {
             e.printStackTrace();
         }
-        
+
         if (StringUtils.isEmpty(getAppName()))
         {
             setAppName("Specify");
         }
-        
+
         SwingUtilities.invokeLater(new Runnable()
         {
             public void run()
@@ -9044,9 +9045,9 @@ public class BuildSampleDatabase
         {
             String[]        cells    = new String[35];
             InputStream     input    = new FileInputStream(file);
-            POIFSFileSystem fs       = new POIFSFileSystem(input);
-            HSSFWorkbook    workBook = new HSSFWorkbook(fs);
-            HSSFSheet       sheet    = workBook.getSheetAt(0);
+            //POIFSFileSystem fs       = new POIFSFileSystem(input);
+            Workbook    workBook = WorkbookFactory.create(input);
+            Sheet       sheet    = workBook.getSheetAt(0);
             Iterator<?>     rows     = sheet.rowIterator();
             
             rows = sheet.rowIterator();
@@ -9057,11 +9058,11 @@ public class BuildSampleDatabase
                     cells[i] = null;
                 }
                 
-                HSSFRow row = (HSSFRow) rows.next();
+                Row row = (Row) rows.next();
                 Iterator<?> cellsIter = row.cellIterator();
                 while (cellsIter.hasNext())
                 {
-                    HSSFCell cell = (HSSFCell)cellsIter.next();
+                    Cell cell = (Cell)cellsIter.next();
                     if (cell != null)
                     {
                         nameHash.add(StringUtils.trim(cell.getRichStringCellValue().getString()));
@@ -9080,7 +9081,7 @@ public class BuildSampleDatabase
      * @param cell
      * @return
      */
-    public String getXLSCellValueAsStr(final HSSFCell cell)
+    public String getXLSCellValueAsStr(final Cell cell)
     {
         String value = null;
         // if cell is blank, set value to ""
@@ -9092,7 +9093,7 @@ public class BuildSampleDatabase
         {
             switch (cell.getCellType())
             {
-                case HSSFCell.CELL_TYPE_NUMERIC:
+                case NUMERIC:
                     // The best I can do at this point in the app is to guess if a
                     // cell is a date.
                     // Handle dates carefully while using HSSF. Excel stores all
@@ -9123,15 +9124,15 @@ public class BuildSampleDatabase
                     }
                     break;
 
-                case HSSFCell.CELL_TYPE_STRING:
+                case STRING:
                     value = cell.getRichStringCellValue().getString();
                     break;
 
-                case HSSFCell.CELL_TYPE_BLANK:
+                case BLANK:
                     value = "";
                     break;
 
-                case HSSFCell.CELL_TYPE_BOOLEAN:
+                case BOOLEAN:
                     value = Boolean.toString(cell.getBooleanCellValue());
                     break;
 
@@ -9208,9 +9209,9 @@ public class BuildSampleDatabase
             String[]        cells    = new String[35];
             String[]        header   = new String[35];
             InputStream     input    = new FileInputStream(file);
-            POIFSFileSystem fs       = new POIFSFileSystem(input);
-            HSSFWorkbook    workBook = new HSSFWorkbook(fs);
-            HSSFSheet       sheet    = workBook.getSheetAt(0);
+            //POIFSFileSystem fs       = new POIFSFileSystem(input);
+            Workbook workBook = WorkbookFactory.create(input);
+            Sheet sheet    = workBook.getSheetAt(0);
             Iterator<?>     rows     = sheet.rowIterator();
             
             int lastRowNum  = sheet.getLastRowNum();
@@ -9240,12 +9241,12 @@ public class BuildSampleDatabase
                 
                 if (counter == 0)
                 {
-                    HSSFRow row = (HSSFRow) rows.next();
+                    Row row = (Row)rows.next();
                     Iterator<?> cellsIter = row.cellIterator();
                     int i = 0;
                     while (cellsIter.hasNext())
                     {
-                        HSSFCell cell = (HSSFCell)cellsIter.next();
+                        Cell cell = (Cell)cellsIter.next();
                         if (cell != null)
                         {
                             cells[i] = getXLSCellValueAsStr(cell);
@@ -9302,10 +9303,10 @@ public class BuildSampleDatabase
                     //log.info("Converted " + counter + " of "+lastRowNum+" Taxon records");
                 }
                 
-                HSSFRow row = (HSSFRow) rows.next();
+                Row row = (Row) rows.next();
                 Iterator<?> cellsIter = row.cellIterator();
                 while (cellsIter.hasNext()) {
-                    HSSFCell cell = (HSSFCell)cellsIter.next();
+                    Cell cell = (Cell)cellsIter.next();
                     if (cell != null) {
                         cells[cell.getColumnIndex()] = getXLSCellValueAsStr(cell);
                     }
@@ -9681,8 +9682,8 @@ public class BuildSampleDatabase
             
             String[]        cells    = new String[6];
             InputStream     input    = new FileInputStream(file);
-            POIFSFileSystem fs       = new POIFSFileSystem(input);
-            HSSFWorkbook    workBook = new HSSFWorkbook(fs);
+            //POIFSFileSystem fs       = new POIFSFileSystem(input);
+            HSSFWorkbook    workBook = new HSSFWorkbook(input);
             HSSFSheet       sheet    = workBook.getSheetAt(0);
             Iterator<?>     rows     = sheet.rowIterator();
             

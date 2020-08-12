@@ -106,14 +106,14 @@ public class TableModel2Excel
                                             final short colorIndex, 
                                             final short borderStyle)
     {
-        style.setBorderBottom(borderStyle);
-        style.setBottomBorderColor(colorIndex);
-        style.setBorderLeft(borderStyle);
-        style.setLeftBorderColor(colorIndex);
-        style.setBorderRight(borderStyle);
-        style.setRightBorderColor(colorIndex);
-        style.setBorderTop(borderStyle);
-        style.setTopBorderColor(colorIndex);
+//        style.setBorderBottom(borderStyle);
+//        style.setBottomBorderColor(colorIndex);
+//        style.setBorderLeft(borderStyle);
+//        style.setLeftBorderColor(colorIndex);
+//        style.setBorderRight(borderStyle);
+//        style.setRightBorderColor(colorIndex);
+//        style.setBorderTop(borderStyle);
+//        style.setTopBorderColor(colorIndex);
     }
 
     /**
@@ -160,7 +160,7 @@ public class TableModel2Excel
                 // Header Captions
                 HSSFFont headerFont = wb.createFont();
                 headerFont.setFontHeightInPoints((short) 12);
-                headerFont.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+                //headerFont.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
                 
                 short numColumns = (short)tableModel.getColumnCount();
                 

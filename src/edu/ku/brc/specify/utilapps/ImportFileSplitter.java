@@ -67,6 +67,10 @@ import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.IconManager.IconSize;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.Row;
 
 /**
  * 
@@ -404,7 +408,7 @@ public class ImportFileSplitter extends CustomDialog
 				        HSSFWorkbook workBookOut  = null;
 				        HSSFSheet    sheetOut = null;
 				        int rowNum = 0;
-				        short styleIdxOffset = 0;
+				        int styleIdxOffset = 0;
 				        String firstLine = null;
 				        boolean wroteHeaders = false;
 						while (rows.hasNext())
@@ -462,31 +466,26 @@ public class ImportFileSplitter extends CustomDialog
 							{
 								rowIn = (HSSFRow) rows.next();
 							}
-		                    HSSFRow rowOut = sheetOut.createRow(rowNum);
+		                    Row rowOut = sheetOut.createRow(rowNum);
 		                    int cellNum = 0;
 		                    while (cellNum < maxCols)
 		                    {
-		                    	HSSFCell cellIn = rowIn.getCell(cellNum, HSSFRow.CREATE_NULL_AS_BLANK);
-		                    	HSSFCell cellOut = rowOut.createCell(cellNum);
+		                    	Cell cellIn = rowIn.getCell(cellNum, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+		                    	Cell cellOut = rowOut.createCell(cellNum);
 		                    	cellNum++;
 		                        cellOut.setCellType(cellIn.getCellType());
 		                        short styleIdx = -1;
-		                        HSSFCellStyle inStyle = cellIn.getCellStyle();
-		                        for (short s = 0; s < workBook.getNumCellStyles(); s++)
-		                        {
-		                        	if (workBook.getCellStyleAt(s).equals(inStyle))
-		                        	{
+		                        CellStyle inStyle = cellIn.getCellStyle();
+		                        for (short s = 0; s < workBook.getNumCellStyles(); s++) {
+		                        	if (workBook.getCellStyleAt(s).equals(inStyle)) {
 		                        		styleIdx = (short)(s + styleIdxOffset);
 		                        		break;
 		                        	}
 		                        }
-		                        if (styleIdx != -1)
-		                        {
-		                        	try
-		                        	{
+		                        if (styleIdx != -1) {
+		                        	try {
 		                        		cellOut.setCellStyle(workBookOut.getCellStyleAt(styleIdx));
-		                        	} catch (Exception ex)
-		                        	{
+		                        	} catch (Exception ex) {
 		                        		//That didn't work. HSSF in action.
 		                        		String msg = String.format(UIRegistry.getResourceString("ImportFileSplitter.CellStyleCopyErrMsg"),
 		                        				rowNum+1, cellNum+1, fileNum, ex.getClass().getSimpleName() + ": " + ex.getLocalizedMessage());
@@ -495,27 +494,17 @@ public class ImportFileSplitter extends CustomDialog
 			                        	result.getReport().add(msg);
 		                        	}
 		                        }
-	                        	switch (cellIn.getCellType())
-	                        	{
-		                        	case HSSFCell.CELL_TYPE_NUMERIC:
-		                        		cellOut.setCellValue(cellIn.getNumericCellValue());
-		                        		break;
-
-	                        		case HSSFCell.CELL_TYPE_STRING:
+		                        CellType cellType = cellIn.getCellType();
+	                        	if (cellType == CellType.NUMERIC) {
+									cellOut.setCellValue(cellIn.getNumericCellValue());
+								} else if(cellType == CellType.STRING) {
 	                        			cellOut.setCellValue(cellIn.getRichStringCellValue());
-	                        			break;
-
-	                        		case HSSFCell.CELL_TYPE_BOOLEAN:
+								} else if(cellType == CellType.BOOLEAN) {
 	                        			cellOut.setCellValue(cellIn.getBooleanCellValue());
-	                        			break;
-		                        		
-	                        		case HSSFCell.CELL_TYPE_FORMULA:
-	    	                        	try
-	    	                        	{
+								} else if(cellType == CellType.FORMULA) {
+	    	                        	try {
 	    	                        		cellOut.setCellFormula(cellIn.getCellFormula());
-	    	                        	}
-	    	                        	catch (Exception ex)
-	    	                        	{
+	    	                        	} catch (Exception ex) {
 	    		                        	//That didn't work. HSSF in action.
 	    	                        		String msg = String.format(UIRegistry.getResourceString("ImportFileSplitter.FormulaCellCopyErrMsg"),
 	    	                        				rowNum+1, cellNum+1, fileNum, ex.getClass().getSimpleName() + ": " + ex.getLocalizedMessage());
@@ -523,16 +512,10 @@ public class ImportFileSplitter extends CustomDialog
 	    		                        	result.setProblems(true);
 	    		                        	result.getReport().add(msg);
 	    	                        	}
-	    	                        	break;
-	    	                        	
-		                        	case HSSFCell.CELL_TYPE_ERROR:
+								} else if(cellType == CellType.ERROR) {
 		                        		cellOut.setCellErrorValue(cellIn.getErrorCellValue());
-		                        		break;
-		                        		
-		                        	case HSSFCell.CELL_TYPE_BLANK:
-		                        		break;
-		                        		
-		                        	default:
+								} else if(cellType == CellType.BLANK) {
+								} else {
 		                        		throw new Exception(String.format(
 		                        			UIRegistry.getResourceString("ImportFileSplitter.UnrecognizedCellTypeNotCopied"),
 		                        			cellIn.getCellType()));
