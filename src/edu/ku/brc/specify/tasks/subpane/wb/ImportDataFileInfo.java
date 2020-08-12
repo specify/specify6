@@ -72,7 +72,7 @@ public class ImportDataFileInfo
         
         boolean isValid = false;
         String mimeType = getMimeType(file);
-        if (mimeType == ExportFileConfigurationFactory.XLS_MIME_TYPE)
+        if (mimeType == ExportFileConfigurationFactory.XLS_MIME_TYPE || mimeType == ExportFileConfigurationFactory.XLSX_MIME_TYPE)
         {
              config = new ConfigureXLS(file);
             if (config.getStatus() == ConfigureExternalDataIFace.Status.Valid)
@@ -192,7 +192,12 @@ public class ImportDataFileInfo
         {
             return ExportFileConfigurationFactory.XLS_MIME_TYPE;
             
-        } else if (extension.equalsIgnoreCase("csv") || extension.equalsIgnoreCase("txt"))
+        } else if (extension.equalsIgnoreCase("xlsx"))
+        {
+            return ExportFileConfigurationFactory.XLSX_MIME_TYPE;
+
+        }
+        else if (extension.equalsIgnoreCase("csv") || extension.equalsIgnoreCase("txt"))
         {
             return ExportFileConfigurationFactory.CSV_MIME_TYPE;
         }

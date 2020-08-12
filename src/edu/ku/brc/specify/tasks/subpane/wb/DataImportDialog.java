@@ -75,12 +75,6 @@ import javax.swing.text.PlainDocument;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFDateUtil;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 
 import com.csvreader.CsvReader;
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -100,7 +94,7 @@ import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.MouseOverJLabel;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
-import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.*;
 
 /**
  * Class that provides "fancy" dialog for importing data from csv or XLS,
@@ -855,9 +849,8 @@ public class DataImportDialog extends JDialog implements ActionListener
             log.debug("setXLSTableData - file - " + configXLS.getFile().toString());
 
             InputStream     input    = new FileInputStream(configXLS.getFile());
-            POIFSFileSystem fs       = new POIFSFileSystem(input);
-            HSSFWorkbook    workBook = new HSSFWorkbook(fs);
-            HSSFSheet       sheet    = workBook.getSheetAt(0);
+            Workbook workBook = WorkbookFactory.create(input);
+            Sheet sheet    = workBook.getSheetAt(0);
 
             Vector<Integer> badHeads = new Vector<Integer>();
             Vector<Integer> emptyCols = new Vector<Integer>();
@@ -899,7 +892,7 @@ public class DataImportDialog extends JDialog implements ActionListener
             {
                 numCols = 0;
                 rowData = new Vector<String>();
-                HSSFRow row = (HSSFRow) rows.next();
+                Row row = (Row) rows.next();
                 //log.debug(row.getLastCellNum()+"  "+row.getPhysicalNumberOfCells());
                 int maxSize = Math.max(row.getPhysicalNumberOfCells(), row.getLastCellNum());
                 if (maxSize > maxCols)
@@ -910,7 +903,7 @@ public class DataImportDialog extends JDialog implements ActionListener
                 {
                     if (emptyCols.indexOf(new Integer(numCols)) == -1)
                     {
-                        HSSFCell cell = row.getCell(numCols);
+                        Cell cell = row.getCell(numCols);
                         String value = null;
                         // if cell is blank, set value to ""
                         if (cell == null)
@@ -938,7 +931,7 @@ public class DataImportDialog extends JDialog implements ActionListener
                                 // This function checks the format against a few internal
                                 // formats to decide the issue,
                                 // but by its very nature it is prone to false negatives.
-                                if (HSSFDateUtil.isCellDateFormatted(cell)) {
+                                if (DateUtil.isCellDateFormatted(cell)) {
                                     value = scrDateFormat.getSimpleDateFormat().format(
                                             cell.getDateCellValue());
                                     //value = scrDateFormat.getSimpleDateFormat().format(cell.getDateCellValue());

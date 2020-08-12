@@ -471,7 +471,7 @@ public class PluginsTask extends BaseTask
      * @return
      */
     protected String getDefaultExcelExt() {
-        return "xls";
+        return "xlsx";
     }
 
     /**

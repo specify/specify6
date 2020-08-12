@@ -34,16 +34,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.poi.hpsf.CustomProperties;
 import org.apache.poi.hpsf.DocumentSummaryInformation;
-import org.apache.poi.hpsf.IllegalPropertySetDataException;
-import org.apache.poi.hpsf.MarkUnsupportedException;
-import org.apache.poi.hpsf.NoPropertySetStreamException;
 import org.apache.poi.hpsf.PropertySet;
-import org.apache.poi.hpsf.UnexpectedPropertySetTypeException;
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFRichTextString;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.DirectoryEntry;
 import org.apache.poi.poifs.filesystem.DocumentEntry;
 import org.apache.poi.poifs.filesystem.DocumentInputStream;
@@ -52,10 +43,7 @@ import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import edu.ku.brc.specify.rstools.ExportFileConfigurationFactory;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.RichTextString;
-import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.*;
 
 /**
  * @author timbo
@@ -92,7 +80,7 @@ public class ConfigureXLS extends ConfigureExternalDataBase
      * Assumes that badHeads and emptyCols are not null and empty.
      * 
      */
-    public void checkHeadsAndCols(final HSSFSheet sheet, Vector<Integer> badHeads, Vector<Integer> emptyCols) 
+    public void checkHeadsAndCols(final Sheet sheet, Vector<Integer> badHeads, Vector<Integer> emptyCols)
     {
         boolean firstRow = true;
         Vector<Boolean> firstRowCells = new Vector<Boolean>();
@@ -101,7 +89,7 @@ public class ConfigureXLS extends ConfigureExternalDataBase
         // Iterate over each row in the sheet
         Iterator<?> rows = sheet.rowIterator();
         while (rows.hasNext()) {
-            HSSFRow row = (HSSFRow) rows.next();
+            Row row = (Row)rows.next();
             int maxSize = Math.max(row.getPhysicalNumberOfCells(), row.getLastCellNum());
             for (int col = 0; col < maxSize; col++) {
                 if (firstRow) {
@@ -403,9 +391,8 @@ public class ConfigureXLS extends ConfigureExternalDataBase
         try
         {
             InputStream     input    = new FileInputStream(externalFile);
-            POIFSFileSystem fs       = new POIFSFileSystem(input);
-            HSSFWorkbook    workBook = new HSSFWorkbook(fs);
-            HSSFSheet       sheet    = workBook.getSheetAt(0);
+            Workbook workBook = WorkbookFactory.create(input);
+            Sheet       sheet    = workBook.getSheetAt(0);
 
             // Calculate the number of rows and columns
             colInfo = new Vector<ImportColumnInfo>(16);
@@ -494,7 +481,12 @@ public class ConfigureXLS extends ConfigureExternalDataBase
                 numRows++;
             }
             Collections.sort(colInfo);
-            readMappings(fs);
+            try {
+                POIFSFileSystem fs = new POIFSFileSystem(input);
+                readMappings(fs);
+            } catch (Exception x) {
+                log.error("mappings not imported for " + externalFile.getName());
+            }
             status = Status.Valid;
         } catch (IOException ex)
         {

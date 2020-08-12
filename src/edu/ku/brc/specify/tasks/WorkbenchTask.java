@@ -1156,10 +1156,10 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         chooser.setDialogTitle(getResourceString("CHOOSE_WORKBENCH_EXPORT_FILE"));
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         chooser.setMultiSelectionEnabled(false);
-        chooser.setFileFilter(new UIFileFilter("xls", getResourceString("WB_EXCELFILES")));
+        chooser.setFileFilter(new UIFileFilter("xlsx", getResourceString("WB_EXCELFILES")));
         if (defaultFileName != null)
         {
-        	chooser.setSelectedFile(new File(chooser.getCurrentDirectory().getPath() + File.separator + defaultFileName + ".xls"));
+        	chooser.setSelectedFile(new File(chooser.getCurrentDirectory().getPath() + File.separator + defaultFileName + ".xlsx"));
         }
         
         if (chooser.showSaveDialog(UIRegistry.getMostRecentWindow()) != JFileChooser.APPROVE_OPTION)
@@ -1552,7 +1552,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         chooser.setDialogTitle(getResourceString("CHOOSE_WORKBENCH_IMPORT_FILE"));
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         chooser.setMultiSelectionEnabled(false);
-        String[] exts = {"xls", "csv"};
+        String[] exts = {"xlsx", "xls", "csv"};
         chooser.setFileFilter(new UIFileFilter(exts, getResourceString("WB_EXCELANDCSVFILES")));
         String currDirPath = AppPreferences.getLocalPrefs().get(IMPORT_FILE_PATH, null);
         if (currDirPath != null)

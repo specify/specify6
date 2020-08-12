@@ -35,6 +35,7 @@ import edu.ku.brc.specify.tasks.subpane.wb.ConfigureXLS;
 public class ExportFileConfigurationFactory
 {
     public static String XLS_MIME_TYPE = "binary/xls";
+    public static String XLSX_MIME_TYPE = "binary/xlsx";
     public static String CSV_MIME_TYPE = "text/csv";
     
     // This should be a WeakReference somday

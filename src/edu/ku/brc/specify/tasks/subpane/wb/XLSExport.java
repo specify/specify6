@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.apache.poi.hpsf.CustomProperties;
 import org.apache.poi.hpsf.DocumentSummaryInformation;
 import org.apache.poi.hpsf.PropertySetFactory;
@@ -38,6 +39,9 @@ import org.apache.poi.hssf.usermodel.HSSFRichTextString;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.openxml4j.opc.OPCPackage;
+import org.apache.poi.openxml4j.opc.ZipPackage;
+import org.apache.poi.poifs.filesystem.OfficeXmlFileException;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 
 import edu.ku.brc.specify.datamodel.Workbench;
@@ -47,8 +51,9 @@ import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.ui.UIRegistry;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFRichTextString;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 /**
  * @author timbo
@@ -58,6 +63,8 @@ import org.apache.poi.ss.usermodel.CellType;
  */
 public class XLSExport implements DataExport
 {
+    private static final Logger log = Logger.getLogger(XLSExport.class);
+
     ConfigureXLS config;
     
     public XLSExport(ConfigureExternalDataIFace config)
@@ -85,14 +92,17 @@ public class XLSExport implements DataExport
         this.config = (ConfigureXLS)config;
     }
 
-    protected void writeHeaders(final HSSFSheet workSheet)
+    protected RichTextString getRichTextString(String string, Object obj) {
+        return (obj instanceof HSSFRow || obj instanceof HSSFCell) ? new HSSFRichTextString(string) : new XSSFRichTextString(string);
+    }
+    protected void writeHeaders(final Sheet workSheet)
     {
         String[] headers = config.getHeaders();
-        HSSFRow hssfRow = workSheet.createRow(0);
+        Row row = workSheet.createRow(0);
         int col = 0;
         for (String head : headers)
         {
-            hssfRow.createCell(col++).setCellValue(new HSSFRichTextString(head));
+            row.createCell(col++).setCellValue(getRichTextString(head, row));
         }
     }
 
@@ -100,16 +110,16 @@ public class XLSExport implements DataExport
      * @param workSheet
      * writes headers for imagePath and geocoord (bg) data columns
      */
-    protected void writeExtraHeaders(final HSSFSheet workSheet, Vector<Integer> imgCols, int geoDataCol)
+    protected void writeExtraHeaders(final Sheet workSheet, Vector<Integer> imgCols, int geoDataCol)
     {
-        HSSFRow hssfRow = workSheet.getRow(0);
+        Row row = workSheet.getRow(0);
         if (geoDataCol != -1)
         {
-        	hssfRow.createCell(geoDataCol).setCellValue(new HSSFRichTextString(DataImport.GEO_DATA_HEADING));
+        	row.createCell(geoDataCol).setCellValue(getRichTextString(DataImport.GEO_DATA_HEADING, row));
         }
         for (Integer c : imgCols)
         {
-            hssfRow.createCell(c).setCellValue(new HSSFRichTextString(DataImport.IMAGE_PATH_HEADING));
+            row.createCell(c).setCellValue(getRichTextString(DataImport.IMAGE_PATH_HEADING, row));
         }
     }
 
@@ -117,55 +127,55 @@ public class XLSExport implements DataExport
      * @param row
      * @return HSSFCellTypes for each column in workbench.
      */
-    protected CellType[] bldColTypes(final WorkbenchTemplate wbt) throws WBUnMappedItemException
-    {
-        CellType[] result = new CellType[wbt.getWorkbenchTemplateMappingItems().size()];
-        for (WorkbenchTemplateMappingItem mapItem : wbt.getWorkbenchTemplateMappingItems())
-        {
-            result[mapItem.getViewOrder()] = getColType(mapItem); 
-        }
-        return result;
-    }
+//    protected CellType[] bldColTypes(final WorkbenchTemplate wbt) throws WBUnMappedItemException
+//    {
+//        CellType[] result = new CellType[wbt.getWorkbenchTemplateMappingItems().size()];
+//        for (WorkbenchTemplateMappingItem mapItem : wbt.getWorkbenchTemplateMappingItems())
+//        {
+//            result[mapItem.getViewOrder()] = getColType(mapItem);
+//        }
+//        return result;
+//    }
     /**
      * @param colNum - index of a workbench column.
      * @return the excel cell type appropriate for the database field the workbench column maps to.
      */
-    protected CellType getColType(final WorkbenchTemplateMappingItem mapItem) throws WBUnMappedItemException
-    {
-        Class<?> dataType = WorkbenchTask.getDataType(mapItem, false);
-        // These are the classes currently returned by getDataType():
-        // java.lang.Long
-        // java.lang.String
-        // java.util.Calendar
-        // java.lang.Float
-        // java.lang.Boolean
-        // java.lang.Byte
-        // java.lang.Integer
-        // java.lang.Short
-        // java.lang.Double
-        // java.util.Date
-        // java.lang.BigDecimal
-
-        if (dataType == java.lang.Long.class
-                || dataType == java.lang.Float.class
-                || dataType == java.lang.Byte.class
-                || dataType == java.lang.Integer.class
-                || dataType == java.lang.Short.class
-                || dataType == java.lang.Double.class
-                || dataType == java.math.BigDecimal.class)
-        {
-            return CellType.NUMERIC;
-        }
-        else if (dataType == java.lang.Boolean.class)
-        {
-            // XXX still need to test if this type allows "don't know"
-            return CellType.BOOLEAN;
-        }
-        else
-        {
-            return CellType.STRING;
-        }
-    }
+//    protected CellType getColType(final WorkbenchTemplateMappingItem mapItem) throws WBUnMappedItemException
+//    {
+//        Class<?> dataType = WorkbenchTask.getDataType(mapItem, false);
+//        // These are the classes currently returned by getDataType():
+//        // java.lang.Long
+//        // java.lang.String
+//        // java.util.Calendar
+//        // java.lang.Float
+//        // java.lang.Boolean
+//        // java.lang.Byte
+//        // java.lang.Integer
+//        // java.lang.Short
+//        // java.lang.Double
+//        // java.util.Date
+//        // java.lang.BigDecimal
+//
+//        if (dataType == java.lang.Long.class
+//                || dataType == java.lang.Float.class
+//                || dataType == java.lang.Byte.class
+//                || dataType == java.lang.Integer.class
+//                || dataType == java.lang.Short.class
+//                || dataType == java.lang.Double.class
+//                || dataType == java.math.BigDecimal.class)
+//        {
+//            return CellType.NUMERIC;
+//        }
+//        else if (dataType == java.lang.Boolean.class)
+//        {
+//            // XXX still need to test if this type allows "don't know"
+//            return CellType.BOOLEAN;
+//        }
+//        else
+//        {
+//            return CellType.STRING;
+//        }
+//    }
     
     /**
      * calls HSSFCell.setCellValue 
@@ -177,9 +187,9 @@ public class XLSExport implements DataExport
      * @param cell
      * @param value
      */
-    protected void setCellValue(final HSSFCell cell, final String value)
+    protected void setCellValue(final Cell cell, final String value)
     {
-    	cell.setCellValue(new HSSFRichTextString(value));
+    	cell.setCellValue(getRichTextString(value, cell));
     }
     
     /**
@@ -193,23 +203,12 @@ public class XLSExport implements DataExport
         DocumentSummaryInformation dsi = PropertySetFactory.newDocumentSummaryInformation();
         CustomProperties cps = new CustomProperties();
         List<WorkbenchTemplateMappingItem> wbmis = new ArrayList<WorkbenchTemplateMappingItem>(wbt.getWorkbenchTemplateMappingItems());
-        Collections.sort(wbmis, new Comparator<WorkbenchTemplateMappingItem>() {
-
-			/* (non-Javadoc)
-			 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-			 */
-			@Override
-			public int compare(WorkbenchTemplateMappingItem arg0,
-					WorkbenchTemplateMappingItem arg1) {
-				// TODO Auto-generated method stub
-				return arg0.getViewOrder().compareTo(arg1.getViewOrder());
-			}
-        	
+        Collections.sort(wbmis, (arg0, arg1) -> {
+            // TODO Auto-generated method stub
+            return arg0.getViewOrder().compareTo(arg1.getViewOrder());
         });
         for (WorkbenchTemplateMappingItem wbmi : wbmis)
         {
-            //cps.put(wbmi.getCaption(), 
-        	//cps.put(wbmi.getTableName() + "." + wbmi.getFieldName(), 
         	cps.put(ConfigureXLS.POIFS_COL_KEY_PREFIX + wbmi.getViewOrder(),
         			wbmi.getCaption()
         			+ "\t" + wbmi.getTableName() 
@@ -229,149 +228,124 @@ public class XLSExport implements DataExport
      * 
      * @see edu.ku.brc.specify.tasks.subpane.wb.DataExport#writeData(java.util.List)
      */
-    public void writeData(final List<?> data) throws Exception
-    {
-        HSSFWorkbook workBook  = new HSSFWorkbook();
-        HSSFSheet    workSheet = workBook.createSheet();
+    public void writeData(final List<?> data) throws Exception {
+        Workbook workBook = new XSSFWorkbook();
+        Sheet workSheet = workBook.createSheet();
         DocumentSummaryInformation mappings = null;
-        
         int rowNum = 0;
 
-        if (config.getFirstRowHasHeaders() && !config.getAppendData())
-        {
+        if (config.getFirstRowHasHeaders() && !config.getAppendData()) {
             writeHeaders(workSheet);
             rowNum++;
-            
             String[] headers = config.getHeaders();
-            for (int i=0;i<headers.length;i++)
-            {
+            for (int i = 0; i < headers.length; i++) {
                 workSheet.setColumnWidth(i, StringUtils.isNotEmpty(headers[i]) ? (256 * headers[i].length()) : 2560);
             }
-            
-            WorkbenchTemplate wbTemplate = null;
-            if (data.get(0) instanceof WorkbenchTemplate)
-            {
-            	wbTemplate = (WorkbenchTemplate )data.get(0);
-            }
-            else
-            {
-            	wbTemplate = ((WorkbenchRow )data.get(0)).getWorkbench().getWorkbenchTemplate();
+           WorkbenchTemplate wbTemplate = null;
+            if (data.get(0) instanceof WorkbenchTemplate) {
+                wbTemplate = (WorkbenchTemplate) data.get(0);
+            } else {
+                wbTemplate = ((WorkbenchRow) data.get(0)).getWorkbench().getWorkbenchTemplate();
             }
             mappings = writeMappings(wbTemplate);
         }
         //assuming data is never empty.
         boolean hasTemplate = data.get(0) instanceof WorkbenchTemplate;
         boolean hasRows = hasTemplate ? data.size() > 1 : data.size() > 0;
-        if (hasRows)
-		{
-			CellType[] disciplinees;
-			
-			WorkbenchRow wbRow = (WorkbenchRow) data.get(hasTemplate ? 1 : 0);
-			Workbench workBench = wbRow.getWorkbench();
-			WorkbenchTemplate template = workBench.getWorkbenchTemplate();
-			int numCols = template.getWorkbenchTemplateMappingItems()
-					.size();
-			int geoDataCol = -1;
-			Vector<Integer> imgCols = new Vector<Integer>();
+        if (hasRows) {
+            //CellType[] disciplinees;
 
-			disciplinees = bldColTypes(template);
-			for (Object rowObj : data)
-			{
-				if (rowObj instanceof WorkbenchTemplate)
-				{
-					continue;
-				}
+            WorkbenchRow wbRow1 = (WorkbenchRow) data.get(hasTemplate ? 1 : 0);
+            Workbench workBench = wbRow1.getWorkbench();
+            WorkbenchTemplate template = workBench.getWorkbenchTemplate();
+            int numCols = template.getWorkbenchTemplateMappingItems()
+                    .size();
+            int geoDataCol = -1;
+            Vector<Integer> imgCols = new Vector<Integer>();
 
-				WorkbenchRow row = (WorkbenchRow) rowObj;
-				HSSFRow hssfRow = workSheet.createRow(rowNum++);
-				int colNum;
-				boolean rowHasGeoData = false;
+            //disciplinees = bldColTypes(template);
+            for (Object rowObj : data) {
+                if (rowObj instanceof WorkbenchTemplate) {
+                    continue;
+                }
 
-				for (colNum = 0; colNum < numCols; colNum++)
-				{
-					HSSFCell cell = hssfRow.createCell(colNum);
-					cell.setCellType(disciplinees[colNum]);
-					setCellValue(cell, row.getData(colNum));
-				}
+                WorkbenchRow wbRow = (WorkbenchRow) rowObj;
+                Row row = workSheet.createRow(rowNum++);
+                int colNum;
+                boolean rowHasGeoData = false;
 
-				if (row.getBioGeomancerResults() != null
-						&& !row.getBioGeomancerResults().equals(""))
-				{
-					geoDataCol = colNum;
-					rowHasGeoData = true;
-					HSSFCell cell = hssfRow.createCell(colNum++);
-					cell.setCellType(CellType.STRING);
-					setCellValue(cell, row.getBioGeomancerResults());
-				}
-
-				// if (row.getCardImage() != null)
-				if (row.getRowImage(0) != null)
-				{
-					if (!rowHasGeoData)
-					{
-						colNum++;
-					}
-					int imgIdx = 0;
-					WorkbenchRowImage img = row.getRowImage(imgIdx++);
-					while (img != null)
-					{
-						if (imgCols.indexOf(colNum) < 0)
-						{
-							imgCols.add(colNum);
-						}
-						HSSFCell cell = hssfRow.createCell(colNum++);
-						cell.setCellType(CellType.STRING);
-						String cellValue = img.getCardImageFullPath();
-						String attachToTbl = img.getAttachToTableName();
-						if (attachToTbl != null) {
-							cellValue += "\t" + attachToTbl;
-						}
-						setCellValue(cell, cellValue);
-						img = row.getRowImage(imgIdx++);
-					}
-				}
-
-			}
-			if (imgCols.size() > 0 || geoDataCol != -1)
-			{
-				writeExtraHeaders(workSheet, imgCols, geoDataCol);
-			}
-
-		}
-        try
-        {
+                for (colNum = 0; colNum < numCols; colNum++) {
+                    Cell cell = row.createCell(colNum);
+                    //cell.setCellType(disciplinees[colNum]);
+                    setCellValue(cell, wbRow.getData(colNum));
+                }
+                if (wbRow.getBioGeomancerResults() != null
+                        && !wbRow.getBioGeomancerResults().equals("")) {
+                    geoDataCol = colNum;
+                    rowHasGeoData = true;
+                    Cell cell = row.createCell(colNum++);
+                    //cell.setCellType(CellType.STRING);
+                    setCellValue(cell, wbRow.getBioGeomancerResults());
+                }
+                if (wbRow.getRowImage(0) != null) {
+                    if (!rowHasGeoData) {
+                        colNum++;
+                    }
+                    int imgIdx = 0;
+                    WorkbenchRowImage img = wbRow.getRowImage(imgIdx++);
+                    while (img != null) {
+                        if (imgCols.indexOf(colNum) < 0) {
+                            imgCols.add(colNum);
+                        }
+                        Cell cell = row.createCell(colNum++);
+                        //cell.setCellType(CellType.STRING);
+                        String cellValue = img.getCardImageFullPath();
+                        String attachToTbl = img.getAttachToTableName();
+                        if (attachToTbl != null) {
+                            cellValue += "\t" + attachToTbl;
+                        }
+                        setCellValue(cell, cellValue);
+                        img = wbRow.getRowImage(imgIdx++);
+                    }
+                }
+            }
+            if (imgCols.size() > 0 || geoDataCol != -1) {
+                writeExtraHeaders(workSheet, imgCols, geoDataCol);
+            }
+        }
+        try {
             // Write the workbook
             File file = new File(getConfig().getFileName());
-            if (file.canWrite() || (!file.exists() && file.createNewFile()))
-            {
+            if (file.canWrite() || (!file.exists() && file.createNewFile())) {
                 FileOutputStream fos = new FileOutputStream(file);
                 workBook.write(fos);
                 fos.close();
-                
+
                 //Now write the mappings.
-                //NOT (hopefully) the best way to write the mappings, but (sadly) the easiest way. 
+                //NOT (hopefully) the best way to write the mappings, but (sadly) the easiest way.
                 //May need to do this another way if this slows performance for big wbs.
-                if (mappings != null)
-                {
-                    InputStream is = new FileInputStream(file);
-                    POIFSFileSystem poifs = new POIFSFileSystem(is);
-                    is.close();
-                    mappings.write(poifs.getRoot(), DocumentSummaryInformation.DEFAULT_STREAM_NAME);
-                    fos = new FileOutputStream(file);
-                    poifs.writeFilesystem(fos);
-                    fos.close();
+                if (mappings != null) {
+                    try {
+                        InputStream is = new FileInputStream(file);
+                        POIFSFileSystem poifs = new POIFSFileSystem(is);
+                        is.close();
+                        mappings.write(poifs.getRoot(), DocumentSummaryInformation.DEFAULT_STREAM_NAME);
+                        fos = new FileOutputStream(file);
+                        poifs.writeFilesystem(fos);
+                        fos.close();
+                    } catch (OfficeXmlFileException x) {
+                        x.printStackTrace();
+                        log.error("mappings were not saved to " + file.getName());
+                    }
                 }
-            } else
-            {
+            } else {
                 UIRegistry.displayErrorDlgLocalized("WB_EXPORT_PERM_ERR");
             }
-        } 
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(XLSExport.class, e);
-            throw(e);
+            throw (e);
         }
     }
-    
+
 }

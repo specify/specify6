@@ -35,13 +35,6 @@ import java.util.Set;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFDateUtil;
-import org.apache.poi.hssf.usermodel.HSSFHyperlink;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.specify.datamodel.Workbench;
@@ -51,7 +44,7 @@ import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.LatLonConverter;
-import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.*;
 
 /**
  * @author timbo
@@ -71,11 +64,11 @@ public class XLSImport extends DataImport implements DataImportIFace
     /**
      * @param headerRow
      */
-    private void getSystemCols(final HSSFRow headerRow)
+    private void getSystemCols(final Row headerRow)
     {
         for (int c = headerRow.getFirstCellNum(); c <= headerRow.getLastCellNum(); c++)
         {
-            HSSFCell cell = headerRow.getCell(c);
+            Cell cell = headerRow.getCell(c);
             int nulls = 0;
             if (cell != null)
             {
@@ -131,9 +124,8 @@ public class XLSImport extends DataImport implements DataImportIFace
             try
             {
                 InputStream     input    = new FileInputStream(config.getFile());
-                POIFSFileSystem fs       = new POIFSFileSystem(input);
-                HSSFWorkbook    workBook = new HSSFWorkbook(fs);
-                HSSFSheet       sheet    = workBook.getSheetAt(0);
+                Workbook workBook = WorkbookFactory.create(input);
+                Sheet sheet    = workBook.getSheetAt(0);
                 int             numRows  = 0;
                 
                 // Calculate the number of rows and columns
@@ -154,13 +146,13 @@ public class XLSImport extends DataImport implements DataImportIFace
                 Collections.sort(wbtmiList);
                 
                 this.truncations.clear();
-                Vector<HSSFHyperlink> activeHyperlinks = new Vector<HSSFHyperlink>();
+                Vector<Hyperlink> activeHyperlinks = new Vector<>();
                 
                 // Iterate over each row in the sheet
                 Iterator<?> rows = sheet.rowIterator();
                 while (rows.hasNext())
                 {
-                    HSSFRow row = (HSSFRow) rows.next();
+                    Row row = (Row) rows.next();
                     if (numRows == 0 && config.getFirstRowHasHeaders())
                     {
                         numRows++;
@@ -184,7 +176,7 @@ public class XLSImport extends DataImport implements DataImportIFace
                                 }
                             }
                         }
-                        HSSFCell cell    = row.getCell(cellNum);
+                        Cell cell    = row.getCell(cellNum);
                         if (cell == null)
                         {
                             continue;
@@ -198,7 +190,7 @@ public class XLSImport extends DataImport implements DataImportIFace
                         boolean  skip    = false;
     
                             if (type == CellType.NUMERIC) {
-                                if (HSSFDateUtil.isCellDateFormatted(cell)) {
+                                if (DateUtil.isCellDateFormatted(cell)) {
                                     //even if WorkbenchTask.getDataType(wbtmi) is not Calendar or Date. Hmmmm.
                                     value = scrDateFormat.getSimpleDateFormat().format(cell.getDateCellValue());
                                 } else {
@@ -232,7 +224,7 @@ public class XLSImport extends DataImport implements DataImportIFace
                                     }
                                 }
                             } else if (type == CellType.STRING) {
-                                HSSFHyperlink hl = checkHyperlinks(cell, activeHyperlinks);
+                                Hyperlink hl = checkHyperlinks(cell, activeHyperlinks);
                                 if (hl == null /*|| (hl != null && hl.getType() == HSSFHyperlink.LINK_EMAIL)*/)
                                 {
                                     value = cell.getRichStringCellValue().getString();
@@ -283,11 +275,11 @@ public class XLSImport extends DataImport implements DataImportIFace
      * 
      * NOTE: This code assumes that hyperlinks' row and column ranges do not overlap.   
      */
-    protected HSSFHyperlink checkHyperlinks(final HSSFCell cell, final Vector<HSSFHyperlink> activeHyperlinks)
+    protected Hyperlink checkHyperlinks(final Cell cell, final Vector<Hyperlink> activeHyperlinks)
     {
         if (cell.getHyperlink() != null)
         {
-            HSSFHyperlink l = cell.getHyperlink();
+            Hyperlink l = cell.getHyperlink();
         	if (l.getLastRow() > cell.getRowIndex() || l.getLastColumn() > cell.getColumnIndex())
             {
                 activeHyperlinks.add(l);
@@ -295,7 +287,7 @@ public class XLSImport extends DataImport implements DataImportIFace
             return l;
         }
         
-        for (HSSFHyperlink hl : activeHyperlinks)
+        for (Hyperlink hl : activeHyperlinks)
         {
             if (cell.getRowIndex() >= hl.getFirstRow() && cell.getRowIndex() <= hl.getLastRow() 
                     && cell.getColumnIndex() >= hl.getFirstColumn() && cell.getColumnIndex() <= hl.getLastColumn())
@@ -311,11 +303,11 @@ public class XLSImport extends DataImport implements DataImportIFace
         return null;
     }
     
-    private void addImageInfo(final HSSFRow row, final WorkbenchRow wbRow)
+    private void addImageInfo(final Row row, final WorkbenchRow wbRow)
     {
         for (Integer c : cardImageCols)
         {
-            HSSFCell imgCell = row.getCell(c);
+            Cell imgCell = row.getCell(c);
             if (imgCell != null)
             {
                 String imageSpec[] = imgCell.getRichStringCellValue().getString().split("\\t");
@@ -347,11 +339,11 @@ public class XLSImport extends DataImport implements DataImportIFace
         }
     }
     
-    public void addGeoInfo(final HSSFRow row, final WorkbenchRow wbRow)
+    public void addGeoInfo(final Row row, final WorkbenchRow wbRow)
     {
         if (geoCol != -1)
         {
-            HSSFCell c = row.getCell(geoCol);
+            Cell c = row.getCell(geoCol);
             if (c != null)
             {
                 String geoData = c.getRichStringCellValue().getString();
