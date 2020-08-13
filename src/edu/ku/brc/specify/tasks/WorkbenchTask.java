@@ -3406,6 +3406,21 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         return "prepType".equalsIgnoreCase(f.getFieldName())
                 || f.getStringId().toLowerCase().endsWith("65.preptype.name");
     }
+
+    protected String getFldLookupKey(final SpQueryField f, final boolean isTree) {
+        if (isTree) {
+            int start = StringUtils.lastIndexOf(f.getStringId(), ".");
+            if (start != -1) {
+                //When/if taxononmy is batch-editable this will need to be changed for Author,Year, etc?
+                String[] result = f.getStringId().substring(start + 1).toLowerCase().split(" ");
+                if (result.length > 1) {
+                    log.warn("ignoring " + result[1] + " when mapping batch edit query to workbench.");
+                }
+                return result[0];
+            }
+        }
+        return f.getFieldName().toLowerCase();
+    }
     /**
      * @param f
      * @param tblMgr
@@ -3449,7 +3464,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         String tblName = tblInfo.getName().toLowerCase();
     	if (relationshipSupportedForQBtoWBTransform(tblName, relName)) {
             boolean isTree = Treeable.class.isAssignableFrom(tblInfo.getClassObj());
-            List<Element> defMatches = defMap.get(f.getFieldName().toLowerCase());
+            List<Element> defMatches = defMap.get(getFldLookupKey(f, isTree));
             if (defMatches != null) {
                 for (Element fld : defMatches) {
                     String wbSchemaTable = XMLHelper.getAttr((Element) fld, "table", null);
