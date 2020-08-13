@@ -23,7 +23,6 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
@@ -35,6 +34,7 @@ import org.apache.log4j.Logger;
 import org.apache.poi.hpsf.CustomProperties;
 import org.apache.poi.hpsf.DocumentSummaryInformation;
 import org.apache.poi.hpsf.PropertySet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.DirectoryEntry;
 import org.apache.poi.poifs.filesystem.DocumentEntry;
 import org.apache.poi.poifs.filesystem.DocumentInputStream;
@@ -44,6 +44,7 @@ import edu.ku.brc.specify.rstools.ExportFileConfigurationFactory;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 /**
  * @author timbo
@@ -348,7 +349,7 @@ public class ConfigureXLS extends ConfigureExternalDataBase
      * 
      * Reads workbench mappings from the XLS file.
     */
-    protected void readMappings(final POIFSFileSystem poifs) {
+    protected void readMappingsHSSF(final POIFSFileSystem poifs) {
         DocumentSummaryInformation dsi = getDocSummary(poifs);
         if (dsi != null) {
             CustomProperties props = dsi.getCustomProperties();
@@ -380,7 +381,39 @@ public class ConfigureXLS extends ConfigureExternalDataBase
             }
         }
     }
-    
+
+    protected void readMappingsXSSF(XSSFWorkbook workbook) {
+        try {
+            Sheet mappingsSheet = workbook.getSheetAt(1);
+            Iterator<?> rows = mappingsSheet.rowIterator();
+            int mapIdxOffset = 1;
+            while (rows.hasNext()) {
+                Row row = (Row) rows.next();
+                String mapDef = row.getCell(0).getStringCellValue();
+                String[] firstCut = mapDef.split(",");
+                Integer wbColIdx = Integer.valueOf(firstCut[0]);
+                ImportColumnInfo col = colInfo.get(wbColIdx);
+                String[] mapping = firstCut[1].split("\t");
+                col.setMapToTbl(mapping[mapIdxOffset + 0]);
+                col.setMapToFld(mapping[mapIdxOffset + 1]);
+                if (mapping.length == 7 + mapIdxOffset) {
+                    col.setFormXCoord(Integer.valueOf(mapping[mapIdxOffset + 2]));
+                    col.setFormYCoord(Integer.valueOf(mapping[mapIdxOffset + 3]));
+                    if (StringUtils.isNotBlank(mapping[mapIdxOffset + 4])) {
+                        col.setCaption(mapping[mapIdxOffset + 4]);
+                    }
+                    col.setFrmFieldType(Integer.valueOf(mapping[mapIdxOffset + 5]));
+                    col.setFrmMetaData(mapping[mapIdxOffset + 6]);
+                }
+            }
+        } catch (Exception x) {
+            //no mappings or bad mappings
+            if (!(x instanceof IllegalArgumentException)) {
+                log.error(x);
+            }
+        }
+    }
+
     /* (non-Javadoc)
      * Sets up colInfo for externalFile.
      * @see edu.ku.brc.specify.tasks.subpane.wb.ConfigureExternalDataIFace#getConfig(java.lang.String)
@@ -481,11 +514,11 @@ public class ConfigureXLS extends ConfigureExternalDataBase
                 numRows++;
             }
             Collections.sort(colInfo);
-            try {
+            if (workBook instanceof HSSFWorkbook) {
                 POIFSFileSystem fs = new POIFSFileSystem(input);
-                readMappings(fs);
-            } catch (Exception x) {
-                log.error("mappings not imported for " + externalFile.getName());
+                readMappingsHSSF(fs);
+            } else {
+                readMappingsXSSF((XSSFWorkbook)workBook);
             }
             status = Status.Valid;
         } catch (IOException ex)
