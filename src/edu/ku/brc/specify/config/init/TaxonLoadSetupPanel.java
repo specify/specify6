@@ -88,6 +88,7 @@ public class TaxonLoadSetupPanel extends BaseSetupPanel
 {
     //private static final Logger log           = Logger.getLogger(TaxonLoadSetupPanel.class);
     private static final String XLS              = "xls";
+    private static final String XLSX             = "xlsx";
     private static final String DWNLD_TAX_URL    = "DWNLD_TAX_URL";
     private static final String BAD_TAXON_DEF_NC = "BAD_TAXON_DEF_NC";
     private static final String BAD_TAXON_URL    = "BAD_TAXON_URL";
@@ -440,7 +441,8 @@ public class TaxonLoadSetupPanel extends BaseSetupPanel
         if (preloadChk.isSelected() /*&& properties.get("othertaxonfile") == null*/)
         {
             TaxonFileDesc tfd = (TaxonFileDesc)fileCBX.getSelectedItem();
-            if (tfd != null && FilenameUtils.isExtension(tfd.getFileName().toLowerCase(), XLS))
+            if (tfd != null &&
+                    (FilenameUtils.isExtension(tfd.getFileName().toLowerCase(), XLS) || FilenameUtils.isExtension(tfd.getFileName().toLowerCase(), XLSX)))
             {
                 File txFile = getFileForTaxon(tfd.getFileName(), false);
                 if (txFile == null || !txFile.exists())
