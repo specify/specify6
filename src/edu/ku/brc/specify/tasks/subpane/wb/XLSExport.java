@@ -251,8 +251,8 @@ public class XLSExport implements DataExport
      * @see edu.ku.brc.specify.tasks.subpane.wb.DataExport#writeData(java.util.List)
      */
     public void writeData(final List<?> data) throws Exception {
-        Workbook workBook = ImportDataFileInfo.getMimeType(config.getFileName()) == ExportFileConfigurationFactory.XLSX_MIME_TYPE ?
-                new XSSFWorkbook() : new HSSFWorkbook();
+        Workbook workBook = ImportDataFileInfo.getMimeType(config.getFileName()) == ExportFileConfigurationFactory.XLS_MIME_TYPE ?
+                new HSSFWorkbook() : new XSSFWorkbook();
         Sheet workSheet = workBook.createSheet();
         DocumentSummaryInformation mappingsHSSF = null;
         int rowNum = 0;
@@ -336,12 +336,12 @@ public class XLSExport implements DataExport
             if (imgCols.size() > 0 || geoDataCol != -1) {
                 writeExtraHeaders(workSheet, imgCols, geoDataCol);
             }
-            if (workBook instanceof XSSFWorkbook) {
-                writeMappingsXSSF(workBook, wbTemplate);
-            }
         }
         try {
             // Write the workbook
+            if (workBook instanceof XSSFWorkbook) {
+                writeMappingsXSSF(workBook, wbTemplate);
+            }
             File file = new File(getConfig().getFileName());
 
             if (file.canWrite() || (!file.exists() && file.createNewFile())) {

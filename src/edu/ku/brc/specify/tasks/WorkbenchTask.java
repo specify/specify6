@@ -1120,7 +1120,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         {
             for (ExportFileConfigurationFactory.ExportableType type : ExportFileConfigurationFactory.getExportList())
             {
-                if (type.getMimeType() == ExportFileConfigurationFactory.XLS_MIME_TYPE)
+                if (type.getMimeType() == ExportFileConfigurationFactory.XLSX_MIME_TYPE)
                 {
                     props.setProperty("mimetype", type.getMimeType());
                     extension = type.getExtension();
