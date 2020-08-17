@@ -144,7 +144,7 @@ public class WorkbenchBackupMgr
         do
         {
             result = getPrefix(workbench) + Math.round(Math.random() * 1000) + "_" + getNameForBackupFileName(workbench)
-                    + ".xls";
+                    + ".xlsx";
             file = new File(result);
         } while (tries++ < 100 && file.exists());
         return result;
