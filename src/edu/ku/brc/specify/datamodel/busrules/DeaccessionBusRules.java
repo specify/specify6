@@ -18,12 +18,43 @@
 package edu.ku.brc.specify.datamodel.busrules;
 
 import edu.ku.brc.af.ui.forms.BaseBusRules;
+import edu.ku.brc.af.ui.forms.Viewable;
+import edu.ku.brc.specify.datamodel.Accession;
+
+import java.awt.*;
+import java.util.HashSet;
+import java.util.Set;
 
 
 public class DeaccessionBusRules extends BaseBusRules {
 
+    private Set<Accession> accessions = new HashSet<>();
+    private Component accessionsComp;
+
     public DeaccessionBusRules()
     {
         super(DeaccessionBusRules.class);
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.BaseBusRules#initialize(edu.ku.brc.ui.forms.Viewable)
+     */
+    @Override
+    public void initialize(Viewable viewableArg) {
+        super.initialize(viewableArg);
+        accessionsComp = formViewObj.getControlByName("accessions");
+    }
+
+    public void checkPrepAccession(final Accession accession) {
+        if (accessionsComp != null && !accessions.contains(accession)) {
+            accessions.add(accession);
+            refreshAccessionsDisplay();
+        }
+    }
+
+    private void refreshAccessionsDisplay() {
+        if (formViewObj != null) {
+            formViewObj.setDataIntoUIComp(accessionsComp, accessions, "");
+        }
     }
 }
