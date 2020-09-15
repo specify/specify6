@@ -20,47 +20,29 @@
 package edu.ku.brc.specify.tools.gbifregistration;
 
 
-import edu.ku.brc.af.ui.ViewBasedDialogFactoryIFace;
-import edu.ku.brc.af.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.helpers.ProxyHelper;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
-import edu.ku.brc.specify.datamodel.SpExportSchemaMapping;
-import edu.ku.brc.specify.plugins.morphbank.DarwinCoreArchiveFile;
-import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
-import edu.ku.brc.specify.tools.gbifregistration.GbifSandbox;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-import org.apache.http.client.HttpClient;
-import org.apache.http.Header;
-import org.apache.http.HttpException;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.*;
 import org.apache.http.entity.ContentType;
+import org.apache.http.entity.FileEntity;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
-import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.util.EntityUtils;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.client.protocol.HttpClientContext;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
@@ -70,7 +52,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.List;
-import java.util.ArrayList;
 import java.io.File;
 
 public class GbifSandbox {
@@ -199,7 +180,7 @@ public class GbifSandbox {
         return registerDataset(data);
     }
 
-    public Pair<Boolean, String>  uploadToZenodo(File file) {
+    public Pair<Boolean, String>  uploadToZenodoOld(File file) {
         try {
             StringEntity se = new StringEntity("{}", "application/json", StandardCharsets.UTF_8.toString());
             Pair<Boolean, String> result1 = postToApi(zenodoApiUrl + "deposit/depositions?access_token=" + getZenodoUploadToken(),
@@ -224,6 +205,35 @@ public class GbifSandbox {
                     null, null, /*headers*/null, builder.build());
 
         } catch (java.io.UnsupportedEncodingException x) {
+            return new Pair<>(false, x.getMessage());
+        }
+    }
+
+    public Pair<Boolean, String>  uploadToZenodo(File file) {
+        //see https://developers.zenodo.org/?python#quickstart-upload     --- New Files API
+        try {
+            StringEntity se = new StringEntity("{}", "application/json", StandardCharsets.UTF_8.toString());
+            Pair<Boolean, String> result1 = postToApi(zenodoApiUrl + "deposit/depositions?access_token=" + getZenodoUploadToken(),
+                    null, null, /*headers*/null, se);
+            if (!result1.getFirst()) {
+                return result1;
+            }
+
+            JSONObject response = JSONObject.fromObject(result1.getSecond());
+            JSONObject links = response.getJSONObject("links");
+            String bucket = links.getString("bucket");
+
+            HttpPut putter = new HttpPut(bucket + "/" + file.getName() + "?access_token=" + getZenodoUploadToken());
+
+            //MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+            //builder.setCharset(StandardCharsets.UTF_8);
+            //builder.addTextBody("data",  "{'filename': '" + file.getName()+ "'}");
+            //builder.addBinaryBody("file", ContentType.TEXT_PLAIN, file.getName());
+            putter.setEntity(new FileEntity(file));
+            Pair<Boolean, String> result = executeMethod(putter, null, 200);
+            return result;
+
+        } catch (Exception x) {
             return new Pair<>(false, x.getMessage());
         }
     }
