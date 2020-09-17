@@ -819,6 +819,12 @@ public class Loan extends DisciplineMember implements AttachmentOwnerIFace<LoanA
         return getClassTableId();
     }
 
+    @Override
+    @Transient
+    public Set<? extends PreparationHolderIFace> getPreparationHolders() {
+        return getLoanPreparations();
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.AttachmentOwnerIFace#getAttachmentTableId()
      */

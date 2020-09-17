@@ -19,6 +19,8 @@
 */
 package edu.ku.brc.specify.datamodel;
 
+import java.util.Set;
+
 /**
  * @author rod
  *
@@ -33,9 +35,9 @@ public interface OneToManyProviderIFace
     /**
      * @return a set of PreparationHolderIFace objects =
      */
-    //public abstract Set<PreparationHolderIFace> getPreparations();
+    Set<? extends PreparationHolderIFace> getPreparationHolders();
     
     
-    public abstract int getTableId();
+    int getTableId();
 
 }

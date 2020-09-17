@@ -653,6 +653,12 @@ public class Gift extends DisciplineMember implements java.io.Serializable, OneT
         return getClassTableId();
     }
 
+    @Override
+    @Transient
+    public Set<? extends PreparationHolderIFace> getPreparationHolders() {
+        return getGiftPreparations();
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.AttachmentOwnerIFace#getAttachmentTableId()
      */

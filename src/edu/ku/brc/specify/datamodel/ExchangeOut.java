@@ -509,7 +509,13 @@ public class ExchangeOut extends DataModelObjBase implements java.io.Serializabl
     {
         return getClassTableId();
     }
-    
+
+    @Override
+    @Transient
+    public Set<? extends PreparationHolderIFace> getPreparationHolders() {
+        return getExchangeOutPreps();
+    }
+
     /**
      * @return the Table ID for the class.
      */

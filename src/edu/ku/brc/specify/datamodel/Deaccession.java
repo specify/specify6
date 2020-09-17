@@ -70,7 +70,6 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
     protected Boolean                     yesNo2;
     protected Set<DeaccessionAgent>       deaccessionAgents;
     protected Set<DeaccessionPreparation> deaccessionPreparations;
-    protected Accession                   accession;
     protected LegalDeaccession            legalDeaccession;
 
     // Constructors
@@ -103,7 +102,6 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
         yesNo2 = null;
         deaccessionAgents = new HashSet<DeaccessionAgent>();
         deaccessionPreparations = new HashSet<DeaccessionPreparation>();
-        accession = null;
         legalDeaccession = null;
         doNotExport = null;
     }
@@ -296,25 +294,6 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
         this.deaccessionPreparations = deaccessionPreparations;
     }
 
-    /**
-     * @return the accession
-     */
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.MERGE, org.hibernate.annotations.CascadeType.LOCK })
-    @JoinColumn(name = "AccessionID", unique = false, nullable = true, insertable = true, updatable = true)
-    public Accession getAccession()
-    {
-        return accession;
-    }
-
-    /**
-     * @param accession the accession to set
-     */
-    public void setAccession(Accession accession)
-    {
-        this.accession = accession;
-    }
-
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.MERGE, org.hibernate.annotations.CascadeType.LOCK })
     @JoinColumn(name = "LegalDeaccessionID", unique = false, nullable = true, insertable = true, updatable = true)
@@ -363,7 +342,13 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
     {
         return getClassTableId();
     }
-    
+
+    @Override
+    @Transient
+    public Set<? extends PreparationHolderIFace> getPreparationHolders() {
+        return getDeaccessionPreparations();
+    }
+
     /**
      * @return the Table ID for the class.
      */

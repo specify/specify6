@@ -119,6 +119,12 @@ public class LegalDeaccession extends DataModelObjBase implements java.io.Serial
         return getClassTableId();
     }
 
+    @Override
+    @Transient
+    public Set<? extends PreparationHolderIFace> getPreparationHolders() {
+        return null;
+    }
+
     public static int getClassTableId() {
         return 163;
     }

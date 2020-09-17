@@ -84,7 +84,6 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
     protected Set<AccessionAttachment>    accessionAttachments;
     protected Set<Appraisal>              appraisals;
     protected Set<TreatmentEvent>         treatmentEvents;
-    protected Set<Deaccession>            deaccessions;
     protected LegalDeaccession            legalDeaccession;
     protected Set<AccessionCitation> accessionCitations;
 
@@ -138,7 +137,6 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
         accessionAttachments    = new HashSet<AccessionAttachment>();
         appraisals              = new HashSet<Appraisal>();
         treatmentEvents         = new HashSet<TreatmentEvent>();
-        deaccessions            = new HashSet<Deaccession>();
         accessionCitations = new HashSet<>();
     }
     // End Initializer
@@ -158,7 +156,6 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
         obj.accessionAttachments    = new HashSet<AccessionAttachment>();
         obj.appraisals              = new HashSet<Appraisal>();
         obj.treatmentEvents         = new HashSet<TreatmentEvent>();
-        obj.deaccessions            = new HashSet<Deaccession>();
         obj.accessionCitations = new HashSet<>();
 
         for (AccessionAuthorization a : this.accessionAuthorizations) {
@@ -184,11 +181,6 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
         for (TreatmentEvent a : this.treatmentEvents) {
             TreatmentEvent c = (TreatmentEvent)a.clone();
             obj.treatmentEvents.add(c);
-            c.setAccession(obj);
-        }
-        for (Deaccession a : this.deaccessions) {
-            Deaccession c = (Deaccession)a.clone();
-            obj.deaccessions.add(c);
             c.setAccession(obj);
         }
         for (AccessionCitation a : this.accessionCitations) {
@@ -226,7 +218,6 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
         accessionAuthorizations.size();
         accessionAgents.size();
         appraisals.size();
-        deaccessions.size();
         treatmentEvents.size();
     }
 
@@ -680,24 +671,6 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
         this.treatmentEvents = treatmentEvents;
     }
 
-    /**
-     * @return the deaccessions
-     */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "accession")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    public Set<Deaccession> getDeaccessions()
-    {
-        return deaccessions;
-    }
-
-    /**
-     * @param eaccessions the deaccessions to set
-     */
-    public void setDeaccessions(Set<Deaccession> deaccessions)
-    {
-        this.deaccessions = deaccessions;
-    }
-
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.MERGE, org.hibernate.annotations.CascadeType.LOCK })
     @JoinColumn(name = "LegalDeaccessionID", unique = false, nullable = true, insertable = true, updatable = true)
@@ -775,7 +748,13 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
     {
         return getClassTableId();
     }
-    
+
+    @Override
+    @Transient
+    public Set<? extends PreparationHolderIFace> getPreparationHolders() {
+        return null;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.AttachmentOwnerIFace#getAttachmentTableId()
      */

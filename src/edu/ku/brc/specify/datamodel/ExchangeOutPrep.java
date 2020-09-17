@@ -42,7 +42,7 @@ import org.hibernate.annotations.Index;
 @org.hibernate.annotations.Table(appliesTo="exchangeoutprep", indexes =
     {   @Index (name="ExchgOutPrepDspMemIDX", columnNames={"DisciplineID"})
     })
-public class ExchangeOutPrep extends DisciplineMember implements java.io.Serializable, Comparable<ExchangeOutPrep>
+public class ExchangeOutPrep extends DisciplineMember implements java.io.Serializable, PreparationHolderIFace, Comparable<ExchangeOutPrep>
 {
     // Fields    
     protected Integer                       exchangeOutPrepId;
@@ -264,7 +264,13 @@ public class ExchangeOutPrep extends DisciplineMember implements java.io.Seriali
     {
         return getClassTableId();
     }
-    
+
+    @Override
+    @Transient
+    public Integer getQuantityReturned() {
+        return null;
+    }
+
     /**
      * @return the Table ID for the class.
      */
