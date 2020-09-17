@@ -1816,7 +1816,7 @@ public class DataBuilder
         DeaccessionPreparation deaccessionpreparation = new DeaccessionPreparation();
         deaccessionpreparation.initialize();
         deaccessionpreparation.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-        deaccessionpreparation.setQuantity(quantity);
+        deaccessionpreparation.setQuantity(quantity.intValue());
         deaccessionpreparation.setDeaccession(deaccession);
         persist(deaccessionpreparation);
         return deaccessionpreparation;
