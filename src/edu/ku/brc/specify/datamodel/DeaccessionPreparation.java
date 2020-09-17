@@ -41,12 +41,12 @@ import javax.persistence.Transient;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "deaccessionpreparation")
-public class DeaccessionPreparation extends DataModelObjBase implements java.io.Serializable {
+public class DeaccessionPreparation extends DataModelObjBase implements java.io.Serializable, PreparationHolderIFace {
 
     // Fields    
 
      protected Integer deaccessionPreparationId;
-     protected Short quantity;
+     protected Integer quantity;
      protected String remarks;
      protected Deaccession deaccession;
      protected LoanReturnPreparation loanReturnPreparation;
@@ -123,11 +123,11 @@ public class DeaccessionPreparation extends DataModelObjBase implements java.io.
      *      * Number of specimens deaccessioned (necessary for lots)
      */
     @Column(name = "Quantity", unique = false, nullable = true, insertable = true, updatable = true)
-    public Short getQuantity() {
+    public Integer getQuantity() {
         return this.quantity;
     }
     
-    public void setQuantity(Short quantity) {
+    public void setQuantity(Integer quantity) {
         this.quantity = quantity;
     }
 
@@ -180,6 +180,12 @@ public class DeaccessionPreparation extends DataModelObjBase implements java.io.
     public void setPreparation(Preparation preparation)
     {
         this.preparation = preparation;
+    }
+
+    @Override
+    @Transient
+    public Integer getQuantityReturned() {
+        return null;
     }
 
     // Add Methods

@@ -2547,6 +2547,23 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         return false;
                     }
                     frame.incOverall();
+
+                    //-------------------------------------------------------------------------------
+                    //
+                    // Schema changes for 2.8
+                    //
+                    //-------------------------------------------------------------------------------
+                    frame.setDesc("Converting deaccessionpreparation.quantity to int");
+                    String coType = getFieldColumnType(conn, databaseName, "deaccessionpreparation", "quantity");
+                    if (coType != null && coType.endsWith("int(6)")) {
+                        sql = "alter table deaccessionpreparation modify quantity int(11)";
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
+                    }
+                    frame.incOverall();
+
                     frame.setProcess(0, 100);
 
                     return true;
