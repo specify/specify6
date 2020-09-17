@@ -1380,7 +1380,7 @@ public class InteractionsTask extends BaseTask
                 if (prepToDeaccessionPrepHash != null) {
                     DeaccessionPreparation dp = prepToDeaccessionPrepHash.get(prep.getId());
                     if (dp != null) {
-                        short dpCnt = dp.getQuantity();
+                        int dpCnt = dp.getQuantity();
                         dpCnt += count;
                         dp.setQuantity(dpCnt);
                         //System.err.println("Adding "+count+"  to "+lp.hashCode());
@@ -1390,7 +1390,7 @@ public class InteractionsTask extends BaseTask
                 DeaccessionPreparation dpo = new DeaccessionPreparation();
                 dpo.initialize();
                 dpo.setPreparation(prep);
-                dpo.setQuantity(count.shortValue());
+                dpo.setQuantity(count);
                 dpo.setDeaccession(deaccession);
                 deaccession.getDeaccessionPreparations().add(dpo);
             }
