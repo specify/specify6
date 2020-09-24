@@ -187,7 +187,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 {
     protected static final Logger  log = Logger.getLogger(SpecifySchemaUpdateService.class);
     
-    private final int OVERALL_TOTAL = 71; //the number of incOverall() calls (+1 or +2)
+    private final int OVERALL_TOTAL = 73; //the number of incOverall() calls (+1 or +2)
 
     private static final String TINYINT4 = "TINYINT(4)";
     private static final String INT11    = "INT(11)";
@@ -2557,6 +2557,14 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     String coType = getFieldColumnType(conn, databaseName, "deaccessionpreparation", "quantity");
                     if (coType != null && coType.endsWith("int(6)")) {
                         sql = "alter table deaccessionpreparation modify quantity int(11)";
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
+                    }
+                    frame.setDesc("Removing deaccession.accessionid");
+                    if (doesColumnExist(databaseName, "deaccession", "accessionid", conn)) {
+                        sql = "alter table deaccession drop column accessionid";
                         if (-1 == update(conn, sql)) {
                             errMsgList.add("update error: " + sql);
                             return false;
