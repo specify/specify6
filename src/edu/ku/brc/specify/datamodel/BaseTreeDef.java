@@ -425,7 +425,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
                     CustomDialog.OKCANCELHELP,
                     pb2.getPanel());
             dlg2.setOkLabel(getResourceString("YES"));
-            dlg.setVisible(true);
+            dlg2.setVisible(true);
             dlg2.dispose();
             if (dlg2.isCancelled())
             {
