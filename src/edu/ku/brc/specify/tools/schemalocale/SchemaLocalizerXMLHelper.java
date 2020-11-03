@@ -741,18 +741,20 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                     }
                     Collections.sort(list);
 
-                    boolean cont = false;
-                    while (cont)
-                    {
-                        ToggleButtonChooserDlg<DisplayLocale> dlg = new ToggleButtonChooserDlg<DisplayLocale>((Dialog)null, 
-                                                                   "CHOOSE_LOCALE", list, ToggleButtonChooserPanel.Type.RadioButton);
+                    boolean cont = true;
+                    while (cont) {
+                        ToggleButtonChooserDlg<DisplayLocale> dlg = new ToggleButtonChooserDlg<>((Dialog)UIRegistry.getMostRecentWindow(),
+                                "CHOOSE_LOCALE", list, ToggleButtonChooserPanel.Type.RadioButton);
                         dlg.setUseScrollPane(true);
                         dlg.setVisible(true);
-                        
+
                         cont = dlg.isCancelled();
-                        if (!cont)
-                        {
+                        if (!cont) {
                             lang = dlg.getSelectedObject().getLocale().getLanguage();
+                            country = dlg.getSelectedObject().getLocale().getCountry();
+                            stripToSingleLocale(lang, country, containers);
+                        } else {
+                            return null;
                         }
                     }
                 }
