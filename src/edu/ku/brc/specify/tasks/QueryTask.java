@@ -316,7 +316,17 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
         if (StringUtils.isNotEmpty(xmlStr))
         {
             XStream xstream = new XStream();
-            list = (Vector<String>)xstream.fromXML(xmlStr);
+            Object parsedXML = xstream.fromXML(xmlStr);
+            if (parsedXML != null) {
+                if (parsedXML instanceof Vector) {
+                    list = (Vector<String>)xstream.fromXML(xmlStr);
+                } else if (parsedXML instanceof ArrayList) {
+                    List<String> aList = (ArrayList<String>)parsedXML;
+                    list = new Vector<>(aList);
+                } else {
+                    log.error("Unable to read resource: " + resourceName);
+                }
+            }
         }
         //log.debug(xmlStr);
 
