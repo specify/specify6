@@ -23,6 +23,7 @@
     </droppableFlavors>
   </entry>
 
+  <!--
   <entry name="legaldeaccession" table="legaldeaccession" view="LegalDeaccession" type="Interactions" action="NEW_LEG_DEACC" icon="LegalDeaccession" isonleft="true"
          issrchsrv="false" order="0" enabled="true" visible="true" tooltip="">
   </entry>
@@ -51,7 +52,7 @@
       </flavor>
     </droppableFlavors>
   </entry>
-
+  -->
   <entry name="permit" table="permit" view="Permit" type="Interactions" action="OpenNewView" icon="Permit" isonleft="true"
          issrchsrv="true" order="0" enabled="true" visible="true" tooltip="">
     <draggableFlavors/>
