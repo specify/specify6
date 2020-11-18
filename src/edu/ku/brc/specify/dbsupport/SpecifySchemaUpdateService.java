@@ -2564,6 +2564,16 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     }
                     frame.setDesc("Removing deaccession.accessionid");
                     if (doesColumnExist(databaseName, "deaccession", "accessionid", conn)) {
+                        sql = "SELECT CONSTRAINT_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE REFERENCED_TABLE_SCHEMA = '"
+                            + databaseName + "' AND REFERENCED_TABLE_NAME = 'accession' AND TABLE_NAME = 'deaccession' AND COLUMN_NAME = 'AccessionID'";
+                        String constraint = BasicSQLUtils.querySingleObj(sql);
+                        if (constraint != null) {
+                            sql = "alter table deaccession drop foreign key " + constraint;
+                            if (-1 == update(conn, sql)) {
+                                errMsgList.add("update error: " + sql);
+                                return false;
+                            }
+                        }
                         sql = "alter table deaccession drop column accessionid";
                         if (-1 == update(conn, sql)) {
                             errMsgList.add("update error: " + sql);
