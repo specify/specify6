@@ -38,6 +38,8 @@ import javax.swing.SwingConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import edu.ku.brc.af.core.db.DBFieldInfo;
+import edu.ku.brc.specify.datamodel.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
@@ -66,14 +68,6 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
 import edu.ku.brc.helpers.UIFileFilter;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
-import edu.ku.brc.specify.datamodel.Collection;
-import edu.ku.brc.specify.datamodel.DataModelObjBase;
-import edu.ku.brc.specify.datamodel.Discipline;
-import edu.ku.brc.specify.datamodel.SpExportSchema;
-import edu.ku.brc.specify.datamodel.SpExportSchemaItem;
-import edu.ku.brc.specify.datamodel.SpExportSchemaMapping;
-import edu.ku.brc.specify.datamodel.SpQuery;
-import edu.ku.brc.specify.datamodel.SpTaskSemaphore;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr.USER_ACTION;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgrCallerIFace;
@@ -100,6 +94,7 @@ public class ExportMappingTask extends QueryTask
 	protected final AtomicBoolean	addingMapping	= new AtomicBoolean(false);
 	
 	protected static final String	DEF_IMP_PREF	= "ExportSchemaMapping.SchemaImportDir";
+	protected static final String PREP_MAPS_ENABLED_PREF = "ExportSchemaMapping.PrepMapsEnabled";
 	
 	protected boolean includeMappingsForCurrCollOnly = true;
 	
@@ -431,25 +426,12 @@ public class ExportMappingTask extends QueryTask
 		}
 	}
 
-	/**
-	 * Creates a new Query Data Object.
-	 * 
-	 * @param tableInfo
-	 *            the table information
-	 * @return the query
-	 */
-	protected SpQuery createNewQueryDataObj()
-	{
-		DBTableInfo tableInfo = getTableInfo();
-		SpQuery query = new SpQuery();
-		query.initialize();
-		//query.setName(exportSchema.getSchemaName() + exportSchema.getVersion());
-		query.setName(UIRegistry.getResourceString("ExportMappingTask.DefaultNewMappingName"));
-		query.setNamed(false);
-		query.setContextTableId((short) tableInfo.getTableId());
-		query.setContextName(tableInfo.getShortClassName());
-		return query;
+
+	@Override
+	protected String getDefaultNewQueryName(DBTableInfo tableInfo) {
+		return UIRegistry.getResourceString("ExportMappingTask.DefaultNewMappingName");
 	}
+
 
 	/**
 	 * @param query
@@ -517,9 +499,26 @@ public class ExportMappingTask extends QueryTask
 	protected DBTableInfo getTableInfo()
 	{
 		//XXX will probably need to support schemas that are NOT based on CO
-		return DBTableIdMgr.getInstance().getInfoById(1);
+		return DBTableIdMgr.getInstance().getInfoById(Preparation.getClassTableId());
 	}
 
+	protected DBTableInfo chooseBaseTable() {
+		DBTableInfo prepInfo = DBTableIdMgr.getInstance().getInfoById(Preparation.getClassTableId());
+		DBTableInfo coInfo = DBTableIdMgr.getInstance().getInfoById(CollectionObject.getClassTableId());
+		Boolean prepsEnabled = false;//AppPreferences.getRemote().getBoolean(PREP_MAPS_ENABLED_PREF, false);
+		int r = prepsEnabled
+				? UIRegistry.askYesNoLocalized(coInfo.getTitle(), prepInfo.getTitle(), "CANCEL",
+						UIRegistry.getResourceString("ExportMappingTask.ChooseBaseTableMsg"),
+						"ExportMappingTask.ChooseBaseTableTitle")
+				: JOptionPane.YES_OPTION;
+		if (r == JOptionPane.YES_OPTION) {
+			return coInfo;
+		} else if (r == JOptionPane.NO_OPTION) {
+			return prepInfo;
+		} else {
+			return null;
+		}
+	}
 	/**
 	 * 
 	 * Prompts to choose ExportSchema and opens new mapping, closing currently
@@ -529,31 +528,28 @@ public class ExportMappingTask extends QueryTask
 	{
 		if (queryBldrPane == null || queryBldrPane.aboutToShutdown())
 		{
-			List<SpExportSchema> selectedSchemas = chooseExportSchema();
-			if (selectedSchemas != null) 
-			{
-				SpExportSchema selectedSchema = selectedSchemas.get(0);
-				
-				if (selectedSchema.getSpExportSchemaId() == null)
-				{
-					exportSchema = null;
-				} else
-				{
-					exportSchema = selectedSchema;
-				}
-				schemaMapping = new SpExportSchemaMapping();
-				schemaMapping.initialize();
-				schemaMapping.setSpExportSchema(exportSchema);
-				SpQuery query = createNewQueryDataObj();
-				if (query != null) 
-				{
-					addingMapping.set(true);
-					try 
-					{
-						editQuery(query);
-					} finally 
-					{
-						addingMapping.set(false);
+			DBTableInfo baseTable = chooseBaseTable();
+			if (baseTable != null) {
+				List<SpExportSchema> selectedSchemas = chooseExportSchema();
+				if (selectedSchemas != null) {
+					SpExportSchema selectedSchema = selectedSchemas.get(0);
+
+					if (selectedSchema.getSpExportSchemaId() == null) {
+						exportSchema = null;
+					} else {
+						exportSchema = selectedSchema;
+					}
+					schemaMapping = new SpExportSchemaMapping();
+					schemaMapping.initialize();
+					schemaMapping.setSpExportSchema(exportSchema);
+					SpQuery query = createNewQueryDataObj(baseTable);
+					if (query != null) {
+						addingMapping.set(true);
+						try {
+							editQuery(query);
+						} finally {
+							addingMapping.set(false);
+						}
 					}
 				}
 			}

@@ -59,7 +59,7 @@ public class PrepInfo
      * @return
      */
     public int getAvailable() {
-        return qtyAvailable;
+         return qtyAvailable;
     }
 
     /**

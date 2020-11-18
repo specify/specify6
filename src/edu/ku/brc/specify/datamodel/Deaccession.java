@@ -52,7 +52,7 @@ import org.hibernate.annotations.Index;
         @Index (name="DeaccessionDateIDX", columnNames={"DeaccessionDate"})
     })
 @SuppressWarnings("serial")
-public class Deaccession extends DataModelObjBase implements java.io.Serializable {
+public class Deaccession extends DataModelObjBase implements java.io.Serializable, OneToManyProviderIFace {
 
     // Fields    
 
@@ -61,6 +61,7 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
     protected String                      deaccessionNumber;
     protected Calendar                    deaccessionDate;
     protected String                      remarks;
+    protected Boolean doNotExport; //don't export to aggregators if true.
     protected String                      text1;
     protected String                      text2;
     protected Float                       number1;
@@ -69,7 +70,7 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
     protected Boolean                     yesNo2;
     protected Set<DeaccessionAgent>       deaccessionAgents;
     protected Set<DeaccessionPreparation> deaccessionPreparations;
-    protected Accession                   accession;
+    protected LegalDeaccession            legalDeaccession;
 
     // Constructors
 
@@ -101,7 +102,8 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
         yesNo2 = null;
         deaccessionAgents = new HashSet<DeaccessionAgent>();
         deaccessionPreparations = new HashSet<DeaccessionPreparation>();
-        accession = null;
+        legalDeaccession = null;
+        doNotExport = null;
     }
     // End Initializer
 
@@ -292,23 +294,43 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
         this.deaccessionPreparations = deaccessionPreparations;
     }
 
-    /**
-     * @return the accession
-     */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.MERGE, org.hibernate.annotations.CascadeType.LOCK })
-    @JoinColumn(name = "AccessionID", unique = false, nullable = true, insertable = true, updatable = true)
-    public Accession getAccession()
-    {
-        return accession;
+    @JoinColumn(name = "LegalDeaccessionID", unique = false, nullable = true, insertable = true, updatable = true)
+    public LegalDeaccession getLegalDeaccession() {
+        return legalDeaccession;
     }
 
-    /**
-     * @param accession the accession to set
-     */
-    public void setAccession(Accession accession)
-    {
-        this.accession = accession;
+    public void setLegalDeaccession(LegalDeaccession legalDeaccession) {
+        this.legalDeaccession = legalDeaccession;
+    }
+
+    @Column(name="doNotExport",unique=false,nullable=true,updatable=true,insertable=true)
+    public Boolean getDoNotExport() {
+        return doNotExport;
+    }
+
+    public void setDoNotExport(Boolean doNotExport) {
+        this.doNotExport = doNotExport;
+    }
+
+    @Override
+    public void forceLoad() {
+        super.forceLoad();
+        deaccessionAgents.size();
+        deaccessionPreparations.size();
+    }
+
+    @Transient
+    public Set<Accession> getAccessions() {
+        Set<Accession> result = new HashSet<>();
+        for (DeaccessionPreparation dp : deaccessionPreparations) {
+            if (dp.getPreparation() != null && dp.getPreparation().getCollectionObject() != null &&
+                    dp.getPreparation().getCollectionObject().getAccession() != null) {
+                result.add(dp.getPreparation().getCollectionObject().getAccession());
+            }
+        }
+        return result;
     }
 
     /* (non-Javadoc)
@@ -320,7 +342,13 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
     {
         return getClassTableId();
     }
-    
+
+    @Override
+    @Transient
+    public Set<? extends PreparationHolderIFace> getPreparationHolders() {
+        return getDeaccessionPreparations();
+    }
+
     /**
      * @return the Table ID for the class.
      */

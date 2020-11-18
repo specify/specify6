@@ -19,20 +19,29 @@
  */
 package edu.ku.brc.specify.tasks;
 
-import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
-import static edu.ku.brc.ui.UIRegistry.getResourceString;
-
+import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 
-import javax.swing.JOptionPane;
+import javax.swing.*;
+import javax.swing.border.LineBorder;
+import javax.swing.plaf.basic.BasicBorders;
 
+import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.SubPaneMgr;
+import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.af.prefs.PrefsPanelIFace;
+import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.dbsupport.*;
+import edu.ku.brc.specify.datamodel.Preparation;
+import edu.ku.brc.specify.prefs.LoansPrefsPanel;
+import edu.ku.brc.ui.CustomDialog;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -42,6 +51,10 @@ import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.tasks.BaseTask.ASK_TYPE;
 import edu.ku.brc.af.ui.forms.Viewable;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.dbsupport.RecordSetIFace;
+import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.CollectionObject;
@@ -55,6 +68,11 @@ import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import scala.collection.mutable.HashTable;
 
+import static edu.ku.brc.ui.ToggleButtonChooserPanel.Type.RadioButton;
+import static edu.ku.brc.ui.UIRegistry.*;
+import static java.awt.Color.BLACK;
+import static java.awt.Color.GRAY;
+
 /**
  * @author rod
  *
@@ -67,11 +85,14 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
 {
     private static final Logger log = Logger.getLogger(InteractionsProcessor.class);
     private static final String LOAN_LOADR = "LoanLoader";
+    public static final String DEFAULT_SRC_TBL_ID = "Interactions.DefaultSrcTableId";
 
     protected static final int forLoan = 0;
     protected static final int forGift = 1;
     protected static final int forAcc = 2;
     protected static final int forExchange = 3;
+    protected static final int forDeacc = 4;
+    protected static final int forLegalDeacc = 5;
 
     protected InteractionsTask task;
     protected int              isFor;
@@ -97,6 +118,10 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
      */
     protected ASK_TYPE askSourceOfPreps(final boolean hasInfoReqs, final boolean hasColObjRS, final T currPrepProvider)
     {
+        if (isFor == forLegalDeacc) {
+            return ASK_TYPE.None;
+        }
+
         String label;
         if (hasInfoReqs && hasColObjRS)
         {
@@ -190,6 +215,66 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
         createOrAdd(currPrepProvider, null, null);
     }
 
+    private int promptForItemIdTableId() {
+        JPanel mainPane = new JPanel(new BorderLayout());
+        mainPane.add(new Label(getResourceString("InteractionsProcessor.ItemIDForTblMsg")), BorderLayout.NORTH);
+        ButtonGroup buttGrp = new ButtonGroup();
+        JRadioButton coBtn = new JRadioButton(DBTableIdMgr.getInstance().getTitleForId(CollectionObject.getClassTableId()));
+        coBtn.setSelected(true);
+        JRadioButton prepBtn = new JRadioButton(DBTableIdMgr.getInstance().getTitleForId(Preparation.getClassTableId()));
+        buttGrp.add(coBtn);
+        buttGrp.add(prepBtn);
+        JPanel buttGrpPane = new JPanel();
+        buttGrpPane.setLayout(new BoxLayout(buttGrpPane, BoxLayout.Y_AXIS));
+        buttGrpPane.setBorder(BorderFactory.createEmptyBorder(5, 10, 10, 4));
+        buttGrpPane.add(coBtn);
+        buttGrpPane.add(prepBtn);
+        mainPane.add(buttGrpPane, BorderLayout.CENTER);
+        mainPane.setBorder(BorderFactory.createEmptyBorder(12, 5, 12, 5));
+        //TaskMgr.getTask("")
+        JCheckBox remember = null;
+        boolean canSetPref = !AppContextMgr.isSecurityOn();
+        if (!canSetPref) {
+            PrefsPanelIFace loanPrefs = new LoansPrefsPanel(false);
+            canSetPref = loanPrefs.getPermissions().canModify();
+        }
+        if (canSetPref) {
+            remember = new JCheckBox(getResourceString("InteractionsProcessor.DoNotAskAgain"));
+            mainPane.add(remember, BorderLayout.SOUTH);
+        }
+        CustomDialog cwin = new CustomDialog((Frame)getTopWindow(), getResourceString("InteractionsProcessor.ItemIDForTblTitle"), true,
+                mainPane); // i18n
+        cwin.setWhichBtns(CustomDialog.OKCANCEL);
+        cwin.setModal(true);
+        cwin.setVisible(true);
+        int result = cwin.isCancelled() ? 0 :
+                (coBtn.isSelected() ? CollectionObject.getClassTableId() : Preparation.getClassTableId());
+        if (canSetPref && remember.isSelected()) {
+            AppPreferences.getRemote().putInt(DEFAULT_SRC_TBL_ID, result);
+        }
+        cwin.dispose();
+        return result;
+    }
+
+    public static String getDefaultInteractionLookupField(int tableId) {
+        if (tableId == CollectionObject.getClassTableId()) {
+            return "CatalogNumber";
+        } else if (tableId == Preparation.getClassTableId()) {
+            return "BarCode";
+        } else {
+            log.error("No default lookup field for " + DBTableIdMgr.getInstance().getInfoById(tableId).getName());
+            return null;
+        }
+    }
+
+    public static String getInteractionItemLookupFieldPref(int tableId) {
+        return "InteractionItemLookupField." + tableId;
+    }
+
+    private String getInteractionItemLookupField(int tableId) {
+        return AppPreferences.getRemote().get(getInteractionItemLookupFieldPref(tableId), getDefaultInteractionLookupField(tableId));
+    }
+
     /**
      * Creates a new loan from a RecordSet.
      * @param currPrepProvider an existing loan that needs additional Preps
@@ -212,28 +297,35 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
             List<RecordSetIFace>   colObjRSList = rsTask.getRecordSets(CollectionObject.getClassTableId());
 
             // If the List is empty then
-            if (rsList.size() == 0 && colObjRSList.size() == 0 && (isFor != forAcc || currPrepProvider != null))
-            {
+            if (rsList.size() == 0 && colObjRSList.size() == 0 && (isFor != forAcc || currPrepProvider != null)) {
                 recordSet = task.askForDataObjRecordSet(CollectionObject.class, catNumField, isFor == forAcc);
 
-            } else
-            {
+            } else {
                 ASK_TYPE rv = askSourceOfPreps(rsList.size() > 0, colObjRSList.size() > 0, currPrepProvider);
-                if (rv == ASK_TYPE.ChooseRS)
-                {
-                    recordSet = RecordSetTask.askForRecordSet(CollectionObject.getClassTableId(), rsList);
-
-                } else if (rv == ASK_TYPE.EnterDataObjs)
-                {
-                    recordSet = task.askForDataObjRecordSet(CollectionObject.class, catNumField, isFor == forAcc);
-
+                if (rv == ASK_TYPE.ChooseRS) {
+                    Vector<Integer> tblIds = new Vector<>();
+                    tblIds.add(CollectionObject.getClassTableId());
+                    if (isFor != forAcc) {
+                        tblIds.add(Preparation.getClassTableId());
+                    }
+                    recordSet = RecordSetTask.askForRecordSet(tblIds, rsList, true);
+                } else if (rv == ASK_TYPE.EnterDataObjs) {
+                    Integer defSrcTblId = AppPreferences.getRemote().getInt(DEFAULT_SRC_TBL_ID, null);
+                    if (isFor == forAcc) {
+                        defSrcTblId = 1;
+                    }
+                    if (defSrcTblId == null || defSrcTblId == 0) {
+                        defSrcTblId = promptForItemIdTableId();
+                    }
+                    if (defSrcTblId != null && defSrcTblId != 0) {
+                        recordSet = task.askForDataObjRecordSet(defSrcTblId == CollectionObject.getClassTableId() ? CollectionObject.class : Preparation.class,
+                                getInteractionItemLookupField(defSrcTblId), isFor == forAcc);
+                    }
                 } else if (rv == ASK_TYPE.None) {
                     recordSet = null;
                     isEmptyAcc = true;
-                } else if (rv == ASK_TYPE.Cancel)
-                {
-                    if (viewable != null)
-                    {
+                } else if (rv == ASK_TYPE.Cancel) {
+                    if (viewable != null) {
                         viewable.setNewObject(null);
                     }
                     return;
@@ -241,8 +333,7 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
             }
         }
 
-        if (recordSet == null && !isEmptyAcc)
-        {
+        if (recordSet == null && !isEmptyAcc) {
             return;
         }
 
@@ -336,18 +427,24 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
      */
     protected void cosLoaded(final RecordSetIFace rs, final T prepProvider) {
         //System.out.println("Adding cos to accession...");
-        task.addCosToAcc(prepProvider, rs, viewable);
+        if (isFor == forAcc) {
+            task.addCosToAcc(prepProvider, rs, viewable);
+        } else {
+            task.addToLegalDeacc(prepProvider, rs, viewable);
+        }
     }
     /**
      * @param coToPrepHash
      * @param prepTypeHash
      * @param prepProvider
      * @param infoRequest
+     * @param session
      */
     protected void prepsLoaded(final Hashtable<Integer, ColObjInfo> coToPrepHash,
                                final Hashtable<Integer, String>     prepTypeHash,
                                final T                              prepProvider,
-                               final InfoRequest                    infoRequest) {
+                               final InfoRequest                    infoRequest,
+                               final int objTblId) {
         if (coToPrepHash.size() == 0 || prepTypeHash.size() == 0) {
             UIRegistry.showLocalizedMsg("NEW_INTER_NO_PREPS_TITLE", "NEW_INTER_NO_PREPS");
             return;
@@ -355,7 +452,7 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
 
         final DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(tableId);
 
-        final SelectPrepsDlg loanSelectPrepsDlg = new SelectPrepsDlg(coToPrepHash, prepTypeHash, ti.getTitle());
+        final SelectPrepsDlg loanSelectPrepsDlg = new SelectPrepsDlg(coToPrepHash, prepTypeHash, ti.getTitle(), objTblId);
         loanSelectPrepsDlg.createUI();
         loanSelectPrepsDlg.setModal(true);
 
@@ -382,7 +479,9 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
                     } else if (isFor == forGift) {
                         task.addPrepsToGift(prepProvider, infoRequest, prepsHash, viewable);
                     } else if (isFor == forExchange) {
-                        //task.addPrepsToExchangeOut(prepProvider, infoRequest, prepsHash, viewable);
+                        task.addPrepsToExchangeOut(prepProvider, infoRequest, prepsHash, viewable);
+                    } else if (isFor == forDeacc) {
+                        task.addPrepsToDeaccession(prepProvider, infoRequest, prepsHash, viewable);
                     }
                     return null;
                 }
@@ -433,6 +532,41 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
         }
     }
 
+    public static int LOAN_ADJUST_IDX = 0;
+    public static int GIFT_ADJUST_IDX = 1;
+    public static int EXCHANGEOUT_ADJUST_IDX = 2;
+    public static int DEACCESSION_ADJUST_IDX = 3;
+
+    public static String getAdjustedCountForPrepSQL(String where, boolean[] settings) {
+    String sql = "select p.preparationid, coalesce(p.countamt, 0)";
+    String adjusters = "";
+    String joiners = "";
+    if (settings[LOAN_ADJUST_IDX]) {
+        adjusters += "coalesce(sum(lp.unavailable), 0)";
+        joiners += " left join (select preparationid, sum(coalesce(quantity, 0) - coalesce(quantityresolved, 0)) unavailable from loanpreparation group by 1) lp on lp.preparationid = p.preparationid";
+    }
+    if (settings[GIFT_ADJUST_IDX]) {
+        adjusters += (adjusters.length() > 0 ? "+" : "") + "coalesce(sum(gp.unavailable), 0)";
+        joiners += " left join (select preparationid, sum(coalesce(quantity, 0)) unavailable from giftpreparation group by 1) gp on gp.preparationid = p.preparationid";
+    }
+    if (settings[EXCHANGEOUT_ADJUST_IDX]) {
+        adjusters += (adjusters.length() > 0 ? "+" : "") + "coalesce(sum(ep.unavailable), 0)";
+        joiners += " left join (select preparationid, sum(coalesce(quantity, 0)) unavailable from exchangeoutprep group by 1) ep on ep.preparationid = p.preparationid";
+    }
+    if (settings[DEACCESSION_ADJUST_IDX]) {
+        adjusters += (adjusters.length() > 0 ? "+" : "") + "coalesce(sum(dp.unavailable), 0)";
+        joiners += " left join (select preparationid, sum(coalesce(quantity, 0)) unavailable from deaccessionpreparation group by 1) dp on dp.preparationid = p.preparationid";
+    }
+    if (adjusters.length() > 0) {
+        sql += " - (" + adjusters +") available from preparation p " + joiners;
+    }
+    if (where != null) {
+        sql += " where " + where;
+    }
+    sql += " group by 1";
+    return sql;
+}
+
     //--------------------------------------------------------------
     // Background loader class for loading a large number of loan preparations
     //--------------------------------------------------------------
@@ -448,6 +582,7 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
 
         private Hashtable<Integer, String>     prepTypeHash = new Hashtable<Integer, String>();
         private Hashtable<Integer, ColObjInfo> coToPrepHash = new Hashtable<Integer, ColObjInfo>();
+
 
         /**
          * @param prepsProvider
@@ -474,44 +609,57 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
             return val == null ? 0 : (Integer)val;
         }
 
+        private String getVisibleIdFldForSql() {
+            String def;
+            if (recordSet.getDbTableId() == 1) {
+                def = "catalognumber";
+            } else {
+                def = "barcode";
+            }
+            return "o." + AppPreferences.getRemote().get(InteractionsProcessor.getInteractionItemLookupFieldPref(recordSet.getDbTableId()),def);
+        }
+
+        private String getIdSelectForSql() {
+            return (recordSet.getDbTableId() == 1 ? "o.CollectionObjectID" : "o.PreparationID") + ", " + getVisibleIdFldForSql();
+        }
+
+        private String getRecordSetFilter() {
+            return (recordSet.getDbTableId() == 1 ? "o.CollectionObjectID" : "o.PreparationID") + DBTableIdMgr.getInstance().getInClause(recordSet);
+        }
+
+        private String getFrom() {
+            return (recordSet.getDbTableId() == 1 ? "collectionobject" : "preparation" ) +
+                    " o left join determination dt ON dt.CollectionObjectID = o.CollectionObjectID " +
+                    "left JOIN taxon tx ON dt.TaxonID = tx.TaxonID";
+        }
         /**
          * @return a List of rows that have the CollectionObject info from the rcordset
          */
-        protected Vector<Object[]> getColObjsFromRecordSet()
-        {
-            String sql = "SELECT co.CollectionObjectID, co.CatalogNumber, tx.FullName FROM determination as dt INNER JOIN collectionobject as co ON dt.CollectionObjectID = co.CollectionObjectID " +
-                    "INNER JOIN taxon as tx ON dt.TaxonID = tx.TaxonID WHERE isCurrent <> 0 AND dt.CollectionMemberID = COLMEMID " +
-                    "AND co.CollectionObjectID " + DBTableIdMgr.getInstance().getInClause(recordSet);
-            sql = QueryAdjusterForDomain.getInstance().adjustSQL(sql);
+        protected Vector<Object[]> getColObjsFromRecordSet() {
+            String sql = "SELECT " + getIdSelectForSql() + ", tx.FullName FROM " + getFrom() + " WHERE (isCurrent is null or isCurrent <> 0) " +
+                    "AND " + getRecordSetFilter();
             log.debug("-------------- " + sql);
 
             Vector<Object[]> fullItems = BasicSQLUtils.query(sql);
-            if (fullItems.size() != recordSet.getNumItems())
-            {
-                sql = "SELECT CollectionObjectID, CatalogNumber FROM collectionobject WHERE CollectionMemberID = COLMEMID " +
-                        "AND CollectionObjectID " + DBTableIdMgr.getInstance().getInClause(recordSet);
-                Vector<Object[]> partialItems = BasicSQLUtils.query(QueryAdjusterForDomain.getInstance().adjustSQL(sql));
-                partialItems.addAll(fullItems);
-                //log.debug("-------------- " + "partialItems: " + partialItems.size());
-                return partialItems;
-            }
             //log.debug("-------------- " + "fullItems: " + fullItems.size());
             return fullItems;
         }
 
         //see git issue #730
         protected String getAvailableCountForPrepSQL(String where) {
-            String sql = "select p.preparationid, coalesce(p.countamt, 0) - (coalesce(sum(lp.unavailable), 0) + coalesce(sum(gp.unavailable), 0) + coalesce(sum(ep.unavailable), 0) + coalesce(sum(dp.unavailable), 0)) available "
-                + "from preparation p left join "
-                + "(select preparationid, sum(coalesce(quantity, 0) - coalesce(quantityresolved, 0)) unavailable from loanpreparation group by 1) lp on lp.preparationid = p.preparationid left join "
-                + "(select preparationid, sum(coalesce(quantity, 0)) unavailable from giftpreparation group by 1) gp on gp.preparationid = p.preparationid left join "
-                + "(select preparationid, sum(coalesce(quantity, 0)) unavailable from exchangeoutprep group by 1) ep on ep.preparationid = p.preparationid left join "
-                + "(select preparationid, sum(coalesce(quantity, 0)) unavailable from deaccessionpreparation group by 1) dp on dp.preparationid = p.preparationid ";
-            if (where != null) {
-                sql += "where " + where;
-            }
-            sql += " group by 1";
-            return sql;
+            boolean[] settings = {true, true, true, true};
+            return getAdjustedCountForPrepSQL(where, settings);
+//            String sql = "select p.preparationid, coalesce(p.countamt, 0) - (coalesce(sum(lp.unavailable), 0) + coalesce(sum(gp.unavailable), 0) + coalesce(sum(ep.unavailable), 0) + coalesce(sum(dp.unavailable), 0)) available "
+//                + "from preparation p left join "
+//                + "(select preparationid, sum(coalesce(quantity, 0) - coalesce(quantityresolved, 0)) unavailable from loanpreparation group by 1) lp on lp.preparationid = p.preparationid left join "
+//                + "(select preparationid, sum(coalesce(quantity, 0)) unavailable from giftpreparation group by 1) gp on gp.preparationid = p.preparationid left join "
+//                + "(select preparationid, sum(coalesce(quantity, 0)) unavailable from exchangeoutprep group by 1) ep on ep.preparationid = p.preparationid left join "
+//                + "(select preparationid, sum(coalesce(quantity, 0)) unavailable from deaccessionpreparation group by 1) dp on dp.preparationid = p.preparationid ";
+//            if (where != null) {
+//                sql += "where " + where;
+//            }
+//            sql += " group by 1";
+//            return sql;
         }
         /**
          *
@@ -532,15 +680,16 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
 
         /**
          *
-         * @param collectionObjectIds
+         * @param objectIds
          * @return
          */
-        protected List<Object[]> getAvailableCounts(List<String> collectionObjectIds) {
-            String sql = "select p.collectionobjectid, p.preparationid, coalesce(p.CountAmt,0), pt.Name, pt.PrepTypeID, avail.available from preparation p";
+        protected List<Object[]> getAvailableCounts(List<String> objectIds) {
+            String sql = "select " + (recordSet.getDbTableId() == 1 ? "p.collectionobjectid" : "p.preparationid")
+                    + ", p.preparationid, coalesce(p.CountAmt,0), pt.Name, pt.PrepTypeID, avail.available from preparation p";
             //assuming there aren't 10s of 1000s of items in collectionObjectIds
-            String idStr = collectionObjectIds.toString();
+            String idStr = objectIds.toString();
             idStr = idStr.substring(1, idStr.length()-1);
-            String where = "collectionobjectid in(" + idStr + ")";
+            String where = recordSet.getDbTableId() == 1 ? "p.collectionobjectid" : "p.preparationid" + " in(" + idStr + ")";
             String subSql = getAvailableCountForPrepSQL(where);
             sql = sql + " inner join (" + subSql + ") avail on avail.preparationid = p.preparationid"
                     + " inner join preptype pt on pt.preptypeid = p.preptypeid";
@@ -560,11 +709,11 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
         }
 
         protected int collect() {
-            if (isFor != forAcc) {
+            if (isFor != forAcc && isFor != forLegalDeacc) {
                 coToPrepHash = new Hashtable<>();
-                List<String> coIds = new ArrayList<>();
-                processRecordSetForCollect(coIds);
-                List<Object[]> rows = getAvailableCounts(coIds);
+                List<String> objds = new ArrayList<>();
+                processRecordSetForCollect(objds);
+                List<Object[]> rows = getAvailableCounts(objds);
                 if (rows.size() > 0) {
                     for (Object[] row : rows) {
                         int prepId = (Integer) row[1];
@@ -576,8 +725,6 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
                         prepTypeHash.put(prepTypeId, prepType);
                         ColObjInfo colObjInfo = coToPrepHash.get(coId);
                         if (colObjInfo != null) {
-                            PrepInfo prepInfo = colObjInfo.get(prepId);
-                            //stuffing available into existing PrepInfo structure for now
                             colObjInfo.add(new PrepInfo(prepId, prepTypeId, prepQty, available));
                         } else {
                             //what went wrong?
@@ -589,13 +736,13 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
         }
 
 
-        protected void processRecordSetForCollect(List<String> coIds) {
-            List<Object[]> coIdRows = getColObjsFromRecordSet();
-            for (Object[] row : coIdRows) {
-                Integer coId = (Integer)row[0];
-                coIds.add(coId.toString());
+        protected void processRecordSetForCollect(List<String> objIds) {
+            List<Object[]> objIdRows = getColObjsFromRecordSet();
+            for (Object[] row : objIdRows) {
+                Integer objId = (Integer)row[0];
+                objIds.add(objId.toString());
                 if (row[1] != null) {
-                    coToPrepHash.put(coId, new ColObjInfo(coId, row[1].toString(), row.length == 3 ? row[2].toString() : null));
+                    coToPrepHash.put(objId, new ColObjInfo(objId, row[1].toString(), (String)row[2]));
                 }
             }
         }
@@ -605,7 +752,7 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
          */
         @Override
         protected Integer doInBackground() throws Exception {
-            return collect();
+             return collect();
         }
 
         /* (non-Javadoc)
@@ -623,10 +770,10 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
                 UIRegistry.clearSimpleGlassPaneMsg();
             }
 
-            if (isFor == forAcc) {
+            if (isFor == forAcc || isFor == forLegalDeacc) {
                 cosLoaded(recordSet, prepsProvider);
             } else {
-                prepsLoaded(coToPrepHash, prepTypeHash, prepsProvider, infoRequest);
+                prepsLoaded(coToPrepHash, prepTypeHash, prepsProvider, infoRequest, recordSet.getDbTableId());
             }
         }
 

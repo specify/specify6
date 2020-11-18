@@ -984,6 +984,27 @@ public void setReservedText3(String reservedText3) {
     	}
     	return null;
     }
+
+    @Transient
+    public int getTotalCount() {
+        int result = 0;
+        for (Preparation p : getPreparations()) {
+            result += p.getCountAmt() != null ? p.getCountAmt() : 0;
+        }
+        return result;
+    }
+
+    @Transient
+    public int getTotalActualCount() {
+        int result = 0;
+        for (Preparation p : getPreparations()) {
+            result += p.getActualCountAmt();
+        }
+        return result;
+    }
+
+
+
     /**
      * 
      */

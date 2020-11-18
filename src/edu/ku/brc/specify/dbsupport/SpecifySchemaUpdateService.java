@@ -187,7 +187,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 {
     protected static final Logger  log = Logger.getLogger(SpecifySchemaUpdateService.class);
     
-    private final int OVERALL_TOTAL = 71; //the number of incOverall() calls (+1 or +2)
+    private final int OVERALL_TOTAL = 73; //the number of incOverall() calls (+1 or +2)
 
     private static final String TINYINT4 = "TINYINT(4)";
     private static final String INT11    = "INT(11)";
@@ -2547,6 +2547,41 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         return false;
                     }
                     frame.incOverall();
+
+                    //-------------------------------------------------------------------------------
+                    //
+                    // Schema changes for 2.8
+                    //
+                    //-------------------------------------------------------------------------------
+                    frame.setDesc("Converting deaccessionpreparation.quantity to int");
+                    String coType = getFieldColumnType(conn, databaseName, "deaccessionpreparation", "quantity");
+                    if (coType != null && coType.endsWith("int(6)")) {
+                        sql = "alter table deaccessionpreparation modify quantity int(11)";
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
+                    }
+                    frame.setDesc("Removing deaccession.accessionid");
+                    if (doesColumnExist(databaseName, "deaccession", "accessionid", conn)) {
+                        sql = "SELECT CONSTRAINT_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE REFERENCED_TABLE_SCHEMA = '"
+                            + databaseName + "' AND REFERENCED_TABLE_NAME = 'accession' AND TABLE_NAME = 'deaccession' AND COLUMN_NAME = 'AccessionID'";
+                        String constraint = BasicSQLUtils.querySingleObj(sql);
+                        if (constraint != null) {
+                            sql = "alter table deaccession drop foreign key " + constraint;
+                            if (-1 == update(conn, sql)) {
+                                errMsgList.add("update error: " + sql);
+                                return false;
+                            }
+                        }
+                        sql = "alter table deaccession drop column accessionid";
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
+                    }
+                    frame.incOverall();
+
                     frame.setProcess(0, 100);
 
                     return true;

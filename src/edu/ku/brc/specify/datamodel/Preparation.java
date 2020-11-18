@@ -23,9 +23,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Calendar;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -43,7 +41,9 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.tasks.InteractionsProcessor;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
@@ -76,7 +76,8 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
                                                              Cloneable
 {
 
-    // Fields    
+    private static final Logger log = Logger.getLogger(Preparation.class);
+    // Fields
 
     protected Integer                     preparationId;
     protected String                      text1;
@@ -593,9 +594,14 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
     public int getLoanAvailable()
     {
         int cnt = this.countAmt != null ? this.countAmt : 0;
-        return cnt - getLoanQuantityOut();
+        return cnt - getLoanQuantityOut() - getDeaccessionedQuantity();
     }
 
+    @Transient
+    public int getActualCountAmt() {
+        int cnt = this.countAmt != null ? this.countAmt : 0;
+        return cnt - getDeaccessionedQuantity();
+    }
     /**
      * calculates the number of preparations already loaned out.
      * @return the (calculated) number of preps out on loan.
@@ -613,7 +619,28 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
         }
         return stillOut;
     }
-    
+
+    private boolean countGiftsAsDeaccessions = true;
+    private boolean countExchangesAsDeaccessions = true;
+    @Transient
+    int getDeaccessionedQuantity() {
+        int deacced = 0;
+        for (DeaccessionPreparation dp : getDeaccessionPreparations()) {
+            deacced += dp.quantity != null ? dp.getQuantity() : 0;
+        }
+        if (countGiftsAsDeaccessions) {
+            for (GiftPreparation gp : getGiftPreparations()) {
+                deacced += gp.quantity != null ? gp.getQuantity() : 0;
+            }
+        }
+        if (countExchangesAsDeaccessions) {
+            for (ExchangeOutPrep ep : getExchangeOutPreps()) {
+                deacced += ep.quantity != null ? ep.getQuantity() : 0;
+            }
+        }
+        return deacced;
+    }
+
     @OneToMany(mappedBy = "preparation")
     @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<MaterialSample> getMaterialSamples() {
@@ -1267,6 +1294,7 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
         preparationAttachments.size();
         preparationAttrs.size();
         preparationProperties.size();
+        deaccessionPreparations.size();
     }
     
     /* (non-Javadoc)
@@ -1320,5 +1348,26 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
         return timestampCreated != null && obj != null && obj.timestampCreated != null ? timestampCreated.compareTo(obj.timestampCreated) : 0;
     }
 
+    @Transient
+    public static List<String> getQueryableTransientFields() {
+        List<String> result = new ArrayList<>();
+        result.add("ActualCountAmt");
+        return result;
+    }
 
+    protected static Object computeActualCountAmt(Object[] vals) {
+        boolean[] settings = {false, true, true, true};
+        String sql = InteractionsProcessor.getAdjustedCountForPrepSQL("p.preparationid = " + vals[0], settings);
+        Object[] amt = BasicSQLUtils.queryForRow(sql);
+        return amt != null ? amt[1] : null;
+    }
+
+    public static Object getQueryableTransientFieldValue(String fldName, Object[] vals) {
+        if (fldName.equalsIgnoreCase("ActualCountAmt")) {
+            return computeActualCountAmt(vals);
+        } else {
+            log.error("Unknown calculated field: " + fldName);
+            return null;
+        }
+    }
 }

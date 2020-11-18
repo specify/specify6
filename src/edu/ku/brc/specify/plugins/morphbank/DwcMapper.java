@@ -150,7 +150,7 @@ public class DwcMapper
 	protected void fillDefaultConcepts()
 	{
 		concepts.clear();
-		for (Map.Entry<String, Vector<MappedFieldInfo>> me : ConceptMapUtils.getDefaultDarwinCoreMappings().entrySet())
+		for (Map.Entry<String, Vector<MappedFieldInfo>> me : ConceptMapUtils.getDefaultDarwinCoreMappings(1).entrySet())
 		{
 			concepts.add(new MappingInfo(me.getKey(), me.getValue().get(0)));
 		}

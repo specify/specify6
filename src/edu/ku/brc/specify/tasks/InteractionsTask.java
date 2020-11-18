@@ -46,6 +46,7 @@ import javax.swing.JTextArea;
 import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 
+import edu.ku.brc.specify.datamodel.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -98,27 +99,6 @@ import edu.ku.brc.helpers.EMailHelper;
 import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
-import edu.ku.brc.specify.datamodel.Accession;
-import edu.ku.brc.specify.datamodel.Agent;
-import edu.ku.brc.specify.datamodel.CollectionObject;
-import edu.ku.brc.specify.datamodel.Discipline;
-import edu.ku.brc.specify.datamodel.Division;
-import edu.ku.brc.specify.datamodel.ExchangeIn;
-import edu.ku.brc.specify.datamodel.ExchangeOut;
-import edu.ku.brc.specify.datamodel.Gift;
-import edu.ku.brc.specify.datamodel.GiftPreparation;
-import edu.ku.brc.specify.datamodel.InfoRequest;
-import edu.ku.brc.specify.datamodel.Loan;
-import edu.ku.brc.specify.datamodel.LoanPreparation;
-import edu.ku.brc.specify.datamodel.LoanReturnPreparation;
-import edu.ku.brc.specify.datamodel.OneToManyProviderIFace;
-import edu.ku.brc.specify.datamodel.Permit;
-import edu.ku.brc.specify.datamodel.Preparation;
-import edu.ku.brc.specify.datamodel.RecordSet;
-import edu.ku.brc.specify.datamodel.RepositoryAgreement;
-import edu.ku.brc.specify.datamodel.Shipment;
-import edu.ku.brc.specify.datamodel.SpAppResource;
-import edu.ku.brc.specify.datamodel.SpReport;
 import edu.ku.brc.specify.datamodel.busrules.AccessionBusRules;
 import edu.ku.brc.specify.datamodel.busrules.LoanBusRules;
 import edu.ku.brc.specify.datamodel.busrules.LoanPreparationBusRules;
@@ -160,13 +140,17 @@ public class InteractionsTask extends BaseTask
     public static final DataFlavorTableExt GIFT_FLAVOR         = new DataFlavorTableExt(Loan.class, "Gift");
     public static final DataFlavorTableExt EXCHGIN_FLAVOR      = new DataFlavorTableExt(ExchangeIn.class, "ExchangeIn");
     public static final DataFlavorTableExt EXCHGOUT_FLAVOR     = new DataFlavorTableExt(ExchangeOut.class, "ExchangeOut");
-    
+    public static final DataFlavorTableExt DEACC_FLAVOR     = new DataFlavorTableExt(Deaccession.class, "Deaccession");
+
     public static final  String   IS_USING_INTERACTIONS_PREFNAME = "Interactions.Using.Interactions.";
 
     protected static final String InfoRequestName      = "InfoRequest";
     protected static final String NEW_LOAN             = "NEW_LOAN";
     protected static final String NEW_ACCESSION        = "NEW_ACC";
-    protected static final String ADD_TO_ACCESSION     = "AddToAccession";
+    protected static final String ADD_TO_ACCESSION     = "AddToDeaccession";
+    protected static final String NEW_DEACCESSION      = "NEW_DEACC";
+    protected static final String NEW_LEGAL_DEACCESSION= "NEW_LEG_DEACC";
+    protected static final String ADD_TO_DEACCESSION   = "AddToDeaccession";
     protected static final String NEW_PERMIT           = "NEW_PERMIT";
     protected static final String NEW_GIFT             = "NEW_GIFT";
     protected static final String NEW_EXCHANGE_OUT     = "NEW_EXCHANGE_OUT";
@@ -183,6 +167,7 @@ public class InteractionsTask extends BaseTask
     protected static final int    loanTableId;
     protected static final int    infoRequestTableId;
     protected static final int    colObjTableId;
+    protected static final int preparationTableId;
 
     // Data Members
     protected NavBox                  infoRequestNavBox;
@@ -202,14 +187,17 @@ public class InteractionsTask extends BaseTask
     
     InteractionsProcessor<Gift> giftProcessor = new InteractionsProcessor<Gift>(this, InteractionsProcessor.forGift, Gift.getClassTableId());
     InteractionsProcessor<Loan> loanProcessor = new InteractionsProcessor<Loan>(this, InteractionsProcessor.forLoan,  Loan.getClassTableId());
+    InteractionsProcessor<ExchangeOut> exchProcessor = new InteractionsProcessor<ExchangeOut>(this, InteractionsProcessor.forExchange,  ExchangeOut.getClassTableId());
     InteractionsProcessor<Accession> accProcessor = new InteractionsProcessor<Accession>(this, InteractionsProcessor.forAcc,  Accession.getClassTableId());
-    
+    InteractionsProcessor<Deaccession> deaccProcessor = new InteractionsProcessor<>(this, InteractionsProcessor.forDeacc,  Deaccession.getClassTableId());
+    InteractionsProcessor<LegalDeaccession> legalDeaccProcessor = new InteractionsProcessor<>(this, InteractionsProcessor.forLegalDeacc,  LegalDeaccession.getClassTableId());
+
     static 
     {
         loanTableId        = DBTableIdMgr.getInstance().getIdByClassName(Loan.class.getName());
         infoRequestTableId = DBTableIdMgr.getInstance().getIdByClassName(InfoRequest.class.getName());
         colObjTableId      = DBTableIdMgr.getInstance().getIdByClassName(CollectionObject.class.getName());
-        
+        preparationTableId = DBTableIdMgr.getInstance().getIdByClassName(Preparation.class.getName());
         INFOREQUEST_FLAVOR.addTableId(50);
     }
 
@@ -1026,7 +1014,8 @@ public class InteractionsTask extends BaseTask
             CommandDispatcher.dispatch(new CommandAction(INTERACTIONS, LoanPreparationBusRules.REFRESH_PREPS, loan));
         }
     }
-    
+
+
     /**
      * @param existingAccArg
      * @param cos
@@ -1034,7 +1023,7 @@ public class InteractionsTask extends BaseTask
     protected void addCosToAcc(final OneToManyProviderIFace existingAccArg, final RecordSetIFace cos, final Viewable srcViewable) {
     	Accession existingAcc = (Accession)existingAccArg;
     	Accession acc;
-    	
+
     	if (existingAcc == null) {
     		acc = new Accession();
     		acc.initialize();
@@ -1042,12 +1031,12 @@ public class InteractionsTask extends BaseTask
     	} else {
     		acc = existingAcc;
     	}
-    	
+
     	if (cos != null) {
     		DataProviderSessionIFace session = null;
     		try {
     			session = DataProviderFactory.getInstance().createSession();
-            
+
     			for (RecordSetItemIFace coId : cos.getItems()) {
     				CollectionObject co = session.get(CollectionObject.class, coId.getRecordId());
     				if (co != null) {
@@ -1060,7 +1049,7 @@ public class InteractionsTask extends BaseTask
     					co.setAccession(acc);
     				}
     			}
-            
+
     		} catch (Exception ex) {
     			ex.printStackTrace();
     			UsageTracker.incrHandledUsageCount();
@@ -1087,6 +1076,41 @@ public class InteractionsTask extends BaseTask
         }
 
     }
+
+    /**
+     * @param existingAccArg
+     * @param objs
+     */
+    protected void addToLegalDeacc(final OneToManyProviderIFace existingDeaccArg, final RecordSetIFace objs, final Viewable srcViewable) {
+        LegalDeaccession existingLegaldeacc = (LegalDeaccession)existingDeaccArg;
+        LegalDeaccession deacc;
+
+        if (existingLegaldeacc == null) {
+            deacc = new LegalDeaccession();
+            deacc.initialize();
+        } else {
+            deacc = existingLegaldeacc;
+        }
+
+        if (objs != null) {
+            log.error("adding to legaldeaccessions is not implemented");
+        }
+        if (existingLegaldeacc == null) {
+            if (srcViewable != null) {
+                srcViewable.setNewObject(deacc);
+            } else {
+                DataEntryTask dataEntryTask = (DataEntryTask)TaskMgr.getTask(DataEntryTask.DATA_ENTRY);
+                if (dataEntryTask != null) {
+                    DBTableInfo deaccTableInfo = DBTableIdMgr.getInstance().getInfoById(deacc.getTableId());
+                    dataEntryTask.openView(this, null, deaccTableInfo.getDefaultFormName(), "edit", deacc, true);
+                }
+            }
+        } else {
+            CommandDispatcher.dispatch(new CommandAction(INTERACTIONS, AccessionBusRules.REFRESH_COS, deacc));
+        }
+
+    }
+
     /**
      * @param existingLoan
      * @param infoRequest
@@ -1212,7 +1236,191 @@ public class InteractionsTask extends BaseTask
             CommandDispatcher.dispatch(new CommandAction(INTERACTIONS, "REFRESH_GIFT_PREPS", gift));
         }
     }
-    
+
+    protected void addPrepsToExchangeOut(final OneToManyProviderIFace existingExchangeOutArg,
+                                      final InfoRequest infoRequest,
+                                      final Hashtable<Integer, Integer> prepsHash,
+                                      final Viewable srcViewable) {
+        ExchangeOut existingExchangeOut = (ExchangeOut) existingExchangeOutArg;
+        ExchangeOut exchange;
+
+        if (existingExchangeOut == null) {
+            exchange = new ExchangeOut();
+            exchange.initialize();
+
+            Calendar dueDate = Calendar.getInstance();
+            dueDate.add(Calendar.MONTH, 6);                 // XXX PREF Due Date
+
+            Shipment shipment = new Shipment();
+            shipment.initialize();
+
+            // Get Defaults for Certain fields
+            //SpecifyAppContextMgr appContextMgr     = (SpecifyAppContextMgr)AppContextMgr.getInstance();
+
+            // Comment out defaults for now until we can manage them
+            //PickListItemIFace    defShipmentMethod = appContextMgr.getDefaultPickListItem("ShipmentMethod", getResourceString("SHIPMENT_METHOD"));
+            //if (defShipmentMethod != null)
+            //{
+            //     shipment.setShipmentMethod(defShipmentMethod.getValue());
+            //}
+
+            //FormDataObjIFace shippedBy = appContextMgr.getDefaultObject(Agent.class, "ShippedBy", getResourceString("SHIPPED_BY"), true, false);
+            //if (shippedBy != null)
+            //{
+            //    shipment.setShippedBy((Agent)shippedBy);
+            //}
+
+            if (infoRequest != null && infoRequest.getAgent() != null) {
+                shipment.setShippedTo(infoRequest.getAgent());
+            }
+
+            exchange.addReference(shipment, "shipments");
+        } else {
+            exchange = existingExchangeOut;
+        }
+
+        Hashtable<Integer, ExchangeOutPrep> prepToExchangeOutPrepHash = null;
+        if (existingExchangeOut != null) {
+            prepToExchangeOutPrepHash = new Hashtable<Integer, ExchangeOutPrep>();
+            for (ExchangeOutPrep lp : existingExchangeOut.getExchangeOutPreps()) {
+                prepToExchangeOutPrepHash.put(lp.getPreparation().getId(), lp);
+            }
+        }
+
+        DataProviderSessionIFace session = null;
+        try {
+            session = DataProviderFactory.getInstance().createSession();
+
+            for (Integer prepId : prepsHash.keySet()) {
+                Preparation prep = session.get(Preparation.class, prepId);
+                Integer count = prepsHash.get(prepId);
+                if (prepToExchangeOutPrepHash != null) {
+                    ExchangeOutPrep gp = prepToExchangeOutPrepHash.get(prep.getId());
+                    if (gp != null) {
+                        int lpCnt = gp.getQuantity();
+                        lpCnt += count;
+                        gp.setQuantity(lpCnt);
+                        //System.err.println("Adding "+count+"  to "+lp.hashCode());
+                        continue;
+                    }
+                }
+
+                ExchangeOutPrep gpo = new ExchangeOutPrep();
+                gpo.initialize();
+                gpo.setPreparation(prep);
+                gpo.setQuantity(count);
+                gpo.setExchangeOut(exchange);
+                exchange.getExchangeOutPreps().add(gpo);
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(InteractionsTask.class, ex);
+
+        } finally {
+            if (session != null) {
+                session.close();
+            }
+        }
+
+        if (existingExchangeOut == null) {
+            if (srcViewable != null) {
+                srcViewable.setNewObject(exchange);
+
+            } else {
+                DataEntryTask dataEntryTask = (DataEntryTask) TaskMgr.getTask(DataEntryTask.DATA_ENTRY);
+                if (dataEntryTask != null) {
+                    DBTableInfo exchangeTableInfo = DBTableIdMgr.getInstance().getInfoById(exchange.getTableId());
+                    dataEntryTask.openView(this, null, exchangeTableInfo.getDefaultFormName(), "edit", exchange, true);
+                }
+            }
+        } else {
+            CommandDispatcher.dispatch(new CommandAction(INTERACTIONS, "REFRESH_EXCHANGE_PREPS", exchange));
+        }
+    }
+
+    /**
+     *
+     * @param existingDeaccessionArg
+     * @param infoRequest
+     * @param prepsHash
+     * @param srcViewable
+     */
+    protected void addPrepsToDeaccession(final OneToManyProviderIFace existingDeaccessionArg,
+                                  final InfoRequest               infoRequest,
+                                  final Hashtable<Integer, Integer> prepsHash,
+                                  final Viewable                    srcViewable)
+    {
+        Deaccession existingDeaccession = (Deaccession)existingDeaccessionArg;
+        Deaccession deaccession;
+
+        if (existingDeaccession == null) {
+            deaccession = new Deaccession();
+            deaccession.initialize();
+        } else {
+            deaccession = existingDeaccession;
+        }
+
+        Hashtable<Integer, DeaccessionPreparation> prepToDeaccessionPrepHash = null;
+        if (existingDeaccession != null) {
+            prepToDeaccessionPrepHash = new Hashtable<>();
+            for (DeaccessionPreparation lp : existingDeaccession.getDeaccessionPreparations())
+            {
+                prepToDeaccessionPrepHash.put(lp.getPreparation().getId(), lp);
+            }
+        }
+
+        DataProviderSessionIFace session = null;
+        try {
+            session = DataProviderFactory.getInstance().createSession();
+            for (Integer prepId : prepsHash.keySet()) {
+                Preparation prep  = session.get(Preparation.class, prepId);
+                Integer     count = prepsHash.get(prepId);
+                if (prepToDeaccessionPrepHash != null) {
+                    DeaccessionPreparation dp = prepToDeaccessionPrepHash.get(prep.getId());
+                    if (dp != null) {
+                        int dpCnt = dp.getQuantity();
+                        dpCnt += count;
+                        dp.setQuantity(dpCnt);
+                        //System.err.println("Adding "+count+"  to "+lp.hashCode());
+                        continue;
+                    }
+                }
+                DeaccessionPreparation dpo = new DeaccessionPreparation();
+                dpo.initialize();
+                dpo.setPreparation(prep);
+                dpo.setQuantity(count);
+                dpo.setDeaccession(deaccession);
+                deaccession.getDeaccessionPreparations().add(dpo);
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(InteractionsTask.class, ex);
+
+        } finally {
+            if (session != null) {
+                session.close();
+            }
+        }
+
+        if (existingDeaccession == null) {
+            if (srcViewable != null) {
+                srcViewable.setNewObject(deaccession);
+            } else {
+                DataEntryTask dataEntryTask = (DataEntryTask)TaskMgr.getTask(DataEntryTask.DATA_ENTRY);
+                if (dataEntryTask != null) {
+                    DBTableInfo deaccessionTableInfo = DBTableIdMgr.getInstance().getInfoById(deaccession.getTableId());
+                    dataEntryTask.openView(this, null, deaccessionTableInfo.getDefaultFormName(), "edit", deaccession, true);
+                }
+            }
+        } else {
+            CommandDispatcher.dispatch(new CommandAction(INTERACTIONS, "REFRESH_DEACCESSION_PREPS", deaccession));
+        }
+    }
+
     /**
      * Displays UI that asks the user to select a predefined label.
      * @return the name of the label file or null if canceled
@@ -2268,229 +2476,151 @@ public class InteractionsTask extends BaseTask
      * Processes all Commands of type INTERACTIONS.
      * @param cmdAction the command to be processed
      */
-    protected void processInteractionsCommands(final CommandAction cmdAction)
-    {
-        boolean isNewAccession   = cmdAction.isAction(NEW_ACCESSION);
-    	boolean isNewLoan        = cmdAction.isAction(NEW_LOAN);
-        boolean isNewLoanNoPreps = cmdAction.isAction(LN_NO_PRP);
-        boolean isNewGift        = cmdAction.isAction(NEW_GIFT);
-        boolean isInfoReq        = cmdAction.isAction(INFO_REQ_MESSAGE);
-
-        boolean isOKToAdd;
-        if (AppContextMgr.isSecurityOn())
-        {
-            PermissionSettings loanPerms = DBTableIdMgr.getInstance().getInfoById(Loan.getClassTableId()).getPermissions();
-            PermissionSettings giftPerms = DBTableIdMgr.getInstance().getInfoById(Gift.getClassTableId()).getPermissions();
-            PermissionSettings irPerms   = DBTableIdMgr.getInstance().getInfoById(InfoRequest.getClassTableId()).getPermissions();
-            PermissionSettings accPerms  = DBTableIdMgr.getInstance().getInfoById(Accession.getClassTableId()).getPermissions();
-            
-            isOKToAdd = ((isNewLoan || isNewLoanNoPreps) && (loanPerms == null || loanPerms.canAdd())) ||
-                        (isNewGift && (giftPerms == null || giftPerms.canAdd())) ||
-                        (isInfoReq && (irPerms == null || irPerms.canAdd())) ||
-                        (isNewAccession && (accPerms == null || accPerms.canAdd()));
-        } else
-        {
-            isOKToAdd = isNewLoan || isNewGift || isInfoReq || isNewLoanNoPreps || isNewAccession;
+    protected void processInteractionsCommands(final CommandAction cmdAction) {
+        boolean isBasicNewInteraction = false;
+        DBTableInfo tblInfo = null;
+        InteractionsProcessor<?> processor = null;
+        if (cmdAction.isAction(NEW_ACCESSION)) {
+            tblInfo = DBTableIdMgr.getInstance().getInfoById(Accession.getClassTableId());
+            isBasicNewInteraction = true;
+            processor = accProcessor;
+        } else if (cmdAction.isAction(NEW_LEGAL_DEACCESSION)) {
+            tblInfo = DBTableIdMgr.getInstance().getInfoById(Deaccession.getClassTableId());
+            isBasicNewInteraction = true;
+            processor = legalDeaccProcessor;
+        } else if (cmdAction.isAction(NEW_DEACCESSION)) {
+            tblInfo = DBTableIdMgr.getInstance().getInfoById(Deaccession.getClassTableId());
+            isBasicNewInteraction = true;
+            processor = deaccProcessor;
+        } else if (cmdAction.isAction(NEW_LOAN)) {
+            tblInfo = DBTableIdMgr.getInstance().getInfoById(Loan.getClassTableId());
+            isBasicNewInteraction = true;
+            processor = loanProcessor;
+        } else if (cmdAction.isAction(LN_NO_PRP)) {
+            tblInfo = DBTableIdMgr.getInstance().getInfoById(Loan.getClassTableId());
+            processor = loanProcessor;
+        } else if (cmdAction.isAction(NEW_GIFT)) {
+            tblInfo = DBTableIdMgr.getInstance().getInfoById(Gift.getClassTableId());
+            isBasicNewInteraction = true;
+            processor = giftProcessor;
+        } else if (cmdAction.isAction(INFO_REQ_MESSAGE)) {
+            tblInfo = DBTableIdMgr.getInstance().getInfoById(InfoRequest.getClassTableId());
+        } else if (cmdAction.isAction(NEW_EXCHANGE_OUT)) {
+            tblInfo = DBTableIdMgr.getInstance().getInfoById(ExchangeOut.getClassTableId());
+            isBasicNewInteraction = true;
+            processor = exchProcessor;
         }
-        
-        UsageTracker.incrUsageCount("IN."+cmdAction.getType());
+        boolean isOKToAdd;
+        if (AppContextMgr.isSecurityOn() && tblInfo != null) {
+            PermissionSettings perms = tblInfo.getPermissions();
+            isOKToAdd = perms == null || perms.canAdd();
+        } else {
+            isOKToAdd = tblInfo != null;
+        }
 
-        if (cmdAction.isAction(CREATE_MAILMSG))
-        {
+        UsageTracker.incrUsageCount("IN." + cmdAction.getType());
+
+        if (cmdAction.isAction(CREATE_MAILMSG)) {
             createAndSendEMail();
-            
-        } else if (cmdAction.isAction(PRINT_INVOICE))
-        {
-            if (cmdAction.getData() instanceof RecordSetIFace)
-            {
+
+        } else if (cmdAction.isAction(PRINT_INVOICE)) {
+            if (cmdAction.getData() instanceof RecordSetIFace) {
                 printInvoice(null, cmdAction.getData());
-                
-            } if (cmdAction.getData() instanceof CommandAction)
-            {
+
+            }
+            if (cmdAction.getData() instanceof CommandAction) {
                 RecordSetIFace recordSet = RecordSetTask.askForRecordSet(this.printableInvoiceTblIds, null, true);
-                if (recordSet != null)
-                {
+                if (recordSet != null) {
                     printInvoice(cmdAction.getPropertyAsString("file"), recordSet);
                 }
             }
-            
-        } else if (isNewLoan || isNewGift || isNewLoanNoPreps || isNewAccession)
-        {
-            if (cmdAction.getData() == cmdAction)
-            {
-                if (isOKToAdd)
-                {
-                    // We get here when a user clicks on a Loan NB action 
-                    if (isNewLoan)
-                    {
-                        loanProcessor.createOrAdd();
-                        
-                    } else if (isNewLoanNoPreps)
-                    {
-                        createLoanNoPreps(null);
-                        
-                    } else if (isNewAccession)
-                    {
-                    	accProcessor.createOrAdd();
-                    	
-                    } else	
-                    {
-                        giftProcessor.createOrAdd();
-                    }
+
+        } else if (isBasicNewInteraction) {
+            if (cmdAction.getData() == cmdAction) {
+                if (isOKToAdd) {
+                    processor.createOrAdd();
                 }
-                
-            } else if (cmdAction.getData() instanceof RecordSetIFace)
-            {
-                RecordSetIFace rs = (RecordSetIFace)cmdAction.getData();
-                if (rs.getDbTableId() == colObjTableId || rs.getDbTableId() == infoRequestTableId)
-                {
-                    if (isOKToAdd)
-                    {
-                        if (isNewLoan)
-                        {    
-                            loanProcessor.createOrAdd(rs);
-                        } else if(isNewAccession && rs.getDbTableId() == colObjTableId) 
-                        {	
-                        	accProcessor.createOrAdd(rs);
-                        	
-                        } else
-                        {
-                            giftProcessor.createOrAdd(rs);
-                        }
+
+            } else if (cmdAction.getData() instanceof RecordSetIFace) {
+                RecordSetIFace rs = (RecordSetIFace) cmdAction.getData();
+                if (rs.getDbTableId() == colObjTableId || rs.getDbTableId() == infoRequestTableId || rs.getDbTableId() == preparationTableId) {
+                    if (isOKToAdd) {
+                        processor.createOrAdd(rs);
                     }
-                } else
-                {
+                } else {
                     log.error("Dropped wrong table type."); // this shouldn't happen
                 }
-                
-            } else if (cmdAction.getData() instanceof Viewable)
-            {
-                if (isNewLoan)
-                {    
-                    loanProcessor.createOrAdd((Viewable)cmdAction.getData());
-                    
-                } else if (isNewLoanNoPreps)
-                {
-                    createLoanNoPreps((Viewable)cmdAction.getData());
-                    
-                } else if (isNewAccession) {
-                	accProcessor.createOrAdd((Viewable)cmdAction.getData());
-                	
-                } else
-                {
-                    giftProcessor.createOrAdd((Viewable)cmdAction.getData());
-                }
-                
-            } else if (cmdAction.getData() instanceof InfoRequest)
-            {
-                if (isOKToAdd)
-                {
-                    if (isNewLoan)
-                    {
-                        loanProcessor.createFromInfoRequest((InfoRequest)cmdAction.getData());
-                    } else
-                    {
-                        giftProcessor.createFromInfoRequest((InfoRequest)cmdAction.getData());
-                    }
-                }
-                
-            }  else if (cmdAction.getData() instanceof CommandActionForDB)
-            {
-                if (isOKToAdd)
-                {
-                    CommandActionForDB cmdActionDB = (CommandActionForDB)cmdAction.getData();
-                    RecordSetIFace     rs          = RecordSetFactory.getInstance().createRecordSet("", cmdActionDB.getTableId(), RecordSet.GLOBAL);
-                    rs.addItem(cmdActionDB.getId());
-                    
-                    if (isNewLoan)
-                    {
-                        loanProcessor.createOrAdd(rs);
-                    } else
-                    {
-                        giftProcessor.createOrAdd(rs);
-                    }
+
+            } else if (cmdAction.getData() instanceof Viewable) {
+                if (isBasicNewInteraction) {
+                    processor.createOrAdd((Viewable) cmdAction.getData());
+                } else if (tblInfo != null && tblInfo.getName().equalsIgnoreCase("loan"))
+                    createLoanNoPreps((Viewable) cmdAction.getData());
+
+            }
+        } else if (cmdAction.getData() instanceof InfoRequest) {
+            if (isOKToAdd) {
+                processor.createFromInfoRequest((InfoRequest) cmdAction.getData());
+            }
+        } else if (cmdAction.getData() instanceof CommandActionForDB) {
+            if (isOKToAdd) {
+                CommandActionForDB cmdActionDB = (CommandActionForDB) cmdAction.getData();
+                RecordSetIFace rs = RecordSetFactory.getInstance().createRecordSet("", cmdActionDB.getTableId(), RecordSet.GLOBAL);
+                rs.addItem(cmdActionDB.getId());
+                if (isBasicNewInteraction && processor != null) {
+                    processor.createOrAdd(rs);
                 }
             }
-            
-        } else if (cmdAction.isAction(ADD_TO_LOAN))
-        {
-            loanProcessor.createOrAdd((Loan)cmdAction.getData());
-            
-        } else if (cmdAction.isAction(ADD_TO_GIFT))
-        {
-            giftProcessor.createOrAdd((Gift)cmdAction.getData());
-            
-        } else if (cmdAction.isAction(ADD_TO_ACCESSION))
-        {
-        	accProcessor.createOrAdd((Accession)cmdAction.getData());
-        	
-        } else if (cmdAction.isAction(INFO_REQ_MESSAGE))
-        {
-            if (cmdAction.getData() == cmdAction || cmdAction.getData() instanceof Viewable)
-            {
-                // We get here when a user clicks on a InfoRequest NB action 
+        } else if (cmdAction.isAction(ADD_TO_LOAN)) {
+            loanProcessor.createOrAdd((Loan) cmdAction.getData());
+        } else if (cmdAction.isAction(ADD_TO_GIFT)) {
+            giftProcessor.createOrAdd((Gift) cmdAction.getData());
+        } else if (cmdAction.isAction(ADD_TO_ACCESSION)) {
+            accProcessor.createOrAdd((Accession) cmdAction.getData());
+        } else if (cmdAction.isAction(INFO_REQ_MESSAGE)) {
+            if (cmdAction.getData() == cmdAction || cmdAction.getData() instanceof Viewable) {
+                // We get here when a user clicks on a InfoRequest NB action
                 createInfoRequest(null, cmdAction);
-                
-            } else if (cmdAction.getData() instanceof RecordSetIFace)
-            {
+            } else if (cmdAction.getData() instanceof RecordSetIFace) {
                 // We get here when a RecordSet is dropped on an InfoRequest
                 Object data = cmdAction.getData();
-                if (data instanceof RecordSetIFace)
-                {
-                    RecordSetIFace rs = (RecordSetIFace)data;
-                    if (rs.getDbTableId() == infoRequestTableId)
-                    {
+                if (data instanceof RecordSetIFace) {
+                    RecordSetIFace rs = (RecordSetIFace) data;
+                    if (rs.getDbTableId() == infoRequestTableId) {
                         showInfoReqForm(null, rs);
-                        
-                    } else if (rs.getDbTableId() == CollectionObject.getClassTableId())
-                    {
-                        createInfoRequest((RecordSetIFace)data, cmdAction);
+                    } else if (rs.getDbTableId() == CollectionObject.getClassTableId()) {
+                        createInfoRequest((RecordSetIFace) data, cmdAction);
                     }
                 }
-            } else if (cmdAction.getData() instanceof CommandActionForDB)
-            {
+            } else if (cmdAction.getData() instanceof CommandActionForDB) {
                 // We get here when a InfoRequest is dropped on an InfoRequest NB action
-                showInfoReqForm((CommandActionForDB)cmdAction.getData(), null);
+                showInfoReqForm((CommandActionForDB) cmdAction.getData(), null);
             }
-            
-        } else if (cmdAction.isAction("ReturnLoan")) // from the 'Return Loan' button on the form
-        {
+        } else if (cmdAction.isAction("ReturnLoan")) {// from the 'Return Loan' button on the form
             returnLoan();
-            
-        } else if (cmdAction.isAction("RET_LOAN")) // from the sidebar
-        {
-            if (cmdAction.getData() instanceof RecordSetIFace)
-            {
-                returnLoan((RecordSetIFace)cmdAction.getData());
-                
-            } else if (cmdAction.getData() == cmdAction)
-            {
+        } else if (cmdAction.isAction("RET_LOAN")) {// from the sidebar
+            if (cmdAction.getData() instanceof RecordSetIFace) {
+                returnLoan((RecordSetIFace) cmdAction.getData());
+            } else if (cmdAction.getData() == cmdAction) {
                 returnLoan(null);
             }
-            
-        } else if (cmdAction.isAction(DELETE_CMD_ACT))
-        {
-            if (cmdAction instanceof CommandActionForDB)
-            {
-                deleteInfoRequest((CommandActionForDB)cmdAction);
+        } else if (cmdAction.isAction(DELETE_CMD_ACT)) {
+            if (cmdAction instanceof CommandActionForDB) {
+                deleteInfoRequest((CommandActionForDB) cmdAction);
             }
-        } else if (cmdAction.isAction(OPEN_NEW_VIEW) || cmdAction.isAction(DataEntryTask.EDIT_DATA))
-        {
-            try
-            {
-                final CommandAction cachedCmdAction = (CommandAction)cmdAction.clone();
-                
+        } else if (cmdAction.isAction(OPEN_NEW_VIEW) || cmdAction.isAction(DataEntryTask.EDIT_DATA)) {
+            try {
+                final CommandAction cachedCmdAction = (CommandAction) cmdAction.clone();
+
                 cmdAction.setType("Data_Entry");
                 cmdAction.setProperty(NavBoxAction.ORGINATING_TASK, this);
                 SwingUtilities.invokeLater(new Runnable() {
-                    public void run()
-                    {
+                    public void run() {
                         CommandDispatcher.dispatch(cmdAction);
                         cmdAction.set(cachedCmdAction);
                     }
                 });
-            } catch (CloneNotSupportedException ex)
-            {
+            } catch (CloneNotSupportedException ex) {
                 //ignore
             }
         }

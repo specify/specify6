@@ -106,6 +106,8 @@ public class FieldQRI extends BaseQRI
     {
         if (fi != null)
             return fi.getTableInfo();
+        if (table != null)
+            return table.getTableInfo();
         return null;
     }
     
@@ -178,8 +180,8 @@ public class FieldQRI extends BaseQRI
         } else if (addAuditValColumns(forWhereClause, forSchemaExport, formatAuditIds)) {
            result += ", " + ta.getAbbreviation(table.getTableTree().getParent()) + ".tableNum"
                    + ", " + ta.getAbbreviation(table.getTableTree()) + ".fieldName";
-        } else if (addAuditFldNameColumns(forWhereClause, forSchemaExport, formatAuditIds)) {
-            result += ", " + ta.getAbbreviation(table.getTableTree().getParent()) + ".tableNum";
+        } else if (this instanceof RelQRI) {
+
         } else if (getDataClass().equals(java.sql.Timestamp.class) && forWhereClause) {
         	//XXX Portability: MySql Specific??
         	//necessary because timeStamp criteria can't currently be entered to nano-precision. 

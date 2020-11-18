@@ -267,7 +267,6 @@ public class BatchAttachFiles
                 }
             }
             
-            errCnt += errFiles.size();
             if (errCnt == records.size() && errCnt > 0)
             {
                 showLocalizedError(isTabDelim? "IMPORT_IMG_BAD_DELIM_TAB" : "IMPORT_IMG_BAD_DELIM_COMMA");

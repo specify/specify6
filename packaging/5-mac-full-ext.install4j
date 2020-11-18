@@ -880,7 +880,7 @@ return console.askYesNo(message, true);
               <action id="125" beanClass="com.install4j.runtime.beans.actions.update.CheckForUpdateAction" actionElevationType="none" failureStrategy="quit">
                 <serializedBean>
                   <property name="showError" type="boolean" value="false" />
-                  <property name="url" type="string">http://update.specifysoftware.org/updates.xml</property>
+                  <property name="url" type="string">https://update.specifysoftware.org/updates.xml</property>
                   <property name="variable" type="string">updateDescriptor</property>
                 </serializedBean>
               </action>
