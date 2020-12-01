@@ -118,6 +118,7 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
         this.isDefault       = isDefault;
         this.fields          = fields;
         this.isIncrementer   = isIncrementer;
+        /* testing ...
         System.out.println(getRegExp());
         String rx = getRegExp();
         //Pattern p = new Pattern(rx);
@@ -127,6 +128,8 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
             System.out.println("huh?");
             getRegExp();
         }
+
+        ...testing */
     }
 
     private String getRegExp() {

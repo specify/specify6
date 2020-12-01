@@ -595,7 +595,7 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
                     	formatter.setLength(Integer.valueOf(length));
                     }
                     if (formatter instanceof CatalogNumberStringRegExUIFieldFormatter) {
-                        ((CatalogNumberStringRegExUIFieldFormatter)formatter).setRegEx(external.attributeValue("regex"));
+                        ((CatalogNumberStringRegExUIFieldFormatter)formatter).setRegEx(XMLHelper.getAttr(formatElement, "regex", ""));
                     }
                     hash.put(name, formatter);
 

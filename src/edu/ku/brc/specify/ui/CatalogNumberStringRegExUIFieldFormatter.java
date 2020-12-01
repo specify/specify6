@@ -12,7 +12,10 @@ public class CatalogNumberStringRegExUIFieldFormatter extends CatalogNumberStrin
 
     @Override
     public boolean isValid(String value) {
-        return java.util.regex.Pattern.matches(getRegEx(), value) && value.length() <= getLength();
+        boolean regexMatch = java.util.regex.Pattern.matches(getRegEx(), value);
+        int len = getLength();
+        System.out.println("CatalogNumberStringRegExUIFieldFormatter.isValid(value): value = " + value + ", " + regexMatch + ", " + len)    ;
+        return java.util.regex.Pattern.matches(getRegEx(), value);
     }
 
     public String getRegEx() {
