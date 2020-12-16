@@ -34,6 +34,7 @@ import javax.swing.JOptionPane;
 
 import edu.ku.brc.dbsupport.*;
 import edu.ku.brc.specify.datamodel.Preparation;
+import edu.ku.brc.util.Pair;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -227,7 +228,18 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
                     if (isFor != forAcc) {
                         tblIds.add(Preparation.getClassTableId());
                     }
-                    recordSet = RecordSetTask.askForRecordSet(tblIds, rsList, true);
+                    Pair<RecordSetIFace, RecordSetIFace> recordSetObj = RecordSetTask.askForRecordSet2(tblIds, rsList, true);
+                    recordSet = recordSetObj.getFirst();
+                    RecordSetIFace irRS = recordSetObj.getSecond();
+                    if (recordSet == null && irRS != null) {
+                        DataProviderSessionIFace session = null;
+                        try {
+                            session = DataProviderFactory.getInstance().createSession();
+                            recordSet = getRSfromInfoReqRS(irRS, session).getSecond();
+                        } finally {
+                            session.close();
+                        }
+                    }
 
                 } else if (rv == ASK_TYPE.EnterDataObjs)
                 {
@@ -276,28 +288,12 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
                     // OK, it COULD be a RecordSet contain one or more InfoRequest,
                     // we will only accept an RS with one InfoRequest
                     if (infoRequest == null && recordSet.getDbTableId() == InfoRequest.getClassTableId()) {
-                        if (recordSet.getNumItems() == 1) {
-                            RecordSetItemIFace item = recordSet.getOnlyItem();
-                            if (item != null) {
-                                InfoRequest infoReq = session.get(InfoRequest.class, item.getRecordId().intValue());
-                                if (infoReq != null) {
-                                    createOrAdd(null, infoReq, infoReq.getRecordSets().iterator().next());
-
-                                } else {
-                                    // error about missing info request
-                                    // Error Dialog
-                                }
-                            } else {
-                                // error about item being null for some unbelievable reason
-                                // Error Dialog
-                            }
-                        } else {
-                            // error about item having more than one or none
-                            // Error Dialog
+                        Pair<InfoRequest, RecordSetIFace> irRS = getRSfromInfoReqRS(recordSet, session);
+                        if (irRS != null) {
+                            createOrAdd(null, irRS.getFirst(), irRS.getSecond());
                         }
                         return;
                     }
-
                     // OK, here we have a recordset of CollectionObjects
                     // First we process all the CollectionObjects in the RecordSet
                     // and create a list of Preparations that can be loaned
@@ -336,6 +332,30 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
         }
     }
 
+    protected Pair<InfoRequest,RecordSetIFace> getRSfromInfoReqRS(RecordSetIFace recordSet, DataProviderSessionIFace session) {
+        // we will only accept an RS with one InfoRequest
+
+        if (recordSet.getNumItems() == 1) {
+            RecordSetItemIFace item = recordSet.getOnlyItem();
+            if (item != null) {
+                InfoRequest infoReq = session.get(InfoRequest.class, item.getRecordId().intValue());
+                if (infoReq != null) {
+                    return new Pair(infoReq, infoReq.getRecordSets().iterator().next());
+
+                } else {
+                    // error about missing info request
+                    // Error Dialog
+                }
+            } else {
+                // error about item being null for some unbelievable reason
+                // Error Dialog
+            }
+        } else {
+            // error about item having more than one or none
+            // Error Dialog
+        }
+        return null;
+    }
     /**
      * @param rs
      * @param prepProvider
