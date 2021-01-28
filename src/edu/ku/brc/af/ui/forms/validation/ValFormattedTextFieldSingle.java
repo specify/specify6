@@ -1146,7 +1146,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements ValFormat
             {
                 return false;
 
-            } else if (field.getType() == UIFieldFormatterField.FieldType.anychar)
+            } else if (field.getType() == UIFieldFormatterField.FieldType.anychar || field.getType() == UIFieldFormatterField.FieldType.regex)
             {
                 return true;
 

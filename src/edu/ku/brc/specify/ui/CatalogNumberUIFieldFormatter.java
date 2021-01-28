@@ -114,6 +114,10 @@ public class CatalogNumberUIFieldFormatter extends BaseUIFieldFormatter implemen
         xmlAttr(sb, "length", getLength()); //$NON-NLS-1$
 
 	}
-    
-    
+
+    @Override
+    public int getMinLength() {
+        return getLength();
+    }
+
 }
