@@ -76,9 +76,7 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
     protected Number               maxValue = null;
     protected Boolean              hasDash  = null;
     
-    // Transient
-    private Integer                fieldLength = null;
-    
+
     /**
      * Default constructor
      */
@@ -284,8 +282,7 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
      */
     public void addField(UIFieldFormatterField field)
     {
-        fieldLength = null;
-    	if (fields == null) 
+    	if (fields == null)
     	{
     		resetFields();
     	}
@@ -298,7 +295,6 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
      */
     public void resetFields()
     {
-        fieldLength = null;
    		fields = new Vector<UIFieldFormatterField>();
     }
 
@@ -524,31 +520,37 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
         this.partialDateType = partialDateType;
     }
 
+
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#getLength()
      */
     @Override
-    public int getLength()
-    {
-        if (fieldLength == null)
-        {
-            int len = 0;
-            for (UIFieldFormatterField field : fields)
-            {
-                len += field.getSize();
-            }
-            fieldLength = len;
+    public int getLength() {
+        int len = 0;
+        for (UIFieldFormatterField field : fields) {
+            len += field.getSize();
         }
-        return fieldLength;
+        return len;
+   }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#getMinLength()
+     */
+    @Override
+    public int getMinLength() {
+        int len = 0;
+        for (UIFieldFormatterField field : fields) {
+            len += field.getMinSize();
+        }
+        return len;
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace#resetLength()
      */
     @Override
-    public void resetLength()
-    {
-        fieldLength = null;
+    public void resetLength() {
     }
     
     /* (non-Javadoc)
@@ -839,7 +841,8 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
             UIFieldFormatterField.FieldType typ = f.getType();
             if (typ == UIFieldFormatterField.FieldType.alphanumeric ||
                 typ == UIFieldFormatterField.FieldType.alpha ||
-                typ == UIFieldFormatterField.FieldType.anychar)
+                typ == UIFieldFormatterField.FieldType.anychar ||
+                typ == UIFieldFormatterField.FieldType.regex)
             {
                 return true;
                 
@@ -1035,7 +1038,6 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
                     return isDateValid(formatter, text);
                 }
                 
-                int inx    = 0;
                 int pos    = 0;
                 for (UIFieldFormatterField field : formatter.getFields())
                 {
@@ -1043,12 +1045,8 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
                     {
                         if (!field.isIncrementer() || doValidateAll)
                         {
-                            //numeric, alphanumeric, alpha, separator, year
+                            //numeric, alphanumeric, alpha, separator, year, regex
                             String val = text.substring(pos, Math.min(pos+field.getSize(), txtLen));
-                            String rx = field.getRegEx();
-                            if (rx != null) {
-                                return Pattern.matches(rx, val);
-                            }
                             switch (field.getType())
                             {
                                 case numeric: {
@@ -1096,7 +1094,8 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
                                         return false;
                                     }
                                     break;
-                                    
+                                case regex:
+                                    return Pattern.matches(field.getValue(), val);
                                 default:
                                     break;
                             }
@@ -1106,7 +1105,6 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
                         return false;
                     }
                     pos += field.getSize();
-                    inx++;
                 }
                 return true;
             }
@@ -1125,15 +1123,7 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
             return lengthOfData < getLength();
         }
 
-        return getLength() - lengthOfData == getOptionalSuffixLen() || getLength() - lengthOfData == 0;
-    }
-
-    private int getOptionalSuffixLen() {
-        if ("world o' pain".equalsIgnoreCase(getName())) {
-            return 1;
-        } else {
-            return 0;
-        }
+        return getMinLength() - lengthOfData <= 0;
     }
 
     /* (non-Javadoc)

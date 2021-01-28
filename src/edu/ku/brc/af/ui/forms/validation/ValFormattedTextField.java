@@ -1006,8 +1006,8 @@ public class ValFormattedTextField extends JPanel implements ValFormattedTextFie
             if ((!f.isIncrementer() || !isAutoFmtOn) && f.getType() != FieldType.constant && f.getType() != FieldType.separator)
             {
                 JFormattedDoc doc = documents.get(inx);
-                int len = f.getSize();
-                if (doc.getLength() != len)
+                int len = f.getMinSize();
+                if (doc.getLength() < len)
                 {
                     return false;
                 }

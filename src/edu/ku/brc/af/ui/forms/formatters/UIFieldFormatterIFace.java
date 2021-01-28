@@ -133,7 +133,13 @@ public interface UIFieldFormatterIFace
      * @return the character length of the entire format.
      */
     public abstract int getLength();
-    
+
+    /**
+     *
+     * @return the minimum possible length of variable length formats (containing regular expression format fields)
+     */
+    public abstract int getMinLength();
+
     /**
      * @param length
      */

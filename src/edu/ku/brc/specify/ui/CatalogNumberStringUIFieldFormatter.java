@@ -89,4 +89,10 @@ public class CatalogNumberStringUIFieldFormatter extends BaseUIFieldFormatter im
     {
         return CollectionObject.class;
     }
+
+    @Override
+    public int getMinLength() {
+        return getLength();
+    }
+
 }

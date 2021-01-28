@@ -37,30 +37,22 @@ import java.util.regex.Pattern;
  */
 public class UIFieldFormatterField implements Cloneable
 {
-    public enum FieldType {numeric, alphanumeric, alpha, separator, year, anychar, constant}
+    public enum FieldType {numeric, alphanumeric, alpha, separator, year, anychar, constant, regex}
                                                   
     private static String alphaSample        = "";
     private static String anyCharSample      = "";
     private static String alphaNumericSample = "";
     private static String anyNumericSample   = "";
-    
+
     protected FieldType type;
     protected int       size;
+    protected int minSize;
     protected String    value;
+
     protected boolean   incrementer;
     protected boolean   byYear;
     protected boolean isOptional = false; //should only be true if the field is last in the format
 
-    public String getRegEx() {
-        return regEx;
-    }
-
-    public void setRegEx(String regEx) {
-        this.regEx = regEx;
-    }
-
-    protected String regEx = null;
-    
     static {
         for (int i=0;i<255;i++)
         {
@@ -83,7 +75,7 @@ public class UIFieldFormatterField implements Cloneable
         incrementer = false;
         byYear      = false;
     }
-    
+
     /**
      * @param type
      * @param size
@@ -91,8 +83,25 @@ public class UIFieldFormatterField implements Cloneable
      * @param incrementer
      * @param byYear
      */
+    public UIFieldFormatterField(final FieldType type,
+                                 final int       size,
+                                 final String    value,
+                                 final boolean   incrementer,
+                                 final boolean   byYear) {
+        this(type, size, size, value, incrementer, byYear);
+    }
+
+        /**
+         * @param type
+         * @param size
+         * @param minSize
+         * @param value
+         * @param incrementer
+         * @param byYear
+         */
     public UIFieldFormatterField(final FieldType type, 
-                                 final int       size, 
+                                 final int       size,
+                                 final int minSize,
                                  final String    value, 
                                  final boolean   incrementer, 
                                  final boolean   byYear)
@@ -101,6 +110,7 @@ public class UIFieldFormatterField implements Cloneable
         
         this.type        = type;
         this.size        = size;
+        this.minSize = minSize;
         this.value       = value;
         this.incrementer = incrementer;
         this.byYear      = byYear;
@@ -198,6 +208,14 @@ public class UIFieldFormatterField implements Cloneable
     public int getSize()
     {
         return size;
+    }
+
+    /**
+     * @return
+     */
+    public int getMinSize()
+    {
+        return minSize;
     }
 
     /**

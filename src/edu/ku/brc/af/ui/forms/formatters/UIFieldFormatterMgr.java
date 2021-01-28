@@ -33,7 +33,6 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
 
-import edu.ku.brc.specify.ui.CatalogNumberStringRegExUIFieldFormatter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
@@ -594,9 +593,6 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
                     if (length != null) {
                     	formatter.setLength(Integer.valueOf(length));
                     }
-                    if (formatter instanceof CatalogNumberStringRegExUIFieldFormatter) {
-                        ((CatalogNumberStringRegExUIFieldFormatter)formatter).setRegEx(XMLHelper.getAttr(formatElement, "regex", ""));
-                    }
                     hash.put(name, formatter);
 
                 } catch (Exception ex)
@@ -621,9 +617,9 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
             Element fldElement = (Element) fldObj;
 
             int     size    = XMLHelper.getAttr(fldElement, "size", 1);
+            int     minSize = XMLHelper.getAttr(fldElement, "minsize", size);
             String  value   = fldElement.attributeValue("value");
             String  typeStr = fldElement.attributeValue("type");
-            String regex = fldElement.attributeValue("regex");
             boolean increm  = XMLHelper.getAttr(fldElement, "inc", false);
             boolean byYear  = false;
 
@@ -645,7 +641,7 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
                 byYear = XMLHelper.getAttr(fldElement, "byyear", false);
             }
 
-            fields.add(new UIFieldFormatterField(type, size, value, increm, byYear));
+            fields.add(new UIFieldFormatterField(type, size, minSize, value, increm, byYear));
             if (increm)
             {
                 isInc = true;

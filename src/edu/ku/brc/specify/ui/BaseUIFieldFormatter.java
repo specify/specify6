@@ -231,7 +231,11 @@ public class BaseUIFieldFormatter implements UIFieldFormatterIFace, Cloneable
         return length;
     }
 
-    
+    @Override
+    public int getMinLength() {
+        return getLength();
+    }
+
     /* (non-Javadoc)
 	 * @see edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace#setLength(int)
 	 */
