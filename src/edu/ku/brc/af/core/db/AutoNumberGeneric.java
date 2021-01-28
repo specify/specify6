@@ -405,7 +405,7 @@ public class AutoNumberGeneric implements AutoNumberIFace
                     StringBuilder sb        = new StringBuilder(value.substring(0, pos.first));
                     String        formatStr = "%0" + (pos.second - pos.first) + "d"; //$NON-NLS-1$ //$NON-NLS-2$
                     sb.append(String.format(formatStr, incVal));
-                    if (fmtLen > pos.second && value.length() >= fmtLen)
+                    if (fmtLen > pos.second)
                     {
                         sb.append(value.substring(pos.second, fmtLen));
                     }
