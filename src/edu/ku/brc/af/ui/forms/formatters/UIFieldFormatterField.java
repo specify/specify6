@@ -48,6 +48,7 @@ public class UIFieldFormatterField implements Cloneable
     protected int       size;
     protected int minSize;
     protected String    value;
+    protected String regex;
 
     protected boolean   incrementer;
     protected boolean   byYear;
@@ -112,6 +113,10 @@ public class UIFieldFormatterField implements Cloneable
         this.size        = size;
         this.minSize = minSize;
         this.value       = value;
+        if (type.equals(FieldType.regex)) {
+            this.regex = value;
+            this.value = null;
+        }
         this.incrementer = incrementer;
         this.byYear      = byYear;
         
@@ -200,8 +205,15 @@ public class UIFieldFormatterField implements Cloneable
     	
     	return field;
     }
-    
-    
+
+    /**
+     *
+     * @return
+     */
+    public String getRegex() {
+        return regex;
+    }
+
     /**
      * @return
      */

@@ -1095,7 +1095,7 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
                                     }
                                     break;
                                 case regex:
-                                    return Pattern.matches(field.getValue(), val);
+                                    return Pattern.matches(field.getRegex(), val);
                                 default:
                                     break;
                             }
