@@ -29,22 +29,23 @@ public class LegalDeaccession extends DataModelObjBase implements java.io.Serial
     protected Float                       number2;
     protected Boolean                     yesNo1;
     protected Boolean                     yesNo2;
-    protected Set<Deaccession> deaccessions;
+    protected Set<Disposal> disposals;
     protected Set<Gift> gifts;
     protected Set<ExchangeOut> exchangeOuts;
     protected Set<Accession> accessions;
+    protected Set<OneToManyProviderIFace> removals;
 
 
     // Constructors
 
     @OneToMany(mappedBy = "legalDeaccession")
     @Cascade( {org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.MERGE, org.hibernate.annotations.CascadeType.LOCK} )
-    public Set<Deaccession> getDeaccessions() {
-        return deaccessions;
+    public Set<Disposal> getDisposals() {
+        return disposals;
     }
 
-    public void setDeaccessions(Set<Deaccession> deaccessions) {
-        this.deaccessions = deaccessions;
+    public void setDisposals(Set<Disposal> disposals) {
+        this.disposals = disposals;
     }
 
     @OneToMany(mappedBy = "legalDeaccession")
@@ -67,16 +68,54 @@ public class LegalDeaccession extends DataModelObjBase implements java.io.Serial
         this.exchangeOuts = exchangeOuts;
     }
 
-    @OneToMany(mappedBy = "legalDeaccession")
-    @Cascade( {org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.MERGE, org.hibernate.annotations.CascadeType.LOCK} )
+//    @OneToMany(mappedBy = "legalDeaccession")
+//    @Cascade( {org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.MERGE, org.hibernate.annotations.CascadeType.LOCK} )
+    @Transient
     public Set<Accession> getAccessions() {
+        if (accessions == null) {
+            accessions = buildAccessions();
+        }
         return accessions;
     }
 
-    public void setAccessions(Set<Accession> accessions) {
-        this.accessions = accessions;
+    private Set<Accession> getAccessionsFromProvider(OneToManyProviderIFace provider) {
+        Set<Accession> result = new HashSet<>();
+        for (PreparationHolderIFace providee : provider.getPreparationHolders()) {
+            if (providee.getPreparation() != null && providee.getPreparation().getCollectionObject() != null &&
+                    providee.getPreparation().getCollectionObject().getAccession() != null) {
+                result.add(providee.getPreparation().getCollectionObject().getAccession());
+            }
+        }
+        return result;
     }
 
+    public Set<Accession> buildAccessions() {
+        //get accessions from associated removal(s)...
+        Set<Accession> result = new HashSet<>();
+        for (OneToManyProviderIFace removal : getRemovals()) {
+            result.addAll(getAccessionsFromProvider(removal));
+        }
+        return result;
+    }
+
+//    public void setAccessions(Set<Accession> accessions) {
+//        this.accessions = accessions;
+//    }
+
+    @Transient
+    public Set<OneToManyProviderIFace> getRemovals() {
+        Set<OneToManyProviderIFace> result = new HashSet<>();
+        for (Disposal d : getDisposals()) {
+            result.add(d);
+        }
+        for (ExchangeOut e : getExchangeOuts()) {
+            result.add(e);
+        }
+        for (Gift g : getGifts()) {
+            result.add(g);
+        }
+        return result;
+    }
     /** default constructor */
     public LegalDeaccession() {
         //
@@ -102,10 +141,11 @@ public class LegalDeaccession extends DataModelObjBase implements java.io.Serial
         number2 = null;
         yesNo1 = null;
         yesNo2 = null;
-        deaccessions = null;
-        gifts = null;
-        exchangeOuts = null;
+        disposals = new HashSet<>();
+        gifts = new HashSet<>();
+        exchangeOuts = new HashSet<>();
         accessions = null;
+        removals = null;
     }
     // End Initializer
 

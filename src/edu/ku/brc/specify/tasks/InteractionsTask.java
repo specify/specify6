@@ -189,7 +189,7 @@ public class InteractionsTask extends BaseTask
     InteractionsProcessor<Loan> loanProcessor = new InteractionsProcessor<Loan>(this, InteractionsProcessor.forLoan,  Loan.getClassTableId());
     InteractionsProcessor<ExchangeOut> exchProcessor = new InteractionsProcessor<ExchangeOut>(this, InteractionsProcessor.forExchange,  ExchangeOut.getClassTableId());
     InteractionsProcessor<Accession> accProcessor = new InteractionsProcessor<Accession>(this, InteractionsProcessor.forAcc,  Accession.getClassTableId());
-    InteractionsProcessor<Deaccession> deaccProcessor = new InteractionsProcessor<>(this, InteractionsProcessor.forDeacc,  Deaccession.getClassTableId());
+    InteractionsProcessor<Disposal> deaccProcessor = new InteractionsProcessor<>(this, InteractionsProcessor.forDeacc,  Disposal.getClassTableId());
     InteractionsProcessor<LegalDeaccession> legalDeaccProcessor = new InteractionsProcessor<>(this, InteractionsProcessor.forLegalDeacc,  LegalDeaccession.getClassTableId());
 
     static 
@@ -1342,32 +1342,32 @@ public class InteractionsTask extends BaseTask
 
     /**
      *
-     * @param existingDeaccessionArg
+     * @param existingDisposalArg
      * @param infoRequest
      * @param prepsHash
      * @param srcViewable
      */
-    protected void addPrepsToDeaccession(final OneToManyProviderIFace existingDeaccessionArg,
+    protected void addPrepsToDisposal(final OneToManyProviderIFace existingDisposalArg,
                                   final InfoRequest               infoRequest,
                                   final Hashtable<Integer, Integer> prepsHash,
                                   final Viewable                    srcViewable)
     {
-        Deaccession existingDeaccession = (Deaccession)existingDeaccessionArg;
-        Deaccession deaccession;
+        Disposal existingDisposal = (Disposal)existingDisposalArg;
+        Disposal disposal;
 
-        if (existingDeaccession == null) {
-            deaccession = new Deaccession();
-            deaccession.initialize();
+        if (existingDisposal == null) {
+            disposal = new Disposal();
+            disposal.initialize();
         } else {
-            deaccession = existingDeaccession;
+            disposal = existingDisposal;
         }
 
-        Hashtable<Integer, DeaccessionPreparation> prepToDeaccessionPrepHash = null;
-        if (existingDeaccession != null) {
-            prepToDeaccessionPrepHash = new Hashtable<>();
-            for (DeaccessionPreparation lp : existingDeaccession.getDeaccessionPreparations())
+        Hashtable<Integer, DisposalPreparation> prepToDisposalPrepHash = null;
+        if (existingDisposal != null) {
+            prepToDisposalPrepHash = new Hashtable<>();
+            for (DisposalPreparation lp : existingDisposal.getDisposalPreparations())
             {
-                prepToDeaccessionPrepHash.put(lp.getPreparation().getId(), lp);
+                prepToDisposalPrepHash.put(lp.getPreparation().getId(), lp);
             }
         }
 
@@ -1377,8 +1377,8 @@ public class InteractionsTask extends BaseTask
             for (Integer prepId : prepsHash.keySet()) {
                 Preparation prep  = session.get(Preparation.class, prepId);
                 Integer     count = prepsHash.get(prepId);
-                if (prepToDeaccessionPrepHash != null) {
-                    DeaccessionPreparation dp = prepToDeaccessionPrepHash.get(prep.getId());
+                if (prepToDisposalPrepHash != null) {
+                    DisposalPreparation dp = prepToDisposalPrepHash.get(prep.getId());
                     if (dp != null) {
                         int dpCnt = dp.getQuantity();
                         dpCnt += count;
