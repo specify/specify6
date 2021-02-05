@@ -11,17 +11,17 @@ import java.util.Set;
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
-@Table(name = "legaldeaccession")
-@org.hibernate.annotations.Table(appliesTo="legaldeaccession", indexes =
-        {   @Index(name="LegalDeaccessionNumberIDX", columnNames={"LegalDeaccessionNumber"}),
-                @Index (name="LegalDeaccessionDateIDX", columnNames={"LegalDeaccessionDate"})
+@Table(name = "deaccession")
+@org.hibernate.annotations.Table(appliesTo="deaccession", indexes =
+        {   @Index(name="DeaccessionNumberIDX", columnNames={"DeaccessionNumber"}),
+                @Index (name="DeaccessionDateIDX", columnNames={"DeaccessionDate"})
         })
 @SuppressWarnings("serial")
-public class LegalDeaccession extends DataModelObjBase implements java.io.Serializable, OneToManyProviderIFace {
-    protected Integer                     legalDeaccessionId;
+public class Deaccession extends DataModelObjBase implements java.io.Serializable, OneToManyProviderIFace {
+    protected Integer                     deaccessionId;
     protected String                      type;
-    protected String                      legalDeaccessionNumber;
-    protected Calendar legalDeaccessionDate;
+    protected String                      deaccessionNumber;
+    protected Calendar deaccessionDate;
     protected String                      remarks;
     protected String                      text1;
     protected String                      text2;
@@ -38,7 +38,7 @@ public class LegalDeaccession extends DataModelObjBase implements java.io.Serial
 
     // Constructors
 
-    @OneToMany(mappedBy = "legalDeaccession")
+    @OneToMany(mappedBy = "deaccession")
     @Cascade( {org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.MERGE, org.hibernate.annotations.CascadeType.LOCK} )
     public Set<Disposal> getDisposals() {
         return disposals;
@@ -48,7 +48,7 @@ public class LegalDeaccession extends DataModelObjBase implements java.io.Serial
         this.disposals = disposals;
     }
 
-    @OneToMany(mappedBy = "legalDeaccession")
+    @OneToMany(mappedBy = "deaccession")
     @Cascade( {org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.MERGE, org.hibernate.annotations.CascadeType.LOCK} )
     public Set<Gift> getGifts() {
         return gifts;
@@ -58,7 +58,7 @@ public class LegalDeaccession extends DataModelObjBase implements java.io.Serial
         this.gifts = gifts;
     }
 
-    @OneToMany(mappedBy = "legalDeaccession")
+    @OneToMany(mappedBy = "deaccession")
     @Cascade( {org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.MERGE, org.hibernate.annotations.CascadeType.LOCK} )
     public Set<ExchangeOut> getExchangeOuts() {
         return exchangeOuts;
@@ -68,7 +68,7 @@ public class LegalDeaccession extends DataModelObjBase implements java.io.Serial
         this.exchangeOuts = exchangeOuts;
     }
 
-//    @OneToMany(mappedBy = "legalDeaccession")
+    //    @OneToMany(mappedBy = "deaccession")
 //    @Cascade( {org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.MERGE, org.hibernate.annotations.CascadeType.LOCK} )
     @Transient
     public Set<Accession> getAccessions() {
@@ -117,23 +117,23 @@ public class LegalDeaccession extends DataModelObjBase implements java.io.Serial
         return result;
     }
     /** default constructor */
-    public LegalDeaccession() {
+    public Deaccession() {
         //
     }
 
     /** constructor with id */
-    public LegalDeaccession(Integer legalDeaccessionId) {
-        this.legalDeaccessionId = legalDeaccessionId;
+    public Deaccession(Integer deaccessionId) {
+        this.deaccessionId = deaccessionId;
     }
 
     // Initializer
     @Override
     public void initialize() {
         super.init();
-        legalDeaccessionId = null;
+        deaccessionId = null;
         type = null;
-        legalDeaccessionNumber = null;
-        legalDeaccessionDate = null;
+        deaccessionNumber = null;
+        deaccessionDate = null;
         remarks = null;
         text1 = null;
         text2 = null;
@@ -176,12 +176,12 @@ public class LegalDeaccession extends DataModelObjBase implements java.io.Serial
      */
     @Id
     @GeneratedValue
-    @Column(name = "LegalDeaccessionID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Integer getLegalDeaccessionId() {
-        return this.legalDeaccessionId;
+    @Column(name = "DeaccessionID", unique = false, nullable = false, insertable = true, updatable = true)
+    public Integer getDeaccessionId() {
+        return this.deaccessionId;
     }
-    public void setLegalDeaccessionId(Integer legalDeaccessionId) {
-        this.legalDeaccessionId = legalDeaccessionId;
+    public void setDeaccessionId(Integer deaccessionId) {
+        this.deaccessionId = deaccessionId;
     }
 
     /**
@@ -192,7 +192,7 @@ public class LegalDeaccession extends DataModelObjBase implements java.io.Serial
     @Override
     public Integer getId()
     {
-        return this.legalDeaccessionId;
+        return this.deaccessionId;
     }
 
     /* (non-Javadoc)
@@ -202,7 +202,7 @@ public class LegalDeaccession extends DataModelObjBase implements java.io.Serial
     @Override
     public Class<?> getDataClass()
     {
-        return LegalDeaccession.class;
+        return Deaccession.class;
     }
 
     @Column(name = "Type", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
@@ -214,23 +214,23 @@ public class LegalDeaccession extends DataModelObjBase implements java.io.Serial
         this.type = type;
     }
 
-    @Column(name = "LegalDeaccessionNumber", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
-    public String getLegalDeaccessionNumber() {
-        return legalDeaccessionNumber;
+    @Column(name = "DeaccessionNumber", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    public String getDeaccessionNumber() {
+        return deaccessionNumber;
     }
 
-    public void setLegalDeaccessionNumber(String legalDeaccessionNumber) {
-        this.legalDeaccessionNumber = legalDeaccessionNumber;
+    public void setDeaccessionNumber(String deaccessionNumber) {
+        this.deaccessionNumber = deaccessionNumber;
     }
 
     @Temporal(TemporalType.DATE)
-    @Column(name = "LegalDeaccessionDate", unique = false, nullable = true, insertable = true, updatable = true)
-    public Calendar getLegalDeaccessionDate() {
-        return legalDeaccessionDate;
+    @Column(name = "DeaccessionDate", unique = false, nullable = true, insertable = true, updatable = true)
+    public Calendar getDeaccessionDate() {
+        return deaccessionDate;
     }
 
-    public void setLegalDeaccessionDate(Calendar legalDeaccessionDate) {
-        this.legalDeaccessionDate = legalDeaccessionDate;
+    public void setDeaccessionDate(Calendar deaccessionDate) {
+        this.deaccessionDate = deaccessionDate;
     }
 
     @Lob

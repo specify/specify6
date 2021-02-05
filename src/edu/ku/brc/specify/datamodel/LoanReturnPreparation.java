@@ -50,7 +50,7 @@ public class LoanReturnPreparation extends DisciplineMember implements java.io.S
     protected Integer                quantityReturned;
     protected String                 remarks;
     protected LoanPreparation        loanPreparation;
-    protected Set<DeaccessionPreparation> deaccessionPreparations;
+    protected Set<DisposalPreparation> disposalPreparations;
     protected Agent                  receivedBy;
 
 
@@ -78,7 +78,7 @@ public class LoanReturnPreparation extends DisciplineMember implements java.io.S
         quantityReturned        = null;
         remarks                 = null;
         loanPreparation         = null;
-        deaccessionPreparations  = new HashSet<>();
+        disposalPreparations  = new HashSet<>();
         receivedBy              = null;
     }
     // End Initializer
@@ -134,7 +134,7 @@ public class LoanReturnPreparation extends DisciplineMember implements java.io.S
     }
 
     /**
-     * Number of specimens returned, deaccessioned or otherwise accounted for. (necessary for Lots)
+     * Number of specimens returned, disposaled or otherwise accounted for. (necessary for Lots)
      */
     @Column(name = "QuantityResolved", unique = false, nullable = true, insertable = true, updatable = true)
     public Integer getQuantityResolved() 
@@ -188,16 +188,16 @@ public class LoanReturnPreparation extends DisciplineMember implements java.io.S
     }
 
     /**
-     *      * ID of associated (if present) DeaccessionPreparation record
+     *      * ID of associated (if present) DisposalPreparation record
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "loanReturnPreparation")
     @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    public Set<DeaccessionPreparation> getDeaccessionPreparations() {
-        return this.deaccessionPreparations;
+    public Set<DisposalPreparation> getDisposalPreparations() {
+        return this.disposalPreparations;
     }
     
-    public void setDeaccessionPreparations(Set<DeaccessionPreparation> deaccessionPreparations) {
-        this.deaccessionPreparations = deaccessionPreparations;
+    public void setDisposalPreparations(Set<DisposalPreparation> disposalPreparations) {
+        this.disposalPreparations = disposalPreparations;
     }
 
     /**

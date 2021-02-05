@@ -90,9 +90,9 @@ import edu.ku.brc.specify.datamodel.CollectionRelType;
 import edu.ku.brc.specify.datamodel.Collector;
 import edu.ku.brc.specify.datamodel.Container;
 import edu.ku.brc.specify.datamodel.DataType;
-import edu.ku.brc.specify.datamodel.Deaccession;
-import edu.ku.brc.specify.datamodel.DeaccessionAgent;
-import edu.ku.brc.specify.datamodel.DeaccessionPreparation;
+import edu.ku.brc.specify.datamodel.Disposal;
+import edu.ku.brc.specify.datamodel.DisposalAgent;
+import edu.ku.brc.specify.datamodel.DisposalPreparation;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.DeterminationCitation;
 import edu.ku.brc.specify.datamodel.Discipline;
@@ -1782,44 +1782,44 @@ public class DataBuilder
         return datatype;
     }
 
-    public static Deaccession createDeaccession(final String type,
-                                                final String deaccessionNumber,
-                                                final Calendar deaccessionDate)
+    public static Disposal createDisposal(final String type,
+                                                final String disposalNumber,
+                                                final Calendar disposalDate)
     {
-        Deaccession deaccession = new Deaccession();
-        deaccession.initialize();
-        deaccession.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-        deaccession.setDeaccessionNumber(deaccessionNumber);
-        deaccession.setDeaccessionDate(deaccessionDate);
-        deaccession.setType(type);
-        persist(deaccession);
-        return deaccession;
+        Disposal disposal = new Disposal();
+        disposal.initialize();
+        disposal.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        disposal.setDisposalNumber(disposalNumber);
+        disposal.setDisposalDate(disposalDate);
+        disposal.setType(type);
+        persist(disposal);
+        return disposal;
     }
 
-    public static DeaccessionAgent createDeaccessionAgent(final String role,
+    public static DisposalAgent createDisposalAgent(final String role,
                                                            final Agent agent,
-                                                           final Deaccession deaccession)
+                                                           final Disposal disposal)
     {
-        DeaccessionAgent deaccessionagent = new DeaccessionAgent();
-        deaccessionagent.initialize();
-        deaccessionagent.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-        deaccessionagent.setRole(role);
-        deaccessionagent.setAgent(agent);
-        deaccessionagent.setDeaccession(deaccession);
-        persist(deaccessionagent);
-        return deaccessionagent;
+        DisposalAgent disposalagent = new DisposalAgent();
+        disposalagent.initialize();
+        disposalagent.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        disposalagent.setRole(role);
+        disposalagent.setAgent(agent);
+        disposalagent.setDisposal(disposal);
+        persist(disposalagent);
+        return disposalagent;
     }
 
-    public static DeaccessionPreparation createDeaccessionPreparation(final Short quantity,
-                                                                      final Deaccession deaccession)
+    public static DisposalPreparation createDisposalPreparation(final Short quantity,
+                                                                      final Disposal disposal)
     {
-        DeaccessionPreparation deaccessionpreparation = new DeaccessionPreparation();
-        deaccessionpreparation.initialize();
-        deaccessionpreparation.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-        deaccessionpreparation.setQuantity(quantity.intValue());
-        deaccessionpreparation.setDeaccession(deaccession);
-        persist(deaccessionpreparation);
-        return deaccessionpreparation;
+        DisposalPreparation disposalpreparation = new DisposalPreparation();
+        disposalpreparation.initialize();
+        disposalpreparation.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        disposalpreparation.setQuantity(quantity.intValue());
+        disposalpreparation.setDisposal(disposal);
+        persist(disposalpreparation);
+        return disposalpreparation;
     }
 
     public static Determination createDetermination(final boolean isCurrent,
@@ -2023,7 +2023,7 @@ public class DataBuilder
                                                                     final Integer qtyRet,
                                                                     final Integer qtyRes,
                                                                     final LoanPreparation loanPreparation,
-                                                                    final DeaccessionPreparation deaccessionPreparation,
+                                                                    final DisposalPreparation disposalPreparation,
                                                                     final Agent agent)
     {
         LoanReturnPreparation loanreturnpreparation = new LoanReturnPreparation();
@@ -2033,9 +2033,9 @@ public class DataBuilder
         loanreturnpreparation.setQuantityReturned(qtyRet);
         loanreturnpreparation.setQuantityResolved(qtyRes);
         loanreturnpreparation.setLoanPreparation(loanPreparation);
-        Set<DeaccessionPreparation> preps = new HashSet<>();
-        preps.add(deaccessionPreparation);
-        loanreturnpreparation.setDeaccessionPreparations(preps);
+        Set<DisposalPreparation> preps = new HashSet<>();
+        preps.add(disposalPreparation);
+        loanreturnpreparation.setDisposalPreparations(preps);
         persist(loanreturnpreparation);
         return loanreturnpreparation;
     }

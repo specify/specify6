@@ -19,24 +19,24 @@ package edu.ku.brc.specify.datamodel.busrules;
 
 import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.BusinessRulesIFace;
-import edu.ku.brc.specify.datamodel.Deaccession;
-import edu.ku.brc.specify.datamodel.DeaccessionPreparation;
+import edu.ku.brc.specify.datamodel.Disposal;
+import edu.ku.brc.specify.datamodel.DisposalPreparation;
 import edu.ku.brc.specify.datamodel.LoanReturnPreparation;
 //import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.ui.UIRegistry;
 
-public class DeaccessionPreparationBusRules extends BaseBusRules {
+public class DisposalPreparationBusRules extends BaseBusRules {
 
-    public DeaccessionPreparationBusRules() {
-        super(DeaccessionPreparationBusRules.class);
+    public DisposalPreparationBusRules() {
+        super(DisposalPreparationBusRules.class);
     }
 
     @Override
     public void afterFillForm(final Object dataObj) {
         super.afterFillForm(dataObj);
         if (dataObj != null) {
-            DeaccessionPreparation dp = (DeaccessionPreparation) dataObj;
+            DisposalPreparation dp = (DisposalPreparation) dataObj;
             if (dp.getId() == null) {
                 if (isOnLoanReturnForm(dataObj)) {
                     if (dp.getLoanReturnPreparation() != null &&
@@ -51,12 +51,12 @@ public class DeaccessionPreparationBusRules extends BaseBusRules {
     @Override
     public void afterCreateNewObj(Object newDataObj) {
         super.afterCreateNewObj(newDataObj);
-        if (isOnDeaccessionForm(newDataObj)) {
-            Preparation p = ((DeaccessionPreparation)newDataObj).getPreparation();
+        if (isOnDisposalForm(newDataObj)) {
+            Preparation p = ((DisposalPreparation)newDataObj).getPreparation();
             if (p != null && p.getCollectionObject() != null && p.getCollectionObject().getAccession() != null) {
                 BusinessRulesIFace busRules = formViewObj.getMVParent().getCurrentViewAsFormViewObj().getBusinessRules();
                 if (busRules != null) {
-                    ((DeaccessionBusRules)busRules).checkPrepAccession(p.getCollectionObject().getAccession());
+                    ((DisposalBusRules)busRules).checkPrepAccession(p.getCollectionObject().getAccession());
                 }
             }
         }
@@ -74,8 +74,8 @@ public class DeaccessionPreparationBusRules extends BaseBusRules {
         return LoanReturnPreparation.class.equals(getContext(dataObj));
     }
 
-    private boolean isOnDeaccessionForm(final Object dataObj) {
-        return Deaccession.class.equals(dataObj);
+    private boolean isOnDisposalForm(final Object dataObj) {
+        return Disposal.class.equals(dataObj);
     }
 
 //    private boolean isOnPreparationForm(final Object dataObj) {
@@ -88,8 +88,8 @@ public class DeaccessionPreparationBusRules extends BaseBusRules {
     @Override
     public boolean isOkToAddSibling(Object parentObj) {
         if (parentObj instanceof LoanReturnPreparation) {
-            if (((LoanReturnPreparation)parentObj).getDeaccessionPreparations().size() > 0) {
-                UIRegistry.showLocalizedError("DeaccessionPreparationBusRules.ONLY_ONE");
+            if (((LoanReturnPreparation)parentObj).getDisposalPreparations().size() > 0) {
+                UIRegistry.showLocalizedError("DisposalPreparationBusRules.ONLY_ONE");
                 return false;
             }
             return true;

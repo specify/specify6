@@ -24,20 +24,15 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.sql.Connection;
-import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 
 import javax.swing.*;
-import javax.swing.border.LineBorder;
-import javax.swing.plaf.basic.BasicBorders;
 
 import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.PrefsPanelIFace;
-import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.dbsupport.*;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.prefs.LoansPrefsPanel;
@@ -48,7 +43,6 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
-import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.tasks.BaseTask.ASK_TYPE;
 import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -66,12 +60,8 @@ import edu.ku.brc.specify.ui.SelectPrepsDlg;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
-import scala.collection.mutable.HashTable;
 
-import static edu.ku.brc.ui.ToggleButtonChooserPanel.Type.RadioButton;
 import static edu.ku.brc.ui.UIRegistry.*;
-import static java.awt.Color.BLACK;
-import static java.awt.Color.GRAY;
 
 /**
  * @author rod
@@ -91,7 +81,7 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
     protected static final int forGift = 1;
     protected static final int forAcc = 2;
     protected static final int forExchange = 3;
-    protected static final int forDeacc = 4;
+    protected static final int forDisposal = 4;
     protected static final int forLegalDeacc = 5;
 
     protected InteractionsTask task;
@@ -480,8 +470,8 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
                         task.addPrepsToGift(prepProvider, infoRequest, prepsHash, viewable);
                     } else if (isFor == forExchange) {
                         task.addPrepsToExchangeOut(prepProvider, infoRequest, prepsHash, viewable);
-                    } else if (isFor == forDeacc) {
-                        task.addPrepsToDeaccession(prepProvider, infoRequest, prepsHash, viewable);
+                    } else if (isFor == forDisposal) {
+                        task.addPrepsToDisposal(prepProvider, infoRequest, prepsHash, viewable);
                     }
                     return null;
                 }
@@ -535,7 +525,7 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
     public static int LOAN_ADJUST_IDX = 0;
     public static int GIFT_ADJUST_IDX = 1;
     public static int EXCHANGEOUT_ADJUST_IDX = 2;
-    public static int DEACCESSION_ADJUST_IDX = 3;
+    public static int DISPOSAL_ADJUST_IDX = 3;
 
     public static String getAdjustedCountForPrepSQL(String where, boolean[] settings) {
     String sql = "select p.preparationid, coalesce(p.countamt, 0)";
@@ -553,9 +543,9 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
         adjusters += (adjusters.length() > 0 ? "+" : "") + "coalesce(sum(ep.unavailable), 0)";
         joiners += " left join (select preparationid, sum(coalesce(quantity, 0)) unavailable from exchangeoutprep group by 1) ep on ep.preparationid = p.preparationid";
     }
-    if (settings[DEACCESSION_ADJUST_IDX]) {
+    if (settings[DISPOSAL_ADJUST_IDX]) {
         adjusters += (adjusters.length() > 0 ? "+" : "") + "coalesce(sum(dp.unavailable), 0)";
-        joiners += " left join (select preparationid, sum(coalesce(quantity, 0)) unavailable from deaccessionpreparation group by 1) dp on dp.preparationid = p.preparationid";
+        joiners += " left join (select preparationid, sum(coalesce(quantity, 0)) unavailable from disposalpreparation group by 1) dp on dp.preparationid = p.preparationid";
     }
     if (adjusters.length() > 0) {
         sql += " - (" + adjusters +") available from preparation p " + joiners;
@@ -654,7 +644,7 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
 //                + "(select preparationid, sum(coalesce(quantity, 0) - coalesce(quantityresolved, 0)) unavailable from loanpreparation group by 1) lp on lp.preparationid = p.preparationid left join "
 //                + "(select preparationid, sum(coalesce(quantity, 0)) unavailable from giftpreparation group by 1) gp on gp.preparationid = p.preparationid left join "
 //                + "(select preparationid, sum(coalesce(quantity, 0)) unavailable from exchangeoutprep group by 1) ep on ep.preparationid = p.preparationid left join "
-//                + "(select preparationid, sum(coalesce(quantity, 0)) unavailable from deaccessionpreparation group by 1) dp on dp.preparationid = p.preparationid ";
+//                + "(select preparationid, sum(coalesce(quantity, 0)) unavailable from disposalessionpreparation group by 1) dp on dp.preparationid = p.preparationid ";
 //            if (where != null) {
 //                sql += "where " + where;
 //            }

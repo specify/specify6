@@ -140,17 +140,17 @@ public class InteractionsTask extends BaseTask
     public static final DataFlavorTableExt GIFT_FLAVOR         = new DataFlavorTableExt(Loan.class, "Gift");
     public static final DataFlavorTableExt EXCHGIN_FLAVOR      = new DataFlavorTableExt(ExchangeIn.class, "ExchangeIn");
     public static final DataFlavorTableExt EXCHGOUT_FLAVOR     = new DataFlavorTableExt(ExchangeOut.class, "ExchangeOut");
-    public static final DataFlavorTableExt DEACC_FLAVOR     = new DataFlavorTableExt(Deaccession.class, "Deaccession");
+    public static final DataFlavorTableExt DISPOSAL_FLAVOR     = new DataFlavorTableExt(Disposal.class, "Disposal");
 
     public static final  String   IS_USING_INTERACTIONS_PREFNAME = "Interactions.Using.Interactions.";
 
     protected static final String InfoRequestName      = "InfoRequest";
     protected static final String NEW_LOAN             = "NEW_LOAN";
     protected static final String NEW_ACCESSION        = "NEW_ACC";
-    protected static final String ADD_TO_ACCESSION     = "AddToDeaccession";
-    protected static final String NEW_DEACCESSION      = "NEW_DEACC";
-    protected static final String NEW_LEGAL_DEACCESSION= "NEW_LEG_DEACC";
-    protected static final String ADD_TO_DEACCESSION   = "AddToDeaccession";
+    protected static final String ADD_TO_ACCESSION     = "AddToAccession";
+    protected static final String NEW_DISPOSAL      = "NEW_DISPOSAL";
+    protected static final String NEW_DEACC = "NEW_DEACC";
+    protected static final String ADD_TO_DISPOSAL   = "AddToDisposal";
     protected static final String NEW_PERMIT           = "NEW_PERMIT";
     protected static final String NEW_GIFT             = "NEW_GIFT";
     protected static final String NEW_EXCHANGE_OUT     = "NEW_EXCHANGE_OUT";
@@ -189,8 +189,8 @@ public class InteractionsTask extends BaseTask
     InteractionsProcessor<Loan> loanProcessor = new InteractionsProcessor<Loan>(this, InteractionsProcessor.forLoan,  Loan.getClassTableId());
     InteractionsProcessor<ExchangeOut> exchProcessor = new InteractionsProcessor<ExchangeOut>(this, InteractionsProcessor.forExchange,  ExchangeOut.getClassTableId());
     InteractionsProcessor<Accession> accProcessor = new InteractionsProcessor<Accession>(this, InteractionsProcessor.forAcc,  Accession.getClassTableId());
-    InteractionsProcessor<Disposal> deaccProcessor = new InteractionsProcessor<>(this, InteractionsProcessor.forDeacc,  Disposal.getClassTableId());
-    InteractionsProcessor<LegalDeaccession> legalDeaccProcessor = new InteractionsProcessor<>(this, InteractionsProcessor.forLegalDeacc,  LegalDeaccession.getClassTableId());
+    InteractionsProcessor<Disposal> disposalProcessor = new InteractionsProcessor<>(this, InteractionsProcessor.forDisposal,  Disposal.getClassTableId());
+    InteractionsProcessor<Deaccession> legalDeaccProcessor = new InteractionsProcessor<>(this, InteractionsProcessor.forLegalDeacc,  Deaccession.getClassTableId());
 
     static 
     {
@@ -1082,18 +1082,18 @@ public class InteractionsTask extends BaseTask
      * @param objs
      */
     protected void addToLegalDeacc(final OneToManyProviderIFace existingDeaccArg, final RecordSetIFace objs, final Viewable srcViewable) {
-        LegalDeaccession existingLegaldeacc = (LegalDeaccession)existingDeaccArg;
-        LegalDeaccession deacc;
+        Deaccession existingLegaldeacc = (Deaccession)existingDeaccArg;
+        Deaccession deacc;
 
         if (existingLegaldeacc == null) {
-            deacc = new LegalDeaccession();
+            deacc = new Deaccession();
             deacc.initialize();
         } else {
             deacc = existingLegaldeacc;
         }
 
         if (objs != null) {
-            log.error("adding to legaldeaccessions is not implemented");
+            log.error("adding to deaccessions is not implemented");
         }
         if (existingLegaldeacc == null) {
             if (srcViewable != null) {
@@ -1387,12 +1387,12 @@ public class InteractionsTask extends BaseTask
                         continue;
                     }
                 }
-                DeaccessionPreparation dpo = new DeaccessionPreparation();
+                DisposalPreparation dpo = new DisposalPreparation();
                 dpo.initialize();
                 dpo.setPreparation(prep);
                 dpo.setQuantity(count);
-                dpo.setDeaccession(deaccession);
-                deaccession.getDeaccessionPreparations().add(dpo);
+                dpo.setDisposal(disposal);
+                disposal.getDisposalPreparations().add(dpo);
             }
 
         } catch (Exception ex) {
@@ -1406,18 +1406,18 @@ public class InteractionsTask extends BaseTask
             }
         }
 
-        if (existingDeaccession == null) {
+        if (existingDisposal == null) {
             if (srcViewable != null) {
-                srcViewable.setNewObject(deaccession);
+                srcViewable.setNewObject(disposal);
             } else {
                 DataEntryTask dataEntryTask = (DataEntryTask)TaskMgr.getTask(DataEntryTask.DATA_ENTRY);
                 if (dataEntryTask != null) {
-                    DBTableInfo deaccessionTableInfo = DBTableIdMgr.getInstance().getInfoById(deaccession.getTableId());
-                    dataEntryTask.openView(this, null, deaccessionTableInfo.getDefaultFormName(), "edit", deaccession, true);
+                    DBTableInfo disposalTableInfo = DBTableIdMgr.getInstance().getInfoById(disposal.getTableId());
+                    dataEntryTask.openView(this, null, disposalTableInfo.getDefaultFormName(), "edit", disposal, true);
                 }
             }
         } else {
-            CommandDispatcher.dispatch(new CommandAction(INTERACTIONS, "REFRESH_DEACCESSION_PREPS", deaccession));
+            CommandDispatcher.dispatch(new CommandAction(INTERACTIONS, "REFRESH_DISPOSAL_PREPS", disposal));
         }
     }
 
@@ -2484,14 +2484,14 @@ public class InteractionsTask extends BaseTask
             tblInfo = DBTableIdMgr.getInstance().getInfoById(Accession.getClassTableId());
             isBasicNewInteraction = true;
             processor = accProcessor;
-        } else if (cmdAction.isAction(NEW_LEGAL_DEACCESSION)) {
+        } else if (cmdAction.isAction(NEW_DEACC)) {
             tblInfo = DBTableIdMgr.getInstance().getInfoById(Deaccession.getClassTableId());
             isBasicNewInteraction = true;
             processor = legalDeaccProcessor;
-        } else if (cmdAction.isAction(NEW_DEACCESSION)) {
-            tblInfo = DBTableIdMgr.getInstance().getInfoById(Deaccession.getClassTableId());
+        } else if (cmdAction.isAction(NEW_DISPOSAL)) {
+            tblInfo = DBTableIdMgr.getInstance().getInfoById(Disposal.getClassTableId());
             isBasicNewInteraction = true;
-            processor = deaccProcessor;
+            processor = disposalProcessor;
         } else if (cmdAction.isAction(NEW_LOAN)) {
             tblInfo = DBTableIdMgr.getInstance().getInfoById(Loan.getClassTableId());
             isBasicNewInteraction = true;

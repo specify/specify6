@@ -90,7 +90,7 @@ public class Gift extends DisciplineMember implements java.io.Serializable, OneT
     
     protected Division                division;
 
-    protected LegalDeaccession            legalDeaccession;
+    protected Deaccession            deaccession;
 
     // Constructors
 
@@ -145,7 +145,7 @@ public class Gift extends DisciplineMember implements java.io.Serializable, OneT
         addressOfRecord = null;
         giftAttachments =  new HashSet<GiftAttachment>();
 
-        legalDeaccession = null;
+        deaccession = null;
 
     }
     // End Initializer
@@ -498,13 +498,13 @@ public class Gift extends DisciplineMember implements java.io.Serializable, OneT
 
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.MERGE, org.hibernate.annotations.CascadeType.LOCK })
-    @JoinColumn(name = "LegalDeaccessionID", unique = false, nullable = true, insertable = true, updatable = true)
-    public LegalDeaccession getLegalDeaccession() {
-        return legalDeaccession;
+    @JoinColumn(name = "DeaccessionID", unique = false, nullable = true, insertable = true, updatable = true)
+    public Deaccession getDeaccession() {
+        return deaccession;
     }
 
-    public void setLegalDeaccession(LegalDeaccession legalDeaccession) {
-        this.legalDeaccession = legalDeaccession;
+    public void setDeaccession(Deaccession deaccession) {
+        this.deaccession = deaccession;
     }
 
     /* (non-Javadoc)

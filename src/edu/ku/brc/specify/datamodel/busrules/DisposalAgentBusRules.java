@@ -19,10 +19,10 @@ package edu.ku.brc.specify.datamodel.busrules;
 
 import edu.ku.brc.af.ui.forms.BaseBusRules;
 
-public class DeaccessionAgentBusRules extends BaseBusRules {
+public class DisposalAgentBusRules extends BaseBusRules {
 
-    public DeaccessionAgentBusRules()
+    public DisposalAgentBusRules()
     {
-        super(DeaccessionAgentBusRules.class);
+        super(DisposalAgentBusRules.class);
     }
 }

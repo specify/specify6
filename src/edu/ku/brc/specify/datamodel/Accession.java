@@ -84,7 +84,7 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
     protected Set<AccessionAttachment>    accessionAttachments;
     protected Set<Appraisal>              appraisals;
     protected Set<TreatmentEvent>         treatmentEvents;
-    protected LegalDeaccession            legalDeaccession;
+    protected Deaccession            deaccession;
     protected Set<AccessionCitation> accessionCitations;
 
     // Constructors
@@ -673,18 +673,18 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
 
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.MERGE, org.hibernate.annotations.CascadeType.LOCK })
-    @JoinColumn(name = "LegalDeaccessionID", unique = false, nullable = true, insertable = true, updatable = true)
-    public LegalDeaccession getLegalDeaccession()
+    @JoinColumn(name = "DeaccessionID", unique = false, nullable = true, insertable = true, updatable = true)
+    public Deaccession getDeaccession()
     {
-        return legalDeaccession;
+        return deaccession;
     }
 
     /**
-     * @param legalDeaccession the legalDeaccession to set
+     * @param deaccession the deaccession to set
      */
-    public void setLegalDeaccession(LegalDeaccession legalDeaccession)
+    public void setDeaccession(Deaccession deaccession)
     {
-        this.legalDeaccession = legalDeaccession;
+        this.deaccession = deaccession;
     }
 
     /**
