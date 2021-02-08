@@ -33,7 +33,7 @@
         SELECT %s1 FROM Container con WHERE %s2 AND con.collectionObjects.size = 0 ORDER BY name
     </typesearch>
     <typesearch tableid="87"  name="CollectingTrip"         searchfield="collectingTripName" displaycols="collectingTripName" format="%s"  dataobjformatter=""/>
-    <typesearch tableid="34"  name="Deaccession" searchfield="deaccessionNumber"      displaycols="deaccessionNumber"         format="%s"     dataobjformatter="Deaccession"/>
+    <typesearch tableid="34"  name="Disposal"               searchfield="disposalNumber"  displaycols="disposalNumber"     format="%s"     dataobjformatter="Disposal"/>
     <typesearch tableid="26"  name="Discipline"             searchfield="name"            displaycols="name"               format="%s"     dataobjformatter=""/>
     <typesearch tableid="96"  name="Division"               searchfield="name"            displaycols="name"               format="%s"     dataobjformatter=""/>
     <typesearch tableid="150" name="DNAPrimer"        	    searchfield="primerDesignator" displaycols="primerDesignator"  format="%s"     dataobjformatter=""/>
@@ -44,7 +44,7 @@
     <typesearch tableid="3"   name="Geography"              searchfield="name"            displaycols="fullName"           format="%s"     dataobjformatter="Geography"/>
     <typesearch tableid="46"  name="GeologicTimePeriod"     searchfield="name"            displaycols="fullName"           format="%s"     dataobjformatter=""/>
     <typesearch tableid="51"  name="Journal"                searchfield="journalName"     displaycols="journalName"        format="%s"     dataobjformatter=""/>
-    <typesearch tableid="163" name="LegalDeaccession"        searchfield="legalDeaccessionNumber"    displaycols="legalDeaccessionNumber"       format="%s" dataobjformatter="LegalDeaccession"/>
+    <typesearch tableid="163" name="Deaccession"            searchfield="deaccessionNumber"    displaycols="deaccessionNumber"       format="%s" dataobjformatter="Deaccession"/>
     <typesearch tableid="100" name="LithoStrat"             searchfield="name"            displaycols="fullName"           format="%s"     dataobjformatter=""/>
     <typesearch tableid="2"   name="Locality"               searchfield="localityName"    displaycols="localityName,geo.fullName"       format="%s;  %s" dataobjformatter="Locality">
         SELECT %s1 FROM Locality loc JOIN loc.discipline as dsp LEFT JOIN loc.geography geo WHERE dsp.disciplineId = DSPLNID AND %s2 ORDER BY localityName, geo.fullName

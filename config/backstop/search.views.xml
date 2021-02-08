@@ -136,13 +136,13 @@
         </view>
 
         <view
-                name="DeaccessionSearch"
-                class="edu.ku.brc.specify.datamodel.Deaccession"
+                name="DisposalSearch"
+                class="edu.ku.brc.specify.datamodel.DisposalSearch"
                 usedefbusrule="false"
                 resourcelabels="false">
-            <desc><![CDATA[The Deaccession Search Form]]></desc>
+            <desc><![CDATA[The Disposal Search Form]]></desc>
             <altviews>
-                <altview name="DeaccessionSearch" viewdef="DeaccessionSearch" mode="edit" validated="false" default="true"/>
+                <altview name="DisposalSearch" viewdef="DisposalSearch" mode="edit" validated="false" default="true"/>
             </altviews>
         </view>
 
@@ -191,13 +191,13 @@
         </view>
 
         <view
-                name="LegalDeaccessionSearch"
-                class="edu.ku.brc.specify.datamodel.LegalDeaccession"
+                name="DeaccessionSearch"
+                class="edu.ku.brc.specify.datamodel.Deaccession"
                 usedefbusrule="false"
                 resourcelabels="false">
-            <desc><![CDATA[The LegalDeaccession Search Form]]></desc>
+            <desc><![CDATA[The Deaccession Search Form]]></desc>
             <altviews>
-                <altview name="LegalDeaccessionSearch" viewdef="LegalDeaccessionSearch" mode="edit" validated="true" default="true"/>
+                <altview name="DeaccessionSearch" viewdef="DeaccessionSearch" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
 
@@ -850,18 +850,18 @@ Good: <cell type="field" name="FieldNum" ...>
             <rows>
                 <row>
                     <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="AccessionNumber" initialize="ispartial=true;alledit=true;"/>
+                    <cell type="field" id="1" name="deaccessionNumber" initialize="ispartial=true;alledit=true;"/>
                 </row>
             </rows>
         </viewdef>
 
         <viewdef type="form"
-                 name="LegalDeaccessionSearch"
-                 class="edu.ku.brc.specify.datamodel.LegalDeaccession"
+                 name="DisposalSearch"
+                 class="edu.ku.brc.specify.datamodel.Disposal"
                  gettable="edu.ku.brc.af.ui.forms.DataGetterForHashMap"
                  settable="edu.ku.brc.af.ui.forms.DataSetterForHashMap">
 
-            <desc><![CDATA[The Legal Deaccession Search Form]]></desc>
+            <desc><![CDATA[The Disposal Search Form]]></desc>
             <enableRules/>
 
             <columnDef>p,3dlu,p</columnDef>
@@ -870,7 +870,7 @@ Good: <cell type="field" name="FieldNum" ...>
             <rows>
                 <row>
                     <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="legalDeaccessionNumber" isrequired="true" uitype="text"/>
+                    <cell type="field" id="1" name="disposalNumber" isrequired="true" uitype="text"/>
                 </row>
             </rows>
         </viewdef>

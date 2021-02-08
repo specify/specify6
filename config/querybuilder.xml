@@ -16,7 +16,6 @@
         <alias name="Appraisal" field="appraisals" />
         <alias name="Agent" field="createdByAgent" />
         <alias name="CollectionObject" field="collectionObjects"/>
-        <alias name="Deaccession" field="deaccessions" />
         <table name="AccessionCitation" field="accessionCitations">
             <alias name="ReferenceWork"/>
         </table>
@@ -298,19 +297,19 @@
       	<alias name="Agent" field="modifiedByAgent" />
     </table>
     
-    <table name="Deaccession">
-      <table name="DeaccessionAgent" field="deaccessionAgents" >
+    <table name="Disposal">
+      <table name="DisposalAgent" field="disposalAgents" >
       	<alias name="Agent"/>
       </table>
-      <alias name="DeaccessionPreparation" field="deaccessionPreparations" />
-        <alias name="LegalDeaccession" field="legalDeaccession" />
+      <alias name="DisposalPreparation" field="disposalPreparations" />
+        <alias name="Deaccession" field="deaccession" />
       	<alias name="Agent" field="createdByAgent" />
       	<alias name="Agent" field="modifiedByAgent" />
     </table>
 
-	<table name="DeaccessionPreparation">
+	<table name="DisposalPreparation">
       	<alias name="Preparation"/>
-		<alias name="Deaccession"/>
+		<alias name="Disposal"/>
       	<alias name="Agent" field="createdByAgent" />
       	<alias name="Agent" field="modifiedByAgent" />
       	<alias name="LoanReturnPreparation" field="loanReturnPreparation"/>
@@ -347,7 +346,7 @@
      	<alias name="Agent" field="agentSentTo"/>
       	<alias name="Agent" field="createdByAgent" />
       	<alias name="Agent" field="modifiedByAgent" />
-        <alias name="LegalDeaccession" field="legalDeaccession" />
+        <alias name="Disposal" field="disposal" />
      	<alias name="Shipment" field="shipments" />
         <table name="ExchangeOutPrep" field="exchangeOutPreps">
                 <alias name="Preparation"/>
@@ -426,7 +425,7 @@
       	<table name="GiftAgent" field="giftAgents">
       		<alias name="Agent"/>
      	</table>
-        <alias name="LegalDeaccession" field="legalDeaccession" />
+        <alias name="Deaccession" field="deaccession" />
        	<alias name="GiftPreparation" field="giftPreparations"/>
         <table name="GiftAttachment" field="giftAttachments">
             <alias name="Attachment"/>
@@ -455,9 +454,8 @@
       	<alias name="ReferenceWork" field="referenceWorks"/>
     </table>
  
-    <table name="LegalDeaccession">
-        <alias name="Accession" field="accessions" />
-        <alias name="Deaccession" field="deaccessions"/>
+    <table name="Deaccession">
+        <alias name="Disposal" field="disposals"/>
         <alias name="Gift" field="gifts"/>
         <alias name="ExchangeOut" field="exchangeOuts"/>
         <alias name="Agent" field="createdByAgent" />
@@ -496,7 +494,7 @@
       	<alias name="Agent" field="createdByAgent" />
       	<alias name="Agent" field="modifiedByAgent" />
        	<alias name="Agent" field="receivedBy" />
-      	<alias name="DeaccessionPreparation" field="deaccessionPreparations"/>
+      	<alias name="DisposalPreparation" field="disposalPreparations"/>
       	<alias name="LoanPreparation" />
     </table>
     
@@ -592,7 +590,7 @@
         <alias name="CollectionObject"/>
         <alias name="LoanPreparation" field="loanPreparations"/>
         <alias name="GiftPreparation" field="giftPreparations"/>
-        <alias name="DeaccessionPreparation" field="deaccessionPreparations"/>
+        <alias name="DisposalPreparation" field="disposalPreparations"/>
         <alias name="Storage" field="storage"/>
         <alias name="Storage" field="alternateStorage"/>
         <alias name="Agent" field="preparedByAgent" />
@@ -768,9 +766,9 @@
     <table name="ConservRecmdType" id="105"/>
     <table name="ConservRecommendation" id="104"/>
     <table name="Container" id="31"/>
-    <table name="Deaccession" id="34"/>
-    <table name="DeaccessionAgent" id="35"/>
-    <table name="DeaccessionPreparation" id="36"/>
+    <table name="Disposal" id="34"/>
+    <table name="DisposalAgent" id="35"/>
+    <table name="DisposalPreparation" id="36"/>
     <table name="DeterminationCitation" id="38"/>
     <table name="DeterminationStatus" id="88">
     <table name="Division" id="96">

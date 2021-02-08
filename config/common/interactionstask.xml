@@ -23,11 +23,11 @@
     </droppableFlavors>
   </entry>
 
-  <entry name="legaldeaccession" table="legaldeaccession" view="LegalDeaccession" type="Interactions" action="NEW_LEG_DEACC" icon="LegalDeaccession" isonleft="true"
+  <entry name="deaccession" table="deaccession" view="Deaccession" type="Interactions" action="NEW_DEACC" icon="Deaccession" isonleft="true"
          issrchsrv="false" order="0" enabled="true" visible="true" tooltip="">
   </entry>
 
-  <entry name="deaccession" table="deaccession" view="Deaccession" type="Interactions" action="NEW_DEACC" icon="Deaccession" isonleft="true"
+  <entry name="disposal" table="disposal" view="Disposal" type="Interactions" action="NEW_DISPOSAL" icon="Disposal" isonleft="true"
          issrchsrv="false" order="0" enabled="true" visible="true" tooltip="">
     <draggableFlavors/>
     <droppableFlavors>
@@ -39,7 +39,7 @@
       </flavor>
     </droppableFlavors>
   </entry>
-  <entry name="deaccession" table="deaccession" view="Deaccession" type="Interactions" action="Edit" icon="Deaccession" isonleft="false"
+  <entry name="disposal" table="disposal" view="Disposal" type="Interactions" action="Edit" icon="Disposal" isonleft="false"
          issrchsrv="true" order="0" enabled="true" visible="false" tooltip="">
     <draggableFlavors/>
     <droppableFlavors>
