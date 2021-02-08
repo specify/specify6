@@ -60,7 +60,6 @@ import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
-import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -78,7 +77,6 @@ import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPreferences;
-import edu.ku.brc.af.tasks.StatsTrackerTask;
 import edu.ku.brc.af.ui.db.DatabaseLoginPanel;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DBMSUserMgr;
@@ -165,8 +163,6 @@ import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
 import edu.ku.brc.specify.tools.export.ExportToMySQLDB;
 import edu.ku.brc.specify.utilapps.BuildSampleDatabase;
 import edu.ku.brc.ui.ChooseFromListDlg;
-import edu.ku.brc.ui.CommandAction;
-import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.ProgressFrame;
 import edu.ku.brc.ui.UIHelper;
@@ -423,7 +419,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     	fixDuplicatedPaleoContexts(dbConn.getConnection());
                         
                         fixLatLonMethodGEOLocate(dbConn.getConnection());
-                        
+
                         if (doSchemaUpdate || doInsert)
                         {
                             //SpecifySchemaUpdateService.attachUnhandledException();
@@ -2553,32 +2549,62 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     // Schema changes for 2.8
                     //
                     //-------------------------------------------------------------------------------
-                    frame.setDesc("Converting deaccessionpreparation.quantity to int");
-                    String coType = getFieldColumnType(conn, databaseName, "deaccessionpreparation", "quantity");
-                    if (coType != null && coType.endsWith("int(6)")) {
-                        sql = "alter table deaccessionpreparation modify quantity int(11)";
+//                    frame.setDesc("Converting deaccessionpreparation.quantity to int");
+//                    String coType = getFieldColumnType(conn, databaseName, "deaccessionpreparation", "quantity");
+//                    if (coType != null && coType.endsWith("int(6)")) {
+//                        sql = "alter table deaccessionpreparation modify quantity int(11)";
+//                        if (-1 == update(conn, sql)) {
+//                            errMsgList.add("update error: " + sql);
+//                            return false;
+//                        }
+//                    }
+//                    frame.setDesc("Removing deaccession.accessionid");
+//                    if (doesColumnExist(databaseName, "deaccession", "accessionid", conn)) {
+//                        sql = "SELECT CONSTRAINT_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE REFERENCED_TABLE_SCHEMA = '"
+//                            + databaseName + "' AND REFERENCED_TABLE_NAME = 'accession' AND TABLE_NAME = 'deaccession' AND COLUMN_NAME = 'AccessionID'";
+//                        String constraint = BasicSQLUtils.querySingleObj(sql);
+//                        if (constraint != null) {
+//                            sql = "alter table deaccession drop foreign key " + constraint;
+//                            if (-1 == update(conn, sql)) {
+//                                errMsgList.add("update error: " + sql);
+//                                return false;
+//                            }
+//                        }
+//                        sql = "alter table deaccession drop column accessionid";
+//                        if (-1 == update(conn, sql)) {
+//                            errMsgList.add("update error: " + sql);
+//                            return false;
+//                        }
+//                    }
+//                    frame.incOverall();
+                    frame.setDesc("Removing old Deaccession tables");
+                    if (BasicSQLUtils.getCountAsInt("SELECT COUNT(*) FROM deaccession") > 0) {
+                        errMsgList.add("The database schema cannot be updated because it contains deaccession data. Please contact Specify customer support.");
+                        return false;
+                    }
+                    sql = "SELECT TABLE_NAME,CONSTRAINT_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE "
+                            + "REFERENCED_TABLE_SCHEMA = '" + databaseName + "' AND REFERENCED_TABLE_NAME = 'deaccessionpreparation'";
+                    Vector<Object[]> constraints = query(conn, sql);
+                    for (Object[] c : constraints) {
+                        sql = "alter table " + c[0] + " drop constraint " + c[1];
                         if (-1 == update(conn, sql)) {
                             errMsgList.add("update error: " + sql);
-                            return false;
                         }
                     }
-                    frame.setDesc("Removing deaccession.accessionid");
-                    if (doesColumnExist(databaseName, "deaccession", "accessionid", conn)) {
-                        sql = "SELECT CONSTRAINT_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE REFERENCED_TABLE_SCHEMA = '"
-                            + databaseName + "' AND REFERENCED_TABLE_NAME = 'accession' AND TABLE_NAME = 'deaccession' AND COLUMN_NAME = 'AccessionID'";
-                        String constraint = BasicSQLUtils.querySingleObj(sql);
-                        if (constraint != null) {
-                            sql = "alter table deaccession drop foreign key " + constraint;
-                            if (-1 == update(conn, sql)) {
-                                errMsgList.add("update error: " + sql);
-                                return false;
-                            }
-                        }
-                        sql = "alter table deaccession drop column accessionid";
-                        if (-1 == update(conn, sql)) {
-                            errMsgList.add("update error: " + sql);
-                            return false;
-                        }
+                    sql = "drop table deaccessionpreparation";
+                    if (-1 == update(conn, sql)) {
+                        errMsgList.add("update error: " + sql);
+                        return false;
+                    }
+                    sql = "drop table deaccessionagent";
+                    if (-1 == update(conn, sql)) {
+                        errMsgList.add("update error: " + sql);
+                        return false;
+                    }
+                    sql = "drop table deaccession";
+                    if (-1 == update(conn, sql)) {
+                        errMsgList.add("update error: " + sql);
+                        return false;
                     }
                     frame.incOverall();
 
@@ -3542,7 +3568,6 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         // This update should be very fast
         update(conn, "UPDATE picklistitem SET Title='GEOLocate', Value ='GEOLocate' WHERE LOWER(Title) = 'geolocate' OR LOWER(Value) = 'geolocate'");
     }
-    
     /**
      * @param connection
      */
