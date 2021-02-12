@@ -59,6 +59,8 @@
     <dialog type="display" view="CollectingEvent"    name="CollectingEvent"          class="edu.ku.brc.specify.datamodel.CollectingEvent" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="CollectingTrip"     name="CollectingTripDisplay"    class="edu.ku.brc.specify.datamodel.CollectingTrip" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="ContainerBrief"     name="ContainerDisplay"         class="edu.ku.brc.specify.datamodel.Container" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="Deaccession"         name="DeaccessionDisplay"        class="edu.ku.brc.specify.datamodel.Deaccession" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="DeaccessionAgent"    name="DeaccessionAgentDisplay"  class="edu.ku.brc.specify.datamodel.DeaccessionAgent" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="Disposal"         name="DisposalDisplay"        class="edu.ku.brc.specify.datamodel.Disposal" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="DisposalAgent"    name="DisposalAgentDisplay"  class="edu.ku.brc.specify.datamodel.DisposalAgent" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="DisposalPreparation"         name="DisposalPreparationDisplay"        class="edu.ku.brc.specify.datamodel.DisposalPreparation" helpcontext="CBXQViewEdit"/>
@@ -104,6 +106,7 @@
     <dialog type="display" view="ObjectAttachment" name="CollectionObjectAttachmentDisplay"     class="edu.ku.brc.specify.datamodel.CollectionObjectAttachment" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="ObjectAttachment" name="ConservDescriptionAttachmentDisplay"   class="edu.ku.brc.specify.datamodel.ConservDescriptionAttachment" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="ObjectAttachment" name="ConservEventAttachmentDisplay"         class="edu.ku.brc.specify.datamodel.ConservEventAttachment" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="ObjectAttachment" name="DeaccessionAttachmentDisplay"          class="edu.ku.brc.specify.datamodel.DeaccessionAttachment" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="ObjectAttachment" name="DNASequenceAttachmentDisplay"          class="edu.ku.brc.specify.datamodel.DNASequenceAttachment" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="ObjectAttachment" name="DNASequencingRunAttachmentDisplay"     class="edu.ku.brc.specify.datamodel.DNASequencingRunAttachment" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="ObjectAttachment" name="FieldNotebookAttachmentDisplay"        class="edu.ku.brc.specify.datamodel.FieldNotebookAttachment" helpcontext="CBXQViewEdit"/>

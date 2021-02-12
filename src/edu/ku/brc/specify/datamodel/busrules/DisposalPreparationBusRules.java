@@ -51,15 +51,15 @@ public class DisposalPreparationBusRules extends BaseBusRules {
     @Override
     public void afterCreateNewObj(Object newDataObj) {
         super.afterCreateNewObj(newDataObj);
-        if (isOnDisposalForm(newDataObj)) {
-            Preparation p = ((DisposalPreparation)newDataObj).getPreparation();
-            if (p != null && p.getCollectionObject() != null && p.getCollectionObject().getAccession() != null) {
-                BusinessRulesIFace busRules = formViewObj.getMVParent().getCurrentViewAsFormViewObj().getBusinessRules();
-                if (busRules != null) {
-                    ((DisposalBusRules)busRules).checkPrepAccession(p.getCollectionObject().getAccession());
-                }
-            }
-        }
+//        if (isOnDisposalForm(newDataObj)) {
+//            Preparation p = ((DisposalPreparation)newDataObj).getPreparation();
+//            if (p != null && p.getCollectionObject() != null && p.getCollectionObject().getAccession() != null) {
+//                BusinessRulesIFace busRules = formViewObj.getMVParent().getCurrentViewAsFormViewObj().getBusinessRules();
+//                if (busRules != null) {
+//                    ((DisposalBusRules)busRules).checkPrepAccession(p.getCollectionObject().getAccession());
+//                }
+//            }
+//        }
     }
 
     private Class<?> getContext(final Object dataObj) {

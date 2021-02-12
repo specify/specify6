@@ -26,9 +26,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 
-public class DisposalBusRules extends BaseBusRules {
-    public DisposalBusRules()
+public class DeaccessionAgentBusRules extends BaseBusRules {
+
+    public DeaccessionAgentBusRules()
     {
-        super(DisposalBusRules.class);
+        super(DeaccessionAgentBusRules.class);
     }
+
 }

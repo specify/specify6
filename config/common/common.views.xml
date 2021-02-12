@@ -718,6 +718,17 @@
             </altviews>
         </view>
 
+        <view name="DeaccessionAgent"
+              objtitle="Deaccession Agent"
+              class="edu.ku.brc.specify.datamodel.DeaccessionAgent"
+        >
+            <desc><![CDATA[Subform within the Deaccession form.]]></desc>
+            <altviews>
+                <altview name="DeaccessionAgent View" viewdef="DeaccessionAgent" mode="view"/>
+                <altview name="DeaccessionAgent Edit" viewdef="DeaccessionAgent" mode="edit" default="true"/>
+            </altviews>
+        </view>
+
         <view name="DeaccessionDialog"
               class="edu.ku.brc.specify.datamodel.Deaccession"
         >
@@ -2868,6 +2879,9 @@
                     <cell type="field" id="rem" name="remarks" uitype="textareabrief" rows="2" colspan="5"/>
                 </row>
                 <row>
+                    <cell type="subview" viewname="DeaccessionAgent" id="8" name="deaccessionAgents" desc="Agents" colspan="12" rows="2"/>
+                </row>
+                <row>
                     <cell type="subview" viewname="DisposalSub" id="44" name="disposals" colspan="12"/>
                 </row>
                 <row>
@@ -3786,7 +3800,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="ldqx"/>
-                    <cell type="field" id="ldqx" name="Deaccession" uitype="querycbx" initialize="name=Deaccession;title=Deaccession"/>
+                    <cell type="field" id="ldqx" name="deaccession" uitype="querycbx" initialize="name=Deaccession;title=Deaccession"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="4"/>
@@ -4347,7 +4361,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="ldqx"/>
-                    <cell type="field" id="ldqx" name="Deaccession" uitype="querycbx" initialize="name=Deaccession;title=Deaccession" colspan="5"/>
+                    <cell type="field" id="ldqx" name="deaccession" uitype="querycbx" initialize="name=Deaccession;title=Deaccession" colspan="5"/>
                 </row>
                 <row>
                     <cell type="subview" viewname="Shipment" id="11" name="shipments" colspan="15"/>

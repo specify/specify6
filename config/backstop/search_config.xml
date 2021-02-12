@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
 
-  Last Id for ExpressSearch 59
+  Last Id for ExpressSearch 60
   Last Id for Other Search  136
 
  -->
@@ -1507,7 +1507,57 @@ SELECT cn.ContainerID,
                 </captions>
             </detailView>
         </table>
-        
+
+        <table id="60" tableid="163" indexed="false" name="Deacc2ATT" priority="1" color="30, 144, 144">
+            <joins>
+                <join tableid="7163" primary="true">deaccession.DeaccessionID</join>
+                <join tableid="164">attachment.AttachmentID</join>
+            </joins>
+            <detailView icon="Deaccession">
+                <sql>
+                    <![CDATA[SELECT
+  deaccession.DeaccessionID,
+  deaccession.DeaccessionNumber,
+  attachment.Title,
+  %s
+  FROM deaccession INNER JOIN deaccessionattachment ON deaccession.DeaccessionID = deaccessionattachment.DeaccessionID
+  INNER JOIN attachment ON deaccessionattachment.AttachmentID = attachment.AttachmentID WHERE %s]]>
+                </sql>
+                <captions>
+                    <caption tableid="7" col="DeaccessionID" visible="false"/>
+                    <caption tableid="7" col="DeaccessionNumber"/>
+                    <caption tableid="41" col="Title"/>
+                </captions>
+            </detailView>
+        </table>
+
+        <table id="15" tableid="5" indexed="false" name="Agt2ATT" priority="1" color="30, 144, 144">
+            <joins>
+                <join tableid="5" primary="true">agent.AgentID</join>
+                <join tableid="41">attachment.AttachmentID</join>
+            </joins>
+            <detailView icon="Agent">
+                <sql>
+                    <![CDATA[SELECT
+  agent.AgentID,
+  agent.LastName,
+  agent.FirstName,
+  attachment.Title,
+  %s
+  FROM agent INNER JOIN agentattachment ON agent.AgentID = agentattachment.AgentID
+  INNER JOIN attachment ON agentattachment.AttachmentID = attachment.AttachmentID
+  WHERE %s
+  ]]>
+                </sql>
+                <captions>
+                    <caption tableid="5" col="AgentID" visible="false"/>
+                    <caption tableid="5" col="LastName"/>
+                    <caption tableid="5" col="FirstName"/>
+                    <caption tableid="41" col="Title"/>
+                </captions>
+            </detailView>
+        </table>
+
         <!-- <table id="20" tableid="121" indexed="false" name="DNA2ATT" priority="1" color="30, 144, 144">
             <joins>
                 <join tableid="121" primary="true">dnasequence.DNASequenceID</join>

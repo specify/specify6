@@ -352,6 +352,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             CollectionObjectAttachment.class,
             ConservDescriptionAttachment.class,
             ConservEventAttachment.class,
+                DeaccessionAttachment.class,
             DNASequenceAttachment.class,
             DNASequencingRunAttachment.class,
             FieldNotebookAttachment.class,

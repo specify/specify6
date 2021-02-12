@@ -17,7 +17,7 @@ import java.util.Set;
                 @Index (name="DeaccessionDateIDX", columnNames={"DeaccessionDate"})
         })
 @SuppressWarnings("serial")
-public class Deaccession extends DataModelObjBase implements java.io.Serializable, OneToManyProviderIFace {
+public class Deaccession extends DataModelObjBase implements java.io.Serializable, OneToManyProviderIFace, AttachmentOwnerIFace<DeaccessionAttachment> {
     protected Integer                     deaccessionId;
     protected String                      type;
     protected String                      deaccessionNumber;
@@ -33,6 +33,7 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
     protected Set<Gift> gifts;
     protected Set<ExchangeOut> exchangeOuts;
     protected Set<Accession> accessions;
+    protected Set<DeaccessionAttachment>    deaccessionAttachments;
     protected Set<OneToManyProviderIFace> removals;
 
 
@@ -98,6 +99,20 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
         return result;
     }
 
+
+    @OneToMany(mappedBy = "deaccession")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @OrderBy("ordinal ASC")
+    public Set<DeaccessionAttachment> getDeaccessionAttachments()
+    {
+        return deaccessionAttachments;
+    }
+
+    public void setDeaccessionAttachments(Set<DeaccessionAttachment> deaccessionAttachments)
+    {
+        this.deaccessionAttachments = deaccessionAttachments;
+    }
+
 //    public void setAccessions(Set<Accession> accessions) {
 //        this.accessions = accessions;
 //    }
@@ -144,8 +159,10 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
         disposals = new HashSet<>();
         gifts = new HashSet<>();
         exchangeOuts = new HashSet<>();
+        deaccessionAttachments = new HashSet<>();
         accessions = null;
         removals = null;
+
     }
     // End Initializer
 
@@ -299,5 +316,24 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
         this.yesNo2 = yesNo2;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.AttachmentOwnerIFace#getAttachmentTableId()
+     */
+    @Override
+    @Transient
+    public int getAttachmentTableId()
+    {
+        return getClassTableId();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.AttachmentOwnerIFace#getAttachmentReferences()
+     */
+    @Override
+    @Transient
+    public Set<DeaccessionAttachment> getAttachmentReferences()
+    {
+        return deaccessionAttachments;
+    }
 
 }
