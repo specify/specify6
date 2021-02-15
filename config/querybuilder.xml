@@ -301,6 +301,9 @@
       <table name="DisposalAgent" field="disposalAgents" >
       	<alias name="Agent"/>
       </table>
+        <table name="DisposalAttachment" field="disposalAttachments">
+            <alias name="Attachment"/>
+        </table>
       <alias name="DisposalPreparation" field="disposalPreparations" />
         <alias name="Deaccession" field="deaccession" />
       	<alias name="Agent" field="createdByAgent" />
@@ -460,6 +463,12 @@
         <alias name="ExchangeOut" field="exchangeOuts"/>
         <alias name="Agent" field="createdByAgent" />
         <alias name="Agent" field="modifiedByAgent" />
+        <table name="DeaccessionAttachment" field="deaccessionAttachments">
+            <alias name="Attachment"/>
+        </table>
+        <table name="DeaccessionAgent" field="deaccessionAgents">
+            <alias name="Agent"/>
+        </table>
     </table>
 
      <table name="LithoStrat" >

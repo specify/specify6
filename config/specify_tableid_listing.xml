@@ -2,7 +2,7 @@
 
 <!-- 
 
-    Last used ID is 163 or 533
+    Last used ID is 165 or 533
     
     [0] are available
     
@@ -161,6 +161,14 @@
         <table name="edu.ku.brc.specify.datamodel.Deaccession" abbrev="ldac" id="163" workbench="true" searchable="true">
             <display view="Deaccession" dataobjformatter="Deaccession" searchdlg="DeaccessionSearch" newobjdlg="DeaccessionDisplay"/>
             <businessrule>edu.ku.brc.specify.datamodel.busrules.DeaccessionBusRules</businessrule>
+        </table>
+        <table name="edu.ku.brc.specify.datamodel.DeaccessionAgent" abbrev="deaa" id="164" searchable="true">
+            <display view="DeaccessionAgent" dataobjformatter="" searchdlg="DeaccessionAgentSearch" newobjdlg="DeaccessionagentDisplay"/>
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.DisposalAgentBusRules</businessrule>
+        </table>
+        <table name="edu.ku.brc.specify.datamodel.DeaccessionAttachment" abbrev="deat" id="165" searchable="true">
+            <display view="ObjectAttachment" newobjdlg="DeaccessionAttachmentDisplay" searchdlg="AttachmentSearch" />
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentReferenceBaseBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.LithoStrat" abbrev="ls" id="100" workbench="true" searchable="true">
             <display view="LithoStrat" dataobjformatter="" searchdlg="LithoStratSearch" newobjdlg="LithoStratDisplay"/>
