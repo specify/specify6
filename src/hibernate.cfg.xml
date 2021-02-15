@@ -45,7 +45,6 @@
 		<mapping class="edu.ku.brc.specify.datamodel.Accession"/>
 		<mapping class="edu.ku.brc.specify.datamodel.AccessionAgent"/>
 		<mapping class="edu.ku.brc.specify.datamodel.AccessionAttachment"/>
-		<mapping class="edu.ku.brc.specify.datamodel.DeaccessionAttachment"/>
 		<mapping class="edu.ku.brc.specify.datamodel.AccessionAuthorization"/>
 		<mapping class="edu.ku.brc.specify.datamodel.AccessionCitation"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Address"/>
@@ -95,8 +94,12 @@
 		<mapping class="edu.ku.brc.specify.datamodel.ConservEventAttachment"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Container"/>
 		<mapping class="edu.ku.brc.specify.datamodel.DataType"/>
+        <mapping class="edu.ku.brc.specify.datamodel.Deaccession"/>
+        <mapping class="edu.ku.brc.specify.datamodel.DeaccessionAgent"/>
+        <mapping class="edu.ku.brc.specify.datamodel.DeaccessionAttachment"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Disposal"/>
 		<mapping class="edu.ku.brc.specify.datamodel.DisposalAgent"/>
+        <mapping class="edu.ku.brc.specify.datamodel.DisposalAttachment"/>
 		<mapping class="edu.ku.brc.specify.datamodel.DisposalPreparation"/>
 		<mapping class="edu.ku.brc.specify.datamodel.DeterminationCitation"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Determination"/>
@@ -142,7 +145,6 @@
 		<mapping class="edu.ku.brc.specify.datamodel.Journal"/>
         <mapping class="edu.ku.brc.specify.datamodel.LatLonPolygon"/>
         <mapping class="edu.ku.brc.specify.datamodel.LatLonPolygonPnt"/>
-		<mapping class="edu.ku.brc.specify.datamodel.Deaccession"/>
 		<mapping class="edu.ku.brc.specify.datamodel.LithoStrat"/>
 		<mapping class="edu.ku.brc.specify.datamodel.LithoStratTreeDef"/>
 		<mapping class="edu.ku.brc.specify.datamodel.LithoStratTreeDefItem"/>

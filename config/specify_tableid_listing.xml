@@ -2,7 +2,7 @@
 
 <!-- 
 
-    Last used ID is 165 or 533
+    Last used ID is 166 or 533
     
     [0] are available
     
@@ -164,7 +164,7 @@
         </table>
         <table name="edu.ku.brc.specify.datamodel.DeaccessionAgent" abbrev="deaa" id="164" searchable="true">
             <display view="DeaccessionAgent" dataobjformatter="" searchdlg="DeaccessionAgentSearch" newobjdlg="DeaccessionagentDisplay"/>
-            <businessrule>edu.ku.brc.specify.datamodel.busrules.DisposalAgentBusRules</businessrule>
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.DeaccessionAgentBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.DeaccessionAttachment" abbrev="deat" id="165" searchable="true">
             <display view="ObjectAttachment" newobjdlg="DeaccessionAttachmentDisplay" searchdlg="AttachmentSearch" />
@@ -192,6 +192,10 @@
         <table name="edu.ku.brc.specify.datamodel.DisposalAgent" abbrev="disa" id="35" searchable="true">
             <display view="DisposalAgent" dataobjformatter="" searchdlg="DisposalAgentSearch" newobjdlg="DisposalagentDisplay"/>
             <businessrule>edu.ku.brc.specify.datamodel.busrules.DisposalAgentBusRules</businessrule>
+        </table>
+        <table name="edu.ku.brc.specify.datamodel.DisposalAttachment" abbrev="dsat" id="166" searchable="true">
+            <display view="ObjectAttachment" newobjdlg="DisposalAttachmentDisplay" searchdlg="AttachmentSearch" />
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentReferenceBaseBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.DisposalPreparation" abbrev="disp" id="36" searchable="true">
             <display view="DisposalPreparation" dataobjformatter=""  newobjdlg="DisposalPreparationDisplay"/>
