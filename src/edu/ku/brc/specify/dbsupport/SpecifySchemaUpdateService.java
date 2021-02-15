@@ -2578,33 +2578,35 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 //                    }
 //                    frame.incOverall();
                     frame.setDesc("Removing old Deaccession tables");
-                    if (BasicSQLUtils.getCountAsInt("SELECT COUNT(*) FROM deaccession") > 0) {
-                        errMsgList.add("The database schema cannot be updated because it contains deaccession data. Please contact Specify customer support.");
-                        return false;
-                    }
-                    sql = "SELECT TABLE_NAME,CONSTRAINT_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE "
-                            + "REFERENCED_TABLE_SCHEMA = '" + databaseName + "' AND REFERENCED_TABLE_NAME = 'deaccessionpreparation'";
-                    Vector<Object[]> constraints = query(conn, sql);
-                    for (Object[] c : constraints) {
-                        sql = "alter table " + c[0] + " drop constraint " + c[1];
+                    if (!doesTableExist(databaseName, "disposal")) {
+                        if (BasicSQLUtils.getCountAsInt("SELECT COUNT(*) FROM deaccession") > 0) {
+                            errMsgList.add("The database schema cannot be updated because it contains deaccession data. Please contact Specify customer support.");
+                            return false;
+                        }
+                        sql = "SELECT TABLE_NAME,CONSTRAINT_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE "
+                                + "REFERENCED_TABLE_SCHEMA = '" + databaseName + "' AND REFERENCED_TABLE_NAME = 'deaccessionpreparation'";
+                        Vector<Object[]> constraints = query(conn, sql);
+                        for (Object[] c : constraints) {
+                            sql = "alter table " + c[0] + " drop constraint " + c[1];
+                            if (-1 == update(conn, sql)) {
+                                errMsgList.add("update error: " + sql);
+                            }
+                        }
+                        sql = "drop table deaccessionpreparation";
                         if (-1 == update(conn, sql)) {
                             errMsgList.add("update error: " + sql);
+                            return false;
                         }
-                    }
-                    sql = "drop table deaccessionpreparation";
-                    if (-1 == update(conn, sql)) {
-                        errMsgList.add("update error: " + sql);
-                        return false;
-                    }
-                    sql = "drop table deaccessionagent";
-                    if (-1 == update(conn, sql)) {
-                        errMsgList.add("update error: " + sql);
-                        return false;
-                    }
-                    sql = "drop table deaccession";
-                    if (-1 == update(conn, sql)) {
-                        errMsgList.add("update error: " + sql);
-                        return false;
+                        sql = "drop table deaccessionagent";
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
+                        sql = "drop table deaccession";
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
                     }
                     frame.incOverall();
 
