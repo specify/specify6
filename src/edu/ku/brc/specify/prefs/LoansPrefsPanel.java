@@ -177,7 +177,9 @@ public class LoansPrefsPanel extends GenericPrefsPanel implements PrefsSavable, 
             }
             ((DefaultComboBoxModel)cb.getModel()).addElement(fi);
         }
-        cb.getComboBox().setSelectedIndex(idx);
+        if (idx < cb.getComboBox().getItemCount()) {
+            cb.getComboBox().setSelectedIndex(idx);
+        }
     }
 
     private static String theValidCoItemIdFlds = ",catalogNumber,altCatalogNumber,barCode,fieldNumber,GUID,modifier,name,projectNumber,Text1,Text2,Text3,";
@@ -251,9 +253,13 @@ public class LoansPrefsPanel extends GenericPrefsPanel implements PrefsSavable, 
         }
 
         prefs.putInt(InteractionsProcessor.DEFAULT_SRC_TBL_ID, getSrcTblIdForSelection());
-        prefs.put(InteractionsProcessor.getInteractionItemLookupFieldPref(CollectionObject.getClassTableId()),
-                ((DBFieldInfo)coFld.getComboBox().getModel().getSelectedItem()).getName());
-        prefs.put(InteractionsProcessor.getInteractionItemLookupFieldPref(Preparation.getClassTableId()),
-                ((DBFieldInfo)prepFld.getComboBox().getModel().getSelectedItem()).getName());
+        if (coFld.getComboBox().getModel().getSelectedItem() != null) {
+            prefs.put(InteractionsProcessor.getInteractionItemLookupFieldPref(CollectionObject.getClassTableId()),
+                    ((DBFieldInfo) coFld.getComboBox().getModel().getSelectedItem()).getName());
+        }
+        if (prepFld.getComboBox().getModel().getSelectedItem() != null) {
+            prefs.put(InteractionsProcessor.getInteractionItemLookupFieldPref(Preparation.getClassTableId()),
+                    ((DBFieldInfo) prepFld.getComboBox().getModel().getSelectedItem()).getName());
+        }
     }
 }
