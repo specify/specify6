@@ -109,6 +109,7 @@ public class StorageBusRules extends BaseTreeBusRules<Storage, StorageTreeDef, S
         String[] relationships = 
         {
                 "preparation", "StorageID",
+                "preparation", "AlternateStorageID",
                 "container",   "StorageID",
                 "storageattachment", "StorageID",
                 "storage",    "AcceptedID"
