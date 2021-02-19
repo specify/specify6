@@ -2607,6 +2607,38 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                             errMsgList.add("update error: " + sql);
                             return false;
                         }
+                        sql = "select splocalecontainerid from splocalecontainer where name in('deaccessionpreparation',"
+                                + "'deaccessionagent', 'deaccession')";
+                        Vector<Object> ids = BasicSQLUtils.querySingleCol(sql);
+                        String containerIdList = commaSeparate(ids);
+                        sql = "select splocalecontaineritemid from splocalecontaineritem where splocalecontainerid in("
+                            + containerIdList + ")";
+                        ids = BasicSQLUtils.querySingleCol(sql);
+                        String containerItemIdList = commaSeparate(ids);
+                        String inStr = " in(" + containerItemIdList + ") ";
+                        sql = "delete from splocaleitemstr where SpLocaleContainerItemNameID" + inStr
+                                + "or SpLocaleContainerItemDescID" + inStr;
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
+                        inStr = " in(" + containerIdList + ") ";
+                        sql = "delete from splocaleitemstr where SpLocaleContainerDescID" + inStr + "or "
+                                + "SpLocaleContainerNameID" + inStr;
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
+                        sql = "delete from splocalecontaineritem where splocalecontainerid in(" + containerIdList + ")";
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
+                        sql = "delete from splocalecontainer where splocalecontainerid in(" + containerIdList + ")";
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
                     }
                     frame.incOverall();
 
@@ -2636,6 +2668,20 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             if (dbConn != null) dbConn.close();
         }
         return false;
+    }
+
+    private String commaSeparate(Vector<Object> v) {
+        String result = null;
+        if (v != null && v.size() > 0) {
+            result = "";
+            for (Object o : v) {
+                if (result.length() > 0) {
+                    result += ",";
+                }
+                result += o;
+            }
+        }
+        return result;
     }
 
     private boolean fixDupPrepGuids(final Connection conn) {
