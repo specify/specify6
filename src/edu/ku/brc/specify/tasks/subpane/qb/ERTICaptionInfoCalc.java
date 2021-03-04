@@ -26,13 +26,9 @@ public class ERTICaptionInfoCalc extends ERTICaptionInfoQB {
     public Object processValue(Object value) {
         Object result = null;
         if (m != null) {
-            Object[] val = (Object[])value;
-            Object[] arg = new Object[Math.max(1, val.length - 1)];
-            if (val.length == 1) {
-                arg[0] = val[0];
-            } else for (int i=0; i < val.length - 1; i++) {
-                arg[i] = val[i];
-            }
+            Object val = (value instanceof Object[]) ? ((Object[])value)[0] : value;
+            Object[] arg = new Object[1];
+            arg[0] = val;
             try {
                 result = m.invoke(null, colName, arg);
                 if (result != null) {
