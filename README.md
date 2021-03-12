@@ -59,7 +59,7 @@ licensed).
 
 The path to Install4J must be provided to the Ant
 build through the `-Dinstall4j.dir=/path/to/install4j` parameter unless
-Install4J is at the default location `$HOME/install4j8.0.4`.
+Install4J is at the default location `$HOME/install4j8.0.11`.
 
 The following Ant build targets are available for packaging:
 
