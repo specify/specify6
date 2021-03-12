@@ -108,7 +108,8 @@ jobs:
         run: >
           xcrun altool --notarize-app --primary-bundle-id org.specifysoftware
           --username beach@ku.edu --password $AC_PASSWORD
-          --file Specify_macos/Specify_macos.dmg | tee notarize-app-output.txt
+          --file Specify_macos/Specify_macos.dmg | tee notarize-app-output.txt;
+          grep -q "RequestUUID = " || { echo "Uploading package for notarization failed!"; exit 1; }
         env:
           AC_PASSWORD: ${{ secrets.AC_PASSWORD }}
 
