@@ -193,7 +193,17 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
     @Override
     @Transient
     public Set<? extends PreparationHolderIFace> getPreparationHolders() {
-        return null;
+        Set<PreparationHolderIFace> result = new HashSet<>();
+        for (Disposal d : getDisposals()) {
+            result.addAll(d.getPreparationHolders());
+        }
+        for (Gift g : getGifts()) {
+            result.addAll(g.getPreparationHolders());
+        }
+        for (ExchangeOut g : getExchangeOuts()) {
+            result.addAll(g.getPreparationHolders());
+        }
+        return result;
     }
 
     public static int getClassTableId() {
