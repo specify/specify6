@@ -19,17 +19,14 @@
 */
 package edu.ku.brc.dbsupport;
 
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
+import org.apache.log4j.Logger;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-
-import org.apache.log4j.Logger;
-
-import com.mysql.jdbc.CommunicationsException;
-
-import edu.ku.brc.ui.CommandAction;
-import edu.ku.brc.ui.CommandDispatcher;
 
 
 /**
@@ -278,12 +275,12 @@ public class SQLExecutionProcessor
             if (showError)
             {
                 edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
-                if (ex instanceof CommunicationsException)
-                {
-                    CommandDispatcher.dispatch(new CommandAction("ERRMSG", "DISPLAY", this, null, "BAD_CONNECTION"));
-                    return;
-                    
-                }
+//                if (ex instanceof CommunicationsException)
+//                {
+//                    CommandDispatcher.dispatch(new CommandAction("ERRMSG", "DISPLAY", this, null, "BAD_CONNECTION"));
+//                    return;
+//
+//                }
                 
                 edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SQLExecutionProcessor.class, ex);
                 log.error("Error in run["+sqlStr+"]", ex); //$NON-NLS-1$ //$NON-NLS-2$

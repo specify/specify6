@@ -45,8 +45,7 @@ import net.sourceforge.jtds.jdbc.ClobImpl;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import com.mysql.jdbc.CommunicationsException;
-import com.mysql.jdbc.exceptions.MySQLIntegrityConstraintViolationException;
+import java.sql.SQLIntegrityConstraintViolationException;
 
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
@@ -350,7 +349,7 @@ public class BasicSQLUtils
         {
             //TODO: Problem encountered with the CUPaleo database when converting the AccessionAgent 
             //We (Rod?) need to go in an create a hashtable that
-            if ((ex instanceof MySQLIntegrityConstraintViolationException)&&(cmdStr.contains("INSERT INTO accessionagent")))
+            if ((ex instanceof SQLIntegrityConstraintViolationException)&&(cmdStr.contains("INSERT INTO accessionagent")))
             {
                 log.error("ignoring a record because it makes a MySQLIntegrityConstraintViolation: " + ex.getStackTrace().toString() );
                 log.error(cmdStr+"\n");
@@ -803,13 +802,13 @@ public class BasicSQLUtils
                 
                 isStale = false;
     
-            } catch (CommunicationsException ex)
-            {
-                connection = DBConnection.getInstance().createConnection();
-                doCloseConn   = true;
-                doSkipConnSet = true;
-                
-            } catch (com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException e)
+//            } catch (CommunicationsException ex)
+//            {
+//                connection = DBConnection.getInstance().createConnection();
+//                doCloseConn   = true;
+//                doSkipConnSet = true;
+//
+            } catch (java.sql.SQLSyntaxErrorException e)
             {
                 e.printStackTrace();
                 log.error(e);
@@ -922,11 +921,11 @@ public class BasicSQLUtils
                     isStale = true;
                 }
     
-            } catch (CommunicationsException ex)
-            {
-                connection = DBConnection.getInstance().createConnection();
-                doCloseConn   = true;
-                doSkipConnSet = true;
+//            } catch (CommunicationsException ex)
+//            {
+//                connection = DBConnection.getInstance().createConnection();
+//                doCloseConn   = true;
+//                doSkipConnSet = true;
                 
             } catch (SQLException ex)
             {
@@ -1050,11 +1049,11 @@ public class BasicSQLUtils
                 
                 isStale = false;
     
-            } catch (CommunicationsException ex)
-            {
-                connection = DBConnection.getInstance().createConnection();
-                doCloseConn   = true;
-                doSkipConnSet = true;
+//            } catch (CommunicationsException ex)
+//            {
+//                connection = DBConnection.getInstance().createConnection();
+//                doCloseConn   = true;
+//                doSkipConnSet = true;
                 
             } catch (SQLException ex)
             {
