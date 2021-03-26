@@ -2837,12 +2837,10 @@ public class Uploader implements ActionListener, KeyListener
      * 
      * 
      */
-    public Vector<UploadMessage> validateConsistency()
-    {
+    public Vector<UploadMessage> validateConsistency() {
         Vector<UploadMessage> result = new Vector<UploadMessage>();
 
-        try
-        {
+        try {
             // Make sure that the tax tree levels included for each determination are consistent.
             // All need to include the same levels, for example [Genus 1, Species1, SubSpecies 1,
             // Genus
@@ -2850,28 +2848,21 @@ public class Uploader implements ActionListener, KeyListener
             // Since, right now, tax trees are the only trees that require this test.
             // Non-tree 1-manys like Collector are ok (but possibly not desirable?) if inconsistent:
             // [FirstName 1, LastName 1, LastName 2] works.
+
             TreeMapElements maxTaxSeqLevel = null;
-            for (int m = 0; m < uploadData.getCols(); m++)
-            {
-                if (uploadData.getMapping(m).getTable().equalsIgnoreCase("taxon"))
-                {
+            for (int m = 0; m < uploadData.getCols(); m++) {
+                if (uploadData.getMapping(m).getTable().equalsIgnoreCase("taxon")) {
                     UploadMappingDefTree tmap = (UploadMappingDefTree) uploadData.getMapping(m);
                     boolean seqSizeInconsistent = false;
-                    for (int l = 0; l < tmap.getLevels().size(); l++)
-                    {
+                    for (int l = 0; l < tmap.getLevels().size(); l++) {
                         TreeMapElements tmes = tmap.getLevels().get(l);
                         if (tmes.getMaxSeq() > 0 || maxTaxSeqLevel != null
-                                && maxTaxSeqLevel.getRank() < tmes.getRank())
-                        {
-                            if (maxTaxSeqLevel == null)
-                            {
+                                && maxTaxSeqLevel.getRank() < tmes.getRank()) {
+                            if (maxTaxSeqLevel == null) {
                                 maxTaxSeqLevel = tmes;
-                            }
-                            else if (maxTaxSeqLevel.getMaxSeq() != tmes.getMaxSeq())
-                            {
+                            } else if (maxTaxSeqLevel.getMaxSeq() != tmes.getMaxSeq()) {
                                 seqSizeInconsistent = true;
-                                if (maxTaxSeqLevel.getMaxSeq() < tmes.getMaxSeq())
-                                {
+                                if (maxTaxSeqLevel.getMaxSeq() < tmes.getMaxSeq()) {
                                     maxTaxSeqLevel = tmes;
                                 }
                             }
@@ -2879,10 +2870,8 @@ public class Uploader implements ActionListener, KeyListener
                         }
 
                         boolean[] seqs = tmes.getSeqs();
-                        for (int s = 0; s < seqs.length; s++)
-                        {
-                            if (!seqs[s])
-                            {
+                        for (int s = 0; s < seqs.length; s++) {
+                            if (!seqs[s]) {
                                 String msg = String.format(
                                         getResourceString("WB_UPLOAD_MISSING_SEQ"), tmes
                                                 .getWbFldName());
@@ -2891,16 +2880,12 @@ public class Uploader implements ActionListener, KeyListener
                         }
                     }
 
-                    if (seqSizeInconsistent && maxTaxSeqLevel != null)
-                    {
-                        for (int l = 0; l < tmap.getLevels().size(); l++)
-                        {
+                    if (seqSizeInconsistent && maxTaxSeqLevel != null) {
+                        for (int l = 0; l < tmap.getLevels().size(); l++) {
                             TreeMapElements tmes = tmap.getLevels().get(l);
                             if (tmes.getRank() > maxTaxSeqLevel.getRank()
-                                    && tmes.getMaxSeq() < maxTaxSeqLevel.getMaxSeq())
-                            {
-                                for (int s = tmes.getMaxSeq() + 1; s <= maxTaxSeqLevel.getMaxSeq(); s++)
-                                {
+                                    && tmes.getMaxSeq() < maxTaxSeqLevel.getMaxSeq()) {
+                                for (int s = tmes.getMaxSeq() + 1; s <= maxTaxSeqLevel.getMaxSeq(); s++) {
                                     String msg = String.format(
                                             getResourceString("WB_UPLOAD_MISSING_SEQ"), tmes
                                                     .getWbFldName());
@@ -2912,42 +2897,33 @@ public class Uploader implements ActionListener, KeyListener
                 }
             }
 
-            if (maxTaxSeqLevel != null && maxTaxSeqLevel.size() > 1)
-            {
+            if (maxTaxSeqLevel != null && maxTaxSeqLevel.size() > 1) {
                 // check to see if Determination.isCurrent is either not present or always present.
                 int isCurrentCount = 0;
                 boolean[] isCurrentPresent = new boolean[maxTaxSeqLevel.size()];
                 for (int b = 0; b < isCurrentPresent.length; b++)
                     isCurrentPresent[b] = false;
                 String isCurrentCaptionSample = null;
-                for (int m = 0; m < uploadData.getCols(); m++)
-                {
+                for (int m = 0; m < uploadData.getCols(); m++) {
                     if (uploadData.getMapping(m).getTable().equalsIgnoreCase("determination")
-                            && uploadData.getMapping(m).getField().equalsIgnoreCase("iscurrent"))
-                    {
+                            && uploadData.getMapping(m).getField().equalsIgnoreCase("iscurrent")) {
                         isCurrentCount++;
                         isCurrentPresent[((UploadMappingDefRel) uploadData.getMapping(m))
                                 .getSequence()] = true;
                         isCurrentCaptionSample = uploadData.getMapping(m).getWbFldName();
                     }
                 }
-                if (isCurrentCount != 0 && isCurrentCount != maxTaxSeqLevel.size())
-                {
-                    for (int c = 0; c < isCurrentPresent.length; c++)
-                    {
-                        if (!isCurrentPresent[c])
-                        {
+                if (isCurrentCount != 0 && isCurrentCount != maxTaxSeqLevel.size()) {
+                    for (int c = 0; c < isCurrentPresent.length; c++) {
+                        if (!isCurrentPresent[c]) {
                             String fldName;
                             // strip off trailing number (assuming we will never allow it to be >
                             // 10)
                             // and trim.
-                            if (isCurrentCaptionSample != null)
-                            {
+                            if (isCurrentCaptionSample != null) {
                                 fldName = isCurrentCaptionSample.substring(0,
                                         isCurrentCaptionSample.length() - 2).trim();
-                            }
-                            else
-                            {
+                            } else {
                                 fldName = "Is Current"; // i18n (but isCurrentCaptionSample can't be
                                 // null. Right.)
                             }
@@ -2959,12 +2935,37 @@ public class Uploader implements ActionListener, KeyListener
                 }
             }
 
+            if (result.size() == 0) {
+                Integer determinationSeqSize = null;
+                for (UploadTable t : uploadTables) {
+                    if (t.tblClass.getSimpleName().equalsIgnoreCase("determination")) {
+                        determinationSeqSize = t.getUploadFields().size();
+                        break;
+                    }
+                }
+                boolean taxDetSeqConflict = false;
+                int aMessedUpSeq = -1;
+                if (determinationSeqSize != null) {
+                    for (UploadTable t : uploadTables) {
+                        if (t.tblClass.getSimpleName().equalsIgnoreCase("taxon")) {
+                            if (determinationSeqSize != t.getUploadFields().size()) {
+                                aMessedUpSeq = t.getUploadFields().size();
+                                taxDetSeqConflict = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (taxDetSeqConflict) {
+                    DBTableInfo info = DBTableIdMgr.getInstance().getInfoByTableName("determination");
+                    String detTitle = info != null ? info.getTitle() : "Determination";
+                    String msg = detTitle + ": " + String.format(getResourceString("WB_UPLOAD_INVALID_MANY_MAPPING"), aMessedUpSeq);
+                    result.add(new InvalidStructure(msg, null));
+                }
+            }
             return result;
-        }
-        finally
-        {
-            if (result.size() > 0)
-            {
+        } finally {
+            if (result.size() > 0) {
                 currentUpload = null;
             }
         }
