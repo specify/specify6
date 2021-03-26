@@ -516,10 +516,11 @@ public class ConfigureXLS extends ConfigureExternalDataBase
             Collections.sort(colInfo);
             if (workBook instanceof HSSFWorkbook) {
                 try {
-                    POIFSFileSystem fs = new POIFSFileSystem(input);
+                    POIFSFileSystem fs = new POIFSFileSystem(externalFile);
                     readMappingsHSSF(fs);
                 } catch (IOException x) {
-                    log.warn("Unable to check for embedded WorkBench mappings in " + externalFile.getName(), x);
+                     log.warn("Unable to check for embedded WorkBench mappings in " + externalFile.getName(), x);
+                     UIRegistry.displayInfoMsgDlgLocalized("ConfigureXLS_ERROR_CHECKING_FOR_MAPPINGS", externalFile.getName());
                 }
             } else {
                 readMappingsXSSF((XSSFWorkbook)workBook);
