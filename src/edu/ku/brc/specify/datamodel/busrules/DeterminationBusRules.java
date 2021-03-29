@@ -33,6 +33,10 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.ui.db.TextFieldWithInfo;
+import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
+import edu.ku.brc.af.ui.forms.validation.ValTextAreaBrief;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -100,6 +104,8 @@ public class DeterminationBusRules extends BaseBusRules
         determination = null;
     }
 
+    boolean prefTaxIsFormatted = true;
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BaseBusRules#afterFillForm(java.lang.Object)
      */
@@ -164,20 +170,31 @@ public class DeterminationBusRules extends BaseBusRules
                     ((ValCheckBox)currentComp).setValue(determination.getIsCurrent(), null);
                 }
             }
-            
+
             Component activeTax = formViewObj.getControlByName("preferredTaxon");
-            if (activeTax != null)
-            {
-                JTextField activeTaxTF = (JTextField)activeTax;
-                activeTaxTF.setFocusable(false);
-                if (determination != null && determination.getPreferredTaxon() != null)
-                {
-                    activeTaxTF.setText(determination.getPreferredTaxon().getFullName());
-                } else
-                {
-                    activeTaxTF.setText("");
+            if (activeTax != null) {
+                if (activeTax instanceof JTextField || activeTax instanceof ValTextAreaBrief) {
+                    String prefTaxTxt = "";
+                    if (determination != null && determination.getPreferredTaxon() != null) {
+                        String formatName = prefTaxIsFormatted ? DBTableIdMgr.getInstance().getInfoById(Taxon.getClassTableId()).getDataObjFormatter() : null;
+                        if (formatName != null && !"".equals(formatName)) {
+                            prefTaxTxt = DataObjFieldFormatMgr.getInstance().format(determination.getPreferredTaxon(), formatName);
+                        } else {
+                            log.warn("Taxon data obj formatter not found. Defaulting to full name.");
+                            prefTaxTxt = determination.getPreferredTaxon().getFullName();
+                        }
+                    }
+                    activeTax.setFocusable(false);
+                    if (activeTax instanceof JTextField) {
+                        ((JTextField)activeTax).setText(prefTaxTxt);
+                    } else {
+                        ((ValTextAreaBrief) activeTax).setText(prefTaxTxt);
+                    }
+                } else {
+                    log.warn("PreferredTaxon control type not supported." + activeTax.getName());
                 }
             }
+
             
             if (formViewObj.getAltView().getMode() != CreationMode.EDIT)
             {
