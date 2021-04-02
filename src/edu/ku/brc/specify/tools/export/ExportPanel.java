@@ -60,6 +60,7 @@ import edu.ku.brc.ui.*;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.apache.poi.hssf.record.formula.functions.Time;
 import org.apache.tools.ant.util.FileUtils;
 import org.dom4j.Element;
 
@@ -286,6 +287,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 		return result;
 	}
 
+
 	protected void buildDwCArchive(final SpExportSchemaMapping schemaMapping) {
 
 		javax.swing.SwingWorker<Boolean, Object> worker =
@@ -298,7 +300,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 					String outputFileName = "/home/timo/datas/dwckuiwarpedmultis.zip";
 					int META_FROM_RESOURCE = 0;
 					int META_FROM_FILE = 1;
-					int metaSrc = META_FROM_RESOURCE;
+					int metaSrc = META_FROM_FILE;//META_FROM_RESOURCE;
 					int SRC_REC_SET = 0;
 					int SRC_MAPPING = 1;
 					int SRC_QUERY = 2;
@@ -649,6 +651,257 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 		worker.execute();
 	}
 
+
+	protected void buildStinkyDwCArchive(final SpExportSchemaMapping schemaMapping) {
+
+		javax.swing.SwingWorker<Boolean, Object> worker =
+				/**
+				 * @author timo
+				 *
+				 */
+				new javax.swing.SwingWorker<Boolean, Object>() {
+
+					int META_FROM_RESOURCE = 0;
+					int META_FROM_FILE = 1;
+					int metaSrc = META_FROM_FILE;//META_FROM_RESOURCE;
+
+					private File selectArchiveDefinitionFile() {
+						//this needs to require file to exist.
+						//and should be handled through (an improved version of) promptForFile()
+						JFileChooser chooser = new JFileChooser();
+						chooser.setDialogTitle(getResourceString("CHOOSE_DWC_DEF_FILE"));
+						chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+						chooser.setMultiSelectionEnabled(false);
+						chooser.setFileFilter(new UIFileFilter("xml", getResourceString("DWC_DEF_FILES")));
+						if (chooser.showOpenDialog(UIRegistry.get(UIRegistry.FRAME)) != JFileChooser.APPROVE_OPTION) {
+							return null;
+						}
+
+						File file = chooser.getSelectedFile();
+
+						String path = chooser.getCurrentDirectory().getPath();
+						if (StringUtils.isNotEmpty(path)) {
+							AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+							localPrefs.put("DWC_DEF_FILE_PATH", path);
+						}
+						return file;
+					}
+
+					private Element getMetaElementFromFile() {
+						File metaFile = selectArchiveDefinitionFile();
+						Element result = null;
+						if (metaFile != null) {
+							try {
+								result = XMLHelper.readFileToDOM4J(metaFile);
+							} catch (Exception x) {
+								UIRegistry.displayErrorDlg(x.getMessage());
+							}
+						}
+						return result;
+					}
+					/**
+					 *
+					 * @param archiveName
+					 * @param csvs
+					 * @throws Exception
+					 */
+					protected void writeFiles(String archiveName, List<Pair<String, List<String>>> csvs, boolean append) throws Exception {
+						String dirName = (new File(archiveName)).getParent();
+						for (Pair<String, List<String>> csv : csvs) {
+							File f = new File(dirName + File.separator + csv.getFirst());
+							org.apache.commons.io.FileUtils.writeLines(f, "UTF-8", csv.getSecond(), append);
+
+						}
+					}
+
+					/**
+					 *
+					 * @param zos
+					 * @param path
+					 * @param file
+					 * @throws IOException
+					 */
+					private void zipFile(ZipOutputStream zos, File file) throws IOException {
+						if (!file.canRead()) {
+							System.out.println("Cannot read " + file.getCanonicalPath() + " (maybe because of permissions)");
+							return;
+						}
+						System.out.println("Compressing " + file.getName());
+						zos.putNextEntry(new ZipEntry(file.getName()));
+						FileInputStream fis = new FileInputStream(file);
+						byte[] buffer = new byte[4092];
+						int byteCount = 0;
+						while ((byteCount = fis.read(buffer)) != -1) {
+							zos.write(buffer, 0, byteCount);
+							System.out.print('.');
+							System.out.flush();
+						}
+						System.out.println();
+						fis.close();
+						zos.closeEntry();
+					}
+
+					/**
+					 *
+					 * @param archiveName
+					 * @param dwcMeta
+					 * @param csvs
+					 * @throws Exception
+					 */
+					protected void zipUpArchive(String archiveName, String dwcMeta, List<Pair<String, List<String>>> csvs) throws Exception {
+						ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(new File(archiveName)));
+						Charset utf8 = Charset.forName("utf8");
+
+						zout.putNextEntry(new ZipEntry("meta.xml"));
+						zout.write(dwcMeta.getBytes(utf8));
+						zout.closeEntry();
+
+						String dirName = (new File(archiveName)).getParent();
+						for (Pair<String, List<String>> csv : csvs) {
+							zipFile(zout, new File(dirName + File.separator + csv.getFirst()));
+						}
+						zout.close();
+					}
+					/**
+					 * @param archiveName
+					 * @param metaFild
+					 * @param csvs
+					 * @throws Exception
+					 */
+					protected void writeToArchiveFile(String archiveName, String dwcMeta, List<Pair<String, List<String>>> csvs) throws Exception {
+						ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(new File(archiveName)));
+
+						Charset utf8 = Charset.forName("utf8");
+
+						zout.putNextEntry(new ZipEntry("meta.xml"));
+						zout.write(dwcMeta.getBytes(utf8));
+						zout.closeEntry();
+						int size = 0;
+						for (Pair<String, List<String>> csv : csvs) {
+							size += csv.getSecond().size();
+						}
+						//initProgRange(size);
+						for (Pair<String, List<String>> csv : csvs) {
+							zout.putNextEntry(new ZipEntry(csv.getFirst()));
+							for (String line : csv.getSecond()) {
+								//System.out.println("    " + line);
+								zout.write(line.getBytes(utf8));
+								zout.write("\n".getBytes(utf8));
+								//setProgValue(++size);
+							}
+							zout.closeEntry();
+						}
+						zout.close();
+					}
+
+					private void showStats(DarwinCoreArchive dwc) {
+						List<Pair<String, Integer>> objStats = dwc.getMapper().getObjFormatStats();
+						System.out.println("#############################################################");
+						System.out.println("Object Format Stats");
+						for (Pair<String, Integer> stat : objStats) {
+							System.out.println(stat.getFirst() + ": " + stat.getSecond());
+						}
+						objStats = dwc.getMapper().getAggStats();
+						System.out.println("#############################################################");
+						System.out.println("Agg Stats");
+						for (Pair<String, Integer> stat : objStats) {
+							System.out.println(stat.getFirst() + ": " + stat.getSecond());
+						}
+
+					}
+
+					private Element getMetaElement() {
+						String sql = "select metaxml from spstynthy where spexportschemamappingid = " + schemaMapping.getId();
+						return GbifSandbox.getDwcaSchemaFromFld(sql);
+					}
+
+					private String getOutputFileName() {
+						return "/home/timo/datas/gbifreg/" + schemaMapping.getMappingName();
+					}
+
+					private boolean needToDoIt() {
+						Object[] dat = BasicSQLUtils.queryForRow("select datediff(now(), lastexported) - UpdatePeriodDays from spstynthy where spexportschemamappingid = " + schemaMapping.getId());
+						Long days = Long.valueOf(dat[0].toString());
+						return days == null || days >= 0;
+					}
+					/* (non-Javadoc)
+					 * @see javax.swing.SwingWorker#doInBackground()
+					 */
+					@Override
+					protected Boolean doInBackground() throws Exception {
+						if (!needToDoIt()) {
+							return true;
+						}
+						try {
+
+							Element dwcMetaEl = getMetaElement();
+							DarwinCoreArchive dwc = new DarwinCoreArchive(dwcMetaEl, schemaMapping.getId(), false);
+							Map<DarwinCoreArchiveFile, List<DarwinCoreArchiveField>> unmapped = dwc.getUnmappedFields();
+							if (unmapped.size() > 0) {
+								System.out.println("There are unmapped concepts.");
+							}
+							List<Integer> recIds = new ArrayList<>();
+							List<Specs> specs = null;
+							boolean updatesOnly = false;
+							specs = getSpecs(schemaMapping, true, false, !updatesOnly, null);
+							if (specs == null) {
+								return false;
+							}
+
+							final List<ERTICaptionInfoQB> cols = specs.get(0).getCols();
+							final HQLSpecs hqlSpecs = specs.get(0).getSpecs();
+							//should let QueryBldr do this...
+							String hql = hqlSpecs.getHql();
+							String idHql = hql.substring(0, hql.indexOf(", ")) + hql.substring(hql.indexOf(" from CollectionObject "));
+							String outputFileName = getOutputFileName();
+							long cnt = 0;
+							DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+							QueryIFace q = session.createQuery(idHql, false);
+							for (Object id : q.list()) {
+								recIds.add((Integer)id);
+							}
+							long size = recIds.size();
+							List<Pair<String, List<String>>> csvs = null;
+							int blk = dwc.getBlockSize();
+							while (cnt < size) {
+//								if (blk != 0) {
+//									recIds = RecordSet.getUniqueIdList(recSetId, blk, cnt);
+//								}
+								dwc.setGlobalSession(null);
+								csvs = dwc.getExportText(1, recIds, null);
+								writeFiles(outputFileName, csvs, cnt > 0);
+								if (blk != 0) {
+									cnt += blk;
+									showStats(dwc);
+								} else {
+									cnt = size;
+								}
+							}
+							showStats(dwc);
+							if (csvs != null) {
+								zipUpArchive(outputFileName, dwcMetaEl.asXML(), csvs);
+							}
+						} catch (Exception e) {
+							UsageTracker.incrHandledUsageCount();
+							edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SymbiotaPane.class, e);
+							e.printStackTrace();
+						}
+						return true;
+					}
+
+					/* (non-Javadoc)
+					 * @see edu.ku.brc.specify.tasks.subpane.SymbiotaPane.SymWorker#doDone()
+					 */
+					@Override
+					protected void done() {
+						super.done();
+						ExportPanel.this.createDwcaBtn.setEnabled(true); //?? OR publishToGbifBtn
+					}
+
+				};
+		worker.execute();
+	}
+
 	/**
 	 * 
 	 */
@@ -886,7 +1139,8 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 			int row = mapsDisplay.getSelectedRow();
 			SpExportSchemaMapping map = maps.get(row);
 			createDwcaBtn.setEnabled(false);
-			buildDwCArchive(map);
+			//buildDwCArchive(map);
+			buildStinkyDwCArchive(map);
 		});
 
 		publishToGbifBtn = UIHelper.createButton(UIRegistry.getResourceString("ExportPanel.ToDwcToGbif"));

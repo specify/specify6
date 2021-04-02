@@ -345,10 +345,14 @@ public class GbifSandbox {
      * @return
      */
     public static Element getDwcaSchema(String mappingName) {
-        Element result = null;
         String sql = "select data from spappresource r inner join spappresourcedata d on d.spappresourceid = "
             + "r.spappresourceid where r.name = '" + mappingName +"'";
         //plus other context parame, or use appcontext mgr to get resource...
+        return getDwcaSchemaFromFld(sql);
+    }
+
+    public static Element getDwcaSchemaFromFld(String sql) {
+        Element result = null;
         try {
             List<Object> blob = BasicSQLUtils.querySingleCol(sql);
             if (blob != null && blob.size() > 0) {
