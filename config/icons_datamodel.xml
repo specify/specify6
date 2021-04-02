@@ -49,6 +49,7 @@
     <icon name="dnaprimer"            file="dna_primer.png" sizes="all"/>
     <icon name="dnasequence"          file="dna.png" sizes="all"/>
     <icon name="dnasequencingrun"     file="dna_seq_run.png" sizes="all"/>
+    <icon name="dnasequencingruncitation"     file="dna_seq_run_citation.png" sizes="all"/>
     <icon name="exsiccata"            file="exsiccata.png" sizes="all"/>
     <icon name="exsiccataitem"        file="exsiccata_item.png" sizes="all"/>
     <icon name="exchangein"           file="exchange_in.png" sizes="all"/>
@@ -74,6 +75,8 @@
     <icon name="locality"             file="locality.png" sizes="all"/>
     <icon name="localitydetail"       file="locality_detail.png" sizes="all"/>
     <icon name="localitynamealias"    file="locality_name_alias.png" sizes="all"/>
+    <icon name="latlonpolygon"        file="lat_lon_polygon.png" sizes="all"/>
+    <icon name="latlonpolygonpnt"     file="lat_lon_polygon_pnt.png" sizes="all"/>
     <icon name="materialsample"       file="material_sample.png" sizes="all"/>
     <icon name="otheridentifier"      file="other_identifier.png" sizes="all"/>
     <icon name="paleocontext"         file="paleocontext.png" sizes="all"/>
@@ -89,6 +92,7 @@
     <icon name="shipment"             file="shipment.png" sizes="all"/>
     <icon name="spauditlog"           file="audit_log_32.png" sizes="all"/>
     <icon name="spauditlogfield"      file="audit_log_field_32.png" sizes="all"/>
+    <icon name="spsymbiotainstance"   file="sp_symbiota_instance.png" sizes="all"/>
     <icon name="storage"              file="storage.png" sizes="all"/>
     <icon name="taxon"                file="taxon.png" sizes="all"/>
     <icon name="taxonattribute"       file="taxonattribute.png" sizes="all"/>
