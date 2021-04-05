@@ -23,20 +23,7 @@ import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
+import javax.persistence.*;
 
 import org.hibernate.annotations.Index;
 
@@ -52,7 +39,7 @@ import org.hibernate.annotations.Index;
                 @Index (name="DisposalDateIDX", columnNames={"DisposalDate"})
         })
 @SuppressWarnings("serial")
-public class Disposal extends DataModelObjBase implements java.io.Serializable, OneToManyProviderIFace {
+public class Disposal extends DataModelObjBase implements java.io.Serializable, OneToManyProviderIFace, AttachmentOwnerIFace<DisposalAttachment> {
 
     // Fields
 
@@ -70,6 +57,7 @@ public class Disposal extends DataModelObjBase implements java.io.Serializable, 
     protected Boolean                     yesNo2;
     protected Set<DisposalAgent>       disposalAgents;
     protected Set<DisposalPreparation> disposalPreparations;
+    protected Set<DisposalAttachment> disposalAttachments;
     protected Deaccession            deaccession;
 
     // Constructors
@@ -102,6 +90,7 @@ public class Disposal extends DataModelObjBase implements java.io.Serializable, 
         yesNo2 = null;
         disposalAgents = new HashSet<>();
         disposalPreparations = new HashSet<>();
+        disposalAttachments = new HashSet<>();
         deaccession = null;
         doNotExport = null;
     }
@@ -333,6 +322,38 @@ public class Disposal extends DataModelObjBase implements java.io.Serializable, 
         return result;
     }
 
+    @OneToMany(mappedBy = "disposal")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @OrderBy("ordinal ASC")
+    public Set<DisposalAttachment> getDisposalAttachments()
+    {
+        return disposalAttachments;
+    }
+
+    public void setDisposalAttachments(Set<DisposalAttachment> disposalAttachments)
+    {
+        this.disposalAttachments = disposalAttachments;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.AttachmentOwnerIFace#getAttachmentTableId()
+     */
+    @Override
+    @Transient
+    public int getAttachmentTableId()
+    {
+        return getClassTableId();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.AttachmentOwnerIFace#getAttachmentReferences()
+     */
+    @Override
+    @Transient
+    public Set<DisposalAttachment> getAttachmentReferences()
+    {
+        return disposalAttachments;
+    }
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
