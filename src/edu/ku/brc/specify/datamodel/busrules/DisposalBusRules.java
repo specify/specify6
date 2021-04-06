@@ -18,8 +18,11 @@
 package edu.ku.brc.specify.datamodel.busrules;
 
 import edu.ku.brc.af.ui.forms.BaseBusRules;
+import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.specify.datamodel.Accession;
+import edu.ku.brc.specify.datamodel.Disposal;
+import edu.ku.brc.specify.datamodel.Gift;
 
 import java.awt.*;
 import java.util.HashSet;
@@ -31,4 +34,26 @@ public class DisposalBusRules extends BaseBusRules {
     {
         super(DisposalBusRules.class);
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.BaseBusRules#processBusinessRules(java.lang.Object)
+     */
+    @Override
+    public STATUS processBusinessRules(Object dataObj)
+    {
+        reasonList.clear();
+
+        if (!(dataObj instanceof Disposal))
+        {
+            return STATUS.Error;
+        }
+
+        STATUS duplicateNumberStatus = isCheckDuplicateNumberOK("disposalNumber",
+                (FormDataObjIFace)dataObj,
+                Disposal.class,
+                "disposalId");
+
+        return duplicateNumberStatus;
+    }
+
 }
