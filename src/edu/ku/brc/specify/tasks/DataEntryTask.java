@@ -2217,23 +2217,28 @@ public class DataEntryTask extends BaseTask
     {
         if (!processRecordSetCommand(cmdAction, stdViews)) {
             if (!processRecordSetCommand(cmdAction, miscViews) && cmdAction.getDstObj() instanceof RecordSetIFace) {
-                RecordSetIFace rs = (RecordSetIFace)cmdAction.getDstObj();
-                if (rs != null) {
+                RecordSetIFace rs = (RecordSetIFace) cmdAction.getDstObj();
+                if (rs != null && !InteractionsTask.isInteractionTable(rs.getDbTableId())) {
                     if (rs.getDbTableId() == Preparation.getClassTableId()) {
                         rs = getRelatedRecordset(rs, CollectionObject.getClassTableId());
                     }
-                    FormPane formPane = createFormFor(this, "", null, null, rs);
-                    String tblTitle = DBTableIdMgr.getInstance().getInfoById(rs.getDbTableId()).getTitle();
-                    boolean canShow = formPane != null ? confirmDubiousFormDisplay(rs.getDbTableId()) : false;
-                    if (canShow) {
-                        addSubPaneToMgr(formPane);
-                    } else {
-                        UIRegistry.displayInfoMsgDlg(String.format(getResourceString("DataEntryTask.NO_FORM_AVAILABLE"), tblTitle));
+                    try {
+                        FormPane formPane = createFormFor(this, "", null, null, rs);
+                        String tblTitle = DBTableIdMgr.getInstance().getInfoById(rs.getDbTableId()).getTitle();
+                        boolean canShow = formPane != null ? confirmDubiousFormDisplay(rs.getDbTableId()) : false;
+                        if (canShow) {
+                            addSubPaneToMgr(formPane);
+                        } else {
+                            UIRegistry.displayInfoMsgDlg(String.format(getResourceString("DataEntryTask.NO_FORM_AVAILABLE"), tblTitle));
+                        }
+
+                    } catch (Exception x) {
+                        //probably not a DataEntryTask action. ignore.
+                        //log.warn(x);
                     }
                 }
             }
         }
-        
         /*
         if (ContextMgr.getCurrentContext() == this && cmdAction.getSrcObj() instanceof RecordSetIFaced)
         {

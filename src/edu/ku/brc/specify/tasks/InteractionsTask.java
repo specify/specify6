@@ -323,7 +323,10 @@ public class InteractionsTask extends BaseTask
                tableId == Permit.getClassTableId() ||
                tableId == RepositoryAgreement.getClassTableId() ||
                tableId == ExchangeIn.getClassTableId() ||
-               tableId == ExchangeOut.getClassTableId();
+               tableId == ExchangeOut.getClassTableId() ||
+                tableId == Borrow.getClassTableId() ||
+                tableId == Disposal.getClassTableId() ||
+                tableId == Deaccession.getClassTableId();
     }
     
     /**
@@ -734,7 +737,7 @@ public class InteractionsTask extends BaseTask
         //labelsList.add(nbi);
         return nbi;
     }
-    
+
     /*
      *  (non-Javadoc)
      * @see edu.ku.brc.specify.core.Taskable#getNavBoxes()
@@ -2287,17 +2290,17 @@ public class InteractionsTask extends BaseTask
                 if (dstObj instanceof RecordSetIFace)
                 {
                     RecordSetIFace rs = (RecordSetIFace)dstObj;
-                    if (rs.getDbTableId() == Loan.getClassTableId())
+                    if (isInteractionTable(rs.getDbTableId()))
                     {
                         DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(rs.getDbTableId());
-                        
                         super.createFormPanel(ti.getTitle(), "view", rs, IconManager.getIcon(ti.getShortClassName(), IconManager.IconSize.Std16));
                     }
                 }
             }
         }
     }
-    
+
+
     /**
      * Processes all Commands of type DB_CMD_TYPE.
      * @param cmdAction the command to be processed
