@@ -2205,7 +2205,7 @@ public class InteractionsTask extends BaseTask
                     tblIds.add(Preparation.getClassTableId());
                     recordSet = RecordSetTask.askForRecordSet(tblIds, null, true);
                 }
-                LoanReturnDlg dlg = new LoanReturnDlg(loan, recordSet);
+                LoanReturnDlg dlg = new LoanReturnDlg(loan, recordSet, defSrcTblId);
                 if (dlg.createUI()) {
                     dlg.setModal(true);
                     UIHelper.centerAndShow(dlg);

@@ -38,6 +38,8 @@ import java.awt.Insets;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.*;
 
 import javax.swing.BorderFactory;
@@ -60,9 +62,14 @@ import javax.swing.WindowConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.tasks.InteractionsProcessor;
 import org.apache.commons.lang.StringUtils;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -104,6 +111,7 @@ import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.VerticalSeparator;
 import edu.ku.brc.util.Pair;
+import org.apache.log4j.Logger;
 
 /**
  * Creates a dialog representing all the Preparation objects being returned for a loan.
@@ -118,6 +126,7 @@ import edu.ku.brc.util.Pair;
  */
 public class LoanReturnDlg extends JDialog
 {
+    private static final Logger log = Logger.getLogger(LoanReturnDlg.class);
     protected ColorWrapper           requiredfieldcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor");
     protected DateWrapper            scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
     protected Loan                   loan;
@@ -129,16 +138,21 @@ public class LoanReturnDlg extends JDialog
     protected ValComboBoxFromQuery   agentCBX;
     protected boolean                isCancelled = true;
     protected ValFormattedTextFieldSingle dateClosed;
+    protected Integer defSrcTblId;
+    protected String defIdentifierFld;
     
     /**
      * Constructor.
      * @param loan the loan
      */
-    public LoanReturnDlg(final Loan loan, final RecordSetIFace itemsForReturn)
+    public LoanReturnDlg(final Loan loan, final RecordSetIFace itemsForReturn, Integer defSrcTblId)
     {
         this.loan = loan;
         this.itemsForReturn = itemsForReturn;
-        
+        this.defSrcTblId = defSrcTblId;
+        this.defIdentifierFld = AppPreferences.getRemote().get(InteractionsProcessor.getInteractionItemLookupFieldPref(defSrcTblId),
+                InteractionsProcessor.getDefaultInteractionLookupField(defSrcTblId));
+
         ImageIcon appIcon = IconManager.getIcon("AppIcon"); //$NON-NLS-1$
         if (appIcon != null)
         {
@@ -156,7 +170,7 @@ public class LoanReturnDlg extends JDialog
             String key = itemsForReturn.getDbTableId() == CollectionObject.getClassTableId() ? "collectionObjectId" : "preparationId";
             String sqlStr = "select loanpreparationid from loanpreparation lp inner join preparation p on p.preparationid = lp.preparationid "
                         + "inner join loan l on l.loanid = lp.loanid where l.loanId = " + loan.getId() + " and p." + key + " " + inClause;
-            //if the base table is collectionobject, check prep.collectionobjectid. Preps associated with Cos not associated with the loan
+            //if the base table is collectionobject, check prep.collectionobjectid. Preps associated with Cos but not associated with the loan
             //may be present, but don't flag them as non-returnable.
             String countStr = "select count(distinct " + key + ") from preparation where " + key + " " + inClause; //querying in case of dup ids in inClause
             List<?> ids = BasicSQLUtils.querySingleCol(sqlStr);
@@ -171,6 +185,31 @@ public class LoanReturnDlg extends JDialog
         return new Pair<>(returnable, nonReturnablesPresent);
     }
 
+
+    private String getIdentifier(Pair<CollectionObject, Vector<LoanPreparation>> record, boolean format)  {
+        DBTableInfo tbl = DBTableIdMgr.getInstance().getInfoById(defSrcTblId);
+        DBFieldInfo fld = tbl.getFieldByName(defIdentifierFld);
+        UIFieldFormatterIFace idFormatter = format ? fld.getFormatter() : null;
+        try {
+            Method getter = tbl.getClassObj().getMethod("get" + StringUtils.capitalize(fld.getName()));
+            Object idVal;
+            if (defSrcTblId == CollectionObject.getClassTableId()) {
+                idVal = record.getFirst() != null ? getter.invoke(record.getFirst()) : "";
+            } else {
+                //assuming one record per prep, no nesting within co, cos repeated for each prep
+                Preparation p = record.getSecond().get(0).getPreparation();
+                idVal = p != null ? getter.invoke(p) : "";
+            }
+            if (idFormatter != null) {
+                return (String) idFormatter.formatToUI(idVal);
+            } else {
+                return idVal.toString();
+            }
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException x) {
+            log.error(x);
+            return record.getFirst().getIdentityTitle();
+        }
+    }
     /**
      * @return
      */
@@ -208,14 +247,14 @@ public class LoanReturnDlg extends JDialog
                 CollectionObject colObj = loanPrep.getPreparation() == null ? null : loanPrep.getPreparation().getCollectionObject();
                 //System.out.println("For LoanPrep ColObj Is: "+colObj.getIdentityTitle());
                 if (colObj != null) {
-                    Vector<LoanPreparation> list = null;
-                    Pair<CollectionObject, Vector<LoanPreparation>> pair = colObjHash.get(colObj.getId());
+                    Vector<LoanPreparation> list;
+                    Pair<CollectionObject, Vector<LoanPreparation>> pair = defSrcTblId == CollectionObject.getClassTableId() ?
+                            colObjHash.get(colObj.getId()) : null;
                     if (pair == null) {
                         list = new Vector<>();
                         colObjHash.put(colObj.getId(), new Pair<>(colObj, list));
                     } else {
                         list = pair.second;
-
                     }
                     list.add(loanPrep);
                 }
@@ -245,29 +284,19 @@ public class LoanReturnDlg extends JDialog
             int i = 0;
             int y = 1;
     
-            Vector<Pair<CollectionObject, Vector<LoanPreparation>>> pairList = new Vector<Pair<CollectionObject, Vector<LoanPreparation>>>(colObjHash.values());
+            Vector<Pair<CollectionObject, Vector<LoanPreparation>>> pairList = new Vector<>(colObjHash.values());
             
-            Collections.sort(pairList, new Comparator<Pair<CollectionObject, Vector<LoanPreparation>>>()
-            {
-                @Override
-                public int compare(Pair<CollectionObject, Vector<LoanPreparation>> o1,
-                                   Pair<CollectionObject, Vector<LoanPreparation>> o2)
-                {
-                    return o1.first.getIdentityTitle().compareTo(o2.first.getIdentityTitle());
-                }
-            });
+            Collections.sort(pairList, (o1, o2) -> getIdentifier(o1, false).compareTo(getIdentifier(o2, false)));
 
-            for (Pair<CollectionObject, Vector<LoanPreparation>> pair : pairList)
-            {
+            for (Pair<CollectionObject, Vector<LoanPreparation>> pair : pairList) {
                 CollectionObject co = pair.first;
                 
-                if (i > 0)
-                {
+                if (i > 0) {
                     pbuilder.addSeparator("", cc.xy(1,y));
                     y += 2;
                 }
                 
-                ColObjPanel panel = new ColObjPanel(session, this, co, colObjHash.get(co.getId()).second);
+                ColObjPanel panel = new ColObjPanel(session, this, co, colObjHash.get(co.getId()).second, getIdentifier(pair, true));
                 colObjPanels.add(panel);
                 panel.addActionListener(al, cl);
                 pbuilder.add(panel, cc.xy(1,y));
@@ -480,7 +509,8 @@ public class LoanReturnDlg extends JDialog
         public ColObjPanel(final DataProviderSessionIFace session,
                            final JDialog               dlgParent, 
                            final CollectionObject      colObj,
-                           final List<LoanPreparation> lpoList)
+                           final List<LoanPreparation> lpoList,
+                           final String identifier)
         {
             super();
             
@@ -522,7 +552,7 @@ public class LoanReturnDlg extends JDialog
                 }
             }
             
-            String descr = String.format("%s - %s", colObj.getIdentityTitle(), taxonName);
+            String descr = String.format("%s - %s", identifier, taxonName);
             descr = StringUtils.stripToEmpty(descr);
             
             checkBox = createCheckBox(descr);
