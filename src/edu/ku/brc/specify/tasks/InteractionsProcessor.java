@@ -261,7 +261,7 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
         return "InteractionItemLookupField." + tableId;
     }
 
-    private String getInteractionItemLookupField(int tableId) {
+    public static String getInteractionItemLookupField(int tableId) {
         return AppPreferences.getRemote().get(getInteractionItemLookupFieldPref(tableId), getDefaultInteractionLookupField(tableId));
     }
 

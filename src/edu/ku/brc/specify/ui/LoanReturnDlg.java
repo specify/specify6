@@ -19,6 +19,8 @@
 */
 package edu.ku.brc.specify.ui;
 
+import static edu.ku.brc.specify.conversion.BasicSQLUtils.query;
+import static edu.ku.brc.specify.conversion.BasicSQLUtils.querySingleCol;
 import static edu.ku.brc.ui.UIHelper.createButton;
 import static edu.ku.brc.ui.UIHelper.createCheckBox;
 import static edu.ku.brc.ui.UIHelper.createI18NLabel;
@@ -36,12 +38,7 @@ import java.awt.Insets;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -63,6 +60,9 @@ import javax.swing.WindowConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.dbsupport.RecordSetIFace;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import org.apache.commons.lang.StringUtils;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -121,6 +121,7 @@ public class LoanReturnDlg extends JDialog
     protected ColorWrapper           requiredfieldcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor");
     protected DateWrapper            scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
     protected Loan                   loan;
+    protected RecordSetIFace itemsForReturn;
     protected List<ColObjPanel>      colObjPanels = new Vector<ColObjPanel>();
     protected JButton                okBtn;
     protected JLabel                 summaryLabel;
@@ -133,9 +134,10 @@ public class LoanReturnDlg extends JDialog
      * Constructor.
      * @param loan the loan
      */
-    public LoanReturnDlg(final Loan loan)
+    public LoanReturnDlg(final Loan loan, final RecordSetIFace itemsForReturn)
     {
         this.loan = loan;
+        this.itemsForReturn = itemsForReturn;
         
         ImageIcon appIcon = IconManager.getIcon("AppIcon"); //$NON-NLS-1$
         if (appIcon != null)
@@ -145,7 +147,25 @@ public class LoanReturnDlg extends JDialog
 
         
     }
-    
+
+    Collection<LoanPreparation> getItemsToReturn() {
+        if (this.itemsForReturn != null) {
+            String inClause = DBTableIdMgr.getInstance().getInClause(itemsForReturn);
+            String key = itemsForReturn.getDbTableId() == CollectionObject.getClassTableId() ? "collectionObjectId" : "preparationId";
+            String sqlStr = "select loanpreparationid from loanpreparation lp inner join preparation p on p.preparationid = lp.preparationid "
+                    + "inner join loan l on l.loanid = lp.loanid where l.loanId = " + loan.getId() + " and p." + key + " " + inClause;
+            List<?> ids = BasicSQLUtils.querySingleCol(sqlStr);
+            List<LoanPreparation> result = new ArrayList<>();
+            for (LoanPreparation lp : loan.getLoanPreparations()) {
+                if (ids.indexOf(lp.getId()) != -1) {
+                    result.add(lp);
+                }
+            }
+            return result;
+        }
+        return loan.getLoanPreparations();
+    }
+
     /**
      * @return
      */
@@ -175,7 +195,7 @@ public class LoanReturnDlg extends JDialog
             //System.out.println("Num Loan Preps for Loan: "+loan.getLoanPreparations());
             
             HashMap<Integer, Pair<CollectionObject, Vector<LoanPreparation>>> colObjHash = new HashMap<Integer, Pair<CollectionObject, Vector<LoanPreparation>>>();
-            for (LoanPreparation loanPrep : loan.getLoanPreparations())
+            for (LoanPreparation loanPrep : this.getItemsToReturn())
             {
                 CollectionObject        colObj = loanPrep.getPreparation() == null ? null : loanPrep.getPreparation().getCollectionObject();
                 //System.out.println("For LoanPrep ColObj Is: "+colObj.getIdentityTitle());

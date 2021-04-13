@@ -19,6 +19,9 @@
 */
 package edu.ku.brc.specify.tasks;
 
+import static edu.ku.brc.specify.tasks.InteractionsProcessor.DEFAULT_SRC_TBL_ID;
+import static edu.ku.brc.specify.tasks.InteractionsProcessor.forAcc;
+import static edu.ku.brc.specify.tasks.InteractionsProcessor.getInteractionItemLookupField;
 import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
@@ -188,7 +191,7 @@ public class InteractionsTask extends BaseTask
     InteractionsProcessor<Gift> giftProcessor = new InteractionsProcessor<Gift>(this, InteractionsProcessor.forGift, Gift.getClassTableId());
     InteractionsProcessor<Loan> loanProcessor = new InteractionsProcessor<Loan>(this, InteractionsProcessor.forLoan,  Loan.getClassTableId());
     InteractionsProcessor<ExchangeOut> exchProcessor = new InteractionsProcessor<ExchangeOut>(this, InteractionsProcessor.forExchange,  ExchangeOut.getClassTableId());
-    InteractionsProcessor<Accession> accProcessor = new InteractionsProcessor<Accession>(this, InteractionsProcessor.forAcc,  Accession.getClassTableId());
+    InteractionsProcessor<Accession> accProcessor = new InteractionsProcessor<Accession>(this, forAcc,  Accession.getClassTableId());
     InteractionsProcessor<Disposal> disposalProcessor = new InteractionsProcessor<>(this, InteractionsProcessor.forDisposal,  Disposal.getClassTableId());
     InteractionsProcessor<Deaccession> legalDeaccProcessor = new InteractionsProcessor<>(this, InteractionsProcessor.forLegalDeacc,  Deaccession.getClassTableId());
 
@@ -2141,55 +2144,88 @@ public class InteractionsTask extends BaseTask
         };
         worker.start();
     }
-    
+    /**
+     * Asks where the source of the Loan Preps should come from.
+     * @return the source enum
+     */
+    protected ASK_TYPE askSourceOfPrepsForLoanReturn()
+    {
+        Object[] options = {
+                getResourceString("InteractionsTask.LOAN_RET_RS_FILTER"),
+                getResourceString("InteractionsTask.LOAN_RET_ID_FILTER"),
+                getResourceString("InteractionsTask.LOAN_RET_NO_FILTER")
+        };
+
+        int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(),
+                getResourceString("InteractionsTask.LOAN_RET_FILTER_DLG_MSG"),
+                getResourceString("InteractionsTask.LOAN_RET_FILTER_DLG_TITLE"),
+                JOptionPane.YES_NO_CANCEL_OPTION,
+                JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+        if (userChoice == 1) {
+            return ASK_TYPE.EnterDataObjs;
+        } else if (userChoice == 0) {
+            return ASK_TYPE.ChooseRS;
+        } else if (userChoice == 2) {
+            return ASK_TYPE.None;
+        }
+
+        return ASK_TYPE.Cancel;
+    }
+
     /**
      * Starts process to return a loan
      * @param doPartial true means show dialog and do partial, false means just return the loan
      */
-    protected void returnLoan()
-    {
-        Loan         loan    = null;
-        MultiView    mv      = null;
+    protected void returnLoan() {
+        Loan loan = null;
+        MultiView mv = null;
         SubPaneIFace subPane = SubPaneMgr.getInstance().getCurrentSubPane();
-        if (subPane != null)
-        {
+        if (subPane != null) {
             mv = subPane.getMultiView();
-            if (mv != null)
-            {
-                if (mv.getData() instanceof Loan)
-                {
-                    loan = (Loan)mv.getData();
+            if (mv != null) {
+                if (mv.getData() instanceof Loan) {
+                    loan = (Loan) mv.getData();
                 }
             }
         }
-        
-        if (mv != null && loan != null)
-        {
-            LoanReturnDlg dlg = new LoanReturnDlg(loan);
-            if (dlg.createUI())
-            {
-                dlg.setModal(true);
-                UIHelper.centerAndShow(dlg);
-                dlg.dispose();
-                
-                if (!dlg.isCancelled())
-                {
-                    FormViewObj fvp = mv.getCurrentViewAsFormViewObj();
-                    fvp.setHasNewData(true);
-                    // 03/04/09 Commented out the two lines below so the form doesn't get enabled for saving.
-                    //fvp.getValidator().setHasChanged(true);
-                    //fvp.validationWasOK(fvp.getValidator().getState() == UIValidatable.ErrorType.Valid);
-                   
-                    List<LoanReturnInfo> returns = dlg.getLoanReturnInfo();
-                    if (returns.size() > 0)
-                    {
-                        doReturnLoans(mv, dlg.getAgent(), dlg.getDate(), returns, true);
+        if (mv != null && loan != null) {
+            ASK_TYPE filter = askSourceOfPrepsForLoanReturn();
+            if (filter == ASK_TYPE.Cancel) {
+                return;
+            }
+            Integer defSrcTblId = AppPreferences.getRemote().getInt(DEFAULT_SRC_TBL_ID, null);
+            RecordSetIFace recordSet = null;
+            if (defSrcTblId != null && defSrcTblId != 0) {
+                if (filter == ASK_TYPE.EnterDataObjs) {
+                    recordSet = ((InteractionsTask) subPane.getTask()).askForDataObjRecordSet(defSrcTblId == CollectionObject.getClassTableId() ? CollectionObject.class : Preparation.class,
+                            getInteractionItemLookupField(defSrcTblId), false);
+                } else if (filter == ASK_TYPE.ChooseRS) {
+                    Vector<Integer> tblIds = new Vector<>();
+                    tblIds.add(CollectionObject.getClassTableId());
+                    tblIds.add(Preparation.getClassTableId());
+                    recordSet = RecordSetTask.askForRecordSet(tblIds, null, true);
+                }
+                LoanReturnDlg dlg = new LoanReturnDlg(loan, recordSet);
+                if (dlg.createUI()) {
+                    dlg.setModal(true);
+                    UIHelper.centerAndShow(dlg);
+                    dlg.dispose();
+                    if (!dlg.isCancelled()) {
+                        FormViewObj fvp = mv.getCurrentViewAsFormViewObj();
+                        fvp.setHasNewData(true);
+                        // 03/04/09 Commented out the two lines below so the form doesn't get enabled for saving.
+                        //fvp.getValidator().setHasChanged(true);
+                        //fvp.validationWasOK(fvp.getValidator().getState() == UIValidatable.ErrorType.Valid);
+
+                        List<LoanReturnInfo> returns = dlg.getLoanReturnInfo();
+                        if (returns.size() > 0) {
+                            doReturnLoans(mv, dlg.getAgent(), dlg.getDate(), returns, true);
+                        }
                     }
                 }
             }
-            
-        } else
-        {
+
+        } else {
             // XXX Show some kind of error dialog
         }
     }
@@ -2635,7 +2671,7 @@ public class InteractionsTask extends BaseTask
     @Override
     public void doCommand(final CommandAction cmdAction)
     {
-        super.doCommand(cmdAction);
+            super.doCommand(cmdAction);
         
         if (cmdAction.isConsumed())
         {
