@@ -148,22 +148,27 @@ public class LoanReturnDlg extends JDialog
         
     }
 
-    Collection<LoanPreparation> getItemsToReturn() {
+    Pair<Collection<LoanPreparation>, Boolean> getItemsToReturn() {
+        Collection<LoanPreparation> returnable = itemsForReturn != null ? new ArrayList<>() : loan.getLoanPreparations();
+        Boolean nonReturnablesPresent = false;
         if (this.itemsForReturn != null) {
             String inClause = DBTableIdMgr.getInstance().getInClause(itemsForReturn);
             String key = itemsForReturn.getDbTableId() == CollectionObject.getClassTableId() ? "collectionObjectId" : "preparationId";
             String sqlStr = "select loanpreparationid from loanpreparation lp inner join preparation p on p.preparationid = lp.preparationid "
-                    + "inner join loan l on l.loanid = lp.loanid where l.loanId = " + loan.getId() + " and p." + key + " " + inClause;
+                        + "inner join loan l on l.loanid = lp.loanid where l.loanId = " + loan.getId() + " and p." + key + " " + inClause;
+            //if the base table is collectionobject, check prep.collectionobjectid. Preps associated with Cos not associated with the loan
+            //may be present, but don't flag them as non-returnable.
+            String countStr = "select count(distinct " + key + ") from preparation where " + key + " " + inClause; //querying in case of dup ids in inClause
             List<?> ids = BasicSQLUtils.querySingleCol(sqlStr);
-            List<LoanPreparation> result = new ArrayList<>();
+            Integer cnt = BasicSQLUtils.getCountAsInt(countStr);
+            nonReturnablesPresent = cnt != ids.size();
             for (LoanPreparation lp : loan.getLoanPreparations()) {
                 if (ids.indexOf(lp.getId()) != -1) {
-                    result.add(lp);
+                    returnable.add(lp);
                 }
             }
-            return result;
         }
-        return loan.getLoanPreparations();
+        return new Pair<>(returnable, nonReturnablesPresent);
     }
 
     /**
@@ -195,16 +200,19 @@ public class LoanReturnDlg extends JDialog
             //System.out.println("Num Loan Preps for Loan: "+loan.getLoanPreparations());
             
             HashMap<Integer, Pair<CollectionObject, Vector<LoanPreparation>>> colObjHash = new HashMap<Integer, Pair<CollectionObject, Vector<LoanPreparation>>>();
-            for (LoanPreparation loanPrep : this.getItemsToReturn())
-            {
-                CollectionObject        colObj = loanPrep.getPreparation() == null ? null : loanPrep.getPreparation().getCollectionObject();
+            Pair<Collection<LoanPreparation>, Boolean> items = getItemsToReturn();
+            if (items.getSecond()) {
+                UIRegistry.displayInfoMsgDlgLocalized("InteractionsTask.NON_RETURNABLES_SELECTED");
+            }
+            for (LoanPreparation loanPrep : items.getFirst()) {
+                CollectionObject colObj = loanPrep.getPreparation() == null ? null : loanPrep.getPreparation().getCollectionObject();
                 //System.out.println("For LoanPrep ColObj Is: "+colObj.getIdentityTitle());
                 if (colObj != null) {
                     Vector<LoanPreparation> list = null;
                     Pair<CollectionObject, Vector<LoanPreparation>> pair = colObjHash.get(colObj.getId());
                     if (pair == null) {
-                        list = new Vector<LoanPreparation>();
-                        colObjHash.put(colObj.getId(), new Pair<CollectionObject, Vector<LoanPreparation>>(colObj, list));
+                        list = new Vector<>();
+                        colObjHash.put(colObj.getId(), new Pair<>(colObj, list));
                     } else {
                         list = pair.second;
 
