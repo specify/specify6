@@ -842,7 +842,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 							}
 							List<Integer> recIds = new ArrayList<>();
 							List<Specs> specs = null;
-							boolean updatesOnly = false;
+							boolean updatesOnly = true;
 							specs = getSpecs(schemaMapping, true, false, !updatesOnly, null);
 							if (specs == null) {
 								return false;
@@ -857,6 +857,11 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 							long cnt = 0;
 							DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
 							QueryIFace q = session.createQuery(idHql, false);
+							if (hqlSpecs.getArgs() != null) {
+								for (Pair<String, Object> param : hqlSpecs.getArgs()) {
+									q.setParameter(param.getFirst(), param.getSecond());
+								}
+							}
 							for (Object id : q.list()) {
 								recIds.add((Integer)id);
 							}
