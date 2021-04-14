@@ -616,7 +616,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 
 					if (!isExportMapping)
 					{
-						addQueryFieldItem(fieldQRI, qf, false);
+						addQueryFieldItem(fieldQRI, qf, false, true);
 					} else
 					{
 						addNewMapping(fieldQRI, qf, null, false);
@@ -651,11 +651,16 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
             queryFieldsScroll.setBorder(null);
         } else {
-            queryFieldsScroll = new JTabbedPane();
-            /*((JTabbedPane) queryFieldsScroll).addTab("core", new JScrollPane(queryFieldsPanel,
+            //forget about multiple tabs for now
+            queryFieldsScroll = new JScrollPane(queryFieldsPanel,
+                    ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+                    ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+            queryFieldsScroll.setBorder(null);
+            /*queryFieldsScroll = new JTabbedPane();
+            ((JTabbedPane) queryFieldsScroll).addTab("core", new JScrollPane(queryFieldsPanel,
                     ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
                     ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER));
-            addExtensionTab(new DwcExtensionInfo("audobon core", "blah blah blah"));*/
+            /*addExtensionTab(new DwcExtensionInfo("audobon core", "blah blah blah"));*/
         }
         add(queryFieldsScroll);
 
@@ -914,7 +919,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      */
     protected void addNewMapping(FieldQRI fieldQRI, SpQueryField qf, QueryFieldPanel aQfp, boolean loading)
     {
-    	QueryFieldPanel qfp = aQfp == null ? addQueryFieldItem(fieldQRI, qf, false) : aQfp;
+    	QueryFieldPanel qfp = aQfp == null ? addQueryFieldItem(fieldQRI, qf, false, false) : aQfp;
     	if (qfp != null)
     	{
     		SpExportSchemaItemMapping newMapping = new SpExportSchemaItemMapping();
@@ -1102,11 +1107,12 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      * @param ei
      */
     protected void addExtensionTab(DwcExtensionInfo ei) {
-        JScrollPane sp = new JScrollPane(makeFieldsPanel(),
-                ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
-                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        ((JTabbedPane)queryFieldsScroll).addTab(ei.getShortName(), sp);
-        extensionInfoMap.put(ei, sp);
+        System.out.println("addExtensionTab() is not implemented.");
+//        JScrollPane sp = new JScrollPane(makeFieldsPanel(),
+//                ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+//                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+//        ((JTabbedPane)queryFieldsScroll).addTab(ei.getShortName(), sp);
+//        extensionInfoMap.put(ei, sp);
     }
 
     /**
@@ -1114,9 +1120,10 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      * @param ei
      */
     protected void removeExtensionTab(DwcExtensionInfo ei) {
-        Component c = extensionInfoMap.get(ei);
-        ((JTabbedPane)queryFieldsScroll).remove(c);
-        extensionInfoMap.remove(ei);
+        System.out.println("removeExtensionTab() is not implemented.");
+//        Component c = extensionInfoMap.get(ei);
+//        ((JTabbedPane)queryFieldsScroll).remove(c);
+//        extensionInfoMap.remove(ei);
     }
 
 
@@ -1128,21 +1135,23 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     protected Map<JScrollPane, List<QueryFieldPanel>> processRowTypes(List<QueryFieldPanel> qfps) {
         Map<JScrollPane, List<QueryFieldPanel>> result = new HashMap<>();
         if (schemaMapping != null) {
-            for (QueryFieldPanel qfp : qfps) {
-                List<QueryFieldPanel> qfpList = result.get((JScrollPane) extensionInfoMap.get(qfp.getExtensionInfo()));
-                if (qfpList == null) {
-                    addExtensionTab(qfp.getExtensionInfo());
-                    qfpList = new ArrayList<>();
-                    result.put((JScrollPane) extensionInfoMap.get(qfp.getExtensionInfo()), qfpList);
-                }
-                qfpList.add(qfp);
-            }
-            for (List<QueryFieldPanel> panels : result.values()) {
-                //assuming header will always be first
-                if (panels.size() > 0 && !panels.get(0).isCreateAsHeader()) {
-                    panels.add(0, new QueryFieldPanel(this, null, null, saveBtn, null, schemaMapping));
-                }
-            }
+            System.out.println("processRowTypes() is not implemented for multiple extensions");
+            result.put((JScrollPane)queryFieldsScroll, qfps); //default
+//            for (QueryFieldPanel qfp : qfps) {
+//                List<QueryFieldPanel> qfpList = result.get((JScrollPane) extensionInfoMap.get(qfp.getExtensionInfo()));
+//                if (qfpList == null) {
+//                    addExtensionTab(qfp.getExtensionInfo());
+//                    qfpList = new ArrayList<>();
+//                    result.put((JScrollPane) extensionInfoMap.get(qfp.getExtensionInfo()), qfpList);
+//                }
+//                qfpList.add(qfp);
+//            }
+//            for (List<QueryFieldPanel> panels : result.values()) {
+//                //assuming header will always be first
+//                if (panels.size() > 0 && !panels.get(0).isCreateAsHeader()) {
+//                    panels.add(0, new QueryFieldPanel(this, null, null, saveBtn, null, schemaMapping));
+//                }
+//            }
         } else {
             result.put((JScrollPane)queryFieldsScroll, qfps);
         }
@@ -4172,7 +4181,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 											if (!isExportMapping)
 											{
 												addQueryFieldItem(fieldQRI, qf,
-														false);
+														false, true);
 											} else
 											{
 												addNewMapping(fieldQRI, qf,
@@ -5099,7 +5108,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      * Add QueryFieldItem to the list created with a TableFieldPair.
      * 
      */
-    protected QueryFieldPanel addQueryFieldItem(final FieldQRI fieldQRI, final SpQueryField queryField, final boolean loading)
+    protected QueryFieldPanel addQueryFieldItem(final FieldQRI fieldQRI, final SpQueryField queryField, final boolean loading, final boolean updateUI)
     {
         QueryFieldPanel result = null;
     	if (fieldQRI != null)
@@ -5117,7 +5126,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             queryFieldItems.add(qfp);
             qualifyFieldLabels();
             fieldQRI.setIsInUse(true);
-            updateUIAfterAddOrMap(fieldQRI, qfp, loading, true, false);
+            if (updateUI) {
+                updateUIAfterAddOrMap(fieldQRI, qfp, loading, true, false);
+            }
         }
     	return result;
     }
