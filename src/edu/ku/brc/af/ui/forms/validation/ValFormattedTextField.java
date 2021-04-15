@@ -419,7 +419,7 @@ public class ValFormattedTextField extends JPanel implements ValFormattedTextFie
                     
                 } else
                 {
-                    JTextField tf = new BGTextField(f.getSize(), isViewOnly ? "" : f.getValue());
+                    JTextField tf = new BGTextField(f.getSize(), isViewOnly ? "" : f.toPattern());
                     tfToAdd = tf;
                     
                     if (inx == 0)

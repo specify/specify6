@@ -615,7 +615,7 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
         StringBuilder str = new StringBuilder();
         for (UIFieldFormatterField field : fields)
         {
-            str.append(field.getValue());
+            str.append(field.toPattern());
         }
         return str.toString();
     }

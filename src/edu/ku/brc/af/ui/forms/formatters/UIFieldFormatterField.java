@@ -48,6 +48,7 @@ public class UIFieldFormatterField implements Cloneable
     protected int       size;
     protected int minSize;
     protected String    value;
+    protected String pattern;
 
     protected boolean   incrementer;
     protected boolean   byYear;
@@ -88,7 +89,7 @@ public class UIFieldFormatterField implements Cloneable
                                  final String    value,
                                  final boolean   incrementer,
                                  final boolean   byYear) {
-        this(type, size, size, value, incrementer, byYear);
+        this(type, size, size, value, null, incrementer, byYear);
     }
 
         /**
@@ -102,7 +103,8 @@ public class UIFieldFormatterField implements Cloneable
     public UIFieldFormatterField(final FieldType type, 
                                  final int       size,
                                  final int minSize,
-                                 final String    value, 
+                                 final String    value,
+                                 final String pattern,
                                  final boolean   incrementer, 
                                  final boolean   byYear)
     {
@@ -112,6 +114,7 @@ public class UIFieldFormatterField implements Cloneable
         this.size        = size;
         this.minSize = minSize;
         this.value       = value;
+        this.pattern = pattern;
         this.incrementer = incrementer;
         this.byYear      = byYear;
         
@@ -234,6 +237,13 @@ public class UIFieldFormatterField implements Cloneable
         return value == null ? "" : value;
     }
 
+    public String toPattern() {
+        if (type.equals(FieldType.regex)) {
+            return pattern;
+        } else {
+            return pattern != null ? pattern : value;
+        }
+    }
     /**
      * @return
      */
