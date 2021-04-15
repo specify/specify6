@@ -619,6 +619,7 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
             int     size    = XMLHelper.getAttr(fldElement, "size", 1);
             int     minSize = XMLHelper.getAttr(fldElement, "minsize", size);
             String  value   = fldElement.attributeValue("value");
+            String pattern = fldElement.attributeValue("pattern");
             String  typeStr = fldElement.attributeValue("type");
             boolean increm  = XMLHelper.getAttr(fldElement, "inc", false);
             boolean byYear  = false;
@@ -641,7 +642,7 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
                 byYear = XMLHelper.getAttr(fldElement, "byyear", false);
             }
 
-            fields.add(new UIFieldFormatterField(type, size, minSize, value, increm, byYear));
+            fields.add(new UIFieldFormatterField(type, size, minSize, value, pattern, increm, byYear));
             if (increm)
             {
                 isInc = true;
