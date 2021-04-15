@@ -816,14 +816,22 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 					}
 
 					private String getOutputFileName() {
-						return "/home/timo/datas/gbifreg/" + schemaMapping.getMappingName();
+						return "/home/timo/datas/gbifreg/" + schemaMapping.getMappingName() + "_" + Integer.valueOf(Double.valueOf(Math.random()*10000).intValue());
 					}
 
 					private boolean needToDoIt() {
 						Object[] dat = BasicSQLUtils.queryForRow("select datediff(now(), lastexported) - UpdatePeriodDays from spstynthy where spexportschemamappingid = " + schemaMapping.getId());
-						Long days = Long.valueOf(dat[0].toString());
+						Long days = dat[0] != null ? Long.valueOf(dat[0].toString()) : null;
 						return days == null || days >= 0;
 					}
+
+					private boolean checkForUpdatedRecs() {
+					    return true; //should be pref or val in spstynthy.
+                    }
+
+                    private void setExportTime() {
+                        BasicSQLUtils.update("update spstynthy set lastexported = now() where spexportschemamappingid = " + schemaMapping.getId());
+                    }
 					/* (non-Javadoc)
 					 * @see javax.swing.SwingWorker#doInBackground()
 					 */
@@ -842,8 +850,17 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 							}
 							List<Integer> recIds = new ArrayList<>();
 							List<Specs> specs = null;
-							boolean updatesOnly = true;
-							specs = getSpecs(schemaMapping, true, false, !updatesOnly, null);
+							boolean exportAll = !checkForUpdatedRecs();
+							if (!exportAll) {
+							    List<Object> r = BasicSQLUtils.querySingleCol("select lastexported from spstynthy where  spexportschemamappingid = " + schemaMapping.getId());
+							    if (r.size() > 0) {
+                                    schemaMapping.setTimestampExported((Timestamp) r.get(0));
+                                } else {
+							        schemaMapping.setTimestampExported((Timestamp) null);
+							        exportAll = true;
+                                }
+                            }
+							specs = getSpecs(schemaMapping, true, false, exportAll, null);
 							if (specs == null) {
 								return false;
 							}
@@ -900,6 +917,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 					@Override
 					protected void done() {
 						super.done();
+						setExportTime();
 						ExportPanel.this.createDwcaBtn.setEnabled(true); //?? OR publishToGbifBtn
 					}
 
