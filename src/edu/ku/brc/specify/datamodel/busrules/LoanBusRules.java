@@ -272,6 +272,8 @@ public class LoanBusRules extends AttachmentOwnerBaseBusRules
                 if (allResolved)
                 {
                     ((JButton)comp).setText(UIRegistry.getResourceString("LOAN_ALL_PREPS_RETURNED"));
+                } else {
+                    ((JButton)comp).setText("Return Loan");
                 }
             }
             
