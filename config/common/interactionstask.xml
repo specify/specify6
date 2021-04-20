@@ -211,17 +211,17 @@
     </droppableFlavors>
   </entry>
   
-  <entry name="returnloan" table="loan" label="RET_LOAN" type="Interactions" action="RET_LOAN" icon="Loan" 
+  <!--entry name="returnloan" table="loan" label="RET_LOAN" type="Interactions" action="RET_LOAN" icon="Loan"
          issrchsrv="false" isonleft="true" order="0" enabled="true" visible="true" tooltip="">
     <draggableFlavors/>
     <droppableFlavors>
       <flavor isdrag="false" classname="edu.ku.brc.specify.tasks.RecordSetTask" humanreadable="Record_Set">
         <tableIds>
-          <int>52</int>  <!-- loan         -->
+          <int>52</int>
         </tableIds>
       </flavor>
     </droppableFlavors>
-  </entry>
+  </entry-->
   
   <entry name="printloan" table="loan" label="PRINT_INVOICE" type="Interactions" action="PRINT_INVOICE" icon="Reports" isonleft="true" 
                 issrchsrv="false" order="0" enabled="true" visible="true" tooltip="InteractionsTask.PRT_INV">
