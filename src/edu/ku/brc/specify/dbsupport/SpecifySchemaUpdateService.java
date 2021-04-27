@@ -2587,7 +2587,8 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                                 + "REFERENCED_TABLE_SCHEMA = '" + databaseName + "' AND REFERENCED_TABLE_NAME = 'deaccessionpreparation'";
                         Vector<Object[]> constraints = query(conn, sql);
                         for (Object[] c : constraints) {
-                            sql = "alter table " + c[0] + " drop constraint " + c[1];
+                            //sql = "alter table " + c[0] + " drop constraint " + c[1];
+                            sql = "alter table " + c[0] + " drop foreign key " + c[1];
                             if (-1 == update(conn, sql)) {
                                 errMsgList.add("update error: " + sql);
                             }
