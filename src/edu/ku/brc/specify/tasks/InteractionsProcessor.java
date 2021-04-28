@@ -205,7 +205,7 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
         createOrAdd(currPrepProvider, null, null);
     }
 
-    private int promptForItemIdTableId() {
+    public static int promptForItemIdTableId() {
         JPanel mainPane = new JPanel(new BorderLayout());
         mainPane.add(new Label(getResourceString("InteractionsProcessor.ItemIDForTblMsg")), BorderLayout.NORTH);
         ButtonGroup buttGrp = new ButtonGroup();

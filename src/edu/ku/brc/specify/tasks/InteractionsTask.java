@@ -2194,15 +2194,22 @@ public class InteractionsTask extends BaseTask
                 return;
             }
             Integer defSrcTblId = AppPreferences.getRemote().getInt(DEFAULT_SRC_TBL_ID, null);
+            if (defSrcTblId == 0 && filter == ASK_TYPE.EnterDataObjs) {
+                defSrcTblId = InteractionsProcessor.promptForItemIdTableId();
+            }
             RecordSetIFace recordSet = null;
-            if (defSrcTblId != null && defSrcTblId != 0) {
+            if (defSrcTblId != null && (defSrcTblId != 0 || filter == ASK_TYPE.ChooseRS)) {
                 if (filter == ASK_TYPE.EnterDataObjs) {
                     recordSet = ((InteractionsTask) subPane.getTask()).askForDataObjRecordSet(defSrcTblId == CollectionObject.getClassTableId() ? CollectionObject.class : Preparation.class,
                             getInteractionItemLookupField(defSrcTblId), false);
                 } else if (filter == ASK_TYPE.ChooseRS) {
                     Vector<Integer> tblIds = new Vector<>();
-                    tblIds.add(CollectionObject.getClassTableId());
-                    tblIds.add(Preparation.getClassTableId());
+                    if (defSrcTblId == 0) {
+                        tblIds.add(CollectionObject.getClassTableId());
+                        tblIds.add(Preparation.getClassTableId());
+                    } else {
+                        tblIds.add(defSrcTblId);
+                    }
                     recordSet = RecordSetTask.askForRecordSet(tblIds, null, true);
                 }
                 LoanReturnDlg dlg = new LoanReturnDlg(loan, recordSet, defSrcTblId);
