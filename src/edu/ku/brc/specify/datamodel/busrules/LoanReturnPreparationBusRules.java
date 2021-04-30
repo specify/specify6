@@ -165,20 +165,21 @@ public class LoanReturnPreparationBusRules extends BaseBusRules
                 int qQntRet = getInt(loanPrep.getQuantityReturned());
                 
                 // Calculate the total available
-                int qtyToBeReturned = Math.max(0, qQnt - qQntRet); // shouldn't be negative
-                int qtyToBeResolved = Math.max(0, qQnt - qQntRes); // shouldn't be negative
-                
+
                 int qtyRetLPR = getInt(loanRetPrep.getQuantityReturned());
                 int qtyResLPR = getInt(loanRetPrep.getQuantityResolved());
-                
+
+                int qtyToBeReturned = Math.max(0, qQnt - qQntRet + qtyResLPR); // shouldn't be negative
+                int qtyToBeResolved = Math.max(0, qQnt - qQntRes + qtyResLPR); // shouldn't be negative
+
                 JButton newBtn = formViewObj.getRsController().getNewRecBtn();
                 newBtn.setEnabled(qtyToBeReturned > 0);
                 
                 ValSpinner quantityReturned = (ValSpinner)comp;
-                quantityReturned.setRange(0, qtyRetLPR+qtyToBeReturned, qtyRetLPR);
-                
                 ValSpinner quantityResolved = (ValSpinner)formViewObj.getControlByName("quantityResolved");
-                quantityResolved.setRange(0, qtyResLPR+qtyToBeResolved, qtyResLPR);
+
+                quantityReturned.setRange(0, qtyToBeResolved, qtyRetLPR);
+                quantityResolved.setRange(0, qtyToBeResolved, qtyResLPR);
             }
         }
         
@@ -291,14 +292,14 @@ public class LoanReturnPreparationBusRules extends BaseBusRules
                     {
                         final JTextField qtyReturnedVS = (JTextField)loanPrepFVO.getControlByName("quantityReturned");
                         final JTextField qtyResolvedVS = (JTextField)comp;
-                        
+
                         qtyReturnedVS.setText(Integer.toString(qtyRet));
                         qtyResolvedVS.setText(Integer.toString(qtyRes));
-                                           
+
                         loanPrep.setQuantityReturned(qtyRet);
                         loanPrep.setQuantityResolved(qtyRes);
                     }
-                    
+
                     int qQnt    = 0;
                     int qQntRes = 0;
                     for (LoanPreparation lp : loan.getLoanPreparations())
