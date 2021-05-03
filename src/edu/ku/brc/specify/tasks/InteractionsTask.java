@@ -2066,11 +2066,13 @@ public class InteractionsTask extends BaseTask
                         loanRetPrep.setQuantityResolved(loanRetInfo.getResolvedQty());
                         loanRetPrep.setQuantityReturned(loanRetInfo.getReturnedQty());
                         
-                        loanPrep.setIsResolved(loanRetInfo.isResolved());
+                        Integer lpReturned = loanPrep.getQuantityReturned() != null ? loanPrep.getQuantityReturned() : 0;
+                        Integer lpResolved = loanPrep.getQuantityResolved() != null ? loanPrep.getQuantityResolved() : 0;
+                        loanPrep.setQuantityResolved(lpResolved + loanRetInfo.getResolvedQty());
+                        loanPrep.setQuantityReturned(lpReturned + loanRetInfo.getReturnedQty());
+                        loanPrep.setIsResolved(loanPrep.getQuantityResolved() == loanPrep.getQuantity());
                         loanRetPrep.setRemarks(loanRetInfo.getRemarks());
-                        loanPrep.setQuantityResolved(loanRetInfo.getResolvedQty());
-                        loanPrep.setQuantityReturned(loanRetInfo.getReturnedQty());
-                        
+
                         loanPrep.addReference(loanRetPrep, "loanReturnPreparations");
                         
                         if (doingSingleItem)

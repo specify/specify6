@@ -709,35 +709,35 @@ public class LoanReturnDlg extends JDialog
                 
                 int quantityResOut   = quantityLoaned - quantityResolved;
                 int quantityRetOut   = quantityLoaned - quantityReturned;
-                
+
                 if ((quantityResOut > 0 || quantityRetOut > 0) && !lpo.getIsResolved())
                 {
-                    maxValue = quantityLoaned;
+                    maxValue = quantityLoaned - quantityResolved;
                     
-                    SpinnerModel retModel = new SpinnerNumberModel(quantityReturned, //initial value
-                                               quantityReturned, //min
-                                               quantityLoaned,   //max
+                    SpinnerModel retModel = new SpinnerNumberModel(0, //initial value
+                                               0, //min
+                                               maxValue,   //max
                                                1);               //step
                     returnedSpinner = new JSpinner(retModel);
                     fixBGOfJSpinner(returnedSpinner);
                     pbuilder.add(returnedSpinner, cc.xy(x, 1)); x += 2; // 3
                     setControlSize(returnedSpinner);
                     
-                    String fmtStr = String.format(getResourceString("LOANRET_OF_FORMAT_RET"), quantityLoaned);
+                    String fmtStr = String.format(getResourceString("LOANRET_OF_FORMAT_RET"), maxValue);
                     pbuilder.add(retLabel = createLabel(fmtStr), cc.xy(x, 1)); x += 1; // 5
                     
                     pbuilder.add(new VerticalSeparator(fg, bg, 20), cc.xy(x,1)); x += 1; // 6
                     
-                    SpinnerModel resModel = new SpinnerNumberModel(quantityResolved, //initial value
-                            quantityResolved, //min
-                            quantityLoaned,   //max
+                    SpinnerModel resModel = new SpinnerNumberModel(0, //initial value
+                            0, //min
+                            maxValue,   //max
                             1);               //step
                     resolvedSpinner = new JSpinner(resModel);
                     fixBGOfJSpinner(resolvedSpinner);
                     pbuilder.add(resolvedSpinner, cc.xy(x, 1)); x += 2; // 7
                     setControlSize(resolvedSpinner);
                     
-                    fmtStr = String.format(getResourceString("LOANRET_OF_FORMAT_RES"), quantityLoaned);
+                    fmtStr = String.format(getResourceString("LOANRET_OF_FORMAT_RES"), maxValue);
                     pbuilder.add(retLabel = createLabel(fmtStr), cc.xy(x, 1)); x += 1; // 9
                     
                     ChangeListener cl = new ChangeListener()
