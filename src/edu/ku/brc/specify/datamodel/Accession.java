@@ -19,7 +19,9 @@
 */
 package edu.ku.brc.specify.datamodel;
 
+import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -30,8 +32,7 @@ import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
-
-
+import java.util.Vector;
 
 
 /**
@@ -85,6 +86,7 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
     protected Set<Appraisal>              appraisals;
     protected Set<TreatmentEvent>         treatmentEvents;
     protected Set<AccessionCitation> accessionCitations;
+    protected Set<Deaccession> deaccessions;
 
     // Constructors
 
@@ -137,8 +139,60 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
         appraisals              = new HashSet<Appraisal>();
         treatmentEvents         = new HashSet<TreatmentEvent>();
         accessionCitations = new HashSet<>();
+        deaccessions = null;
     }
     // End Initializer
+
+
+    /**
+     *
+     * @return
+     */
+    @Transient
+    public Set<Deaccession> getDeaccessions() {
+        if (deaccessions == null) {
+            deaccessions = buildDeaccessions();
+        }
+        return deaccessions;
+    }
+
+    /**
+     *
+     * @return
+     */
+    private Set<Deaccession> buildDeaccessions() {
+        Set<Deaccession> result = new HashSet<>();
+        if (getId() != null) {
+            String dispSql = "select distinct deaccessionid from deaccession d inner join disposal dis on dis.deaccessionid = d.deaccessionid "
+                    + "inner join disposalpreparation dispp on dispp.disposalid = dispp.disposalid inner join preparation p "
+                    + "on p.preparationid = dispp.preparationid inner join collectionobject co on co.collectionobjectid = p.collectionobjectid "
+                    + "where co.collectionobject = " + getId();
+            String giftSql = "select distinct deaccessionid from deaccession d inner join gift dis on dis.deaccessionid = d.deaccessionid "
+                    + "inner join giftpreparation dispp on dispp.giftid = dispp.giftid inner join preparation p "
+                    + "on p.preparationid = dispp.preparationid inner join collectionobject co on co.collectionobjectid = p.collectionobjectid "
+                    + "where co.collectionobject = " + getId();
+            String exchSql = "select distinct deaccessionid from deaccession d inner join exchangeout dis on dis.deaccessionid = d.deaccessionid "
+                    + "inner join exchangeoutprep dispp on dispp.exchangeoutid = dispp.exchangeoutid inner join preparation p "
+                    + "on p.preparationid = dispp.preparationid inner join collectionobject co on co.collectionobjectid = p.collectionobjectid "
+                    + "where co.collectionobject = " + getId();
+            String sql = dispSql + " UNION " + giftSql + " UNION " + exchSql;
+            Vector<Object> ids = BasicSQLUtils.querySingleCol(sql);
+            DataProviderSessionIFace session = null;
+            try {
+                session = DataProviderFactory.getInstance().createSession();
+                for (Object id : ids) {
+                    result.add(session.get(Deaccession.class, (Integer) id));
+                }
+            } catch (Exception x) {
+                log.error(x);
+            } finally {
+                if (session != null) {
+                    session.close();
+                }
+            }
+        }
+        return result;
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#clone()
