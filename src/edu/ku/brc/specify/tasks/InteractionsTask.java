@@ -2194,7 +2194,7 @@ public class InteractionsTask extends BaseTask
             if (filter == ASK_TYPE.Cancel) {
                 return;
             }
-            Integer defSrcTblId = AppPreferences.getRemote().getInt(DEFAULT_SRC_TBL_ID, null);
+            Integer defSrcTblId = AppPreferences.getRemote().getInt(DEFAULT_SRC_TBL_ID, 0);
             if (defSrcTblId == 0 && filter == ASK_TYPE.EnterDataObjs) {
                 defSrcTblId = InteractionsProcessor.promptForItemIdTableId();
             }
