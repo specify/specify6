@@ -22,6 +22,7 @@ package edu.ku.brc.specify.tasks;
 import static edu.ku.brc.specify.tasks.InteractionsProcessor.DEFAULT_SRC_TBL_ID;
 import static edu.ku.brc.specify.tasks.InteractionsProcessor.forAcc;
 import static edu.ku.brc.specify.tasks.InteractionsProcessor.getInteractionItemLookupField;
+import static edu.ku.brc.ui.UIRegistry.displayInfoMsgDlg;
 import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
@@ -2185,6 +2186,10 @@ public class InteractionsTask extends BaseTask
             }
         }
         if (mv != null && loan != null) {
+            if (mv.getCurrentViewAsFormViewObj().getSaveComponent().isEnabled()) {
+                displayInfoMsgDlg(getResourceString("InteractionsTask.RET_LOAN_NOT_AVAILABLE_UNSAVED_CHANGES"));
+                return;
+            }
             ASK_TYPE filter = askSourceOfPrepsForLoanReturn();
             if (filter == ASK_TYPE.Cancel) {
                 return;
@@ -2215,11 +2220,10 @@ public class InteractionsTask extends BaseTask
                     dlg.dispose();
                     if (!dlg.isCancelled()) {
                         FormViewObj fvp = mv.getCurrentViewAsFormViewObj();
-                        fvp.setHasNewData(true);
+                        fvp.setHasNewData(true); //setting to false might eliminate need for changes in formViewObj for #897??
                         // 03/04/09 Commented out the two lines below so the form doesn't get enabled for saving.
                         //fvp.getValidator().setHasChanged(true);
                         //fvp.validationWasOK(fvp.getValidator().getState() == UIValidatable.ErrorType.Valid);
-
                         List<LoanReturnInfo> returns = dlg.getLoanReturnInfo();
                         if (returns.size() > 0) {
                             doReturnLoans(mv, dlg.getAgent(), dlg.getDate(), returns, true);
