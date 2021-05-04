@@ -29,6 +29,7 @@ import java.awt.Component;
 import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
 import java.io.File;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -2072,6 +2073,7 @@ public class InteractionsTask extends BaseTask
                         loanPrep.setQuantityReturned(lpReturned + loanRetInfo.getReturnedQty());
                         loanPrep.setIsResolved(loanPrep.getQuantityResolved() == loanPrep.getQuantity());
                         loanRetPrep.setRemarks(loanRetInfo.getRemarks());
+                        loanPrep.setTimestampModified(new Timestamp(System.currentTimeMillis()));
 
                         loanPrep.addReference(loanRetPrep, "loanReturnPreparations");
                         
@@ -2097,7 +2099,7 @@ public class InteractionsTask extends BaseTask
                         {
                             loan.setIsClosed(true);
                         }
-                        
+                        loan.setTimestampModified(new Timestamp(System.currentTimeMillis()));
                         session.save(loanRetPrep);
                         session.saveOrUpdate(loanPrep);
                         session.saveOrUpdate(loan);
@@ -2126,21 +2128,13 @@ public class InteractionsTask extends BaseTask
 
             //Runs on the event-dispatching thread.
             @Override
-            public void finished()
-            {
+            public void finished() {
                 statusBar.setProgressDone(INTERACTIONS);
                 statusBar.setText("");
-                if (multiView != null)
-                {
-                    multiView.setIsNewForm(false, true);
-                    multiView.setData(null);
-                    if (doingSingleItem && mergedLoans.size() == 1)
-                    {
-                        multiView.setData(mergedLoans.values().iterator().next());
-                    }
+                if (multiView != null) {
+                    multiView.getCurrentViewAsFormViewObj().reloadDataObj(true);
                 }
                 UIRegistry.clearSimpleGlassPaneMsg();
-                
                 UIRegistry.showLocalizedMsg(JOptionPane.INFORMATION_MESSAGE, "InteractionsTask.LN_RET_TITLE", "InteractionsTask.RET_LN_SV", numLPR);
             }
         };

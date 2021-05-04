@@ -2452,13 +2452,20 @@ public class FormViewObj implements Viewable,
         JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(), actualMsg != null ? actualMsg : getResourceString(msgResStr), getResourceString("Error"), JOptionPane.ERROR_MESSAGE);
         reloadDataObj();
     }
-    
+
     /**
      * Reloads a current (non-new) object from the database i nto the the form.
      */
-    protected void reloadDataObj()
+    public void reloadDataObj() {
+        reloadDataObj(false);
+    }
+
+    /**
+     * Reloads a current (non-new) object from the database i nto the the form.
+     */
+    public void reloadDataObj(boolean forceReload)
     {
-        if (!isNewlyCreatedDataObj)
+        if (!isNewlyCreatedDataObj || forceReload)
         {
             if (mvParent != null)
             {
