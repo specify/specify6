@@ -2623,6 +2623,8 @@ public class InteractionsTask extends BaseTask
             giftProcessor.createOrAdd((Gift) cmdAction.getData());
         } else if (cmdAction.isAction(ADD_TO_ACCESSION)) {
             accProcessor.createOrAdd((Accession) cmdAction.getData());
+        } else if (cmdAction.isAction(ADD_TO_DISPOSAL)) {
+            disposalProcessor.createOrAdd((Disposal) cmdAction.getData());
         } else if (cmdAction.isAction(INFO_REQ_MESSAGE)) {
             if (cmdAction.getData() == cmdAction || cmdAction.getData() instanceof Viewable) {
                 // We get here when a user clicks on a InfoRequest NB action

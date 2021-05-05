@@ -17,19 +17,96 @@
  */
 package edu.ku.brc.specify.datamodel.busrules;
 
-import edu.ku.brc.af.ui.forms.BaseBusRules;
-import edu.ku.brc.af.ui.forms.BusinessRulesIFace;
-import edu.ku.brc.specify.datamodel.Disposal;
-import edu.ku.brc.specify.datamodel.DisposalPreparation;
-import edu.ku.brc.specify.datamodel.LoanReturnPreparation;
+import edu.ku.brc.af.ui.forms.*;
+import edu.ku.brc.af.ui.forms.validation.UIValidator;
+import edu.ku.brc.af.ui.forms.validation.ValCheckBox;
+import edu.ku.brc.af.ui.forms.validation.ValSpinner;
+import edu.ku.brc.specify.datamodel.*;
 //import edu.ku.brc.specify.datamodel.Preparation;
-import edu.ku.brc.specify.datamodel.Preparation;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.CommandListener;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.util.Triple;
+import org.apache.log4j.Logger;
 
-public class DisposalPreparationBusRules extends BaseBusRules {
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Set;
+
+public class DisposalPreparationBusRules extends BaseBusRules  implements CommandListener {
+    public static final String CMDTYPE     = "Interactions";
+    public static final String ADD_TO_DISPOSAL = "AddToDisposal";
 
     public DisposalPreparationBusRules() {
         super(DisposalPreparationBusRules.class);
+        CommandDispatcher.register(CMDTYPE, this);
+    }
+    private static final Logger log = Logger.getLogger(DisposalPreparationBusRules.class);
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#initialize(edu.ku.brc.af.ui.forms.Viewable)
+     */
+    @Override
+    public void initialize(Viewable viewableArg) {
+        super.initialize(viewableArg);
+
+        if (formViewObj != null) {
+            formViewObj.setSkippingAttach(true);
+
+            if (formViewObj.getRsController() != null) {
+                JButton newBtn = formViewObj.getRsController().getNewRecBtn();
+                if (newBtn != null) {
+                    // Remove all ActionListeners, there should only be one
+                    for (ActionListener al : newBtn.getActionListeners()) {
+                        newBtn.removeActionListener(al);
+                    }
+
+                    newBtn.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            MultiView disposalMV = null;
+                            if (viewable instanceof FormViewObj) {
+                                disposalMV = formViewObj.getMVParent().getMultiViewParent();
+                                formViewObj.getDataFromUI();
+
+                            } else if (viewable instanceof TableViewObj) {
+                                TableViewObj tblViewObj = (TableViewObj) viewable;
+                                disposalMV = tblViewObj.getMVParent().getMultiViewParent();
+                            }
+
+                            if (disposalMV != null) {
+                                formViewObj.getDataFromUI();
+                                CommandDispatcher.dispatch(new CommandAction(CMDTYPE, ADD_TO_DISPOSAL, disposalMV.getCurrentViewAsFormViewObj().getCurrentDataObj()));
+                            }
+                        }
+                    });
+                }
+            }
+        } else if (viewableArg instanceof TableViewObj) {
+            final TableViewObj tvo = (TableViewObj) viewableArg;
+            JButton newBtn = tvo.getNewButton();
+            if (newBtn != null) {
+                // Remove all ActionListeners, there should only be one
+                for (ActionListener al : newBtn.getActionListeners()) {
+                    newBtn.removeActionListener(al);
+                }
+
+                newBtn.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        MultiView disposalMV = tvo.getMVParent().getMultiViewParent();
+                        if (disposalMV != null) {
+                            CommandDispatcher.dispatch(new CommandAction(CMDTYPE, ADD_TO_DISPOSAL, disposalMV.getCurrentViewAsFormViewObj().getCurrentDataObj()));
+                        }
+                    }
+                });
+            }
+        }
     }
 
     @Override
@@ -95,6 +172,42 @@ public class DisposalPreparationBusRules extends BaseBusRules {
             return true;
         }
         return true;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.CommandListener#doCommand(edu.ku.brc.ui.CommandAction)
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public void doCommand(CommandAction cmdAction) {
+        if (cmdAction.isType(CMDTYPE) && cmdAction.isAction("REFRESH_DISPOSAL_PREPS")) {
+            if (formViewObj != null) {
+                MultiView disposalMV = formViewObj.getMVParent().getMultiViewParent();
+                if (disposalMV != null) {
+                    if (formViewObj.getValidator() != null) {
+                        // Reset in the data sp it shows up
+                        Disposal disposal = (Disposal) disposalMV.getData();
+                        formViewObj.setDataObj(disposal.getDisposalPreparations());
+                        formViewObj.getValidator().setHasChanged(true);
+                        formViewObj.getValidator().validateRoot();
+                    }
+                }
+
+            } else if (viewable instanceof TableViewObj) {
+                TableViewObj tvo = (TableViewObj) viewable;
+                // Make sure the Disposal form knows there is a change
+                MultiView disposalMV = tvo.getMVParent().getMultiViewParent();
+                if (disposalMV != null && disposalMV.getCurrentValidator() != null) {
+                    disposalMV.getCurrentValidator().setHasChanged(true);
+                    disposalMV.getCurrentValidator().validateRoot();
+                } else {
+                    log.error("The Disposal's Multiview should not be null!");
+                }
+
+                // Refresh list in the grid
+                tvo.refreshDataList();
+            }
+        }
     }
 
 }
