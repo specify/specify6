@@ -2512,6 +2512,26 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     }
                     frame.incOverall();
 
+                    frame.setDesc("Modifying specify system tables.");
+                    sql = " CREATE TABLE `spstynthy` ( " +
+                            "`SpStynthyID` int(11) NOT NULL AUTO_INCREMENT, " +
+                            "`TimestampCreated` datetime NOT NULL, " +
+                            "`TimestampModified` datetime DEFAULT NULL, " +
+                            "`MetaXML` mediumblob DEFAULT NULL, " +
+                            "`UpdatePeriodDays` int(11) NOT NULL DEFAULT 30, " +
+                            "`LastExported` datetime DEFAULT NULL, " +
+                            "`CollectionID` int(11) NOT NULL, " +
+                            "`MappingXML` mediumblob DEFAULT NULL, " +
+                            "`Key1` varchar(256) default null, " +
+                            "`Key2` varchar(256) default null, " +
+                            "PRIMARY KEY (`SpStynthyID`) " +
+                            ") ENGINE=InnoDB AUTO_INCREMENT=277 DEFAULT CHARSET=utf8;";
+                    if (-1 == update(conn, sql)) {
+                        errMsgList.add("update error: " + sql);
+                        return false;
+                    }
+                    frame.incOverall();
+
                     frame.setProcess(0, 100);
 
                     return true;
