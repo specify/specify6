@@ -8,10 +8,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
+import java.util.Collection;
 
 import javax.swing.JProgressBar;
 
 import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.specify.datamodel.*;
 import edu.ku.brc.specify.tools.gbifregistration.GbifSandbox;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
@@ -23,12 +25,6 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
-import edu.ku.brc.specify.datamodel.CollectionObject;
-import edu.ku.brc.specify.datamodel.DataModelObjBase;
-import edu.ku.brc.specify.datamodel.Discipline;
-import edu.ku.brc.specify.datamodel.RecordSet;
-import edu.ku.brc.specify.datamodel.RecordSetItem;
-import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -59,18 +55,7 @@ public class DarwinCoreArchive
 	 * @throws Exception
 	 */
 	public DarwinCoreArchive(File file, int mapperID, boolean useCache) throws Exception {
-		this(XMLHelper.readFileToDOM4J(file), mapperID, useCache);
-	}
-
-	/**
-	 *
-	 * @param mappingName
-	 * @param mapperID
-	 * @param useCache
-	 * @throws Exception
-	 */
-	public DarwinCoreArchive(String mappingName, int mapperID, boolean useCache) throws Exception {
-		this(GbifSandbox.getDwcaSchema(mappingName), mapperID, useCache);
+		this(XMLHelper.readFileToDOM4J(file), mapperID, null, useCache);
 	}
 
 	/**
@@ -80,8 +65,8 @@ public class DarwinCoreArchive
 	 * @param useCache
 	 * @throws Exception
 	 */
-	public DarwinCoreArchive(Element el, int mapperID, boolean useCache) throws Exception {
-		mapper = new DwcMapper(mapperID, true);
+	public DarwinCoreArchive(Element el, Integer mapperID, SpExportSchemaMapping mapping, boolean useCache) throws Exception {
+		mapper = new DwcMapper(mapperID, mapping, true);
 		files = new ArrayList<>();
 		for (Object core : el.selectNodes("/archive")) {
 			for (Object c : ((Element) core).selectNodes("*")) {
@@ -255,6 +240,9 @@ public class DarwinCoreArchive
 		this.globalSession = globalSession;
 	}
 
+	public DataProviderSessionIFace getCurrentGlobalSession() {
+		return this.globalSession;
+	}
 	/**
 	 * @param id
 	 * @return

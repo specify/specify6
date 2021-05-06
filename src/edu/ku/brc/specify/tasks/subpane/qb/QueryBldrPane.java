@@ -4755,7 +4755,12 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         List<SpQueryField> result = new ArrayList<>();
         if (schemaMapping != null) {
             for (SpExportSchemaItemMapping mapping : schemaMapping.getMappings()) {
-                if (mapping.getExportSchemaItem() != null && mapping.getExportSchemaItem().getId().equals(schemaItem.getId())) {
+                SpExportSchemaItem mItem = mapping.getExportSchemaItem();
+                if (mItem != null && mItem.getId() != null && schemaItem.getId() != null) {
+                    if (mItem.getId().equals(schemaItem.getId())) {
+                        result.add(mapping.getQueryField());
+                    }
+                } else if (mItem != null && mItem.getFieldName().equals(schemaItem.getFieldName())) {
                     result.add(mapping.getQueryField());
                 }
             }
@@ -4943,7 +4948,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                             container.getColumnDefStr(), saveBtn, fld, schemaMapping, null);
                     result.add(newQfp);
                     fieldQRI.setIsInUse(true);
-                    if (fld.getSpQueryFieldId() == -1) {
+                    if (fld.getSpQueryFieldId() != null && fld.getSpQueryFieldId() == -1) {
                         newQfp.setAutoMapped(true);
                         newQfp.setQueryFieldForAutomapping(null);
                     }

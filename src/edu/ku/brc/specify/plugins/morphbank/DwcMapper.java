@@ -45,6 +45,7 @@ public class DwcMapper
 {
 	protected static final Logger log            = Logger.getLogger(DwcMapper.class);
 	final Integer mappingId; //SpExportSchemaMappingID - key for spexportschemamappingid.
+	final SpExportSchemaMapping mapping;
 	final String mappingName;
 	final String schemaName;
 	final Integer mappingContextTableId;
@@ -65,7 +66,10 @@ public class DwcMapper
 	{
 		this(mappingId, false);
 	}
-	
+
+	public DwcMapper(SpExportSchemaMapping mapping) {
+		this(mapping.getId(), mapping, false);
+	}
 	/**
 	 * @return
 	 */
@@ -75,12 +79,39 @@ public class DwcMapper
 		}
 		return connection;
 	}
-	
+
+	/**
+	 *
+	 * @param mapping
+	 * @param getAllManies
+	 */
+	public DwcMapper(SpExportSchemaMapping mapping, boolean getAllManies) {
+		this(mapping.getId(), mapping, getAllManies);
+	}
+
+	/**
+	 *
+	 * @param mappingId
+	 * @param getAllManies
+	 */
 	public DwcMapper(Integer mappingId, boolean getAllManies)
 	{
+		this(mappingId, null, getAllManies);
+	}
+
+	/**
+	 *
+	 * @param mappingId
+	 * @param mapping
+	 * @param getAllManies
+	 */
+	public DwcMapper(Integer mappingId, SpExportSchemaMapping mapping, boolean getAllManies)
+	{
 		this.mappingId = mappingId;
+		this.mapping = mapping;
 		this.getAllManies = getAllManies;
-		Vector<Object[]> rec = BasicSQLUtils.query(getConnection(), getMappingQuery(mappingId));
+		//Vector<Object[]> rec = BasicSQLUtils.query(getConnection(), getMappingQuery(mappingId));
+		Vector<Object[]> rec = getMappingInfo();
 		mappingName = (String )rec.get(0)[0];
 		schemaName = (String )rec.get(0)[1];
 		mappingContextTableId = (Integer )rec.get(0)[2];
@@ -92,13 +123,35 @@ public class DwcMapper
 //			System.out.println(mi.getMapping() + "  " + mi.getName());
 //		}
 	}
-	
+
+	private Vector<Object[]> getMappingInfo() {
+		if (mappingId != null) {
+			return BasicSQLUtils.query(getConnection(), getMappingQuery(mappingId));
+		} else if (mapping != null) {
+			Vector<Object[]> result = new Vector<>();
+			Object[] data = new Object[4];
+			data[0] = mapping.getMappingName();
+			data[1] = mapping.getSpExportSchema().getSchemaName(); //assuming 1
+			for (SpExportSchemaItemMapping m : mapping.getMappings()) {
+				if (m.getQueryField() != null) {
+					data[2] = Integer.valueOf(m.getQueryField().getQuery().getContextTableId().intValue());
+					break;
+				}
+			}
+			data[3] = mapping.getSpExportSchema().getDescription(); //hmm
+			result.add(data);
+			return result;
+		} else {
+			return null;
+		}
+	}
 	/**
 	 * 
 	 */
 	public DwcMapper()
 	{
 		mappingId = null;
+		mapping = null;
 		getAllManies = false;
 		mappingName = UIRegistry.getResourceString("DwcMapper.Default");
 		schemaName = null;
@@ -121,13 +174,48 @@ public class DwcMapper
 			+ "qf.SpQueryFieldID = esim.SpQueryFieldID inner join spquery q on q.SpQueryID = qf.SpQueryID where "
 			+ "qf.IsDisplay and esm.SpExportSchemaMappingID = " + mappingId;
 	}
-	
+
+	private Vector<Object[]> getConcepts() {
+		if (mappingId != null) {
+			return BasicSQLUtils.query(connection, getConceptQuery());
+		}
+		if (mapping != null) {
+			Vector<Object[]> result = new Vector<>();
+			for (SpExportSchemaItemMapping m : mapping.getMappings()) {
+				if (m.getExportSchemaItem() != null) {
+					Object[] data = new Object[5];
+					data[0] = m.getExportSchemaItem().getFieldName();
+					data[1] = m.getExportSchemaItem().getDataType();
+					data[2] = m.getQueryField().getStringId();
+					data[3] = m.getQueryField().getIsRelFld();
+					data[4] = m.getExportSchemaItem().getSpExportSchema().getDescription();
+					result.add(data);
+				}
+			}
+			return result;
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * @return
+	 */
+	protected String getConceptQuery()
+	{
+		return "select esi.FieldName, esi.DataType, qf.StringId, qf.IsRelFld, es.description from spexportschemaitemmapping esim inner join spexportschemaitem esi on "
+				+ "esi.SpExportSchemaItemID = esim.ExportSchemaItemID inner join spexportschema es on es.spexportschemaid = esi.spexportschemaid "
+				+ "inner join spqueryfield qf on qf.SpQueryFieldID = esim.SpQueryFieldID where qf.IsDisplay and esim.SpExportSchemaMappingID = "
+				+ mappingId;
+	}
+
 	/**
 	 * 
 	 */
 	protected void fillConcepts()
 	{
-		Vector<Object[]> cpts = BasicSQLUtils.query(connection, getConceptQuery());
+		//Vector<Object[]> cpts = BasicSQLUtils.query(connection, getConceptQuery());
+		Vector<Object[]> cpts = getConcepts();
 		concepts.clear();
 		for (Object[] concept : cpts)
 		{
@@ -161,18 +249,7 @@ public class DwcMapper
 				"select MappingName from spexportschemamapping where "
 				+ " SpExportSchemaMappingID = " + mappingId);
 	}
-	
-	/**
-	 * @return
-	 */
-	protected String getConceptQuery()
-	{
-		return "select esi.FieldName, esi.DataType, qf.StringId, qf.IsRelFld, es.description from spexportschemaitemmapping esim inner join spexportschemaitem esi on "
-			+ "esi.SpExportSchemaItemID = esim.ExportSchemaItemID inner join spexportschema es on es.spexportschemaid = esi.spexportschemaid "
-			+ "inner join spqueryfield qf on qf.SpQueryFieldID = esim.SpQueryFieldID where qf.IsDisplay and esim.SpExportSchemaMappingID = "
-			+ mappingId;
-	}
-	
+
 	/**
 	 * @param spec
 	 * @throws Exception

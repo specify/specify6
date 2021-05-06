@@ -570,7 +570,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 					protected Boolean doInBackground() throws Exception {
 						try {
 							Element dwcMetaEl = getMetaElement();
-							DarwinCoreArchive dwc = new DarwinCoreArchive(dwcMetaEl, schemaMapping.getId(), false);
+							DarwinCoreArchive dwc = new DarwinCoreArchive(dwcMetaEl, schemaMapping.getId(), schemaMapping,false);
 							Map<DarwinCoreArchiveFile, List<DarwinCoreArchiveField>> unmapped = dwc.getUnmappedFields();
 							if (unmapped.size() > 0) {
 								if (!showUnmappedTerms(unmapped)) {
@@ -652,7 +652,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 	}
 
 
-	protected void buildStinkyDwCArchive(final SpExportSchemaMapping schemaMapping) {
+	public static void buildStinkyDwCArchive(final SpExportSchemaMapping schemaMapping) {
 
 		javax.swing.SwingWorker<Boolean, Object> worker =
 				/**
@@ -709,6 +709,9 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 						String dirName = (new File(archiveName)).getParent();
 						for (Pair<String, List<String>> csv : csvs) {
 							File f = new File(dirName + File.separator + csv.getFirst());
+							if (append) {
+								csv.getSecond().remove(0);
+							}
 							org.apache.commons.io.FileUtils.writeLines(f, "UTF-8", csv.getSecond(), append);
 
 						}
@@ -811,12 +814,12 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 					}
 
 					private Element getMetaElement() {
-						String sql = "select metaxml from spstynthy where spexportschemamappingid = " + schemaMapping.getId();
+						String sql = "select metaxml from spstynthy where collectionid = " + AppContextMgr.getInstance().getClassObject(Collection.class).getId();
 						return GbifSandbox.getDwcaSchemaFromFld(sql);
 					}
 
 					private String getOutputFileName() {
-						return "/home/timo/datas/gbifreg/" + schemaMapping.getMappingName() + "_" + Integer.valueOf(Double.valueOf(Math.random()*10000).intValue());
+						return  UIRegistry.getAppDataDir() + File.separator  + schemaMapping.getMappingName();
 					}
 
 					private boolean needToDoIt() {
@@ -837,29 +840,20 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 					 */
 					@Override
 					protected Boolean doInBackground() throws Exception {
-						if (!needToDoIt()) {
-							return true;
-						}
+//						if (!needToDoIt()) {
+//							return true;
+//						}
 						try {
 
 							Element dwcMetaEl = getMetaElement();
-							DarwinCoreArchive dwc = new DarwinCoreArchive(dwcMetaEl, schemaMapping.getId(), false);
+							DarwinCoreArchive dwc = new DarwinCoreArchive(dwcMetaEl, schemaMapping.getId(),  schemaMapping,false);
 							Map<DarwinCoreArchiveFile, List<DarwinCoreArchiveField>> unmapped = dwc.getUnmappedFields();
 							if (unmapped.size() > 0) {
 								System.out.println("There are unmapped concepts.");
 							}
 							List<Integer> recIds = new ArrayList<>();
 							List<Specs> specs = null;
-							boolean exportAll = !checkForUpdatedRecs();
-							if (!exportAll) {
-							    List<Object> r = BasicSQLUtils.querySingleCol("select lastexported from spstynthy where  spexportschemamappingid = " + schemaMapping.getId());
-							    if (r.size() > 0) {
-                                    schemaMapping.setTimestampExported((Timestamp) r.get(0));
-                                } else {
-							        schemaMapping.setTimestampExported((Timestamp) null);
-							        exportAll = true;
-                                }
-                            }
+							boolean exportAll = !checkForUpdatedRecs() || schemaMapping.getTimestampExported() == null;
 							specs = getSpecs(schemaMapping, true, false, exportAll, null);
 							if (specs == null) {
 								return false;
@@ -871,7 +865,6 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 							String hql = hqlSpecs.getHql();
 							String idHql = hql.substring(0, hql.indexOf(", ")) + hql.substring(hql.indexOf(" from CollectionObject "));
 							String outputFileName = getOutputFileName();
-							long cnt = 0;
 							DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
 							QueryIFace q = session.createQuery(idHql, false);
 							if (hqlSpecs.getArgs() != null) {
@@ -879,25 +872,24 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 									q.setParameter(param.getFirst(), param.getSecond());
 								}
 							}
-							for (Object id : q.list()) {
-								recIds.add((Integer)id);
-							}
-							long size = recIds.size();
+							List<?> qids = q.list();
+							long size = qids.size();
 							List<Pair<String, List<String>>> csvs = null;
-							int blk = dwc.getBlockSize();
+							int cnt = 0;
+							int blk = 100000; //dwc.getBlockSize();
+							dwc.setGlobalSession(null);
 							while (cnt < size) {
-//								if (blk != 0) {
-//									recIds = RecordSet.getUniqueIdList(recSetId, blk, cnt);
-//								}
-								dwc.setGlobalSession(null);
+								recIds.clear();
+								for (Object id : qids.subList(0, Math.min(blk, qids.size()))) {
+									recIds.add((Integer)id);
+								}
 								csvs = dwc.getExportText(1, recIds, null);
 								writeFiles(outputFileName, csvs, cnt > 0);
-								if (blk != 0) {
-									cnt += blk;
-									showStats(dwc);
-								} else {
-									cnt = size;
-								}
+								qids.subList(0, Math.min(blk, qids.size())).clear();
+								//dwc.getCurrentGlobalSession().evict(CollectionObject.class);
+								dwc.setGlobalSession(null);
+								cnt += blk;
+								showStats(dwc);
 							}
 							showStats(dwc);
 							if (csvs != null) {
@@ -917,8 +909,8 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 					@Override
 					protected void done() {
 						super.done();
-						setExportTime();
-						ExportPanel.this.createDwcaBtn.setEnabled(true); //?? OR publishToGbifBtn
+						//setExportTime();
+//						ExportPanel.this.createDwcaBtn.setEnabled(true); //?? OR publishToGbifBtn
 					}
 
 				};

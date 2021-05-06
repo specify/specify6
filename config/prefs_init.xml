@@ -113,7 +113,16 @@
             <defperm name="Guest"         perm="false,false,false,false"/>
         </pref>
     </section>
-    
+
+    <section title="S2N">
+        <pref name="S2N" title="S2N" icon="S2N" panelClass="edu.ku.brc.specify.prefs.S2nPrefsPanel" viewsetname="Preferences" viewname="S2nPrefs" help="PrefsS2n">
+            <defperm name="Manager"       perm="true,true,true,true"/>
+            <defperm name="FullAccess"    perm="true,true,true,true"/>
+            <defperm name="LimitedAccess" perm="true,true,true,true"/>
+            <defperm name="Guest"         perm="false,false,false,false"/>
+        </pref>
+    </section>
+
     <section title="GEOLocate">
         <pref name="GEOLocate" title="GEOLocate" icon="GEOLocate" panelClass="edu.ku.brc.specify.prefs.GEOLocatePrefsPanel" help="PrefsGeolocate">
             <defperm name="Manager"       perm="true,true,true,true"/>

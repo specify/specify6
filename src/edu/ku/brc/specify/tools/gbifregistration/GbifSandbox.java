@@ -351,14 +351,27 @@ public class GbifSandbox {
         return getDwcaSchemaFromFld(sql);
     }
 
-    public static Element getDwcaSchemaFromFld(String sql) {
-        Element result = null;
+    public static Element getXmlElementFromFld(String sql) {
+       Element result = null;
         try {
             List<Object> blob = BasicSQLUtils.querySingleCol(sql);
             if (blob != null && blob.size() > 0) {
                 //Byte[] blobBytes = (Byte [])blob.get(0);
                 String dataStr = new String((byte[])blob.get(0));
-                Element el = XMLHelper.readStrToDOM4J(dataStr);
+                result = XMLHelper.readStrToDOM4J(dataStr);
+            }
+        } catch (Exception x) {
+            log.error(x);
+        }
+        return result;
+
+    }
+
+    public static Element getDwcaSchemaFromFld(String sql) {
+        Element result = null;
+        try {
+            Element el = getXmlElementFromFld(sql);
+            if (el != null) {
                 List<Object> core = el.selectNodes("/archive");
                 if (core != null && core.size() > 0) {
                     Element archiveElement = (Element) core.get(0); //assuming 1
