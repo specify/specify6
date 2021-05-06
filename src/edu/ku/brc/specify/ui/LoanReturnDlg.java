@@ -170,17 +170,21 @@ public class LoanReturnDlg extends JDialog
             String key = itemsForReturn.getDbTableId() == CollectionObject.getClassTableId() ? "collectionObjectId" : "preparationId";
             String sqlStr = "select loanpreparationid from loanpreparation lp inner join preparation p on p.preparationid = lp.preparationid "
                         + "inner join loan l on l.loanid = lp.loanid where l.loanId = " + loan.getId() + " and p." + key + " " + inClause;
-            //if the base table is collectionobject, check prep.collectionobjectid. Preps associated with Cos but not associated with the loan
-            //may be present, but don't flag them as non-returnable.
-            String countStr = "select count(distinct " + key + ") from preparation where " + key + " " + inClause; //querying in case of dup ids in inClause
             List<?> ids = BasicSQLUtils.querySingleCol(sqlStr);
-            Integer cnt = BasicSQLUtils.getCountAsInt(countStr);
-            nonReturnablesPresent = cnt != ids.size();
             for (LoanPreparation lp : loan.getLoanPreparations()) {
                 if (ids.indexOf(lp.getId()) != -1) {
                     returnable.add(lp);
                 }
             }
+
+            //if the base table is collectionobject, check prep.collectionobjectid. Preps associated with Cos but not associated with the loan
+            //may be present, but don't flag them as non-returnable.
+            String totalCntStr = "select count(distinct " + key + ") from preparation where " + key + " " + inClause; //querying in case of dup ids in inClause
+            Integer totalCnt = BasicSQLUtils.getCountAsInt(totalCntStr);
+            String returnableCntStr = "select count(distinct " + key + ") from loanpreparation lp inner join preparation p on p.preparationid = lp.preparationid "
+                            + "inner join loan l on l.loanid = lp.loanid where l.loanId = " + loan.getId() + " and p." + key + " " + inClause;
+            Integer returnablesCnt = BasicSQLUtils.getCountAsInt(returnableCntStr);
+            nonReturnablesPresent = totalCnt > returnablesCnt;
         }
         return new Pair<>(returnable, nonReturnablesPresent);
     }
