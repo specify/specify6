@@ -1,12 +1,13 @@
 package edu.ku.brc.specify.datamodel;
 
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.tasks.InteractionsTask;
+import org.apache.log4j.Logger;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Index;
 
 import javax.persistence.*;
-import java.util.Calendar;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
@@ -18,6 +19,7 @@ import java.util.Set;
         })
 @SuppressWarnings("serial")
 public class Deaccession extends DataModelObjBase implements java.io.Serializable, OneToManyProviderIFace, AttachmentOwnerIFace<DeaccessionAttachment> {
+    private static final Logger log = Logger.getLogger(Deaccession.class);
     protected Integer                     deaccessionId;
     protected String                      type;
     protected String                      status;
@@ -366,6 +368,64 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
     public Set<DeaccessionAttachment> getAttachmentReferences()
     {
         return deaccessionAttachments;
+    }
+
+
+    @Transient
+    public Integer getTotalPreps() {
+        return countContents(false);
+    }
+
+    @Transient
+    public Integer getTotalItems() {
+        return countContents(true);
+    }
+
+    protected Integer countContents(Boolean countQuantity) {
+        if (getId() == null) {
+            return null;
+        } else {
+            return countContents(countQuantity, getId());
+        }
+    }
+
+    /**
+     *
+     * @param countQuantity
+     * @param id
+     * @return
+     */
+    protected static Integer countContents(boolean countQuantity, int id) {
+        String sql = "select disposalid, " + Disposal.getClassTableId() + " from disposal where deaccessionid = " + id
+        +  " union select giftid, " + Gift.getClassTableId() + " from gift where deaccessionid = " + id
+        + " union select exchangeoutid, " + ExchangeOut.getClassTableId() + " from exchangeout where deaccessionid = " + id;
+        List<Object[]> interactions = BasicSQLUtils.query(sql);
+        Integer result = 0;
+        for (Object[] i : interactions) {
+            result += BasicSQLUtils.getCountAsInt(InteractionsTask.getCountContentsSql(countQuantity, false, (Integer)i[0], (Integer)i[1]));
+        }
+        return result;
+    }
+
+    @Transient
+    public static List<String> getQueryableTransientFields() {
+        List<String> result = new ArrayList<>();
+        result.add("TotalPreps");
+        result.add("TotalItems");
+        return result;
+    }
+
+    public static Object getQueryableTransientFieldValue(String fldName, Object[] vals) {
+        if (vals == null || vals[0] == null) {
+            return null;
+        } else if (fldName.equalsIgnoreCase("TotalPreps")) {
+            return countContents(false, (Integer)vals[0]);
+        } else if (fldName.equalsIgnoreCase("TotalItems")) {
+            return countContents(true, (Integer)vals[0]);
+        } else {
+            log.error("Unknown calculated field: " + fldName);
+            return null;
+        }
     }
 
 }

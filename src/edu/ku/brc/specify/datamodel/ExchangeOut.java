@@ -527,15 +527,15 @@ public class ExchangeOut extends DataModelObjBase implements java.io.Serializabl
 
     @Transient
     public Integer getTotalPreps() {
-        return countContents(false, false);
+        return countContents(false);
     }
 
     @Transient
     public Integer getTotalItems() {
-        return countContents(true, false);
+        return countContents(true);
     }
 
-    protected Integer countContents(Boolean countQuantity, Boolean countUnresolved) {
+    protected Integer countContents(Boolean countQuantity) {
         if (getId() == null) {
             return null;
         } else {

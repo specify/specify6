@@ -701,15 +701,15 @@ public class Gift extends DisciplineMember implements java.io.Serializable, OneT
 
     @Transient
     public Integer getTotalPreps() {
-        return countContents(false, false);
+        return countContents(false);
     }
 
     @Transient
     public Integer getTotalItems() {
-        return countContents(true, false);
+        return countContents(true);
     }
 
-    protected Integer countContents(Boolean countQuantity, Boolean countUnresolved) {
+    protected Integer countContents(Boolean countQuantity) {
         if (getId() == null) {
             return null;
         } else {
