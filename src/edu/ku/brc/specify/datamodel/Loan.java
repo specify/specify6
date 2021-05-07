@@ -37,6 +37,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.tasks.InteractionsTask;
 import org.apache.log4j.Logger;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -742,18 +743,7 @@ public class Loan extends DisciplineMember implements AttachmentOwnerIFace<LoanA
     }
 
     protected static String getCountContentsSql(boolean countQuantity, boolean countUnresolved, int id) {
-        String select = countQuantity ? " sum(quantity" + (countUnresolved ? "-ifnull(quantityresolved,0)" : "") + ")"
-                : " count(*) ";
-
-        String sql = "select " + select + " from loanpreparation where loanid = " + id;
-        if (countUnresolved) {
-            sql += " and (not isresolved";
-            if (countQuantity) {
-                sql += " or ifnull(quantity,0) - ifnull(quantityresolved,0) > 0";
-            }
-            sql += ")";
-        }
-        return sql;
+        return InteractionsTask.getCountContentsSql(countQuantity, countUnresolved, id, getClassTableId());
     }
 
     @Transient

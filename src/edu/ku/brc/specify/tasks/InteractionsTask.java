@@ -2753,5 +2753,35 @@ public class InteractionsTask extends BaseTask
                                 {true, true, false, false},
                                 {true, false, false, false}};
     }
-    
+
+    /**
+     *
+     * @param countQuantity
+     * @param countUnresolved
+     * @param interactionID
+     * @param tblId
+     * @return
+     */
+    public static String getCountContentsSql(boolean countQuantity, boolean countUnresolved, Integer interactionID, Integer tblId) {
+        if (tblId.equals(Loan.getClassTableId())) {
+            String select = countQuantity ? " sum(quantity" + (countUnresolved ? "-ifnull(quantityresolved,0)" : "") + ")"
+                    : " count(*) ";
+            String sql = "select " + select + " from loanpreparation where loanid = " + interactionID;
+            if (countUnresolved) {
+                sql += " and (not isresolved";
+                if (countQuantity) {
+                    sql += " or ifnull(quantity,0) - ifnull(quantityresolved,0) > 0";
+                }
+                sql += ")";
+            }
+            return sql;
+        } else {
+            String tbl =  DBTableIdMgr.getInstance().getInfoById(tblId).getName();
+            String idCol = DBTableIdMgr.getInstance().getInfoById(tblId).getIdColumnName(); //assuming foreign key naming pattern
+            String prepTbl = tbl + (tblId.equals(ExchangeOut.getClassTableId()) ? "prep" : "preparation");
+            String select = countQuantity ? " sum(quantity" +  ")" : " count(*) ";
+            String sql = "select " + select + " from " + prepTbl +  " where " + idCol + " = " + interactionID;
+            return sql;
+        }
+    }
 }
