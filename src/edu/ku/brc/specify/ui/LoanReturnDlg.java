@@ -150,7 +150,14 @@ public class LoanReturnDlg extends JDialog
         this.loan = loan;
         this.itemsForReturn = itemsForReturn;
         this.defSrcTblId = defSrcTblId;
-        this.defIdentifierFld = AppPreferences.getRemote().get(InteractionsProcessor.getInteractionItemLookupFieldPref(defSrcTblId),
+        if (this.defSrcTblId == 0) {
+            if (itemsForReturn != null) {
+                this.defSrcTblId = itemsForReturn.getDbTableId();
+            } else {
+                //one can only hope
+            }
+        }
+        this.defIdentifierFld = AppPreferences.getRemote().get(InteractionsProcessor.getInteractionItemLookupFieldPref(this.defSrcTblId),
                 InteractionsProcessor.getDefaultInteractionLookupField(defSrcTblId));
 
         ImageIcon appIcon = IconManager.getIcon("AppIcon"); //$NON-NLS-1$
@@ -158,8 +165,6 @@ public class LoanReturnDlg extends JDialog
         {
             setIconImage(appIcon.getImage());
         }
-
-        
     }
 
     Pair<Collection<LoanPreparation>, Boolean> getItemsToReturn() {

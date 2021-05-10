@@ -156,6 +156,7 @@ public class InteractionsTask extends BaseTask
     protected static final String NEW_DISPOSAL      = "NEW_DISPOSAL";
     protected static final String NEW_DEACC = "NEW_DEACC";
     protected static final String ADD_TO_DISPOSAL   = "AddToDisposal";
+    protected static final String ADD_TO_EXCHANGE   = "AddToExchange";
     protected static final String NEW_PERMIT           = "NEW_PERMIT";
     protected static final String NEW_GIFT             = "NEW_GIFT";
     protected static final String NEW_EXCHANGE_OUT     = "NEW_EXCHANGE_OUT";
@@ -2195,11 +2196,11 @@ public class InteractionsTask extends BaseTask
                 return;
             }
             Integer defSrcTblId = AppPreferences.getRemote().getInt(DEFAULT_SRC_TBL_ID, 0);
-            if (defSrcTblId == 0 && filter == ASK_TYPE.EnterDataObjs) {
+            if (defSrcTblId == 0 && (filter == ASK_TYPE.EnterDataObjs || filter == ASK_TYPE.None)) {
                 defSrcTblId = InteractionsProcessor.promptForItemIdTableId();
             }
             RecordSetIFace recordSet = null;
-            if (defSrcTblId != null && (defSrcTblId != 0 || filter == ASK_TYPE.ChooseRS)) {
+            if (defSrcTblId != null && (defSrcTblId != 0 || filter == ASK_TYPE.ChooseRS || filter == ASK_TYPE.None)) {
                 if (filter == ASK_TYPE.EnterDataObjs) {
                     recordSet = ((InteractionsTask) subPane.getTask()).askForDataObjRecordSet(defSrcTblId == CollectionObject.getClassTableId() ? CollectionObject.class : Preparation.class,
                             getInteractionItemLookupField(defSrcTblId), false);
@@ -2625,7 +2626,9 @@ public class InteractionsTask extends BaseTask
             accProcessor.createOrAdd((Accession) cmdAction.getData());
         } else if (cmdAction.isAction(ADD_TO_DISPOSAL)) {
             disposalProcessor.createOrAdd((Disposal) cmdAction.getData());
-        } else if (cmdAction.isAction(INFO_REQ_MESSAGE)) {
+        } else if (cmdAction.isAction(ADD_TO_EXCHANGE)) {
+            disposalProcessor.createOrAdd((Disposal) cmdAction.getData());
+        }else if (cmdAction.isAction(INFO_REQ_MESSAGE)) {
             if (cmdAction.getData() == cmdAction || cmdAction.getData() instanceof Viewable) {
                 // We get here when a user clicks on a InfoRequest NB action
                 createInfoRequest(null, cmdAction);

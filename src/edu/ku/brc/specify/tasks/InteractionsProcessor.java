@@ -252,7 +252,9 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
         } else if (tableId == Preparation.getClassTableId()) {
             return "BarCode";
         } else {
-            log.error("No default lookup field for " + DBTableIdMgr.getInstance().getInfoById(tableId).getName());
+            DBTableInfo tbl = DBTableIdMgr.getInstance().getInfoById(tableId);
+            String tblName = tbl != null ? tbl.getName() : "table zero";
+            log.error("No default lookup field for " + tblName);
             return null;
         }
     }
@@ -338,7 +340,7 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
                     task.addPrepsToGift(currPrepProvider, infoRequest, new Hashtable<Integer, Integer>(), viewable);
                 }  else if (isFor == forDisposal) {
                     task.addPrepsToDisposal(currPrepProvider, infoRequest, new Hashtable<>(), viewable);
-                }
+                } 
             } else {
                 DBTableIdMgr.getInstance().getInClause(recordSet);
 
