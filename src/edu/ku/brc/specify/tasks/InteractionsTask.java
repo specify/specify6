@@ -1256,6 +1256,7 @@ public class InteractionsTask extends BaseTask
         if (existingExchangeOut == null) {
             exchange = new ExchangeOut();
             exchange.initialize();
+            exchange.setDivision(AppContextMgr.getInstance().getClassObject(Division.class));
 
             Calendar dueDate = Calendar.getInstance();
             dueDate.add(Calendar.MONTH, 6);                 // XXX PREF Due Date

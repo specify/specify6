@@ -340,7 +340,9 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
                     task.addPrepsToGift(currPrepProvider, infoRequest, new Hashtable<Integer, Integer>(), viewable);
                 }  else if (isFor == forDisposal) {
                     task.addPrepsToDisposal(currPrepProvider, infoRequest, new Hashtable<>(), viewable);
-                } 
+                } else if (isFor == forExchange) {
+                    task.addPrepsToExchangeOut(currPrepProvider, infoRequest, new Hashtable<>(), viewable);
+                }
             } else {
                 DBTableIdMgr.getInstance().getInClause(recordSet);
 
