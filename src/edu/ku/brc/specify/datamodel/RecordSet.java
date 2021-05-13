@@ -554,7 +554,7 @@ public class RecordSet extends CollectionMember implements java.io.Serializable,
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.RecordSetIFace#getIdList()
      */
-    public static List<Integer> getIdList(final Integer rsId, final Set<RecordSetItem>rsiSet)
+    public static List<Integer> getIdList(final Integer rsId, final Set<RecordSetItemIFace>rsiSet)
     {
         
         if (rsId != null)
@@ -608,10 +608,11 @@ public class RecordSet extends CollectionMember implements java.io.Serializable,
         if (rsiSet != null && rsiSet.size() > 0)
         {
             ArrayList<Integer> ids = new ArrayList<Integer>(rsiSet.size());
-            for (RecordSetItem item : rsiSet)
+            for (RecordSetItemIFace item : rsiSet)
             {
-                ids.add(item.getRecordSetItemId());
+                ids.add(item.getRecordId());
             }
+            return ids;
         }
         
         return new ArrayList<Integer>();

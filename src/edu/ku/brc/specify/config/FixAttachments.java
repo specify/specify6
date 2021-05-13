@@ -503,7 +503,7 @@ public class FixAttachments
         JEditorPane htmlPane;
         try
         {
-            url = new URL("http://files.specifysoftware.org/attachment_recovery.html");
+            url = new URL("https://files.specifysoftware.org/attachment_recovery.html");
             htmlPane = new JEditorPane(url);
         } catch (Exception e)
         {

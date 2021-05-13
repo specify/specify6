@@ -92,6 +92,7 @@ public class CollectionDataFetcher
                 CollectionObject.class,   CollectionObjectAttachment.class,
                 ConservDescription.class, ConservDescriptionAttachment.class,
                 ConservEvent.class,       ConservEventAttachment.class,
+                Deaccession.class,        DeaccessionAttachment.class,
                 DNASequence.class,        DNASequenceAttachment.class,
                 DNASequencingRun.class,   DNASequencingRunAttachment.class,
                 FieldNotebook.class,      FieldNotebookAttachment.class,

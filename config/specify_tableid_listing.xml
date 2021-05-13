@@ -2,7 +2,7 @@
 
 <!-- 
 
-    Last used ID is 162 or 533
+    Last used ID is 166 or 533
     
     [0] are available
     
@@ -158,9 +158,25 @@
         <table name="edu.ku.brc.specify.datamodel.DataType" abbrev="dt" id="33">
             <businessrule>edu.ku.brc.specify.datamodel.busrules.DataTypeBusRules</businessrule>          
         </table>
-        <table name="edu.ku.brc.specify.datamodel.Deaccession" abbrev="da" id="34" searchable="true"/>
-        <table name="edu.ku.brc.specify.datamodel.DeaccessionAgent" abbrev="daa" id="35" searchable="true"/>
-        <table name="edu.ku.brc.specify.datamodel.DeaccessionPreparation" abbrev="dap" id="36" searchable="true"/>
+        <table name="edu.ku.brc.specify.datamodel.Deaccession" abbrev="ldac" id="163" workbench="true" searchable="true">
+            <display view="Deaccession" dataobjformatter="Deaccession" searchdlg="DeaccessionSearch" newobjdlg="DeaccessionDisplay"/>
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.DeaccessionBusRules</businessrule>
+        </table>
+        <table name="edu.ku.brc.specify.datamodel.DeaccessionAgent" abbrev="deaa" id="164" searchable="true">
+            <display view="DeaccessionAgent" dataobjformatter="" searchdlg="DeaccessionAgentSearch" newobjdlg="DeaccessionagentDisplay"/>
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.DeaccessionAgentBusRules</businessrule>
+        </table>
+        <table name="edu.ku.brc.specify.datamodel.DeaccessionAttachment" abbrev="deat" id="165" searchable="true">
+            <display view="ObjectAttachment" newobjdlg="DeaccessionAttachmentDisplay" searchdlg="AttachmentSearch" />
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentReferenceBaseBusRules</businessrule>
+        </table>
+        <table name="edu.ku.brc.specify.datamodel.LithoStrat" abbrev="ls" id="100" workbench="true" searchable="true">
+            <display view="LithoStrat" dataobjformatter="" searchdlg="LithoStratSearch" newobjdlg="LithoStratDisplay"/>
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.LithoStratBusRules</businessrule>
+            <fieldaliases>
+                <field vname="acceptedParent" aname="acceptedLithoStrat"/>
+            </fieldaliases>
+        </table>
         <table name="edu.ku.brc.specify.datamodel.Determination" abbrev="det" id="9" workbench="true" searchable="true">
             <display view="Determination" dataobjformatter="Determination"  searchdlg="DeterminationSearch" newobjdlg="DeterminationDisplay"/>            
         </table>
@@ -168,6 +184,22 @@
         <table name="edu.ku.brc.specify.datamodel.Discipline" abbrev="dsp" id="26">
             <display view="Discipline" dataobjformatter="Discipline" uiformatter="" searchdlg="DisciplineSearch" newobjdlg="Discipline"/>
             <businessrule>edu.ku.brc.specify.datamodel.busrules.DisciplineBusRules</businessrule>                    
+        </table>
+        <table name="edu.ku.brc.specify.datamodel.Disposal" abbrev="dis" id="34" searchable="true">
+            <display view="Disposal" dataobjformatter="" uiformatter="" searchdlg="DisposalSearch" newobjdlg="DisposalDisplay"/>
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.DisposalBusRules</businessrule>
+        </table>
+        <table name="edu.ku.brc.specify.datamodel.DisposalAgent" abbrev="disa" id="35" searchable="true">
+            <display view="DisposalAgent" dataobjformatter="" searchdlg="DisposalAgentSearch" newobjdlg="DisposalagentDisplay"/>
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.DisposalAgentBusRules</businessrule>
+        </table>
+        <table name="edu.ku.brc.specify.datamodel.DisposalAttachment" abbrev="dsat" id="166" searchable="true">
+            <display view="ObjectAttachment" newobjdlg="DisposalAttachmentDisplay" searchdlg="AttachmentSearch" />
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentReferenceBaseBusRules</businessrule>
+        </table>
+        <table name="edu.ku.brc.specify.datamodel.DisposalPreparation" abbrev="disp" id="36" searchable="true">
+            <display view="DisposalPreparation" dataobjformatter=""  newobjdlg="DisposalPreparationDisplay"/>
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.DisposalPreparationBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.Division" abbrev="dv" id="96" searchable="true">
             <display view="Division" searchdlg="DivisionSearch" newobjdlg="DivisionDisplay"/>
@@ -189,12 +221,14 @@
         </table>
         <table name="edu.ku.brc.specify.datamodel.DNASequencingRunCitation" abbrev="dnarcit" id="105" searchable="true" />
         <table name="edu.ku.brc.specify.datamodel.ExchangeIn" abbrev="exi" id="39" searchable="true">
+            <display view="ExchangeIn" />
             <businessrule>edu.ku.brc.specify.datamodel.busrules.ExchangeInBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.ExchangeInPrep" abbrev="exip" id="140" searchable="true">
             <display view="ExchangeInPrep" newobjdlg="ExchangeInPrepDisplay"/>
         </table>
         <table name="edu.ku.brc.specify.datamodel.ExchangeOut" abbrev="exo" id="40" searchable="true">
+            <display view="ExchangeOut" />
             <businessrule>edu.ku.brc.specify.datamodel.busrules.ExchangeOutBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.ExchangeOutPrep" abbrev="exop" id="141" searchable="true">
@@ -291,14 +325,6 @@
         
         <table name="edu.ku.brc.specify.datamodel.LatLonPolygon" abbrev="svqp" id="136"/>
         <table name="edu.ku.brc.specify.datamodel.LatLonPolygonPnt" abbrev="svqpp" id="137"/>
-        
-        <table name="edu.ku.brc.specify.datamodel.LithoStrat" abbrev="ls" id="100" workbench="true" searchable="true">
-            <display view="LithoStrat" dataobjformatter="" searchdlg="LithoStratSearch" newobjdlg="LithoStratDisplay"/>
-            <businessrule>edu.ku.brc.specify.datamodel.busrules.LithoStratBusRules</businessrule>            
-            <fieldaliases>
-                <field vname="acceptedParent" aname="acceptedLithoStrat"/>
-            </fieldaliases>                                            
-        </table>
         <table name="edu.ku.brc.specify.datamodel.LithoStratTreeDef" abbrev="lstd" id="101"/>
         <table name="edu.ku.brc.specify.datamodel.LithoStratTreeDefItem" abbrev="lstdi" id="102"/>
         <table name="edu.ku.brc.specify.datamodel.Loan" abbrev="ln" id="52" searchable="true">
@@ -316,7 +342,8 @@
             <display view="LoanItems" dataobjformatter="LoanPreparation" newobjdlg="LoanItemsDisplay"/>
         </table>
         <table name="edu.ku.brc.specify.datamodel.LoanReturnPreparation" abbrev="lrpo" id="55" searchable="true">
-            <!-- <businessrule>edu.ku.brc.specify.datamodel.busrules.LoanReturnPreparationBusRules</businessrule>    -->        
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.LoanReturnPreparationBusRules</businessrule>
+            <relationship relationshipname="disposalpreparations" likemanytoone="true"/>
         </table>
         <table name="edu.ku.brc.specify.datamodel.Locality" abbrev="loc" id="2" workbench="true" searchable="true">
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.LocalityBusRules</businessrule>
@@ -364,7 +391,7 @@
         </table>
         <table name="edu.ku.brc.specify.datamodel.Preparation" abbrev="pp" id="63" workbench="true" searchable="true">
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.PreparationBusRules</businessrule>
-            <display view="Preparation" newobjdlg="PreparationDisplay"/>
+            <display view="Preparation" newobjdlg="PreparationDisplay" searchdlg="PreparationSearch"/>
 		</table>
         <table name="edu.ku.brc.specify.datamodel.PreparationAttachment" abbrev="ppat" id="117" searchable="true">
         	<display view="ObjectAttachment" newobjdlg="PreparationAttachmentDisplay"/>

@@ -141,7 +141,21 @@ public class BuildSearchIndex2
         analyzers  = new Analyzer[fileNames.length];
         readers    = new IndexReader[fileNames.length];
     }
-    
+
+    private Integer getBaseTableId() {
+		String sql = "select contexttableid from spexportschemaitemmapping m inner join spqueryfield f on " +
+				"f.spqueryfieldid = m.spqueryfieldid inner join spquery q on q.spqueryid = f.spqueryid " +
+				"where m.spexportschemamappingid = " + mapping.getId() + " limit 1";
+		return BasicSQLUtils.querySingleObj(sql);
+	}
+
+	private DBTableInfo getBaseTableInfo() {
+		return DBTableIdMgr.getInstance().getInfoById(getBaseTableId());
+	}
+
+	private String getBaseTableName() {
+    	return getBaseTableInfo().getName();
+	}
     /**
      * @param server
      * @param port
@@ -232,8 +246,10 @@ public class BuildSearchIndex2
         {
             
         }*/
-        //                                             
-        String sqlStr = "SELECT co.GUID, t.* from " + tblName  + " t inner join collectionobject co on co.collectionobjectid = t." + tblName + "id";
+        //
+		DBTableInfo baseTblInfo = getBaseTableInfo();
+        String sqlStr = "SELECT co.GUID, t.* from " + tblName  + " t inner join " + baseTblInfo.getName() +
+				" co on co." + baseTblInfo.getIdFieldName() + " = t." + tblName + "id";
         return sqlStr;
     }
     
@@ -241,7 +257,7 @@ public class BuildSearchIndex2
     private String getAttachments(Connection conn, String baseTblName, String baseGUID, boolean includeRelatedAttachments)
     	throws SQLException
     {
-    	if (!"collectionobject".equals(baseTblName)) 
+    	if (!"collectionobject".equalsIgnoreCase(baseTblName) && !"preparation".equalsIgnoreCase(baseTblName))
     	{
     		throw new NotImplementedException("unsupported base table");
     	}
@@ -770,6 +786,7 @@ public class BuildSearchIndex2
                 portalFldJson = getModelInJson(map, shortNames);
                 List<List<String>> tbl = new ArrayList<>(); //another memory muncher
                 tbl.add(getCsvHeaderRow(shortNames));
+                String baseTableName = getBaseTableName();
                 while (rs.next()) {
                     List<String> row = new ArrayList<>();
                     //indexStr.setLength(0);
@@ -831,7 +848,7 @@ public class BuildSearchIndex2
                     }
                     //row.add(geoc);
 
-                    String attachments = getAttachments(dbConn2, "collectionobject", rs.getString(1), false);
+                    String attachments = getAttachments(dbConn2, baseTableName, rs.getString(1), false);
                     //row.add(attachments);
 					row.add(1, geoc);
 					row.add(1, attachments);

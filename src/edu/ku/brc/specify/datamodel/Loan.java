@@ -19,9 +19,7 @@
 */
 package edu.ku.brc.specify.datamodel;
 
-import java.util.Calendar;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -39,6 +37,8 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.tasks.InteractionsTask;
+import org.apache.log4j.Logger;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
@@ -63,6 +63,7 @@ import org.hibernate.annotations.Index;
 @SuppressWarnings("serial")
 public class Loan extends DisciplineMember implements AttachmentOwnerIFace<LoanAttachment>, OneToManyProviderIFace, java.io.Serializable 
 {
+    private static final Logger log = Logger.getLogger(Loan.class);
 
     // options for the 'closed' field
     public static final Boolean CLOSED = true;
@@ -736,19 +737,46 @@ public class Loan extends DisciplineMember implements AttachmentOwnerIFace<LoanA
     protected Integer countContents(Boolean countQuantity, Boolean countUnresolved) {
         if (getId() == null) {
             return null;
+        } else {
+            return BasicSQLUtils.getCountAsInt(getCountContentsSql(countQuantity, countUnresolved, getId()));
         }
-        String select = countQuantity ? " sum(quantity" + (countUnresolved ? "-ifnull(quantityresolved,0)" : "") + ")"
-                : " count(*) ";
+    }
 
-        String sql = "select " + select + " from loanpreparation where loanid = " + getId();
-        if (countUnresolved) {
-            sql += " and (not isresolved";
-            if (countQuantity) {
-                sql += " or ifnull(quantity,0) - ifnull(quantityresolved,0) > 0";
-            }
-            sql += ")";
+    protected static String getCountContentsSql(boolean countQuantity, boolean countUnresolved, int id) {
+        return InteractionsTask.getCountContentsSql(countQuantity, countUnresolved, id, getClassTableId());
+    }
+
+    @Transient
+    public static List<String> getQueryableTransientFields() {
+        List<String> result = new ArrayList<>();
+        result.add("TotalPreps");
+        result.add("TotalItems");
+        result.add("UnresolvedPreps");
+        result.add("UnresolvedItems");
+        result.add("ResolvedPreps");
+        result.add("ResolvedItems");
+        return result;
+    }
+
+    public static Object getQueryableTransientFieldValue(String fldName, Object[] vals) {
+        if (vals == null || vals[0] == null) {
+            return null;
+        } else if (fldName.equalsIgnoreCase("TotalPreps")) {
+            return BasicSQLUtils.getCountAsInt(getCountContentsSql(false, false, (Integer)vals[0]));
+        } else if (fldName.equalsIgnoreCase("TotalItems")) {
+            return BasicSQLUtils.getCountAsInt(getCountContentsSql(true, false, (Integer)vals[0]));
+        } else  if (fldName.equalsIgnoreCase("UnresolvedPreps")) {
+            return BasicSQLUtils.getCountAsInt(getCountContentsSql(false, true, (Integer)vals[0]));
+        } else if (fldName.equalsIgnoreCase("UnresolvedItems")) {
+            return BasicSQLUtils.getCountAsInt(getCountContentsSql(true, true, (Integer)vals[0]));
+        } else if (fldName.equalsIgnoreCase("ResolvedPreps")) {
+            return BasicSQLUtils.getCountAsInt(getCountContentsSql(false, false, (Integer)vals[0])) - BasicSQLUtils.getCountAsInt(getCountContentsSql(false, true, (Integer)vals[0]));
+        } else if (fldName.equalsIgnoreCase("ResolvedItems")) {
+            return BasicSQLUtils.getCountAsInt(getCountContentsSql(true, false, (Integer)vals[0])) - BasicSQLUtils.getCountAsInt(getCountContentsSql(true, true, (Integer)vals[0]));
+        } else {
+            log.error("Unknown calculated field: " + fldName);
+            return null;
         }
-        return BasicSQLUtils.getCountAsInt(sql);
     }
 
     /* (non-Javadoc)
@@ -779,6 +807,12 @@ public class Loan extends DisciplineMember implements AttachmentOwnerIFace<LoanA
     public int getTableId()
     {
         return getClassTableId();
+    }
+
+    @Override
+    @Transient
+    public Set<? extends PreparationHolderIFace> getPreparationHolders() {
+        return getLoanPreparations();
     }
 
     /* (non-Javadoc)

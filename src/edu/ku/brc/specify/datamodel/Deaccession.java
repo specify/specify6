@@ -1,65 +1,30 @@
-/* Copyright (C) 2020, Specify Collections Consortium
- * 
- * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
- * 
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-*/
 package edu.ku.brc.specify.datamodel;
 
-import java.util.Calendar;
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
-
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.tasks.InteractionsTask;
+import org.apache.log4j.Logger;
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Index;
 
-/**
+import javax.persistence.*;
+import java.util.*;
 
- */
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "deaccession")
 @org.hibernate.annotations.Table(appliesTo="deaccession", indexes =
-    {   @Index (name="DeaccessionNumberIDX", columnNames={"DeaccessionNumber"}),
-        @Index (name="DeaccessionDateIDX", columnNames={"DeaccessionDate"})
-    })
+        {   @Index(name="DeaccessionNumberIDX", columnNames={"DeaccessionNumber"}),
+                @Index (name="DeaccessionDateIDX", columnNames={"DeaccessionDate"})
+        })
 @SuppressWarnings("serial")
-public class Deaccession extends DataModelObjBase implements java.io.Serializable {
-
-    // Fields    
-
+public class Deaccession extends DataModelObjBase implements java.io.Serializable, OneToManyProviderIFace, AttachmentOwnerIFace<DeaccessionAttachment> {
+    private static final Logger log = Logger.getLogger(Deaccession.class);
     protected Integer                     deaccessionId;
     protected String                      type;
+    protected String                      status;
     protected String                      deaccessionNumber;
-    protected Calendar                    deaccessionDate;
+    protected Calendar deaccessionDate;
     protected String                      remarks;
     protected String                      text1;
     protected String                      text2;
@@ -67,29 +32,167 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
     protected Float                       number2;
     protected Boolean                     yesNo1;
     protected Boolean                     yesNo2;
-    protected Set<DeaccessionAgent>       deaccessionAgents;
-    protected Set<DeaccessionPreparation> deaccessionPreparations;
-    protected Accession                   accession;
+    protected Set<Disposal> disposals;
+    protected Set<Gift> gifts;
+    protected Set<ExchangeOut> exchangeOuts;
+    protected Set<Accession> accessions;
+    protected Set<DeaccessionAgent> deaccessionAgents;
+    protected Set<DeaccessionAttachment> deaccessionAttachments;
+    protected Set<OneToManyProviderIFace> removals;
+
+    @Override
+    public void forceLoad() {
+        forceLoad(false);
+    }
+
+    private void forceLoadSet(Set<? extends DataModelObjBase> set) {
+        for (DataModelObjBase s : set) {
+            s.forceLoad();
+        }
+    }
+    /**
+     *
+     * @param forcefully
+     */
+    public void forceLoad(boolean forcefully) {
+        super.forceLoad();
+        disposals.size();
+        gifts.size();
+        exchangeOuts.size();
+        deaccessionAttachments.size();
+        deaccessionAgents.size();
+        if (forcefully) {
+            forceLoadSet(disposals);
+            forceLoadSet(gifts);
+            forceLoadSet(exchangeOuts);
+            forceLoadSet(deaccessionAttachments);
+            forceLoadSet(deaccessionAgents);
+        }
+    }
+
+
 
     // Constructors
 
+    @OneToMany(mappedBy = "deaccession")
+    @Cascade( {org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.MERGE, org.hibernate.annotations.CascadeType.LOCK} )
+    public Set<Disposal> getDisposals() {
+        return disposals;
+    }
+
+    public void setDisposals(Set<Disposal> disposals) {
+        this.disposals = disposals;
+    }
+
+    @OneToMany(mappedBy = "deaccession")
+    @Cascade( {org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.MERGE, org.hibernate.annotations.CascadeType.LOCK} )
+    public Set<Gift> getGifts() {
+        return gifts;
+    }
+
+    public void setGifts(Set<Gift> gifts) {
+        this.gifts = gifts;
+    }
+
+    @OneToMany(mappedBy = "deaccession")
+    @Cascade( {org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.MERGE, org.hibernate.annotations.CascadeType.LOCK} )
+    public Set<ExchangeOut> getExchangeOuts() {
+        return exchangeOuts;
+    }
+
+    public void setExchangeOuts(Set<ExchangeOut> exchangeOuts) {
+        this.exchangeOuts = exchangeOuts;
+    }
+
+    //    @OneToMany(mappedBy = "deaccession")
+//    @Cascade( {org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.MERGE, org.hibernate.annotations.CascadeType.LOCK} )
+    @Transient
+    public Set<Accession> getAccessions() {
+        if (accessions == null) {
+            accessions = buildAccessions();
+        }
+        return accessions;
+    }
+
+    private Set<Accession> getAccessionsFromProvider(OneToManyProviderIFace provider) {
+        Set<Accession> result = new HashSet<>();
+        for (PreparationHolderIFace providee : provider.getPreparationHolders()) {
+            if (providee.getPreparation() != null && providee.getPreparation().getCollectionObject() != null &&
+                    providee.getPreparation().getCollectionObject().getAccession() != null) {
+                result.add(providee.getPreparation().getCollectionObject().getAccession());
+            }
+        }
+        return result;
+    }
+
+    public Set<Accession> buildAccessions() {
+        //get accessions from associated removal(s)...
+        Set<Accession> result = new HashSet<>();
+        for (OneToManyProviderIFace removal : getRemovals()) {
+            result.addAll(getAccessionsFromProvider(removal));
+        }
+        return result;
+    }
+
+
+    @OneToMany(mappedBy = "deaccession")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @OrderBy("ordinal ASC")
+    public Set<DeaccessionAttachment> getDeaccessionAttachments()
+    {
+        return deaccessionAttachments;
+    }
+
+    public void setDeaccessionAttachments(Set<DeaccessionAttachment> deaccessionAttachments)
+    {
+        this.deaccessionAttachments = deaccessionAttachments;
+    }
+
+    @OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "deaccession")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    public Set<DeaccessionAgent> getDeaccessionAgents() {
+        return this.deaccessionAgents;
+    }
+
+    public void setDeaccessionAgents(Set<DeaccessionAgent> deaccessionAgents) {
+        this.deaccessionAgents = deaccessionAgents;
+    }
+
+//    public void setAccessions(Set<Accession> accessions) {
+//        this.accessions = accessions;
+//    }
+
+    @Transient
+    public Set<OneToManyProviderIFace> getRemovals() {
+        Set<OneToManyProviderIFace> result = new HashSet<>();
+        for (Disposal d : getDisposals()) {
+            result.add(d);
+        }
+        for (ExchangeOut e : getExchangeOuts()) {
+            result.add(e);
+        }
+        for (Gift g : getGifts()) {
+            result.add(g);
+        }
+        return result;
+    }
     /** default constructor */
     public Deaccession() {
         //
     }
-    
+
     /** constructor with id */
     public Deaccession(Integer deaccessionId) {
         this.deaccessionId = deaccessionId;
     }
-   
+
     // Initializer
     @Override
-    public void initialize()
-    {
+    public void initialize() {
         super.init();
         deaccessionId = null;
         type = null;
+        status = null;
         deaccessionNumber = null;
         deaccessionDate = null;
         remarks = null;
@@ -99,11 +202,46 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
         number2 = null;
         yesNo1 = null;
         yesNo2 = null;
-        deaccessionAgents = new HashSet<DeaccessionAgent>();
-        deaccessionPreparations = new HashSet<DeaccessionPreparation>();
-        accession = null;
+        disposals = new HashSet<>();
+        gifts = new HashSet<>();
+        exchangeOuts = new HashSet<>();
+        deaccessionAttachments = new HashSet<>();
+        deaccessionAgents = new HashSet<>();
+        accessions = null;
+        removals = null;
+
     }
     // End Initializer
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
+     */
+    @Override
+    @Transient
+    public int getTableId()
+    {
+        return getClassTableId();
+    }
+
+    @Override
+    @Transient
+    public Set<? extends PreparationHolderIFace> getPreparationHolders() {
+        Set<PreparationHolderIFace> result = new HashSet<>();
+        for (Disposal d : getDisposals()) {
+            result.addAll(d.getPreparationHolders());
+        }
+        for (Gift g : getGifts()) {
+            result.addAll(g.getPreparationHolders());
+        }
+        for (ExchangeOut g : getExchangeOuts()) {
+            result.addAll(g.getPreparationHolders());
+        }
+        return result;
+    }
+
+    public static int getClassTableId() {
+        return 163;
+    }
 
     // Property accessors
 
@@ -115,6 +253,9 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
     @Column(name = "DeaccessionID", unique = false, nullable = false, insertable = true, updatable = true)
     public Integer getDeaccessionId() {
         return this.deaccessionId;
+    }
+    public void setDeaccessionId(Integer deaccessionId) {
+        this.deaccessionId = deaccessionId;
     }
 
     /**
@@ -137,196 +278,185 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
     {
         return Deaccession.class;
     }
-    
-    public void setDeaccessionId(Integer deaccessionId) {
-        this.deaccessionId = deaccessionId;
-    }
 
-    /**
-     *      * Description of the Type of deaccession; i.e. Gift, disposal, lost
-     */
     @Column(name = "Type", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
     public String getType() {
-        return this.type;
+        return type;
     }
-    
+
     public void setType(String type) {
         this.type = type;
     }
 
-    /**
-     *      * Name institution assigns to the deacession
-     */
+    @Column(name = "Status", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+    public String getStatus() {
+        return this.status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
     @Column(name = "DeaccessionNumber", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getDeaccessionNumber() {
-        return this.deaccessionNumber;
+        return deaccessionNumber;
     }
-    
+
     public void setDeaccessionNumber(String deaccessionNumber) {
         this.deaccessionNumber = deaccessionNumber;
     }
 
-    /**
-     * 
-     */
     @Temporal(TemporalType.DATE)
     @Column(name = "DeaccessionDate", unique = false, nullable = true, insertable = true, updatable = true)
     public Calendar getDeaccessionDate() {
-        return this.deaccessionDate;
+        return deaccessionDate;
     }
-    
+
     public void setDeaccessionDate(Calendar deaccessionDate) {
         this.deaccessionDate = deaccessionDate;
     }
 
-    /**
-     * 
-     */
     @Lob
     @Column(name = "Remarks", length = 4096)
     public String getRemarks() {
-        return this.remarks;
+        return remarks;
     }
-    
+
     public void setRemarks(String remarks) {
         this.remarks = remarks;
     }
 
-    /**
-     *      * User definable
-     */
     @Lob
     @Column(name = "Text1", length = 65535)
     public String getText1() {
-        return this.text1;
+        return text1;
     }
-    
+
     public void setText1(String text1) {
         this.text1 = text1;
     }
 
-    /**
-     *      * User definable
-     */
     @Lob
     @Column(name = "Text2", length = 65535)
     public String getText2() {
-        return this.text2;
+        return text2;
     }
-    
+
     public void setText2(String text2) {
         this.text2 = text2;
     }
 
-    /**
-     *      * User definable
-     */
     @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
     public Float getNumber1() {
-        return this.number1;
+        return number1;
     }
-    
+
     public void setNumber1(Float number1) {
         this.number1 = number1;
     }
 
-    /**
-     *      * User definable
-     */
     @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
     public Float getNumber2() {
-        return this.number2;
+        return number2;
     }
-    
+
     public void setNumber2(Float number2) {
         this.number2 = number2;
     }
 
-    /**
-     *      * User definable
-     */
     @Column(name="YesNo1",unique=false,nullable=true,updatable=true,insertable=true)
     public Boolean getYesNo1() {
-        return this.yesNo1;
+        return yesNo1;
     }
-    
+
     public void setYesNo1(Boolean yesNo1) {
         this.yesNo1 = yesNo1;
     }
 
-    /**
-     *      * User definable
-     */
     @Column(name="YesNo2",unique=false,nullable=true,updatable=true,insertable=true)
     public Boolean getYesNo2() {
-        return this.yesNo2;
+        return yesNo2;
     }
-    
+
     public void setYesNo2(Boolean yesNo2) {
         this.yesNo2 = yesNo2;
     }
 
-    /**
-     * 
-     */
-    @OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "deaccession")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    public Set<DeaccessionAgent> getDeaccessionAgents() {
-        return this.deaccessionAgents;
-    }
-    
-    public void setDeaccessionAgents(Set<DeaccessionAgent> deaccessionAgents) {
-        this.deaccessionAgents = deaccessionAgents;
-    }
-
-    /**
-     * 
-     */
-    @OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "deaccession")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    public Set<DeaccessionPreparation> getDeaccessionPreparations() {
-        return this.deaccessionPreparations;
-    }
-    
-    public void setDeaccessionPreparations(Set<DeaccessionPreparation> deaccessionPreparations) {
-        this.deaccessionPreparations = deaccessionPreparations;
-    }
-
-    /**
-     * @return the accession
-     */
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.MERGE, org.hibernate.annotations.CascadeType.LOCK })
-    @JoinColumn(name = "AccessionID", unique = false, nullable = true, insertable = true, updatable = true)
-    public Accession getAccession()
-    {
-        return accession;
-    }
-
-    /**
-     * @param accession the accession to set
-     */
-    public void setAccession(Accession accession)
-    {
-        this.accession = accession;
-    }
-
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
+     * @see edu.ku.brc.specify.datamodel.AttachmentOwnerIFace#getAttachmentTableId()
      */
     @Override
     @Transient
-    public int getTableId()
+    public int getAttachmentTableId()
     {
         return getClassTableId();
     }
-    
-    /**
-     * @return the Table ID for the class.
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.AttachmentOwnerIFace#getAttachmentReferences()
      */
-    public static int getClassTableId()
+    @Override
+    @Transient
+    public Set<DeaccessionAttachment> getAttachmentReferences()
     {
-        return 34;
+        return deaccessionAttachments;
+    }
+
+
+    @Transient
+    public Integer getTotalPreps() {
+        return countContents(false);
+    }
+
+    @Transient
+    public Integer getTotalItems() {
+        return countContents(true);
+    }
+
+    protected Integer countContents(Boolean countQuantity) {
+        if (getId() == null) {
+            return null;
+        } else {
+            return countContents(countQuantity, getId());
+        }
+    }
+
+    /**
+     *
+     * @param countQuantity
+     * @param id
+     * @return
+     */
+    protected static Integer countContents(boolean countQuantity, int id) {
+        String sql = "select disposalid, " + Disposal.getClassTableId() + " from disposal where deaccessionid = " + id
+        +  " union select giftid, " + Gift.getClassTableId() + " from gift where deaccessionid = " + id
+        + " union select exchangeoutid, " + ExchangeOut.getClassTableId() + " from exchangeout where deaccessionid = " + id;
+        List<Object[]> interactions = BasicSQLUtils.query(sql);
+        Integer result = 0;
+        for (Object[] i : interactions) {
+            result += BasicSQLUtils.getCountAsInt(InteractionsTask.getCountContentsSql(countQuantity, false, (Integer)i[0], (Integer)i[1]));
+        }
+        return result;
+    }
+
+    @Transient
+    public static List<String> getQueryableTransientFields() {
+        List<String> result = new ArrayList<>();
+        result.add("TotalPreps");
+        result.add("TotalItems");
+        return result;
+    }
+
+    public static Object getQueryableTransientFieldValue(String fldName, Object[] vals) {
+        if (vals == null || vals[0] == null) {
+            return null;
+        } else if (fldName.equalsIgnoreCase("TotalPreps")) {
+            return countContents(false, (Integer)vals[0]);
+        } else if (fldName.equalsIgnoreCase("TotalItems")) {
+            return countContents(true, (Integer)vals[0]);
+        } else {
+            log.error("Unknown calculated field: " + fldName);
+            return null;
+        }
     }
 
 }

@@ -55,6 +55,7 @@ public class AttachmentReferenceBaseBusRules extends BaseBusRules
                CollectionObjectAttachment.class,
                ConservDescriptionAttachment.class,
                ConservEventAttachment.class,
+               DeaccessionAttachment.class,
                DNASequenceAttachment.class,
                DNASequencingRunAttachment.class,
                FieldNotebookAttachment.class,

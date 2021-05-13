@@ -19,9 +19,7 @@
 */
 package edu.ku.brc.specify.datamodel;
 
-import java.util.Calendar;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -38,6 +36,9 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.tasks.InteractionsTask;
+import org.apache.log4j.Logger;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
@@ -56,7 +57,8 @@ import org.hibernate.annotations.Index;
 @SuppressWarnings("serial")
 public class Gift extends DisciplineMember implements java.io.Serializable, OneToManyProviderIFace, AttachmentOwnerIFace<GiftAttachment>
 {
-    // Fields    
+    private static final Logger log = Logger.getLogger(Gift.class);
+    // Fields
     protected Integer                 giftId;
     protected String                  giftNumber;
     protected Calendar                giftDate;
@@ -90,6 +92,7 @@ public class Gift extends DisciplineMember implements java.io.Serializable, OneT
     
     protected Division                division;
 
+    protected Deaccession            deaccession;
 
     // Constructors
 
@@ -143,6 +146,8 @@ public class Gift extends DisciplineMember implements java.io.Serializable, OneT
         division        = null;
         addressOfRecord = null;
         giftAttachments =  new HashSet<GiftAttachment>();
+
+        deaccession = null;
 
     }
     // End Initializer
@@ -492,7 +497,18 @@ public class Gift extends DisciplineMember implements java.io.Serializable, OneT
     {
         this.division = division;
     }
-    
+
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.MERGE, org.hibernate.annotations.CascadeType.LOCK })
+    @JoinColumn(name = "DeaccessionID", unique = false, nullable = true, insertable = true, updatable = true)
+    public Deaccession getDeaccession() {
+        return deaccession;
+    }
+
+    public void setDeaccession(Deaccession deaccession) {
+        this.deaccession = deaccession;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentTableId()
      */
@@ -639,6 +655,12 @@ public class Gift extends DisciplineMember implements java.io.Serializable, OneT
         return getClassTableId();
     }
 
+    @Override
+    @Transient
+    public Set<? extends PreparationHolderIFace> getPreparationHolders() {
+        return getGiftPreparations();
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.AttachmentOwnerIFace#getAttachmentTableId()
      */
@@ -677,5 +699,47 @@ public class Gift extends DisciplineMember implements java.io.Serializable, OneT
         return giftNumber != null ? giftNumber : super.getIdentityTitle();
     }
 
+    @Transient
+    public Integer getTotalPreps() {
+        return countContents(false);
+    }
+
+    @Transient
+    public Integer getTotalItems() {
+        return countContents(true);
+    }
+
+    protected Integer countContents(Boolean countQuantity) {
+        if (getId() == null) {
+            return null;
+        } else {
+            return BasicSQLUtils.getCountAsInt(getCountContentsSql(countQuantity, getId()));
+        }
+    }
+
+    protected static String getCountContentsSql(boolean countQuantity, int id) {
+        return InteractionsTask.getCountContentsSql(countQuantity, false, id, getClassTableId());
+    }
+
+    @Transient
+    public static List<String> getQueryableTransientFields() {
+        List<String> result = new ArrayList<>();
+        result.add("TotalPreps");
+        result.add("TotalItems");
+        return result;
+    }
+
+    public static Object getQueryableTransientFieldValue(String fldName, Object[] vals) {
+        if (vals == null || vals[0] == null) {
+            return null;
+        } else if (fldName.equalsIgnoreCase("TotalPreps")) {
+            return BasicSQLUtils.getCountAsInt(getCountContentsSql(false, (Integer)vals[0]));
+        } else if (fldName.equalsIgnoreCase("TotalItems")) {
+            return BasicSQLUtils.getCountAsInt(getCountContentsSql(true, (Integer)vals[0]));
+       } else {
+            log.error("Unknown calculated field: " + fldName);
+            return null;
+        }
+    }
 
 }

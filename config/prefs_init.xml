@@ -105,8 +105,8 @@
         </pref>
     </section>
     
-    <section title="Loans">
-        <pref name="LOANS" title="LOANS" icon="Loan" panelClass="edu.ku.brc.specify.prefs.LoansPrefsPanel" viewsetname="Preferences" viewname="LoansPrefs" help="PrefsLoan">
+    <section title="Interactions">
+        <pref name="LOANS" title="INTERACTIONS_PREF_BTN" icon="Interactions" panelClass="edu.ku.brc.specify.prefs.LoansPrefsPanel" viewsetname="Preferences" viewname="LoansPrefs" help="PrefsLoan">
             <defperm name="Manager"       perm="true,true,true,true"/>
             <defperm name="FullAccess"    perm="true,true,true,true"/>
             <defperm name="LimitedAccess" perm="true,true,true,true"/>

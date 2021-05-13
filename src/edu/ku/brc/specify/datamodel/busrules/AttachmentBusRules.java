@@ -69,7 +69,7 @@ public class AttachmentBusRules extends BaseBusRules
 
 	String[] tableNames = {"accessionattachment",          "agentattachment",               "borrowattachment",
             "collectingeventattachment",    "collectingtripattachment", "collectionobjectattachment",
-            "conservdescriptionattachment",  "conserveventattachment",       "dnasequenceattachment",
+            "conservdescriptionattachment",  "conserveventattachment",  "deaccessionattachment",     "dnasequenceattachment",
             "dnasequencerunattachment", "fieldnotebookattachment",      "fieldnotebookpageattachment",
             "fieldnotebookpagesetattachment", "giftattachment", "loanattachment", "localityattachment",
             "permitattachment", "preparationattachment", "referenceworkattachment",

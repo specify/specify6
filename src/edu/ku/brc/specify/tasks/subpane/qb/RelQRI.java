@@ -231,6 +231,9 @@ public class RelQRI extends FieldQRI
      */
     public static String stripDescriptiveStuff(final String lbl)
     {
+        if (lbl.endsWith(" " + UIRegistry.getResourceString("QB_CALCULATED"))) {
+            return lbl.substring(0, lbl.length() - UIRegistry.getResourceString("QB_CALCULATED").length() - 1);
+        }
         if (lbl.endsWith(" " + UIRegistry.getResourceString("QB_AGGREGATED")))
         {
            return lbl.substring(0, lbl.length() - UIRegistry.getResourceString("QB_AGGREGATED").length() - 1);

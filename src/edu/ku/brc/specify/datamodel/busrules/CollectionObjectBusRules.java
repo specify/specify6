@@ -1039,9 +1039,9 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules {
                                 addDeleteReason(LoanPreparation.getClassTableId());
                             }
 
-                            if (prep.getDeaccessionPreparations() != null && !prep.getDeaccessionPreparations().isEmpty()) {
+                            if (prep.getDisposalPreparations() != null && !prep.getDisposalPreparations().isEmpty()) {
                                 isOK = false;
-                                addDeleteReason(DeaccessionPreparation.getClassTableId());
+                                addDeleteReason(DisposalPreparation.getClassTableId());
                             }
 
                             if (!isOK) {

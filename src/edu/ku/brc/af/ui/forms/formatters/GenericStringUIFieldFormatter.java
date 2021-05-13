@@ -64,7 +64,7 @@ public class GenericStringUIFieldFormatter extends BaseUIFieldFormatter
         DBFieldInfo fi = ti.getFieldByName(fieldName);
         
         this.dataClass              = tableClass;
-        this.length                 = fi.getLength();
+        this.length                 = fi == null ? uiDisplayLen : fi.getLength();
         this.uiLength               = uiDisplayLen;
         this.isNumericCatalogNumber = false;
         this.isIncrementer          = false;

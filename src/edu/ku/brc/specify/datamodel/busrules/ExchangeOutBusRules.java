@@ -20,9 +20,16 @@
 package edu.ku.brc.specify.datamodel.busrules;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
+import edu.ku.brc.af.ui.forms.FormViewObj;
+import edu.ku.brc.af.ui.forms.validation.ValComboBox;
 import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.ExchangeOut;
+
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * @author rod
@@ -50,6 +57,45 @@ public class ExchangeOutBusRules extends BaseBusRules
     public void addChildrenToNewDataObjects(Object newDataObj)
     {
         ((ExchangeOut)newDataObj).setDivision(AppContextMgr.getInstance().getClassObject(Division.class));
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.BaseBusRules#afterFillForm(java.lang.Object)
+     */
+    @Override
+    public void afterFillForm(final Object dataObj)
+    {
+        super.afterFillForm(dataObj);
+
+        if (!(viewable instanceof FormViewObj) || dataObj == null)
+        {
+            return;
+        }
+
+        ExchangeOut exchangeOut = (ExchangeOut)dataObj;
+
+        DBTableInfo divisionTI = DBTableIdMgr.getInstance().getInfoById(Division.getClassTableId());
+        FormViewObj fvo = (FormViewObj)viewable;
+        JLabel label = (JLabel)fvo.getLabelById("divLabel");
+        if (label != null)
+        {
+            label.setText(divisionTI.getTitle()+":");
+        }
+
+        Component divComp = fvo.getControlById("divcbx");
+        if (divComp instanceof ValComboBox)
+        {
+            ValComboBox cbx = (ValComboBox)divComp;
+            DefaultComboBoxModel model = (DefaultComboBoxModel)cbx.getModel();
+            model.removeAllElements();
+            model.addElement(exchangeOut.getDivision());
+            cbx.getComboBox().setSelectedIndex(0);
+
+        } else
+        {
+            JTextField tf = (JTextField)divComp;
+            tf.setText(exchangeOut.getDivision().getName());
+        }
     }
 
 }

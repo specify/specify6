@@ -12,7 +12,9 @@
     <dialog type="search" viewset="Search" view="CollectionRelTypeSearch"  name="CollectionRelTypeSearch"  class="edu.ku.brc.specify.datamodel.CollectionRelType" idfield="collectionRelTypeId" helpcontext="CBXQSearch"/>
     <dialog type="search" viewset="Search" view="ContainerSearch"          name="ContainerSearch"          class="edu.ku.brc.specify.datamodel.Container"      idfield="containerId" helpcontext="CBXQSearch"/>
     <dialog type="search" viewset="Search" view="ContainerSearch"          name="ContainerOwnerSearch"     class="edu.ku.brc.specify.datamodel.Container"      idfield="containerId" helpcontext="CBXQSearch"/>
+    <dialog type="search" viewset="Search" view="DeaccessionSearch"        name="DeaccessionSearch"        class="edu.ku.brc.specify.datamodel.Deaccession"    idfield="deaccessionId" helpcontext="CBXQSearch"/>
     <dialog type="search" viewset="Search" view="DisciplineSearch"         name="DisciplineSearch"         class="edu.ku.brc.specify.datamodel.Discipline"     idfield="disciplineId" helpcontext="CBXQSearch"/>
+    <dialog type="search" viewset="Search" view="DisposalSearch"           name="DisposalSearch"        class="edu.ku.brc.specify.datamodel.Disposal"    idfield="disposalId" helpcontext="CBXQSearch"/>
     <dialog type="search" viewset="Search" view="DNAPrimerSearch"          name="DNAPrimerSearch"          class="edu.ku.brc.specify.datamodel.DNAPrimer"      idfield="dnaPrimerId" helpcontext="CBXQSearch"/>
     <dialog type="search" viewset="Search" view="DivisionSearch"           name="DivisionSearch"           class="edu.ku.brc.specify.datamodel.Division"       idfield="divisionId" helpcontext="CBXQSearch"/>
     <dialog type="search" viewset="Search" view="ExsiccataSearch"          name="ExsiccataSearch"          class="edu.ku.brc.specify.datamodel.Exsiccata"      idfield="exsiccataId" helpcontext="CBXQSearch"/>
@@ -27,6 +29,7 @@
     <dialog type="search" viewset="Search" view="StorageSearch"            name="StorageSearch"            class="edu.ku.brc.specify.datamodel.Storage"        idfield="storageId" helpcontext="CBXQSearch"/>
     <dialog type="search" viewset="Search" view="PaleoContextSearch"       name="PaleoContextSearch"       class="edu.ku.brc.specify.datamodel.PaleoContext"   idfield="paleoContextId" helpcontext="CBXQSearch"/>
     <dialog type="search" viewset="Search" view="PermitSearch"             name="PermitSearch"             class="edu.ku.brc.specify.datamodel.Permit"         idfield="permitId" helpcontext="CBXQSearch"/>
+    <dialog type="search" viewset="Search" view="PreparationSearch"        name="PreparationSearch"        class="edu.ku.brc.specify.datamodel.Preparation"    idfield="preparationId" helpcontext="CBXQSearch"/>
     <dialog type="search" viewset="Search" view="PrepTypeSearch"           name="PrepTypeSearch"           class="edu.ku.brc.specify.datamodel.PrepType"       idfield="prepTypeId" helpcontext="CBXQSearch"/>
     <dialog type="search" viewset="Search" view="ProjectSearch"            name="ProjectSearch"            class="edu.ku.brc.specify.datamodel.Project"        idfield="projectId" helpcontext="CBXQSearch"/>
     <dialog type="search" viewset="Search" view="ReferenceWorkSearch"      name="ReferenceWorkSearch"      class="edu.ku.brc.specify.datamodel.ReferenceWork"  idfield="referenceWorkId" helpcontext="CBXQSearch"/>
@@ -56,6 +59,11 @@
     <dialog type="display" view="CollectingEvent"    name="CollectingEvent"          class="edu.ku.brc.specify.datamodel.CollectingEvent" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="CollectingTrip"     name="CollectingTripDisplay"    class="edu.ku.brc.specify.datamodel.CollectingTrip" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="ContainerBrief"     name="ContainerDisplay"         class="edu.ku.brc.specify.datamodel.Container" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="Deaccession"         name="DeaccessionDisplay"        class="edu.ku.brc.specify.datamodel.Deaccession" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="DeaccessionAgent"    name="DeaccessionAgentDisplay"  class="edu.ku.brc.specify.datamodel.DeaccessionAgent" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="Disposal"         name="DisposalDisplay"        class="edu.ku.brc.specify.datamodel.Disposal" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="DisposalAgent"    name="DisposalAgentDisplay"  class="edu.ku.brc.specify.datamodel.DisposalAgent" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="DisposalPreparation"         name="DisposalPreparationDisplay"        class="edu.ku.brc.specify.datamodel.DisposalPreparation" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="Determination"      name="DeterminationDisplay"     class="edu.ku.brc.specify.datamodel.Determination" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="Division"           name="DivisionDisplay"          class="edu.ku.brc.specify.datamodel.Division" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="DNAPrimer"          name="DNAPrimerDisplay"         class="edu.ku.brc.specify.datamodel.DNAPrimer" helpcontext="CBXQViewEdit"/>
@@ -73,6 +81,7 @@
     <dialog type="display" view="GroupPerson"        name="GroupPersonDisplay"       class="edu.ku.brc.specify.datamodel.GroupPerson" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="Journal"            name="JournalDisplay"           class="edu.ku.brc.specify.datamodel.Journal" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="LithoStrat"         name="LithoStratDisplay"        class="edu.ku.brc.specify.datamodel.LithoStrat" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="DeaccessionDialog"  name="DeaccessionDisplay"  class="edu.ku.brc.specify.datamodel.Deaccession" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="LoanItems"          name="LoanItemsDisplay"         class="edu.ku.brc.specify.datamodel.LoanPreparation" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="LoanAgent"          name="LoanAgentDisplay"         class="edu.ku.brc.specify.datamodel.LoanAgent" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="Locality"           name="LocalityDisplay"          class="edu.ku.brc.specify.datamodel.Locality" helpcontext="CBXQViewEdit"/>
@@ -97,6 +106,7 @@
     <dialog type="display" view="ObjectAttachment" name="CollectionObjectAttachmentDisplay"     class="edu.ku.brc.specify.datamodel.CollectionObjectAttachment" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="ObjectAttachment" name="ConservDescriptionAttachmentDisplay"   class="edu.ku.brc.specify.datamodel.ConservDescriptionAttachment" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="ObjectAttachment" name="ConservEventAttachmentDisplay"         class="edu.ku.brc.specify.datamodel.ConservEventAttachment" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="ObjectAttachment" name="DeaccessionAttachmentDisplay"          class="edu.ku.brc.specify.datamodel.DeaccessionAttachment" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="ObjectAttachment" name="DNASequenceAttachmentDisplay"          class="edu.ku.brc.specify.datamodel.DNASequenceAttachment" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="ObjectAttachment" name="DNASequencingRunAttachmentDisplay"     class="edu.ku.brc.specify.datamodel.DNASequencingRunAttachment" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="ObjectAttachment" name="FieldNotebookAttachmentDisplay"        class="edu.ku.brc.specify.datamodel.FieldNotebookAttachment" helpcontext="CBXQViewEdit"/>

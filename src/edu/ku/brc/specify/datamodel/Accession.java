@@ -19,7 +19,9 @@
 */
 package edu.ku.brc.specify.datamodel;
 
+import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -30,8 +32,7 @@ import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
-
-
+import java.util.Vector;
 
 
 /**
@@ -84,8 +85,8 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
     protected Set<AccessionAttachment>    accessionAttachments;
     protected Set<Appraisal>              appraisals;
     protected Set<TreatmentEvent>         treatmentEvents;
-    protected Set<Deaccession>            deaccessions;
     protected Set<AccessionCitation> accessionCitations;
+    protected Set<Deaccession> deaccessions;
 
     // Constructors
 
@@ -137,10 +138,63 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
         accessionAttachments    = new HashSet<AccessionAttachment>();
         appraisals              = new HashSet<Appraisal>();
         treatmentEvents         = new HashSet<TreatmentEvent>();
-        deaccessions            = new HashSet<Deaccession>();
         accessionCitations = new HashSet<>();
+        deaccessions = null;
     }
     // End Initializer
+
+
+    /**
+     *
+     * @return
+     */
+    @Transient
+    public Set<Deaccession> getDeaccessions() {
+        if (deaccessions == null) {
+            deaccessions = buildDeaccessions();
+        }
+        return deaccessions;
+    }
+
+    /**
+     *
+     * @return
+     */
+    private Set<Deaccession> buildDeaccessions() {
+        Set<Deaccession> result = new HashSet<>();
+        if (getId() != null) {
+            String dispSql = "select distinct d.deaccessionid from deaccession d inner join disposal dis on dis.deaccessionid = d.deaccessionid "
+                    + "inner join disposalpreparation dispp on dispp.disposalid = dispp.disposalid inner join preparation p "
+                    + "on p.preparationid = dispp.preparationid inner join collectionobject co on co.collectionobjectid = p.collectionobjectid "
+                    + "where co.collectionobjectid = " + getId();
+            String giftSql = "select distinct d.deaccessionid from deaccession d inner join gift dis on dis.deaccessionid = d.deaccessionid "
+                    + "inner join giftpreparation dispp on dispp.giftid = dispp.giftid inner join preparation p "
+                    + "on p.preparationid = dispp.preparationid inner join collectionobject co on co.collectionobjectid = p.collectionobjectid "
+                    + "where co.collectionobjectid = " + getId();
+            String exchSql = "select distinct d.deaccessionid from deaccession d inner join exchangeout dis on dis.deaccessionid = d.deaccessionid "
+                    + "inner join exchangeoutprep dispp on dispp.exchangeoutid = dispp.exchangeoutid inner join preparation p "
+                    + "on p.preparationid = dispp.preparationid inner join collectionobject co on co.collectionobjectid = p.collectionobjectid "
+                    + "where co.collectionobjectid = " + getId();
+            String sql = dispSql + " UNION " + giftSql + " UNION " + exchSql;
+            Vector<Object> ids = BasicSQLUtils.querySingleCol(sql);
+            DataProviderSessionIFace session = null;
+            try {
+                session = DataProviderFactory.getInstance().createSession();
+                for (Object id : ids) {
+                    Deaccession deacc = session.get(Deaccession.class, (Integer) id);
+                    deacc.forceLoad();
+                    result.add(deacc);
+                }
+            } catch (Exception x) {
+                log.error(x);
+            } finally {
+                if (session != null) {
+                    session.close();
+                }
+            }
+        }
+        return result;
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#clone()
@@ -157,7 +211,6 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
         obj.accessionAttachments    = new HashSet<AccessionAttachment>();
         obj.appraisals              = new HashSet<Appraisal>();
         obj.treatmentEvents         = new HashSet<TreatmentEvent>();
-        obj.deaccessions            = new HashSet<Deaccession>();
         obj.accessionCitations = new HashSet<>();
 
         for (AccessionAuthorization a : this.accessionAuthorizations) {
@@ -183,11 +236,6 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
         for (TreatmentEvent a : this.treatmentEvents) {
             TreatmentEvent c = (TreatmentEvent)a.clone();
             obj.treatmentEvents.add(c);
-            c.setAccession(obj);
-        }
-        for (Deaccession a : this.deaccessions) {
-            Deaccession c = (Deaccession)a.clone();
-            obj.deaccessions.add(c);
             c.setAccession(obj);
         }
         for (AccessionCitation a : this.accessionCitations) {
@@ -225,7 +273,6 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
         accessionAuthorizations.size();
         accessionAgents.size();
         appraisals.size();
-        deaccessions.size();
         treatmentEvents.size();
     }
 
@@ -680,24 +727,6 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
     }
 
     /**
-     * @return the deaccessions
-     */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "accession")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    public Set<Deaccession> getDeaccessions()
-    {
-        return deaccessions;
-    }
-
-    /**
-     * @param deaccessions the deaccessions to set
-     */
-    public void setDeaccessions(Set<Deaccession> deaccessions)
-    {
-        this.deaccessions = deaccessions;
-    }
-
-    /**
      * @return the addressOfRecord
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
@@ -758,7 +787,13 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
     {
         return getClassTableId();
     }
-    
+
+    @Override
+    @Transient
+    public Set<? extends PreparationHolderIFace> getPreparationHolders() {
+        return null;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.AttachmentOwnerIFace#getAttachmentTableId()
      */

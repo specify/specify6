@@ -1117,7 +1117,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             //query.forceLoad(true);                	
             qfps = !isExportMapping ? getQueryFieldPanels(this, query.getFields(), tableTree, tableTreeHash, saveBtn, missingFlds)
             		: getQueryFieldPanelsForMapping(this, query.getFields(), tableTree, tableTreeHash, saveBtn, schemaMapping, missingFlds, 
-            				(doAutoMap ? ConceptMapUtils.getDefaultDarwinCoreMappings() : null));
+            				(doAutoMap ? ConceptMapUtils.getDefaultDarwinCoreMappings(query.getContextTableId()) : null));
             if (missingFlds.size() > 0)
             {
                 JList list = new JList(new Vector<String>(missingFlds));
@@ -2474,7 +2474,15 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     colInfoList.add(columnInfo);
                     erti.setColInfoList(colInfoList);
                     erti.setColName(null);
-                } else {
+                } else if (qfp.getFieldQRI() instanceof CalcQRI) {
+                    DBTableInfo tblInfo = qfp.getFieldQRI().getTableInfo();
+                    erti = new ERTICaptionInfoCalc(qfp.getFieldQRI().getFieldName(), lbl, qfp.getStringId(), tblInfo);
+                    Vector<ColInfo> colInfoList = new Vector<>();
+                    ColInfo columnInfo = erti.new ColInfo(tblInfo.getIdColumnName(), tblInfo.getIdFieldName());
+                    columnInfo.setPosition(0);
+                    colInfoList.add(columnInfo);
+                    erti.setColInfoList(colInfoList);
+                 } else {
                     erti = new ERTICaptionInfoQB(colName, lbl, true, getColumnFormatter(qfp, forSchemaExport), 0, qfp.getStringId(), qfp.getPickList(), fi);
                 }
                 erti.setColClass(qfp.getFieldQRI().getDataClass());

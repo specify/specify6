@@ -191,13 +191,16 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
         SpQuery query = new SpQuery();
         query.initialize();
         query.setSpecifyUser(AppContextMgr.getInstance().getClassObject(SpecifyUser.class));
-        query.setName(String.format(getResourceString("QB_NEW_QUERY_NAME"), tableInfo.getTitle()));
+        query.setName(getDefaultNewQueryName(tableInfo));
         query.setNamed(false);
         query.setContextTableId((short)tableInfo.getTableId());
         query.setContextName(tableInfo.getShortClassName());
         return query;
     }
 
+    protected String getDefaultNewQueryName(DBTableInfo tableInfo) {
+        return String.format(getResourceString("QB_NEW_QUERY_NAME"), tableInfo.getTitle());
+    }
 
     /**
      * Creates pane and executes a query.
@@ -1940,9 +1943,6 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
                     for (TreeDefItemIface<?, ?, ?> defItem : defItems) {
                         if (defItem.getRankId() > 0) { //skip root, just because. 
                             try {
-                                //newTreeNode.getTableQRI().addField(
-                                //        new TreeLevelQRI(newTreeNode.getTableQRI(), null, defItem
-                                //                .getRankId()));
                                 newTreeNode.getTableQRI().addField(
                                         new TreeLevelQRI(newTreeNode.getTableQRI(), null, defItem
                                                 .getRankId(), "name", treeDef));
@@ -1976,31 +1976,26 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
                         }
                     }
                 }
-                catch (Exception ex)
-                {
+                catch (Exception ex) {
                     UsageTracker.incrHandledUsageCount();
                     edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryTask.class, ex);
                     ex.printStackTrace();
                 }
             }
 
-            for (Object kidObj : parent.selectNodes("table"))
-            {
+            for (Object kidObj : parent.selectNodes("table")) {
                 Element kidElement = (Element) kidObj;
                 processForTables(kidElement, newTreeNode);
             }
 
-            for (Object obj : parent.selectNodes("alias"))
-            {
+            for (Object obj : parent.selectNodes("alias")) {
                 Element kidElement = (Element) obj;
                 String kidClassName = XMLHelper.getAttr(kidElement, "name", null);
                 tableInfo = DBTableIdMgr.getInstance().getByShortClassName(kidClassName);
-                if (!tableInfo.isHidden() && (!AppContextMgr.isSecurityOn() || tableInfo.getPermissions().canView()))
-                {
+                if (!tableInfo.isHidden() && (!AppContextMgr.isSecurityOn() || tableInfo.getPermissions().canView())) {
                     tableName = XMLHelper.getAttr(kidElement, "name", null);
                     fieldName = XMLHelper.getAttr(kidElement, "field", null);
-                    if (StringUtils.isEmpty(fieldName))
-                    {
+                    if (StringUtils.isEmpty(fieldName)) {
                         fieldName = tableName.substring(0, 1).toLowerCase()
                                 + tableName.substring(1);
                     }

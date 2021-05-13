@@ -28,7 +28,7 @@ import edu.ku.brc.specify.datamodel.AccessionAgent;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.BorrowAgent;
 import edu.ku.brc.specify.datamodel.Collector;
-import edu.ku.brc.specify.datamodel.DeaccessionAgent;
+import edu.ku.brc.specify.datamodel.DisposalAgent;
 import edu.ku.brc.specify.datamodel.FundingAgent;
 import edu.ku.brc.specify.datamodel.LoanAgent;
 import edu.ku.brc.ui.IconManager;
@@ -56,7 +56,7 @@ public class AgentIconTextMapper implements ObjectTextMapper, ObjectIconMapper
         mappedClasses[1] = BorrowAgent.class;
         mappedClasses[2] = AccessionAgent.class;
         mappedClasses[3] = Collector.class;
-        mappedClasses[4] = DeaccessionAgent.class;
+        mappedClasses[4] = DisposalAgent.class;
         mappedClasses[5] = LoanAgent.class;
         return mappedClasses;
     }
@@ -85,9 +85,9 @@ public class AgentIconTextMapper implements ObjectTextMapper, ObjectIconMapper
         {
             a = ((Collector)o).getAgent();
         } else
-        if (o instanceof DeaccessionAgent)
+        if (o instanceof DisposalAgent)
         {
-            a = ((DeaccessionAgent)o).getAgent();
+            a = ((DisposalAgent)o).getAgent();
         } else
         if (o instanceof LoanAgent)
         {

@@ -94,9 +94,13 @@
 		<mapping class="edu.ku.brc.specify.datamodel.ConservEventAttachment"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Container"/>
 		<mapping class="edu.ku.brc.specify.datamodel.DataType"/>
-		<mapping class="edu.ku.brc.specify.datamodel.Deaccession"/>
-		<mapping class="edu.ku.brc.specify.datamodel.DeaccessionAgent"/>
-		<mapping class="edu.ku.brc.specify.datamodel.DeaccessionPreparation"/>
+        <mapping class="edu.ku.brc.specify.datamodel.Deaccession"/>
+        <mapping class="edu.ku.brc.specify.datamodel.DeaccessionAgent"/>
+        <mapping class="edu.ku.brc.specify.datamodel.DeaccessionAttachment"/>
+		<mapping class="edu.ku.brc.specify.datamodel.Disposal"/>
+		<mapping class="edu.ku.brc.specify.datamodel.DisposalAgent"/>
+        <mapping class="edu.ku.brc.specify.datamodel.DisposalAttachment"/>
+		<mapping class="edu.ku.brc.specify.datamodel.DisposalPreparation"/>
 		<mapping class="edu.ku.brc.specify.datamodel.DeterminationCitation"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Determination"/>
 		<!--<mapping class="edu.ku.brc.specify.datamodel.DeterminationStatus"/>-->

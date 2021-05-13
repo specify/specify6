@@ -1,22 +1,22 @@
 /* Copyright (C) 2020, Specify Collections Consortium
- * 
+ *
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-*/
+ */
 package edu.ku.brc.specify.datamodel;
 
 import java.util.HashSet;
@@ -40,44 +40,44 @@ import javax.persistence.Transient;
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
-@Table(name = "deaccessionpreparation")
-public class DeaccessionPreparation extends DataModelObjBase implements java.io.Serializable {
+@Table(name = "disposalpreparation")
+public class DisposalPreparation extends DataModelObjBase implements java.io.Serializable, PreparationHolderIFace {
 
-    // Fields    
+    // Fields
 
-     protected Integer deaccessionPreparationId;
-     protected Short quantity;
-     protected String remarks;
-     protected Deaccession deaccession;
-     protected Set<LoanReturnPreparation> loanReturnPreparations;
-     protected Preparation preparation;
+    protected Integer disposalPreparationId;
+    protected Integer quantity;
+    protected String remarks;
+    protected Disposal disposal;
+    protected LoanReturnPreparation loanReturnPreparation;
+    protected Preparation preparation;
 
 
     // Constructors
 
     /** default constructor */
-    public DeaccessionPreparation() {
+    public DisposalPreparation() {
         //
     }
-    
+
     /** constructor with id */
-    public DeaccessionPreparation(Integer deaccessionPreparationId) {
-        this.deaccessionPreparationId = deaccessionPreparationId;
+    public DisposalPreparation(Integer disposalPreparationId) {
+        this.disposalPreparationId = disposalPreparationId;
     }
-   
-    
-    
+
+
+
 
     // Initializer
     @Override
     public void initialize()
     {
         super.init();
-        deaccessionPreparationId = null;
+        disposalPreparationId = null;
         quantity = null;
         remarks = null;
-        deaccession = null;
-        loanReturnPreparations = new HashSet<LoanReturnPreparation>();
+        disposal = null;
+        loanReturnPreparation = null;
         preparation = null;
     }
     // End Initializer
@@ -89,9 +89,9 @@ public class DeaccessionPreparation extends DataModelObjBase implements java.io.
      */
     @Id
     @GeneratedValue
-    @Column(name = "DeaccessionPreparationID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Integer getDeaccessionPreparationId() {
-        return this.deaccessionPreparationId;
+    @Column(name = "DisposalPreparationID", unique = false, nullable = false, insertable = true, updatable = true)
+    public Integer getDisposalPreparationId() {
+        return this.disposalPreparationId;
     }
 
     /**
@@ -102,7 +102,7 @@ public class DeaccessionPreparation extends DataModelObjBase implements java.io.
     @Override
     public Integer getId()
     {
-        return this.deaccessionPreparationId;
+        return this.disposalPreparationId;
     }
 
     /* (non-Javadoc)
@@ -112,62 +112,62 @@ public class DeaccessionPreparation extends DataModelObjBase implements java.io.
     @Override
     public Class<?> getDataClass()
     {
-        return DeaccessionPreparation.class;
+        return DisposalPreparation.class;
     }
-    
-    public void setDeaccessionPreparationId(Integer deaccessionPreparationId) {
-        this.deaccessionPreparationId = deaccessionPreparationId;
+
+    public void setDisposalPreparationId(Integer disposalPreparationId) {
+        this.disposalPreparationId = disposalPreparationId;
     }
 
     /**
-     *      * Number of specimens deaccessioned (necessary for lots)
+     *      * Number of specimens disposaled (necessary for lots)
      */
     @Column(name = "Quantity", unique = false, nullable = true, insertable = true, updatable = true)
-    public Short getQuantity() {
+    public Integer getQuantity() {
         return this.quantity;
     }
-    
-    public void setQuantity(Short quantity) {
+
+    public void setQuantity(Integer quantity) {
         this.quantity = quantity;
     }
 
     /**
-     * 
+     *
      */
     @Lob
     @Column(name = "Remarks", length = 4096)
     public String getRemarks() {
         return this.remarks;
     }
-    
+
     public void setRemarks(String remarks) {
         this.remarks = remarks;
     }
 
     /**
-     *      * The deaccession
+     *      * The disposal
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "DeaccessionID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Deaccession getDeaccession() {
-        return this.deaccession;
+    @JoinColumn(name = "DisposalID", unique = false, nullable = false, insertable = true, updatable = true)
+    public Disposal getDisposal() {
+        return this.disposal;
     }
-    
-    public void setDeaccession(Deaccession deaccession) {
-        this.deaccession = deaccession;
+
+    public void setDisposal(Disposal disposal) {
+        this.disposal = disposal;
     }
 
     /**
-     * 
+     *
      */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "deaccessionPreparation")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    public Set<LoanReturnPreparation> getLoanReturnPreparations() {
-        return this.loanReturnPreparations;
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "LoanReturnPreparationID", unique = false, nullable = true, insertable = true, updatable = true)
+    public LoanReturnPreparation getLoanReturnPreparation() {
+        return this.loanReturnPreparation;
     }
-    
-    public void setLoanReturnPreparations(Set<LoanReturnPreparation> loanReturnPreparations) {
-        this.loanReturnPreparations = loanReturnPreparations;
+
+    public void setLoanReturnPreparation(LoanReturnPreparation loanReturnPreparation) {
+        this.loanReturnPreparation = loanReturnPreparation;
     }
 
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
@@ -182,24 +182,30 @@ public class DeaccessionPreparation extends DataModelObjBase implements java.io.
         this.preparation = preparation;
     }
 
+    @Override
+    @Transient
+    public Integer getQuantityReturned() {
+        return null;
+    }
+
     // Add Methods
 
-    public void addLoanReturnPreparations(final LoanReturnPreparation loanReturnPreparation)
+    /*public void addLoanReturnPreparations(final LoanReturnPreparation loanReturnPreparation)
     {
         this.loanReturnPreparations.add(loanReturnPreparation);
-        loanReturnPreparation.setDeaccessionPreparation(this);
-    }
+        loanReturnPreparation.setDisposalPreparation(this);
+    }*/
 
     // Done Add Methods
 
     // Delete Methods
 
-    public void removeLoanReturnPreparations(final LoanReturnPreparation loanReturnPreparation)
+    /*public void removeLoanReturnPreparations(final LoanReturnPreparation loanReturnPreparation)
     {
         this.loanReturnPreparations.remove(loanReturnPreparation);
-        loanReturnPreparation.setDeaccessionPreparation(null);
-    }
-    
+        loanReturnPreparation.setDisposalPreparation(null);
+    }*/
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentTableId()
      */
@@ -207,7 +213,7 @@ public class DeaccessionPreparation extends DataModelObjBase implements java.io.
     @Transient
     public Integer getParentTableId()
     {
-        return Deaccession.getClassTableId();
+        return Disposal.getClassTableId();
     }
 
     /* (non-Javadoc)
@@ -215,11 +221,11 @@ public class DeaccessionPreparation extends DataModelObjBase implements java.io.
      */
     @Override
     @Transient
-   public Integer getParentId()
+    public Integer getParentId()
     {
-        return deaccession != null ? deaccession.getId() : null;
+        return disposal != null ? disposal.getId() : null;
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
@@ -229,7 +235,7 @@ public class DeaccessionPreparation extends DataModelObjBase implements java.io.
     {
         return getClassTableId();
     }
-    
+
     /**
      * @return the Table ID for the class.
      */

@@ -34,7 +34,7 @@ import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.Gift;
-import edu.ku.brc.specify.datamodel.Deaccession;
+import edu.ku.brc.specify.datamodel.Disposal;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.ExchangeOut;
 import edu.ku.brc.ui.UIHelper;
@@ -124,7 +124,7 @@ public class PreparationBusRules extends AttachmentOwnerBaseBusRules
     public static void showInteractions(Integer prepId) {
         int loanCnt = BasicSQLUtils.getCountAsInt("select count(distinct l.loanid) from loan l inner join loanpreparation lp on lp.loanid = l.loanid where lp.preparationid = " + prepId);
         int giftCnt = BasicSQLUtils.getCountAsInt("select count(distinct l.giftid) from gift l inner join giftpreparation lp on lp.giftid = l.giftid where lp.preparationid = " + prepId);
-        int deaccCnt = BasicSQLUtils.getCountAsInt("select count(distinct l.deaccessionid) from deaccession l inner join deaccessionpreparation lp on lp.deaccessionid = l.deaccessionid where lp.preparationid = " + prepId);
+        int deaccCnt = BasicSQLUtils.getCountAsInt("select count(distinct l.disposalid) from disposal l inner join disposalpreparation lp on lp.disposalid = l.disposalid where lp.preparationid = " + prepId);
         int exchCnt = BasicSQLUtils.getCountAsInt("select count(distinct l.exchangeoutid) from exchangeout l inner join exchangeoutprep lp on lp.exchangeoutid = l.exchangeoutid where lp.preparationid = " + prepId);
         if (loanCnt > 0) {
             showLoans(prepId);
@@ -133,7 +133,7 @@ public class PreparationBusRules extends AttachmentOwnerBaseBusRules
             showGifts(prepId);
         }
         if (deaccCnt > 0) {
-            showDeaccessions(prepId);
+            showDisposals(prepId);
         }
         if (exchCnt > 0) {
             showExchanges(prepId);
@@ -162,8 +162,8 @@ public class PreparationBusRules extends AttachmentOwnerBaseBusRules
      *
      * @param prepId
      */
-    private static void showDeaccessions(Integer prepId) {
-        showInteraction(DBTableIdMgr.getInstance().getInfoById(Deaccession.getClassTableId()), prepId);
+    private static void showDisposals(Integer prepId) {
+        showInteraction(DBTableIdMgr.getInstance().getInfoById(Disposal.getClassTableId()), prepId);
     }
 
     /**
