@@ -22,9 +22,7 @@ package edu.ku.brc.specify.datamodel;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.util.Calendar;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -43,7 +41,9 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
@@ -81,6 +81,7 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
                                                                   AttributeProviderIFace, 
                                                                   Comparable<CollectionObject>
 {
+    private static final Logger log = Logger.getLogger(CollectionObject.class);
 
     // Fields
 
@@ -620,6 +621,61 @@ public void setReservedText3(String reservedText3) {
 
     public void setCountAmt(Integer countAmt) {
         this.countAmt = countAmt;
+    }
+
+    @Transient
+    public Integer getTotalCountAmt() { return getPrepTotalCount(this.getId());}
+
+    @Transient
+    public Integer getActualTotalCountAmt() { return getPrepUndisposedTotalCount(this.getId()); }
+
+    private static Integer getPrepTotalCount(Integer id) {
+        Integer result = null;
+        if (id != null) {
+            result = BasicSQLUtils.getCountAsInt("select sum(countAmt) from preparation where collectionobjectid = " + id);
+        }
+        return result;
+    }
+
+    private static Integer getPrepUndisposedTotalCount(Integer id) {
+        Integer result = null;
+        if (id != null) {
+            Vector<Object> prepIds = BasicSQLUtils.querySingleCol("select preparationid from preparation where collectionobjectid = " + id);
+            int runningTotal = 0;
+            boolean nonNull = false;
+            for (Object prepId : prepIds) {
+                Object[] prepObj = new Object[1];
+                prepObj[0] = prepId;
+                Object prepCnt = Preparation.computeActualCountAmt(prepObj);
+                if (prepCnt != null) {
+                    runningTotal = runningTotal + Integer.valueOf(prepCnt.toString());
+                    nonNull = true;
+                }
+            }
+            if (nonNull) {
+                result = runningTotal;
+            }
+        }
+        return result;
+    }
+
+    @Transient
+    public static List<String> getQueryableTransientFields() {
+        List<String> result = new ArrayList<>();
+        result.add("ActualTotalCountAmt");
+        result.add("TotalCountAmt");
+        return result;
+    }
+
+    public static Object getQueryableTransientFieldValue(String fldName, Object[] vals) {
+        if (fldName.equalsIgnoreCase("ActualTotalCountAmt")) {
+            return getPrepUndisposedTotalCount((Integer)vals[0]);
+        } else if (fldName.equalsIgnoreCase("TotalCountAmt")) {
+            return getPrepTotalCount((Integer)vals[0]);
+        } else {
+            log.error("Unknown calculated field: " + fldName);
+            return null;
+        }
     }
 
     /**
