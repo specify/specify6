@@ -29,10 +29,10 @@
               class="edu.ku.brc.specify.datamodel.Accession"
               busrules="edu.ku.brc.specify.datamodel.busrules.AccessionBusRules"
         >
-            <desc><![CDATA[The Accession form as seen in the CO form.]]></desc>
+            <desc><![CDATA[The Accession form as seen in the Deaccession form.]]></desc>
             <altviews>
-                <altview name="AccessionDeaccession View" viewdef="AccessionDeaccession" mode="view" default="true"/>
-                <altview name="AccessionDeaccession Edit" viewdef="AccessionDeaccession" mode="edit"/>
+                <altview name="AccessionDeaccession View" viewdef="AccessionDeaccession" mode="view" />
+                <altview name="AccessionDeaccession Table View" viewdef="AccessionDeaccession Table" mode="view" default="true"/>
             </altviews>
         </view>
 
@@ -755,7 +755,17 @@
             </altviews>
         </view>
 
-       <view name="DeaccessionDialog"
+        <view name="DeaccessionAccession"
+              class="edu.ku.brc.specify.datamodel.Deaccession"
+        >
+            <desc><![CDATA[The Deaccession form from inside the Accession form.]]></desc>
+            <altviews>
+                <altview name="DeaccessionAccession View" viewdef="DeaccessionAccession" mode="view" />
+                <altview name="DeaccessionAccession Table View" viewdef="DeaccessionAccession Table" mode="view" default="true"/>
+            </altviews>
+        </view>
+
+        <view name="DeaccessionDialog"
               class="edu.ku.brc.specify.datamodel.Deaccession"
         >
             <desc><![CDATA[The Deaccession pop up form.]]></desc>
@@ -1309,6 +1319,9 @@
                     <cell type="subview" viewname="AccessionItems" id="25" desc="Collection Object" name="collectionObjects" colspan="13" rows="2" initialize="addsearch=true"/>
                 </row>
                 <row>
+                    <cell type="subview" viewname="DeaccessionAccession" id="iddeacc" name="deaccessions" colspan="13" readonly="true"/>
+                </row>
+                <row>
                     <cell type="separator" label="Attachments" colspan="13"/>
                 </row>
                 <row>
@@ -1437,12 +1450,22 @@
         </viewdef>
 
         <viewdef
+                type="formtable"
+                name="AccessionDeaccession Table"
+                class="edu.ku.brc.specify.datamodel.Accession"
+                gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+                settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The Accession subform for the deaccession form.]]></desc>
+            <definition>AccessionDeaccession</definition>
+        </viewdef>
+
+        <viewdef
                 type="form"
                 name="AccessionDeaccession"
                 class="edu.ku.brc.specify.datamodel.Accession"
                 gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
                 settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
-            <desc><![CDATA[The Accession form.]]></desc>
+            <desc><![CDATA[The Accession subform for the deaccession form.]]></desc>
             <enableRules/>
 
             <columnDef>p,0px,190px,5px,130px,2px,141px,5px,110px,2px,140px,0px,15px,p:g</columnDef>
@@ -2969,7 +2992,7 @@
                     <cell type="subview" viewname="PHSub" id="44" name="preparationHolders" colspan="12"/>
                 </row>-->
                 <row>
-                    <cell type="subview" viewname="AccessionDeaccession" id="idaccessionco" name="accessions" colspan="12"/>
+                    <cell type="subview" viewname="AccessionDeaccession" id="idaccessionco" name="accessions" colspan="12" readonly="true"/>
                 </row>
                 <row>
                     <cell type="separator" label="" colspan="7"/>
@@ -2981,6 +3004,86 @@
                     <cell type="label" labelfor="11"/>
                     <cell type="field" id="11" name="timestampModified" uitype="label" readonly="true" />
                 </row>
+            </rows>
+        </viewdef>
+
+        <viewdef
+                type="formtable"
+                name="DeaccessionAccession Table"
+                class="edu.ku.brc.specify.datamodel.Deccession"
+                gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+                settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            <desc><![CDATA[Horizontal interpretation of the Deaccession form from inside the Accession form.]]></desc>
+            <definition>DeaccessionAccession</definition>
+        </viewdef>
+
+        <viewdef
+                type="form"
+                name="DeaccessionAccession"
+                class="edu.ku.brc.specify.datamodel.Deaccession"
+                gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+                settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The Deaccession form from inside the Accession form.]]></desc>
+            <enableRules/>
+
+            <columnDef>p,2px,p,80px,p,2px,p,40px,p,2px,p,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="deaccessionNumber" uitype="formattedtext" />
+                    <cell type="label" labelfor="5"/>
+                    <cell type="field" id="5" name="deaccessionDate" uitype="formattedtext" uifieldformatter="Date" default="today"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="ldtype"/>
+                    <cell type="field" id="ldtype" name="type" uitype="combobox" />
+                    <cell type="label" labelfor="ldtatus"/>
+                    <cell type="field" id="ldstatus" name="status" uitype="combobox"/>
+                </row>
+                <row>
+                    <cell type="label" label="Total Preps:" initialize="align=right"/>
+                    <cell type="field" id="ti" name="totalPreps" uitype="text" readonly="true"/>
+                    <cell type="label" label="Total Items:" initialize="align=right"/>
+                    <cell type="field" id="tq" name="totalItems" uitype="text" readonly="true"/>
+                </row>
+                <!--row>
+                    <cell type="label" labelfor="ldnumber1"/>
+                    <cell type="field" id="ldnumber1" name="number1" uitype="formattedtext" />
+                    <cell type="label" labelfor="ldtext2"/>
+                    <cell type="field" id="ldtext2" name="text2" uitype="formattedtext" />
+                </row-->
+                <row>
+                    <cell type="label" labelfor="rem"/>
+                    <cell type="field" id="rem" name="remarks" uitype="textareabrief" rows="2" colspan="5"/>
+                    <!--cell type="subview" id="attachments" viewname="ObjectAttachment" name="deaccessionAttachments" initialize="btn=true;icon=AccessionAttachment;align=right"/-->
+                </row>
+                <!--row>
+                    <cell type="subview" viewname="DeaccessionAgent" id="8" name="deaccessionAgents" desc="Agents" colspan="12" rows="2"/>
+                </row-->
+                <!--row>
+                    <cell type="subview" viewname="DisposalSub" id="44" name="disposals" colspan="12"/>
+                </row>
+                <row>
+                    <cell type="subview" viewname="GiftSub" id="4" name="gifts" colspan="12"/>
+                </row>
+                <row>
+                    <cell type="subview" viewname="ExchangeOutSub" id="444" name="exchangeOuts" colspan="12"/>
+                </row-->
+                <!--<row>
+                     <cell type="subview" viewname="PHSub" id="44" name="preparationHolders" colspan="12"/>
+                 </row>-->
+                <!--row>
+                    <cell type="separator" label="" colspan="7"/>
+                </row-->
+                <!--row>
+                    <cell type="label" labelfor="10"/>
+                    <cell type="field" id="10" name="modifiedByAgent" uitype="label" readonly="true"  uifieldformatter="Agent"/>
+
+                    <cell type="label" labelfor="11"/>
+                    <cell type="field" id="11" name="timestampModified" uitype="label" readonly="true" />
+                </row-->
             </rows>
         </viewdef>
 
@@ -3014,6 +3117,9 @@
                     <cell type="field" id="ldnumber1" name="number1" uitype="text" />
                     <cell type="label" labelfor="ldtext2"/>
                     <cell type="field" id="ldtext2" name="text2" uitype="text" />
+                </row>
+                <row>
+                    <cell type="subview" viewname="AccessionDeaccession" id="idaccessionco" name="accessions" colspan="7" readonly="true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="rem"/>

@@ -40,6 +40,37 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
     protected Set<DeaccessionAttachment> deaccessionAttachments;
     protected Set<OneToManyProviderIFace> removals;
 
+    @Override
+    public void forceLoad() {
+        forceLoad(false);
+    }
+
+    private void forceLoadSet(Set<? extends DataModelObjBase> set) {
+        for (DataModelObjBase s : set) {
+            s.forceLoad();
+        }
+    }
+    /**
+     *
+     * @param forcefully
+     */
+    public void forceLoad(boolean forcefully) {
+        super.forceLoad();
+        disposals.size();
+        gifts.size();
+        exchangeOuts.size();
+        deaccessionAttachments.size();
+        deaccessionAgents.size();
+        if (forcefully) {
+            forceLoadSet(disposals);
+            forceLoadSet(gifts);
+            forceLoadSet(exchangeOuts);
+            forceLoadSet(deaccessionAttachments);
+            forceLoadSet(deaccessionAgents);
+        }
+    }
+
+
 
     // Constructors
 
