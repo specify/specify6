@@ -55,11 +55,39 @@ public class DisposalPreparationBusRules extends BaseBusRules  implements Comman
     public void initialize(Viewable viewableArg) {
         super.initialize(viewableArg);
 
-        if (formViewObj != null) {
-            formViewObj.setSkippingAttach(true);
+        if (isOnDisposalForm()) {
+            if (formViewObj != null) {
+                formViewObj.setSkippingAttach(true);
 
-            if (formViewObj.getRsController() != null) {
-                JButton newBtn = formViewObj.getRsController().getNewRecBtn();
+                if (formViewObj.getRsController() != null) {
+                    JButton newBtn = formViewObj.getRsController().getNewRecBtn();
+                    if (newBtn != null) {
+                        // Remove all ActionListeners, there should only be one
+                        for (ActionListener al : newBtn.getActionListeners()) {
+                            newBtn.removeActionListener(al);
+                        }
+
+                        newBtn.addActionListener(new ActionListener() {
+                            @Override
+                            public void actionPerformed(ActionEvent e) {
+                                MultiView disposalMV = null;
+                                if (viewable instanceof FormViewObj) {
+                                    disposalMV = formViewObj.getMVParent().getMultiViewParent();
+                                } else if (viewable instanceof TableViewObj) {
+                                    TableViewObj tblViewObj = (TableViewObj) viewable;
+                                    disposalMV = tblViewObj.getMVParent().getMultiViewParent();
+                                }
+                                if (disposalMV != null) {
+                                    formViewObj.getDataFromUI();
+                                    CommandDispatcher.dispatch(new CommandAction(CMDTYPE, ADD_TO_DISPOSAL, disposalMV.getCurrentViewAsFormViewObj().getCurrentDataObj()));
+                                }
+                            }
+                        });
+                    }
+                }
+            } else if (viewableArg instanceof TableViewObj) {
+                final TableViewObj tvo = (TableViewObj) viewableArg;
+                JButton newBtn = tvo.getNewButton();
                 if (newBtn != null) {
                     // Remove all ActionListeners, there should only be one
                     for (ActionListener al : newBtn.getActionListeners()) {
@@ -69,42 +97,13 @@ public class DisposalPreparationBusRules extends BaseBusRules  implements Comman
                     newBtn.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            MultiView disposalMV = null;
-                            if (viewable instanceof FormViewObj) {
-                                disposalMV = formViewObj.getMVParent().getMultiViewParent();
-                                formViewObj.getDataFromUI();
-
-                            } else if (viewable instanceof TableViewObj) {
-                                TableViewObj tblViewObj = (TableViewObj) viewable;
-                                disposalMV = tblViewObj.getMVParent().getMultiViewParent();
-                            }
-
+                            MultiView disposalMV = tvo.getMVParent().getMultiViewParent();
                             if (disposalMV != null) {
-                                formViewObj.getDataFromUI();
                                 CommandDispatcher.dispatch(new CommandAction(CMDTYPE, ADD_TO_DISPOSAL, disposalMV.getCurrentViewAsFormViewObj().getCurrentDataObj()));
                             }
                         }
                     });
                 }
-            }
-        } else if (viewableArg instanceof TableViewObj) {
-            final TableViewObj tvo = (TableViewObj) viewableArg;
-            JButton newBtn = tvo.getNewButton();
-            if (newBtn != null) {
-                // Remove all ActionListeners, there should only be one
-                for (ActionListener al : newBtn.getActionListeners()) {
-                    newBtn.removeActionListener(al);
-                }
-
-                newBtn.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        MultiView disposalMV = tvo.getMVParent().getMultiViewParent();
-                        if (disposalMV != null) {
-                            CommandDispatcher.dispatch(new CommandAction(CMDTYPE, ADD_TO_DISPOSAL, disposalMV.getCurrentViewAsFormViewObj().getCurrentDataObj()));
-                        }
-                    }
-                });
             }
         }
     }
@@ -115,7 +114,7 @@ public class DisposalPreparationBusRules extends BaseBusRules  implements Comman
         if (dataObj != null) {
             DisposalPreparation dp = (DisposalPreparation) dataObj;
             if (dp.getId() == null) {
-                if (isOnLoanReturnForm(dataObj)) {
+                if (isOnLoanReturnForm()) {
                     if (dp.getLoanReturnPreparation() != null &&
                             dp.getLoanReturnPreparation().getLoanPreparation() != null) {
                         dp.setPreparation(dp.getLoanReturnPreparation().getLoanPreparation().getPreparation());
@@ -139,7 +138,7 @@ public class DisposalPreparationBusRules extends BaseBusRules  implements Comman
 //        }
     }
 
-    private Class<?> getContext(final Object dataObj) {
+    private Class<?> getContext() {
         Class<?> result = null;
         if (formViewObj != null && formViewObj.getParentDataObj() != null){
             result = formViewObj.getParentDataObj().getClass();
@@ -147,12 +146,12 @@ public class DisposalPreparationBusRules extends BaseBusRules  implements Comman
         return result;
     }
 
-    private boolean isOnLoanReturnForm(final Object dataObj) {
-        return LoanReturnPreparation.class.equals(getContext(dataObj));
+    private boolean isOnLoanReturnForm() {
+        return LoanReturnPreparation.class.equals(getContext());
     }
 
-    private boolean isOnDisposalForm(final Object dataObj) {
-        return Disposal.class.equals(dataObj);
+    private boolean isOnDisposalForm() {
+        return Disposal.class.equals(getContext());
     }
 
 //    private boolean isOnPreparationForm(final Object dataObj) {
