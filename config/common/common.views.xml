@@ -429,6 +429,8 @@
             <altviews>
                 <altview name="DisposalPreparation View" viewdef="DisposalPreparation" mode="view"/>
                 <altview name="DisposalPreparation Edit" viewdef="DisposalPreparation" mode="edit" default="true"/>
+                <altview name="DisposalPreparation Table View" viewdef="DisposalPreparation Table" mode="view"/>
+                <altview name="DisposalPreparation Table Edit" viewdef="DisposalPreparation Table" mode="edit"/>
             </altviews>
         </view>
 
@@ -440,6 +442,8 @@
             <altviews>
                 <altview name="DisposalPreparation2 View" viewdef="DisposalPreparation2" mode="view"/>
                 <altview name="DisposalPreparation2 Edit" viewdef="DisposalPreparation2" mode="edit" default="true"/>
+                <altview name="DisposalPreparation Table View" viewdef="DisposalPreparation Table" mode="view"/>
+                <altview name="DisposalPreparation Table Edit" viewdef="DisposalPreparation Table" mode="edit"/>
             </altviews>
         </view>
 
@@ -1484,25 +1488,8 @@
                     <cell type="field" id="2" name="status"  uitype="combobox"/>
                 </row>
                 <row>
-                    <cell type="label" id="divLabel" label=" " initialize="align=right"/>
-                    <cell type="field" id="4" name="divisionCBX" uitype="combobox" ignore="true"/>
                     <cell type="label" labelfor="5"/>
                     <cell type="field" id="5" name="dateAccessioned" uitype="formattedtext" uifieldformatter="Date" default="today"/>
-                    <cell type="label" labelfor="6"/>
-                    <cell type="field" id="6" name="dateReceived" uitype="formattedtext" uifieldformatter="Date" default="today"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="7"/>
-                    <cell type="field" id="7" name="remarks" uitype="textareabrief" rows="2" colspan="10"/>
-                </row>
-                <row>
-                    <cell type="subview" viewname="AccessionAgent" id="8" name="accessionAgents" desc="Agents" colspan="13"/>
-                </row>
-                <row>
-                    <cell type="subview" viewname="AccessionAuthorization" id="9" desc="Authorization" name="accessionAuthorizations" colspan="13"/>
-                </row>
-                <row>
-                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="accessionAttachments" colspan="13" initialize=";btn=true;icon=AccessionAttachment;hc=xxx"/>
                 </row>
             </rows>
         </viewdef>
@@ -2870,7 +2857,10 @@
             <desc><![CDATA[The Disposal form.]]></desc>
             <enableRules/>
 
-            <columnDef>p,2px,p,80px,p,2px,p,40px,p,2px,p,p:g</columnDef>
+            <columnDef>105px,2px,130px,5px,151px,2px,130px,5px,90px,2px,210px,0px,15px,p:g</columnDef>
+            <columnDef os="lnx">115px,2px,150px,5px,155px,2px,170px,5px,95px,2px,216px,0px,15px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,165px,5px,175px,2px,190px,5px,111px,2px,245px,0px,15px,p:g</columnDef>
+            <columnDef os="exp">p,2px,p:g(2),5px:g,p,2px,p:g,5px:g,p,2px,p:g(2),0px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
 
             <rows>
@@ -2879,30 +2869,30 @@
                     <cell type="field" id="1" name="disposalNumber" uitype="formattedtext" />
                     <cell type="label" labelfor="5"/>
                     <cell type="field" id="5" name="disposalDate" uitype="formattedtext" uifieldformatter="Date" default="today"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="ldqx"/>
-                    <cell type="field" id="ldqx" name="deaccession" uitype="querycbx" initialize="name=Deaccession;title=Deaccession"/>
-                </row>
-                <row>
-                    <!--<cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="accession" uitype="querycbx" initialize="name=AccessionCO;title=Accession;newbtn=false;editbtn=false"/>-->
                     <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="type" uitype="combobox"/>
                 </row>
                 <row>
-                    <cell type="iconview" viewname="DisposalAgent" id="8" name="disposalAgents" desc="Agents" colspan="12"/>
+                    <cell type="label" labelfor="ldqx"/>
+                    <cell type="field" id="ldqx" name="deaccession" uitype="querycbx" initialize="name=Deaccession;title=Deaccession" colspan="9"/>
+                </row>
+                <row>
+                    <!--<cell type="label" labelfor="3"/>
+                    <cell type="field" id="3" name="accession" uitype="querycbx" initialize="name=AccessionCO;title=Accession;newbtn=false;editbtn=false"/>-->
+                </row>
+                <row>
+                    <cell type="subview" viewname="DisposalAgent" id="8" name="disposalAgents" desc="Agents" colspan="13" rows="3"/>
                 </row> 
                 <row>
-                    <cell type="subview" viewname="DisposalPreparation" id="4" name="disposalPreparations" colspan="12"/>
+                    <cell type="subview" viewname="DisposalPreparation" id="4" name="disposalPreparations" colspan="13"/>
                 </row>
                 <row>
-                    <cell type="separator" label="" colspan="12"/>
+                    <cell type="separator" label="" colspan="13"/>
                 </row>
                 <row>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="disposalAttachments" colspan="3" initialize="btn=true;icon=DisposalAttachment;hc=xxx"/>
                     <cell type="label" labelfor="10"/>
                     <cell type="field" id="10" name="modifiedByAgent" uitype="label" readonly="true"  uifieldformatter="Agent"/>
-
                     <cell type="label" labelfor="11"/>
                     <cell type="field" id="11" name="timestampModified" uitype="label" readonly="true" colspan="2"/>
                 </row>
@@ -2918,7 +2908,10 @@
             <desc><![CDATA[The Disposal sub form.]]></desc>
             <enableRules/>
 
-            <columnDef>p,2px,p,80px,p,2px,p,40px,p,2px,p,p:g</columnDef>
+            <columnDef>105px,2px,130px,5px,151px,2px,130px,5px,90px,2px,210px,0px,15px,p:g</columnDef>
+            <columnDef os="lnx">115px,2px,150px,5px,155px,2px,170px,5px,95px,2px,216px,0px,15px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,165px,5px,175px,2px,190px,5px,111px,2px,245px,0px,15px,p:g</columnDef>
+            <columnDef os="exp">p,2px,p:g(2),5px:g,p,2px,p:g,5px:g,p,2px,p:g(2),0px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
 
             <rows>
@@ -2927,10 +2920,6 @@
                     <cell type="field" id="1" name="disposalNumber" uitype="formattedtext" />
                     <cell type="label" labelfor="5"/>
                     <cell type="field" id="5" name="disposalDate" uitype="formattedtext" uifieldformatter="Date" default="today"/>
-                </row>
-                <row>
-                    <!--<cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="accession" uitype="querycbx" initialize="name=AccessionCO;title=Accession;newbtn=false;editbtn=false"/>-->
                     <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="type" uitype="combobox"/>
                 </row>
@@ -2949,7 +2938,10 @@
             <desc><![CDATA[The Deaccession form.]]></desc>
             <enableRules/>
 
-            <columnDef>p,2px,p,80px,p,2px,p,40px,p,2px,p,p:g</columnDef>
+            <columnDef>p,0px,190px,5px,130px,2px,141px,5px,110px,2px,140px,0px,15px,p:g</columnDef>
+            <columnDef os="lnx">135px,2px,200px,5px,135px,2px,153px,5px,125px,2px,153px,0px,15px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,220px,5px,153px,2px,189px,5px,133px,2px,189px,0px,15px,p:g</columnDef>
+            <columnDef os="exp">p,2px,p:g,5px:g,p,2px,p:g(2),5px:g,p,2px,p:g(2),0px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
 
             <rows>
@@ -3026,7 +3018,10 @@
             <desc><![CDATA[The Deaccession form from inside the Accession form.]]></desc>
             <enableRules/>
 
-            <columnDef>p,2px,p,80px,p,2px,p,40px,p,2px,p,p:g</columnDef>
+            <columnDef>p,0px,190px,5px,130px,2px,141px,5px,110px,2px,140px,0px,15px,p:g</columnDef>
+            <columnDef os="lnx">135px,2px,200px,5px,135px,2px,153px,5px,125px,2px,153px,0px,15px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,220px,5px,153px,2px,189px,5px,133px,2px,189px,0px,15px,p:g</columnDef>
+            <columnDef os="exp">p,2px,p:g,5px:g,p,2px,p:g(2),5px:g,p,2px,p:g(2),0px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
 
             <rows>
@@ -3096,44 +3091,48 @@
             <desc><![CDATA[The Deaccession pop up form.]]></desc>
             <enableRules/>
 
-            <columnDef>p,2px,p,80px,p,2px,p,40px,p,2px,p,p:g</columnDef>
+            <columnDef>100px,2px,110px,5px,130px,2px,114px,5px,60px,2px,120px,5px,70px,2px,100px,0px,15px,p:g</columnDef>
+            <columnDef os="lnx">135px,2px,200px,5px,135px,2px,153px,5px,125px,2px,153px,0px,15px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,220px,5px,153px,2px,189px,5px,133px,2px,189px,0px,15px,p:g</columnDef>
+            <columnDef os="exp">p,2px,p:g,5px:g,p,2px,p:g(2),5px:g,p,2px,p:g(2),0px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
 
             <rows>
                 <row>
                     <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="deaccessionNumber" uitype="text" />
+                    <cell type="field" id="1" name="deaccessionNumber" uitype="text"/>
                     <cell type="label" labelfor="5"/>
                     <cell type="field" id="5" name="deaccessionDate" uitype="formattedtext" uifieldformatter="Date" default="today"/>
-                </row>
-                <row>
                     <cell type="label" labelfor="ldtype"/>
-                    <cell type="field" id="ldtype" name="type" uitype="text" />
-                    <cell type="label" labelfor="ldtext1"/>
-                    <cell type="field" id="ldtext1" name="text1" uitype="text"/>
+                    <cell type="field" id="ldtype" name="type" uitype="combobox"/>
+                    <cell type="label" labelfor="st"/>
+                    <cell type="field" id="st" name="status" uitype="combobox"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="ldnumber1"/>
-                    <cell type="field" id="ldnumber1" name="number1" uitype="text" />
-                    <cell type="label" labelfor="ldtext2"/>
-                    <cell type="field" id="ldtext2" name="text2" uitype="text" />
+                    <cell type="label" label="Total Preps:" initialize="align=right"/>
+                    <cell type="field" id="ti" name="totalPreps" uitype="text" readonly="true"/>
+                    <cell type="label" label="Total Items:" initialize="align=right"/>
+                    <cell type="field" id="tq" name="totalItems" uitype="text" readonly="true"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="AccessionDeaccession" id="idaccessionco" name="accessions" colspan="7" readonly="true"/>
+                    <cell type="subview" viewname="DeaccessionAgent" id="8" name="deaccessionAgents" desc="Agents" colspan="17" rows="2"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="rem"/>
-                    <cell type="field" id="rem" name="remarks" uitype="textareabrief" rows="2" colspan="5"/>
+                    <cell type="field" id="rem" name="remarks" uitype="textareabrief" rows="2" colspan="13"/>
                 </row>
                 <row>
-                    <cell type="separator" label="" colspan="7"/>
+                    <cell type="subview" viewname="AccessionDeaccession" id="idaccessionco" name="accessions" colspan="17" readonly="true"/>
                 </row>
                 <row>
+                    <cell type="separator" label="" colspan="13"/>
+                </row>
+                <row>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="deaccessionAttachments" colspan="3" initialize="btn=true;icon=DeaccessionAttachment;hc=xxx"/>
                     <cell type="label" labelfor="10"/>
                     <cell type="field" id="10" name="modifiedByAgent" uitype="label" readonly="true"  uifieldformatter="Agent"/>
-
-                    <cell type="label" labelfor="11"/>
-                    <cell type="field" id="11" name="timestampModified" uitype="label" readonly="true" />
+                    <cell type="label" labelfor="11" colspan="3"/>
+                    <cell type="field" id="11" name="timestampModified" uitype="label" readonly="true"/>
                 </row>
             </rows>
         </viewdef>
@@ -3157,7 +3156,10 @@
             <desc><![CDATA[The DeaccessionAgent subform for Deaccession form.]]></desc>
             <enableRules/>
 
-            <columnDef>60px,2px,p,2px,35px,2px,p,p:g</columnDef>
+            <columnDef>105px,2px,210px,5px,110px,2px,155px,243px,p:g</columnDef>
+            <columnDef os="lnx">115px,2px,230px,5px,98px,2px,155px,290px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,215px,5px,153px,2px,189px,336px,p:g</columnDef>
+            <columnDef os="exp">p,2px,p:g(2),5px:g,p,2px,p:g(2),p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
 
             <rows>
@@ -3193,7 +3195,10 @@
             <desc><![CDATA[The DisposalAgent subform for Disposal form.]]></desc>
             <enableRules/>
 
-            <columnDef>60px,2px,p,2px,35px,2px,p,p:g</columnDef>
+            <columnDef>100px,2px,210px,5px,110px,2px,155px,243px,p:g</columnDef>
+            <columnDef os="lnx">115px,2px,230px,5px,98px,2px,155px,290px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,315px,5px,153px,2px,189px,236px,p:g</columnDef>
+            <columnDef os="exp">p,2px,p:g(2),5px:g,p,2px,p:g(2),p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
 
             <rows>
@@ -3211,6 +3216,16 @@
         </viewdef>
 
         <viewdef
+                type="formtable"
+                name="DisposalPreparation Table"
+                class="edu.ku.brc.specify.datamodel.DisposalPreparation"
+                gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+                settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The Agent subform for the disposal form.]]></desc>
+            <definition>DisposalPreparation</definition>
+        </viewdef>
+
+        <viewdef
                 type="form"
                 name="DisposalPreparation"
                 class="edu.ku.brc.specify.datamodel.DisposalPreparation"
@@ -3219,21 +3234,26 @@
             <desc><![CDATA[The DisposalPreparation subform for Disposal form.]]></desc>
             <enableRules/>
 
-            <columnDef>60px,2px,p,2px,35px,2px,p,p:g</columnDef>
+            <columnDef>105px,2px,120px,5px,80px,2px,120px,5px,73px,2px,56px,5px,120px,2px,130px,p:g</columnDef>
+            <columnDef os="lnx">115px,2px,92px,5px,115px,2px,90px,5px,53px,2px,81px,5px,110px,2px,188px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,141px,5px,110px,2px,145px,5px,90px,2px,95px,5px,133px,2px,175px,p:g</columnDef>
+            <columnDef os="exp">p,2px,p:g,5px:g,p,2px,p:g,5px:g,p,2px,p:g,5px,p:g,2px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
 
             <rows>
                 <row>
+                    <cell type="label" labelfor="9"/>
+                    <cell type="field" id="9" name="preparation.collectionObject.catalogNumber" uitype="text" readonly="true"/>
+                    <cell type="label" labelfor="5"/>
+                    <cell type="field" id="5" name="preparation.barCode" uitype="dsptextfield"/>
                     <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="preparation" uitype="querycbx" initialize="name=Preparation"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="q"/>
-                    <cell type="field" id="q" name="quantity" uitype="text" />
+                    <cell type="field" id="1" name="quantity" uitype="spinner" initialize="max=5000"/>
+                    <cell type="label" labelfor="ac"/>
+                    <cell type="field" id="ac" name="preparation.collectionObject.accession.accessionNumber" uitype="text" readonly="true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="remarks" uitype="textareabrief" rows="2" colspan="6"/>
+                    <cell type="field" id="3" name="remarks" uitype="textareabrief" rows="2" colspan="13"/>
                 </row>
             </rows>
         </viewdef>
@@ -3247,15 +3267,16 @@
             <desc><![CDATA[The DisposalPreparation subform for Disposal form.]]></desc>
             <enableRules/>
 
-            <columnDef>60px,2px,p,2px,35px,2px,p,p:g</columnDef>
+            <columnDef>100px,2px,210px,5px,110px,2px,155px,243px,p:g</columnDef>
+            <columnDef os="lnx">115px,2px,230px,5px,98px,2px,155px,290px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,215px,5px,153px,2px,189px,336px,p:g</columnDef>
+            <columnDef os="exp">p,2px,p,5px,85px,2px,p:g(2),p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
 
             <rows>
                 <row>
                     <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="disposal" uitype="querycbx" initialize="name=Disposal"/>
-                </row>
-                <row>
                     <cell type="label" labelfor="q"/>
                     <cell type="field" id="q" name="quantity" uitype="text" />
                 </row>
@@ -4032,10 +4053,14 @@
                     <cell type="field" id="3" name="agentSentTo" uitype="querycbx" initialize="name=Agent" colspan="3"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="ldqx"/>
-                    <cell type="field" id="ldqx" name="deaccession" uitype="querycbx" initialize="name=Deaccession;title=Deaccession"/>
+                    <cell type="label" label="Total Preps:" initialize="align=right"/>
+                    <cell type="field" id="ti" name="totalPreps" uitype="text" readonly="true"/>
+                    <cell type="label" label="Total Items:" initialize="align=right"/>
+                    <cell type="field" id="tq" name="totalItems" uitype="text" readonly="true"/>
                 </row>
                 <row>
+                    <cell type="label" labelfor="ldqx"/>
+                    <cell type="field" id="ldqx" name="deaccession" uitype="querycbx" initialize="name=Deaccession;title=Deaccession" colspan="5"/>
                     <cell type="label" id="divLabel" label=" " initialize="align=right"/>
                     <cell type="field" id="divcbx" name="divisionCBX" uitype="combobox" ignore="true"/>
                 </row>
@@ -4588,6 +4613,12 @@
                     <cell type="label" labelfor="4"/>
                     <cell type="field" id="4" name="purposeOfGift" uitype="text"/>
                     <cell type="field" id="2" name="isFinancialResponsibility" uitype="checkbox" initialize="editable=true"/>
+                </row>
+                <row>
+                    <cell type="label" label="Total Preps:" initialize="align=right"/>
+                    <cell type="field" id="ti" name="totalPreps" uitype="text" readonly="true"/>
+                    <cell type="label" label="Total Items:" initialize="align=right"/>
+                    <cell type="field" id="tq" name="totalItems" uitype="text" readonly="true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="5"/>
