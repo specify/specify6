@@ -183,7 +183,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 {
     protected static final Logger  log = Logger.getLogger(SpecifySchemaUpdateService.class);
     
-    private final int OVERALL_TOTAL = 73; //the number of incOverall() calls (+1 or +2)
+    private final int OVERALL_TOTAL = 74; //the number of incOverall() calls (+1 or +2)
 
     private static final String TINYINT4 = "TINYINT(4)";
     private static final String INT11    = "INT(11)";
@@ -2639,6 +2639,23 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         if (-1 == update(conn, sql)) {
                             errMsgList.add("update error: " + sql);
                             return false;
+                        }
+                    }
+                    frame.incOverall();
+
+
+                    //For every update check collations
+                    frame.setDesc("Checking table collations");
+                    Vector<Object[]> tbls = BasicSQLUtils.query("select table_name, table_collation from information_schema.tables where table_schema = '"
+                            + databaseName + "' and table_collation != 'utf8_general_ci'");
+                    for (Object[] tbl : tbls) {
+                        tblName = (String)tbl[0];
+                        if (!tblName.startsWith("ios_")) {
+                            sql = "ALTER TABLE `" + tblName + "` CONVERT TO CHARACTER SET utf8";
+                            if (0 > BasicSQLUtils.update(conn, sql)) {
+                                errMsgList.add("update error: " + sql);
+                                return false;
+                            }
                         }
                     }
                     frame.incOverall();
