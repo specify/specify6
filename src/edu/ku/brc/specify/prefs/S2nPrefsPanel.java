@@ -29,6 +29,7 @@ import java.util.Vector;
 import org.dom4j.Element;
 
 import static edu.ku.brc.specify.datamodel.busrules.LoanBusRules.DUEINMONTHS;
+import static java.util.Calendar.*;
 
 
 public class S2nPrefsPanel  extends GenericPrefsPanel implements PrefsSavable, PrefsPanelIFace {
@@ -164,9 +165,10 @@ public class S2nPrefsPanel  extends GenericPrefsPanel implements PrefsSavable, P
             } else {
                 result.setTimestampExported(null);
             }
+            Calendar now = Calendar.getInstance();
             result.setMappingName(AppContextMgr.getInstance().getClassObject(Collection.class).getCollectionName().replaceAll(" ", "_")
-                    + "_S2n_" + Calendar.getInstance().get(Calendar.YEAR) + "_" + Calendar.getInstance().get(Calendar.MONTH)
-                    + "_" + Calendar.getInstance().get(Calendar.DAY_OF_MONTH));
+                    + "_S2n_" + now.get(YEAR) + "_" + (now.get(MONTH) + 1) + "_" + now.get(DAY_OF_MONTH) + "_"
+                    + now.get(HOUR_OF_DAY) + "_" + now.get(MINUTE) + "_" + now.get(SECOND));
         }
         return result;
     }

@@ -752,7 +752,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 					 * @throws Exception
 					 */
 					protected void zipUpArchive(String archiveName, String dwcMeta, List<Pair<String, List<String>>> csvs) throws Exception {
-						ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(new File(archiveName)));
+						ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(new File(archiveName + ".zip")));
 						Charset utf8 = Charset.forName("utf8");
 
 						zout.putNextEntry(new ZipEntry("meta.xml"));
@@ -772,7 +772,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 					 * @throws Exception
 					 */
 					protected void writeToArchiveFile(String archiveName, String dwcMeta, List<Pair<String, List<String>>> csvs) throws Exception {
-						ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(new File(archiveName)));
+						ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(new File(archiveName + ".zip")));
 
 						Charset utf8 = Charset.forName("utf8");
 
