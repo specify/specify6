@@ -162,7 +162,9 @@ public class DNASequence extends CollectionMember implements AttachmentOwnerIFac
     @Override
     public void forceLoad()
     {
-        dnaSequencingRuns.size();
+		for (DNASequencingRun dnar : dnaSequencingRuns) {
+			dnar.forceLoad();
+		}
         attachments.size();
     }
 
