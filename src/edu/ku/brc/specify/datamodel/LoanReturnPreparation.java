@@ -83,6 +83,13 @@ public class LoanReturnPreparation extends DisciplineMember implements java.io.S
     }
     // End Initializer
 
+    @Override
+    public void forceLoad() {
+        super.forceLoad();
+        disposalPreparations.size();
+    }
+
+
     // Property accessors
 
     /**

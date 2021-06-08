@@ -97,7 +97,11 @@ public class ValCheckBox extends JCheckBox implements UIValidatable, GetSetValue
     {
         this.currentValue = currentValue;
     }
-    
+
+    public boolean isReadOnly() {
+        return isReadOnly;
+    }
+
     //--------------------------------------------------
     //-- UIValidatable Interface
     //--------------------------------------------------

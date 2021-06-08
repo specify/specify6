@@ -18,6 +18,7 @@
 package edu.ku.brc.specify.datamodel.busrules;
 
 import edu.ku.brc.af.ui.forms.*;
+import edu.ku.brc.af.ui.forms.persist.AltViewIFace;
 import edu.ku.brc.af.ui.forms.validation.UIValidator;
 import edu.ku.brc.af.ui.forms.validation.ValCheckBox;
 import edu.ku.brc.af.ui.forms.validation.ValSpinner;
@@ -41,6 +42,10 @@ import java.util.Set;
 public class DisposalPreparationBusRules extends BaseBusRules  implements CommandListener {
     public static final String CMDTYPE     = "Interactions";
     public static final String ADD_TO_DISPOSAL = "AddToDisposal";
+    private boolean     isFillingForm    = false;
+    private FormViewObj loanReturnPrepFVO      = null;
+
+    private LoanReturnPreparation  loanRetPrep = null;
 
     public DisposalPreparationBusRules() {
         super(DisposalPreparationBusRules.class);
@@ -105,6 +110,69 @@ public class DisposalPreparationBusRules extends BaseBusRules  implements Comman
                     });
                 }
             }
+        } else if (isOnLoanReturnForm()) {
+            if (formViewObj != null) {
+                formViewObj.setSkippingAttach(true);
+                loanReturnPrepFVO = formViewObj.getMVParent().getMultiViewParent().getCurrentViewAsFormViewObj();
+                Component comp = formViewObj.getControlByName("quantity");
+                if (comp instanceof ValSpinner) {
+                    final ValSpinner quantityResolved = (ValSpinner)comp;
+                   ChangeListener cl = e -> {
+                        if (!isFillingForm) {
+                            updateLoanReturnPrepQuantities(e);
+                        }
+                    };
+                    quantityResolved.addChangeListener(cl);
+                }
+            }
+        }
+    }
+
+    /**
+     * @param obj data val object (might be null)
+     * @return the value or zero for null
+     */
+    public static int getInt(final Object obj) {
+        if (obj instanceof Integer) {
+            return (Integer)obj;
+        }
+        return 0;
+    }
+
+    /**
+     *
+     */
+    protected void updateLoanReturnPrepQuantities(final ChangeEvent e) {
+        if (formViewObj != null && formViewObj.getValidator() != null) {
+            if (formViewObj.getValidator().hasChanged()) {
+                loanReturnPrepFVO = formViewObj.getMVParent().getMultiViewParent().getCurrentViewAsFormViewObj();
+
+                Component comp = formViewObj.getControlByName("quantity");
+                if (comp instanceof ValSpinner) {
+                    LoanReturnPreparation loanRetPrep = (LoanReturnPreparation)loanReturnPrepFVO.getDataObj();
+                    int qtyRes = 0;
+                    int i = 0;
+                    if (loanRetPrep != null) {
+                        LoanPreparation lrpLoanPrep = loanRetPrep.getLoanPreparation();
+                        if (lrpLoanPrep != null && lrpLoanPrep.getLoanReturnPreparations().size() > 0) {
+                            for (LoanReturnPreparation lrp : loanRetPrep.getLoanPreparation().getLoanReturnPreparations()) {
+                                qtyRes += getInt(lrp.getQuantityResolved());
+                                i++;
+                            }
+                        }
+                    }
+
+
+                    comp = loanReturnPrepFVO.getControlByName("quantityResolved");
+                    if (comp instanceof JTextField) {
+                        final JTextField qtyResolvedVS = (JTextField)comp;
+                        qtyResolvedVS.setText(Integer.toString(qtyRes));
+                    }
+                }
+            }
+        } else if (formViewObj == null || formViewObj.getAltView().getMode() != AltViewIFace.CreationMode.VIEW)
+        {
+            UIRegistry.showError("The formViewObj or or the formViewObj's validator was null and shouldn't have been!");
         }
     }
 
@@ -113,6 +181,9 @@ public class DisposalPreparationBusRules extends BaseBusRules  implements Comman
         super.afterFillForm(dataObj);
         if (dataObj != null) {
             DisposalPreparation dp = (DisposalPreparation) dataObj;
+            if (isOnLoanReturnForm()) {
+                loanRetPrep = dp.getLoanReturnPreparation();
+            }
             if (dp.getId() == null) {
                 if (isOnLoanReturnForm()) {
                     if (dp.getLoanReturnPreparation() != null &&
@@ -138,20 +209,20 @@ public class DisposalPreparationBusRules extends BaseBusRules  implements Comman
 //        }
     }
 
-    private Class<?> getContext() {
-        Class<?> result = null;
-        if (formViewObj != null && formViewObj.getParentDataObj() != null){
-            result = formViewObj.getParentDataObj().getClass();
+    private String getContext() {
+        String result = "";
+        if (formViewObj != null && formViewObj.getMVParent().getMultiViewParent() != null){
+            result = formViewObj.getMVParent().getMultiViewParent().getView().getClassName();
         }
         return result;
     }
 
     private boolean isOnLoanReturnForm() {
-        return LoanReturnPreparation.class.equals(getContext());
+        return getContext().equals("edu.ku.brc.specify.datamodel.LoanReturnPreparation");
     }
 
     private boolean isOnDisposalForm() {
-        return Disposal.class.equals(getContext());
+        return getContext().equals("edu.ku.brc.specify.datamodel.Disposal");
     }
 
 //    private boolean isOnPreparationForm(final Object dataObj) {
@@ -167,8 +238,14 @@ public class DisposalPreparationBusRules extends BaseBusRules  implements Comman
             if (((LoanReturnPreparation)parentObj).getDisposalPreparations().size() > 0) {
                 UIRegistry.showLocalizedError("DisposalPreparationBusRules.ONLY_ONE");
                 return false;
+            } else {
+                LoanReturnPreparation rp = (LoanReturnPreparation )parentObj;
+                if (getInt(rp.getQuantityResolved()) - getInt(rp.getQuantityReturned()) <= 0) {;
+                    UIRegistry.showLocalizedError("DisposalPreparationBusRules.NOTHING_TO_DISPOSE");
+                    return false;
+                }
+
             }
-            return true;
         }
         return true;
     }

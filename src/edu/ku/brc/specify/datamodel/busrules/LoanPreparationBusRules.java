@@ -31,6 +31,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.ui.forms.BaseBusRules;
@@ -53,6 +54,8 @@ import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Triple;
+
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 /**
  * @author rod
@@ -184,7 +187,7 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
             {
                 loanRetBtn = (SubViewBtn)comp;
                 loanRetBtn.getBtn().setIcon(null);
-                loanRetBtn.getBtn().setText(UIRegistry.getResourceString("LOAN_RET_PREP"));
+                loanRetBtn.getBtn().setText(getResourceString("LOAN_RET_PREP"));
             }
             
         } else if (viewableArg instanceof TableViewObj)
@@ -414,6 +417,12 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
         return null;
     }
 
+
+    @Override
+    public void aboutToShutdown() {
+        super.aboutToShutdown();
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.BaseBusRules#formShutdown()
      */
@@ -424,6 +433,17 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
         
         CommandDispatcher.unregister(LoanBusRules.CMDTYPE, this);
         CommandDispatcher.unregister(LoanBusRules.DE_CMDS, this);
+    }
+
+    @Override
+    public void beforeSave(Object dataObj, DataProviderSessionIFace session) {
+        super.beforeSave(dataObj, session);
+        if (dataObj instanceof LoanPreparation) {
+            LoanPreparation lp = (LoanPreparation) dataObj;
+            if (lp.getQuantity() > 0) {
+                lp.setIsResolved(lp.getQuantityResolved() == lp.getQuantity());
+            }
+        }
     }
 
     /* (non-Javadoc)
@@ -467,41 +487,43 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
                 // Refresh list in the grid
                 tvo.refreshDataList();
             }
-        } else if (cmdAction.isType(LoanBusRules.DE_CMDS) && cmdAction.isAction("CLOSE_SUBVIEW"))
-        {
+        } else if (cmdAction.isType(LoanBusRules.DE_CMDS) && cmdAction.isAction("CLOSE_SUBVIEW")) {
             Triple<Object, Object, Object> dataTriple = (Triple<Object, Object, Object>)cmdAction.getData();
-            if (dataTriple.first == formViewObj &&
-                dataTriple.second instanceof LoanPreparation && 
-                viewable.getValidator() != null)
-            {
-                LoanPreparation            loanPrep = (LoanPreparation)dataTriple.second;
-                Set<LoanReturnPreparation> lrps     = (Set<LoanReturnPreparation>)dataTriple.third;
-                
-                if (loanPrep != null && lrps != null)
-                {
-                    int quantityResolved = 0;
-                    int quantityReturned = 0;
-                    for (LoanReturnPreparation lrp : lrps)
-                    {
-                        quantityResolved += lrp.getQuantityResolved();
-                        quantityReturned += lrp.getQuantityReturned();
-                    }
-                    loanPrep.setQuantityResolved(quantityResolved);
-                    loanPrep.setQuantityReturned(quantityReturned);
-                    
-                    if (formViewObj != null)
-                    {
-                        Component comp = formViewObj.getControlByName("quantityResolved");
-                        if (comp instanceof JTextField)
-                        {
-                            ((JTextField)comp).setText(Integer.toString(quantityResolved));
-                        }
-                    }
-                } else
-                {
-                    log.error("The loanPrep or lrps should not be null!");
-                }
-            }
+//            if (dataTriple.first == formViewObj && dataTriple.second instanceof LoanPreparation) {
+//                LoanPreparation            loanPrep = (LoanPreparation)dataTriple.second;
+//                Set<LoanReturnPreparation> lrps     = (Set<LoanReturnPreparation>)dataTriple.third;
+//
+//                if (loanPrep != null && lrps != null) {
+//                    int quantityResolved = 0;
+//                    int quantityReturned = 0;
+//                    for (LoanReturnPreparation lrp : lrps) {
+//                        quantityResolved += lrp.getQuantityResolved();
+//                        quantityReturned += lrp.getQuantityReturned();
+//                    }
+//                    //loanPrep.setQuantityResolved(quantityResolved);
+//                    //loanPrep.setQuantityReturned(quantityReturned);
+//
+//                    if (formViewObj != null) {
+//                        Component comp = formViewObj.getControlByName("quantityResolved");
+//                        if (comp instanceof JTextField) {
+//                            ((JTextField)comp).setText(Integer.toString(quantityResolved));
+//                        }
+//                        comp = formViewObj.getControlByName("quantityReturned");
+//                        if (comp instanceof JTextField) {
+//                            ((JTextField)comp).setText(Integer.toString(quantityReturned));
+//                        }
+//                        comp = formViewObj.getControlByName("isResolved");
+//                        if (comp instanceof ValCheckBox) {
+//                            ((ValCheckBox)comp).setSelected(quantityResolved == loanPrep.getQuantity());
+//                            if (((ValCheckBox) comp).isReadOnly()) {
+//                                loanPrep.setIsResolved(quantityResolved == loanPrep.getQuantity());
+//                            }
+//                        }
+//                    }
+//                } else {
+//                    log.error("The loanPrep or lrps should not be null!");
+//                }
+//            }
         }
     }
 
@@ -512,13 +534,30 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
     public STATUS processBusinessRules(Object dataObj)
     {
         reasonList.clear();
+        STATUS result = STATUS.OK;
         LoanPreparation loanPrep = (LoanPreparation)dataObj;
-        if (loanPrep.getQuantityResolved() > loanPrep.getQuantity())
-        {
-            reasonList.add(UIRegistry.getResourceString("LOAN_RET_LWR_QNT"));
-            return STATUS.Error;
+        if (loanPrep.getQuantityResolved() > loanPrep.getQuantity() || loanPrep.getQuantityReturned() > loanPrep.getQuantity()) {
+            reasonList.add(getResourceString("LOAN_RET_LWR_QNT"));
+            result = STATUS.Error;
         }
-        return super.processBusinessRules(dataObj);
+        if (loanPrep.getQuantityReturned() > loanPrep.getQuantityResolved()) {
+            reasonList.add(getResourceString("LOAN_RET_RET_GT_RES"));
+            result = STATUS.Error;
+        }
+        int qtyRes = 0, qtyRet = 0;
+        for (LoanReturnPreparation lrp : loanPrep.getLoanReturnPreparations()) {
+            qtyRes += lrp.getQuantityResolved();
+            qtyRet += lrp.getQuantityReturned();
+        }
+        if (qtyRes != loanPrep.getQuantityResolved() || qtyRet != loanPrep.getQuantityReturned()) {
+            reasonList.add(getResourceString("LOAN_RET_LRQS_NE_LPQS"));
+            result = STATUS.Error;
+        }
+        if (result != STATUS.OK) {
+            return result;
+        } else {
+            return super.processBusinessRules(dataObj);
+        }
     }
     
     
