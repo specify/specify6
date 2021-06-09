@@ -21,11 +21,22 @@ import edu.ku.brc.ui.UIRegistry;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Vector;
 
+import edu.ku.brc.util.Pair;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.FileEntity;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.dom4j.Element;
 
 import static edu.ku.brc.specify.datamodel.busrules.LoanBusRules.DUEINMONTHS;
@@ -173,6 +184,58 @@ public class S2nPrefsPanel  extends GenericPrefsPanel implements PrefsSavable, P
         return result;
     }
 
+    static private Pair<Integer, String> getS2NUrl() {
+        final CloseableHttpClient httpClient = HttpClients.createDefault();
+        HttpGet getMethod = new HttpGet("http://broker.spcoco.org/api/v1/address");
+        int status = -1;
+        try {
+            CloseableHttpResponse response = httpClient.execute(getMethod);
+            status = response.getStatusLine().getStatusCode();
+            if (status == 200) {
+                return new Pair<>(status, EntityUtils.toString(response.getEntity()));
+            }
+        } catch(Exception x) {
+            x.printStackTrace();
+        }
+        return new Pair<>(status, null);
+    }
+
+    static private Pair<Integer, String> regS2NCol(String regJson, String url) {
+        final CloseableHttpClient httpClient = HttpClients.createDefault();
+        HttpPost postMethod  = new HttpPost(url + "/collection");
+        int status = -1;
+        try {
+            StringEntity se = new StringEntity(regJson, "application/json", StandardCharsets.UTF_8.toString());
+            postMethod.setEntity(se);
+            CloseableHttpResponse response = httpClient.execute(postMethod);
+            status = response.getStatusLine().getStatusCode();
+            if (status == 200) {
+                return new Pair<>(status, EntityUtils.toString(response.getEntity()));
+            }
+        } catch(Exception x) {
+            x.printStackTrace();
+        }
+        return new Pair<>(status, null);
+    }
+
+    static private Pair<Integer, String> postFile(String filePath, String url, String collection) {
+        final CloseableHttpClient httpClient = HttpClients.createDefault();
+        HttpPost postMethod  = new HttpPost(url + "/collection/" + collection + "/occurrences/");
+        int status = -1;
+        try {
+            File file = new File(filePath);
+            postMethod.setEntity(new FileEntity(file));
+            CloseableHttpResponse response = httpClient.execute(postMethod);
+            status = response.getStatusLine().getStatusCode();
+            if (status == 204) {
+                return new Pair<>(status, "OK");
+            }
+        } catch (Exception x) {
+            x.printStackTrace();
+        }
+        return new Pair<>(status, null);
+    }
+
     public void buildStinkyDwCArchive() {
         Object regInfo = getStynthyRegInfoForCollection();
         if (regInfo == null) {
@@ -192,4 +255,21 @@ public class S2nPrefsPanel  extends GenericPrefsPanel implements PrefsSavable, P
 //        }
     }
 
+
+    public static void main(String[] args) {
+        try {
+            Pair<Integer, String> url = getS2NUrl();
+            System.out.println(url.getFirst() + " - " + url.getSecond());
+            if (url.getFirst() == 200) {
+                String s2nUrl = url.getSecond().replaceAll("\"","");
+                String regJson = "{\"collection_name\": \"Fish Tissue Collection\", \"institution_name\": \"University of Kansas\",\"collection_id\": \"ku_fish_tissue_test_1j\",\"collection_location\": \"Lawrence, Kansas USA\",\"contact_email\": \"fish_collection@example.com\",\"contact_name\": \"Fish Contact\",\"public_key\": \"COLLECTION PUBLIC KEY\" }";
+                Pair<Integer, String> regResponse = regS2NCol(regJson, s2nUrl);
+                if (regResponse.getFirst() == 200) {
+                    Pair<Integer, String> filePostResp = postFile("/home/timo/Specify/KU_Fish_Tissue_Collection_S2n_2021_6_3.zip", s2nUrl, "ku_fish_tissue_test_1j");
+                }
+            }
+        } catch (Exception x) {
+            x.printStackTrace();
+        }
+    }
 }
