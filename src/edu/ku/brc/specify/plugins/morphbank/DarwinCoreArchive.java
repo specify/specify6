@@ -14,6 +14,7 @@ import javax.swing.JProgressBar;
 
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.specify.datamodel.*;
+import edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace;
 import edu.ku.brc.specify.tools.gbifregistration.GbifSandbox;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
@@ -422,7 +423,7 @@ public class DarwinCoreArchive
 	 * @throws Exception
 	 */
 	public List<Pair<String, List<String>>> getExportText(Integer tableId, List<Integer> recordIds,
-														  JProgressBar prog) throws Exception {
+														  QBDataSourceListenerIFace prog) throws Exception {
 		return getExportText(tableId, recordIds, 0, recordIds.size(), prog);
 	}
 
@@ -435,7 +436,7 @@ public class DarwinCoreArchive
          * @throws Exception
          */
 	public List<Pair<String, List<String>>> getExportText(Integer tableId, List<Integer> recordIds, int startIdx, int endIdx,
-														  JProgressBar prog) throws Exception {
+														  QBDataSourceListenerIFace prog) throws Exception {
 		if (tableId != CollectionObject.getClassTableId()) {
 			throw new Exception("Unsupported Table " + tableId);
 		}
@@ -448,7 +449,8 @@ public class DarwinCoreArchive
 			for (int i = startIdx; i < endIdx; i++) {
 				getExportText(recordIds.get(i), result);
 				if (prog != null) {
-					prog.setValue(i+1);
+					prog.currentRow(i);
+					prog.anotherRow();
 				} else {
 					System.out.println("getExportText() row = " + i);
 				}

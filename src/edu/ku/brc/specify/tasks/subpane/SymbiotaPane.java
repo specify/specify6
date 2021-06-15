@@ -1282,6 +1282,16 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 		setProgValue(Long.valueOf(currentRow).intValue());
 	}
 
+	@Override
+	public void anotherRow() {
+
+	}
+
+	@Override
+	public void fyi(String info) {
+
+	}
+
 	/* (non-Javadoc)
 	 * @see edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace#rowCount(long)
 	 */

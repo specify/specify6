@@ -651,7 +651,17 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
 		});
 	}
 
-	/* (non-Javadoc)
+    @Override
+    public void anotherRow() {
+
+    }
+
+    @Override
+    public void fyi(String info) {
+
+    }
+
+    /* (non-Javadoc)
 	 * @see edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace#done(int)
 	 */
 	@Override
