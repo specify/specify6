@@ -33,6 +33,8 @@ public class SpExportSchemaItemMapping extends DataModelObjBase
     protected SpExportSchemaItem    exportSchemaItem;
     protected String			    exportedFieldName;
     protected SpQueryField			queryField;
+    protected String rowType;
+    protected Boolean extensionItem; //true if item is part of an extension row.
     protected String                remarks;
     
     /**
@@ -162,6 +164,8 @@ public class SpExportSchemaItemMapping extends DataModelObjBase
 		exportSchemaItem = null;
 		queryField = null;
 		exportedFieldName =  null;
+		rowType = null;
+		extensionItem = null;
 		remarks = null;
 	}
 	/**
@@ -267,6 +271,46 @@ public class SpExportSchemaItemMapping extends DataModelObjBase
 	{
 		this.exportedFieldName = exportedFieldName;
 	}
-    
-    
+
+	/**
+	 *
+	 * @return
+	 */
+	@Column(name = "RowType", unique = false, nullable = true, insertable = true, updatable = true, length = 500)
+	public String getRowType() {
+		return rowType;
+	}
+
+	/**
+	 *
+	 * @param rowType
+	 */
+	public void setRowType(String rowType) {
+		this.rowType = rowType;
+	}
+
+	/**
+	 *
+	 * @return
+	 */
+    @Column(name="ExtensionItem",unique=false,nullable=true,updatable=true,insertable=true)
+	public Boolean getExtensionItem() {
+		return extensionItem;
+	}
+
+	/**
+	 *
+	 * @return
+	 */
+	@Transient
+	public Boolean isExtensionItem() {
+    	return extensionItem == null ? false : extensionItem;
+	}
+	/**
+	 *
+	 * @param extensionItem
+	 */
+	public void setExtensionItem(Boolean extensionItem) {
+		this.extensionItem = extensionItem;
+	}
 }

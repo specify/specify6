@@ -19,6 +19,7 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Set;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -68,6 +69,14 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
 import edu.ku.brc.helpers.UIFileFilter;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.datamodel.Collection;
+import edu.ku.brc.specify.datamodel.DataModelObjBase;
+import edu.ku.brc.specify.datamodel.Discipline;
+import edu.ku.brc.specify.datamodel.SpExportSchema;
+import edu.ku.brc.specify.datamodel.SpExportSchemaItem;
+import edu.ku.brc.specify.datamodel.SpExportSchemaMapping;
+import edu.ku.brc.specify.datamodel.SpQuery;
+import edu.ku.brc.specify.datamodel.SpTaskSemaphore;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr.USER_ACTION;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgrCallerIFace;
@@ -89,13 +98,13 @@ public class ExportMappingTask extends QueryTask
 {
     private static final Logger log  = Logger.getLogger(ExportMappingTask.class);
     
-	protected SpExportSchema		exportSchema	= null;
+	protected Set<SpExportSchema>		exportSchemas	= null;
 	protected SpExportSchemaMapping	schemaMapping	= null;
 	protected final AtomicBoolean	addingMapping	= new AtomicBoolean(false);
 	
 	protected static final String	DEF_IMP_PREF	= "ExportSchemaMapping.SchemaImportDir";
 	protected static final String PREP_MAPS_ENABLED_PREF = "ExportSchemaMapping.PrepMapsEnabled";
-	
+
 	protected boolean includeMappingsForCurrCollOnly = true;
 	
 	//protected static final String[] unSupportedsubstitutionGroups = {"dwc"
@@ -426,10 +435,24 @@ public class ExportMappingTask extends QueryTask
 		}
 	}
 
-
-	@Override
-	protected String getDefaultNewQueryName(DBTableInfo tableInfo) {
-		return UIRegistry.getResourceString("ExportMappingTask.DefaultNewMappingName");
+	/**
+	 * Creates a new Query Data Object.
+	 *
+	 * @param tableInfo
+	 *            the table information
+	 * @return the query
+	 */
+	protected SpQuery createNewQueryDataObj()
+	{
+		DBTableInfo tableInfo = getTableInfo();
+		SpQuery query = new SpQuery();
+		query.initialize();
+		//query.setName(exportSchema.getSchemaName() + exportSchema.getVersion());
+		query.setName(UIRegistry.getResourceString("ExportMappingTask.DefaultNewMappingName"));
+		query.setNamed(false);
+		query.setContextTableId((short) tableInfo.getTableId());
+		query.setContextName(tableInfo.getShortClassName());
+		return query;
 	}
 
 
@@ -437,17 +460,14 @@ public class ExportMappingTask extends QueryTask
 	 * @param query
 	 * @return a QueryBldrPane for query
 	 */
-	protected QueryBldrPane buildQb(final SpQuery query) throws QueryTask.QueryBuilderContextException
-	{
-		if (!addingMapping.get())
-		{
+	protected QueryBldrPane buildQb(final SpQuery query) throws QueryTask.QueryBuilderContextException {
+		if (!addingMapping.get()) {
 			schemaMapping = query.getMapping();
-			if (schemaMapping != null)
-        	{
-        		exportSchema = schemaMapping.getSpExportSchema();
-        	}
+			if (schemaMapping != null) {
+				exportSchemas = schemaMapping.getSpExportSchemas();
+			}
 		}
-        return new QueryBldrPane(query.getName(), this, query, false, exportSchema, schemaMapping);
+		return new QueryBldrPane(query.getName(), this, query, false, exportSchemas, schemaMapping);
 	}
 
 	

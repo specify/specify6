@@ -20,18 +20,18 @@
 package edu.ku.brc.helpers;
 
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.ConnectException;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
-import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.http.client.HttpClient;
+import org.apache.http.HttpException;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+
+import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -53,8 +53,8 @@ public class HTTPGetter implements Runnable
     protected Thread       thread     = null;
     protected String       urlStr     = null;
     
-    protected HttpClient   httpClient = null;
-    protected GetMethod    method     = null;
+    protected CloseableHttpClient   httpClient = null;
+    protected HttpGet    method     = null;
     protected InputStream  iStream    = null;
     protected File         fileCache  = null;
     
@@ -135,17 +135,17 @@ public class HTTPGetter implements Runnable
         // Create an HttpClient with the MultiThreadedHttpConnectionManager.
         // This connection manager must be used if more than one thread will
         // be using the HttpClient.
-        httpClient = new HttpClient(new MultiThreadedHttpConnectionManager());
+        httpClient = HttpClients.createMinimal(new PoolingHttpClientConnectionManager());
 
-        GetMethod mthod = new GetMethod(url);
+        HttpGet mthod = new HttpGet(url);
         //method.setQueryString("q=xxx");
 
         log.debug("getting " + mthod.getURI()); //$NON-NLS-1$
         // execute the method
-        httpClient.executeMethod(mthod);
-        
-        log.debug("Len: "+mthod.getResponseContentLength()); //$NON-NLS-1$
-        return iStream = mthod.getResponseBodyAsStream();
+        CloseableHttpResponse response = httpClient.execute(mthod);
+
+        log.debug("Len: "+EntityUtils.toString(response.getEntity()).length()); //$NON-NLS-1$
+        return iStream =   new ByteArrayInputStream(EntityUtils.toByteArray(response.getEntity()));
     }
     
     /**
@@ -186,28 +186,28 @@ public class HTTPGetter implements Runnable
         // Create an HttpClient with the MultiThreadedHttpConnectionManager.
         // This connection manager must be used if more than one thread will
         // be using the HttpClient.
-        httpClient = new HttpClient(new MultiThreadedHttpConnectionManager());
+        httpClient = HttpClients.createMinimal(new PoolingHttpClientConnectionManager());
 
-        GetMethod method = null;
+        HttpGet method = null;
         try
         {
-            method = new GetMethod(url);
+            method = new HttpGet(url);
             
             //log.debug("getting " + method.getURI()); //$NON-NLS-1$
-            httpClient.executeMethod(method);
+            CloseableHttpResponse response = httpClient.execute(method);
 
             // get the response body as an array of bytes
             long bytesRead = 0;
             if (fileCache == null)
             {
-                bytes = method.getResponseBody();
+                bytes = EntityUtils.toByteArray(response.getEntity());
                 bytesRead = bytes.length;
                 
             } else
             {
                 BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(fileCache));
                 bytes = new byte[4096];
-                InputStream ins =  method.getResponseBodyAsStream();
+                InputStream ins =  new ByteArrayInputStream(EntityUtils.toByteArray(response.getEntity()));
                 BufferedInputStream bis = new BufferedInputStream(ins);
                 while (bis.available() > 0)
                 {
@@ -231,12 +231,6 @@ public class HTTPGetter implements Runnable
         {
             excp = ce;
             log.error(String.format("Could not make HTTP connection. (%s)", ce.toString())); //$NON-NLS-1$
-            status = ErrorCode.HttpError;
-
-        } catch (HttpException he)
-        {
-            excp = he;
-            log.error(String.format("Http problem making request.  (%s)", he.toString())); //$NON-NLS-1$
             status = ErrorCode.HttpError;
 
         } catch (IOException ioe)

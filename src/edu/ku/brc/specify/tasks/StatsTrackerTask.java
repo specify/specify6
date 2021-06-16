@@ -36,7 +36,8 @@ import javax.swing.JProgressBar;
 import javax.swing.SwingConstants;
 
 import edu.ku.brc.specify.Specify;
-import org.apache.commons.httpclient.NameValuePair;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
@@ -324,7 +325,7 @@ public class StatsTrackerTask extends edu.ku.brc.af.tasks.StatsTrackerTask
         if (specifyUserId != null)
         {
             String userName = BasicSQLUtils.querySingleObj("SELECT Name FROM specifyuser WHERE SpecifyUSerID = "+specifyUserId);
-            stats.add(new NameValuePair("specifyuser",  fixParam(userName))); //$NON-NLS-1$
+            stats.add(new BasicNameValuePair("specifyuser",  fixParam(userName))); //$NON-NLS-1$
         }
 
         // Gather Collection Counts;
@@ -338,14 +339,14 @@ public class StatsTrackerTask extends edu.ku.brc.af.tasks.StatsTrackerTask
                 Integer estSize = (Integer) row[0];
                 String estSizeStr = estSize != null ? Integer.toString(estSize) : "";
 
-                stats.add(new NameValuePair("Collection_estsize", estSizeStr)); //$NON-NLS-1$
-                stats.add(new NameValuePair("Collection_number", fixParam(row[1]))); //$NON-NLS-1$
-                stats.add(new NameValuePair("Collection_website", fixParam(row[2]))); //$NON-NLS-1$
-                stats.add(new NameValuePair("Collection_portal", fixParam(row[3]))); //$NON-NLS-1$
-                stats.add(new NameValuePair("Collection_name", fixParam(row[4]))); //$NON-NLS-1$
-                stats.add(new NameValuePair("Collection_guid", fixParam(row[5]))); //$NON-NLS-1$
-                stats.add(new NameValuePair("Collection_admin_name", fixParam(row[6]))); //$NON-NLS-1$
-                stats.add(new NameValuePair("Collection_admin_email", fixParam(row[7]))); //$NON-NLS-1$}//
+                stats.add(new BasicNameValuePair("Collection_estsize", estSizeStr)); //$NON-NLS-1$
+                stats.add(new BasicNameValuePair("Collection_number", fixParam(row[1]))); //$NON-NLS-1$
+                stats.add(new BasicNameValuePair("Collection_website", fixParam(row[2]))); //$NON-NLS-1$
+                stats.add(new BasicNameValuePair("Collection_portal", fixParam(row[3]))); //$NON-NLS-1$
+                stats.add(new BasicNameValuePair("Collection_name", fixParam(row[4]))); //$NON-NLS-1$
+                stats.add(new BasicNameValuePair("Collection_guid", fixParam(row[5]))); //$NON-NLS-1$
+                stats.add(new BasicNameValuePair("Collection_admin_name", fixParam(row[6]))); //$NON-NLS-1$
+                stats.add(new BasicNameValuePair("Collection_admin_email", fixParam(row[7]))); //$NON-NLS-1$}//
             }
         }
 
@@ -354,8 +355,8 @@ public class StatsTrackerTask extends edu.ku.brc.af.tasks.StatsTrackerTask
         {
             Object[] row = BasicSQLUtils.getRow(String.format(fmt, "discipline", "DisciplineID", disciplineId));
             if (row != null) {
-                stats.add(new NameValuePair("Discipline_number", fixParam(row[0]))); //$NON-NLS-1$
-                stats.add(new NameValuePair("Discipline_name", fixParam(row[1]))); //$NON-NLS-1$
+                stats.add(new BasicNameValuePair("Discipline_number", fixParam(row[0]))); //$NON-NLS-1$
+                stats.add(new BasicNameValuePair("Discipline_name", fixParam(row[1]))); //$NON-NLS-1$
             }
         }
 
@@ -363,8 +364,8 @@ public class StatsTrackerTask extends edu.ku.brc.af.tasks.StatsTrackerTask
         {
             Object[] row = BasicSQLUtils.getRow(String.format(fmt, "division", "DivisionID", divisionId));
             if (row != null) {
-                stats.add(new NameValuePair("Division_number", fixParam(row[0]))); //$NON-NLS-1$
-                stats.add(new NameValuePair("Division_name", fixParam(row[1]))); //$NON-NLS-1$
+                stats.add(new BasicNameValuePair("Division_number", fixParam(row[0]))); //$NON-NLS-1$
+                stats.add(new BasicNameValuePair("Division_name", fixParam(row[1]))); //$NON-NLS-1$
             }
         }
         if (institutionId != null)
@@ -372,9 +373,9 @@ public class StatsTrackerTask extends edu.ku.brc.af.tasks.StatsTrackerTask
         	fmt = fmt.replace("Name FROM", "Name, GUID FROM");
             Object[] row = BasicSQLUtils.getRow(String.format(fmt, "institution", "InstitutionID", institutionId));
             if (row != null) {
-                stats.add(new NameValuePair("Institution_number", fixParam(row[0]))); //$NON-NLS-1$
-                stats.add(new NameValuePair("Institution_name", fixParam(row[1]))); //$NON-NLS-1$
-                stats.add(new NameValuePair("Institution_guid", fixParam(row[2]))); //$NON-NLS-1$
+                stats.add(new BasicNameValuePair("Institution_number", fixParam(row[0]))); //$NON-NLS-1$
+                stats.add(new BasicNameValuePair("Institution_name", fixParam(row[1]))); //$NON-NLS-1$
+                stats.add(new BasicNameValuePair("Institution_guid", fixParam(row[2]))); //$NON-NLS-1$
             }
         }
     	
@@ -436,7 +437,7 @@ public class StatsTrackerTask extends edu.ku.brc.af.tasks.StatsTrackerTask
             val = URLEncoder.encode(value, "UTF-8");
         } catch (Exception ex) {}
         //System.out.println(String.format("[%s][%s]", valName, val));
-        stats.add(new NameValuePair(valName, val));
+        stats.add(new BasicNameValuePair(valName, val));
     }
     
     /**
@@ -549,7 +550,7 @@ public class StatsTrackerTask extends edu.ku.brc.af.tasks.StatsTrackerTask
         if (StringUtils.isNotEmpty(url))
         {
             Vector<NameValuePair> stats = createPostParameters(false);
-            stats.add(new NameValuePair("Type",  isLoggingIn ? "0" : "1")); //$NON-NLS-1$
+            stats.add(new BasicNameValuePair("Type",  isLoggingIn ? "0" : "1")); //$NON-NLS-1$
             sendStats(url, stats, getClass().getName());
         }
     }

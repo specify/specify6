@@ -60,6 +60,7 @@ import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
+import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -77,6 +78,7 @@ import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.af.tasks.StatsTrackerTask;
 import edu.ku.brc.af.ui.db.DatabaseLoginPanel;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DBMSUserMgr;
@@ -163,6 +165,8 @@ import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
 import edu.ku.brc.specify.tools.export.ExportToMySQLDB;
 import edu.ku.brc.specify.utilapps.BuildSampleDatabase;
 import edu.ku.brc.ui.ChooseFromListDlg;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.ProgressFrame;
 import edu.ku.brc.ui.UIHelper;
@@ -913,8 +917,8 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 //    				}
 //    			}
 //    			edu.ku.brc.specify.tasks.StatsTrackerTask.appendBasicCollStatsStat((Integer)coll[0], null, (Integer)coll[2], (Integer)coll[3], (Integer)coll[4], postparams);
-//    			postparams.add(new NameValuePair("num_co_dna", Integer.toString(codna)));
-//    			postparams.add(new NameValuePair("num_ms_dna", Integer.toString(msdna)));
+//    			postparams.add(new BasicNameValuePair("num_co_dna", Integer.toString(codna)));
+//    			postparams.add(new BasicNameValuePair("num_ms_dna", Integer.toString(msdna)));
 //    			StatsTrackerTask.sendStats(StatsTrackerTask.getVersionCheckURL(), postparams, "StatsTrackerTask");
 //    		} catch (Exception ex) {
 //    			ex.printStackTrace();
@@ -2520,6 +2524,26 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 
                     frame.setDesc("Increasing length of TreatmentEvent.type");
                     sql = "alter table treatmentevent modify column `Type` varchar(128)";
+                    if (-1 == update(conn, sql)) {
+                        errMsgList.add("update error: " + sql);
+                        return false;
+                    }
+                    frame.incOverall();
+
+                    frame.setDesc("Modifying specify system tables.");
+                    sql = " CREATE TABLE `spstynthy` ( " +
+                            "`SpStynthyID` int(11) NOT NULL AUTO_INCREMENT, " +
+                            "`TimestampCreated` datetime NOT NULL, " +
+                            "`TimestampModified` datetime DEFAULT NULL, " +
+                            "`MetaXML` mediumblob DEFAULT NULL, " +
+                            "`UpdatePeriodDays` int(11) NOT NULL DEFAULT 30, " +
+                            "`LastExported` datetime DEFAULT NULL, " +
+                            "`CollectionID` int(11) NOT NULL, " +
+                            "`MappingXML` mediumblob DEFAULT NULL, " +
+                            "`Key1` varchar(256) default null, " +
+                            "`Key2` varchar(256) default null, " +
+                            "PRIMARY KEY (`SpStynthyID`) " +
+                            ") ENGINE=InnoDB AUTO_INCREMENT=277 DEFAULT CHARSET=utf8;";
                     if (-1 == update(conn, sql)) {
                         errMsgList.add("update error: " + sql);
                         return false;

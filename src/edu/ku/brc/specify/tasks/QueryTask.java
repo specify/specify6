@@ -29,9 +29,8 @@ import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.PreferencesDlg;
-import edu.ku.brc.af.ui.db.ERTICaptionInfo;
-import edu.ku.brc.af.ui.db.QueryForIdResultsIFace;
-import edu.ku.brc.af.ui.db.ViewBasedDisplayDialog;
+import edu.ku.brc.af.ui.ViewBasedDialogFactoryIFace;
+import edu.ku.brc.af.ui.db.*;
 import edu.ku.brc.af.ui.forms.FormHelper;
 import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -56,6 +55,8 @@ import edu.ku.brc.ui.*;
 import edu.ku.brc.ui.dnd.DataActionEvent;
 import edu.ku.brc.ui.dnd.Trash;
 import edu.ku.brc.util.Pair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -70,10 +71,13 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.lang.ref.SoftReference;
 import java.sql.Timestamp;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+
+import net.sf.json.JSONObject;
+import net.sf.json.JSONArray;
 
 import static edu.ku.brc.helpers.XMLHelper.getAttr;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
@@ -143,8 +147,8 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
         CommandDispatcher.register(TreeDefinitionEditor.TREE_DEF_EDITOR, this);
         CommandDispatcher.register(SchemaLocalizerDlg.SCHEMA_LOCALIZER, this);
         CommandDispatcher.register(PreferencesDlg.PREFERENCES, this);
+
     }
-    
     
     /**
      * Ask the user for information needed to fill in the data object. (Could be refactored with WorkBench Task)

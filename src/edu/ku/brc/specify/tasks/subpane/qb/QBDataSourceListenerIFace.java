@@ -25,67 +25,73 @@ import java.util.List;
  * @author Administrator
  *
  */
-public interface QBDataSourceListenerIFace
-{
+public interface QBDataSourceListenerIFace {
 	/**
-	 * @param progressPerCent
-	 * 
 	 * Sent when the current row changes.
 	 */
-	public void currentRow(final long currentRow);	
-	
+	public void currentRow(final long currentRow);
+
 	/**
-	 * @param rowCount
-	 * 
-	 * Sent when/if the total row count is determined. 
+	 * @param rowCount Sent when/if the total row count is determined.
 	 */
 	public void rowCount(final long rowCount);
-	
+
 	/**
 	 * @param rows the number of rows processed.
-	 * 
-	 * Sent when processing stops.
+	 *             <p>
+	 *             Sent when processing stops.
 	 */
 	public void done(final long rows);
-	
+
 	/**
 	 * Sent when/if data needs to be pre-processed before JR report can be filled.
 	 */
 	public void loading();
-	
+
 	/**
 	 * Sent when data is loaded.
 	 */
 	public void loaded();
-	
+
 	/**
 	 * Sent when fill begins.
 	 */
 	public void filling();
-	
-	
+
+
 	/**
 	 * @return true if listener wants to hear about currentRow changes and the done() event.
 	 */
 	public boolean isListeningClosely();
-	
+
 	/**
 	 * @return true if listener wants to know about deletes, updates, and additions as well.
 	 */
 	public boolean doTellAll();
-	
+
 	/**
 	 * @param keysDeleted list of keys deleted
 	 */
 	public void deletedRecs(List<Integer> keysDeleted);
-	
+
 	/**
 	 * @param key of updated rec
 	 */
 	public void updatedRec(Integer key);
-	
+
 	/**
 	 * @param key of added rec
 	 */
 	public void addedRec(Integer key);
+
+	/**
+	 * a row was exported
+	 */
+	public void anotherRow();
+
+	/**
+	 *
+	 * @param info
+	 */
+	public void fyi(String info);
 }

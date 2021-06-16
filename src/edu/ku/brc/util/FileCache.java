@@ -35,12 +35,16 @@ import java.util.HashMap;
 import java.util.Properties;
 import java.util.UUID;
 
-import org.apache.commons.httpclient.HostConfiguration;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.http.HttpHost;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.HttpException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -707,18 +711,18 @@ public class FileCache implements DataCacheIFace
 	 */
 	public String cacheWebResource(final String url) throws HttpException, IOException
 	{
-        HttpClient httpClient = new HttpClient();
-		GetMethod get = new GetMethod(url);
-		get.setFollowRedirects(true);
-		ProxyHelper.applyProxySettings(httpClient);
-		int result = httpClient.executeMethod(get);
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+		HttpGet get = new HttpGet(url);
+		ProxyHelper.applyProxySettings(get, null);
+		CloseableHttpResponse httpResponse = httpClient.execute(get);
+		int result = httpResponse.getStatusLine().getStatusCode();
 		if (result != 200)
 		{
 			//log.debug("Retrieving "+url+" resulted in unexpected code: "+result);
 			throw new HttpException("Unexpected HTTP code received: " + result);
 		}
 
-		byte[] response = get.getResponseBody();
+		byte[] response = EntityUtils.toByteArray(httpResponse.getEntity());
 
         if (response.length > 0)
         {

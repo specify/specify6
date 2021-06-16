@@ -4,6 +4,68 @@
 package edu.ku.brc.specify.tools.export;
 
 
+import static edu.ku.brc.specify.prefs.S2nPrefsPanel.postFile;
+import static edu.ku.brc.ui.UIHelper.createButton;
+import static edu.ku.brc.ui.UIHelper.createLabel;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
+
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Frame;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.FileOutputStream;
+import java.nio.charset.Charset;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableModel;
+
+import edu.ku.brc.specify.datamodel.*;
+import edu.ku.brc.specify.datamodel.Collection;
+import edu.ku.brc.specify.plugins.morphbank.DarwinCoreArchive;
+import edu.ku.brc.specify.plugins.morphbank.DarwinCoreArchiveField;
+import edu.ku.brc.specify.prefs.S2nPrefsPanel;
+import edu.ku.brc.specify.tasks.subpane.SymbiotaPane;
+import edu.ku.brc.specify.tools.gbifregistration.GbifSandbox;
+import edu.ku.brc.ui.*;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.apache.poi.hssf.record.formula.functions.Time;
+import org.apache.tools.ant.util.FileUtils;
+import org.dom4j.Element;
+
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -38,15 +100,13 @@ import edu.ku.brc.specify.tasks.subpane.qb.*;
 import edu.ku.brc.specify.tools.webportal.BuildSearchIndex2;
 import edu.ku.brc.specify.ui.AppBase;
 import edu.ku.brc.specify.ui.HelpMgr;
-import edu.ku.brc.ui.CustomDialog;
-import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.IconManager.IconSize;
-import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.AttachmentManagerIface;
 import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.Pair;
 import edu.ku.brc.util.WebStoreAttachmentMgr;
+import edu.ku.brc.specify.plugins.morphbank.DarwinCoreArchiveFile;
+import edu.ku.brc.ui.ChooseFromListDlg;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.tools.ant.util.FileUtils;
@@ -82,7 +142,9 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 
     protected static final String EXPORT_TEXT_PATH = "ExportPanel.TabDelimExportPath";
     protected static final String EXPORT_WEBPORTAL_PATH = "ExportPanelExportWebPortalPath";
-    protected static final long maxExportRowCount = 100000;
+	protected static final String EXPORT_DWCA_PATH = "ExportPanelExportDWCAPath";
+    protected static final String EXPORT_BLOCK_SIZE = "ExportPanelExportBlockSize";
+    protected static long maxExportRowCount;
     
     protected boolean exportIsThreaded = true;
     
@@ -93,6 +155,8 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 	protected JButton exportToTabDelimBtn;
 	protected JButton setupWebPortalBtn;
 	protected JButton showIPTSQLBtn;
+	protected JButton createDwcaBtn;
+	protected JButton publishToGbifBtn;
 	protected JButton helpBtn;
 	protected JLabel status;
 	protected JProgressBar prog;
@@ -120,19 +184,18 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 	/**
 	 * @param maps
 	 */
-	public ExportPanel(List<SpExportSchemaMapping> maps)
-	{
-		super();
-		this.maps = maps;
-		this.updateStats = new ArrayList<Pair<SpExportSchemaMapping, Long>>();
-		for (SpExportSchemaMapping map : maps)
-		{
-			updateStats.add(new Pair<SpExportSchemaMapping, Long>(map, -2L));
-		}
+    public ExportPanel(List<SpExportSchemaMapping> maps) {
+        super();
+        this.maps = maps;
+        this.updateStats = new ArrayList<Pair<SpExportSchemaMapping, Long>>();
+        for (SpExportSchemaMapping map : maps) {
+            updateStats.add(new Pair<SpExportSchemaMapping, Long>(map, -2L));
+        }
         StartUpTask.configureAttachmentManager();
-		createUI();
-		startStatusCalcs();
-	}
+        createUI();
+        startStatusCalcs();
+        maxExportRowCount = AppPreferences.getLocalPrefs().getInt(EXPORT_BLOCK_SIZE, 100000);
+    }
 	
 	/**
 	 * Starts threads to calculate status of maps
@@ -183,17 +246,718 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 		boolean notUpdating = mapUpdating.get() == -1;
 		//System.out.println("updateUIAfterMapSelection: Row: " + selectedIdx + ", isBuilt: " + isBuilt + ", updating: " + !notUpdating);
 		this.showIPTSQLBtn.setEnabled(notUpdating && isBuilt);
+		this.createDwcaBtn.setEnabled(isDwcaMapping(selectedIdx));
+		System.out.println("Skipping publishToGbifBtn state update.");
+		//this.publishToGbifBtn.setEnabled(hasGbifRegistration(selectedIdx));
 		this.exportToTabDelimBtn.setEnabled(notUpdating && isBuilt);
 		this.setupWebPortalBtn.setEnabled(notUpdating && isBuilt);
 		this.exportToDbTblBtn.setEnabled(notUpdating && !isCheckingStatus);
 		
 	}
+
+	protected boolean isDwcaMapping(int selectedIdx) {
+		SpExportSchemaMapping map = maps.get(selectedIdx);
+		String sql = "select count(spappresourceid) from spappresource where name = '" + map.getMappingName() +"'";
+		//plus other context parame, or use appcontext mgr to get resource...
+		return BasicSQLUtils.getCount(sql).equals(1);
+	}
+
+	protected boolean hasGbifRegistration(int selectedIdx) {
+		boolean result = isDwcaMapping(selectedIdx);
+		if (result) {
+			SpExportSchemaMapping map = maps.get(selectedIdx);
+			result = GbifSandbox.getDwcaSchema(map.getMappingName()) != null;
+		}
+		return result;
+	}
+
+	protected File promptForFile(String ext, String prefName) {
+		AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+		String defPath = prefName == null ? null : localPrefs.get(prefName, null);
+		JFileChooser save = defPath == null ? new JFileChooser() :
+				new JFileChooser(new File(defPath));
+		save.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		if (ext != null) {
+			save.setFileFilter(new UIFileFilter(ext));
+		}
+		boolean done = false;
+		File result = null;
+		while (!done) {
+			int dr = save.showSaveDialog(null);
+			if (dr != JFileChooser.APPROVE_OPTION) {
+				done = true;
+			} else {
+				result = save.getSelectedFile();
+				if (!result.getName().endsWith("." + ext)) {
+					result = new File(result.getPath() + "." + ext);
+				}
+				if (result.exists()) {
+					done = JOptionPane.YES_OPTION == UIRegistry.askYesNoLocalized("YES","NO",
+							String.format(getResourceString("ExportPanel.OverwriteFileMsg"), result.getName()),
+							"ExportPanel.OverwriteFileTitle");
+				} else {
+					done = true;
+				}
+			}
+		}
+		if (prefName != null && result != null) {
+			localPrefs.put(prefName, result.getPath());
+		}
+		return result;
+	}
+
+
+	protected void buildDwCArchive(final SpExportSchemaMapping schemaMapping) {
+
+		javax.swing.SwingWorker<Boolean, Object> worker =
+				/**
+		 * @author timo
+		 *
+		 */
+				new javax.swing.SwingWorker<Boolean, Object>() {
+
+					String outputFileName = "/home/timo/datas/dwckuiwarpedmultis.zip";
+					int META_FROM_RESOURCE = 0;
+					int META_FROM_FILE = 1;
+					int metaSrc = META_FROM_FILE;//META_FROM_RESOURCE;
+					int SRC_REC_SET = 0;
+					int SRC_MAPPING = 1;
+					int SRC_QUERY = 2;
+					int SRC_ALL = 3;
+
+					/**
+					 * @return
+					 */
+					private Pair<Integer, Iterator<?>> getSizeAndIterator() {
+						String sql = "select " + getCacheTableName(schemaMapping.getMappingName()) +
+								"id from " + getCacheTableName(schemaMapping.getMappingName());
+						List<?> ids = BasicSQLUtils.querySingleCol(sql);
+						return new Pair<>(ids.size(), ids.iterator());
+					}
+
+
+					private File selectArchiveDefinitionFile() {
+						//this needs to require file to exist.
+						//and should be handled through (an improved version of) promptForFile()
+						JFileChooser chooser = new JFileChooser();
+						chooser.setDialogTitle(getResourceString("CHOOSE_DWC_DEF_FILE"));
+						chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+						chooser.setMultiSelectionEnabled(false);
+						chooser.setFileFilter(new UIFileFilter("xml", getResourceString("DWC_DEF_FILES")));
+						if (chooser.showOpenDialog(UIRegistry.get(UIRegistry.FRAME)) != JFileChooser.APPROVE_OPTION) {
+							return null;
+						}
+
+						File file = chooser.getSelectedFile();
+
+						String path = chooser.getCurrentDirectory().getPath();
+						if (StringUtils.isNotEmpty(path)) {
+							AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+							localPrefs.put("DWC_DEF_FILE_PATH", path);
+						}
+						return file;
+					}
+
+					private Element getMetaElementFromFile() {
+						File metaFile = selectArchiveDefinitionFile();
+						Element result = null;
+						if (metaFile != null) {
+							try {
+								result = XMLHelper.readFileToDOM4J(metaFile);
+							} catch (Exception x) {
+								UIRegistry.displayErrorDlg(x.getMessage());
+							}
+						}
+						return result;
+					}
+                    /**
+                     *
+                     * @param archiveName
+                     * @param csvs
+                     * @throws Exception
+                     */
+                    protected void writeFiles(String archiveName, List<Pair<String, List<String>>> csvs, boolean append) throws Exception {
+                        String dirName = (new File(archiveName)).getParent();
+                        for (Pair<String, List<String>> csv : csvs) {
+                            File f = new File(dirName + File.separator + csv.getFirst());
+                            org.apache.commons.io.FileUtils.writeLines(f, "UTF-8", csv.getSecond(), append);
+
+                        }
+                    }
+
+                    /**
+                     *
+                     * @param zos
+                     * @param path
+                     * @param file
+                     * @throws IOException
+                     */
+                    private void zipFile(ZipOutputStream zos, File file) throws IOException {
+                        if (!file.canRead()) {
+                            System.out.println("Cannot read " + file.getCanonicalPath() + " (maybe because of permissions)");
+                            return;
+                        }
+                        System.out.println("Compressing " + file.getName());
+                        zos.putNextEntry(new ZipEntry(file.getName()));
+                        FileInputStream fis = new FileInputStream(file);
+                        byte[] buffer = new byte[4092];
+                        int byteCount = 0;
+                        while ((byteCount = fis.read(buffer)) != -1) {
+                            zos.write(buffer, 0, byteCount);
+                            System.out.print('.');
+                            System.out.flush();
+                        }
+                        System.out.println();
+                        fis.close();
+                        zos.closeEntry();
+                    }
+
+                    /**
+                     *
+                     * @param archiveName
+                     * @param dwcMeta
+                     * @param csvs
+                     * @throws Exception
+                     */
+                    protected void zipUpArchive(String archiveName, String dwcMeta, List<Pair<String, List<String>>> csvs) throws Exception {
+                        ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(new File(archiveName)));
+                        Charset utf8 = Charset.forName("utf8");
+
+                        zout.putNextEntry(new ZipEntry("meta.xml"));
+                        zout.write(dwcMeta.getBytes(utf8));
+                        zout.closeEntry();
+
+                        String dirName = (new File(archiveName)).getParent();
+                        for (Pair<String, List<String>> csv : csvs) {
+                            zipFile(zout, new File(dirName + File.separator + csv.getFirst()));
+                        }
+                        zout.close();
+                    }
+					/**
+					 * @param archiveName
+					 * @param metaFild
+					 * @param csvs
+					 * @throws Exception
+					 */
+					protected void writeToArchiveFile(String archiveName, String dwcMeta, List<Pair<String, List<String>>> csvs) throws Exception {
+						ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(new File(archiveName)));
+
+						Charset utf8 = Charset.forName("utf8");
+
+						zout.putNextEntry(new ZipEntry("meta.xml"));
+						zout.write(dwcMeta.getBytes(utf8));
+						zout.closeEntry();
+						int size = 0;
+						for (Pair<String, List<String>> csv : csvs) {
+							size += csv.getSecond().size();
+						}
+						//initProgRange(size);
+						for (Pair<String, List<String>> csv : csvs) {
+							zout.putNextEntry(new ZipEntry(csv.getFirst()));
+							for (String line : csv.getSecond()) {
+								//System.out.println("    " + line);
+								zout.write(line.getBytes(utf8));
+								zout.write("\n".getBytes(utf8));
+								//setProgValue(++size);
+							}
+							zout.closeEntry();
+						}
+						zout.close();
+					}
+
+					private void showStats(DarwinCoreArchive dwc) {
+                        List<Pair<String, Integer>> objStats = dwc.getMapper().getObjFormatStats();
+                        System.out.println("#############################################################");
+                        System.out.println("Object Format Stats");
+                        for (Pair<String, Integer> stat : objStats) {
+                            System.out.println(stat.getFirst() + ": " + stat.getSecond());
+                        }
+                        objStats = dwc.getMapper().getAggStats();
+                        System.out.println("#############################################################");
+                        System.out.println("Agg Stats");
+                        for (Pair<String, Integer> stat : objStats) {
+                            System.out.println(stat.getFirst() + ": " + stat.getSecond());
+                        }
+
+                    }
+
+                    private Element getMetaElement() {
+						if (metaSrc == META_FROM_RESOURCE) {
+							return GbifSandbox.getDwcaSchema(schemaMapping.getMappingName());
+						} else if (metaSrc == META_FROM_FILE){
+							return getMetaElementFromFile();
+						} else {
+							return null;
+						}
+					}
+
+
+					private boolean showUnmappedTerms(Map<DarwinCoreArchiveFile, List<DarwinCoreArchiveField>> unmapped) {
+						//rough job
+						List<String> descriptions = new ArrayList<>();
+						for (DarwinCoreArchiveFile f : unmapped.keySet()) {
+							for (DarwinCoreArchiveField fld : unmapped.get(f)) {
+								descriptions.add(f.getRowType() + ": " + fld.getTerm());
+							}
+						}
+						ChooseFromListDlg<String> dog = new ChooseFromListDlg<String>((Frame)UIRegistry.get(UIRegistry.FRAME),
+								getResourceString("ExportPanel.DWC_UNMAPPED_DLG_TITLE"),
+								ChooseFromListDlg.OKCANCEL, descriptions);
+						dog.createUI();
+						dog.getList().setSelectedIndex(0);
+						dog.getList().setEnabled(false);
+						dog.setModal(true);
+						UIHelper.centerAndShow(dog);
+						return !dog.isCancelled();
+					}
+
+					private int getRecSrc() {
+						List<String> recsetOptions = new ArrayList<>();
+						recsetOptions.add(getResourceString("ExportPanel.DWC_SRC_REC_SET"));
+						recsetOptions.add(getResourceString("ExportPanel.DWC_SRC_MAPPING_RESULTS"));
+						recsetOptions.add(getResourceString("ExportPanel.DWC_SRC_QUERY"));
+						recsetOptions.add(getResourceString("ExportPanel.DWC_SRC_ALL_RECORDS"));
+						ChooseFromListDlg<String> dog = new ChooseFromListDlg<>((Frame)UIRegistry.get(UIRegistry.FRAME),
+								getResourceString("ExportPanel.DWC_SRC_DLG_TITLE"),
+								ChooseFromListDlg.OKCANCEL, recsetOptions);
+						dog.createUI();
+						dog.getList().setSelectedIndex(0);
+						dog.setModal(true);
+						UIHelper.centerAndShow(dog);
+						if (dog.isCancelled()) {
+							return -1;
+						} else {
+							return dog.getSelectedIndices()[0];
+						}
+					}
+
+					private int getSrcRecSet() {
+						List<Object[]> rs = BasicSQLUtils.query("select recordsetid, name from recordset where tableid = 1 "
+						 	+ "and specifyuserid = "  + Agent.getUserAgent().getSpecifyUser().getId() + " and type = 0 order by 2");
+						Map<String, Integer> idMap = new HashMap<>();
+						List<String> names = new ArrayList<>();
+						for (Object[] row : rs) {
+							names.add((String)row[1]);
+							idMap.put((String)row[1], (Integer)row[0]);
+						}
+						ChooseFromListDlg<String> dog = new ChooseFromListDlg<>((Frame)UIRegistry.get(UIRegistry.FRAME),
+								getResourceString("ExportPanel.DWC_SRC_RECSET_TITLE"),
+								ChooseFromListDlg.OKCANCEL, names);
+						dog.createUI();
+						dog.getList().setSelectedIndex(0);
+						dog.setModal(true);
+						UIHelper.centerAndShow(dog);
+						if (dog.isCancelled()) {
+							return -1;
+						} else {
+							return idMap.get(dog.getSelectedObject());
+						}
+					}
+
+					private int getSrcMapping() {
+						return -1;
+					}
+
+					private int getSrcQuery() {
+						return -1;
+					}
+
+					private int getSrcAll() {
+						return -1;
+					}
+
+					private int getSrcRecSetId() {
+						int src = getRecSrc();
+						if (src == -1) {
+							return -1;
+						} else if (src == SRC_REC_SET) {
+							return getSrcRecSet();
+						} else if (src == SRC_MAPPING) {
+							return getSrcMapping();
+						} else if (src == SRC_QUERY) {
+							return getSrcQuery();
+						} else if (src == SRC_ALL) {
+							return getSrcAll();
+						} else {
+							return -1;
+						}
+					}
+					/* (non-Javadoc)
+					 * @see javax.swing.SwingWorker#doInBackground()
+					 */
+					@Override
+					protected Boolean doInBackground() throws Exception {
+						try {
+							Element dwcMetaEl = getMetaElement();
+							DarwinCoreArchive dwc = new DarwinCoreArchive(dwcMetaEl, schemaMapping.getId(), schemaMapping,false);
+							Map<DarwinCoreArchiveFile, List<DarwinCoreArchiveField>> unmapped = dwc.getUnmappedFields();
+							if (unmapped.size() > 0) {
+								if (!showUnmappedTerms(unmapped)) {
+									return false;
+								}
+							}
+							List<Integer> recIds = null;
+                            int blk = dwc.getBlockSize();
+							int recSetId = getSrcRecSetId();
+							if (recSetId == -1) {
+								UIRegistry.displayInfoMsgDlg("That option is currently not supported.");
+								return false;
+							}
+							if (schemaMapping.getMappingName().equals("multiqs")) {
+                                //recSetId = 832; //herps
+                                recSetId = 81; //fish with ce and co atts.
+                            } else if (schemaMapping.getMappingName().equalsIgnoreCase("dwckui")) {
+                                //recSetId = 832; //herps all
+								//recSetId = 16001; //ento all
+								//recSetId = 83; //fish multiple dets
+							} else {
+								Pair<Integer, Iterator<?>> ids = getSizeAndIterator();
+								Iterator<?> its = ids.getSecond();
+								recIds = new ArrayList<>(ids.getFirst());
+								//initProgRange(ids.getFirst());
+								int rec = 0;
+								blk = 0;
+								while (its.hasNext()) {
+									recIds.add((Integer) its.next());
+									//setProgValue(++rec);
+								}
+							}
+							//setProgValue(0);
+							File outputFile = promptForFile("zip", EXPORT_DWCA_PATH);
+							if (outputFile == null) {
+								return false;
+							}
+							outputFileName = outputFile.getPath();
+                            long cnt = 0;
+                            long size = recIds == null ? RecordSet.getUniqueSize(recSetId) : recIds.size();
+							List<Pair<String, List<String>>> csvs = null;
+                            while (cnt < size) {
+                                if (blk != 0) {
+                                    recIds = RecordSet.getUniqueIdList(recSetId, blk, cnt);
+                                }
+                                dwc.setGlobalSession(null);
+                                csvs = dwc.getExportText(1, recIds, null);
+                                writeFiles(outputFileName, csvs, cnt > 0);
+                                if (blk != 0) {
+                                    cnt += blk;
+                                    showStats(dwc);
+                                } else {
+                                    cnt = size;
+                                }
+                            }
+                            showStats(dwc);
+                            if (csvs != null) {
+                                zipUpArchive(outputFileName, dwcMetaEl.asXML(), csvs);
+                            }
+						} catch (Exception e) {
+							UsageTracker.incrHandledUsageCount();
+							edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SymbiotaPane.class, e);
+							e.printStackTrace();
+						}
+						return true;
+					}
+
+					/* (non-Javadoc)
+					 * @see edu.ku.brc.specify.tasks.subpane.SymbiotaPane.SymWorker#doDone()
+					 */
+					@Override
+					protected void done() {
+						super.done();
+						ExportPanel.this.createDwcaBtn.setEnabled(true); //?? OR publishToGbifBtn
+					}
+
+				};
+		worker.execute();
+	}
+
+
+	public static javax.swing.SwingWorker<Pair<Integer, String>, Object> buildStinkyDwCArchive(final SpExportSchemaMapping schemaMapping, QBDataSourceListenerIFace listener) {
+
+		javax.swing.SwingWorker<Pair<Integer, String>, Object> worker =
+				/**
+				 * @author timo
+				 *
+				 */
+				new javax.swing.SwingWorker<Pair<Integer, String>, Object>() {
+
+					int META_FROM_RESOURCE = 0;
+					int META_FROM_FILE = 1;
+					int metaSrc = META_FROM_FILE;//META_FROM_RESOURCE;
+
+					private File selectArchiveDefinitionFile() {
+						//this needs to require file to exist.
+						//and should be handled through (an improved version of) promptForFile()
+						JFileChooser chooser = new JFileChooser();
+						chooser.setDialogTitle(getResourceString("CHOOSE_DWC_DEF_FILE"));
+						chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+						chooser.setMultiSelectionEnabled(false);
+						chooser.setFileFilter(new UIFileFilter("xml", getResourceString("DWC_DEF_FILES")));
+						if (chooser.showOpenDialog(UIRegistry.get(UIRegistry.FRAME)) != JFileChooser.APPROVE_OPTION) {
+							return null;
+						}
+
+						File file = chooser.getSelectedFile();
+
+						String path = chooser.getCurrentDirectory().getPath();
+						if (StringUtils.isNotEmpty(path)) {
+							AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+							localPrefs.put("DWC_DEF_FILE_PATH", path);
+						}
+						return file;
+					}
+
+					private Element getMetaElementFromFile() {
+						File metaFile = selectArchiveDefinitionFile();
+						Element result = null;
+						if (metaFile != null) {
+							try {
+								result = XMLHelper.readFileToDOM4J(metaFile);
+							} catch (Exception x) {
+								UIRegistry.displayErrorDlg(x.getMessage());
+							}
+						}
+						return result;
+					}
+					/**
+					 *
+					 * @param archiveName
+					 * @param csvs
+					 * @throws Exception
+					 */
+					protected void writeFiles(String archiveName, List<Pair<String, List<String>>> csvs, boolean append) throws Exception {
+						String dirName = (new File(archiveName)).getParent();
+						for (Pair<String, List<String>> csv : csvs) {
+							File f = new File(dirName + File.separator + csv.getFirst());
+							if (append) {
+								csv.getSecond().remove(0);
+							}
+							org.apache.commons.io.FileUtils.writeLines(f, "UTF-8", csv.getSecond(), append);
+
+						}
+					}
+
+					/**
+					 *
+					 * @param zos
+					 * @param path
+					 * @param file
+					 * @throws IOException
+					 */
+					private void zipFile(ZipOutputStream zos, File file) throws IOException {
+						if (!file.canRead()) {
+							System.out.println("Cannot read " + file.getCanonicalPath() + " (maybe because of permissions)");
+							return;
+						}
+						System.out.println("Compressing " + file.getName());
+						zos.putNextEntry(new ZipEntry(file.getName()));
+						FileInputStream fis = new FileInputStream(file);
+						byte[] buffer = new byte[4092];
+						int byteCount = 0;
+						while ((byteCount = fis.read(buffer)) != -1) {
+							zos.write(buffer, 0, byteCount);
+							System.out.print('.');
+							System.out.flush();
+						}
+						System.out.println();
+						fis.close();
+						zos.closeEntry();
+					}
+
+					/**
+					 *
+					 * @param archiveName
+					 * @param dwcMeta
+					 * @param csvs
+					 * @throws Exception
+					 */
+					protected void zipUpArchive(String archiveName, String dwcMeta, List<Pair<String, List<String>>> csvs) throws Exception {
+						ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(new File(archiveName + ".zip")));
+						Charset utf8 = Charset.forName("utf8");
+
+						zout.putNextEntry(new ZipEntry("meta.xml"));
+						zout.write(dwcMeta.getBytes(utf8));
+						zout.closeEntry();
+
+						String dirName = (new File(archiveName)).getParent();
+						for (Pair<String, List<String>> csv : csvs) {
+							zipFile(zout, new File(dirName + File.separator + csv.getFirst()));
+						}
+						zout.close();
+					}
+					/**
+					 * @param archiveName
+					 * @param metaFild
+					 * @param csvs
+					 * @throws Exception
+					 */
+					protected void writeToArchiveFile(String archiveName, String dwcMeta, List<Pair<String, List<String>>> csvs) throws Exception {
+						ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(new File(archiveName + ".zip")));
+
+						Charset utf8 = Charset.forName("utf8");
+
+						zout.putNextEntry(new ZipEntry("meta.xml"));
+						zout.write(dwcMeta.getBytes(utf8));
+						zout.closeEntry();
+						int size = 0;
+						for (Pair<String, List<String>> csv : csvs) {
+							size += csv.getSecond().size();
+						}
+						//initProgRange(size);
+						for (Pair<String, List<String>> csv : csvs) {
+							zout.putNextEntry(new ZipEntry(csv.getFirst()));
+							for (String line : csv.getSecond()) {
+								//System.out.println("    " + line);
+								zout.write(line.getBytes(utf8));
+								zout.write("\n".getBytes(utf8));
+								//setProgValue(++size);
+							}
+							zout.closeEntry();
+						}
+						zout.close();
+					}
+
+					private void showStats(DarwinCoreArchive dwc) {
+						List<Pair<String, Integer>> objStats = dwc.getMapper().getObjFormatStats();
+						System.out.println("#############################################################");
+						System.out.println("Object Format Stats");
+						for (Pair<String, Integer> stat : objStats) {
+							System.out.println(stat.getFirst() + ": " + stat.getSecond());
+						}
+						objStats = dwc.getMapper().getAggStats();
+						System.out.println("#############################################################");
+						System.out.println("Agg Stats");
+						for (Pair<String, Integer> stat : objStats) {
+							System.out.println(stat.getFirst() + ": " + stat.getSecond());
+						}
+
+					}
+
+					private Element getMetaElement() {
+						String sql = "select metaxml from spstynthy where collectionid = " + AppContextMgr.getInstance().getClassObject(Collection.class).getId();
+						return GbifSandbox.getDwcaSchemaFromFld(sql);
+					}
+
+					private boolean checkForUpdatedRecs() {
+					    return true; //should be pref or val in spstynthy.
+                    }
+
+					/* (non-Javadoc)
+					 * @see javax.swing.SwingWorker#doInBackground()
+					 */
+					@Override
+					protected Pair<Integer, String> doInBackground() throws Exception {
+//						if (!needToDoIt()) {
+//							return true;
+//						}
+						Pair<Integer, String> r = new Pair<>(-1, "unspecified error");
+						try {
+							if (listener != null) {
+								listener.loading();
+							}
+							Calendar startTime = Calendar.getInstance();
+							Element dwcMetaEl = getMetaElement();
+							DarwinCoreArchive dwc = new DarwinCoreArchive(dwcMetaEl, schemaMapping.getId(),  schemaMapping,false);
+							Map<DarwinCoreArchiveFile, List<DarwinCoreArchiveField>> unmapped = dwc.getUnmappedFields();
+							if (unmapped.size() > 0) {
+								System.out.println("There are unmapped concepts.");
+//								if (listener != null) {
+//									listener.fyi("There are unmapped concepts.");
+//								}
+							}
+							List<Integer> recIds = new ArrayList<>();
+							List<Specs> specs = null;
+							boolean exportAll = !checkForUpdatedRecs() || schemaMapping.getTimestampExported() == null;
+							specs = getSpecs(schemaMapping, true, false, exportAll, null);
+							if (specs == null) {
+								return new Pair<>(-1, "error");
+							}
+
+							final List<ERTICaptionInfoQB> cols = specs.get(0).getCols();
+							final HQLSpecs hqlSpecs = specs.get(0).getSpecs();
+							//should let QueryBldr do this...
+							String hql = hqlSpecs.getHql();
+							String idHql = hql.substring(0, hql.indexOf(", ")) + hql.substring(hql.indexOf(" from CollectionObject "));
+							String outputFileName = S2nPrefsPanel.getOutputFileName(schemaMapping);
+							DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+							QueryIFace q = session.createQuery(idHql, false);
+							if (hqlSpecs.getArgs() != null) {
+								for (Pair<String, Object> param : hqlSpecs.getArgs()) {
+									q.setParameter(param.getFirst(), param.getSecond());
+								}
+							}
+							List<?> qids = q.list();
+							long size = qids.size();
+							if (listener != null) {
+								listener.loaded();
+								listener.rowCount(size);
+							}
+							if (size > 0) {
+								List<Pair<String, List<String>>> csvs = null;
+								int cnt = 0;
+								int blk = 100000; //dwc.getBlockSize();
+								dwc.setGlobalSession(null);
+								while (cnt < size) {
+									recIds.clear();
+									for (Object id : qids.subList(0, Math.min(blk, qids.size()))) {
+										recIds.add((Integer) id);
+									}
+									csvs = dwc.getExportText(1, recIds, listener);
+									if (listener != null) {
+										listener.fyi("ExportPanel.WritingDwcArchiveFiles");
+									}
+									writeFiles(outputFileName, csvs, cnt > 0);
+									qids.subList(0, Math.min(blk, qids.size())).clear();
+									//dwc.getCurrentGlobalSession().evict(CollectionObject.class);
+									dwc.setGlobalSession(null);
+									cnt += blk;
+									showStats(dwc);
+								}
+								showStats(dwc);
+								if (csvs != null) {
+									if (listener != null) {
+										listener.fyi("ExportPanel.ZippingDwcArchive");
+									}
+									zipUpArchive(outputFileName, dwcMetaEl.asXML(), csvs);
+									if (listener != null) {
+										listener.fyi("ExportPanel.SendingDwcArchive");
+									}
+									r = S2nPrefsPanel.postFile(outputFileName + ".zip", startTime);
+								}
+							} else {
+								S2nPrefsPanel.nothingToUpdate();
+								r.setFirst(0);
+							}
+						} catch (Exception e) {
+							UsageTracker.incrHandledUsageCount();
+							edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SymbiotaPane.class, e);
+							e.printStackTrace();
+						}
+						return r;
+					}
+
+					/* (non-Javadoc)
+					 * @see edu.ku.brc.specify.tasks.subpane.SymbiotaPane.SymWorker#doDone()
+					 */
+					@Override
+					protected void done() {
+						super.done();
+						if (listener != null) {
+							listener.done(0);
+						}
+						//setExportTime();
+//						ExportPanel.this.createDwcaBtn.setEnabled(true); //?? OR publishToGbifBtn
+					}
+
+				};
+		worker.execute();
+		return worker;
+	}
+
 	/**
 	 * 
 	 */
-	public void createUI()
-	{
-    	buildTableModel();
+	public void createUI() {
+		buildTableModel();
 		mapsDisplay = new JTable(mapsModel) {
 
 			/* (non-Javadoc)
@@ -203,7 +967,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 			public boolean isCellEditable(int row, int column) {
 				return false;
 			}
-			
+
 		};
 		mapsDisplay.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 
@@ -212,89 +976,64 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 			 */
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
-				if (!e.getValueIsAdjusting())
-				{
-					SwingUtilities.invokeLater(new Runnable(){
-
-						/* (non-Javadoc)
-						 * @see java.lang.Runnable#run()
-						 */
-						@Override
-						public void run() {
-							updateUIAfterMapSelection();
-						}
-					
-					});
+				if (!e.getValueIsAdjusting()) {
+					/* (non-Javadoc)
+					 * @see java.lang.Runnable#run()
+					 */
+					SwingUtilities.invokeLater(() -> updateUIAfterMapSelection());
 				}
-				
+
 			}
-			
+
 		});
 		mapsDisplay.getTableHeader().setReorderingAllowed(false);
 		mapsDisplay.setPreferredScrollableViewportSize(mapsDisplay.getPreferredSize());
 		mapsDisplay.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		mapsDisplay.getSelectionModel().setSelectionInterval(0, 0);
-    	setLayout(new BorderLayout());
-    	JScrollPane sp = new JScrollPane(mapsDisplay);
-    	PanelBuilder tblpb = new PanelBuilder(new FormLayout("2dlu, f:p:g, 2dlu", "5dlu, f:p:g, 5dlu"));
-    	CellConstraints cc = new CellConstraints();
-    	tblpb.add(sp, cc.xy(2, 2));
-    	
-    	add(tblpb.getPanel(), BorderLayout.CENTER);
-    	exportToDbTblBtn = UIHelper.createButton(UIRegistry.getResourceString("ExportPanel.ExportToDBTbl"));
-    	exportToDbTblBtn.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0)
-			{
-				int row = mapsDisplay.getSelectedRow();
-				if (row != -1)
-				{
-					mapUpdating.set(row);
-					stupid = 1;
-					SpExportSchemaMapping map = maps.get(row);
-					boolean reBuildIt = false;
-					if (isUpToDateForRow(row)) 
-					{
-						reBuildIt = UIRegistry.displayConfirmLocalized("ExportPanel.ConfirmForceRebuildTitle", "ExportPanel.ConfirmForceRebuildMsg", 
-								"ExportPanel.RebuildBtn", "Cancel", JOptionPane.QUESTION_MESSAGE);
-						if (!reBuildIt) {
-							return;
-						}
-					}
-					if (checkLock(map)) 
-					{
-						updater = exportToTable(map, rebuildForRow(row) || reBuildIt);
-						if (updater != null) 
-						{
-							updater.execute();
-							SwingUtilities.invokeLater(new Runnable() 
-							{
+		setLayout(new BorderLayout());
+		JScrollPane sp = new JScrollPane(mapsDisplay);
+		PanelBuilder tblpb = new PanelBuilder(new FormLayout("2dlu, f:p:g, 2dlu", "5dlu, f:p:g, 5dlu"));
+		CellConstraints cc = new CellConstraints();
+		tblpb.add(sp, cc.xy(2, 2));
 
-								/*
-								 * (non-Javadoc)
-								 * 
-								 * @see java.lang.Runnable#run()
-								 */
-								@Override
-								public void run() 
-								{
-									updateBtnStates();
-									((CardLayout) progPane.getLayout())
-											.last(progPane);
-								}
-
-							});
-						}
+		add(tblpb.getPanel(), BorderLayout.CENTER);
+		exportToDbTblBtn = UIHelper.createButton(UIRegistry.getResourceString("ExportPanel.ExportToDBTbl"));
+		exportToDbTblBtn.addActionListener(arg0 -> {
+			int row = mapsDisplay.getSelectedRow();
+			if (row != -1) {
+				mapUpdating.set(row);
+				stupid = 1;
+				SpExportSchemaMapping map = maps.get(row);
+				boolean reBuildIt = false;
+				if (isUpToDateForRow(row)) {
+					reBuildIt = UIRegistry.displayConfirmLocalized("ExportPanel.ConfirmForceRebuildTitle", "ExportPanel.ConfirmForceRebuildMsg",
+							"ExportPanel.RebuildBtn", "Cancel", JOptionPane.QUESTION_MESSAGE);
+					if (!reBuildIt) {
+						return;
 					}
 				}
-				else 
-				{
-					UIRegistry.showLocalizedMsg("ExportPanel.PleaseMakeASelection");
+				if (checkLock(map)) {
+					updater = exportToTable(map, rebuildForRow(row) || reBuildIt);
+					if (updater != null) {
+						updater.execute();
+						/*
+						 * (non-Javadoc)
+						 *
+						 * @see java.lang.Runnable#run()
+						 */
+						SwingUtilities.invokeLater(() -> {
+							updateBtnStates();
+							((CardLayout) progPane.getLayout())
+									.last(progPane);
+						});
+					}
 				}
+			} else {
+				UIRegistry.showLocalizedMsg("ExportPanel.PleaseMakeASelection");
 			}
-    	});
+		});
 
-    	setupWebPortalBtn = UIHelper.createButton(UIRegistry.getResourceString("ExportPanel.SetupWebPortalBtnTitle"));
+		setupWebPortalBtn = UIHelper.createButton(UIRegistry.getResourceString("ExportPanel.SetupWebPortalBtnTitle"));
 		setupWebPortalBtn.setToolTipText(UIRegistry.getResourceString("ExportPanel.SetupWebPortalBtnHint"));
     	setupWebPortalBtn.addActionListener(new ActionListener() {
 			@Override
@@ -338,60 +1077,58 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
                                 getCollectionName(),
                                 getAttachmentURL());
 
-			        	try {
-			        		bsi.connect();
-			        	} catch (SQLException sqex) {
-			                UsageTracker.incrHandledUsageCount();
-			                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ExportPanel.class, sqex);	
-			                return;
-			        	}
-			        	new javax.swing.SwingWorker<Boolean, Object>() {
-
-			        		Boolean success = false;
-							/* (non-Javadoc)
-							 * @see javax.swing.SwingWorker#doInBackground()
-							 */
-							@Override
-							protected Boolean doInBackground() throws Exception {
-								success = bsi.index(ExportPanel.this);
-								return success;
-							}
-
-							/* (non-Javadoc)
-							 * @see javax.swing.SwingWorker#done()
-							 */
-							@Override
-							protected void done() {
-								if (!success)
-								{
-									String msg = getResourceString("ExportPanel.SetupWebFailMsg");
-									UIRegistry.displayErrorDlg(msg);
-									ExportPanel.this.done(-1);
-								} else
-								{
-									ExportPanel.this.done(1);
-								}
-							}
-			        		
-			        	}.execute();
-			        	
-						SwingUtilities.invokeLater(new Runnable() {
-							@Override
-							public void run() {
-								((CardLayout) progPane.getLayout())
-										.last(progPane);
-							}
-
-						});
+					try {
+						bsi.connect();
+					} catch (SQLException sqex) {
+						UsageTracker.incrHandledUsageCount();
+						edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ExportPanel.class, sqex);
+						return;
 					}
-				} else {
-					UIRegistry
-							.showLocalizedMsg("ExportPanel.PleaseMakeASelection");
+					new javax.swing.SwingWorker<Boolean, Object>() {
+
+						Boolean success = false;
+
+						/* (non-Javadoc)
+						 * @see javax.swing.SwingWorker#doInBackground()
+						 */
+						@Override
+						protected Boolean doInBackground() throws Exception {
+							success = bsi.index(ExportPanel.this);
+							return success;
+						}
+
+						/* (non-Javadoc)
+						 * @see javax.swing.SwingWorker#done()
+						 */
+						@Override
+						protected void done() {
+							if (!success) {
+								String msg = getResourceString("ExportPanel.SetupWebFailMsg");
+								UIRegistry.displayErrorDlg(msg);
+								ExportPanel.this.done(-1);
+							} else {
+								ExportPanel.this.done(1);
+							}
+						}
+
+					}.execute();
+
+					SwingUtilities.invokeLater(new Runnable() {
+						@Override
+						public void run() {
+							((CardLayout) progPane.getLayout())
+									.last(progPane);
+						}
+
+					});
 				}
+			} else {
+				UIRegistry
+						.showLocalizedMsg("ExportPanel.PleaseMakeASelection");
 			}
 		});
-    	//disabling for jar release for WB RecordSet-to-Dataset fix.
-    	//setupWebPortalBtn.setVisible(false);
+		//disabling for jar release for WB RecordSet-to-Dataset fix.
+		//setupWebPortalBtn.setVisible(false);
 
     	this.exportToTabDelimBtn = UIHelper.createButton(UIRegistry.getResourceString("ExportPanel.ExportTabDelimTxt"));
     	this.exportToTabDelimBtn.setToolTipText(UIRegistry.getResourceString("ExportPanel.ExportTabDelimTxtHint"));
@@ -438,129 +1175,128 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 					SpExportSchemaMapping map = maps.get(row);
 					SpQuery q = map.getMappings().iterator().next()
 						.getQueryField().getQuery();
-					Vector<QBDataSourceListenerIFace> ls = new Vector<QBDataSourceListenerIFace>();
-					ls.add(ExportPanel.this);
-					exportToDbTblBtn.setEnabled(false);
-					exportToTabDelimBtn.setEnabled(false);
-					dumper = ExportToMySQLDB.exportRowsToTabDelimitedText(file, null, getCacheTableName(q.getName()), ls);
-					SwingUtilities.invokeLater(new Runnable() {
+				Vector<QBDataSourceListenerIFace> ls = new Vector<QBDataSourceListenerIFace>();
+				ls.add(ExportPanel.this);
+				exportToDbTblBtn.setEnabled(false);
+				exportToTabDelimBtn.setEnabled(false);
+				dumper = ExportToMySQLDB.exportRowsToTabDelimitedText(file, null, getCacheTableName(q.getName()), ls);
+				SwingUtilities.invokeLater(new Runnable() {
 
-						/* (non-Javadoc)
-						 * @see java.lang.Runnable#run()
-						 */
-						@Override
-						public void run()
-						{
-							((CardLayout )progPane.getLayout()).last(progPane);
-						}
-						
-					});
-					dumper.execute();
-				}
-				else 
-				{
-					UIRegistry.showLocalizedMsg("ExportPanel.PleaseMakeASelection");
-				}
+					/* (non-Javadoc)
+					 * @see java.lang.Runnable#run()
+					 */
+					@Override
+					public void run() {
+						((CardLayout) progPane.getLayout()).last(progPane);
+					}
+
+				});
+				dumper.execute();
+			} else {
+				UIRegistry.showLocalizedMsg("ExportPanel.PleaseMakeASelection");
 			}
-    	});
+		});
 
-    	showIPTSQLBtn = UIHelper.createButton(UIRegistry.getResourceString("ExportPanel.ShowSQLBtn"));
-    	showIPTSQLBtn.setToolTipText(UIRegistry.getResourceString("ExportPanel.ShowSQLBtnTT"));
-    	showIPTSQLBtn.addActionListener(new ActionListener() {
+		showIPTSQLBtn = UIHelper.createButton(UIRegistry.getResourceString("ExportPanel.ShowSQLBtn"));
+		showIPTSQLBtn.setToolTipText(UIRegistry.getResourceString("ExportPanel.ShowSQLBtnTT"));
+		showIPTSQLBtn.addActionListener(arg0 -> {
+			int row = mapsDisplay.getSelectedRow();
+			if (row != -1) {
+				if (!isBuiltForRow(row)) {
+					UIRegistry.displayInfoMsgDlgLocalized("ExportPanel.NoSQLForRebuild");
+				} else {
+					JPanel panel = new JPanel(new BorderLayout());
+
+					SpExportSchemaMapping map = maps.get(row);
+					String iptSQL = ExportToMySQLDB
+							.getSelectForIPTDBSrc(getCacheTableName(map.getMappingName()));
+					JTextArea ta = new JTextArea(iptSQL);
+					ta.setLineWrap(true);
+					ta.setColumns(60);
+					ta.setRows(10);
+					ta.selectAll();
+					JScrollPane scrp = new JScrollPane(ta);
+					panel.add(scrp, BorderLayout.CENTER);
+					panel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+					CustomDialog cd = new CustomDialog((Frame) UIRegistry
+							.getTopWindow(), UIRegistry
+							.getResourceString("ExportPanel.SQLTitle"),
+							true, CustomDialog.OK_BTN, panel);
+					cd.setOkLabel(UIRegistry.getResourceString("CLOSE"));
+					UIHelper.centerAndShow(cd);
+				}
+			} else {
+				UIRegistry.showLocalizedMsg("ExportPanel.PleaseMakeASelection");
+			}
+		});
+
+		createDwcaBtn = UIHelper.createButton(UIRegistry.getResourceString("ExportPanel.ToDwc"));
+		createDwcaBtn.setToolTipText(UIRegistry.getResourceString("ExportPanel.export_to_dwc_archive"));
+		createDwcaBtn.addActionListener(arg0 -> {
+			int row = mapsDisplay.getSelectedRow();
+			SpExportSchemaMapping map = maps.get(row);
+			createDwcaBtn.setEnabled(false);
+			//buildDwCArchive(map);
+			buildStinkyDwCArchive(map, null);
+		});
+
+		publishToGbifBtn = UIHelper.createButton(UIRegistry.getResourceString("ExportPanel.ToDwcToGbif"));
+		publishToGbifBtn.setToolTipText(UIRegistry.getResourceString("ExportPanel.to_gbif"));
+		publishToGbifBtn.addActionListener(arg0 -> {
+			int row = mapsDisplay.getSelectedRow();
+			SpExportSchemaMapping map = maps.get(row);
+			publishToGbifBtn.setEnabled(false);
+			buildDwCArchive(map);
+		});
+		publishToGbifBtn.setEnabled(false);
+
+		helpBtn = createButton(getResourceString("HELP"));
+		HelpMgr.registerComponent(helpBtn, "schema_tool");
+
+		PanelBuilder btnPB = new PanelBuilder(new FormLayout("p,f:p:g,4px,p,8px,p,8px,p,8px,p,8px,p,8px,p,8px,p", "p"));
+		quitBtn = UIHelper.createButton("Quit");
+
+		btnPB.add(helpBtn, cc.xy(1, 1));
+		btnPB.add(createDwcaBtn, cc.xy(4, 1));
+		btnPB.add(publishToGbifBtn, cc.xy(6, 1));
+		btnPB.add(showIPTSQLBtn, cc.xy(8, 1));
+		btnPB.add(exportToTabDelimBtn, cc.xy(10, 1));
+		btnPB.add(exportToDbTblBtn, cc.xy(12, 1));
+		btnPB.add(setupWebPortalBtn, cc.xy(14, 1));
+		btnPB.add(quitBtn, cc.xy(16, 1));
+
+		status = new JLabel(UIRegistry.getResourceString("ExportPanel.InitialStatus"));
+		status.setFont(status.getFont().deriveFont(Font.ITALIC));
+		Dimension pref = status.getPreferredSize();
+		pref.setSize(Math.max(300, pref.getWidth()), pref.getHeight());
+		status.setPreferredSize(pref);
+
+
+		progPane = new JPanel(new CardLayout());
+		progPane.add(new JPanel(), "blank");
+
+		prog = new JProgressBar();
+		progPane.add(prog, "prog");
+
+
+		PanelBuilder pbb = new PanelBuilder(new FormLayout("f:p:g,8px,f:p:g", "p, 8px, p"));
+		pbb.add(status, cc.xy(1, 1));
+		pbb.add(progPane, cc.xy(3, 1));
+		pbb.add(btnPB.getPanel(), cc.xyw(1, 3, 3));
+
+		//prog.setVisible(false);
+		add(pbb.getPanel(), BorderLayout.SOUTH);
+
+		setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+
+		HelpMgr.setAppDefHelpId("schema_tool");
+
+		quitBtn.addActionListener(e -> SwingUtilities.invokeLater(new Runnable() {
 			@Override
-			public void actionPerformed(ActionEvent arg0)
-			{
-				int row = mapsDisplay.getSelectedRow();
-				if (row != -1)
-				{
-					if (!isBuiltForRow(row))
-					{
-						UIRegistry.displayInfoMsgDlgLocalized("ExportPanel.NoSQLForRebuild");
-					}
-					else
-					{
-					    JPanel panel = new JPanel(new BorderLayout());
-					    
-						SpExportSchemaMapping map = maps.get(row);
-						String iptSQL = ExportToMySQLDB
-								.getSelectForIPTDBSrc(getCacheTableName(map.getMappingName()));
-						JTextArea ta = new JTextArea(iptSQL);
-						ta.setLineWrap(true);
-						ta.setColumns(60);
-						ta.setRows(10);
-						ta.selectAll();
-						JScrollPane scrp = new JScrollPane(ta);
-						panel.add(scrp, BorderLayout.CENTER);
-						panel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
-						CustomDialog cd = new CustomDialog((Frame) UIRegistry
-								.getTopWindow(), UIRegistry
-								.getResourceString("ExportPanel.SQLTitle"),
-								true, CustomDialog.OK_BTN, panel);
-						cd.setOkLabel(UIRegistry.getResourceString("CLOSE"));
-						UIHelper.centerAndShow(cd);
-					}
-				}
-				else 
-				{
-					UIRegistry.showLocalizedMsg("ExportPanel.PleaseMakeASelection");
-				}
+			public void run() {
+				shutdown();
 			}
-    	});
-    	
-        helpBtn = createButton(getResourceString("HELP"));
-        HelpMgr.registerComponent(helpBtn, "schema_tool");
-    	
-        PanelBuilder btnPB = new PanelBuilder(new FormLayout("p,f:p:g,4px,p,8px,p,8px,p,8px,p,8px,p", "p"));
-        quitBtn = UIHelper.createButton("Quit");
-        
-        btnPB.add(helpBtn,             cc.xy(1, 1));
-        btnPB.add(showIPTSQLBtn,       cc.xy(4, 1));
-        btnPB.add(exportToTabDelimBtn, cc.xy(6, 1));
-        btnPB.add(exportToDbTblBtn,    cc.xy(8, 1));
-        btnPB.add(setupWebPortalBtn,   cc.xy(10, 1));
-        btnPB.add(quitBtn,             cc.xy(12, 1));
-        
-    	status = new JLabel(UIRegistry.getResourceString("ExportPanel.InitialStatus")); 
-    	status.setFont(status.getFont().deriveFont(Font.ITALIC));
-    	Dimension pref = status.getPreferredSize();
-    	pref.setSize(Math.max(300, pref.getWidth()), pref.getHeight());
-    	status.setPreferredSize(pref);
-    	
-    	
-    	progPane = new JPanel(new CardLayout());
-    	progPane.add(new JPanel(), "blank");
-    	
-    	prog = new JProgressBar();
-    	progPane.add(prog, "prog");
-    	
-    	
-        PanelBuilder pbb = new PanelBuilder(new FormLayout("f:p:g,8px,f:p:g", "p, 8px, p"));
-        pbb.add(status,           cc.xy(1, 1));
-        pbb.add(progPane,         cc.xy(3, 1));
-        pbb.add(btnPB.getPanel(), cc.xyw(1, 3, 3));
-    	
-    	//prog.setVisible(false);
-    	add(pbb.getPanel(), BorderLayout.SOUTH);
-
-    	setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
-    	
-        HelpMgr.setAppDefHelpId("schema_tool");
-        
-        quitBtn.addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                SwingUtilities.invokeLater(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        shutdown();
-                    }
-                });
-            }
-        });
+		}));
 	}
 	
     /**
@@ -671,6 +1407,9 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
         {
             log.error(ex);
         }
+
+        AppPreferences.shutdownAllPrefs();
+
         DataProviderFactory.getInstance().shutdown();
         DBConnection.shutdown();
         DBConnection.shutdownFinalConnection(true, false); // true means System.exit
@@ -1484,7 +2223,16 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 		});
 	}
 
-	
+	@Override
+	public void anotherRow() {
+
+	}
+
+	@Override
+	public void fyi(String info) {
+
+	}
+
 	/* (non-Javadoc)
 	 * @see edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace#isListeningClosely()
 	 */
@@ -1562,28 +2310,26 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 	}
 
 	/**
-	 * 
+	 *
+	 * @param mapToRefresh
 	 */
-	protected void refreshUpdatedMapDisplay(int mapToRefresh)
-	{
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        try
-        {
-        	SpExportSchemaMapping newMap = session.get(SpExportSchemaMapping.class,	maps.get(mapToRefresh).getId());
+	protected void refreshUpdatedMapDisplay(int mapToRefresh) {
+		DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+		try {
+			SpExportSchemaMapping newMap = session.get(SpExportSchemaMapping.class, maps.get(mapToRefresh).getId());
 			newMap.forceLoad();
 			newMap.getMappings().iterator().next().getQueryField().getQuery().forceLoad();
-			if (newMap.getSpExportSchema() != null)
-			{
-				newMap.getSpExportSchema().forceLoad();
+			if (newMap.getSpExportSchemas() != null) {
+				for (SpExportSchema schema : newMap.getSpExportSchemas()) {
+					schema.forceLoad();
+				}
 			}
-	        maps.set(mapToRefresh, newMap);
-       }
-        finally
-        {
-        	session.close();
-        }
-        mapsModel.setValueAt(maps.get(mapToRefresh).getTimestampExported().toString(), mapToRefresh, 1);
-        mapsModel.setValueAt(UIRegistry.getResourceString("ExportPanel.Uptodate"), mapToRefresh, 2);
+			maps.set(mapToRefresh, newMap);
+		} finally {
+			session.close();
+		}
+		mapsModel.setValueAt(maps.get(mapToRefresh).getTimestampExported().toString(), mapToRefresh, 1);
+		mapsModel.setValueAt(UIRegistry.getResourceString("ExportPanel.Uptodate"), mapToRefresh, 2);
 	}
 	
 	/* (non-Javadoc)

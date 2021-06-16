@@ -120,7 +120,7 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
                     Element fileElement = (Element) i.next();
                     String  type        = getAttr(fileElement, "type", "display");
                     String  name        = getAttr(fileElement, "name", null);
-                    boolean isDisplay   = type.equals("display");
+                    boolean isDisplay   = type.equals("display") || type.equals("gbif");
                     
                     DialogInfo di = new DialogInfo(isDisplay ? null : getAttr(fileElement, "viewset", null),
                                                     getAttr(fileElement, "view", null),

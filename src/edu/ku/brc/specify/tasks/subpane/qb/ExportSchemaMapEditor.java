@@ -15,6 +15,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.Vector;
+import java.util.Set;
+import java.util.HashSet;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -62,7 +64,7 @@ import edu.ku.brc.ui.UIRegistry;
 @SuppressWarnings("serial")
 public class ExportSchemaMapEditor extends CustomDialog
 {
-	protected SpExportSchema exportSchema = null;
+	protected Set<SpExportSchema> exportSchemas = null;
 	protected SpExportSchemaMapping schemaMapping = null;
 	protected JPanel workPane = null;
 	protected JPanel backgroundPane;
@@ -91,7 +93,7 @@ public class ExportSchemaMapEditor extends CustomDialog
 	
 	protected QueryBldrPane buildQb(final SpQuery query) throws QueryTask.QueryBuilderContextException
 	{
-        return new QueryBldrPane(query.getName(), task, query, false, exportSchema, schemaMapping);
+        return new QueryBldrPane(query.getName(), task, query, false, exportSchemas, schemaMapping);
 	}
 
 	/**
@@ -105,7 +107,7 @@ public class ExportSchemaMapEditor extends CustomDialog
     	SpQuery query = new SpQuery();
         query.initialize();
         //XXX testing
-        query.setName(exportSchema == null ? "nada" : exportSchema.getSchemaName());
+        query.setName(exportSchemas == null ? "nada" : exportSchemas.iterator().next().getSchemaName());
         query.setNamed(false);
         query.setContextTableId((short)tableInfo.getTableId());
         query.setContextName(tableInfo.getShortClassName());
@@ -167,31 +169,27 @@ public class ExportSchemaMapEditor extends CustomDialog
 	 * 
 	 * Loads mapping into the editor, closing currently open mapping if necessary.
 	 */
-	protected void editMapping(final SpExportSchemaMapping mapping)
-	{
-		if (closeCurrentMapping())
-		{
+	protected void editMapping(final SpExportSchemaMapping mapping) {
+		if (closeCurrentMapping()) {
 			DataProviderSessionIFace session = DataProviderFactory
 					.getInstance().createSession();
-			try
-			{
-				exportSchema = mapping.getSpExportSchema();
-				session.attach(exportSchema);
-				exportSchema.forceLoad();
+			try {
+				exportSchemas = mapping.getSpExportSchemas();
+				for (SpExportSchema exportSchema : exportSchemas) {
+					session.attach(exportSchema);
+					exportSchema.forceLoad();
+				}
 				schemaMapping = mapping;
-				if (schemaMapping.getMappings().size() == 0)
-				{
+				if (schemaMapping.getMappings().size() == 0) {
 					setupQB(createNewQueryDataObj());
-				} else
-				{
+				} else {
 					SpQuery query = schemaMapping.getMappings().iterator()
 							.next().getQueryField().getQuery();
 					session.attach(query);
 					query.forceLoad();
 					setupQB(query);
 				}
-			} finally
-			{
+			} finally {
 				session.close();
 			}
 		}
@@ -230,16 +228,14 @@ public class ExportSchemaMapEditor extends CustomDialog
 	 * 
 	 * Prompts to choose ExportSchema and opens new mapping, closing currently open mapping if necessary.
 	 */
-	protected void addMapping()
-	{
-		SpExportSchema selectedSchema = chooseExportSchema();
-		if (closeCurrentMapping())
-		{
-			exportSchema = selectedSchema;
-	       	schemaMapping = new SpExportSchemaMapping();
-	       	schemaMapping.initialize();
-	       	schemaMapping.setSpExportSchema(exportSchema);
-	       	setupQB(createNewQueryDataObj());
+	protected void addMapping() {
+		List<SpExportSchema> selectedSchemas = chooseExportSchema();
+		if (closeCurrentMapping()) {
+			exportSchemas = new HashSet<>(selectedSchemas);
+			schemaMapping = new SpExportSchemaMapping();
+			schemaMapping.initialize();
+			schemaMapping.setSpExportSchemas(exportSchemas);
+			setupQB(createNewQueryDataObj());
 		}
 	}
 
@@ -265,12 +261,12 @@ public class ExportSchemaMapEditor extends CustomDialog
 	/**
 	 * @return prompts user to choose from list of existing export schemas.
 	 */
-	protected SpExportSchema chooseExportSchema()
+	protected List<SpExportSchema> chooseExportSchema()
 	{
 		ChooseFromListDlg<SpExportSchema> dlg = new ChooseFromListDlg<SpExportSchema>((Frame )UIRegistry.getTopWindow(),
 				UIRegistry.getResourceString("ExportSchemaMapEditor.ChooseSchemaTitle"), getExportSchemas());		
 		UIHelper.centerAndShow(dlg);
-		return dlg.getSelectedObject();
+		return dlg.getSelectedObjects();
 	}
 	
 	/**
@@ -312,6 +308,7 @@ public class ExportSchemaMapEditor extends CustomDialog
 		PanelBuilder rightSideBldr = new PanelBuilder(new FormLayout("f:p:g", "5dlu, p, 2dlu, f:p, 5dlu, p, 2dlu, f:p:g"));
 		rightSideBldr.add(UIHelper.createLabel(getResourceString("ExportSchemaMapEdit.ExportSchemaTitle")), cc.xy(1, 2));
 		
+		SpExportSchema exportSchema = exportSchemas.iterator().next();
 		String schemaText = exportSchema.getSchemaName();
 		if (StringUtils.isNotBlank(exportSchema.getSchemaVersion()))
 		{
