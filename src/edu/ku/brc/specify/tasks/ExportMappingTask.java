@@ -544,32 +544,27 @@ public class ExportMappingTask extends QueryTask
 	 * Prompts to choose ExportSchema and opens new mapping, closing currently
 	 * open mapping if necessary.
 	 */
-	protected void addMapping()
-	{
-		if (queryBldrPane == null || queryBldrPane.aboutToShutdown())
-		{
-			DBTableInfo baseTable = chooseBaseTable();
-			if (baseTable != null) {
-				List<SpExportSchema> selectedSchemas = chooseExportSchema();
-				if (selectedSchemas != null) {
-					SpExportSchema selectedSchema = selectedSchemas.get(0);
-
-					if (selectedSchema.getSpExportSchemaId() == null) {
-						exportSchema = null;
-					} else {
-						exportSchema = selectedSchema;
-					}
-					schemaMapping = new SpExportSchemaMapping();
-					schemaMapping.initialize();
-					schemaMapping.setSpExportSchema(exportSchema);
-					SpQuery query = createNewQueryDataObj(baseTable);
-					if (query != null) {
-						addingMapping.set(true);
-						try {
-							editQuery(query);
-						} finally {
-							addingMapping.set(false);
-						}
+	protected void addMapping() {
+		if (queryBldrPane == null || queryBldrPane.aboutToShutdown()) {
+			List<SpExportSchema> selectedSchemas = chooseExportSchema();
+			if (exportSchemas == null) {
+				exportSchemas = new HashSet<>();
+			}
+			exportSchemas.clear();
+			if (selectedSchemas != null) {
+				for (SpExportSchema selectedSchema : selectedSchemas) {
+					exportSchemas.add(selectedSchema);
+				}
+				schemaMapping = new SpExportSchemaMapping();
+				schemaMapping.initialize();
+				schemaMapping.setSpExportSchemas(exportSchemas);
+				SpQuery query = createNewQueryDataObj();
+				if (query != null) {
+					addingMapping.set(true);
+					try {
+						editQuery(query);
+					} finally {
+						addingMapping.set(false);
 					}
 				}
 			}

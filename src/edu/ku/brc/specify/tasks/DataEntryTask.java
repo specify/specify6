@@ -1906,7 +1906,10 @@ public class DataEntryTask extends BaseTask
                 sql = "select distinct collectionobjectid from preparation p inner join recordsetitem rsi on rsi.recordid = p.preparationid" +
                         " where rsi.recordsetid = " + rs.getRecordSetId();
             } else {
-                List<Integer> recIds = RecordSet.getIdList(null, rs.getItems());
+                List<Integer> recIds = new ArrayList<>();
+                for (RecordSetItemIFace item : rs.getItems()) {
+                    recIds.add(item.getRecordId());
+                }
                 String recIdStr = recIds.toString().replace("[", "").replace("]", "");
                 sql = "select distinct collectionobjectid from preparation where preparationid in(" + recIdStr + ")";
             }
