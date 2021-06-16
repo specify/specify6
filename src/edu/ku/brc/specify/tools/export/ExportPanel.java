@@ -4,68 +4,6 @@
 package edu.ku.brc.specify.tools.export;
 
 
-import static edu.ku.brc.specify.prefs.S2nPrefsPanel.postFile;
-import static edu.ku.brc.ui.UIHelper.createButton;
-import static edu.ku.brc.ui.UIHelper.createLabel;
-import static edu.ku.brc.ui.UIRegistry.getResourceString;
-
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Frame;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.FileOutputStream;
-import java.nio.charset.Charset;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
-
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextArea;
-import javax.swing.ListSelectionModel;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.table.DefaultTableModel;
-
-import edu.ku.brc.specify.datamodel.*;
-import edu.ku.brc.specify.datamodel.Collection;
-import edu.ku.brc.specify.plugins.morphbank.DarwinCoreArchive;
-import edu.ku.brc.specify.plugins.morphbank.DarwinCoreArchiveField;
-import edu.ku.brc.specify.prefs.S2nPrefsPanel;
-import edu.ku.brc.specify.tasks.subpane.SymbiotaPane;
-import edu.ku.brc.specify.tools.gbifregistration.GbifSandbox;
-import edu.ku.brc.ui.*;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.apache.poi.hssf.record.formula.functions.Time;
-import org.apache.tools.ant.util.FileUtils;
-import org.dom4j.Element;
-
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -91,25 +29,31 @@ import edu.ku.brc.helpers.UIFileFilter;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
-import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.*;
+import edu.ku.brc.specify.datamodel.Collection;
+import edu.ku.brc.specify.plugins.morphbank.DarwinCoreArchive;
+import edu.ku.brc.specify.plugins.morphbank.DarwinCoreArchiveField;
+import edu.ku.brc.specify.plugins.morphbank.DarwinCoreArchiveFile;
+import edu.ku.brc.specify.prefs.S2nPrefsPanel;
 import edu.ku.brc.specify.tasks.ExportMappingTask;
 import edu.ku.brc.specify.tasks.QueryTask;
 import edu.ku.brc.specify.tasks.StartUpTask;
+import edu.ku.brc.specify.tasks.subpane.SymbiotaPane;
 import edu.ku.brc.specify.tasks.subpane.qb.*;
+import edu.ku.brc.specify.tools.gbifregistration.GbifSandbox;
 import edu.ku.brc.specify.tools.webportal.BuildSearchIndex2;
 import edu.ku.brc.specify.ui.AppBase;
 import edu.ku.brc.specify.ui.HelpMgr;
+import edu.ku.brc.ui.*;
 import edu.ku.brc.ui.IconManager.IconSize;
 import edu.ku.brc.util.AttachmentManagerIface;
 import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.Pair;
 import edu.ku.brc.util.WebStoreAttachmentMgr;
-import edu.ku.brc.specify.plugins.morphbank.DarwinCoreArchiveFile;
-import edu.ku.brc.ui.ChooseFromListDlg;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.tools.ant.util.FileUtils;
+import org.dom4j.Element;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -120,12 +64,18 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.charset.Charset;
 import java.sql.*;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import static edu.ku.brc.ui.UIHelper.createButton;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
@@ -1126,7 +1076,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 				UIRegistry
 						.showLocalizedMsg("ExportPanel.PleaseMakeASelection");
 			}
-		});
+		}});
 		//disabling for jar release for WB RecordSet-to-Dataset fix.
 		//setupWebPortalBtn.setVisible(false);
 
@@ -1195,7 +1145,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 			} else {
 				UIRegistry.showLocalizedMsg("ExportPanel.PleaseMakeASelection");
 			}
-		});
+		}});
 
 		showIPTSQLBtn = UIHelper.createButton(UIRegistry.getResourceString("ExportPanel.ShowSQLBtn"));
 		showIPTSQLBtn.setToolTipText(UIRegistry.getResourceString("ExportPanel.ShowSQLBtnTT"));

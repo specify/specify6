@@ -26,27 +26,21 @@ import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
-import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.ProxyHelper;
-import edu.ku.brc.specify.Specify;
+import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
-import org.apache.http.client.HttpClient;
+import org.apache.commons.lang.StringUtils;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.util.EntityUtils;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.NameValuePair;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.client.params.HttpClientParams;
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import javax.swing.*;
@@ -55,7 +49,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
 
@@ -429,7 +422,7 @@ public class StatsTrackerTask extends BaseTask
             count = BasicSQLUtils.getCount(sql);
             if (count != null)
             {
-                statsList.add(new BasicNameValuePair(statName, Integer.toString(count)));
+                statsList.add(new BasicNameValuePair(statName, count.toString()));
             } else
             {
                 return 0L;
