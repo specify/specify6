@@ -23,6 +23,7 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
+import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.validation.ValComboBox;
 import edu.ku.brc.specify.datamodel.Division;
@@ -42,9 +43,6 @@ import java.awt.*;
 public class ExchangeOutBusRules extends BaseBusRules
 {
 
-    /**
-     * @param dataClasses
-     */
     public ExchangeOutBusRules()
     {
         super(ExchangeOut.class);
@@ -96,6 +94,27 @@ public class ExchangeOutBusRules extends BaseBusRules
             JTextField tf = (JTextField)divComp;
             tf.setText(exchangeOut.getDivision().getName());
         }
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.BaseBusRules#processBusinessRules(java.lang.Object)
+     */
+    @Override
+    public STATUS processBusinessRules(Object dataObj)
+    {
+        reasonList.clear();
+
+        if (!(dataObj instanceof ExchangeOut))
+        {
+            return STATUS.Error;
+        }
+
+        STATUS duplicateNumberStatus = isCheckDuplicateNumberOK("exchangeOutNumber",
+                (FormDataObjIFace)dataObj,
+                ExchangeOut.class,
+                "exchangeOutId");
+
+        return duplicateNumberStatus;
     }
 
 }
