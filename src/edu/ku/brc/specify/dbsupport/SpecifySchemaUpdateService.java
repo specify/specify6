@@ -669,6 +669,25 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     	return true;
     }
 
+    /**
+     * @return
+     */
+    private boolean fixTypeSearchDefResourcesAfterDeaccUpdate() {
+        String sql = "SELECT a.SpAppResourceID FROM spappresource a inner join spappresourcedata ad on ad.spappresourceid = a.spappresourceid where a.`Name`='TypeSearches' and ad.data not like '%<typesearch tableid=\"163\"%'";
+        List<Object> resources = BasicSQLUtils.querySingleCol(sql);
+        if (resources != null && resources.size() > 0) {
+            String deaccSearch = "<typesearch tableid=\"163\" name=\"Deaccession\" searchfield=\"deaccessionNumber\" displaycols=\"deaccessionNumber\" format=\"%s\" dataobjformatter=\"Deaccession\"/>";
+            String disposalSearch = "<typesearch tableid=\"34\" name=\"Disposal\" searchfield=\"disposalNumber\" displaycols=\"disposalNumber\" format=\"%s\" dataobjformatter=\"Disposal\"/>";
+            for (Object resource : resources) {
+                sql = "UPDATE spappresourcedata SET `data`=replace(`data`, '</typesearches>','" + deaccSearch + "'\n'" + disposalSearch + "</typesearches>') WHERE SpAppResourceID=" + resource;
+                if (1 != BasicSQLUtils.update(sql)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     private boolean fixDnaPrimerFormatterAfterDNAModelUpdate() {
     	String sql = "SELECT a.SpAppResourceID FROM spappresource a inner join spappresourcedata ad on ad.spappresourceid = a.spappresourceid where a.`Name`='DataObjFormatters' and ad.data not like '%name=\"DNAPrimer\"%'";
     	List<Object> resources = BasicSQLUtils.querySingleCol(sql);
@@ -760,7 +779,11 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         }
                     }
                 }
-        	}
+                /**
+                 * @return
+                 */
+                fixTypeSearchDefResourcesAfterDeaccUpdate();
+            }
         	return result;
         } finally {
             if (dbConn != null) dbConn.close();
@@ -2423,23 +2446,25 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     }
                     frame.incOverall();
 
-                    frame.setDesc("Modifying specify system tables.");
-                    sql = " CREATE TABLE `spstynthy` ( " +
-                            "`SpStynthyID` int(11) NOT NULL AUTO_INCREMENT, " +
-                            "`TimestampCreated` datetime NOT NULL, " +
-                            "`TimestampModified` datetime DEFAULT NULL, " +
-                            "`MetaXML` mediumblob DEFAULT NULL, " +
-                            "`UpdatePeriodDays` int(11) NOT NULL DEFAULT 30, " +
-                            "`LastExported` datetime DEFAULT NULL, " +
-                            "`CollectionID` int(11) NOT NULL, " +
-                            "`MappingXML` mediumblob DEFAULT NULL, " +
-                            "`Key1` varchar(256) default null, " +
-                            "`Key2` varchar(256) default null, " +
-                            "PRIMARY KEY (`SpStynthyID`) " +
-                            ") ENGINE=InnoDB AUTO_INCREMENT=277 DEFAULT CHARSET=utf8;";
-                    if (-1 == update(conn, sql)) {
-                        errMsgList.add("update error: " + sql);
-                        return false;
+                    if (!doesTableExist(databaseName, "spstynthy")) {
+                        frame.setDesc("Modifying specify system tables.");
+                        sql = " CREATE TABLE `spstynthy` ( " +
+                                "`SpStynthyID` int(11) NOT NULL AUTO_INCREMENT, " +
+                                "`TimestampCreated` datetime NOT NULL, " +
+                                "`TimestampModified` datetime DEFAULT NULL, " +
+                                "`MetaXML` mediumblob DEFAULT NULL, " +
+                                "`UpdatePeriodDays` int(11) NOT NULL DEFAULT 30, " +
+                                "`LastExported` datetime DEFAULT NULL, " +
+                                "`CollectionID` int(11) NOT NULL, " +
+                                "`MappingXML` mediumblob DEFAULT NULL, " +
+                                "`Key1` varchar(256) default null, " +
+                                "`Key2` varchar(256) default null, " +
+                                "PRIMARY KEY (`SpStynthyID`) " +
+                                ") ENGINE=InnoDB AUTO_INCREMENT=277 DEFAULT CHARSET=utf8;";
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
                     }
                     frame.incOverall();
 
