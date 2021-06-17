@@ -80,7 +80,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 {
     protected static final Logger  log = Logger.getLogger(SpecifySchemaUpdateService.class);
     
-    private final int OVERALL_TOTAL = 74; //the number of incOverall() calls (+1 or +2)
+    private final int OVERALL_TOTAL = 75; //the number of incOverall() calls (+1 or +2)
 
     private static final String TINYINT4 = "TINYINT(4)";
     private static final String INT11    = "INT(11)";
@@ -2500,17 +2500,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     }
                     frame.incOverall();
 
-                    frame.setDesc("Adding index for ExchangeOut.ExchangeOutNumber");
-                    if (!doesIndexExist("exchangeout", "ExchangeOutNumberIDX")) {
-                        sql = "create index ExchangeOutNumberIDX on exchangeout(ExchangeOutNumber)";
-                        if (-1 == update(conn, sql)) {
-                            errMsgList.add("update error: " + sql);
-                            return false;
-                        }
-                    }
-                    frame.incOverall();
-
-                    //-------------------------------------------------------------------------------
+                         //-------------------------------------------------------------------------------
                     //
                     // Schema changes for 2.8
                     //
@@ -2609,13 +2599,33 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     }
                     frame.incOverall();
 
+                    if (!doesIndexExist("exchangeout", "ExchangeOutNumberIDX")) {
+                        frame.setDesc("Adding index for ExchangeOut.ExchangeOutNumber");
+                        sql = "create index ExchangeOutNumberIDX on exchangeout(ExchangeOutNumber)";
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
+                    }
+                    frame.incOverall();
 
-                    //For every update check collations
-
+                    if (getFieldNullability(conn, databaseName, "exchangeout", "ExchangeOutNumber")) {
+                        frame.setDesc("Requiring ExchangeOut.ExchangeOutNumber");
+                        String usql = "update exchangeout set exchangeoutnumber = '' where exchangeoutnumber is null";
+                        if (update(conn, usql) == -1) {
+                            errMsgList.add("update error: " + usql);
+                            return false;
+                        }
+                        usql = "ALTER TABLE " + databaseName +
+                                ".exchangeout CHANGE COLUMN ExchangeOutNumber ExchangeOutNumber varchar(50) NOT NULL";
+                        if (update(conn, usql) == -1) {
+                            errMsgList.add("update error: " + usql);
+                            return false;
+                        }
+                    }
+                    frame.incOverall();
                     frame.setProcess(0, 100);
-
                     return true;
-                    
                 } catch (Exception ex)
                 {
                     ex.printStackTrace();
