@@ -51,7 +51,8 @@ import org.hibernate.annotations.Index;
 @Table(name = "exchangeout")
 @org.hibernate.annotations.Table(appliesTo="exchangeout", indexes =
     {   @Index (name="ExchangeOutdateIDX", columnNames={"ExchangeDate"}),
-		@Index (name="DescriptionOfMaterialIDX2", columnNames={"DescriptionOfMaterial"})
+		@Index (name="DescriptionOfMaterialIDX2", columnNames={"DescriptionOfMaterial"}),
+        @Index (name="ExchangeOutNumberIDX", columnNames={"ExchangeOutNumber"})
     })
 @SuppressWarnings("serial")
 public class ExchangeOut extends DataModelObjBase implements java.io.Serializable, OneToManyProviderIFace {

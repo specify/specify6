@@ -80,7 +80,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 {
     protected static final Logger  log = Logger.getLogger(SpecifySchemaUpdateService.class);
     
-    private final int OVERALL_TOTAL = 73; //the number of incOverall() calls (+1 or +2)
+    private final int OVERALL_TOTAL = 74; //the number of incOverall() calls (+1 or +2)
 
     private static final String TINYINT4 = "TINYINT(4)";
     private static final String INT11    = "INT(11)";
@@ -2497,6 +2497,16 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     if (-1 == update(conn, sql)) {
                         errMsgList.add("update error: " + sql);
                         return false;
+                    }
+                    frame.incOverall();
+
+                    frame.setDesc("Adding index for ExchangeOut.ExchangeOutNumber");
+                    if (!doesIndexExist("exchangeout", "ExchangeOutNumberIDX")) {
+                        sql = "create index ExchangeOutNumberIDX on exchangeout(ExchangeOutNumber)";
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
                     }
                     frame.incOverall();
 
