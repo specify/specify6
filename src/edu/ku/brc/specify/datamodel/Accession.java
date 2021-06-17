@@ -29,10 +29,7 @@ import org.hibernate.annotations.Index;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.util.Calendar;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.Vector;
+import java.util.*;
 
 
 /**
@@ -762,7 +759,79 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
     {
         this.division = division;
     }
-    
+
+    //transient summers...
+    private static String totalCntAmtSql = "select sum(countAmt) from preparation p inner join collectionobject co on co.collectionobjectid = p.collectionobjectid where accessionid = ";
+    private static String coCountSql = "select count(*) from collectionobject where accessionid = ";
+    private static String prepCountSql = "select count(*) from preparation p inner join collectionobject co on co.collectionobjectid = p.collectionobjectid where accessionid = ";
+    @Transient
+    public Integer getTotalCountAmt() { return getACount(this.getId(), totalCntAmtSql);}
+
+    @Transient
+    public Integer getActualTotalCountAmt() { return getPrepUndisposedTotalCount(this.getId()); }
+
+    @Transient
+    public Integer getCollectionObjectCount() { return getACount(this.getId(), coCountSql); }
+
+    @Transient
+    public Integer getPreparationCount() { return getACount(this.getId(), prepCountSql); }
+
+    private static Integer getACount(Integer id, String sql) {
+        Integer result = null;
+        if (id != null) {
+            result = BasicSQLUtils.getCountAsInt(sql + id);
+        }
+        return result;
+    }
+
+    private static Integer getPrepUndisposedTotalCount(Integer id) {
+        //this could be seriously slow...
+        Integer result = null;
+        if (id != null) {
+            Vector<Object> prepIds = BasicSQLUtils.querySingleCol("select preparationid from preparation p inner join collectionobject co on co.collectionobjectid = p.collectionobjectid where accessionid = " + id);
+            int runningTotal = 0;
+            boolean nonNull = false;
+            for (Object prepId : prepIds) {
+                Object[] prepObj = new Object[1];
+                prepObj[0] = prepId;
+                Object prepCnt = Preparation.computeActualCountAmt(prepObj);
+                if (prepCnt != null) {
+                    runningTotal = runningTotal + Integer.valueOf(prepCnt.toString());
+                    nonNull = true;
+                }
+            }
+            if (nonNull) {
+                result = runningTotal;
+            }
+        }
+        return result;
+    }
+
+    @Transient
+    public static List<String> getQueryableTransientFields() {
+        List<String> result = new ArrayList<>();
+        result.add("ActualTotalCountAmt");
+        result.add("TotalCountAmt");
+        result.add("CollectionObjectCount");
+        result.add("PreparationCount");
+        return result;
+    }
+
+    public static Object getQueryableTransientFieldValue(String fldName, Object[] vals) {
+        if (fldName.equalsIgnoreCase("ActualTotalCountAmt")) {
+            return getPrepUndisposedTotalCount((Integer)vals[0]);
+        } else if (fldName.equalsIgnoreCase("TotalCountAmt")) {
+            return getACount((Integer)vals[0], totalCntAmtSql);
+        }  else if (fldName.equalsIgnoreCase("CollectionObjectCount")) {
+            return getACount((Integer) vals[0], coCountSql);
+        } else if (fldName.equalsIgnoreCase("PreparationCount")) {
+            return getACount((Integer) vals[0], prepCountSql);
+        } else {
+            log.error("Unknown calculated field: " + fldName);
+            return null;
+        }
+    }
+
     //---------------------------------------------------------------------------
     // Overrides DataModelObjBase
     //---------------------------------------------------------------------------
