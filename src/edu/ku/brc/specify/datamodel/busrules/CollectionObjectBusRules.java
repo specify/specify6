@@ -1236,13 +1236,21 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules  imple
             if (dobj instanceof CollectionObject && dobj.getId() != null) {
                 return ((CollectionObject)dobj).getGuid();
             }
-        } else if (dobj instanceof Determination || dobj instanceof Taxon){
-            Taxon tx = dobj instanceof Determination
-                    ? ((Determination)dobj).getPreferredTaxon()
-                    : (Taxon)dobj;
-            if (tx.getIsAccepted()) {
+        } else if (cmdAction.isAction("SpiceDigTx")) {
+            Taxon tx = null;
+            if (dobj instanceof CollectionObject) {
+                Determination currDet = ((CollectionObject)dobj).getCurrentDetermination();
+                if (currDet != null) {
+                    tx = currDet.getPreferredTaxon();
+                }
+            } else if (dobj instanceof Determination) {
+                tx = ((Determination) dobj).getPreferredTaxon();
+            } else if (dobj instanceof Taxon) {
+                tx = (Taxon) dobj;
+            }
+            if (tx != null && tx.getIsAccepted()) {
                 return tx.getFullName();
-            } else if (tx.getAcceptedTaxon() != null) {
+            } else if (tx != null && tx.getAcceptedTaxon() != null) {
                 return tx.getAcceptedTaxon().getFullName();
             }
         }
@@ -1266,7 +1274,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules  imple
             }
             String spiceArg = getSpiceDigArg(cmdAction, dobj);
             if (spiceArg != null) {
-                String url = "https://broker.spcoco.org/api/v1/" + (cmdAction.isAction("SpiceDigOcc") ? "occ/" : "name/") + spiceArg;
+                String url = "https://broker.spcoco.org/api/v1/" + (cmdAction.isAction("SpiceDigOcc") ? "occ/" : "name/") + spiceArg.replaceAll(" ", "%20");
                 try {
                     URI uri = new URL(url).toURI();
                     Desktop.getDesktop().browse(uri);
