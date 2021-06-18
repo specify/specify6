@@ -19,9 +19,7 @@
  */
 package edu.ku.brc.specify.datamodel.busrules;
 
-import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.af.core.ContextMgr;
-import edu.ku.brc.af.core.UsageTracker;
+import edu.ku.brc.af.core.*;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
@@ -57,6 +55,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.net.URI;
+import java.net.URL;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Vector;
@@ -71,7 +71,7 @@ import static edu.ku.brc.ui.UIRegistry.*;
  * <p>
  * Created Date: Jan 24, 2007
  */
-public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules {
+public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules  implements CommandListener {
     private static final String CATNUMNAME = "catalogNumber";
 
     public static final int MAXSERIESSIZE = 500;
@@ -109,6 +109,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules {
      */
     public CollectionObjectBusRules() {
         super(CollectionObject.class);
+        CommandDispatcher.register("DataEntry", this);
     }
 
     /* (non-Javadoc)
@@ -1221,6 +1222,60 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules {
                     }
                 }
             }
+        }
+    }
+
+    /**
+     *
+     * @param cmdAction
+     * @param dobj
+     * @return
+     */
+    private String getSpiceDigArg(CommandAction cmdAction, DataModelObjBase dobj) {
+        if (cmdAction.isAction("SpiceDigOcc")) {
+            if (dobj instanceof CollectionObject && dobj.getId() != null) {
+                return ((CollectionObject)dobj).getGuid();
+            }
+        } else if (dobj instanceof Determination || dobj instanceof Taxon){
+            Taxon tx = dobj instanceof Determination
+                    ? ((Determination)dobj).getPreferredTaxon()
+                    : (Taxon)dobj;
+            if (tx.getIsAccepted()) {
+                return tx.getFullName();
+            } else if (tx.getAcceptedTaxon() != null) {
+                return tx.getAcceptedTaxon().getFullName();
+            }
+        }
+        return null;
+    }
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.CommandListener#doCommand(edu.ku.brc.ui.CommandAction)
+     */
+    @Override
+    public void doCommand(CommandAction cmdAction) {
+        if (cmdAction.isType("DataEntry") && (cmdAction.isAction("SpiceDigOcc") || cmdAction.isAction("SpiceDigTx"))) {
+            SubPaneIFace subPane = SubPaneMgr.getInstance().getCurrentSubPane();
+            DataModelObjBase dobj = null;
+            if (subPane != null) {
+                MultiView mv = subPane.getMultiView();
+                if (mv != null) {
+                    if (mv.getData() instanceof DataModelObjBase) {
+                        dobj = (DataModelObjBase) mv.getData();
+                    }
+                }
+            }
+            String spiceArg = getSpiceDigArg(cmdAction, dobj);
+            if (spiceArg != null) {
+                String url = "https://broker.spcoco.org/api/v1/" + (cmdAction.isAction("SpiceDigOcc") ? "occ/" : "name/") + spiceArg;
+                try {
+                    URI uri = new URL(url).toURI();
+                    Desktop.getDesktop().browse(uri);
+                } catch (Exception x) {
+                    log.error(x);
+                    x.printStackTrace();
+                }
+            }
+            cmdAction.setConsumed(true);
         }
     }
 }
