@@ -1282,6 +1282,8 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules  imple
                     log.error(x);
                     x.printStackTrace();
                 }
+            } else {
+                UIRegistry.displayInfoMsgDlg(getResourceString("CollectionObjectBusRules.RecordUnSpiceDiggable"));
             }
             cmdAction.setConsumed(true);
         }
