@@ -1323,7 +1323,7 @@
                     <cell type="subview" viewname="AccessionItems" id="25" desc="Collection Object" name="collectionObjects" colspan="13" rows="2" initialize="addsearch=true"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="DeaccessionAccession" id="iddeacc" name="deaccessions" colspan="13" readonly="true"/>
+                    <cell type="subview" viewname="DeaccessionAccession" id="iddeacc" name="deaccessions" colspan="13" defaulttype="table" readonly="true"/>
                 </row>
                 <row>
                     <cell type="separator" label="Attachments" colspan="13"/>
@@ -2984,7 +2984,7 @@
                     <cell type="subview" viewname="PHSub" id="44" name="preparationHolders" colspan="12"/>
                 </row>-->
                 <row>
-                    <cell type="subview" viewname="AccessionDeaccession" id="idaccessionco" name="accessions" colspan="12" readonly="true"/>
+                    <cell type="subview" viewname="AccessionDeaccession" id="idaccessionco" name="accessions" defaulttype="table" colspan="12" readonly="true"/>
                 </row>
                 <row>
                     <cell type="separator" label="" colspan="7"/>
@@ -6314,7 +6314,7 @@
                     <cell type="field" id="4" name="storage" uitype="querycbx" initialize="name=Storage" colspan="3"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="DisposalPreparation2" id="4" name="disposalPreparations" colspan="12"/>
+                    <cell type="subview" viewname="DisposalPreparation2" id="4" name="disposalPreparations" defaulttype="table" colspan="12"/>
                 </row>
             </rows>
         </viewdef>

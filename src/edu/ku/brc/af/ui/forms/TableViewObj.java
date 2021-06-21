@@ -1444,9 +1444,11 @@ public class TableViewObj implements Viewable,
     
     public void refreshDataList()
     {
-        dataObjList.clear();
-        dataObjList.addAll(origDataSet);
-        model.fireDataChanged();
+        if (dataObjList != null) {
+            dataObjList.clear();
+            dataObjList.addAll(origDataSet);
+            model.fireDataChanged();
+        }
     }
     /**
      * Returns the JTable.
