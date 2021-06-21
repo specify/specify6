@@ -108,11 +108,11 @@
       </flavor>
     </droppableFlavors>
   </entry>  
-  <entry name="loan" table="loan" view="Loan" label="LOAN_NO_PRP" type="Interactions" action="LN_NO_PRP" icon="Loan" isonleft="true" 
+  <!--<entry name="loan" table="loan" view="Loan" label="LOAN_NO_PRP" type="Interactions" action="LN_NO_PRP" icon="Loan" isonleft="true"
          issrchsrv="false" order="0" enabled="true" visible="true" tooltip="InteractionsTask.LN_NO_PREP">
     <draggableFlavors/>
     <droppableFlavors/>
-  </entry>  
+  </entry>-->
   <entry name="gift" table="gift" view="Gift" type="Interactions" action="NEW_GIFT" icon="Gift" isonleft="true" 
          issrchsrv="false" order="0" enabled="true" visible="true" tooltip="InteractionsTask.NEW_GFT">
     <draggableFlavors/>
