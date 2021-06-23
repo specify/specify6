@@ -72,6 +72,7 @@ public class Borrow extends CollectionMember implements java.io.Serializable,
     protected String              remarks;
     protected String              text1;
     protected String              text2;
+    protected String status;
     protected Float               number1;
     protected Float               number2;
     protected Boolean             isClosed;
@@ -115,6 +116,7 @@ public class Borrow extends CollectionMember implements java.io.Serializable,
         remarks = null;
         text1 = null;
         text2 = null;
+        status = null;
         number1 = null;
         number2 = null;
         isClosed = null;
@@ -165,6 +167,15 @@ public class Borrow extends CollectionMember implements java.io.Serializable,
         
         borrowAgents.size();
         borrowAttachments.size();
+    }
+
+    @Column(name = "Status", length = 64)
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     /*

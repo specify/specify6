@@ -76,6 +76,7 @@ public class Loan extends DisciplineMember implements AttachmentOwnerIFace<LoanA
     protected Calendar                currentDueDate; // Loan Only
     protected Calendar                originalDueDate; // Loan Only
     protected Calendar                dateClosed; // Loan Only
+    protected String status;
     
     protected String                  receivedComments;
     protected String                  specialConditions;
@@ -141,6 +142,7 @@ public class Loan extends DisciplineMember implements AttachmentOwnerIFace<LoanA
 		purposeOfLoan = null;
 		overdueNotiSentDate = null;
 		dateReceived = null;
+        status = null;
 
 		srcGeography = null;
 		srcTaxonomy = null;
@@ -270,6 +272,15 @@ public class Loan extends DisciplineMember implements AttachmentOwnerIFace<LoanA
     
     public void setCurrentDueDate(Calendar currentDueDate) {
         this.currentDueDate = currentDueDate;
+    }
+
+    @Column(name = "Status", length = 64)
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     /**

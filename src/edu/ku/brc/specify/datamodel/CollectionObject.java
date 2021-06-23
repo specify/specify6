@@ -107,6 +107,11 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
     protected String                        text1;
     protected String                        text2;
     protected String                        text3;
+    protected String                        text4;
+    protected String                        text5;
+    protected String                        text6;
+    protected String                        text7;
+    protected String                        text8;
     protected String                        reservedText;
     protected String					    reservedText2;
     protected String                        reservedText3;
@@ -207,6 +212,11 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
         text1                 = null;
         text2                 = null;
         text3                 = null;
+        text4                 = null;
+        text5                 = null;
+        text6                 = null;
+        text7                 = null;
+        text8                 = null;
         reservedText          = null;
         reservedText2         = null;
         reservedText3         = null;
@@ -345,7 +355,7 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
     /**
      * Image, Sound, Preparation, Container(Container Label?) - this was suppose to be in Preparation
      */
-    @Column(name = "Description", unique = false, nullable = true, insertable = true, updatable = true, length = 255)
+    @Column(name = "Description", unique = false, nullable = true, insertable = true, updatable = true, length = 1000)
     public String getDescription() {
         return this.description;
     }
@@ -380,6 +390,66 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
         this.text2 = text2;
     }
 
+    /**
+     *      * User definable
+     */
+    @Lob
+    @Column(name = "Text4", length = 65535)
+    public String getText4() {
+        return this.text4;
+    }
+
+    public void setText4(String text4) {
+        this.text4 = text4;
+    }
+    /**
+     *      * User definable
+     */
+    @Lob
+    @Column(name = "Text5", length = 65535)
+    public String getText5() {
+        return this.text5;
+    }
+
+    public void setText5(String text5) {
+        this.text5 = text5;
+    }
+    /**
+     *      * User definable
+     */
+    @Lob
+    @Column(name = "Text6", length = 65535)
+    public String getText6() {
+        return this.text6;
+    }
+
+    public void setText6(String text6) {
+        this.text6 = text6;
+    }
+    /**
+     *      * User definable
+     */
+    @Lob
+    @Column(name = "Text7", length = 65535)
+    public String getText7() {
+        return this.text7;
+    }
+
+    public void setText7(String text7) {
+        this.text7 = text7;
+    }
+    /**
+     *      * User definable
+     */
+    @Lob
+    @Column(name = "Text8", length = 65535)
+    public String getText8() {
+        return this.text8;
+    }
+
+    public void setText8(String text8) {
+        this.text8 = text8;
+    }
     /**
     *
     */

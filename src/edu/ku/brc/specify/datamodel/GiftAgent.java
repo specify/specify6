@@ -19,19 +19,11 @@
 */
 package edu.ku.brc.specify.datamodel;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.persistence.UniqueConstraint;
+import javax.persistence.*;
 
 import org.hibernate.annotations.Index;
+
+import java.util.Calendar;
 
 /**
 
@@ -54,6 +46,8 @@ public class GiftAgent extends DisciplineMember implements java.io.Serializable 
      protected String  remarks;
      protected Gift    gift;
      protected Agent   agent;
+    protected Calendar date1;
+    protected Byte                        date1Precision;
 
 
     // Constructors
@@ -81,6 +75,8 @@ public class GiftAgent extends DisciplineMember implements java.io.Serializable 
         remarks = null;
         gift = null;
         agent = null;
+        date1 = null;
+        date1Precision = 1;
     }
     // End Initializer
 
@@ -171,7 +167,25 @@ public class GiftAgent extends DisciplineMember implements java.io.Serializable 
     public void setAgent(Agent agent) {
         this.agent = agent;
     }
-    
+
+    /**
+     *
+     * @return
+     */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "Date1", unique = false, nullable = true, insertable = true, updatable = true)
+    public Calendar getDate1() {
+        return date1;
+    }
+
+    /**
+     *
+     * @param date1
+     */
+    public void setDate1(Calendar date1) {
+        date1 = date1;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentTableId()
      */

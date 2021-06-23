@@ -80,7 +80,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 {
     protected static final Logger  log = Logger.getLogger(SpecifySchemaUpdateService.class);
     
-    private final int OVERALL_TOTAL = 75; //the number of incOverall() calls (+1 or +2)
+    private final int OVERALL_TOTAL = 82; //the number of incOverall() calls (+1 or +2)
 
     private static final String TINYINT4 = "TINYINT(4)";
     private static final String INT11    = "INT(11)";
@@ -2624,6 +2624,77 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         }
                     }
                     frame.incOverall();
+
+                    frame.setDesc("Increasing size of Determination.FeatureOrBasis.");
+                    if (getFieldLength(conn, databaseName, "determination", "FeatureOrBasis") != 250) {
+                        sql = "alter table determination modify column FeatureOrBasis varchar(250)";
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
+                    }
+                    frame.incOverall();
+
+                    frame.setDesc("Increasing size of CollectionObject.Description.");
+                    if (getFieldLength(conn, databaseName, "collectionobject", "Description") != 1000) {
+                        sql = "alter table collectionobject modify column Description varchar(1000)";
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
+                    }
+                    frame.incOverall();
+
+                    frame.setDesc("Increasing size of Referencework.Title.");
+                    if (getFieldLength(conn, databaseName, "referencework", "Title") != 400) {
+                        sql = "alter table referencework modify column Title varchar(400)";
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
+                    }
+                    frame.incOverall();
+
+                    frame.setDesc("Increasing size of Collectingtrip.Collectingtripname.");
+                    if (getFieldLength(conn, databaseName, "collectingtrip", "Collectingtripname") != 400) {
+                        sql = "alter table collectingtrip modify column Collectingtripname varchar(400)";
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
+                    }
+                    frame.incOverall();
+
+                    frame.setDesc("Increasing size of Address.Address3.");
+                    if (getFieldLength(conn, databaseName, "address", "Address3") != 400) {
+                        sql = "alter table address modify column Address3 varchar(400)";
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
+                    }
+                    frame.incOverall();
+
+                    frame.setDesc("Increasing size of Address.Address4.");
+                    if (getFieldLength(conn, databaseName, "address", "Address4") != 400) {
+                        sql = "alter table address modify column Address4 varchar(400)";
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
+                    }
+                    frame.incOverall();
+
+                    frame.setDesc("Increasing size of Address.Address5.");
+                    if (getFieldLength(conn, databaseName, "address", "Address5") != 400) {
+                        sql = "alter table address modify column Address5 varchar(400)";
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
+                    }
+                    frame.incOverall();
+                    
                     frame.setProcess(0, 100);
                     return true;
                 } catch (Exception ex)

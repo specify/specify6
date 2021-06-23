@@ -89,6 +89,10 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
     protected String                      text7;
     protected String                      text8;
     protected String                      text9;
+    protected String                      text10;
+    protected String                      text11;
+    protected String                      text12;
+    protected String                      text13;
     protected Integer                     countAmt;
     protected String                      storageLocation;
     protected String                      remarks;
@@ -174,6 +178,10 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
         text7 = null;
         text8 = null;
         text9 = null;
+        text10 = null;
+        text11 = null;
+        text12 = null;
+        text13 = null;
         countAmt     = null;
         storageLocation = null;
         remarks      = null;
@@ -474,6 +482,72 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
         this.text9 = text9;
     }
 
+    /**
+     *
+     * @return
+     */
+    @Lob
+    @Column(name = "Text10", length = 65535)
+    public String getText10() {
+        return text10;
+    }
+
+    /**
+     *
+     * @param text10
+     */
+    public void setText10(String text10) {
+        this.text10 = text10;
+    }
+    /**
+     *
+     * @return
+     */
+    @Lob
+    @Column(name = "Text11", length = 65535)
+    public String getText11() {
+        return text11;
+    }
+
+    /**
+     *
+     * @param text11
+     */
+    public void setText11(String text11) {
+        this.text11 = text11;
+    }
+    /**
+     *
+     * @return
+     */
+    @Column(name = "Text12", length = 128)
+    public String getText12() {
+        return text12;
+    }
+
+    /**
+     *
+     * @param text12
+     */
+    public void setText12(String text12) {
+        this.text12 = text12;
+    }
+    /**
+     *
+     * @return
+     */
+    @Column(name = "Text13", length = 128)
+    public String getText13() {
+        return text13;
+    }
+
+    /**
+     *
+     * @param text13
+     */
+    public void setText13(String text13) {
+        this.text13 = text13;
+    }
     /**
      *
      */

@@ -62,13 +62,17 @@ public class Gift extends DisciplineMember implements java.io.Serializable, OneT
     protected Integer                 giftId;
     protected String                  giftNumber;
     protected Calendar                giftDate;
-    
+
+
+    protected String status;
     protected String                  receivedComments;
     protected String                  specialConditions;
     protected Boolean                 isFinancialResponsibility;
     protected String                  purposeOfGift;
     protected Calendar                dateReceived;
-    
+    protected Calendar                    date1;
+    protected Byte                        date1Precision;
+
     protected String                  srcGeography;
     protected String                  srcTaxonomy;
     
@@ -76,6 +80,9 @@ public class Gift extends DisciplineMember implements java.io.Serializable, OneT
     protected String				  contents;
     protected String                  text1;
     protected String                  text2;
+    protected String                  text3;
+    protected String                  text4;
+    protected String                  text5;
     protected Float                   number1;
     protected Float                   number2;
     protected Boolean                 yesNo1;
@@ -122,7 +129,10 @@ public class Gift extends DisciplineMember implements java.io.Serializable, OneT
         isFinancialResponsibility = null;
         purposeOfGift       = null;
         dateReceived        = null;
-        
+        date1 = null;
+        date1Precision = 1;
+        status = null;
+
         srcGeography        = null;
         srcTaxonomy         = null;
         
@@ -130,6 +140,9 @@ public class Gift extends DisciplineMember implements java.io.Serializable, OneT
         contents        = null;
         text1           = null;
         text2           = null;
+        text3           = null;
+        text4           = null;
+        text5           = null;
         number1         = null;
         number2         = null;
 		integer1 = null;
@@ -152,6 +165,78 @@ public class Gift extends DisciplineMember implements java.io.Serializable, OneT
     }
     // End Initializer
 
+    @Column(name = "Status", length = 64)
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    @Lob
+    @Column(name = "Text3", length = 65535)
+    public String getText3() {
+        return text3;
+    }
+
+    public void setText3(String text3) {
+        this.text3 = text3;
+    }
+
+    @Lob
+    @Column(name = "Text4", length = 65535)
+    public String getText4() {
+        return text4;
+    }
+
+    public void setText4(String text4) {
+        this.text4 = text4;
+    }
+
+    @Column(name = "Text5", length = 128)
+    public String getText5() {
+        return text5;
+    }
+
+    public void setText5(String text5) {
+        this.text5 = text5;
+    }
+    /**
+     *
+     * @return
+     */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "Date1", unique = false, nullable = true, insertable = true, updatable = true)
+    public Calendar getDate1() {
+        return date1;
+    }
+
+    /**
+     *
+     * @param date1
+     */
+    public void setDate1(Calendar date1) {
+        date1 = date1;
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Column(name = "Date1Precision", unique = false, nullable = true, insertable = true, updatable = true)
+    public Byte getDate1Precision() {
+        return date1Precision;
+    }
+
+    /**
+     *
+     * @param date1Precision
+     */
+    public void setDate1Precision(Byte date1Precision) {
+        date1Precision = date1Precision;
+    }
+    
     /**
      *      * PrimaryKey
      */

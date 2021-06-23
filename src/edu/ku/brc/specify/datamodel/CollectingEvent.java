@@ -109,7 +109,10 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
     protected String				text2;
     protected String				text3;	
     protected String				text4;	
-    protected String				text5;	
+    protected String				text5;
+    protected String				text6;
+    protected String				text7;
+    protected String				text8;
     protected String				reservedText1;
     protected String                reservedText2;
     protected PaleoContext			paleoContext;
@@ -172,6 +175,9 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
         text3 = null;
         text4 = null;
         text5 = null;
+        text6 = null;
+        text7 = null;
+        text8 = null;
         reservedText1         = null;
         reservedText2         = null;
         collectionObjects            = new HashSet<CollectionObject>();
@@ -438,6 +444,54 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
 	public void setText5(String text5) {
 		this.text5 = text5;
 	}
+
+    /**
+     * @return the text6
+     */
+    @Lob
+    @Column(name = "Text6", length = 65535)
+    public String getText6() {
+        return text6;
+    }
+
+    /**
+     * @param text6 the text6 to set
+     */
+    public void setText6(String text6) {
+        this.text6 = text6;
+    }
+
+    /**
+     * @return the text7
+     */
+    @Lob
+    @Column(name = "Text7", length = 65535)
+    public String getText7() {
+        return text7;
+    }
+
+    /**
+     * @param text7 the text7 to set
+     */
+    public void setText7(String text7) {
+        this.text7 = text7;
+    }
+
+    /**
+     * @return the text8
+     */
+    @Lob
+    @Column(name = "Text8", length = 65535)
+    public String getText8() {
+        return text8;
+    }
+
+    /**
+     * @param text8 the text8 to set
+     */
+    public void setText8(String text8) {
+        this.text8 = text8;
+    }
 
     /**
     *
