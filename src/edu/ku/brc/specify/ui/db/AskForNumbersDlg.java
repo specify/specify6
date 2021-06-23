@@ -183,7 +183,7 @@ public class AskForNumbersDlg extends CustomDialog implements ChangeListener
                 checkStatus();
             }
         });
-        
+        textArea.setLineWrap(true);
         getOkBtn().setEnabled(false);
         if (getApplyBtn() != null) {
             getApplyBtn().addActionListener((ae) -> {
