@@ -28,6 +28,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.net.URI;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.*;
@@ -53,6 +55,7 @@ import static java.util.Calendar.*;
 
 public class S2nPrefsPanel  extends GenericPrefsPanel implements PrefsSavable, PrefsPanelIFace, QBDataSourceListenerIFace {
     protected static final Logger log            = Logger.getLogger(S2nPrefsPanel.class);
+    JButton aboutBtn;
     JButton sendBtn;
     ValCheckBox onChk;
     JTextField statDsp;
@@ -98,6 +101,11 @@ public class S2nPrefsPanel  extends GenericPrefsPanel implements PrefsSavable, P
 
         FormViewObj fvo = (FormViewObj) form;
 
+
+        aboutBtn = form.getCompById("S2nAbout");
+        if (aboutBtn != null) {
+            aboutBtn.addActionListener(e -> openSyftoriumAboutInBrowser());
+        }
         statDsp = fvo.getCompById("S2nStatus");
         if (statDsp != null) {
             statDsp.setText(getStynthyStatus(isOn));
@@ -108,8 +116,24 @@ public class S2nPrefsPanel  extends GenericPrefsPanel implements PrefsSavable, P
         onChk = fvo.getCompById("S2nOn");
         if (onChk != null) {
             onChk.setSelected(isOn);
+            if (isOn) {
+                UIRegistry.loadAndPushResourceBundle("preferences");
+                onChk.setText(getResourceString("S2n.OptedIn"));
+                UIRegistry.popResourceBundle();
+            }
             onChk.addActionListener(e -> inOrOut());
 
+        }
+    }
+
+    protected void openSyftoriumAboutInBrowser() {
+        String url = "https://syftorium.org";
+        try {
+            URI uri = new URL(url).toURI();
+            Desktop.getDesktop().browse(uri);
+        } catch (Exception x) {
+            log.error(x);
+            x.printStackTrace();
         }
     }
 
@@ -137,7 +161,9 @@ public class S2nPrefsPanel  extends GenericPrefsPanel implements PrefsSavable, P
 
     protected boolean optInOrOut() {
         boolean result = onChk.isSelected();
-        if (result) {
+        if (!result) {
+            return true; //registration is forever, for now
+        } else {
             result = setUpStynthyRec();
             if (result) {
                 Pair<Integer, String> url = getS2NUrl();
@@ -157,8 +183,8 @@ public class S2nPrefsPanel  extends GenericPrefsPanel implements PrefsSavable, P
                     }
                 }
             }
+            return result;
         }
-        return result;
     }
 
 

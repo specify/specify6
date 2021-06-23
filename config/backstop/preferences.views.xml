@@ -424,13 +424,16 @@
             <rowDef auto="true" cell="p" sep="2dlu"/>
             <rows>
                 <row>
+                    <cell type="command" id="S2nAbout" name="S2nAbout" label="S2N_ABOUT" ignore="true"/>
+                </row>
+                <row>
                     <cell type="field" id="S2nOn" name="S2n.S2nOn" uitype="checkbox" label="S2n.OptIn" ignore="true" colspan="4"/>
                 </row>
                 <row>
                     <cell type="field" id="S2nStatus"  uitype="dsptextfield" initialize="transparent=true" label="S2n.Status" ignore="true" colspan="4"/>
                 </row>
                 <row>
-                    <cell type="command" id="SendData" name="S2nSendData"   label="S2N_SET_ICON" ignore="true"/>
+                    <cell type="command" id="SendData" name="S2nSendData"   label="S2N_SEND_ICON" ignore="true"/>
                 </row>
             </rows>
 
