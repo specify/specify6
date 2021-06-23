@@ -2502,7 +2502,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 
                          //-------------------------------------------------------------------------------
                     //
-                    // Schema changes for 2.8
+                    // Schema changes for 2.8 & 2.9
                     //
                     //-------------------------------------------------------------------------------
 //                    frame.setDesc("Converting deaccessionpreparation.quantity to int");
