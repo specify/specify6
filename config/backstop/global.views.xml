@@ -371,7 +371,7 @@
         
         <view name="ChronosStrat"
             class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
-            busrules="edu.ku.brc.specify.datamodel.busrules.BioStratBusRules"
+            busrules="edu.ku.brc.specify.datamodel.busrules.GeologicTimePeriodBusRules"
             isinternal="true"
             resourcelabels="false">
             <desc><![CDATA[GeologicTimePeriod data entry form.]]></desc>
@@ -2324,7 +2324,7 @@
                 <row>
                     <cell type="label" label=" "/>
                     <cell type="field" id="isBioStrat" uitype="checkbox" name="isBioStrat"/>
-                </row>                
+                </row>
                 <row>
                     <cell type="label" labelfor="parent"/>
                 	<cell type="field" id="parent" uitype="querycbx" initialize="name=GeologicTimePeriod;title=GeologicTimePeriod;editbtn=false;newbtn=false;editoncreate=true" name="parent" isrequired="true" colspan="3"/>
