@@ -1358,10 +1358,11 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
     public static RecordSetIFace askForRecordSet(final Vector<Integer>        tableIds,
                                                  final Vector<RecordSetIFace> additionalRS,
                                                  final boolean                msgIfNoRecordsets) {
-        return askForRecordSet2(tableIds, additionalRS, msgIfNoRecordsets).getFirst();
+        Pair<RecordSetIFace, RecordSetIFace> rs = askForRecordSet2(tableIds, additionalRS, msgIfNoRecordsets);
+        return rs.getFirst() != null ? rs.getFirst() : rs.getSecond();
     }
 
-        public static Pair<RecordSetIFace, RecordSetIFace> askForRecordSet2(final Vector<Integer>        tableIds,
+    public static Pair<RecordSetIFace, RecordSetIFace> askForRecordSet2(final Vector<Integer>        tableIds,
                                                                      final Vector<RecordSetIFace> additionalRS,
                                                                      final boolean                msgIfNoRecordsets)
     {
@@ -1390,10 +1391,7 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
                     result.setSecond(dlg.getSelectedAddlRecordSet());
                 }
             }
-        }
-        
-        // else
-        if (msgIfNoRecordsets)
+        } else if (msgIfNoRecordsets)
         {
         	UIRegistry.displayLocalizedStatusBarText("RecordSetTask.NoRecordsets");
         }

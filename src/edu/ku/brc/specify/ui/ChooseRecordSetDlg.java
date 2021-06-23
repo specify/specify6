@@ -256,7 +256,7 @@ public class ChooseRecordSetDlg extends CustomDialog
      */
     public boolean hasRecordSets()
     {
-        return recordSets != null && recordSets.size() > 0;
+        return (recordSets != null && recordSets.size() > 0) || (addlRSs != null && addlRSs.size() > 0);
     }
 
 
