@@ -4790,7 +4790,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         Vector<SpExportSchemaItem> sis = new Vector<SpExportSchemaItem>();
         if (schemaMapping.getSpExportSchemas() != null) {
             for (SpExportSchema exportSchema : schemaMapping.getSpExportSchemas()) {
-                sis.addAll(exportSchema.getSpExportSchemaItems());
+                if (exportSchema.getSpExportSchemaItems() != null) {
+                    sis.addAll(exportSchema.getSpExportSchemaItems());
+                }
             }
         }
         Collections.sort(sis, new Comparator<SpExportSchemaItem>() {
@@ -5675,7 +5677,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             result = new ArrayList<SpExportSchemaItem>();
             if (exportSchemas != null) {
                 for (SpExportSchema exportSchema : exportSchemas) {
-                    result.addAll(exportSchema.getSpExportSchemaItems());
+                    if (exportSchema.getSpExportSchemaItems() != null) {
+                        result.addAll(exportSchema.getSpExportSchemaItems());
+                    }
                     for (QueryFieldPanel qfp : queryFieldItems) {
                         SpExportSchemaItem qi = qfp.getSchemaItem();
                         if (qi != null) {
