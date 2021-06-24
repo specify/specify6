@@ -288,7 +288,7 @@
         <file path="../src/edu/ku/brc/specify/images/spsecwizard32.png" />
       </iconImageFiles>
     </launcher>
-    <launcher name="SpLocalizer" id="2222">
+    <!--<launcher name="SpLocalizer" id="2222">
       <executable name="SpLocalizer" iconSet="true" executableDir="bin" executableMode="gui" />
       <splashScreen show="true" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" textOverlay="true">
         <text>
@@ -317,7 +317,7 @@
         <file path="../src/edu/ku/brc/specify/images/specify16.png" />
         <file path="../src/edu/ku/brc/specify/images/specify32.png" />
       </iconImageFiles>
-    </launcher>
+    </launcher>-->
   </launchers>
   <installerGui suggestPreviousLocations="false">
     <applications>

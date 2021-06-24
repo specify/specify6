@@ -257,7 +257,7 @@
         <file path="../src/edu/ku/brc/specify/images/specify32.png" />
       </iconImageFiles>
     </launcher>
-    <launcher name="SpLocalizer" id="279" icnsFile="icns/specify.icns">
+    <!--<launcher name="SpLocalizer" id="279" icnsFile="icns/specify.icns">
       <executable name="SpLocalizer" iconSet="true" executableDir="bin" redirectStderr="false" executableMode="gui" />
       <splashScreen show="true" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" textOverlay="true">
         <text>
@@ -285,7 +285,7 @@
         <file path="../src/edu/ku/brc/specify/images/specify16.png" />
         <file path="../src/edu/ku/brc/specify/images/specify32.png" />
       </iconImageFiles>
-    </launcher>
+    </launcher>-->
     <launcher name="SpecifyDBSecurityWizard" id="1876" icnsFile="icns/spsecwizard.icns">
       <executable name="SpecifyDBSecurityWizard" iconSet="true" executableDir="bin" redirectStderr="false" executableMode="gui" />
       <splashScreen show="true" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" textOverlay="true">
