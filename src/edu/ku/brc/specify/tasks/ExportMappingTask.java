@@ -519,7 +519,8 @@ public class ExportMappingTask extends QueryTask
 	protected DBTableInfo getTableInfo()
 	{
 		//XXX will probably need to support schemas that are NOT based on CO
-		return DBTableIdMgr.getInstance().getInfoById(Preparation.getClassTableId());
+		//return DBTableIdMgr.getInstance().getInfoById(Preparation.getClassTableId());
+		return DBTableIdMgr.getInstance().getInfoById(CollectionObject.getClassTableId());
 	}
 
 	protected DBTableInfo chooseBaseTable() {
