@@ -1185,7 +1185,13 @@ public class InteractionsTask extends BaseTask
         try
         {
             session = DataProviderFactory.getInstance().createSession();
-            
+
+            if (prepsHash.size() == 0) {
+                GiftPreparation gpo = new GiftPreparation();
+                gpo.initialize();
+                gpo.setGift(gift);
+                gift.getGiftPreparations().add(gpo);
+            }
             for (Integer prepId : prepsHash.keySet())
             {
                 Preparation prep  = session.get(Preparation.class, prepId);
@@ -1384,6 +1390,12 @@ public class InteractionsTask extends BaseTask
         DataProviderSessionIFace session = null;
         try {
             session = DataProviderFactory.getInstance().createSession();
+            if (prepsHash.size() == 0) {
+                DisposalPreparation dpo = new DisposalPreparation();
+                dpo.initialize();
+                dpo.setDisposal(disposal);
+                disposal.getDisposalPreparations().add(dpo);
+            }
             for (Integer prepId : prepsHash.keySet()) {
                 Preparation prep  = session.get(Preparation.class, prepId);
                 Integer     count = prepsHash.get(prepId);
