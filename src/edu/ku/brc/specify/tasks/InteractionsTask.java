@@ -920,8 +920,8 @@ public class InteractionsTask extends BaseTask
             dueDate.add(Calendar.MONTH, 6);                 // XXX PREF Due Date
             loan.setCurrentDueDate(dueDate);
             
-            Shipment shipment = new Shipment();
-            shipment.initialize();
+            //Shipment shipment = new Shipment();
+            //shipment.initialize();
             
             // Get Defaults for Certain fields
             //SpecifyAppContextMgr appContextMgr     = (SpecifyAppContextMgr)AppContextMgr.getInstance();
@@ -939,12 +939,12 @@ public class InteractionsTask extends BaseTask
             //    shipment.setShippedBy((Agent)shippedBy);
             //}
             
-            if (infoRequest != null && infoRequest.getAgent() != null)
+            //if (infoRequest != null && infoRequest.getAgent() != null)
             {
-                shipment.setShippedTo(infoRequest.getAgent());
+            //    shipment.setShippedTo(infoRequest.getAgent());
             }
             
-            loan.addReference(shipment, "shipments");
+            //loan.addReference(shipment, "shipments");
         } else
         {
             loan = existingLoan;
@@ -959,7 +959,7 @@ public class InteractionsTask extends BaseTask
                 }
             }
         }
-        
+
         DataProviderSessionIFace session = null;
         try {
             session = DataProviderFactory.getInstance().createSession();
@@ -1138,11 +1138,11 @@ public class InteractionsTask extends BaseTask
             gift = new Gift();
             gift.initialize();
             
-            Calendar dueDate = Calendar.getInstance();
-            dueDate.add(Calendar.MONTH, 6);                 // XXX PREF Due Date
+            //Calendar dueDate = Calendar.getInstance();
+            //dueDate.add(Calendar.MONTH, 6);                 // XXX PREF Due Date
             
-            Shipment shipment = new Shipment();
-            shipment.initialize();
+            //Shipment shipment = new Shipment();
+            //shipment.initialize();
             
             // Get Defaults for Certain fields
             //SpecifyAppContextMgr appContextMgr     = (SpecifyAppContextMgr)AppContextMgr.getInstance();
@@ -1160,12 +1160,12 @@ public class InteractionsTask extends BaseTask
             //    shipment.setShippedBy((Agent)shippedBy);
             //}
             
-            if (infoRequest != null && infoRequest.getAgent() != null)
-            {
-                shipment.setShippedTo(infoRequest.getAgent());
-            }
+            //if (infoRequest != null && infoRequest.getAgent() != null)
+            //{
+            //    shipment.setShippedTo(infoRequest.getAgent());
+            //}
             
-            gift.addReference(shipment, "shipments");
+            //gift.addReference(shipment, "shipments");
         } else
         {
             gift = existingGift;
@@ -1205,7 +1205,7 @@ public class InteractionsTask extends BaseTask
                 
                 GiftPreparation gpo = new GiftPreparation();
                 gpo.initialize();
-                gpo.setPreparation(prep);
+                  gpo.setPreparation(prep);
                 gpo.setQuantity(count);
                 gpo.setGift(gift);
                 gift.getGiftPreparations().add(gpo);
