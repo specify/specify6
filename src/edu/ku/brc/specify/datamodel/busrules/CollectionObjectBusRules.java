@@ -1231,12 +1231,12 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules  imple
      * @param dobj
      * @return
      */
-    private String getSpiceDigArg(CommandAction cmdAction, DataModelObjBase dobj) {
-        if (cmdAction.isAction("SpiceDigOcc")) {
+    private String getSpiceDigArg(String cmdAction, DataModelObjBase dobj) {
+        if (cmdAction.equalsIgnoreCase("SpiceDigOcc")) {
             if (dobj instanceof CollectionObject && dobj.getId() != null) {
-                return ((CollectionObject)dobj).getGuid();
+                return ((CollectionObject)dobj).getGuid().replaceAll(" ", "%20");
             }
-        } else if (cmdAction.isAction("SpiceDigTx")) {
+        } else if (cmdAction.equalsIgnoreCase("SpiceDigTx")) {
             Taxon tx = null;
             if (dobj instanceof CollectionObject) {
                 Determination currDet = ((CollectionObject)dobj).getCurrentDetermination();
@@ -1249,9 +1249,9 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules  imple
                 tx = (Taxon) dobj;
             }
             if (tx != null && tx.getIsAccepted()) {
-                return tx.getFullName();
+                return tx.getFullName().replaceAll(" ", "%20");
             } else if (tx != null && tx.getAcceptedTaxon() != null) {
-                return tx.getAcceptedTaxon().getFullName();
+                return tx.getAcceptedTaxon().getFullName().replaceAll(" ", "%20");
             }
         }
         return null;
@@ -1272,9 +1272,17 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules  imple
                     }
                 }
             }
-            String spiceArg = getSpiceDigArg(cmdAction, dobj);
+            String spiceArg = getSpiceDigArg(cmdAction.getAction(), dobj);
+            String occNameArg = cmdAction.isAction("SpiceDigOcc") ? getSpiceDigArg("SpiceDigTx", dobj) : null;
             if (spiceArg != null) {
-                String url = "https://broker.spcoco.org/api/v1/" + (cmdAction.isAction("SpiceDigOcc") ? "occ/" : "name/") + spiceArg.replaceAll(" ", "%20");
+                String url = "https://broker.spcoco.org/api/v1/";
+                if (cmdAction.isAction("SpiceDigOcc")) {
+                    //frontend only available with Occ. Also namestr arg seems irrelevant - result is the same without it
+                    url += "frontend/?occid=" + spiceArg + (occNameArg != null ? "&namestr=" + occNameArg : "");
+                } else {
+                    //no frontend for name only
+                    url += "name/" + spiceArg;
+                }
                 try {
                     URI uri = new URL(url).toURI();
                     Desktop.getDesktop().browse(uri);
