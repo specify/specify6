@@ -216,4 +216,36 @@
   <picklist name="MoleculeType" type="0" tablename="none" readonly="false" sizelimit="20" issystem="false" sort="1" timestampCreated="2017-08-30 12:22:46.0" timestampModified="2017-08-30 12:22:46.0" version="1">
     <items/>
   </picklist>
-</list>
+    <picklist name="DeaccessionType" issystem="true" type="0" readonly="true" sizelimit="4">
+        <items>
+            <picklistitem title="Gift" value="Gift"/>
+            <picklistitem title="Destructive Sampling" value="Destructive Sampling"/>
+            <picklistitem title="Exchange" value="Exchange"/>
+            <picklistitem title="Lost" value="Lost"/>
+        </items>
+    </picklist>
+    <picklist name="DeaccessionStatus" issystem="true" type="0" readonly="true" sizelimit="3">
+        <items>
+            <picklistitem title="No Data" value="No Data"/>
+            <picklistitem title="In Process" value="In Process"/>
+            <picklistitem title="Complete" value="Complete"/>
+        </items>
+    </picklist>
+    <picklist name="DisposalAgentRole" issystem="true" type="0" readonly="true" sizelimit="12">
+        <items>
+            <picklistitem title="Approver" value="Approver"/>
+            <picklistitem title="Other" value="Other"/>
+            <picklistitem title="Preparer" value="Preparer"/>
+            <picklistitem title="Receiver" value="Receiver"/>
+            <picklistitem title="Sponsor" value="Sponsor"/>
+            <picklistitem title="Staff" value="Staff"/>
+            <picklistitem title="Student" value="Student"/>
+        </items>
+        <picklist name="DisposalType" issystem="true" type="0" readonly="true" sizelimit="3">
+            <items>
+                <picklistitem title="Destroyed" value="Destroyed"/>
+                <picklistitem title="Destructive Sampling" value="Destructive Sampling"/>
+                <picklistitem title="Lost" value="lost"/>
+            </items>
+        </picklist>
+    </picklist></list>
