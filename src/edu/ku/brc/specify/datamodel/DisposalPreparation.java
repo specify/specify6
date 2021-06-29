@@ -124,7 +124,7 @@ public class DisposalPreparation extends DataModelObjBase implements java.io.Ser
      */
     @Column(name = "Quantity", unique = false, nullable = true, insertable = true, updatable = true)
     public Integer getQuantity() {
-        return this.quantity;
+        return this.quantity == null ? 0 : this.quantity;
     }
 
     public void setQuantity(Integer quantity) {
