@@ -241,11 +241,12 @@
             <picklistitem title="Staff" value="Staff"/>
             <picklistitem title="Student" value="Student"/>
         </items>
-        <picklist name="DisposalType" issystem="true" type="0" readonly="true" sizelimit="3">
+    </picklist>
+    <picklist name="DisposalType" issystem="true" type="0" readonly="true" sizelimit="3">
             <items>
                 <picklistitem title="Destroyed" value="Destroyed"/>
                 <picklistitem title="Destructive Sampling" value="Destructive Sampling"/>
                 <picklistitem title="Lost" value="lost"/>
             </items>
-        </picklist>
-    </picklist></list>
+    </picklist>
+</list>
