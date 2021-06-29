@@ -80,7 +80,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 {
     protected static final Logger  log = Logger.getLogger(SpecifySchemaUpdateService.class);
     
-    private final int OVERALL_TOTAL = 82; //the number of incOverall() calls (+1 or +2)
+    private final int OVERALL_TOTAL = 83; //the number of incOverall() calls (+1 or +2)
 
     private static final String TINYINT4 = "TINYINT(4)";
     private static final String INT11    = "INT(11)";
@@ -2694,7 +2694,24 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         }
                     }
                     frame.incOverall();
-                    
+
+                    frame.setDesc("Creating picklists.");
+                    sql = "select collectionid from collection";
+                    Vector<Object> colls = BasicSQLUtils.querySingleCol(conn, sql);
+                    String[][] pls = {
+                            {"DeaccessionType", "Gift", "Destructive Sampling", "Exchange", "Lost"},
+                            {"DeaccessionStatus", "No Data", "In Process", "Complete"},
+                            {"DisposalAgentRole", "Approver", "Other", "Preparer", "Receiver", "Sponsor", "Staff", "Student"},
+                            {"DisposalType", "Destroyed", "Destructive Sampling", "Lost"}
+                    };
+                    for (Object coll : colls) {
+                        if (!doPicklists(conn, coll, pls)) {
+                            errMsgList.add("error building picklists for collection " + coll);
+                            return false;
+                        }
+                    }
+                    frame.incOverall();
+
                     frame.setProcess(0, 100);
                     return true;
                 } catch (Exception ex)
@@ -2719,6 +2736,28 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             if (dbConn != null) dbConn.close();
         }
         return false;
+    }
+
+    private boolean doPicklists(Connection conn, Object collId, String[][] pls) {
+        for (String[] pl : pls) {
+            String sql = "select count(*) from picklist where collectionid = " + collId + " and name ='" + pl[0] + "'";
+            if (getCountAsInt(conn, sql) == 0) {
+                sql = "insert into picklist(version,timestampcreated,collectionid,name,issystem,type,readonly,sizelimit)"
+                        + " values(0, now()," + collId + ", '" + pl[0] + "',true,  0, true, " + (pl.length - 1) + ")";
+                if (-1 == update(conn, sql)) {
+                    return false;
+                }
+                for (int i = 1; i < pl.length; i++) {
+                    sql = "insert into picklistitem(TimestampCreated, Version, Title, Value, Picklistid) "
+                            + " values(now(), 0, '" + pl[i] + "', '" + pl[i] + "', (select picklistid from picklist where name = '"
+                            + pl[0] + "' and collectionid = " + collId + "))";
+                    if (-1 == update(conn, sql)) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
     }
 
     private String commaSeparate(Vector<Object> v) {
