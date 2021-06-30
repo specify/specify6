@@ -149,6 +149,12 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
     protected BigDecimal                    totalValue;
     protected Byte							sgrStatus;
     protected String						ocr;
+    protected String embargoReason;
+    protected Calendar embargoStartDate;
+    protected Byte embargoStartDatePrecision;
+    protected Calendar embargoEndDate;
+    protected Byte embargoEndDatePrecision;
+    protected Agent embargoAuthority;
     
     // Security
     protected Byte                          visibility;
@@ -283,8 +289,10 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
         
         exsiccataItems              = new HashSet<>();
         voucherRelationships = new HashSet<>();
-        
+
+
         hasGUIDField = true;
+
         setGUID();
     }
     // End Initializer
@@ -362,6 +370,16 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @Lob
+    @Column(name = "EmbargoReason", length = 4096)
+    public String getEmbargoReason() {
+        return this.embargoReason;
+    }
+
+    public void setEmbargoReason(String embargoReason) {
+        this.embargoReason = embargoReason;
     }
 
     /**
@@ -829,6 +847,76 @@ public void setReservedText3(String reservedText3) {
         this.date1 = date1;
     }
 
+
+    /**
+     *
+     * @return
+     */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "EmbargoStartDate", unique = false, nullable = true, insertable = true, updatable = true)
+    public Calendar getEmbargoStartDate() {
+        return embargoStartDate;
+    }
+
+    /**
+     *
+     * @param embargoStartDate
+     */
+    public void setEmbargoStartDate(Calendar embargoStartDate) {
+        this.embargoStartDate = embargoStartDate;
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Column(name = "EmbargoStartDatePrecision", unique = false, nullable = true, insertable = true, updatable = true)
+    public Byte getEmbargoStartDatePrecision() {
+        return embargoStartDatePrecision;
+    }
+
+    /**
+     *
+     * @param embargoStartDatePrecision
+     */
+    public void setEmbargoStartDatePrecision(Byte embargoStartDatePrecision) {
+        this.embargoStartDatePrecision = embargoStartDatePrecision;
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "EmbargoEndDate", unique = false, nullable = true, insertable = true, updatable = true)
+    public Calendar getEmbargoEndDate() {
+        return embargoEndDate;
+    }
+
+    /**
+     *
+     * @param embargoEndDate
+     */
+    public void setEmbargoEndDate(Calendar embargoEndDate) {
+        this.embargoEndDate = embargoEndDate;
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Column(name = "EmbargoEndDatePrecision", unique = false, nullable = true, insertable = true, updatable = true)
+    public Byte getEmbargoEndDatePrecision() {
+        return embargoEndDatePrecision;
+    }
+
+    /**
+     *
+     * @param embargoEndDatePrecision
+     */
+    public void setEmbargoEndDatePrecision(Byte embargoEndDatePrecision) {
+        this.embargoEndDatePrecision = embargoEndDatePrecision;
+    }
     /**
      *
      */
@@ -1469,6 +1557,24 @@ public void setReservedText3(String reservedText3) {
      */
     public void setAgent1(Agent agent1) {
         this.agent1 = agent1;
+    }
+
+    /**
+     *
+     * @return
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "EmbargoAuthorityID", unique = false, nullable = true, insertable = true, updatable = true)
+    public Agent getEmbargoAuthority() {
+        return embargoAuthority;
+    }
+
+    /**
+     *
+     * @param embargoAuthority
+     */
+    public void setEmbargoAuthority(Agent embargoAuthority) {
+        this.embargoAuthority = embargoAuthority;
     }
 
     /**

@@ -217,6 +217,7 @@
         <alias name="Agent" field="agent1" />
       	<alias name="Agent" field="cataloger" />
       	<alias name="Agent" field="inventorizedBy" />
+        <alias name="Agent" field="embargoAuthority" />
     	<table name="Collection" field="collection" >
     		<alias name="Agent" field="contentContacts" />
         	<alias name="Agent" field="createdByAgent" />
