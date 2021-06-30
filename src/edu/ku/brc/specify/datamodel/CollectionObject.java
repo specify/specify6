@@ -152,8 +152,8 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
     protected String embargoReason;
     protected Calendar embargoStartDate;
     protected Byte embargoStartDatePrecision;
-    protected Calendar embargoEndDate;
-    protected Byte embargoEndDatePrecision;
+    protected Calendar embargoReleaseDate;
+    protected Byte embargoReleaseDatePrecision;
     protected Agent embargoAuthority;
     
     // Security
@@ -888,34 +888,34 @@ public void setReservedText3(String reservedText3) {
      * @return
      */
     @Temporal(TemporalType.DATE)
-    @Column(name = "EmbargoEndDate", unique = false, nullable = true, insertable = true, updatable = true)
-    public Calendar getEmbargoEndDate() {
-        return embargoEndDate;
+    @Column(name = "EmbargoReleaseDate", unique = false, nullable = true, insertable = true, updatable = true)
+    public Calendar getEmbargoReleaseDate() {
+        return embargoReleaseDate;
     }
 
     /**
      *
-     * @param embargoEndDate
+     * @param embargoReleaseDate
      */
-    public void setEmbargoEndDate(Calendar embargoEndDate) {
-        this.embargoEndDate = embargoEndDate;
+    public void setEmbargoReleaseDate(Calendar embargoReleaseDate) {
+        this.embargoReleaseDate = embargoReleaseDate;
     }
 
     /**
      *
      * @return
      */
-    @Column(name = "EmbargoEndDatePrecision", unique = false, nullable = true, insertable = true, updatable = true)
-    public Byte getEmbargoEndDatePrecision() {
-        return embargoEndDatePrecision;
+    @Column(name = "EmbargoReleaseDatePrecision", unique = false, nullable = true, insertable = true, updatable = true)
+    public Byte getEmbargoReleaseDatePrecision() {
+        return embargoReleaseDatePrecision;
     }
 
     /**
      *
-     * @param embargoEndDatePrecision
+     * @param embargoReleaseDatePrecision
      */
-    public void setEmbargoEndDatePrecision(Byte embargoEndDatePrecision) {
-        this.embargoEndDatePrecision = embargoEndDatePrecision;
+    public void setEmbargoReleaseDatePrecision(Byte embargoReleaseDatePrecision) {
+        this.embargoReleaseDatePrecision = embargoReleaseDatePrecision;
     }
     /**
      *
