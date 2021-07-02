@@ -250,7 +250,7 @@ public class TaxonLoadSetupPanel extends BaseSetupPanel
         if (fileName.isEmpty())
         {
             TaxonFileDesc tfd = (TaxonFileDesc)fileCBX.getSelectedItem();
-            if (tfd != null && FilenameUtils.isExtension(tfd.getFileName().toLowerCase(), XLS))
+            if (tfd != null && (FilenameUtils.isExtension(tfd.getFileName().toLowerCase(), XLS) || FilenameUtils.isExtension(tfd.getFileName().toLowerCase(), XLSX)))
             {
                 fileName = tfd.getFileName();
             }
