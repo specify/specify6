@@ -1277,11 +1277,10 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules  imple
             if (spiceArg != null) {
                 String url = "https://broker.spcoco.org/api/v1/";
                 if (cmdAction.isAction("SpiceDigOcc")) {
-                    //frontend only available with Occ. Also namestr arg seems irrelevant - result is the same without it
                     url += "frontend/?occid=" + spiceArg + (occNameArg != null ? "&namestr=" + occNameArg : "");
                 } else {
                     //no frontend for name only
-                    url += "name/" + spiceArg;
+                    url += "frontend/?occid=&namestr=" + spiceArg;
                 }
                 try {
                     URI uri = new URL(url).toURI();
