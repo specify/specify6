@@ -1224,6 +1224,13 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		
 	}
 
+	public void spiceDigSelectedNode(final JList list) {
+	    TreeNode selection = (TreeNode)list.getSelectedValue();
+	    if (selection == null) {
+	        return;
+        }
+
+    }
 	/**
 	 * Sets the visibleRoot property of the tree to the currently selected node.  This provides
 	 * the ability to "zoom in" to a lower level of the tree.

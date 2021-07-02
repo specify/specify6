@@ -71,7 +71,7 @@ import static edu.ku.brc.ui.UIRegistry.*;
  * <p>
  * Created Date: Jan 24, 2007
  */
-public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules  implements CommandListener {
+public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules {
     private static final String CATNUMNAME = "catalogNumber";
 
     public static final int MAXSERIESSIZE = 500;
@@ -109,7 +109,6 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules  imple
      */
     public CollectionObjectBusRules() {
         super(CollectionObject.class);
-        CommandDispatcher.register("DataEntry", this);
     }
 
     /* (non-Javadoc)
@@ -1225,74 +1224,4 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules  imple
         }
     }
 
-    /**
-     *
-     * @param cmdAction
-     * @param dobj
-     * @return
-     */
-    private String getSpiceDigArg(String cmdAction, DataModelObjBase dobj) {
-        if (cmdAction.equalsIgnoreCase("SpiceDigOcc")) {
-            if (dobj instanceof CollectionObject && dobj.getId() != null) {
-                return ((CollectionObject)dobj).getGuid().replaceAll(" ", "%20");
-            }
-        } else if (cmdAction.equalsIgnoreCase("SpiceDigTx")) {
-            Taxon tx = null;
-            if (dobj instanceof CollectionObject) {
-                Determination currDet = ((CollectionObject)dobj).getCurrentDetermination();
-                if (currDet != null) {
-                    tx = currDet.getPreferredTaxon();
-                }
-            } else if (dobj instanceof Determination) {
-                tx = ((Determination) dobj).getPreferredTaxon();
-            } else if (dobj instanceof Taxon) {
-                tx = (Taxon) dobj;
-            }
-            if (tx != null && tx.getIsAccepted()) {
-                return tx.getFullName().replaceAll(" ", "%20");
-            } else if (tx != null && tx.getAcceptedTaxon() != null) {
-                return tx.getAcceptedTaxon().getFullName().replaceAll(" ", "%20");
-            }
-        }
-        return null;
-    }
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.CommandListener#doCommand(edu.ku.brc.ui.CommandAction)
-     */
-    @Override
-    public void doCommand(CommandAction cmdAction) {
-        if (cmdAction.isType("DataEntry") && (cmdAction.isAction("SpiceDigOcc") || cmdAction.isAction("SpiceDigTx"))) {
-            SubPaneIFace subPane = SubPaneMgr.getInstance().getCurrentSubPane();
-            DataModelObjBase dobj = null;
-            if (subPane != null) {
-                MultiView mv = subPane.getMultiView();
-                if (mv != null) {
-                    if (mv.getData() instanceof DataModelObjBase) {
-                        dobj = (DataModelObjBase) mv.getData();
-                    }
-                }
-            }
-            String spiceArg = getSpiceDigArg(cmdAction.getAction(), dobj);
-            String occNameArg = cmdAction.isAction("SpiceDigOcc") ? getSpiceDigArg("SpiceDigTx", dobj) : null;
-            if (spiceArg != null) {
-                String url = "https://broker.spcoco.org/api/v1/";
-                if (cmdAction.isAction("SpiceDigOcc")) {
-                    url += "frontend/?occid=" + spiceArg + (occNameArg != null ? "&namestr=" + occNameArg : "");
-                } else {
-                    //no frontend for name only
-                    url += "frontend/?occid=&namestr=" + spiceArg;
-                }
-                try {
-                    URI uri = new URL(url).toURI();
-                    Desktop.getDesktop().browse(uri);
-                } catch (Exception x) {
-                    log.error(x);
-                    x.printStackTrace();
-                }
-            } else {
-                UIRegistry.displayInfoMsgDlg(getResourceString("CollectionObjectBusRules.RecordUnSpiceDiggable"));
-            }
-            cmdAction.setConsumed(true);
-        }
-    }
 }

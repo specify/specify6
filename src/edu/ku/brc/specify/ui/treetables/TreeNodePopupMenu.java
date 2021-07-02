@@ -46,6 +46,7 @@ public class TreeNodePopupMenu extends JPopupMenu
     protected JMenuItem delete;
     protected JMenuItem unSyn;
     protected JMenuItem find;
+    protected JMenuItem spiceDig;
     protected JMenuItem edit;
     protected JMenuItem newChild;
     protected JMenuItem newChildInViewMode = null;
@@ -69,8 +70,7 @@ public class TreeNodePopupMenu extends JPopupMenu
         
         selectionSensativeButtons.add(subtree);
         selectionSensativeButtons.add(find);
-        
-        
+
         edit     = new JMenuItem(isEditMode ? getResourceString("TTV_EDITING") : getResourceString("TTV_VIEWING"));
         if (isEditMode)
         {
@@ -225,7 +225,12 @@ public class TreeNodePopupMenu extends JPopupMenu
         selectionSensativeButtons.add(menuItem);
     	/* ...Removing lifemapper because of worldwind java 8 issues */
     }
-    
+
+    public void setSpiceDigMenuItem(JMenuItem menuItem) {
+        this.spiceDig = menuItem;
+        selectionSensativeButtons.add(menuItem);
+    }
+
     public void setEditEnabled(boolean enable)
     {
         if (edit != null)

@@ -64,6 +64,8 @@ import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.URI;
+import java.net.URL;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -1881,7 +1883,78 @@ public class DataEntryTask extends BaseTask
         } else if (cmdAction.isAction("PrintColObjLabel"))
         {
             checkToPrintLabel(cmdAction, true);
+        } else if (cmdAction.isAction("SpiceDigOcc") || cmdAction.isAction("SpiceDigTx")) {
+            doSpiceDig(cmdAction);
         }
+    }
+
+    /**
+     *
+     * @param cmdAction
+     * @param dobj
+     * @return
+     */
+    private String getSpiceDigArg(String cmdAction, DataModelObjBase dobj) {
+        if (cmdAction.equalsIgnoreCase("SpiceDigOcc")) {
+            if (dobj instanceof CollectionObject && dobj.getId() != null) {
+                return ((CollectionObject)dobj).getGuid().replaceAll(" ", "%20");
+            }
+        } else if (cmdAction.equalsIgnoreCase("SpiceDigTx")) {
+            Taxon tx = null;
+            if (dobj instanceof CollectionObject) {
+                Determination currDet = ((CollectionObject)dobj).getCurrentDetermination();
+                if (currDet != null) {
+                    tx = currDet.getPreferredTaxon();
+                }
+            } else if (dobj instanceof Determination) {
+                tx = ((Determination) dobj).getPreferredTaxon();
+            } else if (dobj instanceof Taxon) {
+                tx = (Taxon) dobj;
+            }
+            if (tx != null && tx.getIsAccepted()) {
+                return tx.getFullName().replaceAll(" ", "%20");
+            } else if (tx != null && tx.getAcceptedTaxon() != null) {
+                return tx.getAcceptedTaxon().getFullName().replaceAll(" ", "%20");
+            }
+        }
+        return null;
+    }
+
+    private void doSpiceDig(CommandAction cmdAction) {
+        Object data = cmdAction.getData();
+        DataModelObjBase dobj = cmdAction.getData() instanceof DataModelObjBase ? (DataModelObjBase) cmdAction.getData() : null;
+        if (dobj == null) {
+            SubPaneIFace subPane = SubPaneMgr.getInstance().getCurrentSubPane();
+            if (subPane != null) {
+                MultiView mv = subPane.getMultiView();
+                if (mv != null) {
+                    if (mv.getData() instanceof DataModelObjBase) {
+                        dobj = (DataModelObjBase) mv.getData();
+                    }
+                }
+            }
+        }
+        String spiceArg = getSpiceDigArg(cmdAction.getAction(), dobj);
+        String occNameArg = cmdAction.isAction("SpiceDigOcc") ? getSpiceDigArg("SpiceDigTx", dobj) : null;
+        if (spiceArg != null) {
+            String url = "https://broker.spcoco.org/api/v1/";
+            if (cmdAction.isAction("SpiceDigOcc")) {
+                url += "frontend/?occid=" + spiceArg + (occNameArg != null ? "&namestr=" + occNameArg : "");
+            } else {
+                //no frontend for name only
+                url += "frontend/?occid=&namestr=" + spiceArg;
+            }
+            try {
+                URI uri = new URL(url).toURI();
+                Desktop.getDesktop().browse(uri);
+            } catch (Exception x) {
+                log.error(x);
+                x.printStackTrace();
+            }
+        } else {
+            UIRegistry.displayInfoMsgDlg(getResourceString("CollectionObjectBusRules.RecordUnSpiceDiggable"));
+        }
+        cmdAction.setConsumed(true);
     }
 
     private Object getDataForEditing(CommandAction commandAction) {

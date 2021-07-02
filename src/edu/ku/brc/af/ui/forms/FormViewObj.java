@@ -3941,7 +3941,7 @@ public class FormViewObj implements Viewable,
         }
         if (extCnt > 0) {
             final String action = CollectionObject.class.equals(dataClass) ? "SpiceDigOcc" : "SpiceDigTx";
-            ActionListener al = e -> CommandDispatcher.dispatch(new CommandAction("DataEntry", action, ""));
+            ActionListener al = e -> CommandDispatcher.dispatch(new CommandAction("Data_Entry", action, ""));
             IconButton exBtn = (IconButton)UIHelper.createIconBtn("WebPage", IconManager.IconSize.Std20, getResourceString("S2N.SpiceDigBtnOccToolTip"), al);
             /*IconButton exBtn = new IconButton(IconManager.getIcon("WebPage", IconManager.IconSize.Std20), false) {
                 @Override
@@ -3967,7 +3967,7 @@ public class FormViewObj implements Viewable,
             }
             if (extCnt > 1) {
                 //assume Tx for CO.
-                ActionListener al2 = e -> CommandDispatcher.dispatch(new CommandAction("DataEntry", "SpiceDigTx", ""));
+                ActionListener al2 = e -> CommandDispatcher.dispatch(new CommandAction("Data_Entry", "SpiceDigTx", ""));
                 IconButton exBtn2 = (IconButton)UIHelper.createIconBtn("WebPage", IconManager.IconSize.Std20, getResourceString("S2N.SpiceDigBtnTxToolTip"), al2);
                 exBtn2.setEnabled(true);
 
