@@ -3900,7 +3900,7 @@ public class FormViewObj implements Viewable,
 
     protected int extraBtnCnt() {
         if (CollectionObject.class.equals(dataClass)) {
-            return 2;
+            return 1;
         } else if (Taxon.class.equals(dataClass)) {
             if (mvParent != null && mvParent.getMultiViewParent() != null ) {
                 return 0;
