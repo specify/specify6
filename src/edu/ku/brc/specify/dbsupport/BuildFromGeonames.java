@@ -265,7 +265,7 @@ public class BuildFromGeonames
             rs.close();
             
             // Now create all the countries in the geoname table
-            sqlStr = "SELECT asciiname, latitude, longitude, country FROM geoname WHERE fcode LIKE 'PCL%' ORDER BY name";
+            sqlStr = "SELECT asciiname, latitude, longitude, country FROM geoname WHERE fcode LIKE 'PCL%' AND fcode NOT LIKE '%H' ORDER BY name";
             rs = stmt.executeQuery(sqlStr);
             while (rs.next())
             {
