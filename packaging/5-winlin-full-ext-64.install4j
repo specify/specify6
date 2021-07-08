@@ -92,7 +92,7 @@
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" fontSize="12" />
         </text>
       </splashScreen>
-      <java mainClass="edu.ku.brc.specify.config.init.SpecifyDBSetupWizardFrame" vmParameters="-Xmx1024m" arguments="-Dappdir=..">
+      <java mainClass="edu.ku.brc.specify.config.init.SpecifyDBSetupWizardFrame" vmParameters="-Xmx4096m" arguments="-Dappdir=..">
         <classPath>
           <archive location="specify.jar" />
           <scanDirectory location="libs" />
