@@ -150,7 +150,7 @@ public class Disposal extends DataModelObjBase implements java.io.Serializable, 
     /**
      *      * Name institution assigns to the deacession
      */
-    @Column(name = "DisposalNumber", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    @Column(name = "DisposalNumber", unique = false, nullable = false, insertable = true, updatable = true, length = 50)
     public String getDisposalNumber() {
         return this.disposalNumber;
     }
