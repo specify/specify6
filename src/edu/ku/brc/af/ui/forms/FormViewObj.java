@@ -3899,17 +3899,18 @@ public class FormViewObj implements Viewable,
     }
 
     protected int extraBtnCnt() {
-        if (CollectionObject.class.equals(dataClass)) {
-            return 1;
-        } else if (Taxon.class.equals(dataClass)) {
-            if (mvParent != null && mvParent.getMultiViewParent() != null ) {
-                return 0;
-            } else {
-                return 1;
-            }
-        } else {
-            return 0;
-        }
+//        if (CollectionObject.class.equals(dataClass)) {
+//            return 1;
+//        } else if (Taxon.class.equals(dataClass)) {
+//            if (mvParent != null && mvParent.getMultiViewParent() != null ) {
+//                return 0;
+//            } else {
+//                return 1;
+//            }
+//        } else {
+//            return 0;
+//        }
+        return 0;
     }
     /**
      * Adds all the Control buttons to the separator.

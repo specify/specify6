@@ -47,10 +47,10 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.thoughtworks.xstream.XStream;
 
 import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.ui.CustomDialog;
-import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.specify.datamodel.CollectionObject;
+import edu.ku.brc.ui.*;
+
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 /**
  * @author rods
@@ -114,6 +114,15 @@ public class CollapsableSepExtraCompFactory
             JButton btn = UIHelper.createIconBtn("video", IconManager.STD_ICON_SIZE.Std16, UIRegistry.getResourceString("CHSE_VIDEO_TT"), al);
             btn.setEnabled(true);
             return btn;
+        }
+        if (key.startsWith("Form") && !key.startsWith("Form_sub") && (key.endsWith("CollectionObject") || key.endsWith("Taxon"))) {
+            final String action = key.endsWith("CollectionObject") ? "SpiceDigOcc" : "SpiceDigTx";
+            ActionListener al = e -> CommandDispatcher.dispatch(new CommandAction("Data_Entry", action, ""));
+            IconButton exBtn = (IconButton)UIHelper.createIconBtn(action.equalsIgnoreCase("SpiceDigOcc") ? "SpiceDigOccurrence" : "SpiceDigTaxonName",
+                    IconManager.IconSize.Std20, getResourceString(action.equalsIgnoreCase("SpiceDigOcc") ? "S2N.SpiceDigBtnOccToolTip" : "S2N.SpiceDigBtnTxToolTip"), al);
+            exBtn.setEnabled(true);
+            return exBtn;
+
         }
         return null;
     }

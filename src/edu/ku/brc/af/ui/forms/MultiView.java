@@ -371,8 +371,10 @@ public class MultiView extends JPanel
             this.cardPanel = new JPanel(cardLayout);
             this.cardPanel.setVisible(!isOptionOn(options, COLLAPSE_SEPARATOR));
             
-            JComponent extraComp = CollapsableSepExtraCompFactory.getInstance().getComponent("Form", view.getClassName());
-            this.separator = new CollapsableSeparator(titleStr, !isOptionOn(options, NO_MORE_BTN_FOR_SEP), extraComp);
+            boolean includeMore = !isOptionOn(options, NO_MORE_BTN_FOR_SEP);
+            String categoryName = "Form" + (mvParent != null ? "_sub" : "");
+            JComponent extraComp = CollapsableSepExtraCompFactory.getInstance().getComponent(categoryName, view.getClassName());
+            this.separator = new CollapsableSeparator(titleStr, includeMore, extraComp);
             this.separator.setInnerComp(this.cardPanel);
             this.cardPanel.setOpaque(false);
             
