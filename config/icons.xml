@@ -133,6 +133,7 @@
 
     <icon name="SpiceDigOccurrence"       file="SpiceDigOccurrence.png" sizes="all"/>
     <icon name="SpiceDigTaxonName"      file="SpiceDigTaxonName.png" sizes="all"/>
+    <icon name="SNPrefs"      file="SNPrefs.png" sizes="all"/>
 
     <!-- Aliases -->
     <icon name="ShowMap"                   alias="LocalityMapper"/>
