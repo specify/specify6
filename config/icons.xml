@@ -130,7 +130,10 @@
     <icon name="ImageWindow"    file="ImageWindow20x20.png" sizes="NonStd"/>
     <icon name="ZoomIn20"       file="ZoomIn20x20.png" sizes="NonStd"/>
     <icon name="ZoomOut20"      file="ZoomOut20x20.png" sizes="NonStd"/>
-    
+
+    <icon name="SpiceDigOccurrence"       file="SpiceDigOccurrence.png" sizes="all"/>
+    <icon name="SpiceDigTaxonName"      file="SpiceDigTaxonName.png" sizes="all"/>
+    <icon name="SNPrefs"      file="SNPrefs.png" sizes="all"/>
 
     <!-- Aliases -->
     <icon name="ShowMap"                   alias="LocalityMapper"/>

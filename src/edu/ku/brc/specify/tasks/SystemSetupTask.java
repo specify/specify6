@@ -247,23 +247,23 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                 }
             }));
 
-            collNavBox.add(NavBox.createBtnWithTT(getResourceString("GBIF_REGISTRATION_TT"), PICKLIST, "", IconManager.STD_ICON_SIZE, new ActionListener() {
-                public void actionPerformed(ActionEvent e)
-                {
-                    /*PickListEditorDlg dlg = new PickListEditorDlg(null, false, false);
-                    dlg.createUI();
-                    dlg.setSize(400,500);
-                    dlg.setVisible(true);*/
-                    UIRegistry.displayInfoMsgDlg("Insert GBIF registry stuff here.");
-                    GbifSandbox sandbox = new GbifSandbox();
-                    //sandbox.makeADlg();
-                    //sandbox.registerADataset();
-                    //sandbox.deleteADataset();
-                    //sandbox.registerAnOrganization();
-                    //sandbox.registerAGrSciCollCollection();
-                    sandbox.uploadToZenodo(new File("/home/timo/gitspace/specify6/snowman.txt"));
-                }
-            }));
+//            collNavBox.add(NavBox.createBtnWithTT(getResourceString("GBIF_REGISTRATION_TT"), PICKLIST, "", IconManager.STD_ICON_SIZE, new ActionListener() {
+//                public void actionPerformed(ActionEvent e)
+//                {
+//                    /*PickListEditorDlg dlg = new PickListEditorDlg(null, false, false);
+//                    dlg.createUI();
+//                    dlg.setSize(400,500);
+//                    dlg.setVisible(true);*/
+//                    UIRegistry.displayInfoMsgDlg("Insert GBIF registry stuff here.");
+//                    GbifSandbox sandbox = new GbifSandbox();
+//                    //sandbox.makeADlg();
+//                    //sandbox.registerADataset();
+//                    //sandbox.deleteADataset();
+//                    //sandbox.registerAnOrganization();
+//                    //sandbox.registerAGrSciCollCollection();
+//                    sandbox.uploadToZenodo(new File("/home/timo/gitspace/specify6/snowman.txt"));
+//                }
+//            }));
 
             String btnTitle = getResourceString(getI18n("PL_EXPORT"));
             collNavBox.add(NavBox.createBtnWithTT(btnTitle, PICKLIST, "", IconManager.STD_ICON_SIZE, new ActionListener() {

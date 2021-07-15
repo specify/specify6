@@ -332,7 +332,7 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
     public void setStatus(String status) {
         this.status = status;
     }
-    @Column(name = "DeaccessionNumber", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    @Column(name = "DeaccessionNumber", unique = false, nullable = false, insertable = true, updatable = true, length = 50)
     public String getDeaccessionNumber() {
         return deaccessionNumber;
     }
