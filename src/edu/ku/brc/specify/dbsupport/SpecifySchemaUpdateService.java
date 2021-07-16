@@ -688,6 +688,36 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         return true;
     }
 
+    private boolean doAddPrepFlavor(Element e) {
+        String table = e.attributeValue("table");
+        String action = e.attributeValue("action");
+        return ("loan".equals(table) && "NEW_LOAN".equals(action)) ||
+                ("loan".equals(table) && "Edit".equals(action)) ||
+                ("gift".equals(table) && "NEW_GIFT".equals(action)) ||
+                ("gift".equals(table) && "Edit".equals(action));
+    }
+    /**
+     * @return
+     */
+    private boolean fixInteractionsTaskInitResourcesAfterDeaccUpdate() {
+        String sql = "select spappresourceid from spappresource where name like 'InteractionsTaskInit'";
+        List<Object> resources = BasicSQLUtils.querySingleCol(sql);
+        if (resources != null && resources.size() > 0) {
+            for (Object resource : resources) {
+                //the nucyuhler option
+                sql = "delete from spappresourcedata where SpAppResourceDataID=" + resource;
+                if (1 != BasicSQLUtils.update(sql)) {
+                    return false;
+                }
+                sql = "delete from spappresource where name like 'InteractionsTaskInit'";
+                if (resources.size() != BasicSQLUtils.update(sql)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     private boolean fixDnaPrimerFormatterAfterDNAModelUpdate() {
     	String sql = "SELECT a.SpAppResourceID FROM spappresource a inner join spappresourcedata ad on ad.spappresourceid = a.spappresourceid where a.`Name`='DataObjFormatters' and ad.data not like '%name=\"DNAPrimer\"%'";
     	List<Object> resources = BasicSQLUtils.querySingleCol(sql);
@@ -782,7 +812,17 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 /**
                  * @return
                  */
-                fixTypeSearchDefResourcesAfterDeaccUpdate();
+                if (!fixTypeSearchDefResourcesAfterDeaccUpdate()) {
+                    result = false;
+                }
+
+                if (!AppPreferences.getGlobalPrefs().getBoolean("InteractionsTaskAfterDeaccFix", false)) {
+                    if (fixInteractionsTaskInitResourcesAfterDeaccUpdate()) {
+                        AppPreferences.getGlobalPrefs().putBoolean("InteractionsTaskAfterDeaccFix", true);
+                    } else {
+                        result = false;
+                    }
+                }
             }
         	return result;
         } finally {
