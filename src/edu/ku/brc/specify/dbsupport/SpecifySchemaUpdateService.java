@@ -412,8 +412,19 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                                 // Unhide All GUID fields for Schema 1.8
                                 String updateSQL = "UPDATE splocalecontaineritem SET IsHidden=FALSE WHERE LOWER(Name) = 'guid'";
                                 BasicSQLUtils.update(dbConn.getConnection(), updateSQL);
-                                
-                                
+                                //set picklists for disposals/deaccs.
+                                updateSQL = "update splocalecontaineritem i inner join splocalecontainer c on c.splocalecontainerid = i.splocalecontainerid " +
+                                        " set i.picklistname='DisposalAgentRole' where i.name = 'role' and c.name='disposalagent'"; //but what about multiple disciplines? picklist name competition??
+                                BasicSQLUtils.update(dbConn.getConnection(), updateSQL);
+                                updateSQL = "update splocalecontaineritem i inner join splocalecontainer c on c.splocalecontainerid = i.splocalecontainerid " +
+                                        " set i.picklistname='DeaccessionStatus' where i.name = 'status' and c.name='deaccession'"; //but what about multiple disciplines? picklist name competition??
+                                BasicSQLUtils.update(dbConn.getConnection(), updateSQL);
+                                updateSQL = "update splocalecontaineritem i inner join splocalecontainer c on c.splocalecontainerid = i.splocalecontainerid " +
+                                        " set i.picklistname='DeaccessionType' where i.name = 'type' and c.name='deaccession'"; //but what about multiple disciplines? picklist name competition??
+                                BasicSQLUtils.update(dbConn.getConnection(), updateSQL);
+                                updateSQL = "update splocalecontaineritem i inner join splocalecontainer c on c.splocalecontainerid = i.splocalecontainerid " +
+                                        " set i.picklistname='DisposalType' where i.name = 'type' and c.name='disposal'"; //but what about multiple disciplines? picklist name competition??
+                                BasicSQLUtils.update(dbConn.getConnection(), updateSQL);
                             } else
                             {
                                 //CommandDispatcher.dispatch(new CommandAction(APP, APP_REQ_EXIT, null));
@@ -823,11 +834,38 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         result = false;
                     }
                 }
+                if (!AppPreferences.getGlobalPrefs().getBoolean("UniquenessConstraintsFix", false)) {
+                    if (fixUniquenessConstraints(conn)) {
+                        AppPreferences.getGlobalPrefs().putBoolean("InteractionsTaskAfterDeaccFix", true);
+                    } else {
+                        result = false;
+                    }
+                }
             }
         	return result;
         } finally {
             if (dbConn != null) dbConn.close();
         }
+    }
+
+    private boolean fixUniquenessConstraints(Connection conn) {
+        String sql = "alter table preparation add constraint unique collUniqueId(CollectionMemberID, barcode)";
+        if (-1 == BasicSQLUtils.update(conn, sql)) {
+            return false;
+        }
+        sql = "alter table collectionobject add constraint unique collUniqueId(CollectionMemberID, UniqueIdentifier)";
+        if (-1 == BasicSQLUtils.update(conn, sql)) {
+            return false;
+        }
+        sql = "alter table collectingevent add constraint unique dispUniqueId(DisciplineID, UniqueIdentifier)";
+        if (-1 == BasicSQLUtils.update(conn, sql)) {
+            return false;
+        }
+        sql = "alter table locality add constraint unique dispUniqueId(DisciplineID, UniqueIdentifier)";
+        if (-1 == BasicSQLUtils.update(conn, sql)) {
+            return false;
+        }
+        return true;
     }
 
     private void addCollectingEventAuth(Connection conn) {

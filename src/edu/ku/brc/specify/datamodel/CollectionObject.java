@@ -64,8 +64,9 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "collectionobject", uniqueConstraints = {
-        @UniqueConstraint(columnNames={"CollectionID", "CatalogNumber"} ) 
-        } 
+        @UniqueConstraint(columnNames={"CollectionID", "CatalogNumber"} ),
+        @UniqueConstraint(columnNames={"CollectionID", "UniqueIdentifier"} )
+        }
 )
 @org.hibernate.annotations.Table(appliesTo="collectionobject", indexes =
     {   @Index (name="FieldNumberIDX", columnNames={"FieldNumber"}),
@@ -135,6 +136,7 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
     protected Byte                          catalogedDatePrecision;   // Accurate to Year, Month, Day
     protected String                        catalogedDateVerbatim;
     protected String                        guid;
+    protected String uniqueIdentifier;
     protected String                        altCatalogNumber;
     protected Boolean                       deaccessioned;
     protected String                        catalogNumber;
@@ -247,6 +249,7 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
         date1 = null;
         date1Precision = 1;
         guid                  = null;
+        uniqueIdentifier = null;
         altCatalogNumber      = null;
         deaccessioned         = null;
         catalogNumber         = null;
@@ -939,6 +942,18 @@ public void setReservedText3(String reservedText3) {
 
     public void setGuid(String guid) {
         this.guid = guid;
+    }
+
+   /**
+     *
+     */
+    @Column(name = "UniqueIdentifier", unique = false, nullable = true, insertable = true, updatable = false, length = 128)
+    public String getUniqueIdentifier() {
+        return this.uniqueIdentifier;
+    }
+
+    public void setUniqueIdentifier(String uniqueIdentifier) {
+        this.uniqueIdentifier = uniqueIdentifier;
     }
 
     /**

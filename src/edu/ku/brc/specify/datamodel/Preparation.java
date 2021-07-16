@@ -25,20 +25,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
+import javax.persistence.*;
 
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.tasks.InteractionsProcessor;
@@ -60,7 +47,10 @@ import edu.ku.brc.dbsupport.DBConnection;
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
-@Table(name = "preparation")
+@Table(name = "preparation", uniqueConstraints = {
+        @UniqueConstraint(columnNames={"CollectionMemberID", "BarCode"} )
+}
+)
 @org.hibernate.annotations.Table(appliesTo="preparation", indexes =
     {   @Index (name="PreparedDateIDX", columnNames={"preparedDate"}),
         @Index (name="PrepColMemIDX", columnNames={"CollectionMemberID"}),
