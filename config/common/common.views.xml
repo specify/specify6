@@ -2939,9 +2939,9 @@
             <enableRules/>
 
             <columnDef>p,0px,120px,5px,120px,2px,110px,5px,57px,2px,120px,5px,57px,2px,120px,0px,15px,p:g</columnDef>
-            <columnDef os="lnx">135px,2px,200px,5px,135px,2px,153px,5px,125px,2px,153px,0px,15px,p:g</columnDef>
-            <columnDef os="mac">130px,2px,220px,5px,153px,2px,189px,5px,133px,2px,189px,0px,15px,p:g</columnDef>
-            <columnDef os="exp">p,2px,p:g,5px:g,p,2px,p:g(2),5px:g,p,2px,p:g(2),0px,p,p:g</columnDef>
+            <columnDef os="lnx">135px,2px,135px,5px,135px,2px,123px,5px,75px,2px,120px,5px,70px,2px,121px,0px,15px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,140px,5px,153px,2px,149px,5px,93px,2px,146px,5px,90px,2px,146px,0px,15px,p:g</columnDef>
+            <columnDef os="exp">p,2px,min(p;200px),5px:g,p,2px,p:g(2),5px:g,p,2px,p:g(2),5px:g,p,2px,p:g(2),0px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
 
             <rows>
@@ -2961,12 +2961,6 @@
                     <cell type="label" label="Total Items:" initialize="align=right"/>
                     <cell type="field" id="tq" name="totalItems" uitype="text" readonly="true"/>
                 </row>
-                <!--row>
-                    <cell type="label" labelfor="ldnumber1"/>
-                    <cell type="field" id="ldnumber1" name="number1" uitype="formattedtext" />
-                    <cell type="label" labelfor="ldtext2"/>
-                    <cell type="field" id="ldtext2" name="text2" uitype="formattedtext" />
-                </row-->
                 <row>
                     <cell type="label" labelfor="rem"/>
                     <cell type="field" id="rem" name="remarks" uitype="textareabrief" rows="2" colspan="13"/>
@@ -2983,9 +2977,6 @@
                 <row>
                     <cell type="subview" viewname="ExchangeOutDeaccSub" id="444" name="exchangeOuts" colspan="17"/>
                 </row>
-               <!--<row>
-                    <cell type="subview" viewname="PHSub" id="44" name="preparationHolders" colspan="12"/>
-                </row>-->
                 <row>
                     <cell type="separator" label="Attachments" colspan="17"/>
                 </row>
@@ -2999,6 +2990,15 @@
                     <cell type="field" id="11" name="timestampModified" uitype="label" readonly="true"/>
                 </row>
             </rows>
+               <!--<row>
+                    <cell type="subview" viewname="PHSub" id="44" name="preparationHolders" colspan="12"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="ldnumber1"/>
+                    <cell type="field" id="ldnumber1" name="number1" uitype="formattedtext" />
+                    <cell type="label" labelfor="ldtext2"/>
+                    <cell type="field" id="ldtext2" name="text2" uitype="formattedtext" />
+                </row-->
         </viewdef>
 
         <viewdef
@@ -3353,9 +3353,9 @@
             <enableRules/>
 
             <columnDef>105px,2px,130px,5px,151px,2px,130px,5px,90px,2px,130px,70px,15px,p:g</columnDef>
-            <columnDef os="lnx">115px,2px,150px,5px,155px,2px,170px,5px,95px,2px,216px,0px,15px,p:g</columnDef>
-            <columnDef os="mac">130px,2px,165px,5px,175px,2px,190px,5px,111px,2px,245px,0px,15px,p:g</columnDef>
-            <columnDef os="exp">p,2px,p:g(2),5px:g,p,2px,p:g,5px:g,p,2px,p:g(2),0px,p,p:g</columnDef>
+            <columnDef os="lnx">115px,2px,145px,5px,155px,2px,140px,5px,95px,2px,146px,100px,0px,15px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,175px,5px,175px,2px,190px,5px,111px,2px,245px,0px,15px,p:g</columnDef>
+            <columnDef os="exp">p,2px,p:g,5px:g,p,2px,p:g,5px:g,p,2px,p:g,0px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
 
             <rows>
@@ -3393,9 +3393,9 @@
             <enableRules/>
 
             <columnDef>105px,2px,100px,5px,120px,2px,100px,5px,75px,2px,70px,5px,120px,2px,100px,p:g</columnDef>
-            <columnDef os="lnx">115px,2px,137px,5px,135px,2px,130px,5px,133px,2px,81px,15px,155px,p:g</columnDef>
-            <columnDef os="mac">130px,2px,151px,5px,155px,2px,145px,5px,155px,2px,95px,20px,165px,p:g</columnDef>
-            <columnDef os="exp">p,2px,p:g(2),5px:g,p,2px,p:g(2),5px:g,p,2px,p:g(2),15px,p:g</columnDef>
+            <columnDef os="lnx">115px,2px,117px,5px,130px,2px,120px,5px,90px,2px,70px,5px,135px,2px,108px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,131px,5px,145px,2px,145px,5px,105px,2px,85px,5px,135px,2px,133px,p:g</columnDef>
+            <columnDef os="exp">p,2px,p:g(2),5px:g,p,2px,p:g(2),5px:g,p,2px,p:g(2),5px:g,p,2px,p:g(2),p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
 
             <rows>
@@ -4426,8 +4426,8 @@
 
             <columnDef>105px,2px,170px,5px,125px,2px,150px,5px,96px,2px,170px,0px,10px,p,p:g</columnDef>
             <columnDef os="lnx">115px,2px,185px,5px,150px,2px,165px,5px,101px,2px,185px,0px,15px,p,p:g</columnDef>
-            <columnDef os="mac">130px,2px,204px,5px,170px,2px,183px,5px,126px,2px,203px,0px,15px,p,p:g</columnDef>
-            <columnDef os="exp">p,2px,p:g(2),5px:g,p,2px,p:g(2),5px,p:g,2px,p:g(2),0px,p,p:g</columnDef>
+            <columnDef os="mac">130px,2px,214px,5px,170px,2px,183px,5px,126px,2px,203px,0px,15px,p,p:g</columnDef>
+            <columnDef os="exp">p,2px,p:g(2),5px:g,p,2px,p:g(2),5px,p:g,2px,p:g(2),0px,10px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="1dlu"/>
 
             <rows>
@@ -4511,9 +4511,9 @@
             <desc><![CDATA[Loan viewing form.]]></desc>
 
             <columnDef>105px,2px,100px,5px,120px,2px,110px,5px,75px,2px,70px,5px,120px,2px,100px,p:g</columnDef>
-            <columnDef os="lnx">115px,2px,137px,5px,135px,2px,130px,5px,133px,2px,81px,15px,155px,p:g</columnDef>
-            <columnDef os="mac">130px,2px,151px,5px,155px,2px,145px,5px,155px,2px,95px,20px,165px,p:g</columnDef>
-            <columnDef os="exp">p,2px,p:g(2),5px:g,p,2px,p:g(2),5px:g,p,2px,p:g(2),15px,p:g</columnDef>
+            <columnDef os="lnx">115px,2px,117px,5px,130px,2px,120px,5px,90px,2px,70px,5px,135px,2px,108px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,131px,5px,145px,2px,135px,5px,105px,2px,85px,5px,135px,2px,143px,p:g</columnDef>
+            <columnDef os="exp">p,2px,p:g(2),5px:g,p,2px,p:g(2),5px:g,p,2px,p:g(2),5px:g,p,2px,p:g(2),p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
 
             <rows>
@@ -5289,7 +5289,7 @@
 
             <columnDef>105px,2px,130px,5px,60px,2px,100px,5px,100px,2px,141px,15px,165px,0px,10px,p:g</columnDef>
             <columnDef os="lnx">115px,2px,146px,5px,75px,2px,100px,5px,115px,2px,155px,15px,180px,0px,15px,p:g</columnDef>
-            <columnDef os="mac">130px,2px,160px,5px,86px,2px,115px,5px,130px,2px,185px,10px,200px,0px,15px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,160px,5px,86px,2px,125px,5px,130px,2px,185px,10px,200px,0px,15px,p:g</columnDef>
             <columnDef os="exp">p,2px,min(p;150px),5px:g,p,2px,p:g(2),5px:g,p,2px,p:g(2),5px,p,0px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="1dlu"/>
 
@@ -5382,9 +5382,9 @@
             <desc><![CDATA[Gift viewing form.]]></desc>
 
             <columnDef>105px,2px,100px,5px,120px,2px,110px,5px,75px,2px,70px,5px,120px,2px,100px,p:g</columnDef>
-            <columnDef os="lnx">115px,2px,137px,5px,135px,2px,130px,5px,133px,2px,81px,15px,155px,p:g</columnDef>
-            <columnDef os="mac">130px,2px,151px,5px,155px,2px,145px,5px,155px,2px,95px,20px,165px,p:g</columnDef>
-            <columnDef os="exp">p,2px,p:g(2),5px:g,p,2px,p:g(2),5px:g,p,2px,p:g(2),15px,p:g</columnDef>
+            <columnDef os="lnx">115px,2px,117px,5px,130px,2px,120px,5px,90px,2px,70px,5px,135px,2px,108px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,131px,5px,145px,2px,145px,5px,105px,2px,85px,5px,135px,2px,133px,p:g</columnDef>
+            <columnDef os="exp">p,2px,p:g(2),5px:g,p,2px,p:g(2),5px:g,p,2px,p:g(2),5px:g,p,2px,p:g(2),p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
 
             <rows>
