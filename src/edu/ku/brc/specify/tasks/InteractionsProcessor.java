@@ -289,10 +289,9 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
             List<RecordSetIFace>   colObjRSList = rsTask.getRecordSets(CollectionObject.getClassTableId());
 
             // If the List is empty then
-            if (rsList.size() == 0 && colObjRSList.size() == 0 && (isFor != forAcc || currPrepProvider != null))
+            if (rsList.size() == 0 && colObjRSList.size() == 0 && isFor == forAcc && currPrepProvider != null)
             {
                 recordSet = task.askForDataObjRecordSet(CollectionObject.class, catNumField, isFor == forAcc);
-
             } else {
                 ASK_TYPE rv = askSourceOfPreps(rsList.size() > 0, colObjRSList.size() > 0, currPrepProvider);
                 if (rv == ASK_TYPE.ChooseRS) {
