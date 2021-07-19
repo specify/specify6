@@ -131,8 +131,10 @@
     <icon name="ZoomIn20"       file="ZoomIn20x20.png" sizes="NonStd"/>
     <icon name="ZoomOut20"      file="ZoomOut20x20.png" sizes="NonStd"/>
 
-    <icon name="SpiceDigOccurrence"       file="SNPrefs.png" sizes="all"/>
-    <icon name="SpiceDigTaxonName"      file="SNPrefs.png" sizes="all"/>
+    <icon name="SpiceDigOccurrence"       file="Spnetwork_spacer.png" sizes="all"/>
+    <icon name="SpiceDigTaxonName"      file="Spnetwork_spacer.png" sizes="all"/>
+    <icon name="SpiceDigOccurrenceFrm"       file="SNPrefs.png" sizes="all"/>
+    <icon name="SpiceDigTaxonNameFrm"      file="SNPrefs.png" sizes="all"/>
     <icon name="SNPrefs"      file="SNPrefs.png" sizes="all"/>
 
     <!-- Aliases -->
