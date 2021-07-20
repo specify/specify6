@@ -741,7 +741,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                     }
                     Collections.sort(list);
 
-                    boolean cont = true; //This messes up the stand-alone schemalocalizer app.
+                    boolean cont = false; //This messes up the stand-alone schemalocalizer app. Set to false for stand-alone
                     while (cont) {
                         ToggleButtonChooserDlg<DisplayLocale> dlg = new ToggleButtonChooserDlg<>((Dialog)UIRegistry.getMostRecentWindow(),
                                 "CHOOSE_LOCALE", list, ToggleButtonChooserPanel.Type.RadioButton);
