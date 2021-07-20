@@ -721,7 +721,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     return false;
                 }
                 sql = "delete from spappresource where SpAppResourceID=" + resource;
-                if (resources.size() != BasicSQLUtils.update(sql)) {
+                if (1 != BasicSQLUtils.update(sql)) {
                     return false;
                 }
             }
