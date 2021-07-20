@@ -297,28 +297,21 @@
       	<alias name="Agent" field="createdByAgent" />
       	<alias name="Agent" field="modifiedByAgent" />
     </table>
-    
-    <table name="Disposal">
-      <table name="DisposalAgent" field="disposalAgents" >
-      	<alias name="Agent"/>
-      </table>
-        <table name="DisposalAttachment" field="disposalAttachments">
+
+    <table name="Deaccession">
+        <alias name="Disposal" field="disposals"/>
+        <alias name="Gift" field="gifts"/>
+        <alias name="ExchangeOut" field="exchangeOuts"/>
+        <alias name="Agent" field="createdByAgent" />
+        <alias name="Agent" field="modifiedByAgent" />
+        <table name="DeaccessionAttachment" field="deaccessionAttachments">
             <alias name="Attachment"/>
         </table>
-      <alias name="DisposalPreparation" field="disposalPreparations" />
-        <alias name="Deaccession" field="deaccession" />
-      	<alias name="Agent" field="createdByAgent" />
-      	<alias name="Agent" field="modifiedByAgent" />
+        <table name="DeaccessionAgent" field="deaccessionAgents">
+            <alias name="Agent"/>
+        </table>
     </table>
 
-	<table name="DisposalPreparation">
-      	<alias name="Preparation"/>
-		<alias name="Disposal"/>
-      	<alias name="Agent" field="createdByAgent" />
-      	<alias name="Agent" field="modifiedByAgent" />
-      	<alias name="LoanReturnPreparation" field="loanReturnPreparation"/>
-	</table>
-	
     <table name="Determination" field="determinations" title="Determinations">
     	<alias name="Taxon"/>
     	<alias name="Taxon" field="preferredTaxon" />
@@ -330,7 +323,28 @@
         <alias name="Agent" field="createdByAgent" />
         <alias name="Agent" field="modifiedByAgent" />
     </table>
-    
+
+    <table name="Disposal">
+        <table name="DisposalAgent" field="disposalAgents" >
+            <alias name="Agent"/>
+        </table>
+        <table name="DisposalAttachment" field="disposalAttachments">
+            <alias name="Attachment"/>
+        </table>
+        <alias name="DisposalPreparation" field="disposalPreparations" />
+        <alias name="Deaccession" field="deaccession" />
+        <alias name="Agent" field="createdByAgent" />
+        <alias name="Agent" field="modifiedByAgent" />
+    </table>
+
+    <table name="DisposalPreparation">
+        <alias name="Preparation"/>
+        <alias name="Disposal"/>
+        <alias name="Agent" field="createdByAgent" />
+        <alias name="Agent" field="modifiedByAgent" />
+        <alias name="LoanReturnPreparation" field="loanReturnPreparation"/>
+    </table>
+
     <table name="ExchangeIn" >
     	<alias name="AddressOfRecord" />
     	<alias name="Agent" field="agentCatalogedBy"/>
@@ -456,20 +470,6 @@
       	<alias name="Agent" field="createdByAgent" />
       	<alias name="Agent" field="modifiedByAgent" />   
       	<alias name="ReferenceWork" field="referenceWorks"/>
-    </table>
- 
-    <table name="Deaccession">
-        <alias name="Disposal" field="disposals"/>
-        <alias name="Gift" field="gifts"/>
-        <alias name="ExchangeOut" field="exchangeOuts"/>
-        <alias name="Agent" field="createdByAgent" />
-        <alias name="Agent" field="modifiedByAgent" />
-        <table name="DeaccessionAttachment" field="deaccessionAttachments">
-            <alias name="Attachment"/>
-        </table>
-        <table name="DeaccessionAgent" field="deaccessionAgents">
-            <alias name="Agent"/>
-        </table>
     </table>
 
      <table name="LithoStrat" >
