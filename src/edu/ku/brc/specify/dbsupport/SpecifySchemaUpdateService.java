@@ -715,12 +715,12 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         List<Object> resources = BasicSQLUtils.querySingleCol(sql);
         if (resources != null && resources.size() > 0) {
             for (Object resource : resources) {
-                //the nucyuhler option
-                sql = "delete from spappresourcedata where SpAppResourceDataID=" + resource;
+                //the nukeyuhler option
+                sql = "delete from spappresourcedata where SpAppResourceID=" + resource;
                 if (1 != BasicSQLUtils.update(sql)) {
                     return false;
                 }
-                sql = "delete from spappresource where name like 'InteractionsTaskInit'";
+                sql = "delete from spappresource where SpAppResourceID=" + resource;
                 if (resources.size() != BasicSQLUtils.update(sql)) {
                     return false;
                 }
