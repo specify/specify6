@@ -836,7 +836,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 }
                 if (!AppPreferences.getGlobalPrefs().getBoolean("UniquenessConstraintsFix", false)) {
                     if (fixUniquenessConstraints(conn)) {
-                        AppPreferences.getGlobalPrefs().putBoolean("InteractionsTaskAfterDeaccFix", true);
+                        AppPreferences.getGlobalPrefs().putBoolean("UniquenessConstraintsFix", true);
                     } else {
                         result = false;
                     }
