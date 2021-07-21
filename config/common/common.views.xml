@@ -4890,9 +4890,9 @@
                 settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[Gift viewing form.]]></desc>
 
-            <columnDef>105px,2px,130px,5px,60px,2px,100px,5px,100px,2px,141px,15px,165px,0px,15px,p:g</columnDef>
-            <columnDef os="lnx">115px,2px,146px,5px,75px,2px,100px,5px,115px,2px,155px,15px,180px,0px,15px,p:g</columnDef>
-            <columnDef os="mac">130px,2px,160px,5px,86px,2px,115px,5px,130px,2px,185px,10px,200px,0px,15px,p:g</columnDef>
+            <columnDef>105px,2px,120px,5px,70px,2px,100px,5px,100px,2px,141px,15px,165px,0px,15px,p:g</columnDef>
+            <columnDef os="lnx">115px,2px,130px,5px,81px,2px,110px,5px,115px,2px,155px,15px,180px,0px,15px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,140px,5px,96px,2px,125px,5px,130px,2px,185px,10px,200px,0px,15px,p:g</columnDef>
             <columnDef os="exp">p,2px,min(p;150px),5px:g,p,2px,p:g(2),5px:g,p,2px,p:g(2),5px,p,0px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="1dlu"/>
 
