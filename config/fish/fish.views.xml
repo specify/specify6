@@ -181,11 +181,11 @@
                         <rows>
 							<row>
 								<cell type="label" label="Total Count:" initialize="align=right"/>
-								<cell type="field" id="tq" name="totalCount" uitype="text" readonly="true"/>
+								<cell type="field" id="tq" name="totalCountAmt" uitype="text" readonly="true"/>
 							</row>
 							<row>
 								<cell type="label" label="Current Total Count:" initialize="align=right"/>
-								<cell type="field" id="ti" name="currentTotalCount" uitype="text" readonly="true"/>
+								<cell type="field" id="ti" name="actualTotalCountAmt" uitype="text" readonly="true"/>
 							</row>
 							<row>
 								<cell type="label" labelfor="11"/>
