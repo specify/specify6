@@ -955,7 +955,9 @@ public class InteractionsTask extends BaseTask
             prepToLoanPrepHash = new Hashtable<Integer, LoanPreparation>();
             for (LoanPreparation lp : existingLoan.getLoanPreparations()) {
                 if (lp.getPreparation() !=  null) {
-                    prepToLoanPrepHash.put(lp.getPreparation().getId(), lp);
+                    if (lp.getPreparation() != null) {
+                        prepToLoanPrepHash.put(lp.getPreparation().getId(), lp);
+                    }
                 }
             }
         }
@@ -1177,7 +1179,9 @@ public class InteractionsTask extends BaseTask
             prepToGiftPrepHash = new Hashtable<Integer, GiftPreparation>();
             for (GiftPreparation lp : existingGift.getGiftPreparations())
             {
-                prepToGiftPrepHash.put(lp.getPreparation().getId(), lp);
+                if (lp.getPreparation() != null) {
+                    prepToGiftPrepHash.put(lp.getPreparation().getId(), lp);
+                }
             }
         }
         
@@ -1299,7 +1303,9 @@ public class InteractionsTask extends BaseTask
         if (existingExchangeOut != null) {
             prepToExchangeOutPrepHash = new Hashtable<Integer, ExchangeOutPrep>();
             for (ExchangeOutPrep lp : existingExchangeOut.getExchangeOutPreps()) {
-                prepToExchangeOutPrepHash.put(lp.getPreparation().getId(), lp);
+                if (lp.getPreparation() != null) {
+                    prepToExchangeOutPrepHash.put(lp.getPreparation().getId(), lp);
+                }
             }
         }
 
@@ -1383,7 +1389,9 @@ public class InteractionsTask extends BaseTask
             prepToDisposalPrepHash = new Hashtable<>();
             for (DisposalPreparation lp : existingDisposal.getDisposalPreparations())
             {
-                prepToDisposalPrepHash.put(lp.getPreparation().getId(), lp);
+                if (lp.getPreparation() != null) {
+                    prepToDisposalPrepHash.put(lp.getPreparation().getId(), lp);
+                }
             }
         }
 
