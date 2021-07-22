@@ -109,6 +109,7 @@ public class S2nPrefsPanel  extends GenericPrefsPanel implements PrefsSavable, P
         statDsp = fvo.getCompById("S2nStatus");
         if (statDsp != null) {
             statDsp.setText(getStynthyStatus(isOn));
+            statDsp.setFont(statDsp.getFont().deriveFont(Font.ITALIC));
         }
         sendBtn      = form.getCompById("SendData"); //$NON-NLS-1$
         sendBtn.addActionListener(e -> buildStinkyDwCArchive() );
