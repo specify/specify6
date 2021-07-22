@@ -1,6 +1,7 @@
 package edu.ku.brc.specify.datamodel;
 
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.tasks.InteractionsProcessor;
 import edu.ku.brc.specify.tasks.InteractionsTask;
 import org.apache.log4j.Logger;
 import org.hibernate.annotations.Cascade;
@@ -646,13 +647,14 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
      * @return
      */
     protected static Integer countContents(boolean countQuantity, int id) {
+        java.sql.Connection conn = InteractionsProcessor.getConnForAvailableCounts();
         String sql = "select disposalid, " + Disposal.getClassTableId() + " from disposal where deaccessionid = " + id
         +  " union select giftid, " + Gift.getClassTableId() + " from gift where deaccessionid = " + id
         + " union select exchangeoutid, " + ExchangeOut.getClassTableId() + " from exchangeout where deaccessionid = " + id;
-        List<Object[]> interactions = BasicSQLUtils.query(sql);
+        List<Object[]> interactions = BasicSQLUtils.query(conn, sql);
         Integer result = 0;
         for (Object[] i : interactions) {
-            result += BasicSQLUtils.getCountAsInt(InteractionsTask.getCountContentsSql(countQuantity, false, (Integer)i[0], (Integer)i[1]));
+            result += BasicSQLUtils.getCountAsInt(conn, InteractionsTask.getCountContentsSql(countQuantity, false, (Integer)i[0], (Integer)i[1]));
         }
         return result;
     }

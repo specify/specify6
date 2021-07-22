@@ -534,34 +534,52 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
     public static int DISPOSAL_ADJUST_IDX = 3;
 
     public static String getAdjustedCountForPrepSQL(String where, boolean[] settings) {
-    String sql = "select p.preparationid, coalesce(p.countamt, 0)";
-    String adjusters = "";
-    String joiners = "";
-    if (settings[LOAN_ADJUST_IDX]) {
-        adjusters += "coalesce(sum(lp.unavailable), 0)";
-        joiners += " left join (select preparationid, sum(coalesce(quantity, 0) - coalesce(quantityresolved, 0)) unavailable from loanpreparation group by 1) lp on lp.preparationid = p.preparationid";
+        String sql = "select p.preparationid, coalesce(p.countamt, 0)";
+        String adjusters = "";
+        String joiners = "";
+        if (settings[LOAN_ADJUST_IDX]) {
+            adjusters += "coalesce(sum(lp.unavailable), 0)";
+            joiners += " left join (select preparationid, sum(coalesce(quantity, 0) - coalesce(quantityresolved, 0)) unavailable from loanpreparation group by 1) lp on lp.preparationid = p.preparationid";
+        }
+        if (settings[GIFT_ADJUST_IDX]) {
+            adjusters += (adjusters.length() > 0 ? "+" : "") + "coalesce(sum(gp.unavailable), 0)";
+            joiners += " left join (select preparationid, sum(coalesce(quantity, 0)) unavailable from giftpreparation group by 1) gp on gp.preparationid = p.preparationid";
+        }
+        if (settings[EXCHANGEOUT_ADJUST_IDX]) {
+            adjusters += (adjusters.length() > 0 ? "+" : "") + "coalesce(sum(ep.unavailable), 0)";
+            joiners += " left join (select preparationid, sum(coalesce(quantity, 0)) unavailable from exchangeoutprep group by 1) ep on ep.preparationid = p.preparationid";
+        }
+        if (settings[DISPOSAL_ADJUST_IDX]) {
+            adjusters += (adjusters.length() > 0 ? "+" : "") + "coalesce(sum(dp.unavailable), 0)";
+            joiners += " left join (select preparationid, sum(coalesce(quantity, 0)) unavailable from disposalpreparation group by 1) dp on dp.preparationid = p.preparationid";
+        }
+        if (adjusters.length() > 0) {
+            sql += " - (" + adjusters + ") available from preparation p " + joiners;
+        }
+        if (where != null) {
+            sql += " where " + where;
+        }
+        sql += " group by 1";
+        return sql;
     }
-    if (settings[GIFT_ADJUST_IDX]) {
-        adjusters += (adjusters.length() > 0 ? "+" : "") + "coalesce(sum(gp.unavailable), 0)";
-        joiners += " left join (select preparationid, sum(coalesce(quantity, 0)) unavailable from giftpreparation group by 1) gp on gp.preparationid = p.preparationid";
+
+    /**
+     *
+     * @return
+     */
+    public static java.sql.Connection getConnForAvailableCounts() {
+        String sqlMode = BasicSQLUtils.querySingleObj("select @@sql_mode");
+        log.debug("-------------- " + sqlMode);
+        Connection result = DBConnection.getInstance().createConnection();
+        int updated = BasicSQLUtils.update(result, "set sql_mode = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION'");
+        if (updated < 0) {
+            log.warn("error setting sql_mode");
+        }
+        sqlMode = BasicSQLUtils.querySingleObj(result,"select @@sql_mode");
+        log.debug("-------------- " + sqlMode);
+        return result;
     }
-    if (settings[EXCHANGEOUT_ADJUST_IDX]) {
-        adjusters += (adjusters.length() > 0 ? "+" : "") + "coalesce(sum(ep.unavailable), 0)";
-        joiners += " left join (select preparationid, sum(coalesce(quantity, 0)) unavailable from exchangeoutprep group by 1) ep on ep.preparationid = p.preparationid";
-    }
-    if (settings[DISPOSAL_ADJUST_IDX]) {
-        adjusters += (adjusters.length() > 0 ? "+" : "") + "coalesce(sum(dp.unavailable), 0)";
-        joiners += " left join (select preparationid, sum(coalesce(quantity, 0)) unavailable from disposalpreparation group by 1) dp on dp.preparationid = p.preparationid";
-    }
-    if (adjusters.length() > 0) {
-        sql += " - (" + adjusters +") available from preparation p " + joiners;
-    }
-    if (where != null) {
-        sql += " where " + where;
-    }
-    sql += " group by 1";
-    return sql;
-}
+
 
     //--------------------------------------------------------------
     // Background loader class for loading a large number of loan preparations
@@ -656,22 +674,6 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
 //            }
 //            sql += " group by 1";
 //            return sql;
-        }
-        /**
-         *
-         * @return
-         */
-        protected java.sql.Connection getConnForAvailableCounts() {
-            String sqlMode = BasicSQLUtils.querySingleObj("select @@sql_mode");
-            log.debug("-------------- " + sqlMode);
-            Connection result = DBConnection.getInstance().createConnection();
-            int updated = BasicSQLUtils.update(result, "set sql_mode = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION'");
-            if (updated < 0) {
-                log.warn("error setting sql_mode");
-            }
-            sqlMode = BasicSQLUtils.querySingleObj(result,"select @@sql_mode");
-            log.debug("-------------- " + sqlMode);
-            return result;
         }
 
         /**
