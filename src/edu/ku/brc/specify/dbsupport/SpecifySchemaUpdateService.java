@@ -425,6 +425,9 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                                 updateSQL = "update splocalecontaineritem i inner join splocalecontainer c on c.splocalecontainerid = i.splocalecontainerid " +
                                         " set i.picklistname='DisposalType' where i.name = 'type' and c.name='disposal'"; //but what about multiple disciplines? picklist name competition??
                                 BasicSQLUtils.update(dbConn.getConnection(), updateSQL);
+                                updateSQL = "update splocalecontaineritem i inner join splocalecontainer c on c.splocalecontainerid = i.splocalecontainerid " +
+                                        " set i.picklistname='DeaccessionAgentRole' where i.name = 'role' and c.name='deaccessionagent'"; //but what about multiple disciplines? picklist name competition??
+                                BasicSQLUtils.update(dbConn.getConnection(), updateSQL);
                             } else
                             {
                                 //CommandDispatcher.dispatch(new CommandAction(APP, APP_REQ_EXIT, null));
@@ -2779,6 +2782,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     String[][] pls = {
                             {"DeaccessionType", "Gift", "Destructive Sampling", "Exchange", "Lost"},
                             {"DeaccessionStatus", "No Data", "In Process", "Complete"},
+                            {"DeaccessionAgentRole", "Approver", "Other", "Preparer", "Receiver", "Sponsor", "Staff", "Student"},
                             {"DisposalAgentRole", "Approver", "Other", "Preparer", "Receiver", "Sponsor", "Staff", "Student"},
                             {"DisposalType", "Destroyed", "Destructive Sampling", "Lost"}
                     };
