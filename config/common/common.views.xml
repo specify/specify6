@@ -2938,9 +2938,9 @@
             <desc><![CDATA[The Deaccession form.]]></desc>
             <enableRules/>
 
-            <columnDef>p,0px,120px,5px,120px,2px,110px,5px,57px,2px,120px,5px,57px,2px,120px,0px,15px,p:g</columnDef>
-            <columnDef os="lnx">135px,2px,135px,5px,135px,2px,123px,5px,75px,2px,120px,5px,70px,2px,121px,0px,15px,p:g</columnDef>
-            <columnDef os="mac">130px,2px,140px,5px,153px,2px,149px,5px,93px,2px,146px,5px,90px,2px,146px,0px,15px,p:g</columnDef>
+            <columnDef>p,0px,110px,5px,120px,2px,110px,5px,52px,2px,140px,5px,52px,2px,120px,0px,15px,p:g</columnDef>
+            <columnDef os="lnx">135px,2px,120px,5px,135px,2px,120px,5px,65px,2px,148px,5px,70px,2px,121px,0px,15px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,140px,5px,153px,2px,149px,5px,73px,2px,166px,5px,90px,2px,146px,0px,15px,p:g</columnDef>
             <columnDef os="exp">p,2px,min(p;200px),5px:g,p,2px,p:g(2),5px:g,p,2px,p:g(2),5px:g,p,2px,p:g(2),0px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
 
@@ -3091,9 +3091,9 @@
             <desc><![CDATA[The Deaccession pop up form.]]></desc>
             <enableRules/>
 
-            <columnDef>100px,2px,110px,5px,130px,2px,114px,5px,60px,2px,120px,5px,70px,2px,100px,0px,15px,p:g</columnDef>
-            <columnDef os="lnx">135px,2px,120px,5px,135px,2px,123px,5px,75px,2px,133px,5px,63px,2px,100px,0px,15px,p:g</columnDef>
-            <columnDef os="mac">130px,2px,140px,5px,153px,2px,149px,5px,93px,2px,159px,5px,73px,2px,110px,0px,15px,p:g</columnDef>
+            <columnDef>100px,2px,110px,5px,120px,2px,114px,5px,55px,2px,140px,5px,65px,2px,100px,0px,15px,p:g</columnDef>
+            <columnDef os="lnx">135px,2px,120px,5px,135px,2px,123px,5px,65px,2px,143px,5px,63px,2px,100px,0px,15px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,140px,5px,153px,2px,149px,5px,73px,2px,179px,5px,73px,2px,110px,0px,15px,p:g</columnDef>
             <columnDef os="exp">p,2px,p:g,5px:g,p,2px,p:g(2),5px:g,p,2px,p:g(2),5px:g,p,2px,p:g(2),0px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
 
