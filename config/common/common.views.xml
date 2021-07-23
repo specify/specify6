@@ -453,7 +453,6 @@
             <desc><![CDATA[The Disposal form.]]></desc>
             <altviews>
                 <altview name="DisposalDeaccSub View" viewdef="DisposalDeaccSub" mode="view" default="true"/>
-                <altview name="DisposalDeaccSub Edit" viewdef="DisposalDeaccSub" mode="edit"/>
             </altviews>
         </view>
 
@@ -464,9 +463,7 @@
             <desc><![CDATA[Subform within the Disposal form.]]></desc>
             <altviews>
                 <altview name="DisposalDeaccPreparation View" viewdef="DisposalDeaccPreparation" mode="view"/>
-                <altview name="DisposalDeaccPreparation Edit" viewdef="DisposalDeaccPreparation" mode="edit" default="true"/>
                 <altview name="DisposalDeaccPreparation Table View" viewdef="DisposalDeaccPreparation Table" mode="view"/>
-                <altview name="DisposalDeaccPreparation Table Edit" viewdef="DisposalDeaccPreparation Table" mode="edit"/>
             </altviews>
         </view>
 
@@ -630,7 +627,6 @@
             <desc><![CDATA[Exchange Out sub form]]></desc>
             <altviews>
                 <altview name="ExchangeOutDeaccSub View" viewdef="ExchangeOutDeaccSub" mode="view" default="true"/>
-                <altview name="ExchangeOutDeaccSub Edit" viewdef="ExchangeOutDeaccSub" mode="edit"/>
             </altviews>
         </view>
 
@@ -640,9 +636,7 @@
             <desc><![CDATA[Exchange Out display form]]></desc>
             <altviews>
                 <altview name="ExchangeOutDeaccPrep Table View" viewdef="ExchangeOutDeaccPrep Table" mode="view"/>
-                <altview name="ExchangeOutDeaccPrep Table Edit" viewdef="ExchangeOutDeaccPrep Table" mode="edit"/>
                 <altview name="ExchangeOutDeaccPrep View" viewdef="ExchangeOutDeaccPrep" mode="view" default="true"/>
-                <altview name="ExchangeOutDeaccPrep Edit" viewdef="ExchangeOutDeaccPrep" mode="edit"/>
             </altviews>
         </view>
 
@@ -801,7 +795,6 @@
             <desc><![CDATA[Gift sub form]]></desc>
             <altviews>
                 <altview name="GiftDeaccSub View" viewdef="GiftDeaccSub" mode="view" default="true"/>
-                <altview name="GiftDeaccSub Edit" viewdef="GiftDeaccSub" mode="edit"/>
             </altviews>
         </view>
 
@@ -812,9 +805,7 @@
             <desc><![CDATA[Gift display form]]></desc>
             <altviews>
                 <altview name="GiftDeaccItems Table View" viewdef="GiftDeaccItems Table" mode="view"/>
-                <altview name="GiftDeaccItems Table Edit" viewdef="GiftDeaccItems Table" mode="edit"/>
                 <altview name="GiftDeaccItems View" viewdef="GiftDeaccItems" mode="view" default="true"/>
-                <altview name="GiftDeaccItems Edit" viewdef="GiftDeaccItems" mode="edit"/>
             </altviews>
         </view>
 
@@ -2969,10 +2960,10 @@
                     <cell type="subview" viewname="DeaccessionAgent" id="8" name="deaccessionAgents" desc="Agents" colspan="17" rows="2"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="DisposalDeaccSub" id="44" name="disposals" colspan="17" readonly="true"/>
+                    <cell type="subview" viewname="DisposalDeaccSub" id="44" name="disposals" colspan="17" />
                 </row>
                 <row>
-                    <cell type="subview" viewname="GiftDeaccSub" id="4" name="gifts" colspan="17" readonly="true"/>
+                    <cell type="subview" viewname="GiftDeaccSub" id="4" name="gifts" colspan="17" />
                 </row>
                 <row>
                     <cell type="subview" viewname="ExchangeOutDeaccSub" id="444" name="exchangeOuts" colspan="17"/>
@@ -3218,7 +3209,7 @@
                     <cell type="subview" viewname="DisposalAgent" id="8" name="disposalAgents" desc="Agents" colspan="13" rows="3"/>
                 </row> 
                 <row>
-                    <cell type="subview" viewname="DisposalPreparation" id="4" name="disposalPreparations" colspan="13"/>
+                    <cell type="subview" viewname="DisposalPreparation" id="4" name="disposalPreparations" defaulttype="table" colspan="13"/>
                 </row>
                 <row>
                     <cell type="separator" label="" colspan="13"/>
@@ -5588,7 +5579,7 @@
                     <cell type="subview" viewname="Shipment" id="11" name="shipments" colspan="17"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="LoanItems" id="10" name="loanPreparations" defaulttype="table" colspan="17" rows="4"/>
+                    <cell type="subview" viewname="LoanItems" id="10" name="loanPreparations" colspan="17" rows="4"/>
                 </row>
                 <row>
                     <cell type="panel" id="17" name="srcPanel" coldef="130px,2px,p:g,5px,130px,2px,p:g" rowdef="p" colspan="17">
