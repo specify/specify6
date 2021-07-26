@@ -2931,7 +2931,7 @@
 
             <columnDef>105px,0px,110px,5px,120px,2px,110px,5px,52px,2px,140px,5px,52px,2px,120px,0px,15px,p:g</columnDef>
             <columnDef os="lnx">135px,2px,120px,5px,135px,2px,120px,5px,65px,2px,148px,5px,70px,2px,121px,0px,15px,p:g</columnDef>
-            <columnDef os="mac">130px,2px,140px,5px,153px,2px,149px,5px,73px,2px,166px,5px,90px,2px,146px,0px,15px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,140px,5px,153px,2px,149px,5px,63px,2px,176px,5px,80px,2px,156px,0px,15px,p:g</columnDef>
             <columnDef os="exp">p,2px,min(p;200px),5px:g,p,2px,p:g(2),5px:g,p,2px,p:g(2),5px:g,p,2px,p:g(2),0px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
 
