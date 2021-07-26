@@ -231,6 +231,17 @@
             <picklistitem title="Complete" value="Complete"/>
         </items>
     </picklist>
+    <picklist name="DeaccessionAgentRole" issystem="true" type="0" readonly="true" sizelimit="12">
+      <items>
+        <picklistitem title="Approver" value="Approver"/>
+        <picklistitem title="Other" value="Other"/>
+        <picklistitem title="Preparer" value="Preparer"/>
+        <picklistitem title="Receiver" value="Receiver"/>
+        <picklistitem title="Sponsor" value="Sponsor"/>
+        <picklistitem title="Staff" value="Staff"/>
+        <picklistitem title="Student" value="Student"/>
+      </items>
+    </picklist>
     <picklist name="DisposalAgentRole" issystem="true" type="0" readonly="true" sizelimit="12">
         <items>
             <picklistitem title="Approver" value="Approver"/>
