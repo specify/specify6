@@ -118,7 +118,7 @@ public class LoanReturnPreparationBusRules extends BaseBusRules implements Comma
     {
         super.initialize(viewableArg);
         
-        if (formViewObj != null && formViewObj.getRsController() != null)
+        if (formViewObj != null && formViewObj.getRsController() != null && formViewObj.isEditing())
         {
             formViewObj.setSkippingAttach(true);
             loanPrepFVO = formViewObj.getMVParent().getMultiViewParent().getCurrentViewAsFormViewObj();
@@ -212,7 +212,7 @@ public class LoanReturnPreparationBusRules extends BaseBusRules implements Comma
     {
         super.afterFillForm(dataObj);
         
-        if (dataObj != null && formViewObj != null && formViewObj.getMVParent() != null && formViewObj.getMVParent().getMultiViewParent() != null)
+        if (dataObj != null && formViewObj != null && formViewObj.isEditing() && formViewObj.getMVParent() != null && formViewObj.getMVParent().getMultiViewParent() != null)
         {
 
             LoanReturnPreparation loanRetPrep = (LoanReturnPreparation)dataObj;
@@ -394,7 +394,9 @@ public class LoanReturnPreparationBusRules extends BaseBusRules implements Comma
                     }
                 }
             }
-            loanPrepFVO.getValidator().setHasChanged(true);
+            if (loanPrepFVO.getValidator() != null) {
+                loanPrepFVO.getValidator().setHasChanged(true);
+            }
         }
     }
 
