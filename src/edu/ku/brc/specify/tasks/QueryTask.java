@@ -1307,7 +1307,7 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
             SpExportSchema es = schemaMapping.getSpExportSchema();
             if (es != null) {
                 log.warn("assuming multiple schemas are not supported");
-                if (es.getSchemaName().equalsIgnoreCase("no schema")) {
+                if (es.getSchemaName().equalsIgnoreCase("no schema") && es.getId() == null) {
                     schemaMapping.getSpExportSchemas().clear();
                     //es.getSpExportSchemaMappings().clear();
                 }
