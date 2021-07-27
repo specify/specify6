@@ -1303,6 +1303,17 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
             query.setIsFavorite(true);
         }
 
+        if (schemaMapping != null) {
+            SpExportSchema es = schemaMapping.getSpExportSchema();
+            if (es != null) {
+                log.warn("assuming multiple schemas are not supported");
+                if (es.getSchemaName().equalsIgnoreCase("no schema")) {
+                    schemaMapping.getSpExportSchemas().clear();
+                    //es.getSpExportSchemaMappings().clear();
+                }
+
+            }
+        }
         persistQuery(query, schemaMapping);
 
 
