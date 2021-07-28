@@ -1394,6 +1394,7 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
         } else if (msgIfNoRecordsets)
         {
         	UIRegistry.displayLocalizedStatusBarText("RecordSetTask.NoRecordsets");
+        	UIRegistry.displayInfoMsgDlg(getResourceString("RecordSetTask.NoRecordsets"));
         }
         return result;
     }

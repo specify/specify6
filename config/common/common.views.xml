@@ -453,7 +453,6 @@
             <desc><![CDATA[The Disposal form.]]></desc>
             <altviews>
                 <altview name="DisposalDeaccSub View" viewdef="DisposalDeaccSub" mode="view" default="true"/>
-                <altview name="DisposalDeaccSub Edit" viewdef="DisposalDeaccSub" mode="edit"/>
             </altviews>
         </view>
 
@@ -464,9 +463,7 @@
             <desc><![CDATA[Subform within the Disposal form.]]></desc>
             <altviews>
                 <altview name="DisposalDeaccPreparation View" viewdef="DisposalDeaccPreparation" mode="view"/>
-                <altview name="DisposalDeaccPreparation Edit" viewdef="DisposalDeaccPreparation" mode="edit" default="true"/>
                 <altview name="DisposalDeaccPreparation Table View" viewdef="DisposalDeaccPreparation Table" mode="view"/>
-                <altview name="DisposalDeaccPreparation Table Edit" viewdef="DisposalDeaccPreparation Table" mode="edit"/>
             </altviews>
         </view>
 
@@ -630,7 +627,6 @@
             <desc><![CDATA[Exchange Out sub form]]></desc>
             <altviews>
                 <altview name="ExchangeOutDeaccSub View" viewdef="ExchangeOutDeaccSub" mode="view" default="true"/>
-                <altview name="ExchangeOutDeaccSub Edit" viewdef="ExchangeOutDeaccSub" mode="edit"/>
             </altviews>
         </view>
 
@@ -640,9 +636,7 @@
             <desc><![CDATA[Exchange Out display form]]></desc>
             <altviews>
                 <altview name="ExchangeOutDeaccPrep Table View" viewdef="ExchangeOutDeaccPrep Table" mode="view"/>
-                <altview name="ExchangeOutDeaccPrep Table Edit" viewdef="ExchangeOutDeaccPrep Table" mode="edit"/>
                 <altview name="ExchangeOutDeaccPrep View" viewdef="ExchangeOutDeaccPrep" mode="view" default="true"/>
-                <altview name="ExchangeOutDeaccPrep Edit" viewdef="ExchangeOutDeaccPrep" mode="edit"/>
             </altviews>
         </view>
 
@@ -801,7 +795,6 @@
             <desc><![CDATA[Gift sub form]]></desc>
             <altviews>
                 <altview name="GiftDeaccSub View" viewdef="GiftDeaccSub" mode="view" default="true"/>
-                <altview name="GiftDeaccSub Edit" viewdef="GiftDeaccSub" mode="edit"/>
             </altviews>
         </view>
 
@@ -812,9 +805,7 @@
             <desc><![CDATA[Gift display form]]></desc>
             <altviews>
                 <altview name="GiftDeaccItems Table View" viewdef="GiftDeaccItems Table" mode="view"/>
-                <altview name="GiftDeaccItems Table Edit" viewdef="GiftDeaccItems Table" mode="edit"/>
                 <altview name="GiftDeaccItems View" viewdef="GiftDeaccItems" mode="view" default="true"/>
-                <altview name="GiftDeaccItems Edit" viewdef="GiftDeaccItems" mode="edit"/>
             </altviews>
         </view>
 
@@ -892,7 +883,6 @@
             <desc><![CDATA[LoanReturnPreparation display form]]></desc>
             <altviews>
                 <altview name="LoanReturnPreparation View" viewdef="LoanReturnPreparation" mode="view" default="true"/>
-                <altview name="LoanReturnPreparation Edit" viewdef="LoanReturnPreparation" mode="edit"/>
             </altviews>
         </view>
 
@@ -2938,9 +2928,9 @@
             <desc><![CDATA[The Deaccession form.]]></desc>
             <enableRules/>
 
-            <columnDef>p,0px,110px,5px,120px,2px,110px,5px,52px,2px,140px,5px,52px,2px,120px,0px,15px,p:g</columnDef>
+            <columnDef>105px,0px,110px,5px,120px,2px,110px,5px,52px,2px,140px,5px,52px,2px,120px,0px,15px,p:g</columnDef>
             <columnDef os="lnx">135px,2px,120px,5px,135px,2px,120px,5px,65px,2px,148px,5px,70px,2px,121px,0px,15px,p:g</columnDef>
-            <columnDef os="mac">130px,2px,140px,5px,153px,2px,149px,5px,73px,2px,166px,5px,90px,2px,146px,0px,15px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,140px,5px,153px,2px,149px,5px,63px,2px,176px,5px,80px,2px,156px,0px,15px,p:g</columnDef>
             <columnDef os="exp">p,2px,min(p;200px),5px:g,p,2px,p:g(2),5px:g,p,2px,p:g(2),5px:g,p,2px,p:g(2),0px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
 
@@ -2969,10 +2959,10 @@
                     <cell type="subview" viewname="DeaccessionAgent" id="8" name="deaccessionAgents" desc="Agents" colspan="17" rows="2"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="DisposalDeaccSub" id="44" name="disposals" colspan="17" readonly="true"/>
+                    <cell type="subview" viewname="DisposalDeaccSub" id="44" name="disposals" colspan="17" />
                 </row>
                 <row>
-                    <cell type="subview" viewname="GiftDeaccSub" id="4" name="gifts" colspan="17" readonly="true"/>
+                    <cell type="subview" viewname="GiftDeaccSub" id="4" name="gifts" colspan="17" />
                 </row>
                 <row>
                     <cell type="subview" viewname="ExchangeOutDeaccSub" id="444" name="exchangeOuts" colspan="17"/>
@@ -3218,7 +3208,7 @@
                     <cell type="subview" viewname="DisposalAgent" id="8" name="disposalAgents" desc="Agents" colspan="13" rows="3"/>
                 </row> 
                 <row>
-                    <cell type="subview" viewname="DisposalPreparation" id="4" name="disposalPreparations" colspan="13"/>
+                    <cell type="subview" viewname="DisposalPreparation" id="4" name="disposalPreparations" defaulttype="table" colspan="13"/>
                 </row>
                 <row>
                     <cell type="separator" label="" colspan="13"/>
@@ -4424,7 +4414,7 @@
                 settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[ExchangeOut sub form.]]></desc>
 
-            <columnDef>105px,2px,170px,5px,125px,2px,150px,5px,96px,2px,170px,0px,10px,p,p:g</columnDef>
+            <columnDef>105px,2px,170px,5px,115px,2px,150px,5px,96px,2px,170px,0px,10px,p,p:g</columnDef>
             <columnDef os="lnx">115px,2px,185px,5px,150px,2px,165px,5px,101px,2px,185px,0px,15px,p,p:g</columnDef>
             <columnDef os="mac">130px,2px,214px,5px,170px,2px,183px,5px,126px,2px,203px,0px,15px,p,p:g</columnDef>
             <columnDef os="exp">p,2px,p:g(2),5px:g,p,2px,p:g(2),5px,p:g,2px,p:g(2),0px,10px,p,p:g</columnDef>
@@ -4510,7 +4500,7 @@
                 settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[Loan viewing form.]]></desc>
 
-            <columnDef>105px,2px,100px,5px,120px,2px,110px,5px,75px,2px,70px,5px,120px,2px,100px,p:g</columnDef>
+            <columnDef>105px,2px,100px,5px,115px,2px,110px,5px,75px,2px,70px,5px,120px,2px,100px,p:g</columnDef>
             <columnDef os="lnx">115px,2px,117px,5px,130px,2px,120px,5px,90px,2px,70px,5px,135px,2px,108px,p:g</columnDef>
             <columnDef os="mac">130px,2px,131px,5px,145px,2px,135px,5px,105px,2px,85px,5px,135px,2px,143px,p:g</columnDef>
             <columnDef os="exp">p,2px,p:g(2),5px:g,p,2px,p:g(2),5px:g,p,2px,p:g(2),5px:g,p,2px,p:g(2),p:g</columnDef>
@@ -5287,7 +5277,7 @@
                 settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[Gift viewing form.]]></desc>
 
-            <columnDef>105px,2px,130px,5px,60px,2px,100px,5px,100px,2px,141px,15px,165px,0px,10px,p:g</columnDef>
+            <columnDef>105px,2px,130px,5px,60px,2px,100px,5px,100px,2px,141px,15px,155px,0px,10px,p:g</columnDef>
             <columnDef os="lnx">115px,2px,146px,5px,75px,2px,100px,5px,115px,2px,155px,15px,180px,0px,15px,p:g</columnDef>
             <columnDef os="mac">130px,2px,160px,5px,86px,2px,125px,5px,130px,2px,185px,10px,200px,0px,15px,p:g</columnDef>
             <columnDef os="exp">p,2px,min(p;150px),5px:g,p,2px,p:g(2),5px:g,p,2px,p:g(2),5px,p,0px,p,p:g</columnDef>
@@ -5381,7 +5371,7 @@
                 settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[Gift viewing form.]]></desc>
 
-            <columnDef>105px,2px,100px,5px,120px,2px,110px,5px,75px,2px,70px,5px,120px,2px,100px,p:g</columnDef>
+            <columnDef>105px,2px,100px,5px,115px,2px,110px,5px,75px,2px,70px,5px,120px,2px,100px,p:g</columnDef>
             <columnDef os="lnx">115px,2px,117px,5px,130px,2px,120px,5px,90px,2px,70px,5px,135px,2px,108px,p:g</columnDef>
             <columnDef os="mac">130px,2px,131px,5px,145px,2px,145px,5px,105px,2px,85px,5px,135px,2px,133px,p:g</columnDef>
             <columnDef os="exp">p,2px,p:g(2),5px:g,p,2px,p:g(2),5px:g,p,2px,p:g(2),5px:g,p,2px,p:g(2),p:g</columnDef>
@@ -5588,7 +5578,7 @@
                     <cell type="subview" viewname="Shipment" id="11" name="shipments" colspan="17"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="LoanItems" id="10" name="loanPreparations" defaulttype="table" colspan="17" rows="4"/>
+                    <cell type="subview" viewname="LoanItems" id="10" name="loanPreparations" colspan="17" rows="4"/>
                 </row>
                 <row>
                     <cell type="panel" id="17" name="srcPanel" coldef="130px,2px,p:g,5px,130px,2px,p:g" rowdef="p" colspan="17">

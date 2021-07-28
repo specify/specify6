@@ -1911,7 +1911,7 @@ public class DataEntryTask extends BaseTask
             } else if (dobj instanceof Taxon) {
                 tx = (Taxon) dobj;
             }
-            if (tx != null && tx.getIsAccepted()) {
+            if (tx != null && tx.getIsAccepted() && tx.getFullName() != null) {
                 return tx.getFullName().replaceAll(" ", "%20");
             } else if (tx != null && tx.getAcceptedTaxon() != null) {
                 return tx.getAcceptedTaxon().getFullName().replaceAll(" ", "%20");

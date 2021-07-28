@@ -39,6 +39,7 @@ import edu.ku.brc.specify.datamodel.LoanReturnPreparation;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 import edu.ku.brc.util.Triple;
 import org.apache.log4j.Logger;
@@ -110,6 +111,15 @@ public class LoanReturnPreparationBusRules extends BaseBusRules implements Comma
         return theLoanPrep;
     }
 
+    @Override
+    public boolean isOkToAddSibling(Object parentObj) {
+        if (super.isOkToAddSibling(parentObj)) {
+            UIRegistry.showLocalizedMsg("LoanReturnPrep_RecordCreationNotAvailable");
+        }
+
+        return false;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.BaseBusRules#initialize(edu.ku.brc.af.ui.forms.Viewable)
      */
@@ -118,7 +128,7 @@ public class LoanReturnPreparationBusRules extends BaseBusRules implements Comma
     {
         super.initialize(viewableArg);
         
-        if (formViewObj != null && formViewObj.getRsController() != null)
+        if (formViewObj != null && formViewObj.getRsController() != null && formViewObj.isEditing())
         {
             formViewObj.setSkippingAttach(true);
             loanPrepFVO = formViewObj.getMVParent().getMultiViewParent().getCurrentViewAsFormViewObj();
@@ -212,7 +222,7 @@ public class LoanReturnPreparationBusRules extends BaseBusRules implements Comma
     {
         super.afterFillForm(dataObj);
         
-        if (dataObj != null && formViewObj != null && formViewObj.getMVParent() != null && formViewObj.getMVParent().getMultiViewParent() != null)
+        if (dataObj != null && formViewObj != null && formViewObj.isEditing() && formViewObj.getMVParent() != null && formViewObj.getMVParent().getMultiViewParent() != null)
         {
 
             LoanReturnPreparation loanRetPrep = (LoanReturnPreparation)dataObj;
@@ -394,7 +404,9 @@ public class LoanReturnPreparationBusRules extends BaseBusRules implements Comma
                     }
                 }
             }
-            loanPrepFVO.getValidator().setHasChanged(true);
+            if (loanPrepFVO.getValidator() != null) {
+                loanPrepFVO.getValidator().setHasChanged(true);
+            }
         }
     }
 

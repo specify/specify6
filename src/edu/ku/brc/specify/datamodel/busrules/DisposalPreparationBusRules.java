@@ -60,7 +60,7 @@ public class DisposalPreparationBusRules extends BaseBusRules  implements Comman
     public void initialize(Viewable viewableArg) {
         super.initialize(viewableArg);
 
-        if (isOnDisposalForm()) {
+        if (isOnDisposalForm(viewableArg)) {
             if (formViewObj != null) {
                 formViewObj.setSkippingAttach(true);
 
@@ -110,7 +110,7 @@ public class DisposalPreparationBusRules extends BaseBusRules  implements Comman
                     });
                 }
             }
-        } else if (isOnLoanReturnForm()) {
+        } else if (isOnLoanReturnForm(viewableArg)) {
             if (formViewObj != null) {
                 formViewObj.setSkippingAttach(true);
                 loanReturnPrepFVO = formViewObj.getMVParent().getMultiViewParent().getCurrentViewAsFormViewObj();
@@ -181,11 +181,11 @@ public class DisposalPreparationBusRules extends BaseBusRules  implements Comman
         super.afterFillForm(dataObj);
         if (dataObj != null) {
             DisposalPreparation dp = (DisposalPreparation) dataObj;
-            if (isOnLoanReturnForm()) {
+            if (isOnLoanReturnForm(null)) {
                 loanRetPrep = dp.getLoanReturnPreparation();
             }
             if (dp.getId() == null) {
-                if (isOnLoanReturnForm()) {
+                if (isOnLoanReturnForm(null)) {
                     if (dp.getLoanReturnPreparation() != null &&
                             dp.getLoanReturnPreparation().getLoanPreparation() != null) {
                         dp.setPreparation(dp.getLoanReturnPreparation().getLoanPreparation().getPreparation());
@@ -209,20 +209,21 @@ public class DisposalPreparationBusRules extends BaseBusRules  implements Comman
 //        }
     }
 
-    private String getContext() {
+    private String getContext(Viewable viewableArg) {
         String result = "";
-        if (formViewObj != null && formViewObj.getMVParent().getMultiViewParent() != null){
-            result = formViewObj.getMVParent().getMultiViewParent().getView().getClassName();
+        Viewable viewable = viewableArg == null ? formViewObj : viewableArg;
+        if (viewable != null && viewable.getMVParent().getMultiViewParent() != null) {
+            result = viewable.getMVParent().getMultiViewParent().getView().getClassName();
         }
         return result;
     }
 
-    private boolean isOnLoanReturnForm() {
-        return getContext().equals("edu.ku.brc.specify.datamodel.LoanReturnPreparation");
+    private boolean isOnLoanReturnForm(Viewable viewableArg) {
+        return getContext(viewableArg).equals("edu.ku.brc.specify.datamodel.LoanReturnPreparation");
     }
 
-    private boolean isOnDisposalForm() {
-        return getContext().equals("edu.ku.brc.specify.datamodel.Disposal");
+    private boolean isOnDisposalForm(Viewable viewableArg) {
+        return getContext(viewableArg).equals("edu.ku.brc.specify.datamodel.Disposal");
     }
 
 //    private boolean isOnPreparationForm(final Object dataObj) {
