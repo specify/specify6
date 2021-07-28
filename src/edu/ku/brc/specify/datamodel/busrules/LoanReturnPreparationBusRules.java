@@ -39,6 +39,7 @@ import edu.ku.brc.specify.datamodel.LoanReturnPreparation;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 import edu.ku.brc.util.Triple;
 import org.apache.log4j.Logger;
@@ -108,6 +109,15 @@ public class LoanReturnPreparationBusRules extends BaseBusRules implements Comma
             theLoanPrep.setIsResolved(getBool(getValueFromComp(isResolved)));
         }
         return theLoanPrep;
+    }
+
+    @Override
+    public boolean isOkToAddSibling(Object parentObj) {
+        if (super.isOkToAddSibling(parentObj)) {
+            UIRegistry.showLocalizedMsg("LoanReturnPrep_RecordCreationNotAvailable");
+        }
+
+        return false;
     }
 
     /* (non-Javadoc)
