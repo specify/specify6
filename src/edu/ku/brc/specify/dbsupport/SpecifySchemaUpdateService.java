@@ -80,7 +80,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 {
     protected static final Logger  log = Logger.getLogger(SpecifySchemaUpdateService.class);
     
-    private final int OVERALL_TOTAL = 83; //the number of incOverall() calls (+1 or +2)
+    private final int OVERALL_TOTAL = 84; //the number of incOverall() calls (+1 or +2)
 
     private static final String TINYINT4 = "TINYINT(4)";
     private static final String INT11    = "INT(11)";
@@ -856,7 +856,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         if (-1 == BasicSQLUtils.update(conn, sql)) {
             return false;
         }
-        sql = "alter table collectionobject add constraint unique collUniqueId(CollectionMemberID, UniqueIdentifier)";
+        sql = "alter table collectionobject add constraint unique collUniqueId(CollectionID, UniqueIdentifier)";
         if (-1 == BasicSQLUtils.update(conn, sql)) {
             return false;
         }
@@ -2581,7 +2581,16 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     }
                     frame.incOverall();
 
-                         //-------------------------------------------------------------------------------
+                    frame.setDesc("Increasing length of BorrowMaterial.Description");
+                    sql = "alter table borrow modify column `Description` varchar(250)";
+                    if (-1 == update(conn, sql)) {
+                        errMsgList.add("update error: " + sql);
+                        return false;
+                    }
+                    frame.incOverall();
+
+
+                    //-------------------------------------------------------------------------------
                     //
                     // Schema changes for 2.8 & 2.9
                     //
