@@ -856,7 +856,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         if (-1 == BasicSQLUtils.update(conn, sql)) {
             return false;
         }
-        sql = "alter table collectionobject add constraint unique collUniqueId(CollectionMemberID, UniqueIdentifier)";
+        sql = "alter table collectionobject add constraint unique collUniqueId(CollectionID, UniqueIdentifier)";
         if (-1 == BasicSQLUtils.update(conn, sql)) {
             return false;
         }
