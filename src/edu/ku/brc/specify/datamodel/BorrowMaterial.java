@@ -165,7 +165,7 @@ public class BorrowMaterial extends CollectionMember implements java.io.Serializ
     /**
      *      * Description of the material. 'e.g. Bufo bufo skull'
      */
-    @Column(name = "Description", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    @Column(name = "Description", unique = false, nullable = true, insertable = true, updatable = true, length = 250)
     public String getDescription() {
         return this.description;
     }
