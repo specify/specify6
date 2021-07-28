@@ -649,8 +649,8 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
     protected static Integer countContents(boolean countQuantity, int id) {
         java.sql.Connection conn = InteractionsProcessor.getConnForAvailableCounts();
         String sql = "select disposalid, " + Disposal.getClassTableId() + " from disposal where deaccessionid = " + id
-        +  " union select giftid, " + Gift.getClassTableId() + " from gift where deaccessionid = " + id
-        + " union select exchangeoutid, " + ExchangeOut.getClassTableId() + " from exchangeout where deaccessionid = " + id;
+        +  " union (select giftid, " + Gift.getClassTableId() + " from gift where deaccessionid = " + id
+        + " union (select exchangeoutid, " + ExchangeOut.getClassTableId() + " from exchangeout where deaccessionid = " + id + "))";
         List<Object[]> interactions = BasicSQLUtils.query(conn, sql);
         Integer result = 0;
         for (Object[] i : interactions) {
