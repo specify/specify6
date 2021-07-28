@@ -883,7 +883,6 @@
             <desc><![CDATA[LoanReturnPreparation display form]]></desc>
             <altviews>
                 <altview name="LoanReturnPreparation View" viewdef="LoanReturnPreparation" mode="view" default="true"/>
-                <altview name="LoanReturnPreparation Edit" viewdef="LoanReturnPreparation" mode="edit"/>
             </altviews>
         </view>
 
