@@ -8647,15 +8647,15 @@ public class BuildSampleDatabase
         
         String dispName = discipline.getType().toString();
         
-//        if (isLocalize)
-//        {
-//            List<Locale> availLocales = schemaLocalizer.getAvailLocales();
-//            if (availLocales.size() > 1)
-//            {
-//                UIRegistry.displayErrorDlgLocalized("BSD.TOOMANYLOCALES");
-//                return false;
-//            }
-//        }
+        if (isLocalize)
+        {
+            List<Locale> availLocales = schemaLocalizer.getAvailLocales();
+            if (availLocales.size() > 1)
+            {
+                UIRegistry.displayErrorDlgLocalized("BSD.TOOMANYLOCALES");
+                return false;
+            }
+        }
         
         float progressCnt = 0.0f;
         float len = (float)schemaLocalizer.getSpLocaleContainers().size();
