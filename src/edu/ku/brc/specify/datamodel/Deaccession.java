@@ -652,8 +652,10 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
         +  ") union (select giftid, " + Gift.getClassTableId() + " from gift where deaccessionid = " + id
         + ") union (select exchangeoutid, " + ExchangeOut.getClassTableId() + " from exchangeout where deaccessionid = " + id + ")";
         List<Object[]> interactions = BasicSQLUtils.query(conn, sql);
+        log.info("countContents: found " + interactions.size() +  " related interactions.");
         Integer result = 0;
         for (Object[] i : interactions) {
+            log.info("   " + i[0] + ", " + i[1]);
             result += BasicSQLUtils.getCountAsInt(conn, InteractionsTask.getCountContentsSql(countQuantity, false, (Integer)i[0], (Integer)i[1]));
         }
         return result;
@@ -668,6 +670,7 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
     }
 
     public static Object getQueryableTransientFieldValue(String fldName, Object[] vals) {
+        log.info("getQueryableTransientFieldValue(" + fldName + ", " + vals + ")");
         if (vals == null || vals[0] == null) {
             return null;
         } else if (fldName.equalsIgnoreCase("TotalPreps")) {
