@@ -624,11 +624,13 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
 
     @Transient
     public Integer getTotalPreps() {
-        return countContents(false);
+	log.info("getTotalPreps()");
+	return countContents(false);
     }
 
     @Transient
     public Integer getTotalItems() {
+	log.info("getTotalItems");
         return countContents(true);
     }
 
@@ -648,13 +650,18 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
      */
     protected static Integer countContents(boolean countQuantity, int id) {
         java.sql.Connection conn = InteractionsProcessor.getConnForAvailableCounts();
-        String sql = "select disposalid, " + Disposal.getClassTableId() + " from disposal where deaccessionid = " + id
-        +  " union select giftid, " + Gift.getClassTableId() + " from gift where deaccessionid = " + id
-        + " union select exchangeoutid, " + ExchangeOut.getClassTableId() + " from exchangeout where deaccessionid = " + id;
+        String sql = "(select disposalid, " + Disposal.getClassTableId() + " from disposal where deaccessionid = " + id
+        +  ") union (select giftid, " + Gift.getClassTableId() + " from gift where deaccessionid = " + id
+        + ") union (select exchangeoutid, " + ExchangeOut.getClassTableId() + " from exchangeout where deaccessionid = " + id + ")";
         List<Object[]> interactions = BasicSQLUtils.query(conn, sql);
+        log.info("countContents: found " + interactions.size() +  " related interactions.");
         Integer result = 0;
         for (Object[] i : interactions) {
-            result += BasicSQLUtils.getCountAsInt(conn, InteractionsTask.getCountContentsSql(countQuantity, false, (Integer)i[0], (Integer)i[1]));
+            log.info("   " + i[0] + ", " + i[1]);
+	    log.info(InteractionsTask.getCountContentsSql(countQuantity, false, (Integer)i[0], (Integer)i[1]));
+	    BasicSQLUtils.setSkipExceptions(false);		     
+	    result += BasicSQLUtils.getCountAsInt(conn, InteractionsTask.getCountContentsSql(countQuantity, false, (Integer)i[0], (Integer)i[1]));
+	    BasicSQLUtils.setSkipExceptions(true);
         }
         return result;
     }
@@ -668,6 +675,7 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
     }
 
     public static Object getQueryableTransientFieldValue(String fldName, Object[] vals) {
+        log.info("getQueryableTransientFieldValue(" + fldName + ", " + vals + ")");
         if (vals == null || vals[0] == null) {
             return null;
         } else if (fldName.equalsIgnoreCase("TotalPreps")) {
