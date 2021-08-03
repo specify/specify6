@@ -658,10 +658,17 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
         Integer result = 0;
         for (Object[] i : interactions) {
             log.info("   " + i[0] + ", " + i[1]);
-	        log.info(InteractionsTask.getCountContentsSql(countQuantity, false, (Integer)i[0], (Integer)i[1]));
-	        BasicSQLUtils.setSkipTrackExceptions(false);
-	        result += BasicSQLUtils.getCountAsInt(conn, InteractionsTask.getCountContentsSql(countQuantity, false, (Integer)i[0], (Integer)i[1]));
-	        BasicSQLUtils.setSkipTrackExceptions(true);
+            try {
+                Integer key = Integer.valueOf(i[0].toString());
+                Integer tblId = Integer.valueOf(i[1].toString());
+	            log.info(InteractionsTask.getCountContentsSql(countQuantity, false, key, tblId));
+	            BasicSQLUtils.setSkipTrackExceptions(false);
+	            result += BasicSQLUtils.getCountAsInt(conn, InteractionsTask.getCountContentsSql(countQuantity, false, (Integer)i[0], (Integer)i[1]));
+	            BasicSQLUtils.setSkipTrackExceptions(true);
+            } catch (Exception x){
+                x.printStackTrace();
+                log.error(x, x);
+            }
         }
         return result;
     }
