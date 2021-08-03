@@ -852,19 +852,19 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     }
 
     private boolean fixUniquenessConstraints(Connection conn) {
-        String sql = "alter table preparation add constraint unique collUniqueId(CollectionMemberID, barcode)";
+        String sql = "alter table preparation add constraint unique collPrepUniqueId(CollectionMemberID, barcode)";
         if (-1 == BasicSQLUtils.update(conn, sql)) {
             return false;
         }
-        sql = "alter table collectionobject add constraint unique collUniqueId(CollectionID, UniqueIdentifier)";
+        sql = "alter table collectionobject add constraint unique collCoUniqueId(CollectionID, UniqueIdentifier)";
         if (-1 == BasicSQLUtils.update(conn, sql)) {
             return false;
         }
-        sql = "alter table collectingevent add constraint unique dispUniqueId(DisciplineID, UniqueIdentifier)";
+        sql = "alter table collectingevent add constraint unique dispCEUniqueId(DisciplineID, UniqueIdentifier)";
         if (-1 == BasicSQLUtils.update(conn, sql)) {
             return false;
         }
-        sql = "alter table locality add constraint unique dispUniqueId(DisciplineID, UniqueIdentifier)";
+        sql = "alter table locality add constraint unique dispLocUniqueId(DisciplineID, UniqueIdentifier)";
         if (-1 == BasicSQLUtils.update(conn, sql)) {
             return false;
         }
@@ -2581,14 +2581,6 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     }
                     frame.incOverall();
 
-                    frame.setDesc("Increasing length of BorrowMaterial.Description");
-                    sql = "alter table borrow modify column `Description` varchar(250)";
-                    if (-1 == update(conn, sql)) {
-                        errMsgList.add("update error: " + sql);
-                        return false;
-                    }
-                    frame.incOverall();
-
 
                     //-------------------------------------------------------------------------------
                     //
@@ -2778,6 +2770,16 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     frame.setDesc("Increasing size of Address.Address5.");
                     if (getFieldLength(conn, databaseName, "address", "Address5") != 400) {
                         sql = "alter table address modify column Address5 varchar(400)";
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
+                    }
+                    frame.incOverall();
+
+                    frame.setDesc("Increasing length of BorrowMaterial.Description");
+                    if (getFieldLength(conn, databaseName, "borrowmaterial", "Description") != 250) {
+                        sql = "alter table borrowmaterial modify column `Description` varchar(250)";
                         if (-1 == update(conn, sql)) {
                             errMsgList.add("update error: " + sql);
                             return false;

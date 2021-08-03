@@ -198,6 +198,7 @@ public class DataGetterForObj implements DataObjectGettable
                 }
             } catch (Exception ex)
             {
+                log.error((dataObjArg != null ? dataObjArg.getClass().getSimpleName() : "?")  + "." + fieldName);
                 log.error(ex);
                 if (!(ex instanceof org.hibernate.LazyInitializationException))
                 {

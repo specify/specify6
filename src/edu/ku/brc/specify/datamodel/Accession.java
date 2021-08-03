@@ -163,7 +163,7 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
             String dispSql = "select distinct d.deaccessionid from deaccession d inner join disposal dis on dis.deaccessionid = d.deaccessionid "
                     + "inner join disposalpreparation dispp on dispp.disposalid = dispp.disposalid inner join preparation p "
                     + "on p.preparationid = dispp.preparationid inner join collectionobject co on co.collectionobjectid = p.collectionobjectid "
-                    + "where co.collectionobjectid = " + getId();
+                    + "where co.collectionobjectid = " + getId() ;
             String giftSql = "select distinct d.deaccessionid from deaccession d inner join gift dis on dis.deaccessionid = d.deaccessionid "
                     + "inner join giftpreparation dispp on dispp.giftid = dispp.giftid inner join preparation p "
                     + "on p.preparationid = dispp.preparationid inner join collectionobject co on co.collectionobjectid = p.collectionobjectid "
@@ -172,7 +172,7 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
                     + "inner join exchangeoutprep dispp on dispp.exchangeoutid = dispp.exchangeoutid inner join preparation p "
                     + "on p.preparationid = dispp.preparationid inner join collectionobject co on co.collectionobjectid = p.collectionobjectid "
                     + "where co.collectionobjectid = " + getId();
-            String sql = dispSql + " UNION " + giftSql + " UNION " + exchSql;
+            String sql = "(" + dispSql + ") UNION (" + giftSql + ") UNION (" + exchSql + ")";
             Vector<Object> ids = BasicSQLUtils.querySingleCol(sql);
             DataProviderSessionIFace session = null;
             try {
