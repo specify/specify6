@@ -433,13 +433,14 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
         String localeStr = getLocaleStr(language, country);
         for (DisciplineBasedContainer container : containers)
         {
+            String containerTitle = null;
             if (getStrForLocale(localeStr, container.getNamesSet()) == null) {
                 log.debug("Container: "+container.getName()+ "no name for " + localeStr + ".");
                 SpLocaleItemStr str = new SpLocaleItemStr();
                 str.initialize();
                 str.setLanguage(language);
                 str.setCountry(country);
-                str.setText(container.getName());
+                str.setText(UIHelper.makeNamePretty(container.getName()));
                 str.setContainerDesc(container);
                 container.getNamesSet().add(str);
                 containerCnt++;
@@ -449,8 +450,10 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                 {
                     if (StringUtils.isEmpty(str.getText()))
                     {
-                        str.setText(container.getName());
+                        str.setText(UIHelper.makeNamePretty(container.getName()));
                         containerCnt++;
+                    } else if (localeStr.equals(getLocaleStr(str))) {
+                        containerTitle = str.getText();
                     }
                 }
             }
@@ -463,7 +466,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                 str.initialize();
                 str.setLanguage(language);
                 str.setCountry(country);
-                str.setText(container.getName());
+                str.setText(containerTitle != null ? containerTitle : UIHelper.makeNamePretty(container.getName()));
                 str.setContainerDesc(container);
                 container.getDescsSet().add(str);
                 containerCnt++;
@@ -473,7 +476,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                 {
                     if (StringUtils.isEmpty(str.getText()))
                     {
-                        str.setText(container.getName());
+                        str.setText(containerTitle != null ? containerTitle : UIHelper.makeNamePretty(container.getName())); //should see if there's a name for the str's locale?? but does this case ever occur?
                         containerCnt++;
                     }
                 }
@@ -481,6 +484,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
             
             for (SpLocaleContainerItem sci : container.getItems())
             {
+                String itemTitle = null;
                 if (getStrForLocale(localeStr, sci.getNamesSet()) == null)
                 {
                     log.debug(container.getName()+" Item: "+sci.getName()+" no name for " + localeStr + ".");
@@ -498,8 +502,10 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                     {
                         if (StringUtils.isEmpty(str.getText()))
                         {
-                            str.setText(sci.getName());
+                            str.setText(UIHelper.makeNamePretty(sci.getName())); //should see if there's a name for the str's locale?? but does this case ever occur?
                             itemCnt++;
+                        } else if (localeStr.equals(getLocaleStr(str))) {
+                            itemTitle = str.getText();
                         }
                     }
                 }
@@ -510,7 +516,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                     str.initialize();
                     str.setLanguage(language);
                     str.setCountry(country);
-                    str.setText(UIHelper.makeNamePretty(sci.getName()));
+                    str.setText(itemTitle != null ? itemTitle : UIHelper.makeNamePretty(sci.getName()));
                     str.setItemDesc(sci);
                     sci.getDescsSet().add(str);
                     itemCnt++;
@@ -520,7 +526,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                     {
                         if (StringUtils.isEmpty(str.getText()))
                         {
-                            str.setText(UIHelper.makeNamePretty(sci.getName()));
+                            str.setText(itemTitle != null ? itemTitle : UIHelper.makeNamePretty(sci.getName()));
                             itemCnt++;
                         }
                     }
@@ -1009,7 +1015,8 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
             
         } catch (Exception ex)
         {
-           UIRegistry.showError("There was a problem reading the XML in the file."); // I18N
+            ex.printStackTrace();
+            UIRegistry.showError("There was a problem reading the XML in the file."); // I18N
         }
            
         return containers;
