@@ -852,21 +852,46 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     }
 
     private boolean fixUniquenessConstraints(Connection conn) {
-        String sql = "alter table preparation add constraint unique collPrepUniqueId(CollectionMemberID, barcode)";
-        if (-1 == BasicSQLUtils.update(conn, sql)) {
-            return false;
+        String sql;
+        if (!doesIndexExist("preparation", "PrepBarCodeIdx")) {
+            sql = "alter table preparation add constraint unique collPrepUniqueId(CollectionMemberID, barcode)";
+            if (-1 == BasicSQLUtils.update(conn, sql)) {
+                return false;
+            }
+            sql = "alter table preparation add index PrepBarCodeIdx(barcode)";
+            if (-1 == BasicSQLUtils.update(conn, sql)) {
+                return false;
+            }
         }
-        sql = "alter table collectionobject add constraint unique collCoUniqueId(CollectionID, UniqueIdentifier)";
-        if (-1 == BasicSQLUtils.update(conn, sql)) {
-            return false;
+        if (!doesIndexExist("collectionobject", "COUniqueIdentifierIDX")) {
+            sql = "alter table collectionobject add constraint unique collCoUniqueId(CollectionID, UniqueIdentifier)";
+            if (-1 == BasicSQLUtils.update(conn, sql)) {
+                return false;
+            }
+            sql = "alter table collectionobject add index COUniqueIdentifierIDX(UniqueIdentifier)";
+            if (-1 == BasicSQLUtils.update(conn, sql)) {
+                return false;
+            }
         }
-        sql = "alter table collectingevent add constraint unique dispCEUniqueId(DisciplineID, UniqueIdentifier)";
-        if (-1 == BasicSQLUtils.update(conn, sql)) {
-            return false;
+        if (!doesIndexExist("collectingevent", "CEUniqueIdentifierIDX")) {
+            sql = "alter table collectingevent add constraint unique dispCEUniqueId(DisciplineID, UniqueIdentifier)";
+            if (-1 == BasicSQLUtils.update(conn, sql)) {
+                return false;
+            }
+            sql = "alter table collectingevent add index CEUniqueIdentifierIDX(UniqueIdentifier)";
+            if (-1 == BasicSQLUtils.update(conn, sql)) {
+                return false;
+            }
         }
-        sql = "alter table locality add constraint unique dispLocUniqueId(DisciplineID, UniqueIdentifier)";
-        if (-1 == BasicSQLUtils.update(conn, sql)) {
-            return false;
+        if (!doesIndexExist("locality", "LocalityUniqueIdentifierIDX")) {
+            sql = "alter table locality add constraint unique dispLocUniqueId(DisciplineID, UniqueIdentifier)";
+            if (-1 == BasicSQLUtils.update(conn, sql)) {
+                return false;
+            }
+            sql = "alter table locality add index LocalityUniqueIdentifierIDX(UniqueIdentifier)";
+            if (-1 == BasicSQLUtils.update(conn, sql)) {
+                return false;
+            }
         }
         return true;
     }

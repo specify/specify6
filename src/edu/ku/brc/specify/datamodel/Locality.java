@@ -50,13 +50,14 @@ import edu.ku.brc.ui.UIRegistry;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "locality", uniqueConstraints = {
-        @UniqueConstraint(columnNames={"DisciplineID", "UniqueIdentifier"} )
-        }
+       @UniqueConstraint(columnNames={"DisciplineID", "UniqueIdentifier"} )
+       }
 )
 @org.hibernate.annotations.Table(appliesTo="locality", indexes =
     {   @Index (name="localityNameIDX", columnNames={"LocalityName"}),
         @Index (name="LocalityDisciplineIDX", columnNames={"DisciplineID"}),
         @Index (name="NamedPlaceIDX", columnNames={"NamedPlace"}),
+            @Index (name="LocalityUniqueIdentifierIDX", columnNames={"UniqueIdentifier"}),
         @Index (name="RelationToNamedPlaceIDX", columnNames={"RelationToNamedPlace"})
     })
 @SuppressWarnings("serial")
@@ -286,7 +287,7 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
     /**
      *
      */
-    @Column(name = "UniqueIdentifier", unique = false, nullable = true, insertable = true, updatable = false, length = 128)
+    @Column(name = "UniqueIdentifier", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
     public String getUniqueIdentifier() {
         return this.uniqueIdentifier;
     }

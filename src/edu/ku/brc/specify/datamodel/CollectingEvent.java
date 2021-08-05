@@ -53,7 +53,8 @@ import edu.ku.brc.specify.conversion.BasicSQLUtils;
     {   @Index (name="CEStationFieldNumberIDX", columnNames={"StationFieldNumber"}),
         @Index (name="CEStartDateIDX", columnNames={"StartDate"}),
         @Index (name="CEEndDateIDX", columnNames={"EndDate"}),
-        @Index (name="CEGuidIDX", columnNames={"GUID"})
+            @Index (name="CEUniqueIdentifierIDX", columnNames={"UniqueIdentifier"}),
+            @Index (name="CEGuidIDX", columnNames={"GUID"})
     })
 @SuppressWarnings("serial")
 public class CollectingEvent extends DisciplineMember implements AttachmentOwnerIFace<CollectingEventAttachment>, 
@@ -283,7 +284,7 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
     /**
      *
      */
-    @Column(name = "UniqueIdentifier", unique = false, nullable = true, insertable = true, updatable = false, length = 128)
+    @Column(name = "UniqueIdentifier", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
     public String getUniqueIdentifier() {
         return this.uniqueIdentifier;
     }

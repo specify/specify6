@@ -72,6 +72,7 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
     {   @Index (name="FieldNumberIDX", columnNames={"FieldNumber"}),
         @Index (name="CatalogedDateIDX", columnNames={"CatalogedDate"}),
         @Index (name="CatalogNumberIDX", columnNames={"CatalogNumber"}),
+            @Index (name="COUniqueIdentifierIDX", columnNames={"UniqueIdentifier"}),
         @Index (name="AltCatalogNumberIDX", columnNames= {"AltCatalogNumber"}),
         @Index (name="ColObjGuidIDX", columnNames={"GUID"}),
         @Index (name="COColMemIDX", columnNames={"CollectionmemberID"})
@@ -947,7 +948,7 @@ public void setReservedText3(String reservedText3) {
    /**
      *
      */
-    @Column(name = "UniqueIdentifier", unique = false, nullable = true, insertable = true, updatable = false, length = 128)
+    @Column(name = "UniqueIdentifier", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
     public String getUniqueIdentifier() {
         return this.uniqueIdentifier;
     }
