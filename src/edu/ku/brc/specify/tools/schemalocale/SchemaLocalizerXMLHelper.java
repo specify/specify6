@@ -749,7 +749,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                     }
                     Collections.sort(list);
 
-                    boolean cont = false; 
+                    boolean cont = true;
                     while (cont) {
                         ToggleButtonChooserDlg<DisplayLocale> dlg = new ToggleButtonChooserDlg<>((Dialog)UIRegistry.getMostRecentWindow(),
                                 "CHOOSE_LOCALE", list, ToggleButtonChooserPanel.Type.RadioButton);
@@ -1238,7 +1238,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
 //        fixDescriptions(new File("/home/timo/datas/schemadescfix/schema_localization.xml"),
 //                new File("/home/timo/sp6locale/Good/schema_localization_en.xml"),
 //                new File("/home/timo/sp6locale/Good/schema_localization_en_desced2/"));
-        fixDescriptionsInWrongLanguage(new File("/home/timo/sp6gitbak/specify6/config/schema_localization.xml"), new File("/home/timo/datas/fixedschema/"));
+//        fixDescriptionsInWrongLanguage(new File("/home/timo/sp6gitbak/specify6/config/schema_localization.xml"), new File("/home/timo/datas/fixedschema/"));
         boolean savedOk = save(basePath, null, tables);
 
         if (savedOk)
