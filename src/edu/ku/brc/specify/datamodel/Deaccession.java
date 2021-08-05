@@ -80,6 +80,7 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
         exchangeOuts.size();
         deaccessionAttachments.size();
         deaccessionAgents.size();
+
         if (forcefully) {
             forceLoadSet(disposals);
             forceLoadSet(gifts);
