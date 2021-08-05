@@ -161,17 +161,17 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
         Set<Deaccession> result = new HashSet<>();
         if (getId() != null) {
             String dispSql = "select distinct d.deaccessionid from deaccession d inner join disposal dis on dis.deaccessionid = d.deaccessionid "
-                    + "inner join disposalpreparation dispp on dispp.disposalid = dispp.disposalid inner join preparation p "
+                    + "inner join disposalpreparation dispp on dispp.disposalid = dis.disposalid inner join preparation p "
                     + "on p.preparationid = dispp.preparationid inner join collectionobject co on co.collectionobjectid = p.collectionobjectid "
-                    + "where co.collectionobjectid = " + getId() ;
+                    + "where co.accessionid = " + getId() ;
             String giftSql = "select distinct d.deaccessionid from deaccession d inner join gift dis on dis.deaccessionid = d.deaccessionid "
-                    + "inner join giftpreparation dispp on dispp.giftid = dispp.giftid inner join preparation p "
+                    + "inner join giftpreparation dispp on dispp.giftid = dis.giftid inner join preparation p "
                     + "on p.preparationid = dispp.preparationid inner join collectionobject co on co.collectionobjectid = p.collectionobjectid "
-                    + "where co.collectionobjectid = " + getId();
+                    + "where co.accessionid = " + getId();
             String exchSql = "select distinct d.deaccessionid from deaccession d inner join exchangeout dis on dis.deaccessionid = d.deaccessionid "
-                    + "inner join exchangeoutprep dispp on dispp.exchangeoutid = dispp.exchangeoutid inner join preparation p "
+                    + "inner join exchangeoutprep dispp on dispp.exchangeoutid = dis.exchangeoutid inner join preparation p "
                     + "on p.preparationid = dispp.preparationid inner join collectionobject co on co.collectionobjectid = p.collectionobjectid "
-                    + "where co.collectionobjectid = " + getId();
+                    + "where co.accessionid = " + getId();
             String sql = "(" + dispSql + ") UNION (" + giftSql + ") UNION (" + exchSql + ")";
             Vector<Object> ids = BasicSQLUtils.querySingleCol(sql);
             DataProviderSessionIFace session = null;
@@ -761,7 +761,7 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
     }
 
     //transient summers...
-    private static String totalCntAmtSql = "select sum(countAmt) from preparation p inner join collectionobject co on co.collectionobjectid = p.collectionobjectid where accessionid = ";
+    private static String totalCntAmtSql = "select sum(p.countAmt) from preparation p inner join collectionobject co on co.collectionobjectid = p.collectionobjectid where accessionid = ";
     private static String coCountSql = "select count(*) from collectionobject where accessionid = ";
     private static String prepCountSql = "select count(*) from preparation p inner join collectionobject co on co.collectionobjectid = p.collectionobjectid where accessionid = ";
     @Transient
