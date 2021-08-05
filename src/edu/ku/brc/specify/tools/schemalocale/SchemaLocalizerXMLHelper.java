@@ -749,7 +749,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                     }
                     Collections.sort(list);
 
-                    boolean cont = true;
+                    boolean cont = false;
                     while (cont) {
                         ToggleButtonChooserDlg<DisplayLocale> dlg = new ToggleButtonChooserDlg<>((Dialog)UIRegistry.getMostRecentWindow(),
                                 "CHOOSE_LOCALE", list, ToggleButtonChooserPanel.Type.RadioButton);
