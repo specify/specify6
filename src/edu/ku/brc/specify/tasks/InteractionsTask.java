@@ -1271,8 +1271,8 @@ public class InteractionsTask extends BaseTask
             Calendar dueDate = Calendar.getInstance();
             dueDate.add(Calendar.MONTH, 6);                 // XXX PREF Due Date
 
-            Shipment shipment = new Shipment();
-            shipment.initialize();
+            //Shipment shipment = new Shipment();
+            //shipment.initialize();
 
             // Get Defaults for Certain fields
             //SpecifyAppContextMgr appContextMgr     = (SpecifyAppContextMgr)AppContextMgr.getInstance();
@@ -1290,11 +1290,11 @@ public class InteractionsTask extends BaseTask
             //    shipment.setShippedBy((Agent)shippedBy);
             //}
 
-            if (infoRequest != null && infoRequest.getAgent() != null) {
-                shipment.setShippedTo(infoRequest.getAgent());
-            }
+            //if (infoRequest != null && infoRequest.getAgent() != null) {
+            //    shipment.setShippedTo(infoRequest.getAgent());
+            //}
 
-            exchange.addReference(shipment, "shipments");
+            //exchange.addReference(shipment, "shipments");
         } else {
             exchange = existingExchangeOut;
         }
