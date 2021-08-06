@@ -34,7 +34,7 @@ import edu.ku.brc.ui.Trayable;
 import edu.ku.brc.util.Pair;
 
 
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
