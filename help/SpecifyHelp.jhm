@@ -9,7 +9,6 @@
 	<mapID target="Add_Discipline" url="SpecifyHelp/Configuration/institution_hierarchy.html#add_discipline"/>
 	<mapID target="Add_Division" url="SpecifyHelp/Configuration/institution_hierarchy.html#add_division"/>
 	<mapID target="Add_User" url="SpecifyHelp/Security/permissions.html#add_user"/>
-	<mapID target="alt_storage" url="SpecifyHelp/Data_Entry/Data_Entry.html#alt_storage"/>
 	<mapID target="Apply_Edits" url="SpecifyHelp/QueryBuilder/batch_editor.html#apply_edits"/>
 	<mapID target="AskForCatNumbers" url="SpecifyHelp/Interactions/Interactions.html#cat_number"/>
 	<mapID target="Attach_Browser" url="SpecifyHelp/Data_Entry/attachments.html#attach_browser"/>
@@ -158,8 +157,8 @@
 	<mapID target="Load" url="SpecifyHelp/Security/loading.html"/>
 	<mapID target="LOAN_REVIEW" url="SpecifyHelp/Interactions/Interactions.html#return_loan"/>
 	<mapID target="loan_uncataloged" url="SpecifyHelp/Interactions/Interactions.html#loan_uncataloged"/>
-	<mapID target="Login" url="SpecifyHelp/Dialogs/Login.html"/>
 	<mapID target="login" url="SpecifyHelp/Dialogs/Login.html#login"/>
+	<mapID target="Login" url="SpecifyHelp/Dialogs/Login.html"/>
 	<mapID target="login" url="SpecifyHelp/Dialogs/Login.html#login"/>
 	<mapID target="login_master" url="SpecifyHelp/login.html#login_master"/>
 	<mapID target="MASTERPWD_GEN" url="SpecifyHelp/Dialogs/Login.html#generate_master"/>
@@ -192,7 +191,6 @@
 	<mapID target="PrefsTree" url="SpecifyHelp/Prefs/Tree.html"/>
 	<mapID target="PrefsWebPortal" url="SpecifyHelp/Prefs/PrefsWebPortal.html"/>
 	<mapID target="Prep_Type" url="SpecifyHelp/Configuration/prep_type.html"/>
-	<mapID target="Properties Tables" url="SpecifyHelp/Data_Entry/Data_Entry.html#properties"/>
 	<mapID target="Q_Controls" url="SpecifyHelp/QueryBuilder/Query_Builder.html#q_controls"/>
 	<mapID target="Q_Delete" url="SpecifyHelp/QueryBuilder/Query_Builder.html#q_delete"/>
 	<mapID target="Q_Edit" url="SpecifyHelp/QueryBuilder/Query_Builder.html#edit_query"/>
@@ -259,6 +257,7 @@
 	<mapID target="SL_TOOLS_HELP_CONTEXT" url="SpecifyHelp/SchemaConfig/schema_config.html"/>
 	<mapID target="slicer" url="SpecifyHelp/Uploading/splitter.html"/>
 	<mapID target="specify" url="http://specify6.specifysoftware.org"/>
+	<mapID target="SpecifyNetwork" url="SpecifyNetwork.html"/>
 	<mapID target="SS" url="SpecifyHelp/Simple_Search/SS_Overview.html"/>
 	<mapID target="SS_Cards" url="SpecifyHelp/Simple_Search/Simple_Search.html#ss_cards"/>
 	<mapID target="SS_Execute" url="SpecifyHelp/Simple_Search/Simple_Search.html#ss_execute"/>
@@ -374,4 +373,9 @@
 	<mapID target="WorkbenchTop10" url="SpecifyHelp/Workbench/top10.html"/>
 	<mapID target="WorkbenchWorkingWithImages" url="SpecifyHelp/Workbench/WorkingWithImages.html"/>
 	<mapID target="world_wind" url="SpecifyHelp/Data_Entry/Data_Entry.html#world_wind"/>
+	<mapID target="Gift" url="SpecifyHelp/Interactions/Interactions.html#gift"/>
+	<mapID target="Loan" url="SpecifyHelp/Interactions/Interactions.html#loan"/>
+	<mapID target="Disposal" url="SpecifyHelp/Interactions/Interactions.html#disposal"/>
+	<mapID target="Deaccession" url="SpecifyHelp/Interactions/Interactions.html#deaccession"/>
+	<mapID target="Specify Network" url="SpecifyHelp/Data_Entry/Data_Entry.html#specify_network"/>
 </map>

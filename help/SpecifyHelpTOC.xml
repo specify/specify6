@@ -62,6 +62,7 @@
 			<tocitem text="Task Bar" target="PrefsMisc" />
 			<tocitem text="Tree" target="PrefsTree" />
 			<tocitem text="Web Portal" target="PrefsWebPortal" />
+			<tocitem text="Specify Network" target="SpecifyNetwork" />
 		</tocitem>
 		<tocitem text="Introduction to Specify" target="Intro">
 			<tocitem text="Components in Specify" target="intro_components" />
@@ -83,7 +84,6 @@
 			<tocitem text="Data Forms" target="Data_Entry">
 				<tocitem text="Side Bar Configuration" target="Data_Entry_Sidebar" />
 				<tocitem text="Working with Forms and Trees" target="Data_Entry_Trees" />
-				<tocitem text="Alternate Storage Location" target="alt_storage" />
 				<tocitem text="Container" target="Forms_Container" />
 				<tocitem text="Taxon Form" target="Data_Entry_Taxon" />
 				<tocitem text="Determinations Form" target="Data_Entry_Determinations" />
@@ -92,18 +92,21 @@
 				<tocitem text="Agent Form" target="Data_Entry_Agent" />
 				<tocitem text="Preparations Form" target="Data_Entry_Preparations" />
 				<tocitem text="Attachments Form" target="Data_Entry_Attachments" />
-				<tocitem text="Properties" target="Properties Tables" />
 				<tocitem text="Paleo Context" target="paleo_context" />
 				<tocitem text="GUID" target="GUID" />
+				<tocitem text="Specify Network" target="Specify Network" />
 			</tocitem>
 			<tocitem text="Interactions Forms" target="Interactions">
 				<tocitem text="Side Bar Configuration" target="InteractionsConfig" />
 				<tocitem text="Accessions" target="Int_Accessions" />
-				<tocitem text="Gifts and Loans" target="Int_Gifts_Loans" />
+				<tocitem text="Loan" target="Loan" />
 				<tocitem text="Returning Loans" target="Int_Return_Loans" />
 				<tocitem text="Information Requests" target="Int_Info_Requests" />
-				<tocitem text="Borrows" target="Int_Borrows" />
+				<tocitem text="Gift" target="Gift" />
 				<tocitem text="Exchange In / Exchange Out" target="Int_Exchange" />
+				<tocitem text="Disposals" target="Disposal" />
+				<tocitem text="Deaccessions" target="Deaccession" />
+				<tocitem text="Borrows" target="Int_Borrows" />
 				<tocitem text="Repository Agreements" target="Repos_Agree" />
 			</tocitem>
 		</tocitem>
