@@ -144,7 +144,7 @@ public class S2nPrefsPanel  extends GenericPrefsPanel implements PrefsSavable, P
     protected Integer getCurrentCollectionId() {
         return AppContextMgr.getInstance().getClassObject(Collection.class).getId();
     }
-    
+
     protected boolean setUpStynthyRec() {
         Vector<Object[]> rec = BasicSQLUtils.query("select * from spstynthy where collectionid =" + getCurrentCollectionId());
         if (rec == null || rec.size() == 0) {
