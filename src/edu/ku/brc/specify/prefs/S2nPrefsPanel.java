@@ -10,11 +10,13 @@ import edu.ku.brc.af.ui.forms.validation.ValCheckBox;
 import edu.ku.brc.af.ui.forms.validation.ValComboBox;
 import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
 import edu.ku.brc.af.ui.forms.validation.ValSpinner;
+import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.*;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.busrules.LoanGiftShipmentBusRules;
+import edu.ku.brc.specify.dbsupport.SpecifySchemaUpdateService;
 import edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace;
 import edu.ku.brc.specify.tools.export.ExportPanel;
 import edu.ku.brc.specify.tools.gbifregistration.GbifSandbox;
@@ -48,6 +50,7 @@ import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
+import static edu.ku.brc.specify.conversion.BasicSQLUtils.update;
 import static edu.ku.brc.specify.datamodel.busrules.LoanBusRules.DUEINMONTHS;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static java.util.Calendar.*;
@@ -141,7 +144,7 @@ public class S2nPrefsPanel  extends GenericPrefsPanel implements PrefsSavable, P
     protected Integer getCurrentCollectionId() {
         return AppContextMgr.getInstance().getClassObject(Collection.class).getId();
     }
-
+    
     protected boolean setUpStynthyRec() {
         Vector<Object[]> rec = BasicSQLUtils.query("select * from spstynthy where collectionid =" + getCurrentCollectionId());
         if (rec == null || rec.size() == 0) {
@@ -268,6 +271,21 @@ public class S2nPrefsPanel  extends GenericPrefsPanel implements PrefsSavable, P
     }
 
 
+    static public String getSynthyTblCreateSQL() {
+        return " CREATE TABLE `spstynthy` ( " +
+                "`SpStynthyID` int(11) NOT NULL AUTO_INCREMENT, " +
+                "`TimestampCreated` datetime NOT NULL, " +
+                "`TimestampModified` datetime DEFAULT NULL, " +
+                "`MetaXML` mediumblob DEFAULT NULL, " +
+                "`UpdatePeriodDays` int(11) NOT NULL DEFAULT 30, " +
+                "`LastExported` datetime DEFAULT NULL, " +
+                "`CollectionID` int(11) NOT NULL, " +
+                "`MappingXML` mediumblob DEFAULT NULL, " +
+                "`Key1` varchar(256) default null, " +
+                "`Key2` varchar(256) default null, " +
+                "PRIMARY KEY (`SpStynthyID`) " +
+                ") ENGINE=InnoDB AUTO_INCREMENT=277 DEFAULT CHARSET=utf8;";
+    }
     static private Pair<Integer, String> getS2NUrl() {
         final CloseableHttpClient httpClient = HttpClients.createDefault();
         HttpGet getMethod = new HttpGet("http://broker.spcoco.org/api/v1/address");

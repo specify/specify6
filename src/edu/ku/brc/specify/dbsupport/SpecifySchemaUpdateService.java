@@ -38,6 +38,7 @@ import edu.ku.brc.specify.conversion.IdTableMapper;
 import edu.ku.brc.specify.conversion.TableWriter;
 import edu.ku.brc.specify.datamodel.*;
 import edu.ku.brc.specify.datamodel.Collection;
+import edu.ku.brc.specify.prefs.S2nPrefsPanel;
 import edu.ku.brc.specify.tasks.subpane.security.NavigationTreeMgr;
 import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
 import edu.ku.brc.specify.tools.export.ExportToMySQLDB;
@@ -2554,19 +2555,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 
                     if (!doesTableExist(databaseName, "spstynthy")) {
                         frame.setDesc("Modifying specify system tables.");
-                        sql = " CREATE TABLE `spstynthy` ( " +
-                                "`SpStynthyID` int(11) NOT NULL AUTO_INCREMENT, " +
-                                "`TimestampCreated` datetime NOT NULL, " +
-                                "`TimestampModified` datetime DEFAULT NULL, " +
-                                "`MetaXML` mediumblob DEFAULT NULL, " +
-                                "`UpdatePeriodDays` int(11) NOT NULL DEFAULT 30, " +
-                                "`LastExported` datetime DEFAULT NULL, " +
-                                "`CollectionID` int(11) NOT NULL, " +
-                                "`MappingXML` mediumblob DEFAULT NULL, " +
-                                "`Key1` varchar(256) default null, " +
-                                "`Key2` varchar(256) default null, " +
-                                "PRIMARY KEY (`SpStynthyID`) " +
-                                ") ENGINE=InnoDB AUTO_INCREMENT=277 DEFAULT CHARSET=utf8;";
+                        sql = S2nPrefsPanel.getSynthyTblCreateSQL();
                         if (-1 == update(conn, sql)) {
                             errMsgList.add("update error: " + sql);
                             return false;

@@ -19,6 +19,7 @@
 */
 package edu.ku.brc.specify.config.init;
 
+import static edu.ku.brc.specify.conversion.BasicSQLUtils.update;
 import static edu.ku.brc.ui.UIHelper.createComboBox;
 import static edu.ku.brc.ui.UIHelper.createI18NFormLabel;
 import static edu.ku.brc.ui.UIHelper.createLabel;
@@ -47,6 +48,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.event.DocumentEvent;
 
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.prefs.S2nPrefsPanel;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -640,7 +643,19 @@ public class DatabasePanel extends BaseSetupPanel
                                 AttachmentManagerIface attachMgr = new FileStoreAttachmentManager(attLoc);
                                 AttachmentUtils.setAttachmentManager(attachMgr);
                                 AttachmentUtils.setThumbnailer(thumb);
-                                
+
+
+                                DBConnection itDbConn = DBConnection.createInstance(driverInfo.getDriverClassName(),
+                                        driverInfo.getDialectClassName(),
+                                        dbNameTxt.getText(),
+                                        connStr,
+                                        dbUserName,
+                                        dbPwd);
+
+                                String sql = S2nPrefsPanel.getSynthyTblCreateSQL();
+                                if (-1 == BasicSQLUtils.update(itDbConn.getConnection(), sql)) {
+                                    isOK = false;
+                                }
                             } else
                             {
                                 errorKey = "NO_LOGIN_ROOT";
