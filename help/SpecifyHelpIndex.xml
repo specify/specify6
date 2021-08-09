@@ -75,11 +75,11 @@
 		<indexitem text="Accessions" target="Int_Accessions" mergetype="javax.help.SortMerge" />
 		<indexitem text="Borrows" target="Int_Borrows" mergetype="javax.help.SortMerge" />
 		<indexitem text="Configure Interactions side bar" target="InteractionsConfig" mergetype="javax.help.SortMerge" />
-		<indexitem text="Deaccessions" target="Deaccession" />
-		<indexitem text="Disposals" target="Disposal" />
+		<indexitem text="Deaccessions" target="deaccessions" />
+		<indexitem text="Disposals" target="disposals" />
 		<indexitem text="Exchange In / Exchange Out" target="Int_Exchange" mergetype="javax.help.SortMerge" />
-		<indexitem text="Gifts" target="Int_Gifts_Loans" mergetype="javax.help.SortMerge" />
-		<indexitem text="Loans" target="Int_Gifts_Loans" mergetype="javax.help.SortMerge" />
+		<indexitem text="Gifts" target="gift" mergetype="javax.help.SortMerge" />
+		<indexitem text="Loans" target="loans" mergetype="javax.help.SortMerge" />
 		<indexitem text="Information Requests" target="Int_Info_Requests" mergetype="javax.help.SortMerge" />
 		<indexitem text="Return Loans" target="Int_Return_Loans" mergetype="javax.help.SortMerge" />
 		<indexitem text="Repository Agreement" target="Repos_Agree" mergetype="javax.help.SortMerge" />

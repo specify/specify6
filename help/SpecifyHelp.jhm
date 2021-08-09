@@ -186,6 +186,7 @@
 	<mapID target="PrefsMisc" url="SpecifyHelp/Prefs/Taskbar.html"/>
 	<mapID target="PrefsMySQL" url="SpecifyHelp/Prefs/MySQL.html"/>
 	<mapID target="PrefsNetwork" url="SpecifyHelp/Prefs/Network.html"/>
+    <mapID target="PrefsS2n" url="SpecifyHelp/Prefs/SpecifyNetwork.html"/>
 	<mapID target="PrefsSymbiota" url="SpecifyHelp/Prefs/symbiota_pref.html"/>
 	<mapID target="PrefsSystem" url="SpecifyHelp/Prefs/System.html"/>
 	<mapID target="PrefsTree" url="SpecifyHelp/Prefs/Tree.html"/>
@@ -257,7 +258,7 @@
 	<mapID target="SL_TOOLS_HELP_CONTEXT" url="SpecifyHelp/SchemaConfig/schema_config.html"/>
 	<mapID target="slicer" url="SpecifyHelp/Uploading/splitter.html"/>
 	<mapID target="specify" url="http://specify6.specifysoftware.org"/>
-	<mapID target="SpecifyNetwork" url="SpecifyNetwork.html"/>
+	<mapID target="SpecifyNetwork" url="SpecifyHelp/Prefs/SpecifyNetwork.html"/>
 	<mapID target="SS" url="SpecifyHelp/Simple_Search/SS_Overview.html"/>
 	<mapID target="SS_Cards" url="SpecifyHelp/Simple_Search/Simple_Search.html#ss_cards"/>
 	<mapID target="SS_Execute" url="SpecifyHelp/Simple_Search/Simple_Search.html#ss_execute"/>
@@ -373,9 +374,9 @@
 	<mapID target="WorkbenchTop10" url="SpecifyHelp/Workbench/top10.html"/>
 	<mapID target="WorkbenchWorkingWithImages" url="SpecifyHelp/Workbench/WorkingWithImages.html"/>
 	<mapID target="world_wind" url="SpecifyHelp/Data_Entry/Data_Entry.html#world_wind"/>
-	<mapID target="Gift" url="SpecifyHelp/Interactions/Interactions.html#gift"/>
-	<mapID target="Loan" url="SpecifyHelp/Interactions/Interactions.html#loan"/>
-	<mapID target="Disposal" url="SpecifyHelp/Interactions/Interactions.html#disposal"/>
-	<mapID target="Deaccession" url="SpecifyHelp/Interactions/Interactions.html#deaccession"/>
-	<mapID target="Specify Network" url="SpecifyHelp/Data_Entry/Data_Entry.html#specify_network"/>
+	<mapID target="gift" url="SpecifyHelp/Interactions/Interactions.html#gift"/>
+	<mapID target="loans" url="SpecifyHelp/Interactions/Interactions.html#loans"/>
+	<mapID target="disposals" url="SpecifyHelp/Interactions/Interactions.html#disposals"/>
+	<mapID target="deaccessions" url="SpecifyHelp/Interactions/Interactions.html#deaccessions"/>
+	<mapID target="specify_network" url="SpecifyHelp/Data_Entry/Data_Entry.html#specify_network"/>
 </map>

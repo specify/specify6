@@ -31,4 +31,10 @@
 		<label>Favorites</label>
 		<type>javax.help.FavoritesView</type>
 	</view>
+	<view>
+		<name>Index</name>
+		<label>Index</label>
+		<type>javax.help.IndexView</type>
+		<data>SpecifyHelpGlossary.xml</data>
+	</view>
 </helpset>

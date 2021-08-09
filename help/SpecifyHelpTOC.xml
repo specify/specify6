@@ -94,20 +94,20 @@
 				<tocitem text="Attachments Form" target="Data_Entry_Attachments" />
 				<tocitem text="Paleo Context" target="paleo_context" />
 				<tocitem text="GUID" target="GUID" />
-				<tocitem text="Specify Network" target="Specify Network" />
+				<tocitem text="Specify Network" target="specify_network" />
 			</tocitem>
 			<tocitem text="Interactions Forms" target="Interactions">
-				<tocitem text="Side Bar Configuration" target="InteractionsConfig" />
 				<tocitem text="Accessions" target="Int_Accessions" />
-				<tocitem text="Loan" target="Loan" />
-				<tocitem text="Returning Loans" target="Int_Return_Loans" />
-				<tocitem text="Information Requests" target="Int_Info_Requests" />
-				<tocitem text="Gift" target="Gift" />
-				<tocitem text="Exchange In / Exchange Out" target="Int_Exchange" />
-				<tocitem text="Disposals" target="Disposal" />
-				<tocitem text="Deaccessions" target="Deaccession" />
 				<tocitem text="Borrows" target="Int_Borrows" />
+				<tocitem text="Deaccessions" target="deaccessions" />
+				<tocitem text="disposals" target="disposals" />
+				<tocitem text="Exchange In / Exchange Out" target="Int_Exchange" />
+				<tocitem text="Gift" target="gift" />
+				<tocitem text="Information Requests" target="Int_Info_Requests" />
+				<tocitem text="Loan" target="loans" />
 				<tocitem text="Repository Agreements" target="Repos_Agree" />
+				<tocitem text="Returning Loans" target="Int_Return_Loans" />
+				<tocitem text="Side Bar Configuration" target="InteractionsConfig" />
 			</tocitem>
 		</tocitem>
 		<tocitem text="Attachments" target="attach_general">
