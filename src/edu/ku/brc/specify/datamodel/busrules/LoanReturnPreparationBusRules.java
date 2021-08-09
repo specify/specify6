@@ -28,6 +28,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import edu.ku.brc.af.ui.forms.*;
+import edu.ku.brc.af.ui.forms.persist.AltViewIFace;
 import edu.ku.brc.af.ui.forms.validation.ValCheckBox;
 import edu.ku.brc.af.ui.forms.validation.ValFormattedTextFieldSingle;
 import edu.ku.brc.af.ui.forms.validation.ValSpinner;
@@ -202,7 +203,7 @@ public class LoanReturnPreparationBusRules extends BaseBusRules implements Comma
             prevLoanRetPrep = null;
         }
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.BaseBusRules#beforeDelete(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
      */
@@ -377,24 +378,26 @@ public class LoanReturnPreparationBusRules extends BaseBusRules implements Comma
         }
     }
 
+    private void setComp(final Component comp, final String val) {
+        if (comp instanceof ValFormattedTextFieldSingle ) {
+            final ValFormattedTextFieldSingle c =  (ValFormattedTextFieldSingle) comp;
+            SwingUtilities.invokeLater(() -> c.setText(val/*, true*/));
+        } else if (comp instanceof JTextField) {
+            final JTextField c =  (JTextField) comp;
+            SwingUtilities.invokeLater(() -> c.setText(val/*, true*/));
+        }
+
+    }
     private void updateTheLoanPrepFVO() {
         //quantityChanged(null, null);
         if (loanPrepFVO != null) {
             LoanPreparation loanPrep = getTheLoanPrep();
             if (loanPrep != null) {
-                Component comp = loanPrepFVO.getControlByName("quantityResolved");
-                if (comp instanceof ValFormattedTextFieldSingle) {
-                    final ValFormattedTextFieldSingle c =  (ValFormattedTextFieldSingle) comp;
-                    final String qres = Integer.toString(loanPrep.getQuantityResolved());
-                    SwingUtilities.invokeLater(() -> c.setText(qres/*, true*/));
-                }
-                comp = loanPrepFVO.getControlByName("quantityReturned");
-                if (comp instanceof ValFormattedTextFieldSingle) {
-                    final ValFormattedTextFieldSingle c =  (ValFormattedTextFieldSingle) comp;
-                    final String qret = Integer.toString(loanPrep.getQuantityReturned());
-                    SwingUtilities.invokeLater(() -> c.setText(qret/*, true*/));
-                }
-                comp = loanPrepFVO.getControlByName("isResolved");
+                setComp(loanPrepFVO.getControlByName("quantityResolved"), Integer.toString(loanPrep.getQuantityResolved()));
+                ((LoanPreparation)loanPrepFVO.getDataObj()).setQuantityResolved(loanPrep.getQuantityResolved());
+                setComp(loanPrepFVO.getControlByName("quantityReturned"), Integer.toString(loanPrep.getQuantityReturned()));
+                ((LoanPreparation)loanPrepFVO.getDataObj()).setQuantityReturned(loanPrep.getQuantityReturned());
+                Component comp = comp = loanPrepFVO.getControlByName("isResolved");
                 if (comp instanceof ValCheckBox) {
                     final ValCheckBox c =  (ValCheckBox) comp;
                     final Boolean qres = loanPrep.getIsResolved();

@@ -5748,9 +5748,9 @@
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="quantity" uitype="spinner" initialize="max=5000"/>
                     <cell type="label" labelfor="7"/>
-                    <cell type="field" id="7" name="quantityReturned" uitype="text" readonly="true"/>
+                    <cell type="field" id="7" name="quantityReturned" uitype="dsptextfield"/>
                     <cell type="label" labelfor="10" colspan="3"/>
-                    <cell type="field" id="10" name="quantityResolved" uitype="text" readonly="true"/>
+                    <cell type="field" id="10" name="quantityResolved" uitype="dsptextfield"/>
                     <cell type="subview" id="loanReturnPreparations" viewname="LoanReturnPreparation" name="loanReturnPreparations" initialize="btn=true;icon=LoanReturnPreparation"/>
                 </row>
                 <row>

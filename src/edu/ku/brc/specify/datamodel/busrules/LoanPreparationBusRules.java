@@ -527,6 +527,39 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
         }
     }
 
+//    /* (non-Javadoc)
+//     * @see edu.ku.brc.af.ui.forms.BaseBusRules#processBusinessRules(java.lang.Object)
+//     */
+//    @Override
+//    public STATUS processBusinessRules(Object dataObj)
+//    {
+//        reasonList.clear();
+//        STATUS result = STATUS.OK;
+//        LoanPreparation loanPrep = (LoanPreparation)dataObj;
+//        if (loanPrep.getQuantityResolved() > loanPrep.getQuantity() || loanPrep.getQuantityReturned() > loanPrep.getQuantity()) {
+//            reasonList.add(getResourceString("LOAN_RET_LWR_QNT"));
+//            result = STATUS.Error;
+//        }
+//        if (loanPrep.getQuantityReturned() > loanPrep.getQuantityResolved()) {
+//            reasonList.add(getResourceString("LOAN_RET_RET_GT_RES"));
+//            result = STATUS.Error;
+//        }
+//        int qtyRes = 0, qtyRet = 0;
+//        for (LoanReturnPreparation lrp : loanPrep.getLoanReturnPreparations()) {
+//            qtyRes += lrp.getQuantityResolved();
+//            qtyRet += lrp.getQuantityReturned();
+//        }
+//        if (qtyRes != loanPrep.getQuantityResolved() || qtyRet != loanPrep.getQuantityReturned()) {
+//            reasonList.add(getResourceString("LOAN_RET_LRQS_NE_LPQS"));
+//            result = STATUS.Error;
+//        }
+//        if (result != STATUS.OK) {
+//            return result;
+//        } else {
+//            return super.processBusinessRules(dataObj);
+//        }
+//    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.BaseBusRules#processBusinessRules(java.lang.Object)
      */
@@ -534,31 +567,13 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
     public STATUS processBusinessRules(Object dataObj)
     {
         reasonList.clear();
-        STATUS result = STATUS.OK;
         LoanPreparation loanPrep = (LoanPreparation)dataObj;
-        if (loanPrep.getQuantityResolved() > loanPrep.getQuantity() || loanPrep.getQuantityReturned() > loanPrep.getQuantity()) {
-            reasonList.add(getResourceString("LOAN_RET_LWR_QNT"));
-            result = STATUS.Error;
+        if (loanPrep.getQuantityResolved() > loanPrep.getQuantity())
+        {
+            reasonList.add(UIRegistry.getResourceString("LOAN_RET_LWR_QNT"));
+            return STATUS.Error;
         }
-        if (loanPrep.getQuantityReturned() > loanPrep.getQuantityResolved()) {
-            reasonList.add(getResourceString("LOAN_RET_RET_GT_RES"));
-            result = STATUS.Error;
-        }
-        int qtyRes = 0, qtyRet = 0;
-        for (LoanReturnPreparation lrp : loanPrep.getLoanReturnPreparations()) {
-            qtyRes += lrp.getQuantityResolved();
-            qtyRet += lrp.getQuantityReturned();
-        }
-        if (qtyRes != loanPrep.getQuantityResolved() || qtyRet != loanPrep.getQuantityReturned()) {
-            reasonList.add(getResourceString("LOAN_RET_LRQS_NE_LPQS"));
-            result = STATUS.Error;
-        }
-        if (result != STATUS.OK) {
-            return result;
-        } else {
-            return super.processBusinessRules(dataObj);
-        }
+        return super.processBusinessRules(dataObj);
     }
-    
-    
+
 }
