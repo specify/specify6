@@ -185,7 +185,6 @@
 	<mapID target="PrefsLogin" url="SpecifyHelp/Prefs/Login.html"/>
 	<mapID target="PrefsMisc" url="SpecifyHelp/Prefs/Taskbar.html"/>
 	<mapID target="PrefsMySQL" url="SpecifyHelp/Prefs/MySQL.html"/>
-	<mapID target="PrefsS2n" url="SpecifyHelp/Prefs/SpecifyNetwork.html"/>
 	<mapID target="PrefsNetwork" url="SpecifyHelp/Prefs/Network.html"/>
     <mapID target="PrefsS2n" url="SpecifyHelp/Prefs/SpecifyNetwork.html"/>
 	<mapID target="PrefsSymbiota" url="SpecifyHelp/Prefs/symbiota_pref.html"/>
