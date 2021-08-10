@@ -25,15 +25,15 @@
        <img src="../../images/interactions.png" alt="">&nbsp;Interactions Forms
     </h2>
     <p>
-       <a name="interactions_overview"></a>The interactions forms in Specify help users create and
-      manage documentation for the movement of specimens or data into or outside of the collection.
-      This can include information about loans, gifts, borrowed items, permits, shipments,
-      accessions, disposals, deaccessions and information requests. For example, a collection
-      manager may respond to a request for a loan of from an institution for research
-      by&nbsp;creating loan record in Specify. The record would include the list of specimens to be
-      loaned, along with other required loan information. When the loan is returned, the manager
-      would then update the loan record to note the date of the return and which specimens were
-      returned.
+       Interactions in Specify allow users to create and manage documentation associated
+      with&nbsp;the movement of specimens or data into or outside of the collection. This includes
+      information about loans, gifts, borrowed items, permits, shipments, accessions, disposals,
+      deaccessions and information requests. For example, a collection manager may respond to a
+      request for a loan of specimens&nbsp;for research by&nbsp;creating loan record in Specify.
+      The record would include the list of specimens to be loaned, along with other required loan
+      information (loan number, date of loan, due date, agents, etc.). When the loan is returned,
+      the manager would then update the loan record to note the date of the return and which
+      specimens were returned.
     </p>
     <p>
        Access Interaction Forms by clicking the <img src="../../images/interactions_20.png" width=
@@ -74,9 +74,9 @@
         </li>
       </ul>
       <p>
-         Interactions forms can be activated by clicking them in the side bar. Gifts, Loans or
-        Information Request are also activated by dropping a Collection Object record set onto them
-        in the side bar.
+         Interactions forms can be activated by clicking them in the side bar. Accessions,
+        Disposals, Gifts, Loans, Exchange Outs&nbsp;or Information Requests can also
+        be&nbsp;activated by dropping a Collecion Object record set onto them in the side bar.
       </p>
       <blockquote>
         <p>
@@ -99,7 +99,7 @@
         recorded as a museum item and differs from cataloging. This usually entails proof of
         ownership (in the form of a signed deed of gift) and legal collection (in the form of all
         associated permits - collecting, import and export). Accessioning and its numbering system
-        is usually a policy adopted as a museum-wide policy but is not used by all museums. An
+        are usually a policy adopted as a museum-wide policy but is not used by all museums. An
         accession usually covers an entire field trip and multiple catalog items could be included
         within a single accession. Within the database there is a one-to-many relationship between
         Accessions and Collection Objects. Accessions can be created through the Interactions menu
@@ -117,7 +117,8 @@
         relationship within the accession.
       </p>
       <p>
-         Accession forms can also be edited to show associated Deaccessions.
+         A Deaccession, the legal process of removing items from a collection, can be associated
+        with the relevant accession(s).
       </p>
     </blockquote>
     <p>
@@ -131,6 +132,12 @@
          Loans, Gifts, Exchange Outs and Disposals&nbsp;document items leaving the Institution, and
         Collection Objects are linked to them through preparations.&nbsp; The first step in
         creating a record is choosing the specimens (as preparations) to add to the transaction.
+      </p>
+      <p>
+         A Specify preference allows collections to choose whether to use collection object
+        identifiers (catalog numbers) or preparation identifiers (preparation numbers or bar
+        codes), or to be asked. For more information see <a href=
+        "../Prefs/Loans.html">Interactions</a> <a href="../Prefs/Loans.html">Preferences</a>.
       </p>
       <ul>
         <li>
@@ -158,10 +165,10 @@
         user to either <em>Enter Items</em> or use an existing <i>Record Set or Information
         Request</i>. The Record Set option is the easiest method to use when loaning/gifting large
         numbers of Collection Objects or Preparations. The Information Request is a good way to
-        document the data sent to researchers outside of the collection.
+        document the data sent outside of the collection.
       </p>
       <p>
-         Uncataloged items may also be recorded (See <a href=
+         Uncataloged items may also be recorded in Interactions&nbsp;(See <a href=
         "../Interactions/Interactions.html#loan_mixed">Loaning Uncataloged and Cataloged Items</a>)
       </p>
       <p>
@@ -175,12 +182,12 @@
       </p>
       <ul>
         <li>
-          <strong>Enter (Item Source)</strong> <b>List</b>&nbsp;by typing the numbers into the text
-          dialog, separating multiple numbers with commas (100, 105, 152))
+          <strong>Enter (Item Source)</strong> <b>List</b>&nbsp;by typing the identifying numbers
+          into the text dialog, separating multiple numbers with commas (100, 105, 152))
         </li>
         <li>
-          <b>Enter a range of numbers</b>, with a slash as a separator for the range, for example:
-          12012-12020 
+          <b>Enter a consecutive range of numbers</b>, with a slash as a separator for the range,
+          for example: 12012-12020 
           <p>
              OR, if the number includes a dash a slash can be used, for example:
             2011-0001/2011-0010<br>
@@ -209,8 +216,8 @@
         </li>
       </ul>
       <p>
-         Next, a dialog listing all preparations associated with the above choices&nbsp;will
-        appear.
+         Next, a dialog listing all preparations associated with the choice above (collection
+        object or preparation)&nbsp;will appear.
       </p>
       <p align="center">
          <img height="257" src="../../images/loan_screen.png" width="305">
@@ -219,29 +226,21 @@
          Create Loan from Preparations
       </p>
       <p>
-         Each checkbox represents either a&nbsp;Collection Object or Preparation and is labeled
-        with the appropriate identifier&nbsp;and determination. Specimen counts reflect the number
-        of specimens that are currently available to be loaned. An indication is also given if any
-        additional specimens are associated with previous open loans or gifts. In these cases the
-        total number of available specimens would be reduced by this number. The <img height="20"
-        src="../../images/info_20x20.png" width="20">(information) button links to the loan or gift
-        in question for further information.
+         Each checkbox represents either a&nbsp;Collection Object or Preparation (depending on the
+        preference selected above) and is labeled with the appropriate identifier&nbsp;and
+        determination. Specimen counts reflect the number of specimens that are currently available
+        to be loaned. An indication is also given if any additional specimens are associated with
+        previous open loans or gifts. In these cases the total number of available specimens would
+        be reduced by this number. The <img height="20" src="../../images/info_20x20.png" width=
+        "20">(information) button links to information about the unavailable preparation.
       </p>
       <ul>
         <li>
           <strong>Select specimens</strong> by typing the number of specimens of each preparation
-          being sent on loan into the dialog or use the arrow keys.&nbsp; If multiple preparations
-          for a single Collection Object are present, they will be listed together under the same
-          checkbox.&nbsp;All preparations can be selected at once by clicking the <em>Select
-          All</em> button. 
-          <p>
-             The number of specimens available to be loaned is indicated next to the arrow keys to
-            select a number.&nbsp; An indication is also given if any additional specimens are
-            associated with previous open loans or gifts.&nbsp; In these cases the total number of
-            available specimens would be reduced by this number.&nbsp; The <img height="20" src=
-            "../../images/info_20x20.png" width="20">(information) links to the loan or gift in
-            question for further information.
-          </p>
+          being sent on loan into the dialog or use the up and down arrow keys.&nbsp; If multiple
+          preparations for a single Collection Object are present, they will be listed together
+          under the same checkbox.&nbsp;All preparations can be selected at once by clicking the
+          <em>Select All</em> button at the bottom of the dialog.
         </li>
         <li>
           <p>
@@ -274,12 +273,12 @@
          &nbsp;
       </p>
       <p align="left" style=" margin-left: 20.0px;">
-         If you have Record Sets available to choose from you will immediately see the Choose
-        Source dialog above. Choose <i>Enter Items</i> from the Choose Source dialog.
+         If you have appropriate Record Sets available to choose from you will immediately see the
+        Choose Source dialog above. Choose <i>Enter Items</i> from the Choose Source dialog.
       </p>
       <p align="left" style=" margin-left: 20.0px;">
-         <b><i>Note:</i></b> If you do not have Record Sets you will only see the Enter List dialog
-        below.
+         <b><i>Note:</i></b> If you do not have appropriate Record Sets (Collection Object or
+        Preparation) you will only see the Enter List dialog below.
       </p>
       <p>
          &nbsp;
@@ -303,17 +302,17 @@
          &nbsp;
       </p>
       <p align="left" style=" margin-left: 20.0px;">
-         A form with Preparations opens. A loaned item with '0' quantity is available. Double click
-        it to change the information associated with it.
+         An Interaction form&nbsp;with a single Preparation with '0' quantity is presented. Double
+        click the Preparation row to&nbsp;change the information associated with it.
       </p>
       <p align="left" style=" margin-left: 20.0px;">
-         Click the <img src="../../images/add.png">&nbsp;(add) button to add Cataloged or
-        Uncataloged items.
+         Click the <img src="../../images/add.png">&nbsp;(add) button to add additional Cataloged
+        or Uncataloged items.
       </p>
       <p align="left" style=" margin-left: 20.0px;">
-         Fields for Total Items, Total Quantities, Unresolved Items and Unresolved Quantities are
-        included&nbsp;on the form by default. These allow total&nbsp;counts to be captured that are
-        not associated with uncataloged items.
+         Calculated fields for Total Items, Total Quantities, Unresolved Items and Unresolved
+        Quantities are included&nbsp;on the default Interaction form. These allow total&nbsp;counts
+        to be captured but are not associated with uncataloged items.
       </p>
     </blockquote>
     <p>
@@ -323,9 +322,9 @@
        <u>Invoices</u>
     </h4>
     <p style=" margin-left: 20.0px;">
-       Once preparations have been added to the transaction, a <em>Generate Invoice on Save</em>
+       Once the interaction has been successfully completed, a <em>Generate Invoice on Save</em>
       check box becomes available on the form.&nbsp; If checked and the necessary query and Report
-      have been constructed, the Report associated with this Loan or Gift will be created
+      have been constructed, the Report associated with the Interaction&nbsp;will be created
       automatically once the <em>Save</em> button has been clicked.
     </p>
     <p style=" margin-left: 20.0px;">
@@ -344,8 +343,8 @@
        Loans
     </h3>
     <p style=" margin-left: 20.0px;">
-       Loans are unique in that the item is expected to be returned; therefore extra fields can be
-      added to the Loan form for tracking the status of the loaned items and Due Dates.
+       Loans are unique in that the items are&nbsp;expected to be returned; therefore extra fields
+      can be added to the Loan form for tracking the status of the loaned items and Due Dates.
     </p>
     <p style=" margin-left: 40.0px;">
        Note:&nbsp;A Due Date can be set automatically in the <a href=
@@ -360,12 +359,13 @@
     </p>
     <blockquote>
       <p>
-         To return items associated with a loan open the loan by either typing the Loan Number into
-        the Simple Search bar or querying for it. Once the Loan is open click the Edit button. A
-        <b><i>Return Loan</i></b> button appears on the bottom of the Loan form.
+         To return items associated with a loan open the loan by searching for it with the
+        appropriate field (for example Loan Number) into the Simple Search bar or querying for it.
+        Once the Loan is open click the Edit button. A <b><i>Return Loan</i></b> button appears on
+        the bottom of the Loan form.
       </p>
       <p align="center">
-         &nbsp;<img src="../../images/return_loan_button.png" border="1" width="736">
+         &nbsp;<img src="../../images/return_loan_button.png" border="1" width="601" height="360">
       </p>
       <p align="center" class="imgcaption">
          <i>Return Loan Button</i>
@@ -395,9 +395,10 @@
           Preference</a>.
         </li>
         <li>
-          <b><i>Enter Item IDs</i></b> allows you to enter specific IDs for the loaned items either
-          by typing or by using a bar code reader. IDs are entered based on the unique identifier
-          selected in the <a href="../Prefs/Loans.html">Interactions Preference</a>.&nbsp;
+          <b><i>Enter Item IDs</i></b> allows you to enter specific identifiers for the loaned
+          items either by typing them or by using a bar code reader. Identifiers are entered based
+          on the unique identifier selected in the <a href="../Prefs/Loans.html">Interactions
+          Preference</a>.&nbsp;
         </li>
         <li>
           <b><i>Record Sets</i></b> will present a dialog listing all items in a Record Set. If any
@@ -413,15 +414,14 @@
       </p>
       <p>
          When returning all of the items in a loan it is easiest to use the <em>Select</em>
-        All&nbsp;button at the bottom of the Loan Retun dialog.&nbsp; This method offers a Select
-        All feature for automatically returning all preparations.&nbsp; Clicking <em>Select
-        All</em> will make the quantity returned and quantity resolved equal to the quantity sent
-        out for each preparation and automatically check the <em>Is Closed</em> checkbox in the
-        loan, thereby closing the loan.&nbsp; The <em>Return Loan</em> button will also change to
-        <em>All Returned</em>.&nbsp; If any of these numbers are altered at any stage, thereby
-        reopening the loan, this button will revert to Return Loan.&nbsp; For partial returns, or
-        when some items are resolved but not returned, due to loss or damage, the quantity returned
-        and quantity resolved can be manipulated and remarks inserted.
+        All&nbsp;button at the bottom of the Loan Retun dialog. Clicking <em>Select All</em> will
+        return and resolve the loan and close the loan by&nbsp;checking the <em>Is Closed</em>
+        checkbox in the loan, thereby closing the loan.&nbsp; The <em>Return Loan</em> button ont
+        the form will also change to <em>All Returned</em>.&nbsp; If any of these numbers are
+        altered at any stage, thereby reopening the loan, this button will revert to Return
+        Loan.&nbsp; For partial returns, or when some items are resolved but not returned, due to
+        loss or damage, the quantity returned and quantity resolved can be manipulated and remarks
+        inserted.
       </p>
       <p>
          When returning loans, a Loan Return Prep record is created for each preparation lent
@@ -429,16 +429,16 @@
       </p>
       <blockquote>
         <p>
-           <strong>Quantity</strong> - the number of each preparation lent out.
+           <strong>Quantity</strong> - the quantity of each preparation lent out.
         </p>
         <p>
-           <strong>Quantity Returned</strong> - the number of preparations returned.&nbsp; This may
-          not equal the quantity sent out in cases of partial returns and/or lost/damaged specimens
-          not returned (see resolved below).
+           <strong>Quantity Returned</strong> - the quantity of preparations returned.&nbsp; This
+          may not equal the quantity sent out in cases of partial returns and/or lost/damaged
+          specimens not returned (see resolved below).
         </p>
         <p>
-           <strong>Quantity Resolved</strong> - used to increase the number resolved to correspond
-          to the quantity lent. This is used in the case where specimens are lost or damaged and
+           <strong>Quantity Resolved</strong> - used to document items that are&nbsp;resolved but
+          have not been returned. This is used in the case where specimens are lost or damaged and
           are no longer associated with the collection.&nbsp; It us often helpful to use the
           remarks field to describe the circumstances of this discrepancy.&nbsp;
         </p>
@@ -472,8 +472,8 @@
        <a name="track_loans" id="track_loans"><b><u>Tracking Loans</u></b></a>
     </p>
     <p style=" margin-left: 20.0px;">
-       Fields for tracking loans, especially partial returns, are available on the Loan form. The
-      default Loan form includes fields to track total counts near the top of the form:
+       Fields for tracking loan counts, especially for partial returns, are available on the Loan
+      form. The default Loan form includes fields to track total counts near the top of the form:
     </p>
     <p align="center" style=" margin-left: 20.0px;">
        <img src="../../images/loan_top.png" border="1">
@@ -485,25 +485,25 @@
        &nbsp;
     </p>
     <p align="left" style=" margin-left: 40.0px;">
-       <b>Total Preps</b> -&nbsp;the number of Preparation Types, for all Catalog
+       <b>Total Preps</b> -&nbsp;the count of Preparation Types, for all Catalog
       Numbers,&nbsp;included in the loan.
     </p>
     <p align="left" style=" margin-left: 40.0px;">
-       <b>Total Items</b> - the total number of individual Preparations included in the loan.
+       <b>Total Items</b> - the total count of individual items included in the loan.
     </p>
     <p align="left" style=" margin-left: 40.0px;">
-       <b>Returned Preps</b> - the number of Preparation Types, or all Catalog
+       <b>Returned Preps</b> - the count of Preparation Types, or all Catalog
       Numbers,&nbsp;returned.
     </p>
     <p align="left" style=" margin-left: 40.0px;">
-       <b>Returned Items</b> - the number of individual Preparations returned.
+       <b>Returned Items</b> - the count of individual items returned.
     </p>
     <p align="left" style=" margin-left: 40.0px;">
-       <b>Unresolved Preps</b> - the number of Preparation Types, for all Catalog Numbers,&nbsp;not
+       <b>Unresolved Preps</b> - the count of Preparation Types, for all Catalog Numbers,&nbsp;not
       resolved.
     </p>
     <p align="left" style=" margin-left: 40.0px;">
-       <b>Unresolved Items</b> - the number of individual Preparations not resolved.
+       <b>Unresolved Items</b> - the count of individual items not resolved.
     </p>
     <p align="center" style=" margin-left: 20.0px;">
        &nbsp;
@@ -532,14 +532,14 @@
     <blockquote>
       <p>
          Collection managers are regularly asked to share specific data records with local or
-        remote researchers. In most cases this is easily accomplished by attaching a spreadsheet or
-        .csv file to an email message. The information shared is usually in the form of Collection
+        external researchers. In most cases this is accomplished by attaching a spreadsheet or .csv
+        file to an email message. The information shared is usually in the form of Collection
         Objects. Specify 6 has an automated function to handle responses to specimen information
-        requests.
+        requests and record these for later retrieval and reporting.
       </p>
       <p>
-         Interactions such as Loans, Gifts, Exchange Outs and Disposals can be created from
-        Information Requests as well.
+         Interactions such as Loans, Gifts, Exchange Outs and Disposals can also be created using
+        Information Requests.
       </p>
       <p>
          Click <i><b>Information Request</b></i> in the side bar to start the process.
@@ -572,7 +572,7 @@
         database and b) the necessary email settings have been entered in <em>Preferences &gt;
         Email</em>, an email will automatically be sent to the designated recipient once the Save
         button has been clicked.&nbsp; The attached Collection Objects will appear in the main
-        portion of the email and also attached as a CSV file.
+        portion of the email and will also be attached as a CSV file.
       </p>
       <p>
          Unlike queries, Information Requests are only saved on the side bar and not in the
@@ -581,18 +581,18 @@
         kept in the database of an Information Request once it has been deleted.
       </p>
       <p>
-         It is possible to send an information request via email at a later date or resend it if it
+         It is possible to send an Information Request via email at a later date or resend it if it
         has been saved.
       </p>
     </blockquote>
     <ul>
       <li>
-        Click on the <em>Information Request</em> button in the side bar to open it in the work
-        space.
+        Click on the <em>Information Request</em> button in the side bar to open it in the
+        workspace.
       </li>
       <li>
         Click the <img height="20" src="../../images/form_editor20x20.png" width="20"> (edit form)
-        button at the bottom of the work space to edit the Information Request.
+        button at the bottom of the workspace to edit the Information Request.
       </li>
       <li>
         Make a change to the Information Request (this could simply be retyping part of the date).
@@ -608,11 +608,11 @@
       </li>
     </ul>
     <h3 class="style3">
-       <a name="gift" id="fift"></a> <strong>Gifts</strong>
+       <a name="gift" id="gift"></a> <strong>Gifts</strong>
     </h3>
     <p style=" margin-left: 20.0px;">
        Specimens may be transferred outside of the collection and not expected to be returned. In
-      these instances they may be considered a Gift. Gifts can be documented by created a record
+      these instances they may be considered a Gift. Gifts can be documented by creating a record
       using the methods described above.
     </p>
     <h3 class="style3">
@@ -624,13 +624,18 @@
     <blockquote>
       <p class="style2">
          The Exchange In / Exchange Out feature of Specify 6 is intended to give certain
-        disciplines the facility to track incoming and outgoing specimens against each other.
+        disciplines the facility to track incoming and outgoing specimens related to&nbsp;each
+        other.
       </p>
       <p>
          The Exchange Out table is connected to preparations for the exchanging of cataloged items.
         Functionality follows that of Gifts and Loans above. Forms can also be modified or
         augmented to incorporate the exchanging of non-cataloged items much like in Loans without
         Preps.
+      </p>
+      <p>
+         The Exchange In table is similar to the borrow table in recording incoming material and
+        thus does not use preparations.
       </p>
     </blockquote>
     <p>
@@ -641,11 +646,12 @@
     </h3>
     <blockquote>
       <p>
-         There may be times when specimens are not available in a collection for reasons other than
-        a transfer of ownership (such as a Gift or Exchange Out transaction). This may be a
-        destructive sample, item lost in transport, the item was disposed, or simply no longer
-        found in the collection. For this purpose Specify created the Disposal table. Disposals can
-        be created using the steps outlined above.
+         There may be times when specimens are no longer&nbsp;available in a collection for reasons
+        other than a transfer of ownership (such as a Gift or Exchange Out transaction). This may
+        be a destructive sample, item lost in transport, the item was disposed, or simply no longer
+        found in the collection. For this purpose Specify created the Disposal table. Disposals
+        can<a name="deaccessions" id="deaccessions">Deaccessions</a> be created using the steps
+        outlined above.
       </p>
     </blockquote>
     <p>
@@ -656,12 +662,12 @@
     </h3>
     <blockquote>
       <p>
-         Deaccessions in Specify are defined as the opposite of an Accession, or the process of
-        giving up legal possession of a specimen. For this reason Deaccessions can not be created
-        without a specimen first being associated with a transaction such as Gift, Exchange Out or
-        Disposal. Deaccessions can be queried and a form can be opened for viewing purposes, but
-        the creation of a Deaccession can only be accomplished from a Gift, Exchange Out or
-        Disposal form as shown below.
+         Deaccessions in Specify are the opposite of an Accession i.e. the legal process of
+        relinquishing possession of a specimen through removal from the collection. For this reason
+        Deaccessions can not be created without a specimen first being associated with the
+        relevant&nbsp;transaction - Gift, Exchange Out or Disposal. Deaccessions can be queried and
+        viewed, but the creation of a Deaccession can only be accomplished from a Gift, Exchange
+        Out or Disposal form as shown below.
       </p>
       <p align="center">
          <img src="../../images/interactions_disposalform.png">
@@ -673,9 +679,13 @@
          &nbsp;
       </p>
       <p>
-         Click on the <img src="../../images/add.png" height="16" width="16">(add) button to create
-        a new Deaccession or type in the first few number of an existing Deaccession and then click
-        the down arrow to access a list of existing Deaccessions.
+         Click the&nbsp;<img src="../../images/add.png" height="16" width="16">(add) button for a
+        Deaccession in a Disposal, Exchange Out, or Gift form to create a new Deaccession or
+        alternatively&nbsp;type in the first few numbers of an existing Deaccession number and then
+        click the down arrow and select an&nbsp;existing Deaccessions.
+      </p>
+      <p>
+         &nbsp;
       </p>
       <p align="center">
          <img src="../../images/interactions_deaccession_add.png">
@@ -689,8 +699,7 @@
       <p>
          Information such as Total Preps and Total Items will automatically update once the
         Deaccession is saved. As shown on the form above, Deaccessions are related to Accessions
-        and information any Accession information can be made&nbsp;available on the Deaccession
-        form and vice versa.
+        and Accession information can be viewed from the Deaccession form and vice versa.
       </p>
       <p>
          &nbsp;
@@ -740,8 +749,8 @@
         linking many accessions to a single repository agreement.
       </p>
       <p>
-         All associated agents and permitting information can be entered in a one-to-many
-        relationship within the repository agreement.
+         Much like an accession, all associated agents and permitting information can be entered in
+        a one-to-many relationship within the repository agreement.
       </p>
     </blockquote>
     <p>
