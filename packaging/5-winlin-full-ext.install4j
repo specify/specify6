@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="8.0.4" transformSequenceNumber="8">
   <directoryPresets config="../InstallerFiles/images" />
-  <application name="Specify" applicationId="5397-6897-2502-8965" mediaDir="../ExtMedia" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}" shrinkRuntime="false" shortName="Specify" publisher="Biodiversity Research Center, University of Kansas" publisherWeb="http://www.specifysoftware.org" version="6.7.00" allPathsRelative="true" backupOnSave="true" autoSave="true" macVolumeId="925fde729c142ea5" javaMinVersion="1.8">
+  <application name="Specify" applicationId="5397-6897-2502-8965" mediaDir="../ExtMedia" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}" shrinkRuntime="false" shortName="Specify" publisher="Biodiversity Research Center, University of Kansas" publisherWeb="http://www.specifysoftware.org" version="6.7.00" allPathsRelative="true" backupOnSave="true" autoSave="true" macVolumeId="925fde729c142ea5" javaMinVersion="1.8" javaMaxVersion="11">
     <languages>
       <principalLanguage id="en" customLocalizationFile="./localization_en.utf8" />
       <additionalLanguages>
