@@ -28,6 +28,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import edu.ku.brc.af.ui.forms.*;
+import edu.ku.brc.af.ui.forms.persist.AltViewIFace;
 import edu.ku.brc.af.ui.forms.validation.ValCheckBox;
 import edu.ku.brc.af.ui.forms.validation.ValFormattedTextFieldSingle;
 import edu.ku.brc.af.ui.forms.validation.ValSpinner;
@@ -82,6 +83,9 @@ public class LoanReturnPreparationBusRules extends BaseBusRules implements Comma
         if (comp instanceof ValFormattedTextFieldSingle) {
             return ((ValFormattedTextFieldSingle)comp).getText();
         }
+        if (comp instanceof JTextField) {
+            return ((JTextField)comp).getText();
+        }
         log.error("Invalid Control Type: " + comp.getClass());
         return null;
     }
@@ -94,6 +98,7 @@ public class LoanReturnPreparationBusRules extends BaseBusRules implements Comma
                 }
             }
             LoanPreparation lp = (LoanPreparation)loanPrepFVO.getDataObj();
+            Component quantity = loanPrepFVO.getControlByName("quantity");
             Component quantityReturned = loanPrepFVO.getControlByName("quantityReturned");
             Component quantityResolved = loanPrepFVO.getControlByName("quantityResolved");
             Component isResolved = loanPrepFVO.getControlByName("isResolved");
@@ -103,7 +108,7 @@ public class LoanReturnPreparationBusRules extends BaseBusRules implements Comma
 
             theLoanPrep = new LoanPreparation();
             theLoanPrep.setLoanPreparationId(lp.getLoanPreparationId());
-            theLoanPrep.setQuantity(lp.getQuantity());
+            theLoanPrep.setQuantity(getInt(getValueFromComp(quantity)));
             theLoanPrep.setQuantityResolved(getInt(getValueFromComp(quantityResolved)));
             theLoanPrep.setQuantityReturned(getInt(getValueFromComp(quantityReturned)));
             theLoanPrep.setIsResolved(getBool(getValueFromComp(isResolved)));
@@ -202,7 +207,7 @@ public class LoanReturnPreparationBusRules extends BaseBusRules implements Comma
             prevLoanRetPrep = null;
         }
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.BaseBusRules#beforeDelete(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
      */
@@ -235,19 +240,20 @@ public class LoanReturnPreparationBusRules extends BaseBusRules implements Comma
                 int qQnt    = getInt(getTheLoanPrep().getQuantity());
                 
                 int qQntRes = getInt(getTheLoanPrep().getQuantityResolved());
-                int qQntRet = getInt(getTheLoanPrep().getQuantityReturned());
+                //int qQntRet = getInt(getTheLoanPrep().getQuantityReturned());
                 
                 // Calculate the total available
 
                 int qtyRetLPR = getInt(loanRetPrep.getQuantityReturned());
                 int qtyResLPR = getInt(loanRetPrep.getQuantityResolved());
 
-                int qtyToBeReturned = Math.max(0, qQnt - qQntRet + qtyResLPR); // shouldn't be negative
+                //int qtyToBeReturned = Math.max(0, qQnt - qQntRet + qtyResLPR); // shouldn't be negative
                 int qtyToBeResolved = Math.max(0, qQnt - qQntRes + qtyResLPR); // shouldn't be negative
 
                 JButton newBtn = formViewObj.getRsController().getNewRecBtn();
-                newBtn.setEnabled(qtyToBeReturned > 0);
-                
+                //newBtn.setEnabled(qtyToBeReturned > 0);
+                newBtn.setEnabled(false);
+
                 ValSpinner quantityReturned = (ValSpinner)comp;
                 ValSpinner quantityResolved = (ValSpinner)formViewObj.getControlByName("quantityResolved");
 
@@ -285,8 +291,8 @@ public class LoanReturnPreparationBusRules extends BaseBusRules implements Comma
             }
             formViewObj.getValidator().setHasChanged(true);
         }
-        //loanRetPrep.setQuantityResolved(lrpResolvedQty);
-        //loanRetPrep.setQuantityReturned(lrpReturnedQty);
+        loanRetPrep.setQuantityResolved(lrpResolvedQty);
+        loanRetPrep.setQuantityReturned(lrpReturnedQty);
     }
 
     /**
@@ -361,13 +367,14 @@ public class LoanReturnPreparationBusRules extends BaseBusRules implements Comma
     protected void quantityChanged(final LoanReturnPreparation loanRetPrepArg, final ChangeEvent e) {
         if (formViewObj != null) {
             Component comp = formViewObj.getControlByName("quantityResolved");
+            LoanReturnPreparation loanRetPrep = loanRetPrepArg != null ? loanRetPrepArg : (LoanReturnPreparation) formViewObj.getDataObj();
+            //these bus rules depend on quantityReturned and quantityResolved being ValSpinners.
             if (comp instanceof ValSpinner) {
-                LoanReturnPreparation loanRetPrep = loanRetPrepArg != null ? loanRetPrepArg : (LoanReturnPreparation) formViewObj.getDataObj();
-                if (loanRetPrep != null) {
-                    final ValSpinner lrpResolvedVS = (ValSpinner) comp;
-                    final ValSpinner lrpReturnedVS = (ValSpinner) formViewObj.getControlByName("quantityReturned");
-                    adjustQuantitySpinners(loanRetPrep, lrpResolvedVS, lrpReturnedVS, e);
-                }
+                final ValSpinner lrpResolvedVS = (ValSpinner) comp;
+                final ValSpinner lrpReturnedVS = (ValSpinner) formViewObj.getControlByName("quantityReturned");
+                adjustQuantitySpinners(loanRetPrep, lrpResolvedVS, lrpReturnedVS, e);
+            }
+            if (loanRetPrep != null && comp instanceof ValSpinner) {
                 Pair<Integer, Integer> resRetTotals = getResRetTotals(loanRetPrep);
                 setPrepIsResolved(resRetTotals.getFirst());
                 setLoanPrepResRet(resRetTotals);
@@ -377,24 +384,26 @@ public class LoanReturnPreparationBusRules extends BaseBusRules implements Comma
         }
     }
 
+    private void setComp(final Component comp, final String val) {
+        if (comp instanceof ValFormattedTextFieldSingle ) {
+            final ValFormattedTextFieldSingle c =  (ValFormattedTextFieldSingle) comp;
+            SwingUtilities.invokeLater(() -> c.setText(val/*, true*/));
+        } else if (comp instanceof JTextField) {
+            final JTextField c =  (JTextField) comp;
+            SwingUtilities.invokeLater(() -> c.setText(val/*, true*/));
+        }
+
+    }
     private void updateTheLoanPrepFVO() {
         //quantityChanged(null, null);
         if (loanPrepFVO != null) {
             LoanPreparation loanPrep = getTheLoanPrep();
             if (loanPrep != null) {
-                Component comp = loanPrepFVO.getControlByName("quantityResolved");
-                if (comp instanceof ValFormattedTextFieldSingle) {
-                    final ValFormattedTextFieldSingle c =  (ValFormattedTextFieldSingle) comp;
-                    final String qres = Integer.toString(loanPrep.getQuantityResolved());
-                    SwingUtilities.invokeLater(() -> c.setText(qres/*, true*/));
-                }
-                comp = loanPrepFVO.getControlByName("quantityReturned");
-                if (comp instanceof ValFormattedTextFieldSingle) {
-                    final ValFormattedTextFieldSingle c =  (ValFormattedTextFieldSingle) comp;
-                    final String qret = Integer.toString(loanPrep.getQuantityReturned());
-                    SwingUtilities.invokeLater(() -> c.setText(qret/*, true*/));
-                }
-                comp = loanPrepFVO.getControlByName("isResolved");
+                setComp(loanPrepFVO.getControlByName("quantityResolved"), Integer.toString(loanPrep.getQuantityResolved()));
+                ((LoanPreparation)loanPrepFVO.getDataObj()).setQuantityResolved(loanPrep.getQuantityResolved());
+                setComp(loanPrepFVO.getControlByName("quantityReturned"), Integer.toString(loanPrep.getQuantityReturned()));
+                ((LoanPreparation)loanPrepFVO.getDataObj()).setQuantityReturned(loanPrep.getQuantityReturned());
+                Component comp = comp = loanPrepFVO.getControlByName("isResolved");
                 if (comp instanceof ValCheckBox) {
                     final ValCheckBox c =  (ValCheckBox) comp;
                     final Boolean qres = loanPrep.getIsResolved();
