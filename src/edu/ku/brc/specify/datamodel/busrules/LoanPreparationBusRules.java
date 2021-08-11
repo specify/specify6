@@ -261,7 +261,7 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
                 final JTextField qtyResolved      = (JTextField)comp;
                 final JTextField qtyReturned      = (JTextField)formViewObj.getControlByName("quantityReturned");
                 
-                int qMax = 0;
+                int qMax = 5000;
                 if (loanPrep.getPreparation() != null && loanPrep.getPreparation().getId() != null) {
                     boolean[] settings = {true, true, true, true};
                     String sql = InteractionsProcessor.getAdjustedCountForPrepSQL("p.preparationid = " + loanPrep.getPreparation().getId(), settings);
@@ -270,8 +270,6 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
                     if (loanPrep.getId() != null) {
                         qMax += loanPrep.getQuantity() - loanPrep.getQuantityResolved(); //But... If returns are deleted or modified, this limit will not be adjusted till form is closed and reopened.
                     }
-                } else {
-                    qMax = 0;
                 }
                 int qMin = loanPrep.getQuantityResolved(); //But... If returns are deleted or modified, this limit will not be adjusted till form is closed and reopened.
                 quantity.setRange(qMin, qMax, loanPrep.getQuantity());
