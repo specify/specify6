@@ -31,8 +31,10 @@ import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.TableViewObj;
 import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.af.ui.forms.validation.ValSpinner;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Gift;
 import edu.ku.brc.specify.datamodel.GiftPreparation;
+import edu.ku.brc.specify.tasks.InteractionsProcessor;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
@@ -113,20 +115,22 @@ public class GiftPreparationBusRules extends BaseBusRules implements CommandList
         {
             GiftPreparation  giftPrep   = (GiftPreparation)dataObj;
             
-            //boolean    isNewObj         = giftPrep.getId() == null;
             ValSpinner quantity         = (ValSpinner)comp;
             
-            // TODO I think this would be better if the Max Range 
-            // was set to the available number of items.
             if (quantity != null)
             {
-                quantity.setRange(0, giftPrep.getQuantity(), giftPrep.getQuantity());
+                int qMax = 5000;
+                if (giftPrep.getPreparation() != null && giftPrep.getPreparation().getId() != null) {
+                    boolean[] settings = {false, true, true, true}; //the false means stuff on loan will be available to gift???
+                    String sql = InteractionsProcessor.getAdjustedCountForPrepSQL("p.preparationid = " + giftPrep.getPreparation().getId(), settings);
+                    Object[] amt = BasicSQLUtils.queryForRow(sql);
+                    qMax = amt != null ? Integer.valueOf(amt[1].toString()).intValue() : qMax;
+                    if (giftPrep.getId() != null) {
+                        qMax += giftPrep.getQuantity();
+                    }
+                }
+                quantity.setRange(0, qMax, giftPrep.getQuantity());
             }
-            
-            //quantityReturned.setEnabled(!isNewObj);
-            //int max = Math.max(loanPrep.getQuantity(), loanPrep.getQuantityReturned());
-            //quantityReturned.setRange(0, max, loanPrep.getQuantityReturned());
-            //formViewObj.getLabelFor(quantityReturned).setEnabled(!isNewObj);
         }
 
     }
