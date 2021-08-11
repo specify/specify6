@@ -32,6 +32,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.tasks.InteractionsProcessor;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.ui.forms.BaseBusRules;
@@ -260,67 +261,20 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
                 final JTextField qtyResolved      = (JTextField)comp;
                 final JTextField qtyReturned      = (JTextField)formViewObj.getControlByName("quantityReturned");
                 
-                // Calculate how many have been Gift'ed
-                String sql = "SELECT gf.Quantity FROM  giftpreparation AS gf " +
-                             "INNER JOIN giftpreparation AS gfp ON gfp.GiftPreparationID = gf.GiftPreparationID " +
-                             "INNER JOIN preparation AS p ON gf.PreparationID = p.PreparationID " +
-                             "WHERE p.PreparationID = " + prep.getPreparationId();
-                
-                //System.out.println(sql);
-                int qGiftQnt = 0;
-
-                Vector<Object[]> rows = BasicSQLUtils.query(sql);
-                for (Object[] cols : rows)
-                {
-                    qGiftQnt  += getInt(cols[0]);
-                }
-                
-                int qQnt     = 0;
-                int qQntRes  = 0;
-                int qQntRet  = 0;
-                int qPrepCnt = 0;
-                
-                Integer pCnt = BasicSQLUtils.getCount("SELECT CountAmt FROM preparation WHERE PreparationID = " + prep.getPreparationId());
-                qPrepCnt = pCnt != null ? pCnt : 0;
-                
-                if (loanPrep.getId() != null)
-                {
-                    // Get all the LoanReturn Quantities so we can figure out
-                    // how many are still available
-                    sql = "SELECT lp.Quantity, lp.QuantityResolved, lrp.QuantityReturned " +
-                                 "FROM  loanpreparation AS lp " +
-                                 "LEFT JOIN loanreturnpreparation AS lrp ON lrp.LoanPreparationID = lp.LoanPreparationID " +
-                                 "INNER JOIN preparation AS p ON lp.PreparationID = p.PreparationID " +
-                                 "WHERE p.PreparationID = " + prep.getPreparationId();
-                    //System.out.println(sql);
-                    //System.out.println(" prep.getPreparationId() "+prep.getPreparationId());
-                    
-                    rows = BasicSQLUtils.query(sql);
-                    for (Object[] cols : rows)
-                    {
-                        qQnt     += getInt(cols[0]); // Qty loaned out
-                        qQntRes  += getInt(cols[1]); // Qty Resolved (came back)
-                        qQntRet  += getInt(cols[2]); // Qty Resolved (came back)
+                int qMax = 0;
+                if (loanPrep.getPreparation() != null && loanPrep.getPreparation().getId() != null) {
+                    boolean[] settings = {true, true, true, true};
+                    String sql = InteractionsProcessor.getAdjustedCountForPrepSQL("p.preparationid = " + loanPrep.getPreparation().getId(), settings);
+                    Object[] amt = BasicSQLUtils.queryForRow(sql);
+                    qMax = amt != null ? Integer.valueOf(amt[1].toString()).intValue() : qMax;
+                    if (loanPrep.getId() != null) {
+                        qMax += loanPrep.getQuantity() - loanPrep.getQuantityResolved(); //But... If returns are deleted or modified, this limit will not be adjusted till form is closed and reopened.
                     }
+                } else {
+                    qMax = 0;
                 }
-                
-                // Calculate the total available
-                //System.out.println("qPrepCnt "+qPrepCnt+"  qQnt "+qQnt+"  qQntRes "+qQntRes+"  qGiftQnt "+qGiftQnt+" avail: "+(qPrepCnt - (qQnt - qQntRes) - qGiftQnt));
-                int availableQnt = Math.max(0, qPrepCnt - (qQnt - qQntRes) - qGiftQnt); // shouldn't be negative
-                
-                //System.out.println("availableQnt "+availableQnt+" loanPrep.getQuantity() "+loanPrep.getQuantity());
-                // Adding insurance against expceptions in case the quantity is eve greater
-                // may want to add a popup error msg
-                if (availableQnt == 0)
-                {
-                    quantity.setRange(0, loanPrep.getQuantity(), loanPrep.getQuantity());
-                    quantity.setEnabled(false);
-                } else
-                {
-                    quantity.setRange(0, loanPrep.getQuantity()+availableQnt, loanPrep.getQuantity());
-                    quantity.setEnabled(true);
-                }
-                
+                int qMin = loanPrep.getQuantityResolved(); //But... If returns are deleted or modified, this limit will not be adjusted till form is closed and reopened.
+                quantity.setRange(qMin, qMax, loanPrep.getQuantity());
                 qtyResolved.setText(Integer.toString(loanPrep.getQuantityResolved()));
                 qtyReturned.setText(Integer.toString(loanPrep.getQuantityReturned()));
             }
