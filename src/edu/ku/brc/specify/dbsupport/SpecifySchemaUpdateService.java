@@ -81,7 +81,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 {
     protected static final Logger  log = Logger.getLogger(SpecifySchemaUpdateService.class);
     
-    private final int OVERALL_TOTAL = 84; //the number of incOverall() calls (+1 or +2)
+    private final int OVERALL_TOTAL = 83; //the number of incOverall() calls (+1 or +2)
 
     private static final String TINYINT4 = "TINYINT(4)";
     private static final String INT11    = "INT(11)";
@@ -1243,30 +1243,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         }
                     }
                     frame.incOverall();
-                    
-                    //---------------------------------------------------------------------------
-                    //-- Agent
-                    //---------------------------------------------------------------------------
-                    tblName = getTableNameAndTitleForFrame(Agent.getClassTableId());
-                    len     = getFieldLength(conn, databaseName, tblName, "LastName");
-                    if (len == null) {
-                        errMsgList.add(String.format(UPD_CNT_NO_MATCH, tblName));
-                        return false;
-                    }
-                    if (len.intValue() != 128) {
-                        count = getCount(tblName);
-                        rv = update(conn, "ALTER TABLE agent MODIFY LastName varchar(128)");
-                        if (rv != count) {
-                            //when only agent, the counts might not match, even when length change succeeds
-                            len     = getFieldLength(conn, databaseName, tblName, "LastName");
-                            if (len == null || len.intValue() != 128) {
-                                errMsgList.add(String.format(UPD_CNT_NO_MATCH, tblName));
-                                return false;
-                            }
-                        }
-                    }
-                    frame.incOverall();
-                    
+
                     //---------------------------------------------------------------------------
                     //-- SpExportSchema
                     //---------------------------------------------------------------------------
