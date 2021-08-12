@@ -22,6 +22,8 @@ package edu.ku.brc.specify.datamodel.busrules;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Set;
 import java.util.Vector;
 
@@ -265,7 +267,13 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
                 if (loanPrep.getPreparation() != null && loanPrep.getPreparation().getId() != null) {
                     boolean[] settings = {true, true, true, true};
                     String sql = InteractionsProcessor.getAdjustedCountForPrepSQL("p.preparationid = " + loanPrep.getPreparation().getId(), settings);
-                    Object[] amt = BasicSQLUtils.queryForRow(sql);
+                    Connection conn = InteractionsProcessor.getConnForAvailableCounts();
+                    Object[] amt = BasicSQLUtils.queryForRow(conn, sql);
+                    try {
+                        conn.close();
+                    } catch (SQLException x) {
+                        log.warn(x);
+                    }
                     qMax = amt != null ? Integer.valueOf(amt[1].toString()).intValue() : qMax;
                     if (loanPrep.getId() != null) {
                         qMax += loanPrep.getQuantity() - loanPrep.getQuantityResolved(); //But... If returns are deleted or modified, this limit will not be adjusted till form is closed and reopened.
