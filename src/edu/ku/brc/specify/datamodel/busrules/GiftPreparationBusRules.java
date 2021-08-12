@@ -121,7 +121,7 @@ public class GiftPreparationBusRules extends BaseBusRules implements CommandList
             {
                 int qMax = 5000;
                 if (giftPrep.getPreparation() != null && giftPrep.getPreparation().getId() != null) {
-                    boolean[] settings = {false, true, true, true}; //the false means stuff on loan will be available to gift???
+                    boolean[] settings = {true, true, true, true}; //the false means stuff on loan will be available to gift???
                     String sql = InteractionsProcessor.getAdjustedCountForPrepSQL("p.preparationid = " + giftPrep.getPreparation().getId(), settings);
                     Object[] amt = BasicSQLUtils.queryForRow(sql);
                     qMax = amt != null ? Integer.valueOf(amt[1].toString()).intValue() : qMax;
