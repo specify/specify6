@@ -27,6 +27,8 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Index;
 
 import javax.persistence.*;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.*;
 
 @Entity
@@ -674,21 +676,21 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
         +  ") union (select giftid, " + Gift.getClassTableId() + " from gift where deaccessionid = " + id
         + ") union (select exchangeoutid, " + ExchangeOut.getClassTableId() + " from exchangeout where deaccessionid = " + id + ")";
         List<Object[]> interactions = BasicSQLUtils.query(conn, sql);
-        log.info("countContents: found " + interactions.size() +  " related interactions.");
         Integer result = 0;
         for (Object[] i : interactions) {
             log.info("   " + i[0] + ", " + i[1]);
             try {
                 Integer key = Integer.valueOf(i[0].toString());
                 Integer tblId = Integer.valueOf(i[1].toString());
-	            log.info(InteractionsTask.getCountContentsSql(countQuantity, false, key, tblId));
-	            BasicSQLUtils.setSkipTrackExceptions(false);
 	            result += BasicSQLUtils.getCountAsInt(conn, InteractionsTask.getCountContentsSql(countQuantity, false, key, tblId));
-	            BasicSQLUtils.setSkipTrackExceptions(true);
             } catch (Exception x){
-                x.printStackTrace();
                 log.error(x, x);
             }
+        }
+        try {
+            conn.close();
+        } catch (SQLException x) {
+            log.warn(x);
         }
         return result;
     }
