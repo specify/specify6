@@ -22,6 +22,8 @@ package edu.ku.brc.specify.datamodel.busrules;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 import javax.swing.JButton;
 
@@ -38,6 +40,7 @@ import edu.ku.brc.specify.tasks.InteractionsProcessor;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
+import org.apache.log4j.Logger;
 
 /**
  * @author rod
@@ -49,7 +52,8 @@ import edu.ku.brc.ui.CommandListener;
  */
 public class GiftPreparationBusRules extends BaseBusRules implements CommandListener
 {
-    
+    private static final Logger log = Logger.getLogger(GiftPreparationBusRules.class);
+
     /**
      * 
      */
@@ -123,8 +127,14 @@ public class GiftPreparationBusRules extends BaseBusRules implements CommandList
                 if (giftPrep.getPreparation() != null && giftPrep.getPreparation().getId() != null) {
                     boolean[] settings = {true, true, true, true}; //the false means stuff on loan will be available to gift???
                     String sql = InteractionsProcessor.getAdjustedCountForPrepSQL("p.preparationid = " + giftPrep.getPreparation().getId(), settings);
-                    Object[] amt = BasicSQLUtils.queryForRow(sql);
+                    Connection conn = InteractionsProcessor.getConnForAvailableCounts();
+                    Object[] amt = BasicSQLUtils.queryForRow(conn, sql);
                     qMax = amt != null ? Integer.valueOf(amt[1].toString()).intValue() : qMax;
+                    try {
+                        conn.close();
+                    } catch (SQLException x) {
+                        log.warn(x);
+                    }
                     if (giftPrep.getId() != null) {
                         qMax += giftPrep.getQuantity();
                     }
