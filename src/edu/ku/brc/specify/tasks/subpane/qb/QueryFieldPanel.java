@@ -428,9 +428,9 @@ public class QueryFieldPanel extends JPanel implements ActionListener
             final Component       saveBtn,
             final SpQueryField  queryField,
             final SpExportSchemaMapping schemaMapping,
-            final SpExportSchemaItemMapping itemMapping)
+            final SpExportSchemaItem schemaItem)
     {
-    	this(ownerQuery, fieldQRI, IconManager.IconSize.Std24, columnDefStr, saveBtn, queryField, schemaMapping, itemMapping);
+    	this(ownerQuery, fieldQRI, IconManager.IconSize.Std24, columnDefStr, saveBtn, queryField, schemaMapping, schemaItem);
     }
 
     /**
@@ -450,11 +450,11 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                            final Component       saveBtn,
                            final SpQueryField  queryField,
                            final SpExportSchemaMapping schemaMapping,
-                           final SpExportSchemaItemMapping itemMapping)
+                           final SpExportSchemaItem schemaItem)
     {        
         this.ownerQuery = ownerQuery;
         this.schemaMapping = schemaMapping;
-        this.schemaItem = itemMapping != null ? itemMapping.getExportSchemaItem() : null;
+        this.schemaItem = schemaItem;
         boolean isForSchema = this.schemaMapping != null;
         if (this.ownerQuery.isPromptMode()) {
             if (!isForSchema) {
@@ -501,9 +501,9 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                         " "};
             }
         }
-        if (itemMapping != null) {
-            extensionInfo = new DwcExtensionInfo(itemMapping.getRowType(), itemMapping.isExtensionItem());
-        }
+//        if (itemMapping != null) {
+//            extensionInfo = new DwcExtensionInfo(itemMapping.getRowType(), itemMapping.isExtensionItem());
+//        }
         this.iconSize = iconSize;
         this.fieldQRI      = fieldQRI;
         if (fieldQRI != null && (fieldQRI.getDataClass().equals(Calendar.class) || fieldQRI.getDataClass().equals(java.sql.Timestamp.class)))

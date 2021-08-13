@@ -104,7 +104,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     protected QueryFieldPanel                                selectedQFP = null; 
     protected int                                            currentInx       = -1;
     protected JPanel                                         queryFieldsPanel;
-    protected JComponent                                     queryFieldsScroll;
+    protected JScrollPane                                     queryFieldsScroll;
     
     protected SpQuery                                        query            = null;
 
@@ -645,23 +645,10 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         add(topPanel, BorderLayout.NORTH);
 
         queryFieldsPanel = makeFieldsPanel();
-        if (schemaMapping == null) {
-            queryFieldsScroll = new JScrollPane(queryFieldsPanel,
+        queryFieldsScroll = new JScrollPane(queryFieldsPanel,
                     ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
                     ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
             queryFieldsScroll.setBorder(null);
-        } else {
-            //forget about multiple tabs for now
-            queryFieldsScroll = new JScrollPane(queryFieldsPanel,
-                    ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
-                    ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-            queryFieldsScroll.setBorder(null);
-            /*queryFieldsScroll = new JTabbedPane();
-            ((JTabbedPane) queryFieldsScroll).addTab("core", new JScrollPane(queryFieldsPanel,
-                    ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
-                    ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER));
-            /*addExtensionTab(new DwcExtensionInfo("audobon core", "blah blah blah"));*/
-        }
         add(queryFieldsScroll);
 
         //if (!isExportMapping)
@@ -1083,22 +1070,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         return getQueryFieldPanels(container, q.getFields(), tblTree, ttHash, null, null);
     }
 
-    /**
-     *
-     * @return
-     */
-    protected List<JScrollPane> getFieldScrollPanes() {
-        List<JScrollPane> result = new ArrayList<>();
-        if (queryFieldsScroll instanceof JScrollPane) {
-            result.add((JScrollPane)queryFieldsScroll);
-        } else {
-            JTabbedPane tp = (JTabbedPane)queryFieldsScroll;
-            for (int t = 0; t < tp.getTabCount(); t++) {
-                result.add((JScrollPane) tp.getComponentAt(t));
-            }
-        }
-        return result;
-    }
 
     protected Map<DwcExtensionInfo, Component> extensionInfoMap = new HashMap<>();
 
@@ -1226,25 +1197,22 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             }
         }
 
-        Map<JScrollPane, List<QueryFieldPanel>> rowTypes = processRowTypes(qfps);
-        for (JScrollPane rowType : rowTypes.keySet()) {
-            boolean header = true;
-            for (final QueryFieldPanel qfp : rowTypes.get(rowType)) {
-                if (header) {
-                    header = false;
-                    rowType.setColumnHeaderView(qfp);
-                } else {
-                    queryFieldItems.add(qfp);
-                    qfp.addMouseListener(new MouseInputAdapter() {
-                        @Override
-                        public void mousePressed(MouseEvent e) {
-                            selectQFP(qfp);
-                        }
-                    });
-                    qfp.resetValidator();
-                    ((JPanel )rowType.getViewport().getView()).add(qfp);
-                    //doAutoMap &= qfp.getFieldQRI() == null;
-                }
+        boolean header = true;
+        for (final QueryFieldPanel qfp : qfps) {
+            if (header) {
+                header = false;
+                this.queryFieldsScroll.setColumnHeaderView(qfp);
+            } else {
+                queryFieldItems.add(qfp);
+                qfp.addMouseListener(new MouseInputAdapter() {
+                    @Override
+                    public void mousePressed(MouseEvent e) {
+                        selectQFP(qfp);
+                    }
+                });
+                qfp.resetValidator();
+                queryFieldsPanel.add(qfp);
+                //doAutoMap &= qfp.getFieldQRI() == null;
             }
         }
         qualifyFieldLabels();
@@ -4742,7 +4710,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     result.add(mapping.getQueryField());
                 }
             }
-        } else {
+        } if (result.size() == 0) {
             result.add(null);
         }
         return result;
@@ -4788,11 +4756,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 container.getColumnDefStr(), saveBtn, null, schemaMapping, null));
 
         Vector<SpExportSchemaItem> sis = new Vector<SpExportSchemaItem>();
-        if (schemaMapping.getSpExportSchemas() != null) {
-            for (SpExportSchema exportSchema : schemaMapping.getSpExportSchemas()) {
-                if (exportSchema.getSpExportSchemaItems() != null) {
-                    sis.addAll(exportSchema.getSpExportSchemaItems());
-                }
+        if (schemaMapping.getSpExportSchema() != null) {
+            if (schemaMapping.getSpExportSchema().getSpExportSchemaItems() != null) {
+                sis.addAll(schemaMapping.getSpExportSchema().getSpExportSchemaItems());
             }
         }
         Collections.sort(sis, new Comparator<SpExportSchemaItem>() {
@@ -4838,7 +4804,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 }
                 if (fieldQRI != null) {
                     QueryFieldPanel newPanel = new QueryFieldPanel(container, fieldQRI,
-                            container.getColumnDefStr(), saveBtn, fld, schemaMapping, getItemMappingForQueryField(schemaMapping, fld));
+                            container.getColumnDefStr(), saveBtn, fld, schemaMapping, schemaItem);
                     newPanel.setAutoMapped(autoMapped);
                     result.add(newPanel);
                     fieldQRI.setIsInUse(true);
@@ -5434,26 +5400,18 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         });
     }
 
-    protected JScrollPane getCurrentScrollPane() {
-        if (queryFieldsScroll instanceof JScrollPane) {
-            return (JScrollPane)queryFieldsScroll;
-        } else {
-            JTabbedPane tp = (JTabbedPane)queryFieldsScroll;
-            return (JScrollPane) tp.getSelectedComponent();
-        }
-    }
     /**
      * @param rect - the rectangle to make visible.
      * 
      * Wrapper for JViewport.scrollReectToVisible() with a work around for a java bug.
      */
     protected void scrollQueryFieldsToRect(final Rectangle rect) {
-        getCurrentScrollPane().getViewport().scrollRectToVisible(rect);
+        queryFieldsScroll.getViewport().scrollRectToVisible(rect);
         
         //scrollRectToVisible doesn't work when newBounds is above the viewport.
         //This is a java bug: http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6333318
-    	if (rect.y < getCurrentScrollPane().getViewport().getViewPosition().y) {
-            getCurrentScrollPane().getViewport().setViewPosition(new Point(rect.x,rect.y));
+    	if (rect.y < queryFieldsScroll.getViewport().getViewPosition().y) {
+            queryFieldsScroll.getViewport().setViewPosition(new Point(rect.x,rect.y));
         }
     }
     
