@@ -308,17 +308,32 @@ public class ConfigureXLS extends ConfigureExternalDataBase
     	return result;
     }
 
-    protected Integer getIdxForPropKey(String propKey) {
+    protected Integer getIdxForPropKey(String propKey, boolean usesViewOrder, int i) {
         if (propKey != null) {
-            String sint = propKey.replace(POIFS_COL_KEY_PREFIX, "").trim();
-            try {
-                return Integer.valueOf(sint);
-            } catch (NumberFormatException x) {
-                //oh well
+            if (usesViewOrder) {
+                String sint = propKey.replace(POIFS_COL_KEY_PREFIX, "").trim();
+                try {
+                    return Integer.valueOf(sint);
+                } catch (NumberFormatException x) {
+                    //oh well
+                }
+            } else {
+                if (propKey.toLowerCase().trim().startsWith("period") || propKey.toLowerCase().trim().startsWith("epoch") || propKey.toLowerCase().trim().startsWith("age") || propKey.toLowerCase().trim().startsWith("max uncer")) {
+                    System.out.println(propKey);
+                }
+                for (int c = 0; c < colInfo.size(); c++) {
+                    ImportColumnInfo ci = colInfo.get(c);
+                    if (ci.colName.equalsIgnoreCase(propKey.trim())) {
+                        return c;
+                    }
+                }
+                System.out.println("No match for:" + propKey);
+                return i;
             }
         }
         return null;
     }
+
     /**
      * @param props
      * @param cols
@@ -329,7 +344,7 @@ public class ConfigureXLS extends ConfigureExternalDataBase
         if (props != null && ((usesViewOrder && props.size() == cols.size()) || !usesViewOrder)) {
         	if (usesViewOrder) {
             	for (Map.Entry p : props.entrySet()) {
-            	    Integer colIdx = getIdxForPropKey(p.getKey().toString());
+            	    Integer colIdx = getIdxForPropKey(p.getKey().toString(), usesViewOrder, -1);
             	    if (colIdx != null && colIdx >= 0 && colIdx < cols.size()) {
                         String[] mapping = ((String)p.getValue()).split("\t");
                         if (!mapping[0].equals(cols.get(colIdx).getColTitle())) {
@@ -359,7 +374,7 @@ public class ConfigureXLS extends ConfigureExternalDataBase
                 Set<String> dupedCols = usesViewOrder ? new HashSet<>() : getDuplicatedColTitles(colInfo);
                 int i = 0;
                 for (Map.Entry p : props.entrySet()) {
-                    Integer colIdx = usesViewOrder ? getIdxForPropKey(p.getKey().toString()) : i++;
+                    Integer colIdx = getIdxForPropKey(p.getKey().toString(), usesViewOrder, i++);
                     if (!usesViewOrder || (colIdx != null && colIdx >= 0 && colIdx < colInfo.size())) {
                         ImportColumnInfo col = colInfo.get(colIdx);
                         if (!dupedCols.contains(col.getColTitle())) {
