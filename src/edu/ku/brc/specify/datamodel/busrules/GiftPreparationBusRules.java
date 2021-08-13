@@ -139,7 +139,11 @@ public class GiftPreparationBusRules extends BaseBusRules implements CommandList
                         qMax += giftPrep.getQuantity();
                     }
                 }
-                quantity.setRange(0, qMax, giftPrep.getQuantity());
+                if (0 <= giftPrep.getQuantity() && giftPrep.getQuantity() <= qMax) {
+                    quantity.setRange(0, qMax, giftPrep.getQuantity());
+                } else {
+                    quantity.setRange(giftPrep.getQuantity(), giftPrep.getQuantity(), giftPrep.getQuantity());
+                }
             }
         }
 

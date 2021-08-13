@@ -280,7 +280,11 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
                     }
                 }
                 int qMin = loanPrep.getQuantityResolved(); //But... If returns are deleted or modified, this limit will not be adjusted till form is closed and reopened.
-                quantity.setRange(qMin, qMax, loanPrep.getQuantity());
+                if (qMin <= loanPrep.getQuantity() && loanPrep.getQuantity() <= qMax) {
+                    quantity.setRange(qMin, qMax, loanPrep.getQuantity());
+                } else {
+                    quantity.setRange(loanPrep.getQuantity(), loanPrep.getQuantity(), loanPrep.getQuantity());
+                }
                 qtyResolved.setText(Integer.toString(loanPrep.getQuantityResolved()));
                 qtyReturned.setText(Integer.toString(loanPrep.getQuantityReturned()));
             }
