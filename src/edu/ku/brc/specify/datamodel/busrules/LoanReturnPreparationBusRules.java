@@ -90,14 +90,17 @@ public class LoanReturnPreparationBusRules extends BaseBusRules implements Comma
         return null;
     }
 
+    private LoanPreparation getLoanPrepFromFVO() {
+        if (loanPrepFVO == null) {
+            if (formViewObj != null) {
+                loanPrepFVO = formViewObj.getMVParent().getMultiViewParent().getCurrentViewAsFormViewObj();
+            }
+        }
+        return loanPrepFVO == null ? null : (LoanPreparation)loanPrepFVO.getDataObj();
+    }
     private LoanPreparation getTheLoanPrep() {
         if (theLoanPrep == null) {
-            if (loanPrepFVO == null) {
-                if (formViewObj != null) {
-                    loanPrepFVO = formViewObj.getMVParent().getMultiViewParent().getCurrentViewAsFormViewObj();
-                }
-            }
-            LoanPreparation lp = (LoanPreparation)loanPrepFVO.getDataObj();
+            LoanPreparation lp = getLoanPrepFromFVO();
             Component quantity = loanPrepFVO.getControlByName("quantity");
             Component quantityReturned = loanPrepFVO.getControlByName("quantityReturned");
             Component quantityResolved = loanPrepFVO.getControlByName("quantityResolved");
@@ -257,8 +260,8 @@ public class LoanReturnPreparationBusRules extends BaseBusRules implements Comma
                 ValSpinner quantityReturned = (ValSpinner)comp;
                 ValSpinner quantityResolved = (ValSpinner)formViewObj.getControlByName("quantityResolved");
 
-                quantityReturned.setRange(0, qtyToBeResolved, qtyRetLPR);
-                quantityResolved.setRange(0, qtyToBeResolved, qtyResLPR);
+                quantityReturned.setRange(qtyRetLPR, qtyRetLPR, qtyRetLPR);
+                quantityResolved.setRange(qtyResLPR, qtyResLPR, qtyResLPR);
             }
         }
         
@@ -302,14 +305,17 @@ public class LoanReturnPreparationBusRules extends BaseBusRules implements Comma
      */
     protected Pair<Integer, Integer> getResRetTotals(LoanReturnPreparation loanRetPrep) {
         Pair<Integer, Integer> result = new Pair<>(0, 0);
-        int qtyRes = 0, qtyRet = 0, i = 0;
-        if (loanRetPrep != null) {
-            LoanPreparation lrpLoanPrep = loanRetPrep.getLoanPreparation();
-            if (lrpLoanPrep != null && lrpLoanPrep.getLoanReturnPreparations().size() > 0) {
-                for (LoanReturnPreparation lrp : loanRetPrep.getLoanPreparation().getLoanReturnPreparations()) {
+        int qtyRes = 0, qtyRet = 0;
+        if (loanRetPrep == null) {
+            return null;
+        } else {
+            LoanPreparation lrpLoanPrep = getLoanPrepFromFVO();
+            if (lrpLoanPrep == null) {
+                return null;
+            } else {
+                for (LoanReturnPreparation lrp : lrpLoanPrep.getLoanReturnPreparations()) {
                     qtyRes += getInt(lrp.getQuantityResolved());
                     qtyRet += getInt(lrp.getQuantityReturned());
-                    i++;
                 }
             }
             result.setFirst(qtyRes);
@@ -376,8 +382,10 @@ public class LoanReturnPreparationBusRules extends BaseBusRules implements Comma
             }
             if (loanRetPrep != null && comp instanceof ValSpinner) {
                 Pair<Integer, Integer> resRetTotals = getResRetTotals(loanRetPrep);
-                setPrepIsResolved(resRetTotals.getFirst());
-                setLoanPrepResRet(resRetTotals);
+                if (resRetTotals != null) {
+                    setPrepIsResolved(resRetTotals.getFirst());
+                    setLoanPrepResRet(resRetTotals);
+                }
                 //setLoanIsClosedChkBox();
             }
             updateTheLoanPrepFVO();
