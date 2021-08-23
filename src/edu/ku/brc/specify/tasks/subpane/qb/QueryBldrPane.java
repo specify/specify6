@@ -3482,11 +3482,13 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 }
                 
                 queryNavBtn = ((QueryTask) task).saveNewQuery(query, schemaMapping, false);
-                QueryTask otherQueryTask =  (QueryTask)ContextMgr.getTaskByClass(task instanceof BatchEditTask ? QueryTask.class : BatchEditTask.class);
-                if (otherQueryTask != null) {
-                    WorkbenchTask wbTask = (WorkbenchTask)ContextMgr.getTaskByClass(WorkbenchTask.class);
-                    if (!(otherQueryTask instanceof BatchEditTask) || (wbTask != null && wbTask.getUpdateSchemaForTable(query.getContextTableId()) != null)) {
-                        otherQueryTask.addSavedQueryToSideBar(query, true);
+                if (!(task instanceof ExportMappingTask)) {
+                    QueryTask otherQueryTask = (QueryTask) ContextMgr.getTaskByClass(task instanceof BatchEditTask ? QueryTask.class : BatchEditTask.class);
+                    if (otherQueryTask != null) {
+                        WorkbenchTask wbTask = (WorkbenchTask) ContextMgr.getTaskByClass(WorkbenchTask.class);
+                        if (!(otherQueryTask instanceof BatchEditTask) || (wbTask != null && wbTask.getUpdateSchemaForTable(query.getContextTableId()) != null)) {
+                            otherQueryTask.addSavedQueryToSideBar(query, true);
+                        }
                     }
                 }
                 query.setNamed(true); //XXX this isn't getting persisted!!!!!!!!!

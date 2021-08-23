@@ -713,7 +713,7 @@ public class ExportMappingTask extends QueryTask
 	protected boolean isLoadableQuery(SpQuery query)
 	{
 		//assuming query was produced by this.getQueriesForLoading()
-		return true;
+		return QueryTask.isSchemaExportQuery(query);
 	}
 
 	/**
@@ -872,8 +872,12 @@ public class ExportMappingTask extends QueryTask
 			}
 		}
 	}
-	
-	
+
+	@Override
+	protected void getRsNavBoxes() {
+		//nuthin
+	}
+
 	/**
 	 * @param xsdFile
 	 * @return true if the schema was imported

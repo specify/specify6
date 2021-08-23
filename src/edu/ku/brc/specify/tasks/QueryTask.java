@@ -566,12 +566,13 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
             {
                 Object[] obj = (Object[]) iter.next();
                 SpQuery query = (SpQuery) obj[0];
-                if (!AppContextMgr.isSecurityOn()
-                        || DBTableIdMgr.getInstance().getInfoById(query.getContextTableId())
-                                .getPermissions().canView())
-                {
-                    count = 1;
-                    break;
+                if (isLoadableQuery(query)) {
+                    if (!AppContextMgr.isSecurityOn()
+                            || DBTableIdMgr.getInstance().getInfoById(query.getContextTableId())
+                            .getPermissions().canView()) {
+                        count = 1;
+                        break;
+                    }
                 }
             }
             if (count > 0)
@@ -801,7 +802,10 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
             for (Object obj : rows)
             {
                 Object[] row = (Object[])obj;
-                queryList.add((SpQuery)row[0]); 
+                SpQuery q = (SpQuery)row[0];
+                if (isLoadableQuery(q)) {
+                    queryList.add(q);
+                }
             }
             ToggleButtonChooserDlg<SpQuery> dlg = new ToggleButtonChooserDlg<SpQuery>((Frame)UIRegistry.getTopWindow(),
                     "QY_OTHER_QUERIES", 
@@ -969,7 +973,7 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
     protected NavBoxItemIFace addToNavBox(final RecordSet recordSet, int contextTblId)
     {
         //boolean canDelete = AppContextMgr.isSecurityOn() ? getPermissions().canDelete() : true;
-        boolean canDelete = ((QueryTask )ContextMgr.getTaskByClass(QueryTask.class)).isPermitted();
+        boolean canDelete = this.isPermitted();
         final RolloverCommand roc = (RolloverCommand) makeDnDNavBtn(navBox, recordSet.getName(),
                 //"Query",
                 DBTableIdMgr.getInstance().getInfoById(contextTblId).getName(),
@@ -1230,6 +1234,15 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
     	return false;
     }
 
+    protected void getRsNavBoxes() {
+        RecordSetTask rsTask = (RecordSetTask)ContextMgr.getTaskByClass(RecordSetTask.class);
+
+        List<NavBoxIFace> nbs = rsTask.getNavBoxes();
+        if (nbs != null)
+        {
+            extendedNavBoxes.addAll(nbs);
+        }
+    }
     /*
      * (non-Javadoc)
      * 
@@ -1243,13 +1256,7 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
         extendedNavBoxes.clear();
         extendedNavBoxes.addAll(navBoxes);
 
-        RecordSetTask rsTask = (RecordSetTask)ContextMgr.getTaskByClass(RecordSetTask.class);
-
-        List<NavBoxIFace> nbs = rsTask.getNavBoxes();
-        if (nbs != null)
-        {
-            extendedNavBoxes.addAll(nbs);
-        }
+        getRsNavBoxes();
 
         return extendedNavBoxes;
     }
@@ -1298,7 +1305,7 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
     {        
         query.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
         query.setSpecifyUser(AppContextMgr.getInstance().getClassObject(SpecifyUser.class));
-        if (query.getIsFavorite() == null)
+        if (query.getId() == null)
         {
             query.setIsFavorite(true);
         }

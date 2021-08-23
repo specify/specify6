@@ -278,7 +278,7 @@ public class SpQuery extends DataModelObjBase implements Cloneable
     @Column(name = "IsFavorite", unique = false, nullable = true, insertable = true, updatable = true)
     public Boolean getIsFavorite()
     {
-        return isFavorite == null ? false : isFavorite;
+        return isFavorite == null ? true : isFavorite;
     }
 
     /**
