@@ -367,7 +367,8 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
     /**
      * Image, Sound, Preparation, Container(Container Label?) - this was suppose to be in Preparation
      */
-    @Column(name = "Description", unique = false, nullable = true, insertable = true, updatable = true, length = 1000)
+    @Lob
+    @Column(name = "Description", unique = false, nullable = true, insertable = true, updatable = true, length = 65535)
     public String getDescription() {
         return this.description;
     }

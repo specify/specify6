@@ -407,7 +407,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                                 frame.setVisible(false);
                                 
                                 fixSchemaMappingScope(dbConn.getConnection(), dbConn.getDatabaseName());
-                                
+                                fixSchemaMappingTblNames(dbConn.getConnection(), dbConn.getDatabaseName());
                                 fixLocaleSchema();
                                 
                                 // Unhide All GUID fields for Schema 1.8
@@ -1077,7 +1077,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
      * @param propToGet
      * @return
      */
-    private Object getFieldProp(final Connection conn, final String databaseName, final String tableName, final String fieldName, 
+    private Object tabkegetFieldProp(final Connection conn, final String databaseName, final String tableName, final String fieldName,
     		final String propToGet)
     {
         // XXX portability. This is MySQL -specific.
@@ -2709,8 +2709,8 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     frame.incOverall();
 
                     frame.setDesc("Increasing size of CollectionObject.Description.");
-                    if (getFieldLength(conn, databaseName, "collectionobject", "Description") != 1000) {
-                        sql = "alter table collectionobject modify column Description varchar(1000)";
+                    if (!getFieldColumnType(conn, databaseName, "collectionobject", "Description").equalsIgnoreCase("text")) {
+                        sql = "alter table collectionobject modify column Description text(65535)";
                         if (-1 == update(conn, sql)) {
                             errMsgList.add("update error: " + sql);
                             return false;
@@ -5459,6 +5459,27 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 		// AppPreferences.getGlobalPrefs().putBoolean("FixExportSchemaCollectionMemberIDs",
 		// true);
 	}
+
+//	protected void fixSchemaMappingTblNames(final Connection conn, final String databaseName) throws Exception {
+//        String sql = "select distinct SpExportSchemaMappingID, MappingName, CollectionMemberID, SpecifyUserID from spexportschemamapping "
+//                + "em inner join spexportschemaitemmapping im on im.spexportschemamappingid = em.spexportschemamappingid "
+//                + " inner join spqueryfield qf on qf.spqueryfieldid = im.spqueryfieldid inner join spquery q on q.spqueryid = qf.spqueryid";
+//        Vector<Object[]> mappingsToFix = BasicSQLUtils.query(sql);
+//        if (mappingsToFix != null && mappingsToFix.size() > 0) {
+//            for (Object[] row : mappingsToFix) {
+//                String baseTbl = ExportToMySQLDB.fixTblNameForMySQL(row[1].toString());
+//                String fixedTbl = ExportToMySQLDB.getExportMappingTblName(row[1].toString(), row[2].toString(), row[3].toString());
+//                if (doesTableExist(databaseName, baseTbl)) {
+//                    log.info("export mapping " + row[1] + ": renaming cache table from " + baseTbl + " to " + fixedTbl);
+//                    if (!doesTableExist(databaseName, fixedTbl)) {
+//                        sql = "rename table `" + baseTbl + "` to `" + fixedTbl + "`";
+//                    } else {
+//                        throw new Exception("table " + fixedTbl + " already exists.");
+//                    }
+//                }
+//            }
+//        }
+//    }
 
     /**
      * Launches dialog for Importing and Exporting Forms and Resources.
