@@ -1297,7 +1297,18 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
             FormHelper.updateLastEdittedInfo(query);
         }
     }
-    
+
+    public boolean checkNameUniqueness(final String newQueryName, final DataProviderSessionIFace session) {
+        SpQuery fndQuery = session.getData(SpQuery.class, "name", newQueryName,
+                DataProviderSessionIFace.CompareType.Equals);
+        if (fndQuery != null && fndQuery.getSpecifyUser().getId().equals(AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getId())) {
+            return false;
+        } else {
+            return true;
+        }
+
+    }
+
     /**
      * Save a record set.
      */

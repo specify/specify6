@@ -805,6 +805,17 @@ public class ExportMappingTask extends QueryTask
 		return result;
 	}
 
+	@Override
+	public boolean checkNameUniqueness(final String newQueryName, final DataProviderSessionIFace session) {
+		SpQuery fndQuery = session.getData(SpQuery.class, "name", newQueryName,
+				DataProviderSessionIFace.CompareType.Equals);
+		if (fndQuery != null) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
 	/* (non-Javadoc)
 	 * @see edu.ku.brc.specify.tasks.QueryTask#deleteThisQuery(edu.ku.brc.specify.datamodel.SpQuery, edu.ku.brc.dbsupport.DataProviderSessionIFace)
 	 */

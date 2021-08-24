@@ -3660,9 +3660,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     }
                     else
                     {
-                        fndQuery = session.getData(SpQuery.class, "name", newQueryName,
-                                DataProviderSessionIFace.CompareType.Equals);
-                        if (fndQuery != null && fndQuery.getSpecifyUser().getId().equals(AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getId()))
+                        if (!((QueryTask)this.getTask()).checkNameUniqueness(newQueryName, session))
                         {
                             UIRegistry.getStatusBar().setErrorMessage(
                                     String.format(getResourceString("QB_QUERY_EXISTS"),
@@ -3702,6 +3700,16 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         return true;
     }
 
+    protected boolean checkNameUniqueness(final String newQueryName, final DataProviderSessionIFace session) {
+        SpQuery fndQuery = session.getData(SpQuery.class, "name", newQueryName,
+                DataProviderSessionIFace.CompareType.Equals);
+        if (fndQuery != null && fndQuery.getSpecifyUser().getId().equals(AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getId())) {
+            return false;
+        } else {
+            return true;
+        }
+
+    }
     /**
      * @param parentTT
      * @param nameArg
