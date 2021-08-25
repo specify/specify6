@@ -407,7 +407,6 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                                 frame.setVisible(false);
                                 
                                 fixSchemaMappingScope(dbConn.getConnection(), dbConn.getDatabaseName());
-                                fixSchemaMappingTblNames(dbConn.getConnection(), dbConn.getDatabaseName());
                                 fixLocaleSchema();
                                 
                                 // Unhide All GUID fields for Schema 1.8
@@ -1077,7 +1076,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
      * @param propToGet
      * @return
      */
-    private Object tabkegetFieldProp(final Connection conn, final String databaseName, final String tableName, final String fieldName,
+    private Object getFieldProp(final Connection conn, final String databaseName, final String tableName, final String fieldName,
     		final String propToGet)
     {
         // XXX portability. This is MySQL -specific.
