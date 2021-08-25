@@ -119,7 +119,7 @@ public class CollapsableSepExtraCompFactory
             final String action = key.endsWith("CollectionObject") ? "SpiceDigOcc" : "SpiceDigTx";
             ActionListener al = e -> CommandDispatcher.dispatch(new CommandAction("Data_Entry", action, ""));
             IconButton exBtn = (IconButton)UIHelper.createIconBtn(action.equalsIgnoreCase("SpiceDigOcc") ? "SpiceDigOccurrence" : "SpiceDigTaxonName",
-                    IconManager.IconSize.Std32, getResourceString(action.equalsIgnoreCase("SpiceDigOcc") ? "S2N.SpiceDigBtnOccToolTip" : "S2N.SpiceDigBtnTxToolTip"), al);
+                    getResourceString(action.equalsIgnoreCase("SpiceDigOcc") ? "S2N.SpiceDigBtnOccToolTip" : "S2N.SpiceDigBtnTxToolTip"), al);
             exBtn.setEnabled(true);
             return exBtn;
 
