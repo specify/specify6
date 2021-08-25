@@ -449,7 +449,7 @@ public class S2nPrefsPanel  extends GenericPrefsPanel implements PrefsSavable, P
     @Override
     public void fyi(String info) {
         //System.out.println(info);
-        progDlg.setDesc(info);
+        progDlg.setDesc(getResourceString(info));
     }
 
     @Override
