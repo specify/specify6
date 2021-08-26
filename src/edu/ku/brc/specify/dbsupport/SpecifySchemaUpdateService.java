@@ -2605,6 +2605,13 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 //                        }
 //                    }
 //                    frame.incOverall();
+                    frame.setDesc("Checking for duplicate export mapping names.");
+                    Vector<Object[]> dups = BasicSQLUtils.query("select mappingname from spexportschemamapping group by 1 having count(spexportschemamappingid) > 1");
+                    if (dups != null && dups.size() > 0) {
+                        errMsgList.add("The database schema cannot be updated because it contains duplicate Export Schema Mapping names. Please contact Specify customer support.");
+                        return false;
+                    }
+                    frame.incOverall();
                     frame.setDesc("Removing old Deaccession tables");
                     if (!doesTableExist(databaseName, "disposal")) {
                         if (BasicSQLUtils.getCountAsInt("SELECT COUNT(*) FROM deaccession") > 0) {
