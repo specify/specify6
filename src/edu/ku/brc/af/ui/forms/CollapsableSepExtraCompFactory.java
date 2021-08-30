@@ -35,11 +35,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Vector;
 
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JList;
-import javax.swing.JScrollPane;
-import javax.swing.ListSelectionModel;
+import javax.swing.*;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -117,9 +113,11 @@ public class CollapsableSepExtraCompFactory
         }
         if (key.startsWith("Form") && !key.startsWith("Form_sub") && (key.endsWith("CollectionObject") || key.endsWith("Taxon"))) {
             final String action = key.endsWith("CollectionObject") ? "SpiceDigOcc" : "SpiceDigTx";
-            ActionListener al = e -> CommandDispatcher.dispatch(new CommandAction("Data_Entry", action, ""));
-            IconButton exBtn = (IconButton)UIHelper.createIconBtn(action.equalsIgnoreCase("SpiceDigOcc") ? "SpiceDigOccurrence" : "SpiceDigTaxonName",
-                    getResourceString(action.equalsIgnoreCase("SpiceDigOcc") ? "S2N.SpiceDigBtnOccToolTip" : "S2N.SpiceDigBtnTxToolTip"), al);
+            ActionListener al =  e -> SwingUtilities.invokeLater(() -> CommandDispatcher.dispatch(new CommandAction("Data_Entry", action, "")));
+            String iconName = action.equalsIgnoreCase("SpiceDigOcc") ? "SpiceDigOccurrence" : "SpiceDigTaxonName";
+            String tip = action.equalsIgnoreCase("SpiceDigOcc") ? "S2N.SpiceDigBtnOccToolTip" : "S2N.SpiceDigBtnTxToolTip";
+            IconButton exBtn = (IconButton)UIHelper.createIconBtn(iconName, tip, al);
+
             exBtn.setEnabled(true);
             return exBtn;
 
