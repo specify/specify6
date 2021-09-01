@@ -591,6 +591,7 @@
 
         <view name="ExchangeOut"
               class="edu.ku.brc.specify.datamodel.ExchangeOut"
+              busrules="edu.ku.brc.specify.datamodel.busrules.ExchangeOutBusRules"
         >
             <desc><![CDATA[Exchange Out display form]]></desc>
             <altviews>
@@ -601,6 +602,7 @@
 
         <view name="ExchangeOutSub"
               class="edu.ku.brc.specify.datamodel.ExchangeOut"
+              busrules="edu.ku.brc.specify.datamodel.busrules.ExchangeOutBusRules"
         >
             <desc><![CDATA[Exchange Out sub form]]></desc>
             <altviews>
@@ -611,6 +613,7 @@
 
         <view name="ExchangeOutPrep"
               class="edu.ku.brc.specify.datamodel.ExchangeOutPrep"
+              busrules="edu.ku.brc.specify.datamodel.busrules.ExchangeOutPrepBusRules"
         >
             <desc><![CDATA[Exchange Out display form]]></desc>
             <altviews>

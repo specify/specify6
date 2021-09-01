@@ -156,7 +156,7 @@ public class InteractionsTask extends BaseTask
     protected static final String NEW_DISPOSAL      = "NEW_DISPOSAL";
     protected static final String NEW_DEACC = "NEW_DEACC";
     protected static final String ADD_TO_DISPOSAL   = "AddToDisposal";
-    protected static final String ADD_TO_EXCHANGE   = "AddToExchange";
+    public static final String ADD_TO_EXCHANGE   = "AddToExchange";
     protected static final String NEW_PERMIT           = "NEW_PERMIT";
     protected static final String NEW_GIFT             = "NEW_GIFT";
     protected static final String NEW_EXCHANGE_OUT     = "NEW_EXCHANGE_OUT";
@@ -2648,7 +2648,7 @@ public class InteractionsTask extends BaseTask
         } else if (cmdAction.isAction(ADD_TO_DISPOSAL)) {
             disposalProcessor.createOrAdd((Disposal) cmdAction.getData());
         } else if (cmdAction.isAction(ADD_TO_EXCHANGE)) {
-            disposalProcessor.createOrAdd((Disposal) cmdAction.getData());
+            exchProcessor.createOrAdd((ExchangeOut) cmdAction.getData());
         }else if (cmdAction.isAction(INFO_REQ_MESSAGE)) {
             if (cmdAction.getData() == cmdAction || cmdAction.getData() instanceof Viewable) {
                 // We get here when a user clicks on a InfoRequest NB action
