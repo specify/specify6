@@ -158,7 +158,7 @@ public class LoanReturnDlg extends JDialog
             }
         }
         this.defIdentifierFld = AppPreferences.getRemote().get(InteractionsProcessor.getInteractionItemLookupFieldPref(this.defSrcTblId),
-                InteractionsProcessor.getDefaultInteractionLookupField(defSrcTblId));
+                InteractionsProcessor.getDefaultInteractionLookupField(this.defSrcTblId));
 
         ImageIcon appIcon = IconManager.getIcon("AppIcon"); //$NON-NLS-1$
         if (appIcon != null)
