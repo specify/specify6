@@ -61,11 +61,11 @@ public class DarwinCoreSpecimen
 	 * @throws Exception
 	 */
 	protected void add(String term, String value) throws Exception {
-		if (concepts.containsKey(term)) {
+		if (concepts.containsKey(term.toLowerCase())) {
 			//throw new Exception(term + " concept is already mapped.");
 			//log.warn(term + " concept is already mapped.");
 		} else {
-			concepts.put(term, new Pair<String, Object>(term, value));
+			concepts.put(term.toLowerCase(), new Pair<String, Object>(term, value));
 		}
 	}
 
@@ -75,15 +75,15 @@ public class DarwinCoreSpecimen
 	 * @throws Exception
 	 */
 	protected void set(String term, Object value) throws Exception {
-		String fullTerm = term;
-		if (!concepts.containsKey(term)) {
+		String fullTerm = term.toLowerCase();
+		if (!concepts.containsKey(term.toLowerCase())) {
 			//throw new Exception(fieldName + " concept is not mapped.");
 			Map.Entry<String, Pair<String, Object>> m = getMappingByName(term);
 			if (m == null) {
 				log.warn(term + " concept is not mapped.");
 				return;
 			}
-			fullTerm = m.getKey();
+			fullTerm = m.getKey().toLowerCase();
 		}
 		Object valueToSet = value;
 		Object existingValue = concepts.get(fullTerm).getSecond();
@@ -120,7 +120,8 @@ public class DarwinCoreSpecimen
 	public Object get(String termName)
 	{
 		//System.out.println("DarwinCoreSpecimen.get(" + termName + ")");
-		return concepts.get(termName).getSecond();
+		return concepts.get(termName.toLowerCase()).getSecond();
+
 	}
 	
 	/**
@@ -143,7 +144,7 @@ public class DarwinCoreSpecimen
 	 */
 	public boolean isMapped(String termName)
 	{
-		return concepts.containsKey(termName);
+		return concepts.containsKey(termName.toLowerCase());
 	}
 	
 	/**
