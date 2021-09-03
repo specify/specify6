@@ -35,6 +35,9 @@
 <field  position="3" fieldName="termsOfUse" isNot="false" isDisplay="true" isPrompt="true" isRelFld="false" alwaysFilter="false" stringId="1,23,26,96,94.institution.termsOfUse" operStart="11" operEnd="" startValue="" endValue="" sortType="0" tableList="1,23,26,96,94" contextTableIdent="94" columnAlias="termsOfUse" formatName="" />
 <field  position="2" fieldName="copyright" isNot="false" isDisplay="true" isPrompt="true" isRelFld="false" alwaysFilter="false" stringId="1,23,26,96,94.institution.copyright" operStart="11" operEnd="" startValue="" endValue="" sortType="0" tableList="1,23,26,96,94" contextTableIdent="94" columnAlias="copyright" formatName="" />
 <field  position="33" fieldName="fullName" isNot="false" isDisplay="true" isPrompt="true" isRelFld="false" alwaysFilter="false" stringId="1,10,2,3.geography.fullName" operStart="11" operEnd="" startValue="" endValue="" sortType="0" tableList="1,10,2,3" contextTableIdent="3" columnAlias="Geography/fullName" formatName="" />
+    <field  position="35" fieldName="startDate" isNot="false" isDisplay="true" isPrompt="true" isRelFld="false" alwaysFilter="false" stringId="1,10.collectingevent.startDateNumericMonth" operStart="1" operEnd="" startValue="" endValue="" sortType="0" tableList="1,10" contextTableIdent="10" columnAlias="startDate (Month)" formatName="" />
+    <field  position="36" fieldName="startDate" isNot="false" isDisplay="true" isPrompt="true" isRelFld="false" alwaysFilter="false" stringId="1,10.collectingevent.startDateNumericDay" operStart="1" operEnd="" startValue="" endValue="" sortType="0" tableList="1,10" contextTableIdent="10" columnAlias="startDate (Day)" formatName="" />
+    <field  position="37" fieldName="startDate" isNot="false" isDisplay="true" isPrompt="true" isRelFld="false" alwaysFilter="false" stringId="1,10.collectingevent.startDateNumericYear" operStart="1" operEnd="" startValue="" endValue="" sortType="0" tableList="1,10" contextTableIdent="10" columnAlias="startDate (Year)" formatName="" />
 </fields>
 <spexportschemamapping  mappingName="BaitDefault" description="">
 <spexportschemas>
@@ -253,6 +256,9 @@
 <spexportschemaitemmapping  queryField="1,9-determinations,4-preferredTaxon.taxon.Family" exportSchema="Darwin Core" exportSchemaItem="family" exportedFieldName="" remarks="" />
 <spexportschemaitemmapping  queryField="1,10.collectingevent.startDate" exportSchema="Darwin Core" exportSchemaItem="eventDate" exportedFieldName="" remarks="" />
 <spexportschemaitemmapping  queryField="1,9-determinations,4-preferredTaxon.taxon.Genus" exportSchema="Darwin Core" exportSchemaItem="genus" exportedFieldName="" remarks="" />
+    <spexportschemaitemmapping  queryField="1,10.collectingevent.startDateNumericMonth" exportSchema="Darwin Core" exportSchemaItem="month" exportedFieldName="" remarks="" />
+    <spexportschemaitemmapping  queryField="1,10.collectingevent.startDateNumericDay" exportSchema="Darwin Core" exportSchemaItem="day" exportedFieldName="" remarks="" />
+    <spexportschemaitemmapping  queryField="1,10.collectingevent.startDateNumericYear" exportSchema="Darwin Core" exportSchemaItem="year" exportedFieldName="" remarks="" />
 </spexportschemaitemmappings>
 </spexportschemamapping></query>
 </spexportschemamappings>

@@ -41,7 +41,10 @@
     <field index="34" term="http://rs.tdwg.org/dwc/terms/datasetname" /> 
     <field index="35" term="http://rs.tdwg.org/dwc/terms/fieldnumber" /> 
     <field index="36" term="http://rs.tdwg.org/dwc/terms/highergeography" /> 
-    <field index="37" term="http://rs.tdwg.org/dwc/terms/waterbody" /> 
+    <field index="37" term="http://rs.tdwg.org/dwc/terms/waterbody" />
+    <field index="38" term="http://rs.tdwg.org/dwc/terms/month" />
+    <field index="39" term="http://rs.tdwg.org/dwc/terms/day" />
+    <field index="40" term="http://rs.tdwg.org/dwc/terms/year" />
   </core>
 
   <!--extension encoding="ISO-8859-1" fieldsTerminatedBy="," linesTerminatedBy="\n" fieldsEnclosedBy='"' ignoreHeaderLines="1" rowType="http://rs.tdwg.org/dwc/terms/Identification">
