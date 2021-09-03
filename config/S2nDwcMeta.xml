@@ -38,7 +38,6 @@
     <field index="31" term="http://rs.tdwg.org/dwc/terms/preparations" /> 
     <field index="32" term="http://rs.tdwg.org/dwc/terms/recordedBy" /> 
     <field index="33" term="http://rs.tdwg.org/dwc/terms/license" /> 
-    <field index="34" term="http://rs.tdwg.org/dwc/terms/datasetName" />
     <field index="35" term="http://rs.tdwg.org/dwc/terms/fieldNumber" />
     <field index="36" term="http://rs.tdwg.org/dwc/terms/higherGeography" />
     <field index="37" term="http://rs.tdwg.org/dwc/terms/waterBody" />
