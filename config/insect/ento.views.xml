@@ -167,11 +167,11 @@
                     <cell type="panel" id="116" name="outerPanel" coldef="p,2px,p:g,5px,p:g" rowdef="p,4px,p,4px,p,4px,p,4px,p,4px,p" colspan="5">
                         <rows>
 							<row>
-								<cell type="label" label="Total Count:" initialize="align=right"/>
+								<cell type="label" label="Total Items:" initialize="align=right"/>
 								<cell type="field" id="tq" name="totalCountAmt" uitype="text" readonly="true"/>
 							</row>
 							<row>
-								<cell type="label" label="Current Total Count:" initialize="align=right"/>
+								<cell type="label" label="Total Current Items:" initialize="align=right"/>
 								<cell type="field" id="ti" name="actualTotalCountAmt" uitype="text" readonly="true"/>
 							</row>
 							<row>
@@ -766,7 +766,7 @@
                     <cell type="field" id="7" name="prepType" uitype="combobox" picklist="PrepType"/>
                     <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="countAmt" uitype="text"/>
-					<cell type="label" label="Actual Count:" initialize="align=right"/>
+					<cell type="label" label="Current Count:" initialize="align=right"/>
 					<cell type="field" id="ti" name="actualCountAmt" uitype="text" readonly="true"/>
                     <cell type="field" id="isOnLoan" name="isOnLoan" uitype="checkbox" label="IS_ON_LOAN" readonly="true"/>
                     <cell type="command" id="ShowLoansBtn" name="ShowLoansBtn" label="SHOW_INTERACTIONS" ignore="true"/>

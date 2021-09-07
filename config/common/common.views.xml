@@ -1373,15 +1373,15 @@
                     <cell type="field" id="6" name="dateReceived" uitype="formattedtext" uifieldformatter="Date" default="today"/>
                 </row>
 				<row>
-					<cell type="label" label="Total Count:" initialize="align=right"/>
+					<cell type="label" label="Total Items:" initialize="align=right"/>
 					<cell type="field" id="tca" name="totalCountAmt" uitype="text" readonly="true"/>
-					<cell type="label" label="Actual Total Count:" initialize="align=right"/>
+					<cell type="label" label="Total Current Items:" initialize="align=right"/>
 					<cell type="field" id="atca" name="actualTotalCountAmt" uitype="text" readonly="true"/>
 				</row>
 				<row>
-					<cell type="label" label="Specimen Count:" initialize="align=right"/>
+					<cell type="label" label="Total Coll Objs:" initialize="align=right"/>
 					<cell type="field" id="coc" name="collectionObjectCount" uitype="text" readonly="true"/>
-					<cell type="label" label="Preparation Count:" initialize="align=right"/>
+					<cell type="label" label="Total Preps:" initialize="align=right"/>
 					<cell type="field" id="pc" name="preparationCount" uitype="text" readonly="true"/>
 				</row>
                 <row>
