@@ -38,12 +38,12 @@
     <field index="31" term="http://rs.tdwg.org/dwc/terms/preparations" /> 
     <field index="32" term="http://rs.tdwg.org/dwc/terms/recordedBy" /> 
     <field index="33" term="http://rs.tdwg.org/dwc/terms/license" /> 
-    <field index="35" term="http://rs.tdwg.org/dwc/terms/fieldNumber" />
-    <field index="36" term="http://rs.tdwg.org/dwc/terms/higherGeography" />
-    <field index="37" term="http://rs.tdwg.org/dwc/terms/waterBody" />
-    <field index="38" term="http://rs.tdwg.org/dwc/terms/month" />
-    <field index="39" term="http://rs.tdwg.org/dwc/terms/day" />
-    <field index="40" term="http://rs.tdwg.org/dwc/terms/year" />
+    <field index="34" term="http://rs.tdwg.org/dwc/terms/fieldNumber" />
+    <field index="35" term="http://rs.tdwg.org/dwc/terms/higherGeography" />
+    <field index="36" term="http://rs.tdwg.org/dwc/terms/waterBody" />
+    <field index="37" term="http://rs.tdwg.org/dwc/terms/month" />
+    <field index="38" term="http://rs.tdwg.org/dwc/terms/day" />
+    <field index="39" term="http://rs.tdwg.org/dwc/terms/year" />
   </core>
 
   <!--extension encoding="ISO-8859-1" fieldsTerminatedBy="," linesTerminatedBy="\n" fieldsEnclosedBy='"' ignoreHeaderLines="1" rowType="http://rs.tdwg.org/dwc/terms/Identification">
