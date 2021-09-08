@@ -114,7 +114,7 @@ public class CollapsableSepExtraCompFactory
         if (key.startsWith("Form") && !key.startsWith("Form_sub") && (key.endsWith("CollectionObject") || key.endsWith("Taxon"))) {
             final String action = key.endsWith("CollectionObject") ? "SpiceDigOcc" : "SpiceDigTx";
             ActionListener al =  e -> SwingUtilities.invokeLater(() -> CommandDispatcher.dispatch(new CommandAction("Data_Entry", action, "")));
-            String iconName = action.equalsIgnoreCase("SpiceDigOcc") ? "SpiceDigOccurrence" : "SpiceDigTaxonName";
+            String iconName = action.equalsIgnoreCase("SpiceDigOcc") ? "SpiceDigOccurrence" : "SpiceDigOccurrence";
             String tip = action.equalsIgnoreCase("SpiceDigOcc") ? "S2N.SpiceDigBtnOccToolTip" : "S2N.SpiceDigBtnTxToolTip";
             IconButton exBtn = (IconButton)UIHelper.createIconBtn(iconName, tip, al);
 
