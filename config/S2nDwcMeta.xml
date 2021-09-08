@@ -43,7 +43,7 @@
     <field index="36" term="http://rs.tdwg.org/dwc/terms/waterBody" />
     <field index="37" term="http://rs.tdwg.org/dwc/terms/month" />
     <field index="38" term="http://rs.tdwg.org/dwc/terms/day" />
-    <field index="49" term="http://rs.tdwg.org/dwc/terms/year" />
+    <field index="39" term="http://rs.tdwg.org/dwc/terms/year" />
   </core>
 
   <!--extension encoding="ISO-8859-1" fieldsTerminatedBy="," linesTerminatedBy="\n" fieldsEnclosedBy='"' ignoreHeaderLines="1" rowType="http://rs.tdwg.org/dwc/terms/Identification">
