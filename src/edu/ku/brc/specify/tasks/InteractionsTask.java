@@ -1313,7 +1313,12 @@ public class InteractionsTask extends BaseTask
         try {
             session = DataProviderFactory.getInstance().createSession();
 
-            for (Integer prepId : prepsHash.keySet()) {
+            if (prepsHash.isEmpty()) {
+                ExchangeOutPrep eopo = new ExchangeOutPrep();
+                eopo.initialize();
+                eopo.setExchangeOut(exchange);
+                exchange.getExchangeOutPreps().add(eopo);
+            } else for (Integer prepId : prepsHash.keySet()) {
                 Preparation prep = session.get(Preparation.class, prepId);
                 Integer count = prepsHash.get(prepId);
                 if (prepToExchangeOutPrepHash != null) {
