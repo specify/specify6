@@ -345,6 +345,7 @@ public class DNASequencingRunCitation extends DataModelObjBase
 	@Override
 	public void initialize()
 	{
+		super.init();
 		dnaSequencingRunCitationId = null;
 		remarks = null;
 		text1 = null;
