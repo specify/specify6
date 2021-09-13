@@ -222,6 +222,12 @@ public class S2nPrefsPanel  extends GenericPrefsPanel implements PrefsSavable, P
         return dateStrFromUser;
         ...*/
         Timestamp result = BasicSQLUtils.querySingleObj("select lastexported from spstynthy where collectionid = " + getCurrentCollectionId());
+        if (result != null) {
+            //"Do you want to send ALL records, or just records updated since last send (recommended)?"
+            if (UIRegistry.displayConfirmLocalized("S2NPrefs.SendAllDlgTitle", "S2NPrefs.SendAllDlgMsg", "S2NPrefs.AllBtn","S2nPrefs.UpdateBtn",  JOptionPane.QUESTION_MESSAGE)) {
+                result = null;
+            }
+        }
         return result;
     }
 
