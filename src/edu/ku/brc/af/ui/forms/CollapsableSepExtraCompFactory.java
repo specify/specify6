@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.Vector;
 
 import javax.swing.*;
+import javax.swing.plaf.BorderUIResource;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -116,8 +117,15 @@ public class CollapsableSepExtraCompFactory
             ActionListener al =  e -> SwingUtilities.invokeLater(() -> CommandDispatcher.dispatch(new CommandAction("Data_Entry", action, "")));
             String iconName = action.equalsIgnoreCase("SpiceDigOcc") ? "SpiceDigOccurrence" : "SpiceDigOccurrence";
             String tip = action.equalsIgnoreCase("SpiceDigOcc") ? "S2N.SpiceDigBtnOccToolTip" : "S2N.SpiceDigBtnTxToolTip";
-            IconButton exBtn = (IconButton)UIHelper.createIconBtn(iconName, tip, al);
-
+            boolean withEmptyBorder = false;
+            JButton exBtn = null;
+            if (withEmptyBorder) {
+                exBtn = UIHelper.createIconBtn(iconName, tip, al);
+            } else {
+                exBtn = UIHelper.createButton(IconManager.getIcon(iconName));
+                exBtn.addActionListener(al);
+                exBtn.setToolTipText(UIRegistry.getResourceString(tip));
+            }
             exBtn.setEnabled(true);
             return exBtn;
 
