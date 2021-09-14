@@ -117,7 +117,7 @@ public class CollapsableSepExtraCompFactory
             ActionListener al =  e -> SwingUtilities.invokeLater(() -> CommandDispatcher.dispatch(new CommandAction("Data_Entry", action, "")));
             String iconName = action.equalsIgnoreCase("SpiceDigOcc") ? "SpiceDigOccurrence" : "SpiceDigOccurrence";
             String tip = action.equalsIgnoreCase("SpiceDigOcc") ? "S2N.SpiceDigBtnOccToolTip" : "S2N.SpiceDigBtnTxToolTip";
-            boolean withEmptyBorder = false;
+            boolean withEmptyBorder = true;
             JButton exBtn = null;
             if (withEmptyBorder) {
                 exBtn = UIHelper.createIconBtn(iconName, tip, al);
