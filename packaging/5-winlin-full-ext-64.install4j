@@ -432,8 +432,8 @@ return console.askOkCancel(message, true);
           <screen name="Display text" id="823" beanClass="com.install4j.runtime.beans.screens.FormScreen">
             <serializedBean>
               <property name="scrollable" type="boolean" value="false" />
-              <property name="subTitle" type="string">Specify ${compiler:sys.version} includes the following changes:</property>
-              <property name="title" type="string">New This Release</property>
+              <!--property name="subTitle" type="string">Specify ${compiler:sys.version} includes the following changes:</property-->
+              <property name="title" type="string">Specify Collections Consortium</property>
             </serializedBean>
             <formComponents>
               <formComponent id="2141" beanClass="com.install4j.runtime.beans.formcomponents.MultilineLabelComponent" useExternalParametrization="true" externalParametrizationName="Header" externalParametrizationMode="include">
