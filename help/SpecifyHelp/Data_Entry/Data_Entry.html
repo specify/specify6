@@ -1294,174 +1294,6 @@ table.box {
         </p>
       </blockquote>
       <p>
-         <u>World Wind</u><a name="world_wind"></a>
-      </p>
-      <blockquote>
-        <p>
-           <img src="../../images/worldwind_button.png" height="23" width="144">&nbsp;The link to
-          NASA World Wind is always available on the Locality form. A text box at the top of the
-          World Wind dialog allows either a Latitude and Longitude or a Locality Name to be
-          entered. The location is then displayed on a World Wind map. If either a Latitude and
-          Longitude or Locality Name exists in the Locality form World Wind will automatically plot
-          the location on the map once the button is clicked.
-        </p>
-        <p>
-           World Wind requires a 3D video card with updated drivers to work properly.
-        </p>
-        <p>
-           Several default controls are available from within World Wind.
-        </p>
-        <p>
-           Mouse with scroll wheel:
-        </p>
-        <table border="1" cellpadding="6" cellspacing="2">
-          <tbody>
-          <tr>
-            <td>
-              Pan
-            </td>
-            <td>
-              <p>
-                 Left-click &amp; drag - all directions<br>
-                 Left-click once to center the view.
-              </p>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              Zoom
-            </td>
-            <td>
-              Use the scroll wheel on the mouse<br>
-               or Left or Right-click &amp; drag
-            </td>
-          </tr>
-          <tr>
-            <td>
-              Tilt
-            </td>
-            <td>
-              Right - click &amp; drag - up and down<br>
-               or use "Page Up" and "Page Down" on the keyboard.
-            </td>
-          </tr>
-          <tr>
-            <td valign="top">
-              Rotate
-            </td>
-            <td>
-              <p>
-                 Right-click &amp; drag - left and right<br>
-                 <strong><em>Note:</em></strong> Crossing the top and bottom half of the screen
-                while rotating will change direction.
-              </p>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              Stop
-            </td>
-            <td>
-              Spacebar
-            </td>
-          </tr>
-          <tr>
-            <td>
-              Reset Heading
-            </td>
-            <td>
-              N
-            </td>
-          </tr>
-          <tr>
-            <td>
-              Rest All
-            </td>
-            <td>
-              R
-            </td>
-          </tr>
-          </tbody>
-        </table>
-        <p>
-           &nbsp;
-        </p>
-        <p>
-           Single button mouse:
-        </p>
-        <table border="1" cellpadding="6" cellspacing="2">
-          <tbody>
-          <tr>
-            <td>
-              Pan
-            </td>
-            <td>
-              Left - click &amp; drag - all directions<br>
-               Left - button click once to center view.
-            </td>
-          </tr>
-          <tr>
-            <td>
-              Zoom
-            </td>
-            <td>
-              Hold "Ctrl" on the keyboard and<br>
-               Left - click &amp; drag - up and down.
-            </td>
-          </tr>
-          <tr>
-            <td>
-              Tilt
-            </td>
-            <td>
-              Hold "Shift" on the keyboard and<br>
-               Left - click &amp; drag - up and down
-            </td>
-          </tr>
-          <tr>
-            <td valign="top">
-              Rotate
-            </td>
-            <td>
-              Hold "Shift" on the keyboar and<br>
-               Left - click &amp; drag - left and right.
-            </td>
-          </tr>
-          <tr>
-            <td>
-              Stop
-            </td>
-            <td>
-              Spacebar
-            </td>
-          </tr>
-          <tr>
-            <td>
-              Reset Heading
-            </td>
-            <td>
-              N
-            </td>
-          </tr>
-          <tr>
-            <td>
-              Rest All
-            </td>
-            <td>
-              R
-            </td>
-          </tr>
-          </tbody>
-        </table>
-        <p>
-           More information about World Wind can be found at <a href=
-          "http://worldwind.arc.nasa.gov/java/">http://worldwind.arc.nasa.gov/java/</a>.
-        </p>
-        <p>
-           &nbsp;
-        </p>
-      </blockquote>
-      <p>
          <u><strong>Google Earth Web Button</strong></u>
       </p>
     </blockquote>
@@ -1622,257 +1454,249 @@ table.box {
     <p>
        &nbsp;
     </p>
+    <h4>
+       <a name="data_entry_preparations"></a><u>Preparation Form</u>
+    </h4>
     <blockquote>
-      <h4>
-         <a name="data_entry_preparations"></a><u>Preparation Form</u>
-      </h4>
-      <blockquote>
-        <p>
-           It is important to note that the <strong>Is on loan</strong> checkbox is for display
-          purposes only. This information is updated when a loan is created or edited.
-        </p>
-        <p>
-           The Preparation Type field is a Pick List. To edit the Pick List choose <em>System &gt;
-          Collection Setup &gt; Configuration</em> and click on the <em>Pick List</em> button in
-          the Side Bar. For more information on editing a Pick List please refer to the <a href=
-          "../PickList/system_picklist.html">System Pick Lists</a> documentation.
-        </p>
-      </blockquote>
+      <p>
+         It is important to note that the <strong>Is on loan</strong> checkbox is for display
+        purposes only. This information is updated when a loan is created or edited.
+      </p>
+      <p>
+         The Preparation Type field is a Pick List. To edit the Pick List choose <em>System &gt;
+        Collection Setup &gt; Configuration</em> and click on the <em>Pick List</em> button in the
+        Side Bar. For more information on editing a Pick List please refer to the <a href=
+        "../PickList/system_picklist.html">System Pick Lists</a> documentation.
+      </p>
+    </blockquote>
+    <p>
+       &nbsp;
+    </p>
+    <h4>
+       <a name="data_entry_attachments"></a><u>Attachments Form</u>
+    </h4>
+    <p>
+       Many tables in Specify 6 allow Attachments. When a file is attached, Specify creates an
+      attachment record in the database with the original name, mime-type and most importantly, the
+      path to the file in the repository, or attachment location. Attachments are not stored in the
+      database. Specify makes a copy of the attachment, renames it with a unique name, and stores
+      it in the attachment location - based on a path specified in the User Preferences.<br>
+    </p>
+    <p>
+       The Specify Wizard creates a default path and location for the copied attachments, but it is
+      recommended that the user create a unique location by editing the default path within the
+      System Preferences. The attachment storage can either be located on a local drive, a server
+      or an attachment server. To create and/or alter the attachment location, go to:
+    </p>
+    <ul>
+      <li>
+        For Mac: <em>Specify &gt; Preferences &gt; System &gt; Attachment Storage Location.</em>
+      </li>
+      <li>
+        For PC and Linux: Choose <em>Edit &gt; Preferences &gt; System &gt; Attachment Storage
+        Location</em>.
+      </li>
+    </ul>
+    <blockquote>
+      <p>
+        <br>
+         <i><b>Note:</b></i> thumbnails are also created for jpg, png and most pdfs, which can be
+        viewed on the attachment form. Other file types are represented by a default thumbnail
+        based on their file type.
+      </p>
+    </blockquote>
+    <p>
+       If a path does not exist or Specify is not able to connect to the path, the Attachment
+      button will become disabled on the forms.
+    </p>
+    <p>
+       Accepted Attachment files include:
+    </p>
+    <ul>
+      <li>
+        text
+      </li>
+      <li>
+        audio
+      </li>
+      <li>
+        binary
+      </li>
+      <li>
+        pdf
+      </li>
+      <li>
+        image (jpg, png, gif, tiff)
+      </li>
+      <li>
+        html
+      </li>
+      <li>
+        spreadsheet
+      </li>
+      <li>
+        video
+      </li>
+    </ul>
+    <blockquote>
+      <p>
+         <strong><em>Note:</em></strong> Specify can accept images in a tiff format, but they can
+        not be displayed in Specify, a default thumbnail will display on the form.
+      </p>
       <p>
          &nbsp;
       </p>
-      <h4>
-         <a name="data_entry_attachments"></a><u>Attachments Form</u>
-      </h4>
+    </blockquote>
+    <p>
+       <u><strong>Attach Files</strong></u>
+    </p>
+    <p>
+       Attach files to a record by clicking the Attachment button (<img alt="" src=
+      "../../images/collection_object_attachment.png" height="20" width="34">) on the form. An
+      Attachment sub form will open.
+    </p>
+    <ol>
+      <li>
+        Click the <img src="../../images/add.png" height="16" width="16"> (add) button.
+      </li>
+      <li>
+        Click the Browse button and use the file system dialog to find the path to the file.
+      </li>
+      <li>
+        Type a name in the Title text box. Specify will use the file name as a default title if
+        this box is left blank.
+      </li>
+      <li>
+        Click the Accept button.
+      </li>
+      <li>
+        Click the <img alt="" src="../../images/add.png" height="16" width="16"> (add) button to
+        add another attachment, or click Done to close the sub form.
+      </li>
+    </ol>
+    <blockquote>
+      <p>
+         <strong><em>Note:</em></strong> If a table does not have an attachment button<span>,
+        i</span>t does not accept attachments.
+      </p>
+      <p>
+        <br>
+      </p>
+      <img alt="attachment window" src="../../images/attach_icon_view.png" height="203" width=
+      "288"> 
+      <p>
+         <i><b>Note:</b></i> For versions of Specify 6.5 and newer the default Collection Object
+        form includes an attachment window, rather than a subform, for adding attachments. This
+        allows attachments to be dragged and dropped from the file directory to the attachment
+        window.<br>
+         &nbsp;
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+         <u>View/Edit Attachment</u>
+      </p>
       <blockquote>
         <p>
-           Many tables in Specify 6 allow Attachments. When a file is attached, Specify creates an
-          attachment record in the database with the original name, mime-type and most importantly,
-          the path to the file in the repository, or attachment location. Attachments are not
-          stored in the database. Specify makes a copy of the attachment, renames it with a unique
-          name, and stores it in the attachment location - based on a path specified in the User
-          Preferences.<br>
+           Once Attachments have been saved to a record they can be viewed/edited in form, grid, or
+          icon mode. Each mode allows different functions.
         </p>
         <p>
-           The Specify Wizard creates a default path and location for the copied attachments, but
-          it is recommended that the user create a unique location by editing the default path
-          within the System Preferences. The attachment storage can either be located on a local
-          drive, a server or an attachment server. To create and/or alter the attachment location,
-          go to:
+           Choose a mode by clicking the <img src="../../images/Down16x16.png" height="16" width=
+          "16">(expand) button and selecting a mode.
+        </p>
+        <p>
+           <img src="../../images/form_editor20x20.png" height="20" width="20">&nbsp;Form Mode
         </p>
         <ul>
           <li>
-            For Mac: <em>Specify &gt; Preferences &gt; System &gt; Attachment Storage
-            Location.</em>
+            Use the Navigation Control to view each Attachment.
           </li>
           <li>
-            For PC and Linux: Choose <em>Edit &gt; Preferences &gt; System &gt; Attachment Storage
-            Location</em>.
+            Click the<img src="../../images/add.png" height="16" width="16"> (add) button to add an
+            Attachment.
+          </li>
+          <li>
+            Click the <img src="../../images/delete.png" height="16" width="16"> (delete) button to
+            delete an Attachment.
+          </li>
+          <li>
+            Click the Browse button to change an Attachment path.
+          </li>
+          <li>
+            Edit the Title of an Attachment in the Title text box.
           </li>
         </ul>
-        <blockquote>
-          <p>
-            <br>
-             <i><b>Note:</b></i> thumbnails are also created for jpg, png and most pdfs, which can
-            be viewed on the attachment form. Other file types are represented by a default
-            thumbnail based on their file type.
-          </p>
-        </blockquote>
         <p>
-           If a path does not exist or Specify is not able to connect to the path, the Attachment
-          button will become disabled on the forms.
+           &nbsp;
         </p>
         <p>
-           Accepted Attachment files include:
+           <img src="../../images/icon_view.png" height="20" width="20">&nbsp;Icon Mode
         </p>
         <ul>
           <li>
-            text
+            Click the<img alt="add" src="../../images/add.png" height="16" width="16"> (add) button
+            to add an Attachment.
           </li>
           <li>
-            audio
+            Click the <img alt="delete" src="../../images/delete.png" height="16" width="16">
+            (delete) button to delete an Attachment.
           </li>
           <li>
-            binary
+            Click the <img alt="edit" src="../../images/Edit-2-16x16.png" height="16" width="16">
+            (edit) button to edit the Attachment path in the Form Mode.
           </li>
           <li>
-            pdf
-          </li>
-          <li>
-            image (jpg, png, gif, tiff)
-          </li>
-          <li>
-            html
-          </li>
-          <li>
-            spreadsheet
-          </li>
-          <li>
-            video
+            Double Click the Attachment button to open the Attachment in its native application.
           </li>
         </ul>
-        <blockquote>
-          <p>
-             <strong><em>Note:</em></strong> Specify can accept images in a tiff format, but they
-            can not be displayed in Specify, a default thumbnail will display on the form.
-          </p>
-          <p>
-             &nbsp;
-          </p>
-        </blockquote>
         <p>
-           <u><strong>Attach Files</strong></u>
+           &nbsp;
         </p>
         <p>
-           Attach files to a record by clicking the Attachment button (<img alt="" src=
-          "../../images/collection_object_attachment.png" height="20" width="34">) on the form. An
-          Attachment sub form will open.
+           <img src="../../images/grid_editor_20x20.png" height="20" width="20">&nbsp;Grid Mode
         </p>
-        <ol>
+        <ul>
           <li>
-            Click the <img src="../../images/add.png" height="16" width="16"> (add) button.
+            Click the<img alt="add" src="../../images/add.png" height="16" width="16"> (add) button
+            to add an Attachment.
           </li>
           <li>
-            Click the Browse button and use the file system dialog to find the path to the file.
+            Click the <img alt="delete" src="../../images/delete.png" height="16" width="16">
+            (delete) button to delete an Attachment.
           </li>
           <li>
-            Type a name in the Title text box. Specify will use the file name as a default title if
-            this box is left blank.
+            Click the <img src="../../images/Edit-2-16x16.png" height="16" width="16"> (edit)
+            button to edit the Attachment path in the Form Mode.
           </li>
           <li>
-            Click the Accept button.
+            Click the <img src="../../images/ReorderUp16x16.png" height="16" width="16">&nbsp;<img
+            src="../../images/ReorderDown16x16.png" height="16" width="16"> (reorder) buttons to
+            reorder the Attachments.
           </li>
-          <li>
-            Click the <img alt="" src="../../images/add.png" height="16" width="16"> (add) button
-            to add another attachment, or click Done to close the sub form.
-          </li>
-        </ol>
-        <blockquote>
-          <p>
-             <strong><em>Note:</em></strong> If a table does not have an attachment button<span>,
-            i</span>t does not accept attachments.
-          </p>
-          <p>
-            <br>
-          </p>
-          <img alt="attachment window" src="../../images/attach_icon_view.png" height="203" width=
-          "288"> 
-          <p>
-             <i><b>Note:</b></i> For versions of Specify 6.5 and newer the default Collection
-            Object form includes an attachment window, rather than a subform, for adding
-            attachments. This allows attachments to be dragged and dropped from the file directory
-            to the attachment window.<br>
-             &nbsp;
-          </p>
-        </blockquote>
-        <blockquote>
-          <p>
-             <u>View/Edit Attachment</u>
-          </p>
-          <blockquote>
-            <p>
-               Once Attachments have been saved to a record they can be viewed/edited in form,
-              grid, or icon mode. Each mode allows different functions.
-            </p>
-            <p>
-               Choose a mode by clicking the <img src="../../images/Down16x16.png" height="16"
-              width="16">(expand) button and selecting a mode.
-            </p>
-            <p>
-               <img src="../../images/form_editor20x20.png" height="20" width="20">&nbsp;Form Mode
-            </p>
-            <ul>
-              <li>
-                Use the Navigation Control to view each Attachment.
-              </li>
-              <li>
-                Click the<img src="../../images/add.png" height="16" width="16"> (add) button to
-                add an Attachment.
-              </li>
-              <li>
-                Click the <img src="../../images/delete.png" height="16" width="16"> (delete)
-                button to delete an Attachment.
-              </li>
-              <li>
-                Click the Browse button to change an Attachment path.
-              </li>
-              <li>
-                Edit the Title of an Attachment in the Title text box.
-              </li>
-            </ul>
-            <p>
-               &nbsp;
-            </p>
-            <p>
-               <img src="../../images/icon_view.png" height="20" width="20">&nbsp;Icon Mode
-            </p>
-            <ul>
-              <li>
-                Click the<img alt="add" src="../../images/add.png" height="16" width="16"> (add)
-                button to add an Attachment.
-              </li>
-              <li>
-                Click the <img alt="delete" src="../../images/delete.png" height="16" width="16">
-                (delete) button to delete an Attachment.
-              </li>
-              <li>
-                Click the <img alt="edit" src="../../images/Edit-2-16x16.png" height="16" width=
-                "16"> (edit) button to edit the Attachment path in the Form Mode.
-              </li>
-              <li>
-                Double Click the Attachment button to open the Attachment in its native
-                application.
-              </li>
-            </ul>
-            <p>
-               &nbsp;
-            </p>
-            <p>
-               <img src="../../images/grid_editor_20x20.png" height="20" width="20">&nbsp;Grid Mode
-            </p>
-            <ul>
-              <li>
-                Click the<img alt="add" src="../../images/add.png" height="16" width="16"> (add)
-                button to add an Attachment.
-              </li>
-              <li>
-                Click the <img alt="delete" src="../../images/delete.png" height="16" width="16">
-                (delete) button to delete an Attachment.
-              </li>
-              <li>
-                Click the <img src="../../images/Edit-2-16x16.png" height="16" width="16"> (edit)
-                button to edit the Attachment path in the Form Mode.
-              </li>
-              <li>
-                Click the <img src="../../images/ReorderUp16x16.png" height="16" width=
-                "16">&nbsp;<img src="../../images/ReorderDown16x16.png" height="16" width="16">
-                (reorder) buttons to reorder the Attachments.
-              </li>
-            </ul>
-            <p>
-               &nbsp;
-            </p>
-          </blockquote>
-          <p>
-             <u>To Open an Attachment or Display a larger image:<br>
-            </u>
-          </p>
-          <ul>
-            <li>
-              Double click an individual image thumbnail to display it larger in a new tab in the
-              workspace.
-            </li>
-            <li>
-              Right click on an individual image thumbnail and click the <em>Select an External
-              Program</em> button to open the image for viewing.
-            </li>
-            <li>
-              Double click a non-image file to open it in its native program (example: .xls opens
-              the file in Excel).<br>
-            </li>
-          </ul>
-        </blockquote>
+        </ul>
+        <p>
+           &nbsp;
+        </p>
       </blockquote>
+      <p>
+         <u>To Open an Attachment or Display a larger image:<br>
+        </u>
+      </p>
+      <ul>
+        <li>
+          Double click an individual image thumbnail to display it larger in a new tab in the
+          workspace.
+        </li>
+        <li>
+          Right click on an individual image thumbnail and click the <em>Select an External
+          Program</em> button to open the image for viewing.
+        </li>
+        <li>
+          Double click a non-image file to open it in its native program (example: .xls opens the
+          file in Excel).<br>
+        </li>
+      </ul>
     </blockquote>
     <h3>
        <a name="paleo_context" id="paleo_context"></a>Paleo Context
@@ -1978,7 +1802,8 @@ table.box {
        &nbsp;
     </p>
     <h3>
-       <a name="specify_network" id="specify_network"></a> Specify Network
+       <a name="specify_network" id="specify_network"></a> <img src=
+      "../../images/specify_network_32x32.png">Specify Network
     </h3>
     <p style=" margin-left: 20.0px;">
        The Specify Collections Consortium has partnered with the Lifemapper project and the larger

@@ -81,6 +81,8 @@
 			<tocitem text="Series Data Entry" target="Forms_Series_Entry" />
 			<tocitem text="Batch Identify" target="Forms_Batch_Determine" />
 			<tocitem text="How Editing Affects Related Records" target="Editing_Related_Records" />
+			<tocitem text="Counts" target="data_counts" />
+			<tocitem text="Unique Identifier" target="unique_identifier" />
 			<tocitem text="Data Forms" target="Data_Entry">
 				<tocitem text="Side Bar Configuration" target="Data_Entry_Sidebar" />
 				<tocitem text="Working with Forms and Trees" target="Data_Entry_Trees" />
@@ -103,6 +105,7 @@
 				<tocitem text="disposals" target="disposals" />
 				<tocitem text="Exchange In / Exchange Out" target="Int_Exchange" />
 				<tocitem text="Gift" target="gift" />
+				<tocitem text="Counts" target="inter_counts" />
 				<tocitem text="Information Requests" target="Int_Info_Requests" />
 				<tocitem text="Loan" target="loans" />
 				<tocitem text="Repository Agreements" target="Repos_Agree" />
@@ -206,6 +209,7 @@
 			<tocitem text="Schema Mapping" target="schema_map" />
 			<tocitem text="Data Exporter Application" target="schema_tool" />
 		</tocitem>
+		<tocitem text="Specify Network" target="SpecifyNetwork" />
 		<tocitem text="Stand-Alone Specify Applications" target="separate_apps">
 			<tocitem text="Specify Setup Wizard" target="wizard">
 				<tocitem text="Field Format Editor" target="field_format" />

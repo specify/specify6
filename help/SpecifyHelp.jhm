@@ -186,7 +186,6 @@
 	<mapID target="PrefsMisc" url="SpecifyHelp/Prefs/Taskbar.html"/>
 	<mapID target="PrefsMySQL" url="SpecifyHelp/Prefs/MySQL.html"/>
 	<mapID target="PrefsNetwork" url="SpecifyHelp/Prefs/Network.html"/>
-    <mapID target="PrefsS2n" url="SpecifyHelp/Prefs/SpecifyNetwork.html"/>
 	<mapID target="PrefsSymbiota" url="SpecifyHelp/Prefs/symbiota_pref.html"/>
 	<mapID target="PrefsSystem" url="SpecifyHelp/Prefs/System.html"/>
 	<mapID target="PrefsTree" url="SpecifyHelp/Prefs/Tree.html"/>
@@ -379,4 +378,7 @@
 	<mapID target="disposals" url="SpecifyHelp/Interactions/Interactions.html#disposals"/>
 	<mapID target="deaccessions" url="SpecifyHelp/Interactions/Interactions.html#deaccessions"/>
 	<mapID target="specify_network" url="SpecifyHelp/Data_Entry/Data_Entry.html#specify_network"/>
+	<mapID target="data_counts" url="SpecifyHelp/Data_Entry/Using_Forms.html#counts"/>
+	<mapID target="inter_counts" url="SpecifyHelp/Interactions/Interactions.html#inter_counts"/>
+	<mapID target="unique_identifier" url="SpecifyHelp/Data_Entry/Using_Forms.html#unique_identifier"/>
 </map>
