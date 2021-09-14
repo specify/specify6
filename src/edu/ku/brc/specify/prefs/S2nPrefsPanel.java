@@ -131,7 +131,7 @@ public class S2nPrefsPanel  extends GenericPrefsPanel implements PrefsSavable, P
     }
 
     protected void openSyftoriumAboutInBrowser() {
-        String url = "https://syftorium.org";
+        String url = "https://www.specifysoftware.org/specify-network/";
         try {
             URI uri = new URL(url).toURI();
             Desktop.getDesktop().browse(uri);
