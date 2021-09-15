@@ -257,7 +257,7 @@
 	<mapID target="SL_TOOLS_HELP_CONTEXT" url="SpecifyHelp/SchemaConfig/schema_config.html"/>
 	<mapID target="slicer" url="SpecifyHelp/Uploading/splitter.html"/>
 	<mapID target="specify" url="http://specify6.specifysoftware.org"/>
-	<mapID target="SpecifyNetwork" url="SpecifyHelp/Prefs/SpecifyNetwork.html"/>
+	<mapID target="PrefsS2n" url="SpecifyHelp/Prefs/SpecifyNetwork.html"/>
 	<mapID target="SS" url="SpecifyHelp/Simple_Search/SS_Overview.html"/>
 	<mapID target="SS_Cards" url="SpecifyHelp/Simple_Search/Simple_Search.html#ss_cards"/>
 	<mapID target="SS_Execute" url="SpecifyHelp/Simple_Search/Simple_Search.html#ss_execute"/>
