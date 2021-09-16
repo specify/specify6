@@ -878,11 +878,11 @@ public class LoanReturnDlg extends JDialog
         {
             if (returnedSpinner != null)
             {
-                returnedSpinner.setValue(quantityLoaned);
+                returnedSpinner.setValue(maxValue);
             }
             if (resolvedSpinner != null)
             {
-                resolvedSpinner.setValue(quantityLoaned);
+                resolvedSpinner.setValue(maxValue);
             }
         }
 
