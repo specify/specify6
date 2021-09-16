@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -617,7 +617,9 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
             Element fldElement = (Element) fldObj;
 
             int     size    = XMLHelper.getAttr(fldElement, "size", 1);
+            int     minSize = XMLHelper.getAttr(fldElement, "minsize", size);
             String  value   = fldElement.attributeValue("value");
+            String pattern = fldElement.attributeValue("pattern");
             String  typeStr = fldElement.attributeValue("type");
             boolean increm  = XMLHelper.getAttr(fldElement, "inc", false);
             boolean byYear  = false;
@@ -640,7 +642,7 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
                 byYear = XMLHelper.getAttr(fldElement, "byyear", false);
             }
 
-            fields.add(new UIFieldFormatterField(type, size, value, increm, byYear));
+            fields.add(new UIFieldFormatterField(type, size, minSize, value, pattern, increm, byYear));
             if (increm)
             {
                 isInc = true;
@@ -1011,6 +1013,7 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
             formatter.setDateWrapper(dateFormat);
         } else
         {
+            log.info("setting partial date format: " + newFormatStr.toString());
             dateFormat.setSimpleDateFormat(new SimpleDateFormat(newFormatStr.toString()));
             formatter.setDateWrapper(dateFormat);
         }

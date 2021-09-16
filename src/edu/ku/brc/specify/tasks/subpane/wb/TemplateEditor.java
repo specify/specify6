@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -1531,11 +1531,11 @@ public class TemplateEditor extends CustomDialog {
      * @param fld
      * @return FieldInfo where Table is tbl and Field is fld.
      */
-    protected FieldInfo findFieldInfo(final String tbl, final String fld)
+    protected FieldInfo findFieldInfo(final String tblArg, final String fld)
     {
-        if (tbl == null || fld == null)
+        if (tblArg == null || fld == null)
             return null;
-        
+        String tbl = "taxononly".equalsIgnoreCase(tblArg) ? "taxon" : tblArg;
         TableInfo tblInfo = null;
         for (int i=0; i<tableModel.size(); i++)
         {

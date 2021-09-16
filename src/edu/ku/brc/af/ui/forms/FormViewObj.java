@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -87,6 +87,10 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
+import edu.ku.brc.specify.datamodel.CollectionObject;
+import edu.ku.brc.specify.datamodel.Determination;
+import edu.ku.brc.specify.datamodel.Taxon;
+import edu.ku.brc.ui.*;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -152,17 +156,6 @@ import edu.ku.brc.dbsupport.SQLExecutionProcessor;
 import edu.ku.brc.dbsupport.StaleObjectException;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
-import edu.ku.brc.ui.ColorChooser;
-import edu.ku.brc.ui.ColorWrapper;
-import edu.ku.brc.ui.CommandAction;
-import edu.ku.brc.ui.CommandDispatcher;
-import edu.ku.brc.ui.CustomDialog;
-import edu.ku.brc.ui.DateWrapper;
-import edu.ku.brc.ui.GetSetValueIFace;
-import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.ToggleButtonChooserDlg;
-import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Orderable;
 import edu.ku.brc.util.Pair;
 
@@ -2452,13 +2445,20 @@ public class FormViewObj implements Viewable,
         JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow() != null ? UIRegistry.getMostRecentWindow() : UIRegistry.getTopWindow(), actualMsg != null ? actualMsg : getResourceString(msgResStr), getResourceString("Error"), JOptionPane.ERROR_MESSAGE);
         reloadDataObj();
     }
-    
+
     /**
      * Reloads a current (non-new) object from the database i nto the the form.
      */
-    protected void reloadDataObj()
+    public void reloadDataObj() {
+        reloadDataObj(false);
+    }
+
+    /**
+     * Reloads a current (non-new) object from the database i nto the the form.
+     */
+    public void reloadDataObj(boolean forceReload)
     {
-        if (!isNewlyCreatedDataObj)
+        if (!isNewlyCreatedDataObj || forceReload)
         {
             if (mvParent != null)
             {
@@ -3897,7 +3897,21 @@ public class FormViewObj implements Viewable,
             }
         }
     }
-    
+
+    protected int extraBtnCnt() {
+//        if (CollectionObject.class.equals(dataClass)) {
+//            return 1;
+//        } else if (Taxon.class.equals(dataClass)) {
+//            if (mvParent != null && mvParent.getMultiViewParent() != null ) {
+//                return 0;
+//            } else {
+//                return 1;
+//            }
+//        } else {
+//            return 0;
+//        }
+        return 0;
+    }
     /**
      * Adds all the Control buttons to the separator.
      */
@@ -3905,6 +3919,9 @@ public class FormViewObj implements Viewable,
     {
         JButton searchBtn = rsController.getSearchRecBtn();
         int cnt = (newRecBtn != null ? 1 : 0) + (delRecBtn != null ? 1 : 0) + (searchBtn != null ? 1 : 0);
+        int extCnt = extraBtnCnt();
+        cnt += extCnt;
+
         PanelBuilder pb = new PanelBuilder(new FormLayout(UIHelper.createDuplicateJGoodiesDef("p", "2px", cnt), "p"));
         
         int x = 1;
@@ -3923,7 +3940,45 @@ public class FormViewObj implements Viewable,
             pb.add(searchBtn, cc.xy(x, 1));
             x += 2;
         }
-        
+        if (extCnt > 0) {
+            final String action = CollectionObject.class.equals(dataClass) ? "SpiceDigOcc" : "SpiceDigTx";
+            ActionListener al = e -> CommandDispatcher.dispatch(new CommandAction("Data_Entry", action, ""));
+            IconButton exBtn = (IconButton)UIHelper.createIconBtn(action.equalsIgnoreCase("SpiceDigOcc") ? "SpiceDigOccurrence" : "SpiceDigTaxonName",
+                    IconManager.IconSize.Std20, getResourceString("S2N.SpiceDigBtnOccToolTip"), al);
+            /*IconButton exBtn = new IconButton(IconManager.getIcon("WebPage", IconManager.IconSize.Std20), false) {
+                @Override
+                public void setEnabled(boolean enable) {
+                    super.setEnabled(enable);
+                    System.out.println("Who rang?");
+                }
+            };
+            if (StringUtils.isNotEmpty(getResourceString("S2N.SpiceDigBtnToolTip")))
+            {
+                exBtn.setToolTipText(getResourceString("S2N.SpiceDigBtn"));
+            }
+            if (al != null)
+            {
+                exBtn.addActionListener(al);
+            }*/
+            exBtn.setEnabled(true);
+
+            pb.add(exBtn, cc.xy(x, 1));
+            x += 2;
+            if (formValidator != null) {
+                formValidator.addEnableItem(exBtn, FormValidator.EnableType.ValidNotNew);
+            }
+            if (extCnt > 1) {
+                //assume Tx for CO.
+                ActionListener al2 = e -> CommandDispatcher.dispatch(new CommandAction("Data_Entry", "SpiceDigTx", ""));
+                IconButton exBtn2 = (IconButton)UIHelper.createIconBtn("SpiceDigTaxonName", IconManager.IconSize.Std20, getResourceString("S2N.SpiceDigBtnTxToolTip"), al2);
+                exBtn2.setEnabled(true);
+
+                pb.add(exBtn2, cc.xy(x, 1));
+                if (formValidator != null) {
+                    formValidator.addEnableItem(exBtn2, FormValidator.EnableType.ValidNotNew);
+                }
+            }
+        }
         pb.getPanel().setOpaque(false);
         sepController = pb.getPanel();
     }

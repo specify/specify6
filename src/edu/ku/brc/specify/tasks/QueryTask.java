@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -29,9 +29,8 @@ import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.PreferencesDlg;
-import edu.ku.brc.af.ui.db.ERTICaptionInfo;
-import edu.ku.brc.af.ui.db.QueryForIdResultsIFace;
-import edu.ku.brc.af.ui.db.ViewBasedDisplayDialog;
+import edu.ku.brc.af.ui.ViewBasedDialogFactoryIFace;
+import edu.ku.brc.af.ui.db.*;
 import edu.ku.brc.af.ui.forms.FormHelper;
 import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -56,6 +55,8 @@ import edu.ku.brc.ui.*;
 import edu.ku.brc.ui.dnd.DataActionEvent;
 import edu.ku.brc.ui.dnd.Trash;
 import edu.ku.brc.util.Pair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -70,10 +71,13 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.lang.ref.SoftReference;
 import java.sql.Timestamp;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+
+import net.sf.json.JSONObject;
+import net.sf.json.JSONArray;
 
 import static edu.ku.brc.helpers.XMLHelper.getAttr;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
@@ -143,8 +147,8 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
         CommandDispatcher.register(TreeDefinitionEditor.TREE_DEF_EDITOR, this);
         CommandDispatcher.register(SchemaLocalizerDlg.SCHEMA_LOCALIZER, this);
         CommandDispatcher.register(PreferencesDlg.PREFERENCES, this);
+
     }
-    
     
     /**
      * Ask the user for information needed to fill in the data object. (Could be refactored with WorkBench Task)
@@ -191,13 +195,16 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
         SpQuery query = new SpQuery();
         query.initialize();
         query.setSpecifyUser(AppContextMgr.getInstance().getClassObject(SpecifyUser.class));
-        query.setName(String.format(getResourceString("QB_NEW_QUERY_NAME"), tableInfo.getTitle()));
+        query.setName(getDefaultNewQueryName(tableInfo));
         query.setNamed(false);
         query.setContextTableId((short)tableInfo.getTableId());
         query.setContextName(tableInfo.getShortClassName());
         return query;
     }
 
+    protected String getDefaultNewQueryName(DBTableInfo tableInfo) {
+        return String.format(getResourceString("QB_NEW_QUERY_NAME"), tableInfo.getTitle());
+    }
 
     /**
      * Creates pane and executes a query.
@@ -316,7 +323,17 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
         if (StringUtils.isNotEmpty(xmlStr))
         {
             XStream xstream = new XStream();
-            list = (Vector<String>)xstream.fromXML(xmlStr);
+            Object parsedXML = xstream.fromXML(xmlStr);
+            if (parsedXML != null) {
+                if (parsedXML instanceof Vector) {
+                    list = (Vector<String>)xstream.fromXML(xmlStr);
+                } else if (parsedXML instanceof ArrayList) {
+                    List<String> aList = (ArrayList<String>)parsedXML;
+                    list = new Vector<>(aList);
+                } else {
+                    log.error("Unable to read resource: " + resourceName);
+                }
+            }
         }
         //log.debug(xmlStr);
 
@@ -549,12 +566,13 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
             {
                 Object[] obj = (Object[]) iter.next();
                 SpQuery query = (SpQuery) obj[0];
-                if (!AppContextMgr.isSecurityOn()
-                        || DBTableIdMgr.getInstance().getInfoById(query.getContextTableId())
-                                .getPermissions().canView())
-                {
-                    count = 1;
-                    break;
+                if (isLoadableQuery(query)) {
+                    if (!AppContextMgr.isSecurityOn()
+                            || DBTableIdMgr.getInstance().getInfoById(query.getContextTableId())
+                            .getPermissions().canView()) {
+                        count = 1;
+                        break;
+                    }
                 }
             }
             if (count > 0)
@@ -784,7 +802,10 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
             for (Object obj : rows)
             {
                 Object[] row = (Object[])obj;
-                queryList.add((SpQuery)row[0]); 
+                SpQuery q = (SpQuery)row[0];
+                if (isLoadableQuery(q)) {
+                    queryList.add(q);
+                }
             }
             ToggleButtonChooserDlg<SpQuery> dlg = new ToggleButtonChooserDlg<SpQuery>((Frame)UIRegistry.getTopWindow(),
                     "QY_OTHER_QUERIES", 
@@ -952,7 +973,7 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
     protected NavBoxItemIFace addToNavBox(final RecordSet recordSet, int contextTblId)
     {
         //boolean canDelete = AppContextMgr.isSecurityOn() ? getPermissions().canDelete() : true;
-        boolean canDelete = ((QueryTask )ContextMgr.getTaskByClass(QueryTask.class)).isPermitted();
+        boolean canDelete = this.isPermitted();
         final RolloverCommand roc = (RolloverCommand) makeDnDNavBtn(navBox, recordSet.getName(),
                 //"Query",
                 DBTableIdMgr.getInstance().getInfoById(contextTblId).getName(),
@@ -1213,6 +1234,15 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
     	return false;
     }
 
+    protected void getRsNavBoxes() {
+        RecordSetTask rsTask = (RecordSetTask)ContextMgr.getTaskByClass(RecordSetTask.class);
+
+        List<NavBoxIFace> nbs = rsTask.getNavBoxes();
+        if (nbs != null)
+        {
+            extendedNavBoxes.addAll(nbs);
+        }
+    }
     /*
      * (non-Javadoc)
      * 
@@ -1226,13 +1256,7 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
         extendedNavBoxes.clear();
         extendedNavBoxes.addAll(navBoxes);
 
-        RecordSetTask rsTask = (RecordSetTask)ContextMgr.getTaskByClass(RecordSetTask.class);
-
-        List<NavBoxIFace> nbs = rsTask.getNavBoxes();
-        if (nbs != null)
-        {
-            extendedNavBoxes.addAll(nbs);
-        }
+        getRsNavBoxes();
 
         return extendedNavBoxes;
     }
@@ -1273,7 +1297,18 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
             FormHelper.updateLastEdittedInfo(query);
         }
     }
-    
+
+    public boolean checkNameUniqueness(final String newQueryName, final DataProviderSessionIFace session) {
+        SpQuery fndQuery = session.getData(SpQuery.class, "name", newQueryName,
+                DataProviderSessionIFace.CompareType.Equals);
+        if (fndQuery != null && fndQuery.getSpecifyUser().getId().equals(AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getId())) {
+            return false;
+        } else {
+            return true;
+        }
+
+    }
+
     /**
      * Save a record set.
      */
@@ -1281,11 +1316,22 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
     {        
         query.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
         query.setSpecifyUser(AppContextMgr.getInstance().getClassObject(SpecifyUser.class));
-        if (query.getIsFavorite() == null)
+        if (query.getId() == null)
         {
             query.setIsFavorite(true);
         }
 
+        if (schemaMapping != null) {
+            SpExportSchema es = schemaMapping.getSpExportSchema();
+            if (es != null) {
+                log.warn("assuming multiple schemas are not supported");
+                if (es.getSchemaName().equalsIgnoreCase("no schema") && es.getId() == null) {
+                    schemaMapping.getSpExportSchemas().clear();
+                    //es.getSpExportSchemaMappings().clear();
+                }
+
+            }
+        }
         persistQuery(query, schemaMapping);
 
 
@@ -1930,9 +1976,6 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
                     for (TreeDefItemIface<?, ?, ?> defItem : defItems) {
                         if (defItem.getRankId() > 0) { //skip root, just because. 
                             try {
-                                //newTreeNode.getTableQRI().addField(
-                                //        new TreeLevelQRI(newTreeNode.getTableQRI(), null, defItem
-                                //                .getRankId()));
                                 newTreeNode.getTableQRI().addField(
                                         new TreeLevelQRI(newTreeNode.getTableQRI(), null, defItem
                                                 .getRankId(), "name", treeDef));
@@ -1966,31 +2009,26 @@ public class QueryTask extends BaseTask implements SubPaneMgrListener
                         }
                     }
                 }
-                catch (Exception ex)
-                {
+                catch (Exception ex) {
                     UsageTracker.incrHandledUsageCount();
                     edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryTask.class, ex);
                     ex.printStackTrace();
                 }
             }
 
-            for (Object kidObj : parent.selectNodes("table"))
-            {
+            for (Object kidObj : parent.selectNodes("table")) {
                 Element kidElement = (Element) kidObj;
                 processForTables(kidElement, newTreeNode);
             }
 
-            for (Object obj : parent.selectNodes("alias"))
-            {
+            for (Object obj : parent.selectNodes("alias")) {
                 Element kidElement = (Element) obj;
                 String kidClassName = XMLHelper.getAttr(kidElement, "name", null);
                 tableInfo = DBTableIdMgr.getInstance().getByShortClassName(kidClassName);
-                if (!tableInfo.isHidden() && (!AppContextMgr.isSecurityOn() || tableInfo.getPermissions().canView()))
-                {
+                if (!tableInfo.isHidden() && (!AppContextMgr.isSecurityOn() || tableInfo.getPermissions().canView())) {
                     tableName = XMLHelper.getAttr(kidElement, "name", null);
                     fieldName = XMLHelper.getAttr(kidElement, "field", null);
-                    if (StringUtils.isEmpty(fieldName))
-                    {
+                    if (StringUtils.isEmpty(fieldName)) {
                         fieldName = tableName.substring(0, 1).toLowerCase()
                                 + tableName.substring(1);
                     }

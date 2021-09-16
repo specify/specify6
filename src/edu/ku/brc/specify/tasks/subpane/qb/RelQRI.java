@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -231,6 +231,9 @@ public class RelQRI extends FieldQRI
      */
     public static String stripDescriptiveStuff(final String lbl)
     {
+        if (lbl.endsWith(" " + UIRegistry.getResourceString("QB_CALCULATED"))) {
+            return lbl.substring(0, lbl.length() - UIRegistry.getResourceString("QB_CALCULATED").length() - 1);
+        }
         if (lbl.endsWith(" " + UIRegistry.getResourceString("QB_AGGREGATED")))
         {
            return lbl.substring(0, lbl.length() - UIRegistry.getResourceString("QB_AGGREGATED").length() - 1);

@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -1120,7 +1120,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         {
             for (ExportFileConfigurationFactory.ExportableType type : ExportFileConfigurationFactory.getExportList())
             {
-                if (type.getMimeType() == ExportFileConfigurationFactory.XLS_MIME_TYPE)
+                if (type.getMimeType() == ExportFileConfigurationFactory.XLSX_MIME_TYPE)
                 {
                     props.setProperty("mimetype", type.getMimeType());
                     extension = type.getExtension();
@@ -1156,10 +1156,10 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         chooser.setDialogTitle(getResourceString("CHOOSE_WORKBENCH_EXPORT_FILE"));
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         chooser.setMultiSelectionEnabled(false);
-        chooser.setFileFilter(new UIFileFilter("xls", getResourceString("WB_EXCELFILES")));
+        chooser.setFileFilter(new UIFileFilter("xlsx", getResourceString("WB_EXCELFILES")));
         if (defaultFileName != null)
         {
-        	chooser.setSelectedFile(new File(chooser.getCurrentDirectory().getPath() + File.separator + defaultFileName + ".xls"));
+        	chooser.setSelectedFile(new File(chooser.getCurrentDirectory().getPath() + File.separator + defaultFileName + ".xlsx"));
         }
         
         if (chooser.showSaveDialog(UIRegistry.getMostRecentWindow()) != JFileChooser.APPROVE_OPTION)
@@ -1552,7 +1552,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         chooser.setDialogTitle(getResourceString("CHOOSE_WORKBENCH_IMPORT_FILE"));
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         chooser.setMultiSelectionEnabled(false);
-        String[] exts = {"xls", "csv"};
+        String[] exts = {"xlsx", "xls", "csv"};
         chooser.setFileFilter(new UIFileFilter(exts, getResourceString("WB_EXCELANDCSVFILES")));
         String currDirPath = AppPreferences.getLocalPrefs().get(IMPORT_FILE_PATH, null);
         if (currDirPath != null)
@@ -3406,6 +3406,21 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         return "prepType".equalsIgnoreCase(f.getFieldName())
                 || f.getStringId().toLowerCase().endsWith("65.preptype.name");
     }
+
+    protected String getFldLookupKey(final SpQueryField f, final boolean isTree) {
+        if (isTree) {
+            int start = StringUtils.lastIndexOf(f.getStringId(), ".");
+            if (start != -1) {
+                //When/if taxononmy is batch-editable this will need to be changed for Author,Year, etc?
+                String[] result = f.getStringId().substring(start + 1).toLowerCase().split(" ");
+                if (result.length > 1) {
+                    log.warn("ignoring " + result[1] + " when mapping batch edit query to workbench.");
+                }
+                return result[0];
+            }
+        }
+        return f.getFieldName().toLowerCase();
+    }
     /**
      * @param f
      * @param tblMgr
@@ -3449,7 +3464,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         String tblName = tblInfo.getName().toLowerCase();
     	if (relationshipSupportedForQBtoWBTransform(tblName, relName)) {
             boolean isTree = Treeable.class.isAssignableFrom(tblInfo.getClassObj());
-            List<Element> defMatches = defMap.get(f.getFieldName().toLowerCase());
+            List<Element> defMatches = defMap.get(getFldLookupKey(f, isTree));
             if (defMatches != null) {
                 for (Element fld : defMatches) {
                     String wbSchemaTable = XMLHelper.getAttr((Element) fld, "table", null);

@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -89,7 +89,15 @@ public class TableQRI extends ExpandableQRI
         	}
         }        		
     }
-    
+
+    /**
+     *
+     * @param calcFld
+     */
+    public void addField(final String calcFld) {
+        fields.add(new CalcQRI(this, calcFld));
+    }
+
     /**
      * @param fieldInfo
      * @return true if Day,Month,Year accessors should be added for the (assumed) date

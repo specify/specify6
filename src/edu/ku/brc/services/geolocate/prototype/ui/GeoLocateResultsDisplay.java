@@ -51,9 +51,13 @@ import net.sf.json.JSONObject;
 import net.sf.json.util.JSONTokener;
 
 import org.apache.axis.message.MessageElement;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.util.EntityUtils;
 import org.jdesktop.swingx.mapviewer.GeoPosition;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -183,7 +187,7 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
         super();
         
         PanelBuilder mainPB;
-        useWorldWind = /*false; //bug #9965// */!AppPreferences.getLocalPrefs().getBoolean("GEOLocate.USEGL_MAPS", true);
+        useWorldWind = false; //bug #9965 & #737// */!AppPreferences.getLocalPrefs().getBoolean("GEOLocate.USEGL_MAPS", true);
         if (useWorldWind)
             mainPB = new PanelBuilder(new FormLayout("p,10px,500px,10px,f:p:g", "p,2px,p,2px,p,2px,p,2px,p,10px,p,2px,f:p:g"), this); //$NON-NLS-1$ //$NON-NLS-2$
         else
@@ -502,7 +506,7 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
 					
 					try
 					{
-		                HttpClient httpClient = new HttpClient();
+		                CloseableHttpClient httpClient = HttpClients.createDefault();
 		                httpClient.getParams().setParameter("http.useragent", getClass().getName()); //$NON-NLS-1$
 		                httpClient.getParams().setParameter("http.socket.timeout", 15000); 
 		                
@@ -510,11 +514,11 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
 		                		+ "&units=Meters&output=json";
 		                //System.out.println(url);
 		                
-		                GetMethod getMethod = new GetMethod(url);
+		                HttpGet getMethod = new HttpGet(url);
 		                try
 		                {
-		                    httpClient.executeMethod(getMethod);
-		                    String jsonResponse = getMethod.getResponseBodyAsString();
+                            CloseableHttpResponse response = httpClient.execute(getMethod);
+		                    String jsonResponse = EntityUtils.toString(response.getEntity());
                             JSONTokener tok = new JSONTokener(jsonResponse);
                             if (tok.more()) {
                                 JSONObject obj = (JSONObject)tok.nextValue();

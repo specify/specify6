@@ -8,7 +8,7 @@ NOTE: The "name" must be entered into the localization resource file.
     <!-- Discipline Icons -->
     <icon name="Bird"           file="bird.png" sizes="all"/>    
     <icon name="Bug"            file="bug.png" sizes="all"/>    
-    <icon name="fish"           file="fish.png" sizes="all"/>    
+    <icon name="fish"           file="fish.png" sizes="all"/>
     <icon name="Frogs"          file="frog.png" sizes="all"/>    
     <icon name="InvertPaleo"    file="paleo_invert.png" sizes="all"/>    
     <icon name="Lizard"         file="lizard.png" sizes="all"/>    

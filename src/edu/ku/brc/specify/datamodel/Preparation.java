@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -23,27 +23,14 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Calendar;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
+import javax.persistence.*;
 
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.tasks.InteractionsProcessor;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
@@ -60,7 +47,11 @@ import edu.ku.brc.dbsupport.DBConnection;
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
-@Table(name = "preparation")
+@Table(name="preparation", uniqueConstraints = {
+        @UniqueConstraint(columnNames={"CollectionMemberID", "BarCode"} )
+}
+)
+
 @org.hibernate.annotations.Table(appliesTo="preparation", indexes =
     {   @Index (name="PreparedDateIDX", columnNames={"preparedDate"}),
         @Index (name="PrepColMemIDX", columnNames={"CollectionMemberID"}),
@@ -76,7 +67,8 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
                                                              Cloneable
 {
 
-    // Fields    
+    private static final Logger log = Logger.getLogger(Preparation.class);
+    // Fields
 
     protected Integer                     preparationId;
     protected String                      text1;
@@ -88,6 +80,10 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
     protected String                      text7;
     protected String                      text8;
     protected String                      text9;
+    protected String                      text10;
+    protected String                      text11;
+    protected String                      text12;
+    protected String                      text13;
     protected Integer                     countAmt;
     protected String                      storageLocation;
     protected String                      remarks;
@@ -126,7 +122,7 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
     protected Agent                       preparedByAgent;
     protected Storage                     storage;
     protected Storage alternateStorage;
-    protected Set<DeaccessionPreparation> deaccessionPreparations;
+    protected Set<DisposalPreparation> disposalPreparations;
 
     protected PreparationAttribute        preparationAttribute;    // Specify 5 Attributes table
     protected Set<PreparationAttr>        preparationAttrs;        // Generic Expandable Attributes
@@ -173,6 +169,10 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
         text7 = null;
         text8 = null;
         text9 = null;
+        text10 = null;
+        text11 = null;
+        text12 = null;
+        text13 = null;
         countAmt     = null;
         storageLocation = null;
         remarks      = null;
@@ -209,7 +209,7 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
         preparedByAgent = null;
         storage = null;
         alternateStorage = null;
-        deaccessionPreparations = new HashSet<DeaccessionPreparation>();
+        disposalPreparations = new HashSet<DisposalPreparation>();
         conservDescriptions         = new HashSet<ConservDescription>();
 
         preparationAttribute   = null;
@@ -475,6 +475,72 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
 
     /**
      *
+     * @return
+     */
+    @Lob
+    @Column(name = "Text10", length = 65535)
+    public String getText10() {
+        return text10;
+    }
+
+    /**
+     *
+     * @param text10
+     */
+    public void setText10(String text10) {
+        this.text10 = text10;
+    }
+    /**
+     *
+     * @return
+     */
+    @Lob
+    @Column(name = "Text11", length = 65535)
+    public String getText11() {
+        return text11;
+    }
+
+    /**
+     *
+     * @param text11
+     */
+    public void setText11(String text11) {
+        this.text11 = text11;
+    }
+    /**
+     *
+     * @return
+     */
+    @Column(name = "Text12", length = 128)
+    public String getText12() {
+        return text12;
+    }
+
+    /**
+     *
+     * @param text12
+     */
+    public void setText12(String text12) {
+        this.text12 = text12;
+    }
+    /**
+     *
+     * @return
+     */
+    @Column(name = "Text13", length = 128)
+    public String getText13() {
+        return text13;
+    }
+
+    /**
+     *
+     * @param text13
+     */
+    public void setText13(String text13) {
+        this.text13 = text13;
+    }
+    /**
+     *
      */
     @OneToMany(mappedBy = "preparation")
     @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
@@ -593,9 +659,14 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
     public int getLoanAvailable()
     {
         int cnt = this.countAmt != null ? this.countAmt : 0;
-        return cnt - getLoanQuantityOut();
+        return cnt - getLoanQuantityOut() - getDisposedQuantity();
     }
 
+    @Transient
+    public int getActualCountAmt() {
+        int cnt = this.countAmt != null ? this.countAmt : 0;
+        return cnt - getDisposedQuantity();
+    }
     /**
      * calculates the number of preparations already loaned out.
      * @return the (calculated) number of preps out on loan.
@@ -613,7 +684,28 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
         }
         return stillOut;
     }
-    
+
+    private boolean countGiftsAsDisposals = true;
+    private boolean countExchangesAsDisposals = true;
+    @Transient
+    int getDisposedQuantity() {
+        int deacced = 0;
+        for (DisposalPreparation dp : getDisposalPreparations()) {
+            deacced += dp.quantity != null ? dp.getQuantity() : 0;
+        }
+        if (countGiftsAsDisposals) {
+            for (GiftPreparation gp : getGiftPreparations()) {
+                deacced += gp.quantity != null ? gp.getQuantity() : 0;
+            }
+        }
+        if (countExchangesAsDisposals) {
+            for (ExchangeOutPrep ep : getExchangeOutPreps()) {
+                deacced += ep.quantity != null ? ep.getQuantity() : 0;
+            }
+        }
+        return deacced;
+    }
+
     @OneToMany(mappedBy = "preparation")
     @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<MaterialSample> getMaterialSamples() {
@@ -674,7 +766,7 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
                     isOnLoan = totalOnLoan > 0;
                     if (!isOnLoan && checkAllInteractions) {
                         isOnLoan = !BasicSQLUtils.getCount("select count(*) from preparation p left join giftpreparation"
-                                + " gp on gp.preparationid = p.preparationid left join deaccessionpreparation dp on dp.preparationid"
+                                + " gp on gp.preparationid = p.preparationid left join disposalpreparation dp on dp.preparationid"
                                 + " = p.preparationid left join exchangeoutprep ep on ep.preparationid = p.preparationid where p.preparationid = "
                                 + getId() + " and (gp.quantity > 0 or dp.quantity > 0 or ep.quantity > 0)").equals(0);
                     }
@@ -1178,12 +1270,12 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
     */
    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "preparation")
     @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-   public Set<DeaccessionPreparation> getDeaccessionPreparations() {
-       return this.deaccessionPreparations;
+   public Set<DisposalPreparation> getDisposalPreparations() {
+       return this.disposalPreparations;
    }
 
-   public void setDeaccessionPreparations(Set<DeaccessionPreparation> deaccessionPreparations) {
-       this.deaccessionPreparations = deaccessionPreparations;
+   public void setDisposalPreparations(Set<DisposalPreparation> disposalPreparations) {
+       this.disposalPreparations = disposalPreparations;
    }
    
    /**
@@ -1267,6 +1359,7 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
         preparationAttachments.size();
         preparationAttrs.size();
         preparationProperties.size();
+        disposalPreparations.size();
     }
     
     /* (non-Javadoc)
@@ -1280,7 +1373,7 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
         obj.preparationId           = null;
         obj.loanPreparations        = new HashSet<LoanPreparation>();
         obj.collectionObject        = null;
-        obj.deaccessionPreparations = new HashSet<DeaccessionPreparation>();
+        obj.disposalPreparations = new HashSet<DisposalPreparation>();
         obj.preparationAttachments  = new HashSet<PreparationAttachment>();
         obj.conservDescriptions = new HashSet<ConservDescription>();
         obj.preparationProperties = new HashSet<PreparationProperty>();
@@ -1320,5 +1413,26 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
         return timestampCreated != null && obj != null && obj.timestampCreated != null ? timestampCreated.compareTo(obj.timestampCreated) : 0;
     }
 
+    @Transient
+    public static List<String> getQueryableTransientFields() {
+        List<String> result = new ArrayList<>();
+        result.add("ActualCountAmt");
+        return result;
+    }
 
+    protected static Object computeActualCountAmt(Object[] vals) {
+        boolean[] settings = {false, true, true, true};
+        String sql = InteractionsProcessor.getAdjustedCountForPrepSQL("p.preparationid = " + vals[0], settings);
+        Object[] amt = BasicSQLUtils.queryForRow(sql);
+        return amt != null ? amt[1] : null;
+    }
+
+    public static Object getQueryableTransientFieldValue(String fldName, Object[] vals) {
+        if (fldName.equalsIgnoreCase("ActualCountAmt")) {
+            return computeActualCountAmt(vals);
+        } else {
+            log.error("Unknown calculated field: " + fldName);
+            return null;
+        }
+    }
 }

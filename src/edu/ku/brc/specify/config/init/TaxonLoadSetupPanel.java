@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -88,6 +88,7 @@ public class TaxonLoadSetupPanel extends BaseSetupPanel
 {
     //private static final Logger log           = Logger.getLogger(TaxonLoadSetupPanel.class);
     private static final String XLS              = "xls";
+    private static final String XLSX             = "xlsx";
     private static final String DWNLD_TAX_URL    = "DWNLD_TAX_URL";
     private static final String BAD_TAXON_DEF_NC = "BAD_TAXON_DEF_NC";
     private static final String BAD_TAXON_URL    = "BAD_TAXON_URL";
@@ -249,7 +250,7 @@ public class TaxonLoadSetupPanel extends BaseSetupPanel
         if (fileName.isEmpty())
         {
             TaxonFileDesc tfd = (TaxonFileDesc)fileCBX.getSelectedItem();
-            if (tfd != null && FilenameUtils.isExtension(tfd.getFileName().toLowerCase(), XLS))
+            if (tfd != null && (FilenameUtils.isExtension(tfd.getFileName().toLowerCase(), XLS) || FilenameUtils.isExtension(tfd.getFileName().toLowerCase(), XLSX)))
             {
                 fileName = tfd.getFileName();
             }
@@ -284,7 +285,7 @@ public class TaxonLoadSetupPanel extends BaseSetupPanel
             String downloadHTTP = UIRegistry.getResourceString(DWNLD_TAX_URL);
             if (StringUtils.isNotEmpty(downloadHTTP))
             {
-                url = new URL(downloadHTTP + "/taxonfiles.xml");
+                url = new URL(downloadHTTP + "/taxonfiles_2.xml");
                 URLConnection  conn = url.openConnection();
                 BufferedReader in   = new BufferedReader(new InputStreamReader(conn.getInputStream()));
                 String line;
@@ -437,10 +438,11 @@ public class TaxonLoadSetupPanel extends BaseSetupPanel
     @Override
     public void aboutToLeave()
     {
-        if (preloadChk.isSelected())
+        if (preloadChk.isSelected() /*&& properties.get("othertaxonfile") == null*/)
         {
             TaxonFileDesc tfd = (TaxonFileDesc)fileCBX.getSelectedItem();
-            if (tfd != null && FilenameUtils.isExtension(tfd.getFileName().toLowerCase(), XLS))
+            if (tfd != null &&
+                    (FilenameUtils.isExtension(tfd.getFileName().toLowerCase(), XLS) || FilenameUtils.isExtension(tfd.getFileName().toLowerCase(), XLSX)))
             {
                 File txFile = getFileForTaxon(tfd.getFileName(), false);
                 if (txFile == null || !txFile.exists())

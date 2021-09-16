@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  *
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -19,9 +19,7 @@
  */
 package edu.ku.brc.specify.datamodel.busrules;
 
-import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.af.core.ContextMgr;
-import edu.ku.brc.af.core.UsageTracker;
+import edu.ku.brc.af.core.*;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
@@ -57,6 +55,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.net.URI;
+import java.net.URL;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Vector;
@@ -1039,9 +1039,9 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules {
                                 addDeleteReason(LoanPreparation.getClassTableId());
                             }
 
-                            if (prep.getDeaccessionPreparations() != null && !prep.getDeaccessionPreparations().isEmpty()) {
+                            if (prep.getDisposalPreparations() != null && !prep.getDisposalPreparations().isEmpty()) {
                                 isOK = false;
-                                addDeleteReason(DeaccessionPreparation.getClassTableId());
+                                addDeleteReason(DisposalPreparation.getClassTableId());
                             }
 
                             if (!isOK) {
@@ -1223,4 +1223,5 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules {
             }
         }
     }
+
 }

@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -22,9 +22,7 @@ package edu.ku.brc.specify.datamodel;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.util.Calendar;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -43,7 +41,9 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
@@ -64,13 +64,15 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "collectionobject", uniqueConstraints = {
-        @UniqueConstraint(columnNames={"CollectionID", "CatalogNumber"} ) 
-        } 
+        @UniqueConstraint(columnNames={"CollectionID", "CatalogNumber"} ),
+        @UniqueConstraint(columnNames={"CollectionID", "UniqueIdentifier"} )
+        }
 )
 @org.hibernate.annotations.Table(appliesTo="collectionobject", indexes =
     {   @Index (name="FieldNumberIDX", columnNames={"FieldNumber"}),
         @Index (name="CatalogedDateIDX", columnNames={"CatalogedDate"}),
         @Index (name="CatalogNumberIDX", columnNames={"CatalogNumber"}),
+            @Index (name="COUniqueIdentifierIDX", columnNames={"UniqueIdentifier"}),
         @Index (name="AltCatalogNumberIDX", columnNames= {"AltCatalogNumber"}),
         @Index (name="ColObjGuidIDX", columnNames={"GUID"}),
         @Index (name="COColMemIDX", columnNames={"CollectionmemberID"})
@@ -81,6 +83,7 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
                                                                   AttributeProviderIFace, 
                                                                   Comparable<CollectionObject>
 {
+    private static final Logger log = Logger.getLogger(CollectionObject.class);
 
     // Fields
 
@@ -106,6 +109,11 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
     protected String                        text1;
     protected String                        text2;
     protected String                        text3;
+    protected String                        text4;
+    protected String                        text5;
+    protected String                        text6;
+    protected String                        text7;
+    protected String                        text8;
     protected String                        reservedText;
     protected String					    reservedText2;
     protected String                        reservedText3;
@@ -129,6 +137,7 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
     protected Byte                          catalogedDatePrecision;   // Accurate to Year, Month, Day
     protected String                        catalogedDateVerbatim;
     protected String                        guid;
+    protected String uniqueIdentifier;
     protected String                        altCatalogNumber;
     protected Boolean                       deaccessioned;
     protected String                        catalogNumber;
@@ -143,6 +152,12 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
     protected BigDecimal                    totalValue;
     protected Byte							sgrStatus;
     protected String						ocr;
+    protected String embargoReason;
+    protected Calendar embargoStartDate;
+    protected Byte embargoStartDatePrecision;
+    protected Calendar embargoReleaseDate;
+    protected Byte embargoReleaseDatePrecision;
+    protected Agent embargoAuthority;
     
     // Security
     protected Byte                          visibility;
@@ -206,6 +221,11 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
         text1                 = null;
         text2                 = null;
         text3                 = null;
+        text4                 = null;
+        text5                 = null;
+        text6                 = null;
+        text7                 = null;
+        text8                 = null;
         reservedText          = null;
         reservedText2         = null;
         reservedText3         = null;
@@ -230,6 +250,7 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
         date1 = null;
         date1Precision = 1;
         guid                  = null;
+        uniqueIdentifier = null;
         altCatalogNumber      = null;
         deaccessioned         = null;
         catalogNumber         = null;
@@ -272,8 +293,10 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
         
         exsiccataItems              = new HashSet<>();
         voucherRelationships = new HashSet<>();
-        
+
+
         hasGUIDField = true;
+
         setGUID();
     }
     // End Initializer
@@ -344,13 +367,24 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
     /**
      * Image, Sound, Preparation, Container(Container Label?) - this was suppose to be in Preparation
      */
-    @Column(name = "Description", unique = false, nullable = true, insertable = true, updatable = true, length = 255)
+    @Lob
+    @Column(name = "Description", unique = false, nullable = true, insertable = true, updatable = true, length = 65535)
     public String getDescription() {
         return this.description;
     }
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @Lob
+    @Column(name = "EmbargoReason", length = 4096)
+    public String getEmbargoReason() {
+        return this.embargoReason;
+    }
+
+    public void setEmbargoReason(String embargoReason) {
+        this.embargoReason = embargoReason;
     }
 
     /**
@@ -379,6 +413,66 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
         this.text2 = text2;
     }
 
+    /**
+     *      * User definable
+     */
+    @Lob
+    @Column(name = "Text4", length = 65535)
+    public String getText4() {
+        return this.text4;
+    }
+
+    public void setText4(String text4) {
+        this.text4 = text4;
+    }
+    /**
+     *      * User definable
+     */
+    @Lob
+    @Column(name = "Text5", length = 65535)
+    public String getText5() {
+        return this.text5;
+    }
+
+    public void setText5(String text5) {
+        this.text5 = text5;
+    }
+    /**
+     *      * User definable
+     */
+    @Lob
+    @Column(name = "Text6", length = 65535)
+    public String getText6() {
+        return this.text6;
+    }
+
+    public void setText6(String text6) {
+        this.text6 = text6;
+    }
+    /**
+     *      * User definable
+     */
+    @Lob
+    @Column(name = "Text7", length = 65535)
+    public String getText7() {
+        return this.text7;
+    }
+
+    public void setText7(String text7) {
+        this.text7 = text7;
+    }
+    /**
+     *      * User definable
+     */
+    @Lob
+    @Column(name = "Text8", length = 65535)
+    public String getText8() {
+        return this.text8;
+    }
+
+    public void setText8(String text8) {
+        this.text8 = text8;
+    }
     /**
     *
     */
@@ -622,6 +716,61 @@ public void setReservedText3(String reservedText3) {
         this.countAmt = countAmt;
     }
 
+    @Transient
+    public Integer getTotalCountAmt() { return getPrepTotalCount(this.getId());}
+
+    @Transient
+    public Integer getActualTotalCountAmt() { return getPrepUndisposedTotalCount(this.getId()); }
+
+    private static Integer getPrepTotalCount(Integer id) {
+        Integer result = null;
+        if (id != null) {
+            result = BasicSQLUtils.getCountAsInt("select sum(countAmt) from preparation where collectionobjectid = " + id);
+        }
+        return result;
+    }
+
+    private static Integer getPrepUndisposedTotalCount(Integer id) {
+        Integer result = null;
+        if (id != null) {
+            Vector<Object> prepIds = BasicSQLUtils.querySingleCol("select preparationid from preparation where collectionobjectid = " + id);
+            int runningTotal = 0;
+            boolean nonNull = false;
+            for (Object prepId : prepIds) {
+                Object[] prepObj = new Object[1];
+                prepObj[0] = prepId;
+                Object prepCnt = Preparation.computeActualCountAmt(prepObj);
+                if (prepCnt != null) {
+                    runningTotal = runningTotal + Integer.valueOf(prepCnt.toString());
+                    nonNull = true;
+                }
+            }
+            if (nonNull) {
+                result = runningTotal;
+            }
+        }
+        return result;
+    }
+
+    @Transient
+    public static List<String> getQueryableTransientFields() {
+        List<String> result = new ArrayList<>();
+        result.add("ActualTotalCountAmt");
+        result.add("TotalCountAmt");
+        return result;
+    }
+
+    public static Object getQueryableTransientFieldValue(String fldName, Object[] vals) {
+        if (fldName.equalsIgnoreCase("ActualTotalCountAmt")) {
+            return getPrepUndisposedTotalCount((Integer)vals[0]);
+        } else if (fldName.equalsIgnoreCase("TotalCountAmt")) {
+            return getPrepTotalCount((Integer)vals[0]);
+        } else {
+            log.error("Unknown calculated field: " + fldName);
+            return null;
+        }
+    }
+
     /**
      *
      */
@@ -703,6 +852,76 @@ public void setReservedText3(String reservedText3) {
         this.date1 = date1;
     }
 
+
+    /**
+     *
+     * @return
+     */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "EmbargoStartDate", unique = false, nullable = true, insertable = true, updatable = true)
+    public Calendar getEmbargoStartDate() {
+        return embargoStartDate;
+    }
+
+    /**
+     *
+     * @param embargoStartDate
+     */
+    public void setEmbargoStartDate(Calendar embargoStartDate) {
+        this.embargoStartDate = embargoStartDate;
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Column(name = "EmbargoStartDatePrecision", unique = false, nullable = true, insertable = true, updatable = true)
+    public Byte getEmbargoStartDatePrecision() {
+        return embargoStartDatePrecision;
+    }
+
+    /**
+     *
+     * @param embargoStartDatePrecision
+     */
+    public void setEmbargoStartDatePrecision(Byte embargoStartDatePrecision) {
+        this.embargoStartDatePrecision = embargoStartDatePrecision;
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "EmbargoReleaseDate", unique = false, nullable = true, insertable = true, updatable = true)
+    public Calendar getEmbargoReleaseDate() {
+        return embargoReleaseDate;
+    }
+
+    /**
+     *
+     * @param embargoReleaseDate
+     */
+    public void setEmbargoReleaseDate(Calendar embargoReleaseDate) {
+        this.embargoReleaseDate = embargoReleaseDate;
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Column(name = "EmbargoReleaseDatePrecision", unique = false, nullable = true, insertable = true, updatable = true)
+    public Byte getEmbargoReleaseDatePrecision() {
+        return embargoReleaseDatePrecision;
+    }
+
+    /**
+     *
+     * @param embargoReleaseDatePrecision
+     */
+    public void setEmbargoReleaseDatePrecision(Byte embargoReleaseDatePrecision) {
+        this.embargoReleaseDatePrecision = embargoReleaseDatePrecision;
+    }
     /**
      *
      */
@@ -725,6 +944,18 @@ public void setReservedText3(String reservedText3) {
 
     public void setGuid(String guid) {
         this.guid = guid;
+    }
+
+   /**
+     *
+     */
+    @Column(name = "UniqueIdentifier", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    public String getUniqueIdentifier() {
+        return this.uniqueIdentifier;
+    }
+
+    public void setUniqueIdentifier(String uniqueIdentifier) {
+        this.uniqueIdentifier = uniqueIdentifier;
     }
 
     /**
@@ -984,6 +1215,27 @@ public void setReservedText3(String reservedText3) {
     	}
     	return null;
     }
+
+    @Transient
+    public int getTotalCount() {
+        int result = 0;
+        for (Preparation p : getPreparations()) {
+            result += p.getCountAmt() != null ? p.getCountAmt() : 0;
+        }
+        return result;
+    }
+
+    @Transient
+    public int getTotalActualCount() {
+        int result = 0;
+        for (Preparation p : getPreparations()) {
+            result += p.getActualCountAmt();
+        }
+        return result;
+    }
+
+
+
     /**
      * 
      */
@@ -1322,6 +1574,24 @@ public void setReservedText3(String reservedText3) {
      */
     public void setAgent1(Agent agent1) {
         this.agent1 = agent1;
+    }
+
+    /**
+     *
+     * @return
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "EmbargoAuthorityID", unique = false, nullable = true, insertable = true, updatable = true)
+    public Agent getEmbargoAuthority() {
+        return embargoAuthority;
+    }
+
+    /**
+     *
+     * @param embargoAuthority
+     */
+    public void setEmbargoAuthority(Agent embargoAuthority) {
+        this.embargoAuthority = embargoAuthority;
     }
 
     /**

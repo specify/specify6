@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -550,51 +550,125 @@ public class RecordSet extends CollectionMember implements java.io.Serializable,
         ((RecordSetItem)item).setRecordSet(this);
         return item;
     }
-    
+
+
+    /**
+     *
+     * @param rsID
+     * @return
+     */
+    public static Long getUniqueSize(Integer rsID) {
+        return getSize(rsID, true);
+    }
+
+    /**
+     *
+     * @param rsID
+     * @return
+     */
+    public static Long getSize(Integer rsID) {
+        return getSize(rsID, false);
+    }
+
+    /**
+     *
+     * @param rsID
+     * @param distinctIDs
+     * @return
+     */
+    public static Long getSize(Integer rsID, boolean distinctIDs) {
+        String sql = "select count(" + (distinctIDs ? "distinct " : "") + "recordid) from recordsetitem where recordsetid = " + rsID;
+        Connection conn = null;
+        Statement stmt = null;
+        Long result = null;
+        try {
+            conn = DatabaseService.getInstance().getConnection();
+            stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            if (rs.next()) {
+                result = rs.getLong(1);
+            }
+            rs.close();
+        } catch (SQLException e) {
+            edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(RecordSet.class, e);
+            e.printStackTrace();
+        } finally {
+            try {
+                if (conn != null) conn.close();
+                if (stmt != null) stmt.close();
+            } catch (SQLException e) {
+                edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(RecordSet.class, e);
+                e.printStackTrace();
+            }
+        }
+        return result;
+    }
+    /**
+     *
+     * @param rsId
+     * @return
+     */
+    public static List<Integer> getUniqueIdList(Integer rsId) {
+        return getUniqueIdList(rsId, -1, -1L);
+    }
+
+    /**
+     *
+     * @param rsId
+     * @param limit
+     * @param offset
+     * @return
+     */
+    public static List<Integer> getUniqueIdList(Integer rsId, int limit, long offset) {
+        return getIdList(rsId, null, true, limit, offset);
+    }
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.RecordSetIFace#getIdList()
      */
-    public static List<Integer> getIdList(final Integer rsId, final Set<RecordSetItem>rsiSet)
-    {
-        
-        if (rsId != null)
-        {
-            String sql = "FROM recordsetitem WHERE RecordSetID = "+rsId;
-            
-            int count = BasicSQLUtils.getCount("SELECT count(*) " + sql);
-            if (count > 0)
-            {
+    public static List<Integer> getIdList(final Integer rsId, final Set<RecordSetItem>rsiSet) {
+        return getIdList(rsId, rsiSet, false, -1, -1L);
+    }
+
+    public static List<Integer> getIdList(final Integer rsId, final Set<RecordSetItem> rsiSet, boolean unique, int limit, long offset) {
+
+        if (rsId != null) {
+            String sql = "FROM recordsetitem WHERE RecordSetID = " + rsId;
+            if (limit != -1) {
+                sql += " limit " + limit;
+                if (offset != -1L) {
+                    sql += " offset " + offset;
+                }
+            }
+            int count = limit != -1 ? limit : BasicSQLUtils.getCount("SELECT count(" + (unique ? "distinct RecordId" : "*") + ") " + sql);
+            if (count > 0) {
                 ArrayList<Integer> ids = new ArrayList<Integer>(count);
-                
-                Connection    conn = null;
-                Statement     stmt = null;
-                try
-                {
+
+                Connection conn = null;
+                Statement stmt = null;
+                try {
                     conn = DatabaseService.getInstance().getConnection();
                     stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-                    ResultSet rs = stmt.executeQuery("SELECT RecordId "+sql);
-                    
-                    while (rs.next())
-                    {
+                    String selectSql = "select " + (unique ? "distinct " : "") + "recordid ";
+                    ResultSet rs = stmt.executeQuery(selectSql + sql);
+
+                    while (rs.next()) {
                         ids.add(rs.getInt(1));
                     }
                     rs.close();
-                    
-                } catch (SQLException e)
-                {
+
+                } catch (SQLException e) {
                     edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
                     edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(RecordSet.class, e);
                     e.printStackTrace();
-                    
-                } finally
-                {
-                    try
-                    {
-                        if (conn != null)  conn.close();
-                        if (stmt != null)  stmt.close(); 
-                        
-                    } catch (SQLException e)
-                    {
+
+                } finally {
+                    try {
+                        if (conn != null) conn.close();
+                        if (stmt != null) stmt.close();
+
+                    } catch (SQLException e) {
                         edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
                         edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(RecordSet.class, e);
                         e.printStackTrace();
@@ -604,16 +678,15 @@ public class RecordSet extends CollectionMember implements java.io.Serializable,
             }
             return new ArrayList<Integer>();
         }
-        
-        if (rsiSet != null && rsiSet.size() > 0)
-        {
+
+        if (rsiSet != null && rsiSet.size() > 0) {
             ArrayList<Integer> ids = new ArrayList<Integer>(rsiSet.size());
-            for (RecordSetItem item : rsiSet)
-            {
+            for (RecordSetItem item : rsiSet) {
                 ids.add(item.getRecordSetItemId());
             }
+            return ids;
         }
-        
+
         return new ArrayList<Integer>();
     }
     

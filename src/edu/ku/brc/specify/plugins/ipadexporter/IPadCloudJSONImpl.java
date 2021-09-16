@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -21,21 +21,27 @@ package edu.ku.brc.specify.plugins.ipadexporter;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
+import edu.ku.brc.helpers.ProxyHelper;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
-import org.apache.commons.httpclient.methods.multipart.Part;
-import org.apache.commons.httpclient.methods.multipart.StringPart;
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.util.EntityUtils;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.config.RequestConfig.Builder;
+import org.apache.http.client.config.RequestConfig;
 
 import edu.ku.brc.util.Pair;
 
@@ -497,9 +503,29 @@ public class IPadCloudJSONImpl implements IPadCloudIFace
 //        System.out.println("------------------------\n"+writeURLStr);
         //UIRegistry.showError("Cloud URL: "+writeURLStr); // Visual Debugging
         
-        PostMethod post   = new PostMethod(writeURLStr);
+        HttpPost post   = new HttpPost(writeURLStr);
         try
         {
+            MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+            builder.setCharset(StandardCharsets.UTF_8);
+            for (String key : valuesMap.keySet()) {
+                //System.out.println("key["+key+"] val["+valuesMap.get(key)+"]");
+                String val = valuesMap.get(key);
+                builder.addTextBody(key, val == null ? "" : val);
+            }
+            post.setEntity(builder.build());
+            RequestConfig.Builder requestConfig = RequestConfig.custom();
+            requestConfig.setConnectTimeout(15000);
+            ProxyHelper.applyProxySettings(post, requestConfig);
+            post.setConfig(requestConfig.build());
+
+            CloseableHttpClient client = HttpClients.createDefault();
+
+            //client.getHttpConnectionManager().getParams().setConnectionTimeout(15000);
+            client.getParams().setParameter("http.protocol.content-charset", "UTF-8");
+            CloseableHttpResponse response = client.execute(post);
+
+            /*
             Part[] parts = new Part[valuesMap.size()];
             int i = 0;
             for (String key : valuesMap.keySet())
@@ -510,8 +536,11 @@ public class IPadCloudJSONImpl implements IPadCloudIFace
             }
 
             post.setRequestEntity(new MultipartRequestEntity(parts, post.getParams()));
-            
-            HttpClient client = new HttpClient();
+            CloseableHttpResponse response = httpClient.execute(uploadFile);
+            HttpEntity responseEntity = response.getEntity();
+
+
+            CloseableHttpClient client = HttpClients.createDefault();
             client.getHttpConnectionManager().getParams().setConnectionTimeout(15000);
             client.getParams().setParameter("http.protocol.content-charset", "UTF-8");
             
@@ -520,18 +549,22 @@ public class IPadCloudJSONImpl implements IPadCloudIFace
             //System.out.println("CharSet: "+client.getParams().getHttpElementCharset());
 
             int status = client.executeMethod(post);
-            
+            */
+            int status = response.getStatusLine().getStatusCode();
+
             if (status == HttpStatus.SC_OK)
             {
                 System.err.println("HTTP Status: OK");
-                String outStr = post.getResponseBodyAsString();
+                //String outStr = post.getResponseBodyAsString();
+                String outStr = EntityUtils.toString(response.getEntity());
                 System.out.println("outStr["+outStr+"]");
                 
                 return JSONObject.fromObject(outStr);
             }
             
             System.err.println("HTTP Status: "+status);
-            System.err.println(post.getResponseBodyAsString());
+            //System.err.println(post.getResponseBodyAsString());
+            System.err.println(EntityUtils.toString(response.getEntity()));
             
         } catch (java.net.UnknownHostException uex)
         {

@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -30,8 +30,7 @@ import edu.ku.brc.specify.datamodel.CollectingTrip;
  * Feb 11, 2008
  *
  */
-public class CollectingTripBusRules extends BaseBusRules
-{
+public class CollectingTripBusRules extends AttachmentOwnerBaseBusRules {
 
     public CollectingTripBusRules()
     {

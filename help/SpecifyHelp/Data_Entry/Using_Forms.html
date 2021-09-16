@@ -612,7 +612,7 @@
               Editor at <em>System &gt; Collection Setup &gt; Configuration</em>. Then click on the
               <img height="20" src="../../images/pick_list_20.png" width="20"> <em>Pick List
               Editor</em> button on the side bar and refer to the directions for the <a href=
-              "../pick_list/pick_list.html">Pick List Editor</a>. Preparation Type can be edited by
+              "../PickList/Pick_List.html">Pick List Editor</a>. Preparation Type can be edited by
               clicking the <em>Preparation Type</em> icon on the same side bar.
             </p>
           </blockquote>
@@ -781,7 +781,7 @@
           Configuration.</em> Typical fields that are formatted with a numbering scheme are
           <em>Catalog Number</em>, <em>Accession Number, Loan Number</em> and <em>Gift Number</em>.
           Once these fields are formatted, they can either be entered manually or auto increment
-          using <a href="../Data_Entry/auto_numbering.html">Auto Numbering</a>.
+          using Auto Numbering.
         </p>
         <blockquote>
           <p>
@@ -988,9 +988,6 @@
           </p>
         </blockquote>
       </blockquote>
-      <h3>
-         &nbsp;
-      </h3>
       <h4>
          <a name="carry_forward"></a><u>Carry Forward</u>
       </h4>
@@ -1078,7 +1075,7 @@
     </div>
     <blockquote>
       <h4>
-         <a name="auto_numbering"></a><u>Auto Numbering</u>
+         <a name="auto_numbering"></a><u>Auto</u> <u>Numbering</u>
       </h4>
       <blockquote>
         <p>
@@ -1128,7 +1125,8 @@
           <li>
             Series Data Entry is included by default only for entomology. For all other disciplines
             it is turned off by default. For these and all existing databases contact the Specify
-            team to have this feature included on your forms.
+            team <a href="mailto:specify@ku.edu">Specify team</a> to have this feature included on
+            your forms.
           </li>
         </ul>
         <p>
@@ -1274,6 +1272,10 @@
         and configure the bar code reader. Once the bar code reader is successfully installed and
         configured, it should work automatically in Specify 6.
       </p>
+      <p>
+         Also, a specific 'Barcode' field is available in the&nbsp;Preparations table. It is forced
+        to be unique within the collection and therefore can not include duplicate values.
+      </p>
       <blockquote>
         <h4>
            <u>Data Entry</u>
@@ -1308,8 +1310,8 @@
         </h4>
         <ul>
           <li>
-            Activate a Loan, Gift or Information Request by choosing it in the Interactions
-            Sidebar, this will activate a Catalog Number dialog.
+            Activate a Loan, Gift, Exchange Out, Disposal,&nbsp;or Information Request by choosing
+            it in the Interactions Sidebar, this will activate a Catalog Number dialog.
           </li>
         </ul>
       </blockquote>
@@ -1415,6 +1417,61 @@
     </blockquote>
     <p align="center" class="imgcaption">
        Edit Collection Object form
+    </p>
+    <p align="center" class="imgcaption">
+       &nbsp;
+    </p>
+    <p align="center" class="imgcaption">
+       &nbsp;
+    </p>
+    <h3 style=" margin-left: 20.0px;">
+       Count Fields
+    </h3>
+    <p style=" margin-left: 20.0px;">
+       Calculated fields in Specify track the number of Collection Objects and Preparations in a
+      Collection. These are not in the Specify schema, but rather are written in the code and
+      automatically updated. They are included on the default forms in Specify 6.8.01. For forms
+      created prior to this release please contact support@specifysoftware.org.
+    </p>
+    <p style=" margin-left: 20.0px;">
+       The suggested field names for calculated fields associated with Collection Objects:
+    </p>
+    <p style=" margin-left: 40.0px;">
+       <u>Total Counts</u>: The number of items that were ever part of a Collection Object,
+      typically the original number.
+    </p>
+    <p style=" margin-left: 40.0px;">
+       <u>Total Current Counts</u>: The number it items still physically associated with the
+      Collection Object i.e. the original number minus any items that have been Gifted, Exchanged
+      Out, or Disposed.
+    </p>
+    <p style=" margin-left: 40.0px;">
+       &nbsp;
+    </p>
+    <p style=" margin-left: 20.0px;">
+       The suggested field name for calculated Preparations field:
+    </p>
+    <p style=" margin-left: 40.0px;">
+       <u>Current Count</u>: The number of items originally entered in the Count Amount field (a
+      user-editable field in the Specify schema) minus any items that have been Gifted, Exchanged
+      Out, or Disposed.
+    </p>
+    <p style=" margin-left: 40.0px;">
+       &nbsp;
+    </p>
+    <h3 style=" margin-left: 0.0px;">
+       <a name="unique_identifier" id="unique_identifier">Unique Identifier</a>
+    </h3>
+    <p>
+       Tracking information in the database is easier if there is a way to identify, and therefore
+      search, for a particular record. This can be accomplished by placing an identifier on the
+      record, such as a Collection Object Number on each&nbsp;Collection Object. It is further
+      helpful if the identifier is unique within a Collection or Discipline. For this reason the
+      Specify schema has included fields that are forced to be unique within the Collection Object,
+      Preparation, Locality, and Collecting Event tables.&nbsp;&nbsp;The Collection Object field is
+      required to be unique in the Specify schema, but can be changed if necessary. Barcode in the
+      Preparation table is also forced to be unique and fields named uniqueIdentifier are included
+      in both the Locality and Collecting Event tables with enforced uniqueness.&nbsp;
     </p>
   </body>
 </html>

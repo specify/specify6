@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -73,8 +73,12 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import net.sf.json.util.JSONTokener;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.util.EntityUtils;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.commons.lang.StringUtils;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -102,6 +106,7 @@ import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.Polyline;
 import gov.nasa.worldwind.render.markers.BasicMarkerAttributes;
 import gov.nasa.worldwind.render.markers.BasicMarkerShape;
+import org.apache.http.impl.client.HttpClients;
 
 /**
  * @author rods
@@ -796,7 +801,7 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
             @Override
             protected String doInBackground() throws Exception
             {
-                HttpClient httpClient = new HttpClient();
+                CloseableHttpClient httpClient = HttpClients.createDefault();
                 httpClient.getParams().setParameter("http.useragent", getClass().getName()); //$NON-NLS-1$
                 httpClient.getParams().setParameter("http.socket.timeout", 15000); 
                 
@@ -804,11 +809,11 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
                 String url = "http://svc.lifemapper.org/api/v2/hint/"+genusSpecies + "?limit=1000";
                 //System.out.println(url);
                 
-                GetMethod getMethod = new GetMethod(url);
+                HttpGet getMethod = new HttpGet(url);
                 try
                 {
-                    httpClient.executeMethod(getMethod);
-                    return getMethod.getResponseBodyAsString();
+                    CloseableHttpResponse response = httpClient.execute(getMethod);
+                    return EntityUtils.toString(response.getEntity());
                 }
                 catch (java.net.UnknownHostException uex)
                 {
@@ -972,7 +977,7 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
         glassPane.setTextYPos((int)((double)getSize().height * 0.25));
         
         // check the website for the info about the latest version
-        final HttpClient httpClient = new HttpClient();
+        final CloseableHttpClient httpClient = HttpClients.createDefault();
         httpClient.getParams().setParameter("http.useragent", getClass().getName()); //$NON-NLS-1$
         httpClient.getParams().setParameter("http.socket.timeout", 15000); 
         
@@ -991,18 +996,22 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
             @Override
             protected String doInBackground() throws Exception
             {
-                GetMethod  getMethod  = new GetMethod(lmURL);
+                HttpGet  getMethod  = new HttpGet(lmURL);
                 try
                 {
-                    httpClient.executeMethod(getMethod);
+                    CloseableHttpResponse response = httpClient.execute(getMethod);
                     
                     // get the server response
                     //String responseString = getMethod.getResponseBodyAsString();
-                    byte[] bytes = getMethod.getResponseBody();
-                    if (bytes != null && bytes.length > 0)
-                    {
-                        return new String(bytes, "UTF-8");
+                    String responseString = EntityUtils.toString(response.getEntity());
+                    if (StringUtils.isNotEmpty(responseString)) {
+                        return responseString;
                     }
+                    //byte[] bytes = response.getResponseBody();
+                    //if (bytes != null && bytes.length > 0)
+                   //{
+                    //    return new String(bytes, "UTF-8");
+                    //}
                     //if (StringUtils.isNotEmpty(responseString))
                     //{
                     //    System.err.println(responseString);

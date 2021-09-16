@@ -13,6 +13,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -35,13 +36,14 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
 import edu.ku.brc.helpers.ProxyHelper;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.RequestEntity;
-import org.apache.commons.httpclient.methods.multipart.FilePart;
-import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
-import org.apache.commons.httpclient.methods.multipart.Part;
-import org.apache.commons.httpclient.methods.multipart.StringPart;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.util.EntityUtils;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.ContentType;
 import org.apache.commons.io.FileUtils;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -1156,31 +1158,40 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 			 */
 			@Override
 			protected Pair<Boolean, String> doInBackground() throws Exception {
-				HttpClient httpClient = new HttpClient();
+				CloseableHttpClient httpClient = HttpClients.createDefault();
 				ProxyHelper.applyProxySettings(httpClient);
-				PostMethod post = new PostMethod(symTask.getSymbiotaPostUrlForCurrentInstance());
+				HttpPost post = new HttpPost(symTask.getSymbiotaPostUrlForCurrentInstance());
 				Pair<Boolean, String> result = new Pair<Boolean, String>(false, null);
 								
 				try {
-				
-					Part[] parts = {new StringPart("uploadtype", "6"), 
-						new StringPart("key", symTask.getTheInstance().getSymbiotaKey()),
-						new FilePart("uploadfile", fileName, new File(fileName)),
-						new StringPart("importident", "1")/*, new StringPart("importimage", "1")*/};
-					RequestEntity entity = new MultipartRequestEntity(parts, post.getParams());
-					post.setRequestEntity(entity);
 
+//					Part[] parts = {new StringPart("uploadtype", "6"),
+//						new StringPart("key", symTask.getTheInstance().getSymbiotaKey()),
+//						new FilePart("uploadfile", fileName, new File(fileName)),
+//						new StringPart("importident", "1")/*, new StringPart("importimage", "1")*/};
+//					RequestEntity entity = new MultipartRequestEntity(parts, post.getParams());
+//					post.setRequestEntity(entity);
+
+					MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+					builder.setCharset(StandardCharsets.UTF_8);
+					builder.addTextBody("uploadtype", "6");
+					builder.addTextBody("key", symTask.getTheInstance().getSymbiotaKey());
+					builder.addTextBody("importident", "1");
+					builder.addBinaryBody("uploadfile", new File(fileName), ContentType.APPLICATION_OCTET_STREAM, fileName);
+					post.setEntity(builder.build());
+					ProxyHelper.applyProxySettings(post, null);
 					//System.out.println("SKIPPING the POST!!!");
-					int postStatus = /*200;*/ httpClient.executeMethod(post);
+					CloseableHttpResponse response = httpClient.execute(post);
+					int postStatus = /*200;*/ response.getStatusLine().getStatusCode();
 					//System.out.println("Status from Symbiota Post: " + postStatus);
 					if (postStatus == 200) {
-						byte[] responseBytes = post.getResponseBody();
-						String response = responseBytes == null ? "" : new String(responseBytes);
-						System.out.println("ResponseBody: " + response);
-						if (!response.startsWith("FAILED") && !response.startsWith("ERROR")) {
+						byte[] responseBytes = EntityUtils.toByteArray(response.getEntity());
+						String responseStr = responseBytes == null ? "" : new String(responseBytes);
+						System.out.println("ResponseBody: " + responseStr);
+						if (!responseStr.startsWith("FAILED") && !responseStr.startsWith("ERROR")) {
 							result.setFirst(true);
 						}
-						result.setSecond(response);
+						result.setSecond(responseStr);
 					} else {
 						result.setSecond(String.format(UIRegistry.getResourceString("SymbiotaPane.BadPostStatus"), postStatus));
 					}
@@ -1268,6 +1279,16 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 	@Override
 	public void currentRow(long currentRow) {
 		setProgValue(Long.valueOf(currentRow).intValue());
+	}
+
+	@Override
+	public void anotherRow() {
+
+	}
+
+	@Override
+	public void fyi(String info) {
+
 	}
 
 	/* (non-Javadoc)

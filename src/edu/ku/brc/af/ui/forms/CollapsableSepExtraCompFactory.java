@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -35,11 +35,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Vector;
 
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JList;
-import javax.swing.JScrollPane;
-import javax.swing.ListSelectionModel;
+import javax.swing.*;
+import javax.swing.plaf.BorderUIResource;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -47,10 +44,10 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.thoughtworks.xstream.XStream;
 
 import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.ui.CustomDialog;
-import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.specify.datamodel.CollectionObject;
+import edu.ku.brc.ui.*;
+
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 /**
  * @author rods
@@ -114,6 +111,24 @@ public class CollapsableSepExtraCompFactory
             JButton btn = UIHelper.createIconBtn("video", IconManager.STD_ICON_SIZE.Std16, UIRegistry.getResourceString("CHSE_VIDEO_TT"), al);
             btn.setEnabled(true);
             return btn;
+        }
+        if (key.startsWith("Form") && !key.startsWith("Form_sub") && (key.endsWith("CollectionObject") || key.endsWith("Taxon"))) {
+            final String action = key.endsWith("CollectionObject") ? "SpiceDigOcc" : "SpiceDigTx";
+            ActionListener al =  e -> SwingUtilities.invokeLater(() -> CommandDispatcher.dispatch(new CommandAction("Data_Entry", action, "")));
+            String iconName = action.equalsIgnoreCase("SpiceDigOcc") ? "SpiceDigOccurrence" : "SpiceDigOccurrence";
+            String tip = action.equalsIgnoreCase("SpiceDigOcc") ? "S2N.SpiceDigBtnOccToolTip" : "S2N.SpiceDigBtnTxToolTip";
+            boolean withEmptyBorder = true;
+            JButton exBtn = null;
+            if (withEmptyBorder) {
+                exBtn = UIHelper.createIconBtn(iconName, tip, al);
+            } else {
+                exBtn = UIHelper.createButton(IconManager.getIcon(iconName));
+                exBtn.addActionListener(al);
+                exBtn.setToolTipText(UIRegistry.getResourceString(tip));
+            }
+            exBtn.setEnabled(true);
+            return exBtn;
+
         }
         return null;
     }

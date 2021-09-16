@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -27,6 +27,7 @@ import java.awt.Frame;
 import java.awt.HeadlessException;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
@@ -67,6 +68,7 @@ public class ChooseRecordSetDlg extends CustomDialog
 
     // Data Members
     protected JList                       list       = null;
+    protected List<Pair<RecordSetIFace, Integer>> addlRSs = new ArrayList<>();
     protected List<Pair<String, Integer>> recordSets = null;
     protected boolean                     includeAddBtn = false;
 
@@ -244,6 +246,7 @@ public class ChooseRecordSetDlg extends CustomDialog
         
         for (RecordSetIFace rsi : additionalRS)
         {
+            addlRSs.add(new Pair<>(rsi, recordSets.size()));
             recordSets.add(new Pair<String, Integer>(rsi.getName(), rsi.getOnlyItem().getRecordId()));
         }
     }
@@ -253,9 +256,23 @@ public class ChooseRecordSetDlg extends CustomDialog
      */
     public boolean hasRecordSets()
     {
-        return recordSets != null && recordSets.size() > 0;
+        return (recordSets != null && recordSets.size() > 0) || (addlRSs != null && addlRSs.size() > 0);
     }
 
+
+    public RecordSetIFace getSelectedAddlRecordSet() {
+        if (list != null) {
+            int inx = list.getSelectedIndex();
+            if (inx != -1) {
+                for (Pair<RecordSetIFace, Integer> rs : addlRSs) {
+                    if (rs.getSecond() == inx) {
+                        return rs.getFirst();
+                    }
+                }
+            }
+        }
+        return null;
+    }
     /**
      * Returns the selected RecordSetIFace
      * @return the selected RecordSetIFace
@@ -278,7 +295,6 @@ public class ChooseRecordSetDlg extends CustomDialog
                     {
                         return (RecordSetIFace)rvList.get(0);
                     }
-
                 } catch (Exception ex)
                 {
                     edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();

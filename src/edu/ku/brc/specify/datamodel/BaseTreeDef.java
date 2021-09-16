@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -425,7 +425,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
                     CustomDialog.OKCANCELHELP,
                     pb2.getPanel());
             dlg2.setOkLabel(getResourceString("YES"));
-            dlg.setVisible(true);
+            dlg2.setVisible(true);
             dlg2.dispose();
             if (dlg2.isCancelled())
             {

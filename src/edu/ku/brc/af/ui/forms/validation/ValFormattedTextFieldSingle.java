@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -1146,7 +1146,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements ValFormat
             {
                 return false;
 
-            } else if (field.getType() == UIFieldFormatterField.FieldType.anychar)
+            } else if (field.getType() == UIFieldFormatterField.FieldType.anychar || field.getType() == UIFieldFormatterField.FieldType.regex)
             {
                 return true;
 

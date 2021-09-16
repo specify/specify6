@@ -56,6 +56,15 @@
         </view>
 
         <view
+                name="S2nPrefs"
+                class="java.util.prefs.Preferences">
+            <desc><![CDATA[System Preference Form.]]></desc>
+            <altviews>
+                <altview name="S2nPrefs" viewdef="S2nPrefs" label="V_S2N" mode="edit" validated="true"/>
+            </altviews>
+        </view>
+
+        <view
             name="Morphbank"
             class="java.util.prefs.Preferences">
             <desc><![CDATA[Morphbank Preference Form.]]></desc>
@@ -399,6 +408,35 @@
                 </row>
             </rows>
             
+        </viewdef>
+
+        <viewdef
+                type="form"
+                name="S2nPrefs"
+                class="java.util.prefs.Preferences"
+                gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
+                settable="edu.ku.brc.af.prefs.PrefsSettableImpl"
+                useresourcelabels="true">
+
+            <desc><![CDATA[Formatting Misc Form.]]></desc>
+
+            <columnDef>p,2dlu,p,f:p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+            <rows>
+                <row>
+                    <cell type="command" id="S2nAbout" name="S2nAbout" label="S2N_ABOUT" ignore="true"/>
+                </row>
+                <row>
+                    <cell type="field" id="S2nOn" name="S2n.S2nOn" uitype="checkbox" label="S2n.OptIn" ignore="true" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="command" id="SendData" name="S2nSendData"   label="S2N_SEND_ICON" ignore="true"/>
+                </row>
+                <row>
+                    <cell type="field" id="S2nStatus"  uitype="dsptextfield" initialize="transparent=true" label="S2n.Status" ignore="true" colspan="4"/>
+                </row>
+            </rows>
+
         </viewdef>
 
         <viewdef
@@ -1001,6 +1039,24 @@
                     <cell type="label" labelfor="SHIPPEDBY" label="SHIPPEDBY"/>
                     <cell type="field" id="SHIPPEDBY" name="SHIPPEDBY" uitype="querycbx" ignore="true" initialize="name=Agent" colspan="3"/>
                 </row>
+                <row>
+                    <cell type="separator" label="LOANS_DEFAULT_SRC_BAR" colspan="5"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="lnDefSrcCBX" label="LOANS_DEFAULT_SRC_LBL"/>
+                    <cell type="field" uitype="combobox" id="lnDefSrcCBX" readonly="false" changesonly="true" />
+                </row>
+                <row>
+                    <cell type="separator" label="LOANS_DEFAULT_ID_FLDS_BAR" colspan="5"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="lnIdFldCoCBX" label="LOANS_DEFAULT_ID_FLDS_BAR"/>
+                    <cell type="field" uitype="combobox" id="lnIdFldCoCBX" readonly="false" changesonly="true" />
+                </row>
+                <row>
+                    <cell type="label" labelfor="lnIdFldPrepCBX" label="LOANS_DEFAULT_ID_FLDS_BAR"/>
+                    <cell type="field" uitype="combobox" id="lnIdFldPrepCBX" readonly="false" changesonly="true" />
+                </row>
             </rows>
         </viewdef>
         
@@ -1039,10 +1095,10 @@
                 <row>
                     <cell type="field" id="GEOLocate.DISPLACEPOLY" name="GEOLocate.DISPLACEPOLY" uitype="checkbox" label="GL_DISPLACEPOLY" colspan="4"/>
                 </row>
-                <!-- no more worldwind bug #9965 -->
+                <!-- no more worldwind bug #9965
                 <row>
                     <cell type="field" id="GEOLocate.USEGL_MAPS" name="GEOLocate.USEGL_MAPS" uitype="checkbox" label="GL_USEGL_MAPS" colspan="4"/>
-                </row> <!--  -->
+                </row> -->
                 <row>
                 	<cell type="label" labelfor="GEOLocate.LANGUAGEKEY" label="GL_LANGKEY" />
                     <cell type="field" id="GEOLocate.LANGUAGEKEY" name="GEOLocate.LANGUAGEKEY" uitype="combobox" isrequired="true" 

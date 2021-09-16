@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -25,18 +25,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 
 import org.apache.log4j.Logger;
 import org.hibernate.annotations.Cascade;
@@ -60,11 +49,15 @@ import edu.ku.brc.ui.UIRegistry;
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
-@Table(name = "locality")
+@Table(name = "locality", uniqueConstraints = {
+       @UniqueConstraint(columnNames={"DisciplineID", "UniqueIdentifier"} )
+       }
+)
 @org.hibernate.annotations.Table(appliesTo="locality", indexes =
     {   @Index (name="localityNameIDX", columnNames={"LocalityName"}),
         @Index (name="LocalityDisciplineIDX", columnNames={"DisciplineID"}),
         @Index (name="NamedPlaceIDX", columnNames={"NamedPlace"}),
+            @Index (name="LocalityUniqueIdentifierIDX", columnNames={"UniqueIdentifier"}),
         @Index (name="RelationToNamedPlaceIDX", columnNames={"RelationToNamedPlace"})
     })
 @SuppressWarnings("serial")
@@ -119,6 +112,7 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
     protected Boolean               yesNo5;
     protected Byte                  sgrStatus;
     protected PaleoContext			paleoContext;
+    protected String uniqueIdentifier;
     
     
     // Source Data used for formatting
@@ -182,6 +176,8 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
         remarks = null;
         sgrStatus = null;
         paleoContext = null;
+        uniqueIdentifier = null;
+
         
         lat1text   = null;
         lat2text   = null;
@@ -286,6 +282,18 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
     public void setShortName(String shortName)
     {
         this.shortName = shortName;
+    }
+
+    /**
+     *
+     */
+    @Column(name = "UniqueIdentifier", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    public String getUniqueIdentifier() {
+        return this.uniqueIdentifier;
+    }
+
+    public void setUniqueIdentifier(String uniqueIdentifier) {
+        this.uniqueIdentifier = uniqueIdentifier;
     }
 
     /**

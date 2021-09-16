@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -651,7 +651,17 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
 		});
 	}
 
-	/* (non-Javadoc)
+    @Override
+    public void anotherRow() {
+
+    }
+
+    @Override
+    public void fyi(String info) {
+
+    }
+
+    /* (non-Javadoc)
 	 * @see edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace#done(int)
 	 */
 	@Override

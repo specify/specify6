@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -123,7 +123,8 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
                               final Byte         schemaType,
                               final DBTableIdMgr tableMgr) throws HeadlessException
     {
-        super(frame, "", true, OKCANCELAPPLYHELP, null);
+        //super(frame, "", true, OKCANCELAPPLYHELP, null);
+        super(frame, "", true, OKCANCELHELP, null);
         this.schemaType = schemaType;
         this.tableMgr   = tableMgr;
         
@@ -916,7 +917,9 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
     {
         okBtn.setEnabled(enable ? (schemaLocPanel != null ? schemaLocPanel.hasChanged() : false) : false);
         cancelBtn.setEnabled(enable);
-        applyBtn.setEnabled(enable);
+        if (applyBtn != null) {
+            applyBtn.setEnabled(enable);
+        }
         helpBtn.setEnabled(enable);
     }
     

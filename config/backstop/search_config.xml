@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
 
-  Last Id for ExpressSearch 59
-  Last Id for Other Search  133
+  Last Id for ExpressSearch 60
+  Last Id for Other Search  136
 
  -->
 <searches>
@@ -10,7 +10,31 @@
     <!--      These are for Express Search      -->
     <!-- ************************************** -->
     <express>
-    
+        <table id="60" tableid="63" indexed="false" name="CollObjToPrep" priority="1" color="30, 144, 144">
+            <joins>
+                <!--join tableid="1" primary="true">collectionobject.CollectionObjectID</join-->
+                <join tableid="63" >preparation.PreparationID</join>
+            </joins>
+            <detailView icon="CollectionObject">
+                <sql>
+                    <![CDATA[SELECT
+ preparation.PreparationID,
+ preparation.BarCode,
+ collectionobject.CatalogNumber,
+ %s
+ FROM
+ collectionobject
+ INNER JOIN preparation ON preparation.CollectionObjectID = collectionobject.CollectionObjectID
+ WHERE (preparation.CollectionMemberID = COLMEMID) AND %s]]>
+                </sql>
+                <captions>
+                    <caption tableid="1" col="collectionobject.CollectionObjectID" visible="false"/>
+                    <caption tableid="63" col="BarCode"/>
+                    <caption tableid="1" col="CatalogNumber"/>
+                </captions>
+            </detailView>
+        </table>
+
         <table id="1" tableid="4" indexed="false" name="CollObjToDeterminer" priority="1" color="30, 144, 144">
             <joins>
                 <join tableid="5" primary="true">agent.AgentID</join>
@@ -1483,7 +1507,57 @@ SELECT cn.ContainerID,
                 </captions>
             </detailView>
         </table>
-        
+
+        <table id="60" tableid="163" indexed="false" name="Deacc2ATT" priority="1" color="30, 144, 144">
+            <joins>
+                <join tableid="163" primary="true">deaccession.DeaccessionID</join>
+                <join tableid="164">attachment.AttachmentID</join>
+            </joins>
+            <detailView icon="Deaccession">
+                <sql>
+                    <![CDATA[SELECT
+  deaccession.DeaccessionID,
+  deaccession.DeaccessionNumber,
+  attachment.Title,
+  %s
+  FROM deaccession INNER JOIN deaccessionattachment ON deaccession.DeaccessionID = deaccessionattachment.DeaccessionID
+  INNER JOIN attachment ON deaccessionattachment.AttachmentID = attachment.AttachmentID WHERE %s]]>
+                </sql>
+                <captions>
+                    <caption tableid="163" col="DeaccessionID" visible="false"/>
+                    <caption tableid="163" col="DeaccessionNumber"/>
+                    <caption tableid="41" col="Title"/>
+                </captions>
+            </detailView>
+        </table>
+
+        <table id="15" tableid="5" indexed="false" name="Agt2ATT" priority="1" color="30, 144, 144">
+            <joins>
+                <join tableid="5" primary="true">agent.AgentID</join>
+                <join tableid="41">attachment.AttachmentID</join>
+            </joins>
+            <detailView icon="Agent">
+                <sql>
+                    <![CDATA[SELECT
+  agent.AgentID,
+  agent.LastName,
+  agent.FirstName,
+  attachment.Title,
+  %s
+  FROM agent INNER JOIN agentattachment ON agent.AgentID = agentattachment.AgentID
+  INNER JOIN attachment ON agentattachment.AttachmentID = attachment.AttachmentID
+  WHERE %s
+  ]]>
+                </sql>
+                <captions>
+                    <caption tableid="5" col="AgentID" visible="false"/>
+                    <caption tableid="5" col="LastName"/>
+                    <caption tableid="5" col="FirstName"/>
+                    <caption tableid="41" col="Title"/>
+                </captions>
+            </detailView>
+        </table>
+
         <!-- <table id="20" tableid="121" indexed="false" name="DNA2ATT" priority="1" color="30, 144, 144">
             <joins>
                 <join tableid="121" primary="true">dnasequence.DNASequenceID</join>
@@ -1746,7 +1820,41 @@ SELECT cn.ContainerID,
                 </captions>
             </detailView>
         </table>
-    
+
+        <table id="134" tableid="34" name="DisposalSearch" priority="1" color="30, 144, 255">
+            <detailView icon="">
+                <sql>
+                    <![CDATA[SELECT disposal.DisposalID,
+ Disposal.DisposalNumber,
+ Disposal.DisposalDate,
+ FROM disposal
+ WHERE %s GROUP BY agent.AgentID]]>
+                </sql>
+                <captions>
+                    <caption tableid="34" col="DisposalID" visible="false"/>
+                    <caption tableid="34" col="DisposalNumber"/>
+                    <caption tableid="34" col="DisposalDate"/>
+                </captions>
+            </detailView>
+        </table>
+
+        <table id="135" tableid="63" name="PreparationSearch" priority="1" color="30, 144, 255">
+            <detailView icon="">
+                <sql>
+                    <![CDATA[SELECT preparation.PreparationID,
+ co.CatalogNumber,
+ pt.Name,
+ FROM preparation INNER JOIN collectionobject co on co.CollectionObjectID = preparation.CollectionObjectID INNER JOIN preptype pt on pt.PrepTypeID = p.PrepTypeID
+ WHERE %s GROUP BY agent.AgentID]]>
+                </sql>
+                <captions>
+                    <caption tableid="63" col="PreparationID" visible="false"/>
+                    <caption tableid="1" col="CatalogNumber"/>
+                    <caption tableid="65" col="Name"/>
+                </captions>
+            </detailView>
+        </table>
+
         <table id="101" tableid="6" name="PermitSearch" priority="1" color="30, 144, 255">
             <detailView icon="">
                 <sql>
@@ -2232,6 +2340,19 @@ LEFT JOIN lithostrat ls on ls.LithoStratID = pc.LithoStratID WHERE (pc.Disciplin
                 </captions>
             </detailView>
         </table>
-        
+
+        <table id="136" tableid="163" name="DeaccessionSearch" priority="1" color="30, 144, 255">
+            <detailView icon="Deaccession">
+                <sql>
+                    <![CDATA[SELECT l.DeaccessionID, l.DeaccessionNumber, l.DeaccessionDate FROM Deaccession l WHERE (%s)]]>
+                </sql>
+                <captions>
+                    <caption tableid="163" col="DeaccessionID" visible="false"/>
+                    <caption tableid="163" col="DeaccessionNumber"/>
+                    <caption tableid="163" col="DeaccessionDate"/>
+                </captions>
+            </detailView>
+        </table>
+
     </generic>
 </searches>

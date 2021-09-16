@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -208,7 +208,7 @@ public class Address extends DataModelObjBase implements Orderable,
     /**
      *
      */
-    @Column(name = "Address3", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+    @Column(name = "Address3", unique = false, nullable = true, insertable = true, updatable = true, length = 255)
     public String getAddress3() {
         return this.address3;
     }
@@ -220,7 +220,7 @@ public class Address extends DataModelObjBase implements Orderable,
     /**
      *
      */
-    @Column(name = "Address4", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+    @Column(name = "Address4", unique = false, nullable = true, insertable = true, updatable = true, length = 255)
     public String getAddress4() {
         return this.address4;
     }
@@ -232,7 +232,7 @@ public class Address extends DataModelObjBase implements Orderable,
     /**
      *
      */
-    @Column(name = "Address5", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+    @Column(name = "Address5", unique = false, nullable = true, insertable = true, updatable = true, length = 255)
     public String getAddress5() {
         return this.address5;
     }

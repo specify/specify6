@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -22,16 +22,25 @@ package edu.ku.brc.ui;
 import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.ProxyHelper;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.NameValuePair;
-import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Properties;
 import java.util.Vector;
+import java.util.Arrays;
+import java.nio.charset.StandardCharsets;
 
 
 /**
@@ -135,24 +144,25 @@ public abstract class FeedBackSender
         if (item != null)
         {
             // check the website for the info about the latest version
-            HttpClient httpClient = new HttpClient();
-            httpClient.getParams().setParameter("http.useragent", getClass().getName()); //$NON-NLS-1$
-            ProxyHelper.applyProxySettings(httpClient);
+            CloseableHttpClient httpClient = HttpClientBuilder.create()
+                .setUserAgent(getClass().getName())
+                .build();
+            //httpClient.getParams().setParameter("http.useragent", getClass().getName()); //$NON-NLS-1$
 
-            PostMethod postMethod = new PostMethod(getSenderURL());
+            HttpPost postMethod = new HttpPost(getSenderURL());
             
             // get the POST parameters (which includes usage stats, if we're allowed to send them)
+            //https://stackoverflow.com/questions/9362427/adding-parameter-to-httppost-on-apaches-httpclient
             NameValuePair[] postParams = createPostParameters(item);
-            postMethod.setRequestBody(postParams);
-            
+            postMethod.setEntity(new UrlEncodedFormEntity(Arrays.asList(postParams), StandardCharsets.UTF_8));
+            ProxyHelper.applyProxySettings(postMethod, null);
+
             // connect to the server
             try
             {
-                httpClient.executeMethod(postMethod);
-                
-                // get the server response
-                String responseString = postMethod.getResponseBodyAsString();
-                
+                CloseableHttpResponse response = httpClient.execute(postMethod);
+                String responseString = EntityUtils.toString(response.getEntity());
+
                 if (StringUtils.isNotEmpty(responseString))
                 {
                     System.err.println(responseString);
@@ -181,44 +191,44 @@ public abstract class FeedBackSender
         Vector<NameValuePair> postParams = new Vector<NameValuePair>();
         try
         {
-            postParams.add(new NameValuePair("bug",         item.getBug())); //$NON-NLS-1$
-            postParams.add(new NameValuePair("class_name",  item.getClassName())); //$NON-NLS-1$
-            postParams.add(new NameValuePair("comments",    item.getComments())); //$NON-NLS-1$
-            postParams.add(new NameValuePair("stack_trace", item.getStackTrace())); //$NON-NLS-1$
-            postParams.add(new NameValuePair("task_name",   item.getTaskName())); //$NON-NLS-1$
-            postParams.add(new NameValuePair("title",       item.getTitle())); //$NON-NLS-1$
+            postParams.add(new BasicNameValuePair("bug",         item.getBug())); //$NON-NLS-1$
+            postParams.add(new BasicNameValuePair("class_name",  item.getClassName())); //$NON-NLS-1$
+            postParams.add(new BasicNameValuePair("comments",    item.getComments())); //$NON-NLS-1$
+            postParams.add(new BasicNameValuePair("stack_trace", item.getStackTrace())); //$NON-NLS-1$
+            postParams.add(new BasicNameValuePair("task_name",   item.getTaskName())); //$NON-NLS-1$
+            postParams.add(new BasicNameValuePair("title",       item.getTitle())); //$NON-NLS-1$
             
             // get the install ID
             String installID = UsageTracker.getInstallId();
-            postParams.add(new NameValuePair("id", installID)); //$NON-NLS-1$
+            postParams.add(new BasicNameValuePair("id", installID)); //$NON-NLS-1$
     
             Runtime runtime    = Runtime.getRuntime();
             Long    usedMemory = runtime.maxMemory() - (runtime.totalMemory () + runtime.freeMemory ());
             Long    maxMemory = runtime.maxMemory();
             
             // get the OS name and version
-            postParams.add(new NameValuePair("os_name",      System.getProperty("os.name"))); //$NON-NLS-1$ //$NON-NLS-2$
-            postParams.add(new NameValuePair("os_version",   System.getProperty("os.version"))); //$NON-NLS-1$ //$NON-NLS-2$
-            postParams.add(new NameValuePair("java_version", System.getProperty("java.version"))); //$NON-NLS-1$ //$NON-NLS-2$
-            postParams.add(new NameValuePair("java_vendor",  System.getProperty("java.vendor"))); //$NON-NLS-1$ //$NON-NLS-2$
-            postParams.add(new NameValuePair("max_memory",   maxMemory.toString())); //$NON-NLS-1$
-            postParams.add(new NameValuePair("used_memory",  usedMemory.toString())); //$NON-NLS-1$
+            postParams.add(new BasicNameValuePair("os_name",      System.getProperty("os.name"))); //$NON-NLS-1$ //$NON-NLS-2$
+            postParams.add(new BasicNameValuePair("os_version",   System.getProperty("os.version"))); //$NON-NLS-1$ //$NON-NLS-2$
+            postParams.add(new BasicNameValuePair("java_version", System.getProperty("java.version"))); //$NON-NLS-1$ //$NON-NLS-2$
+            postParams.add(new BasicNameValuePair("java_vendor",  System.getProperty("java.vendor"))); //$NON-NLS-1$ //$NON-NLS-2$
+            postParams.add(new BasicNameValuePair("max_memory",   maxMemory.toString())); //$NON-NLS-1$
+            postParams.add(new BasicNameValuePair("used_memory",  usedMemory.toString())); //$NON-NLS-1$
             
             Properties props = item.getProps();
             if (props != null)
             {
                 for (Object key : props.keySet())
                 {
-                    postParams.add(new NameValuePair(key.toString(),  props.getProperty(key.toString()))); //$NON-NLS-1$
+                    postParams.add(new BasicNameValuePair(key.toString(),  props.getProperty(key.toString()))); //$NON-NLS-1$
                 }
             }
             
             //if (!UIRegistry.isRelease()) // For Testing Only
             {
-                postParams.add(new NameValuePair("user_name", System.getProperty("user.name"))); //$NON-NLS-1$
+                postParams.add(new BasicNameValuePair("user_name", System.getProperty("user.name"))); //$NON-NLS-1$
                 try 
                 {
-                    postParams.add(new NameValuePair("ip", InetAddress.getLocalHost().getHostAddress())); //$NON-NLS-1$
+                    postParams.add(new BasicNameValuePair("ip", InetAddress.getLocalHost().getHostAddress())); //$NON-NLS-1$
                 } catch (UnknownHostException e) {}
             }
             
@@ -227,7 +237,7 @@ public abstract class FeedBackSender
             {
                 resAppVersion = "Unknown"; 
             }
-            postParams.add(new NameValuePair("app_version", resAppVersion)); //$NON-NLS-1$
+            postParams.add(new BasicNameValuePair("app_version", resAppVersion)); //$NON-NLS-1$
             
             Vector<NameValuePair> extraStats = collectionSecondaryInfo(item);
             if (extraStats != null)
@@ -236,7 +246,7 @@ public abstract class FeedBackSender
             }
             
             // create an array from the params
-            NameValuePair[] paramArray = new NameValuePair[postParams.size()];
+            NameValuePair[] paramArray = new BasicNameValuePair[postParams.size()];
             for (int i = 0; i < paramArray.length; ++i)
             {
                 paramArray[i] = postParams.get(i);

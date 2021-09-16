@@ -1,22 +1,22 @@
-/* Copyright (C) 2020, Specify Collections Consortium
- * 
+/* Copyright (C) 2021, Specify Collections Consortium
+ *
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-*/
+ */
 package edu.ku.brc.specify.datamodel;
 
 import javax.persistence.Column;
@@ -40,13 +40,13 @@ import javax.persistence.UniqueConstraint;
 @Table(name = "deaccessionagent", uniqueConstraints = { @UniqueConstraint(columnNames = { "Role", "AgentID", "DeaccessionID" }) })
 public class DeaccessionAgent extends DataModelObjBase implements java.io.Serializable {
 
-    // Fields    
+    // Fields
 
-     protected Integer     deaccessionAgentId;
-     protected String      role;
-     protected String      remarks;
-     protected Agent       agent;
-     protected Deaccession deaccession;
+    protected Integer     deaccessionAgentId;
+    protected String      role;
+    protected String      remarks;
+    protected Agent       agent;
+    protected Deaccession deaccession;
 
 
     // Constructors
@@ -55,14 +55,14 @@ public class DeaccessionAgent extends DataModelObjBase implements java.io.Serial
     public DeaccessionAgent() {
         //
     }
-    
+
     /** constructor with id */
     public DeaccessionAgent(Integer deaccessionAgentId) {
         this.deaccessionAgentId = deaccessionAgentId;
     }
-   
-    
-    
+
+
+
 
     // Initializer
     @Override
@@ -80,7 +80,7 @@ public class DeaccessionAgent extends DataModelObjBase implements java.io.Serial
     // Property accessors
 
     /**
-     * 
+     *
      */
     @Id
     @GeneratedValue
@@ -109,7 +109,7 @@ public class DeaccessionAgent extends DataModelObjBase implements java.io.Serial
     {
         return DeaccessionAgent.class;
     }
-    
+
     public void setDeaccessionAgentId(Integer deaccessionAgentId) {
         this.deaccessionAgentId = deaccessionAgentId;
     }
@@ -121,20 +121,20 @@ public class DeaccessionAgent extends DataModelObjBase implements java.io.Serial
     public String getRole() {
         return this.role;
     }
-    
+
     public void setRole(String role) {
         this.role = role;
     }
 
     /**
-     * 
+     *
      */
     @Lob
     @Column(name = "Remarks", length = 4096)
     public String getRemarks() {
         return this.remarks;
     }
-    
+
     public void setRemarks(String remarks) {
         this.remarks = remarks;
     }
@@ -147,7 +147,7 @@ public class DeaccessionAgent extends DataModelObjBase implements java.io.Serial
     public Agent getAgent() {
         return this.agent;
     }
-    
+
     public void setAgent(Agent agent) {
         this.agent = agent;
     }
@@ -160,11 +160,11 @@ public class DeaccessionAgent extends DataModelObjBase implements java.io.Serial
     public Deaccession getDeaccession() {
         return this.deaccession;
     }
-    
+
     public void setDeaccession(Deaccession deaccession) {
         this.deaccession = deaccession;
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentTableId()
      */
@@ -184,7 +184,7 @@ public class DeaccessionAgent extends DataModelObjBase implements java.io.Serial
     {
         return deaccession != null ? deaccession.getId() : null;
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
@@ -194,13 +194,13 @@ public class DeaccessionAgent extends DataModelObjBase implements java.io.Serial
     {
         return getClassTableId();
     }
-    
+
     /**
      * @return the Table ID for the class.
      */
     public static int getClassTableId()
     {
-        return 35;
+        return 164;
     }
 
 }

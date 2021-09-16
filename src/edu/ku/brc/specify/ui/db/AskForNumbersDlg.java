@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -77,7 +77,8 @@ public class AskForNumbersDlg extends CustomDialog implements ChangeListener
     protected Class<? extends FormDataObjIFace> dataClass;
     protected Vector<String>      numbersList   = new Vector<String>();
     protected Vector<Integer>     dataObjsIds   = new Vector<Integer>();
-    protected String              labelKey;
+    protected String              labelKey = null;
+    protected String label = null;
     protected String              fieldName;
     protected boolean             requireNumbers;
     protected boolean             noNumbers = false;
@@ -122,6 +123,20 @@ public class AskForNumbersDlg extends CustomDialog implements ChangeListener
         this.helpContext = "AskForCatNumbers";
     }
 
+    public AskForNumbersDlg(Class<? extends FormDataObjIFace> dataClass,
+                            final String  fieldName,
+                            final boolean requireNumbers,
+                            final String title,
+                            final String label) {
+
+        super((Frame)UIRegistry.getTopWindow(), getResourceString(title), true, requireNumbers ? OKCANCELHELP : OKCANCELAPPLYHELP, null);
+        this.label  = label;
+        this.dataClass = dataClass;
+        this.fieldName = fieldName;
+        this.requireNumbers = requireNumbers;
+
+        this.helpContext = "AskForCatNumbers";
+    }
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.CustomDialog#createUI()
      */
@@ -153,7 +168,7 @@ public class AskForNumbersDlg extends CustomDialog implements ChangeListener
         CellConstraints cc = new CellConstraints();
         
         pb = new PanelBuilder(new FormLayout("f:p:g", "p,2px,p,4px,f:p:g,4px,f:p:g"));
-        pb.addSeparator(UIRegistry.getResourceString(labelKey), cc.xy(1,1));
+        pb.addSeparator(labelKey != null ? UIRegistry.getResourceString(labelKey) : label, cc.xy(1,1));
         pb.add(UIHelper.createScrollPane(textArea),             cc.xy(1,3));
         
         contentPanel = pb.getPanel();
@@ -168,7 +183,7 @@ public class AskForNumbersDlg extends CustomDialog implements ChangeListener
                 checkStatus();
             }
         });
-        
+        textArea.setLineWrap(true);
         getOkBtn().setEnabled(false);
         if (getApplyBtn() != null) {
             getApplyBtn().addActionListener((ae) -> {
@@ -336,7 +351,7 @@ public class AskForNumbersDlg extends CustomDialog implements ChangeListener
         pb.getPanel().removeAll();
         
         CellConstraints cc = new CellConstraints();
-        pb.addSeparator(UIRegistry.getResourceString(labelKey), cc.xy(1,1));
+        pb.addSeparator(labelKey != null ? UIRegistry.getResourceString(labelKey) : label, cc.xy(1,1));
         pb.add(UIHelper.createScrollPane(textArea),             cc.xy(1,3));
 
         int y = 5;

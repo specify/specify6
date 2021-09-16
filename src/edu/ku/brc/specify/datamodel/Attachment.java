@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -125,6 +125,8 @@ public class Attachment extends DataModelObjBase implements Serializable
     protected Set<CollectionObjectAttachment>        collectionObjectAttachments;
     protected Set<ConservDescriptionAttachment>      conservDescriptionAttachments;
     protected Set<ConservEventAttachment>            conservEventAttachments;
+    protected Set<DeaccessionAttachment>             deaccessionAttachments;
+    protected Set<DisposalAttachment>                disposalAttachments;
     protected Set<DNASequenceAttachment>             dnaSequenceAttachments;
     protected Set<DNASequencingRunAttachment>        dnaSequencingRunAttachments;
     protected Set<FieldNotebookAttachment>           fieldNotebookAttachments;
@@ -203,6 +205,8 @@ public class Attachment extends DataModelObjBase implements Serializable
         collectingTripAttachments = new HashSet<CollectingTripAttachment>();
         conservDescriptionAttachments  = new HashSet<ConservDescriptionAttachment>();
         conservEventAttachments        = new HashSet<ConservEventAttachment>();
+        deaccessionAttachments           = new HashSet<>();
+        disposalAttachments = new HashSet<>();
         dnaSequenceAttachments         = new HashSet<DNASequenceAttachment>();
         dnaSequencingRunAttachments    = new HashSet<DNASequencingRunAttachment>();
         giftAttachments                = new HashSet<GiftAttachment>();
@@ -623,6 +627,7 @@ public class Attachment extends DataModelObjBase implements Serializable
             Borrow.getClassTableId(),  Attachment.COLLECTION_SCOPE,
             CollectionObject.getClassTableId(),  Attachment.COLLECTION_SCOPE,
             CollectingEvent.getClassTableId(),  Attachment.DISCIPLINE_SCOPE,
+            CollectingTrip.getClassTableId(),  Attachment.DISCIPLINE_SCOPE,
             ConservDescription.getClassTableId(), Attachment.DIVISION_SCOPE,
             ConservEvent.getClassTableId(), Attachment.DIVISION_SCOPE,
             DNASequence.getClassTableId(), Attachment.COLLECTION_SCOPE,
@@ -707,6 +712,30 @@ public class Attachment extends DataModelObjBase implements Serializable
     public void setAccessionAttachments(Set<AccessionAttachment> accessionAttachments)
     {
         this.accessionAttachments = accessionAttachments;
+    }
+
+    @OneToMany(mappedBy = "attachment")
+    @Cascade( {CascadeType.ALL} )
+    public Set<DeaccessionAttachment> getDeaccessionAttachments()
+    {
+        return deaccessionAttachments;
+    }
+
+    public void setDeaccessionAttachments(Set<DeaccessionAttachment> deaccessionAttachments)
+    {
+        this.deaccessionAttachments = deaccessionAttachments;
+    }
+
+    @OneToMany(mappedBy = "attachment")
+    @Cascade( {CascadeType.ALL} )
+    public Set<DisposalAttachment> getDisposalAttachments()
+    {
+        return disposalAttachments;
+    }
+
+    public void setDisposalAttachments(Set<DisposalAttachment> disposalAttachments)
+    {
+        this.disposalAttachments = disposalAttachments;
     }
 
     @OneToMany(mappedBy = "attachment")

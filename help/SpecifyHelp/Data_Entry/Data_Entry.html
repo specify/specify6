@@ -19,6 +19,9 @@ table.box {
     <title>Data Entry Forms</title>
   </head>
   <body bgcolor="#ffffff">
+    <p>
+       &nbsp;
+    </p>
     <table background="../../images/topbar.png" border="0" width="100%">
       <tbody>
       <tr>
@@ -29,8 +32,8 @@ table.box {
       </tbody>
     </table>
     <h2>
-       <img src="../../images/data_entry_32.png" alt="" width="32" height="32"> <a name=
-      "data_entry_overview">Data</a> Entry in Data Forms
+       <img src="../../images/data_entry.png" alt=""> <a name="data_entry_overview">Data</a> Entry
+      in Data Forms
     </h2>
     <p>
        Data forms are used for entering, editing and viewing collection data. Because Specify uses
@@ -102,7 +105,7 @@ table.box {
     </h3>
     <blockquote>
       <h4>
-         <a name="data_entry_trees"></a><u>Working with</u> <u>Forms and Trees</u>
+         <a name="data_entry_trees"></a><u>Working with Forms and Trees</u>
       </h4>
       <p>
          Specify represents Taxon, Geography, Storage, Lithostratigraphy and Chronostratigraphy
@@ -122,25 +125,9 @@ table.box {
           and Form mode, or by multiple users. For example, if a user is editing the Taxon Tree and
           wants to open a Taxon Form, it will open as <em>View Only</em>. In addition, if another
           user tries to open either the Taxon Tree or Taxon Form, a dialog will pop-up stating that
-          the Tree is locked and will open in <em>View Only</em> mode
+          the Tree is locked and will open in <em>View Only</em> mode.
         </p>
       </blockquote>
-    </blockquote>
-    <p>
-       &nbsp;
-    </p>
-    <blockquote>
-      <h4>
-         <a id="alt_storage" name="alt_storage"></a><u>Alternate Storage Location</u>
-      </h4>
-      <p>
-         We added a second link connecting the Storage Tree and the Preparation table in order to
-        provide the possibility for designating a second, alternate, storage location for a
-        Preparation. This capability is useful when Preparations are moved temporarily, e.g. for an
-        exhibit, conservation treatment, or for use in a project. It serves as a finding aid for
-        the object’s current location and to mark the original location to know where it should be
-        returned after a temporary placement.
-      </p>
     </blockquote>
     <p>
        &nbsp;
@@ -176,7 +163,7 @@ table.box {
       </p>
       <p>
          <strong><em>Note:</em></strong> Containers and their associated collection objects must be
-        within the same collection.
+        within the same collection
       </p>
       <blockquote>
         <p>
@@ -946,7 +933,9 @@ table.box {
           </table>
           <p>
              <strong><em>Note:</em></strong> A complete list of acceptable countries is available
-            on the GEOLocate website: <b>www.geolocate.org</b>&nbsp;
+            on the <a href=
+            "http://www.museum.tulane.edu/geolocate/standalone/globalExp.html">GEOLocate
+            website</a>.&nbsp;
           </p>
         </blockquote>
         <p>
@@ -1297,7 +1286,8 @@ table.box {
            &nbsp;
         </p>
         <p>
-           More information about GEOLocate can be found at <b>www.geolocate.org</b>.
+           More information about GEOLocate can be found at <a href=
+          "https://www.geo-locate.org/./">https://www.geo-locate.org/.</a>.
         </p>
         <p>
            &nbsp;
@@ -1315,8 +1305,8 @@ table.box {
         must be properly installed on the local machine for Specify to display in Google Earth.
       </p>
       <p>
-         For more information or to download and install Google Earth visit
-        <b>www.earth.google.com</b>.
+         For more information or to download and install Google Earth visit <a href=
+        "http://earth.google.com/">http://earth.google.com/</a>.
       </p>
       <p>
          For more information about the GEOLocate or Google Earth plugins please refer to the <a
@@ -1464,306 +1454,252 @@ table.box {
     <p>
        &nbsp;
     </p>
+    <h4>
+       <a name="data_entry_preparations"></a><u>Preparation Form</u>
+    </h4>
     <blockquote>
-      <h4>
-         <a name="data_entry_preparations"></a><u>Preparation Form</u>
-      </h4>
-      <blockquote>
-        <p>
-           It is important to note that the <strong>Is on loan</strong> checkbox is for display
-          purposes only. This information is updated when a loan is created or edited.
-        </p>
-        <p>
-           The Preparation Type field is a Pick List. To edit the Pick List choose <em>System &gt;
-          Collection Setup &gt; Configuration</em> and click on the <em>Pick List</em> button in
-          the Side Bar. For more information on editing a Pick List please refer to the <a href=
-          "../PickList/system_picklist.html">System Pick Lists</a> documentation.
-        </p>
-      </blockquote>
       <p>
-         &nbsp;
+         It is important to note that the <strong>Is on loan</strong> checkbox is for display
+        purposes only. This information is updated when a loan is created or edited.
       </p>
-      <h4>
-         <a name="data_entry_attachments"></a><u>Attachments Form</u>
-      </h4>
-      <blockquote>
-        <p>
-           Many tables in Specify 6 allow Attachments. When a file is attached, Specify creates an
-          attachment record in the database with the original name, mime-type and most importantly,
-          the path to the file in the repository, or attachment location. Attachments are not
-          stored in the database. Specify makes a copy of the attachment, renames it with a unique
-          name, and stores it in the attachment location - based on a path specified in the User
-          Preferences.<br>
-        </p>
-        <p>
-           The Specify Wizard creates a default path and location for the copied attachments, but
-          it is recommended that the user create a unique location by editing the default path
-          within the System Preferences. The attachment storage can either be located on a local
-          drive, a server or an attachment server. To create and/or alter the attachment location,
-          go to:
-        </p>
-        <ul>
-          <li>
-            For Mac: <em>Specify &gt; Preferences &gt; System &gt; Attachment Storage
-            Location.</em>
-          </li>
-          <li>
-            For PC and Linux: Choose <em>Edit &gt; Preferences &gt; System &gt; Attachment Storage
-            Location</em>.
-          </li>
-        </ul>
-        <blockquote>
-          <p>
-            <br>
-             <i><b>Note:</b></i> thumbnails are also created for jpg, png and most pdfs, which can
-            be viewed on the attachment form. Other file types are represented by a default
-            thumbnail based on their file type.
-          </p>
-        </blockquote>
-        <p>
-           If a path does not exist or Specify is not able to connect to the path, the Attachment
-          button will become disabled on the forms.
-        </p>
-        <p>
-           Accepted Attachment files include:
-        </p>
-        <ul>
-          <li>
-            text
-          </li>
-          <li>
-            audio
-          </li>
-          <li>
-            binary
-          </li>
-          <li>
-            pdf
-          </li>
-          <li>
-            image (jpg, png, gif, tiff)
-          </li>
-          <li>
-            html
-          </li>
-          <li>
-            spreadsheet
-          </li>
-          <li>
-            video
-          </li>
-        </ul>
-        <blockquote>
-          <p>
-             <strong><em>Note:</em></strong> Specify can accept images in a tiff format, but they
-            can not be displayed in Specify, a default thumbnail will display on the form.
-          </p>
-          <p>
-             &nbsp;
-          </p>
-        </blockquote>
-        <p>
-           <u><strong>Attach Files</strong></u>
-        </p>
-        <p>
-           Attach files to a record by clicking the Attachment button (<img alt="" src=
-          "../../images/collection_object_attachment.png" height="20" width="34">) on the form. An
-          Attachment sub form will open.
-        </p>
-        <ol>
-          <li>
-            Click the <img src="../../images/add.png" height="16" width="16"> (add) button.
-          </li>
-          <li>
-            Click the Browse button and use the file system dialog to find the path to the file.
-          </li>
-          <li>
-            Type a name in the Title text box. Specify will use the file name as a default title if
-            this box is left blank.
-          </li>
-          <li>
-            Click the Accept button.
-          </li>
-          <li>
-            Click the <img alt="" src="../../images/add.png" height="16" width="16"> (add) button
-            to add another attachment, or click Done to close the sub form.
-          </li>
-        </ol>
-        <blockquote>
-          <p>
-             <strong><em>Note:</em></strong> If a table does not have an attachment button<span>,
-            i</span>t does not accept attachments.
-          </p>
-          <p>
-            <br>
-          </p>
-          <img alt="attachment window" src="../../images/attach_icon_view.png" height="203" width=
-          "288"> 
-          <p>
-             <i><b>Note:</b></i> For versions of Specify 6.5 and newer the default Collection
-            Object form includes an attachment window, rather than a subform, for adding
-            attachments. This allows attachments to be dragged and dropped from the file directory
-            to the attachment window.<br>
-             &nbsp;
-          </p>
-        </blockquote>
-        <blockquote>
-          <p>
-             <u>View/Edit Attachment</u>
-          </p>
-          <blockquote>
-            <p>
-               Once Attachments have been saved to a record they can be viewed/edited in form,
-              grid, or icon mode. Each mode allows different functions.
-            </p>
-            <p>
-               Choose a mode by clicking the <img src="../../images/Down16x16.png" height="16"
-              width="16">(expand) button and selecting a mode.
-            </p>
-            <p>
-               <img src="../../images/form_editor20x20.png" height="20" width="20">&nbsp;Form Mode
-            </p>
-            <ul>
-              <li>
-                Use the Navigation Control to view each Attachment.
-              </li>
-              <li>
-                Click the<img src="../../images/add.png" height="16" width="16"> (add) button to
-                add an Attachment.
-              </li>
-              <li>
-                Click the <img src="../../images/delete.png" height="16" width="16"> (delete)
-                button to delete an Attachment.
-              </li>
-              <li>
-                Click the Browse button to change an Attachment path.
-              </li>
-              <li>
-                Edit the Title of an Attachment in the Title text box.
-              </li>
-            </ul>
-            <p>
-               &nbsp;
-            </p>
-            <p>
-               <img src="../../images/icon_view.png" height="20" width="20">&nbsp;Icon Mode
-            </p>
-            <ul>
-              <li>
-                Click the<img alt="add" src="../../images/add.png" height="16" width="16"> (add)
-                button to add an Attachment.
-              </li>
-              <li>
-                Click the <img alt="delete" src="../../images/delete.png" height="16" width="16">
-                (delete) button to delete an Attachment.
-              </li>
-              <li>
-                Click the <img alt="edit" src="../../images/Edit-2-16x16.png" height="16" width=
-                "16"> (edit) button to edit the Attachment path in the Form Mode.
-              </li>
-              <li>
-                Double Click the Attachment button to open the Attachment in its native
-                application.
-              </li>
-            </ul>
-            <p>
-               &nbsp;
-            </p>
-            <p>
-               <img src="../../images/grid_editor_20x20.png" height="20" width="20">&nbsp;Grid Mode
-            </p>
-            <ul>
-              <li>
-                Click the<img alt="add" src="../../images/add.png" height="16" width="16"> (add)
-                button to add an Attachment.
-              </li>
-              <li>
-                Click the <img alt="delete" src="../../images/delete.png" height="16" width="16">
-                (delete) button to delete an Attachment.
-              </li>
-              <li>
-                Click the <img src="../../images/Edit-2-16x16.png" height="16" width="16"> (edit)
-                button to edit the Attachment path in the Form Mode.
-              </li>
-              <li>
-                Click the <img src="../../images/ReorderUp16x16.png" height="16" width=
-                "16">&nbsp;<img src="../../images/ReorderDown16x16.png" height="16" width="16">
-                (reorder) buttons to reorder the Attachments.
-              </li>
-            </ul>
-            <p>
-               &nbsp;
-            </p>
-          </blockquote>
-          <p>
-             <u>To Open an Attachment or Display a larger image:<br>
-            </u>
-          </p>
-          <ul>
-            <li>
-              Double click an individual image thumbnail to display it larger in a new tab in the
-              workspace.
-            </li>
-            <li>
-              Right click on an individual image thumbnail and click the <em>Select an External
-              Program</em> button to open the image for viewing.
-            </li>
-            <li>
-              Double click a non-image file to open it in its native program (example: .xls opens
-              the file in Excel).<br>
-            </li>
-          </ul>
-        </blockquote>
-      </blockquote>
+      <p>
+         The Preparation Type field is a Pick List. To edit the Pick List choose <em>System &gt;
+        Collection Setup &gt; Configuration</em> and click on the <em>Pick List</em> button in the
+        Side Bar. For more information on editing a Pick List please refer to the <a href=
+        "../PickList/system_picklist.html">System Pick Lists</a> documentation.
+      </p>
     </blockquote>
-    <h3>
-       <a name="paleo_context"></a>
-    </h3>
-    <p style=" margin-left: 20.0px;">
-       <a id="properties" name="properties"></a><b><u>Collection Object Properties and Preparation
-      Properties</u></b>
+    <p>
+       &nbsp;
     </p>
+    <h4>
+       <a name="data_entry_attachments"></a><u>Attachments Form</u>
+    </h4>
+    <p>
+       Many tables in Specify 6 allow Attachments. When a file is attached, Specify creates an
+      attachment record in the database with the original name, mime-type and most importantly, the
+      path to the file in the repository, or attachment location. Attachments are not stored in the
+      database. Specify makes a copy of the attachment, renames it with a unique name, and stores
+      it in the attachment location - based on a path specified in the User Preferences.<br>
+    </p>
+    <p>
+       The Specify Wizard creates a default path and location for the copied attachments, but it is
+      recommended that the user create a unique location by editing the default path within the
+      System Preferences. The attachment storage can either be located on a local drive, a server
+      or an attachment server. To create and/or alter the attachment location, go to:
+    </p>
+    <ul>
+      <li>
+        For Mac: <em>Specify &gt; Preferences &gt; System &gt; Attachment Storage Location.</em>
+      </li>
+      <li>
+        For PC and Linux: Choose <em>Edit &gt; Preferences &gt; System &gt; Attachment Storage
+        Location</em>.
+      </li>
+    </ul>
     <blockquote>
       <p>
-         The Specify database schema includes the tables: “Collection Object Attribute” and
-        “Preparation Attribute”. These tables are designed to function in a 1:1 relationship with
-        the Collection Object (CO) and Preparation (Prep) tables, respectively. They function
-        primarily to extend the CO and Prep tables by providing additional data fields for
-        attribute or trait information. Two tables,&nbsp;“Collection Object Properties (COP)” and
-        “Preparation Properties (PrepP)”, are also included in the&nbsp;Specify schema and intended
-        for attribute data but notably, in many-to-one (M:1) relationships with Collection Object
-        (CO) and Preparation (Prep), respectively. The many-to-one relationships are significant
-        because they enable additional flexibility and extensibility for managing attribute or
-        trait information.
+        <br>
+         <i><b>Note:</b></i> thumbnails are also created for jpg, png and most pdfs, which can be
+        viewed on the attachment form. Other file types are represented by a default thumbnail
+        based on their file type.
       </p>
+    </blockquote>
+    <p>
+       If a path does not exist or Specify is not able to connect to the path, the Attachment
+      button will become disabled on the forms.
+    </p>
+    <p>
+       Accepted Attachment files include:
+    </p>
+    <ul>
+      <li>
+        text
+      </li>
+      <li>
+        audio
+      </li>
+      <li>
+        binary
+      </li>
+      <li>
+        pdf
+      </li>
+      <li>
+        image (jpg, png, gif, tiff)
+      </li>
+      <li>
+        html
+      </li>
+      <li>
+        spreadsheet
+      </li>
+      <li>
+        video
+      </li>
+    </ul>
+    <blockquote>
       <p>
-         These two Specify Properties data tables allow a researcher to choose the attribute being
-        described or measured at the time of data entry, from a dropdown pick list, and then record
-        the corresponding value of that attribute in a second, associated field. In the data
-        modelling world, this type of data association is known as the Entity-Attribute-Value (EAV)
-        model.
-      </p>
-      <p>
-         Another use of the EAV data model is to enable the recording of multiple measurements of
-        the same kind, for a given Collection Object or Preparation. For example, if a Collection
-        Object consists of a container of fish specimens, a researcher might decide to record the
-        snout/vent length for each one and record that data as discrete measurements. Instead of
-        having ten data fields labeled as S/V#1, S/V#2, S/V#3, etc., one field named attribute can
-        be used to select Snout/Vent Length as the attribute type, and a second field used for a
-        measurement value. Multiple measurements can be added in that way by simply adding another
-        row to the Properties table subform in Specify and entering another measurement value. In
-        that way, the Property table’s many-to-one relationship with the base CO or Prep table
-        allows an indefinite number of named traits and states to be recorded.
+         <strong><em>Note:</em></strong> Specify can accept images in a tiff format, but they can
+        not be displayed in Specify, a default thumbnail will display on the form.
       </p>
       <p>
          &nbsp;
       </p>
     </blockquote>
     <p>
-       &nbsp;
+       <u><strong>Attach Files</strong></u>
     </p>
+    <p>
+       Attach files to a record by clicking the Attachment button (<img alt="" src=
+      "../../images/collection_object_attachment.png" height="20" width="34">) on the form. An
+      Attachment sub form will open.
+    </p>
+    <ol>
+      <li>
+        Click the <img src="../../images/add.png" height="16" width="16"> (add) button.
+      </li>
+      <li>
+        Click the Browse button and use the file system dialog to find the path to the file.
+      </li>
+      <li>
+        Type a name in the Title text box. Specify will use the file name as a default title if
+        this box is left blank.
+      </li>
+      <li>
+        Click the Accept button.
+      </li>
+      <li>
+        Click the <img alt="" src="../../images/add.png" height="16" width="16"> (add) button to
+        add another attachment, or click Done to close the sub form.
+      </li>
+    </ol>
+    <blockquote>
+      <p>
+         <strong><em>Note:</em></strong> If a table does not have an attachment button<span>,
+        i</span>t does not accept attachments.
+      </p>
+      <p>
+        <br>
+      </p>
+      <img alt="attachment window" src="../../images/attach_icon_view.png" height="203" width=
+      "288"> 
+      <p>
+         <i><b>Note:</b></i> For versions of Specify 6.5 and newer the default Collection Object
+        form includes an attachment window, rather than a subform, for adding attachments. This
+        allows attachments to be dragged and dropped from the file directory to the attachment
+        window.<br>
+         &nbsp;
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+         <u>View/Edit Attachment</u>
+      </p>
+      <blockquote>
+        <p>
+           Once Attachments have been saved to a record they can be viewed/edited in form, grid, or
+          icon mode. Each mode allows different functions.
+        </p>
+        <p>
+           Choose a mode by clicking the <img src="../../images/Down16x16.png" height="16" width=
+          "16">(expand) button and selecting a mode.
+        </p>
+        <p>
+           <img src="../../images/form_editor20x20.png" height="20" width="20">&nbsp;Form Mode
+        </p>
+        <ul>
+          <li>
+            Use the Navigation Control to view each Attachment.
+          </li>
+          <li>
+            Click the<img src="../../images/add.png" height="16" width="16"> (add) button to add an
+            Attachment.
+          </li>
+          <li>
+            Click the <img src="../../images/delete.png" height="16" width="16"> (delete) button to
+            delete an Attachment.
+          </li>
+          <li>
+            Click the Browse button to change an Attachment path.
+          </li>
+          <li>
+            Edit the Title of an Attachment in the Title text box.
+          </li>
+        </ul>
+        <p>
+           &nbsp;
+        </p>
+        <p>
+           <img src="../../images/icon_view.png" height="20" width="20">&nbsp;Icon Mode
+        </p>
+        <ul>
+          <li>
+            Click the<img alt="add" src="../../images/add.png" height="16" width="16"> (add) button
+            to add an Attachment.
+          </li>
+          <li>
+            Click the <img alt="delete" src="../../images/delete.png" height="16" width="16">
+            (delete) button to delete an Attachment.
+          </li>
+          <li>
+            Click the <img alt="edit" src="../../images/Edit-2-16x16.png" height="16" width="16">
+            (edit) button to edit the Attachment path in the Form Mode.
+          </li>
+          <li>
+            Double Click the Attachment button to open the Attachment in its native application.
+          </li>
+        </ul>
+        <p>
+           &nbsp;
+        </p>
+        <p>
+           <img src="../../images/grid_editor_20x20.png" height="20" width="20">&nbsp;Grid Mode
+        </p>
+        <ul>
+          <li>
+            Click the<img alt="add" src="../../images/add.png" height="16" width="16"> (add) button
+            to add an Attachment.
+          </li>
+          <li>
+            Click the <img alt="delete" src="../../images/delete.png" height="16" width="16">
+            (delete) button to delete an Attachment.
+          </li>
+          <li>
+            Click the <img src="../../images/Edit-2-16x16.png" height="16" width="16"> (edit)
+            button to edit the Attachment path in the Form Mode.
+          </li>
+          <li>
+            Click the <img src="../../images/ReorderUp16x16.png" height="16" width="16">&nbsp;<img
+            src="../../images/ReorderDown16x16.png" height="16" width="16"> (reorder) buttons to
+            reorder the Attachments.
+          </li>
+        </ul>
+        <p>
+           &nbsp;
+        </p>
+      </blockquote>
+      <p>
+         <u>To Open an Attachment or Display a larger image:<br>
+        </u>
+      </p>
+      <ul>
+        <li>
+          Double click an individual image thumbnail to display it larger in a new tab in the
+          workspace.
+        </li>
+        <li>
+          Right click on an individual image thumbnail and click the <em>Select an External
+          Program</em> button to open the image for viewing.
+        </li>
+        <li>
+          Double click a non-image file to open it in its native program (example: .xls opens the
+          file in Excel).<br>
+        </li>
+      </ul>
+    </blockquote>
     <h3>
-       Paleo Context
+       <a name="paleo_context" id="paleo_context"></a>Paleo Context
     </h3>
     <blockquote>
       <p>
@@ -1801,7 +1737,7 @@ table.box {
       </p>
     </blockquote>
     <h3>
-       <a name="GUID"></a>GUID
+       <a name="GUID" id="GUID"></a>GUID
     </h3>
     <blockquote>
       <p>
@@ -1860,12 +1796,35 @@ table.box {
       </blockquote>
       <p>
          Using a GUID to identify information allows it to be shared and recognized as being unique
-        globally.<br>
       </p>
-      <p>
-        <br>
-      </p>
-      <br>
     </blockquote>
+    <p>
+       &nbsp;
+    </p>
+    <h3>
+       <a name="specify_network" id="specify_network"></a> <img src=
+      "../../images/specify_network_32x32.png">Specify Network
+    </h3>
+    <p style=" margin-left: 20.0px;">
+       The Specify Collections Consortium has partnered with the Lifemapper project and the larger
+      community to link services that increase the exposure, utility, and curation of
+      collections&nbsp;worldwide. For instance, if your information is sent to GBIF then opening a
+      collection object record in your collection&nbsp;and clicking the <img src=
+      "../../images/specify_network.png">&nbsp;(Specify Network) button will send the specimen ID
+      information&nbsp;for the specimen to the Specify Network service and a summary page will be
+      presented, showing&nbsp;published information and data cleanup metrics from GBIF. Similarly,
+      it will display species distribution information from Lifemapper using all occurrence points
+      for that species in GBIF. We are constantly looking for new sources of shared information, if
+      you know of a resource that is not shown on the web page for your specimen please let us
+      know.
+    </p>
+    <p style=" margin-left: 20.0px;">
+       We are also updating the Specify Network to create colection-level analytics assessing the
+      composition of collection holdings and available species information. These data are used to
+      compare and assess collections against and among the collective holdings of all published
+      collections. This information is then made available back to the institutions and the
+      community so that it can assist those collections in prioritizing collecting and digitization
+      efforts.
+    </p>
   </body>
 </html>

@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -43,6 +43,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 
+import edu.ku.brc.util.Pair;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -1345,7 +1346,9 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
         id.add(tableId);
         return askForRecordSet(id, additionalRS, false);
      }
-    
+
+
+
     /**
      * @param tableIds
      * @param additionalRS
@@ -1354,10 +1357,18 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
      */
     public static RecordSetIFace askForRecordSet(final Vector<Integer>        tableIds,
                                                  final Vector<RecordSetIFace> additionalRS,
-    		                                     final boolean                msgIfNoRecordsets)
+                                                 final boolean                msgIfNoRecordsets) {
+        Pair<RecordSetIFace, RecordSetIFace> rs = askForRecordSet2(tableIds, additionalRS, msgIfNoRecordsets);
+        return rs.getFirst() != null ? rs.getFirst() : rs.getSecond();
+    }
+
+    public static Pair<RecordSetIFace, RecordSetIFace> askForRecordSet2(final Vector<Integer>        tableIds,
+                                                                     final Vector<RecordSetIFace> additionalRS,
+                                                                     final boolean                msgIfNoRecordsets)
     {
         UsageTracker.incrUsageCount("RS.ASKRS");
         ChooseRecordSetDlg dlg = new ChooseRecordSetDlg(tableIds);
+        Pair<RecordSetIFace, RecordSetIFace> result = new Pair<>(null, null);
         if (additionalRS != null && additionalRS.size() > 0)
         {
             dlg.addAdditionalObjectsAsRecordSets(additionalRS);
@@ -1373,15 +1384,19 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
             }*/
             // else
             UIHelper.centerAndShow(dlg);  // modal (waits for answer here)
-            return dlg.isCancelled() ? null : dlg.getSelectedRecordSet();
-        }
-        
-        // else
-        if (msgIfNoRecordsets)
+            if (!dlg.isCancelled()) {
+                RecordSetIFace rs = dlg.getSelectedRecordSet();
+                result.setFirst(rs);
+                if (rs == null) {
+                    result.setSecond(dlg.getSelectedAddlRecordSet());
+                }
+            }
+        } else if (msgIfNoRecordsets)
         {
         	UIRegistry.displayLocalizedStatusBarText("RecordSetTask.NoRecordsets");
+        	UIRegistry.displayInfoMsgDlg(getResourceString("RecordSetTask.NoRecordsets"));
         }
-        return null;
+        return result;
     }
     
     /* (non-Javadoc)

@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -76,10 +76,27 @@ public class Determination extends CollectionMember implements java.io.Serializa
      protected String              remarks;
      protected String              text1;
      protected String              text2;
+    protected String              text3;
+    protected String              text4;
+    protected String              text5;
+    protected String              text6;
+    protected String              text7;
+    protected String              text8;
      protected Float               number1;
      protected Float               number2;
+    protected Float               number3;
+    protected Float               number4;
+    protected Float               number5;
+    protected Integer               integer1;
+    protected Integer               integer2;
+    protected Integer               integer3;
+    protected Integer               integer4;
+    protected Integer               integer5;
      protected Boolean             yesNo1;
      protected Boolean             yesNo2;
+    protected Boolean             yesNo3;
+    protected Boolean             yesNo4;
+    protected Boolean             yesNo5;
      protected String              guid;
      protected Taxon               preferredTaxon; //= taxon.acceptedTaxon or taxon
      protected Taxon               taxon;
@@ -128,8 +145,22 @@ public class Determination extends CollectionMember implements java.io.Serializa
         remarks = null;
         text1 = null;
         text2 = null;
+        text3 = null;
+        text4 = null;
+        text5 = null;
+        text6 = null;
+        text7 = null;
+        text8 = null;
         number1 = null;
         number2 = null;
+        number3 = null;
+        number4 = null;
+        number5 = null;
+        integer1 = null;
+        integer2 = null;
+        integer3 = null;
+        integer4 = null;
+        integer5 = null;
         yesNo1 = null;
         yesNo2 = null;
         preferredTaxon = null;
@@ -387,7 +418,7 @@ public class Determination extends CollectionMember implements java.io.Serializa
     /**
      *      * Body part, or characteristic used as the basis of a determination.
      */
-    @Column(name = "FeatureOrBasis", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    @Column(name = "FeatureOrBasis", unique = false, nullable = true, insertable = true, updatable = true, length = 250)
     public String getFeatureOrBasis() 
     {
         return this.featureOrBasis;
@@ -442,7 +473,85 @@ public class Determination extends CollectionMember implements java.io.Serializa
     {
         this.text2 = text2;
     }
+    
+    @Lob
+    @Column(name = "Text3", length = 65535)
+    public String getText3()
+    {
+        return this.text3;
+    }
 
+    public void setText3(String text3)
+    {
+        this.text3 = text3;
+    }
+
+    /**
+     *      * User definable
+     */
+    @Column(name = "Text4", length = 128)
+    public String getText4()
+    {
+        return this.text4;
+    }
+
+    public void setText4(String text4)
+    {
+        this.text4 = text4;
+    }
+
+    /**
+     *      * User definable
+     */
+    @Column(name = "Text5", length = 128)
+    public String getText5()
+    {
+        return this.text5;
+    }
+
+    public void setText5(String text5)
+    {
+        this.text5 = text5;
+    }
+    /**
+     *      * User definable
+     */
+    @Column(name = "Text6", length = 128)
+    public String getText6()
+    {
+        return this.text6;
+    }
+
+    public void setText6(String text6)
+    {
+        this.text6 = text6;
+    }
+    /**
+     *      * User definable
+     */
+    @Column(name = "Text7", length = 128)
+    public String getText7()
+    {
+        return this.text7;
+    }
+
+    public void setText7(String text7)
+    {
+        this.text7 = text7;
+    }
+    /**
+     *      * User definable
+     */
+    @Column(name = "Text8", length = 128)
+    public String getText8()
+    {
+        return this.text8;
+    }
+
+    public void setText8(String text8)
+    {
+        this.text8 = text8;
+    }
     /**
      *      * User definable
      */
@@ -474,6 +583,114 @@ public class Determination extends CollectionMember implements java.io.Serializa
     /**
      *      * User definable
      */
+    @Column(name = "Number3", unique = false, nullable = true, insertable = true, updatable = true, length = 34)
+    public Float getNumber3()
+    {
+        return this.number3;
+    }
+
+    public void setNumber3(Float number3)
+    {
+        this.number3 = number3;
+    }
+    /**
+     *      * User definable
+     */
+    @Column(name = "Number4", unique = false, nullable = true, insertable = true, updatable = true, length = 44)
+    public Float getNumber4()
+    {
+        return this.number4;
+    }
+
+    public void setNumber4(Float number4)
+    {
+        this.number4 = number4;
+    }
+    /**
+     *      * User definable
+     */
+    @Column(name = "Number5", unique = false, nullable = true, insertable = true, updatable = true, length = 54)
+    public Float getNumber5()
+    {
+        return this.number5;
+    }
+
+    public void setNumber5(Float number5)
+    {
+        this.number5 = number5;
+    }
+
+    /**
+     *      * User definable
+     */
+    @Column(name = "Integer1", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
+    public Integer getInteger1()
+    {
+        return this.integer1;
+    }
+
+    public void setInteger1(Integer integer1)
+    {
+        this.integer1 = integer1;
+    }
+
+    /**
+     *      * User definable
+     */
+    @Column(name = "Integer2", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
+    public Integer getInteger2()
+    {
+        return this.integer2;
+    }
+
+    public void setInteger2(Integer integer2)
+    {
+        this.integer2 = integer2;
+    }
+
+    /**
+     *      * User definable
+     */
+    @Column(name = "Integer3", unique = false, nullable = true, insertable = true, updatable = true, length = 34)
+    public Integer getInteger3()
+    {
+        return this.integer3;
+    }
+
+    public void setInteger3(Integer integer3)
+    {
+        this.integer3 = integer3;
+    }
+    /**
+     *      * User definable
+     */
+    @Column(name = "Integer4", unique = false, nullable = true, insertable = true, updatable = true, length = 44)
+    public Integer getInteger4()
+    {
+        return this.integer4;
+    }
+
+    public void setInteger4(Integer integer4)
+    {
+        this.integer4 = integer4;
+    }
+    /**
+     *      * User definable
+     */
+    @Column(name = "Integer5", unique = false, nullable = true, insertable = true, updatable = true, length = 54)
+    public Integer getInteger5()
+    {
+        return this.integer5;
+    }
+
+    public void setInteger5(Integer integer5)
+    {
+        this.integer5 = integer5;
+    }
+
+    /**
+     *      * User definable
+     */
     @Column(name="YesNo1",unique=false,nullable=true,updatable=true,insertable=true)
     public Boolean getYesNo1() 
     {
@@ -497,6 +714,45 @@ public class Determination extends CollectionMember implements java.io.Serializa
     public void setYesNo2(Boolean yesNo2) 
     {
         this.yesNo2 = yesNo2;
+    }
+    /**
+     *      * User definable
+     */
+    @Column(name="YesNo3",unique=false,nullable=true,updatable=true,insertable=true)
+    public Boolean getYesNo3()
+    {
+        return this.yesNo3;
+    }
+
+    public void setYesNo3(Boolean yesNo3)
+    {
+        this.yesNo3 = yesNo3;
+    }
+    /**
+     *      * User definable
+     */
+    @Column(name="YesNo4",unique=false,nullable=true,updatable=true,insertable=true)
+    public Boolean getYesNo4()
+    {
+        return this.yesNo4;
+    }
+
+    public void setYesNo4(Boolean yesNo4)
+    {
+        this.yesNo4 = yesNo4;
+    }
+    /**
+     *      * User definable
+     */
+    @Column(name="YesNo5",unique=false,nullable=true,updatable=true,insertable=true)
+    public Boolean getYesNo5()
+    {
+        return this.yesNo5;
+    }
+
+    public void setYesNo5(Boolean yesNo5)
+    {
+        this.yesNo5 = yesNo5;
     }
 
 

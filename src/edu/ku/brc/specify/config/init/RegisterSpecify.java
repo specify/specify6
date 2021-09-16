@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -32,10 +32,13 @@ import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 
 import edu.ku.brc.helpers.ProxyHelper;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.NameValuePair;
-import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -385,13 +388,16 @@ public class RegisterSpecify
                                       final boolean isAnonymous,
                                       final boolean isForISANumber) throws Exception
     {
-        HttpClient httpClient = new HttpClient();
+        //NOT migrating to apache http 4.x
+        throw new Exception("doRegisterInternal() is not implemented.");
+        /*
+        CloseableHttpClient httpClient = HttpClients.createDefault();
         httpClient.getParams().setParameter("http.useragent", RegisterSpecify.class.getName()); //$NON-NLS-1$
         ProxyHelper.applyProxySettings(httpClient);
         // get the URL of the website to check, with usage info appended, if allowed
         String versionCheckURL = getRegisterURL();
         
-        PostMethod postMethod = new PostMethod(versionCheckURL);
+        HttpPost postMethod = new HttpPost(versionCheckURL);
         
         // get the POST parameters
         NameValuePair[] postParams = createPostParameters(regType, isAnonymous, isForISANumber);
@@ -428,8 +434,7 @@ public class RegisterSpecify
                 return tokens[0];
             }
         }
-        
-        return null;
+        */
     }
     
     /**
@@ -466,19 +471,19 @@ public class RegisterSpecify
 
         // get the install ID
         String installID = UsageTracker.getInstallId();
-        postParams.add(new NameValuePair("id", installID)); //$NON-NLS-1$
+        postParams.add(new BasicNameValuePair("id", installID)); //$NON-NLS-1$
 
         // get the OS name and version
-        postParams.add(new NameValuePair("reg_type",     regType.toString()));//$NON-NLS-1$
-        postParams.add(new NameValuePair("os_name",      System.getProperty("os.name"))); //$NON-NLS-1$ $NON-NLS-2$
-        postParams.add(new NameValuePair("os_version",   System.getProperty("os.version"))); //$NON-NLS-1$ $NON-NLS-2$
-        postParams.add(new NameValuePair("java_version", System.getProperty("java.version"))); //$NON-NLS-1$ $NON-NLS-2$
-        postParams.add(new NameValuePair("java_vendor",  System.getProperty("java.vendor"))); //$NON-NLS-1$ $NON-NLS-2$
-        postParams.add(new NameValuePair("is_anonymous", Boolean.toString(isAnonymous))); //$NON-NLS-1$
-        postParams.add(new NameValuePair("is_isa_anonymous", Boolean.toString(isAnonymous))); //$NON-NLS-1$
+        postParams.add(new BasicNameValuePair("reg_type",     regType.toString()));//$NON-NLS-1$
+        postParams.add(new BasicNameValuePair("os_name",      System.getProperty("os.name"))); //$NON-NLS-1$ $NON-NLS-2$
+        postParams.add(new BasicNameValuePair("os_version",   System.getProperty("os.version"))); //$NON-NLS-1$ $NON-NLS-2$
+        postParams.add(new BasicNameValuePair("java_version", System.getProperty("java.version"))); //$NON-NLS-1$ $NON-NLS-2$
+        postParams.add(new BasicNameValuePair("java_vendor",  System.getProperty("java.vendor"))); //$NON-NLS-1$ $NON-NLS-2$
+        postParams.add(new BasicNameValuePair("is_anonymous", Boolean.toString(isAnonymous))); //$NON-NLS-1$
+        postParams.add(new BasicNameValuePair("is_isa_anonymous", Boolean.toString(isAnonymous))); //$NON-NLS-1$
 
         
-        //postParams.add(new NameValuePair("user_name",    System.getProperty("user.name"))); //$NON-NLS-1$
+        //postParams.add(new BasicNameValuePair("user_name",    System.getProperty("user.name"))); //$NON-NLS-1$
 
         AppContextMgr acMgr      = AppContextMgr.getInstance();
         Institution   inst       = acMgr.getClassObject(Institution.class);
@@ -488,8 +493,8 @@ public class RegisterSpecify
         
         if (isForISANumber)
         {
-            postParams.add(new NameValuePair("reg_isa",  "true")); //$NON-NLS-1$  $NON-NLS-2$
-            postParams.add(new NameValuePair("reg_number",  collection.getRegNumber())); //$NON-NLS-1$
+            postParams.add(new BasicNameValuePair("reg_isa",  "true")); //$NON-NLS-1$  $NON-NLS-2$
+            postParams.add(new BasicNameValuePair("reg_number",  collection.getRegNumber())); //$NON-NLS-1$
         }
         
         switch (regType)
@@ -497,37 +502,37 @@ public class RegisterSpecify
             case Institution:
                 if (!isAnonymous)
                 {
-                    postParams.add(new NameValuePair("Institution_name",  fixParam(inst.getName()))); //$NON-NLS-1$
+                    postParams.add(new BasicNameValuePair("Institution_name",  fixParam(inst.getName()))); //$NON-NLS-1$
                 }
                 break;
                 
             case Division:
-                postParams.add(new NameValuePair("Institution_number", fixParam(inst.getRegNumber()))); //$NON-NLS-1$
+                postParams.add(new BasicNameValuePair("Institution_number", fixParam(inst.getRegNumber()))); //$NON-NLS-1$
                 if (!isAnonymous)
                 {
-                    postParams.add(new NameValuePair("Division_name",      fixParam(division.getName()))); //$NON-NLS-1$
+                    postParams.add(new BasicNameValuePair("Division_name",      fixParam(division.getName()))); //$NON-NLS-1$
                 }
                 break;
                 
             case Discipline:
-                postParams.add(new NameValuePair("Institution_number", fixParam(inst.getRegNumber()))); //$NON-NLS-1$
-                postParams.add(new NameValuePair("Division_number",    fixParam(division.getRegNumber()))); //$NON-NLS-1$
+                postParams.add(new BasicNameValuePair("Institution_number", fixParam(inst.getRegNumber()))); //$NON-NLS-1$
+                postParams.add(new BasicNameValuePair("Division_number",    fixParam(division.getRegNumber()))); //$NON-NLS-1$
                 if (!isAnonymous)
                 {
-                    postParams.add(new NameValuePair("Discipline_type",    fixParam(discipline.getType()))); //$NON-NLS-1$
+                    postParams.add(new BasicNameValuePair("Discipline_type",    fixParam(discipline.getType()))); //$NON-NLS-1$
                 }
                 break;
                 
             case Collection:
-                postParams.add(new NameValuePair("Institution_number", fixParam(inst.getRegNumber()))); //$NON-NLS-1$
-                postParams.add(new NameValuePair("Division_number",    fixParam(division.getRegNumber()))); //$NON-NLS-1$
-                postParams.add(new NameValuePair("Discipline_number",  fixParam(discipline.getRegNumber()))); //$NON-NLS-1$
-                postParams.add(new NameValuePair("Collection_number",  fixParam(collection.getRegNumber()))); //$NON-NLS-1$
+                postParams.add(new BasicNameValuePair("Institution_number", fixParam(inst.getRegNumber()))); //$NON-NLS-1$
+                postParams.add(new BasicNameValuePair("Division_number",    fixParam(division.getRegNumber()))); //$NON-NLS-1$
+                postParams.add(new BasicNameValuePair("Discipline_number",  fixParam(discipline.getRegNumber()))); //$NON-NLS-1$
+                postParams.add(new BasicNameValuePair("Collection_number",  fixParam(collection.getRegNumber()))); //$NON-NLS-1$
                 if (!isAnonymous)
                 {
-                    postParams.add(new NameValuePair("Discipline_type", fixParam(discipline.getType()))); //$NON-NLS-1$
-                    postParams.add(new NameValuePair("Collection_name", fixParam(collection.getCollectionName()))); //$NON-NLS-1$
-                    postParams.add(new NameValuePair("ISA_Number",       fixParam(collection.getIsaNumber()))); //$NON-NLS-1$
+                    postParams.add(new BasicNameValuePair("Discipline_type", fixParam(discipline.getType()))); //$NON-NLS-1$
+                    postParams.add(new BasicNameValuePair("Collection_name", fixParam(collection.getCollectionName()))); //$NON-NLS-1$
+                    postParams.add(new BasicNameValuePair("ISA_Number",       fixParam(collection.getIsaNumber()))); //$NON-NLS-1$
                 }
                 break;
         } // switch
@@ -536,18 +541,18 @@ public class RegisterSpecify
         {
             SpecifyUser user = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
             //postParams.add(new NameValuePair("User_name",  fixParam(user.getName()))); //$NON-NLS-1$
-            postParams.add(new NameValuePair("User_email", fixParam(user.getEmail()))); //$NON-NLS-1$
+            postParams.add(new BasicNameValuePair("User_email", fixParam(user.getEmail()))); //$NON-NLS-1$
             
             Address addr = inst.getAddress();
             if (addr != null)
             {
-                postParams.add(new NameValuePair("Address", fixParam(addr.getIdentityTitle()))); //$NON-NLS-1$
-                postParams.add(new NameValuePair("Phone", fixParam(addr.getPhone1()))); //$NON-NLS-1$
+                postParams.add(new BasicNameValuePair("Address", fixParam(addr.getIdentityTitle()))); //$NON-NLS-1$
+                postParams.add(new BasicNameValuePair("Phone", fixParam(addr.getPhone1()))); //$NON-NLS-1$
             }
         }
         
         // Create an array from the params
-        NameValuePair[] paramArray = new NameValuePair[postParams.size()];
+        NameValuePair[] paramArray = new BasicNameValuePair[postParams.size()];
         for (int i = 0; i < paramArray.length; ++i)
         {
             paramArray[i] = postParams.get(i);
@@ -791,13 +796,13 @@ public class RegisterSpecify
     {
         try
         {
-            HttpClient httpClient = new HttpClient();
+            CloseableHttpClient httpClient = HttpClients.createDefault();
             httpClient.getParams().setParameter("http.useragent", RegisterSpecify.class.getName()); //$NON-NLS-1$
             
             // get the URL of the website to check, with usage info appended, if allowed
             String versionCheckURL = getRegisterURL();
             
-            PostMethod postMethod = new PostMethod(versionCheckURL);
+            HttpPost postMethod = new HttpPost(versionCheckURL);
             
             // get the POST parameters
             NameValuePair[] postParams = new NameValuePair[2];

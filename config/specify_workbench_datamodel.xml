@@ -1430,12 +1430,12 @@
   </table>
   <table classname="edu.ku.brc.specify.datamodel.Taxon" table="taxononly" tableid="4000">
   
-    <!-- for OU PBOT... -->
+    <!-- for OU PBOT...
       <field column="Domain" name="domain" type="java.lang.String" length="64"/>
      <field column="Infrakingdom" name="infrakingdom" type="java.lang.String" length="64"/>
       <field column="Superphylum" name="superphylum" type="java.lang.String" length="64"/>
      <field column="Infradivision" name="infradivision" type="java.lang.String" length="64"/>
-      <field column="Cohort" name="cohort" type="java.lang.String" length="64"/>
+      <field column="Cohort" name="cohort" type="java.lang.String" length="64"/-->
     <!-- ...for OU PBOT -->
     
     <field column="Kingdom" name="kingdom" type="java.lang.String" length="64"/>

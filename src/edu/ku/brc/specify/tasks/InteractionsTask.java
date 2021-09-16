@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -19,6 +19,10 @@
 */
 package edu.ku.brc.specify.tasks;
 
+import static edu.ku.brc.specify.tasks.InteractionsProcessor.DEFAULT_SRC_TBL_ID;
+import static edu.ku.brc.specify.tasks.InteractionsProcessor.forAcc;
+import static edu.ku.brc.specify.tasks.InteractionsProcessor.getInteractionItemLookupField;
+import static edu.ku.brc.ui.UIRegistry.displayInfoMsgDlg;
 import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
@@ -26,6 +30,7 @@ import java.awt.Component;
 import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
 import java.io.File;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -46,6 +51,7 @@ import javax.swing.JTextArea;
 import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 
+import edu.ku.brc.specify.datamodel.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -98,27 +104,6 @@ import edu.ku.brc.helpers.EMailHelper;
 import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
-import edu.ku.brc.specify.datamodel.Accession;
-import edu.ku.brc.specify.datamodel.Agent;
-import edu.ku.brc.specify.datamodel.CollectionObject;
-import edu.ku.brc.specify.datamodel.Discipline;
-import edu.ku.brc.specify.datamodel.Division;
-import edu.ku.brc.specify.datamodel.ExchangeIn;
-import edu.ku.brc.specify.datamodel.ExchangeOut;
-import edu.ku.brc.specify.datamodel.Gift;
-import edu.ku.brc.specify.datamodel.GiftPreparation;
-import edu.ku.brc.specify.datamodel.InfoRequest;
-import edu.ku.brc.specify.datamodel.Loan;
-import edu.ku.brc.specify.datamodel.LoanPreparation;
-import edu.ku.brc.specify.datamodel.LoanReturnPreparation;
-import edu.ku.brc.specify.datamodel.OneToManyProviderIFace;
-import edu.ku.brc.specify.datamodel.Permit;
-import edu.ku.brc.specify.datamodel.Preparation;
-import edu.ku.brc.specify.datamodel.RecordSet;
-import edu.ku.brc.specify.datamodel.RepositoryAgreement;
-import edu.ku.brc.specify.datamodel.Shipment;
-import edu.ku.brc.specify.datamodel.SpAppResource;
-import edu.ku.brc.specify.datamodel.SpReport;
 import edu.ku.brc.specify.datamodel.busrules.AccessionBusRules;
 import edu.ku.brc.specify.datamodel.busrules.LoanBusRules;
 import edu.ku.brc.specify.datamodel.busrules.LoanPreparationBusRules;
@@ -160,13 +145,18 @@ public class InteractionsTask extends BaseTask
     public static final DataFlavorTableExt GIFT_FLAVOR         = new DataFlavorTableExt(Loan.class, "Gift");
     public static final DataFlavorTableExt EXCHGIN_FLAVOR      = new DataFlavorTableExt(ExchangeIn.class, "ExchangeIn");
     public static final DataFlavorTableExt EXCHGOUT_FLAVOR     = new DataFlavorTableExt(ExchangeOut.class, "ExchangeOut");
-    
+    public static final DataFlavorTableExt DISPOSAL_FLAVOR     = new DataFlavorTableExt(Disposal.class, "Disposal");
+
     public static final  String   IS_USING_INTERACTIONS_PREFNAME = "Interactions.Using.Interactions.";
 
     protected static final String InfoRequestName      = "InfoRequest";
     protected static final String NEW_LOAN             = "NEW_LOAN";
     protected static final String NEW_ACCESSION        = "NEW_ACC";
     protected static final String ADD_TO_ACCESSION     = "AddToAccession";
+    protected static final String NEW_DISPOSAL      = "NEW_DISPOSAL";
+    protected static final String NEW_DEACC = "NEW_DEACC";
+    protected static final String ADD_TO_DISPOSAL   = "AddToDisposal";
+    public static final String ADD_TO_EXCHANGE   = "AddToExchange";
     protected static final String NEW_PERMIT           = "NEW_PERMIT";
     protected static final String NEW_GIFT             = "NEW_GIFT";
     protected static final String NEW_EXCHANGE_OUT     = "NEW_EXCHANGE_OUT";
@@ -183,6 +173,7 @@ public class InteractionsTask extends BaseTask
     protected static final int    loanTableId;
     protected static final int    infoRequestTableId;
     protected static final int    colObjTableId;
+    protected static final int preparationTableId;
 
     // Data Members
     protected NavBox                  infoRequestNavBox;
@@ -202,14 +193,17 @@ public class InteractionsTask extends BaseTask
     
     InteractionsProcessor<Gift> giftProcessor = new InteractionsProcessor<Gift>(this, InteractionsProcessor.forGift, Gift.getClassTableId());
     InteractionsProcessor<Loan> loanProcessor = new InteractionsProcessor<Loan>(this, InteractionsProcessor.forLoan,  Loan.getClassTableId());
-    InteractionsProcessor<Accession> accProcessor = new InteractionsProcessor<Accession>(this, InteractionsProcessor.forAcc,  Accession.getClassTableId());
-    
+    InteractionsProcessor<ExchangeOut> exchProcessor = new InteractionsProcessor<ExchangeOut>(this, InteractionsProcessor.forExchange,  ExchangeOut.getClassTableId());
+    InteractionsProcessor<Accession> accProcessor = new InteractionsProcessor<Accession>(this, forAcc,  Accession.getClassTableId());
+    InteractionsProcessor<Disposal> disposalProcessor = new InteractionsProcessor<>(this, InteractionsProcessor.forDisposal,  Disposal.getClassTableId());
+    InteractionsProcessor<Deaccession> legalDeaccProcessor = new InteractionsProcessor<>(this, InteractionsProcessor.forLegalDeacc,  Deaccession.getClassTableId());
+
     static 
     {
         loanTableId        = DBTableIdMgr.getInstance().getIdByClassName(Loan.class.getName());
         infoRequestTableId = DBTableIdMgr.getInstance().getIdByClassName(InfoRequest.class.getName());
         colObjTableId      = DBTableIdMgr.getInstance().getIdByClassName(CollectionObject.class.getName());
-        
+        preparationTableId = DBTableIdMgr.getInstance().getIdByClassName(Preparation.class.getName());
         INFOREQUEST_FLAVOR.addTableId(50);
     }
 
@@ -335,7 +329,10 @@ public class InteractionsTask extends BaseTask
                tableId == Permit.getClassTableId() ||
                tableId == RepositoryAgreement.getClassTableId() ||
                tableId == ExchangeIn.getClassTableId() ||
-               tableId == ExchangeOut.getClassTableId();
+               tableId == ExchangeOut.getClassTableId() ||
+                tableId == Borrow.getClassTableId() ||
+                tableId == Disposal.getClassTableId() ||
+                tableId == Deaccession.getClassTableId();
     }
     
     /**
@@ -746,7 +743,7 @@ public class InteractionsTask extends BaseTask
         //labelsList.add(nbi);
         return nbi;
     }
-    
+
     /*
      *  (non-Javadoc)
      * @see edu.ku.brc.specify.core.Taskable#getNavBoxes()
@@ -923,8 +920,8 @@ public class InteractionsTask extends BaseTask
             dueDate.add(Calendar.MONTH, 6);                 // XXX PREF Due Date
             loan.setCurrentDueDate(dueDate);
             
-            Shipment shipment = new Shipment();
-            shipment.initialize();
+            //Shipment shipment = new Shipment();
+            //shipment.initialize();
             
             // Get Defaults for Certain fields
             //SpecifyAppContextMgr appContextMgr     = (SpecifyAppContextMgr)AppContextMgr.getInstance();
@@ -942,12 +939,12 @@ public class InteractionsTask extends BaseTask
             //    shipment.setShippedBy((Agent)shippedBy);
             //}
             
-            if (infoRequest != null && infoRequest.getAgent() != null)
+            //if (infoRequest != null && infoRequest.getAgent() != null)
             {
-                shipment.setShippedTo(infoRequest.getAgent());
+            //    shipment.setShippedTo(infoRequest.getAgent());
             }
             
-            loan.addReference(shipment, "shipments");
+            //loan.addReference(shipment, "shipments");
         } else
         {
             loan = existingLoan;
@@ -958,11 +955,13 @@ public class InteractionsTask extends BaseTask
             prepToLoanPrepHash = new Hashtable<Integer, LoanPreparation>();
             for (LoanPreparation lp : existingLoan.getLoanPreparations()) {
                 if (lp.getPreparation() !=  null) {
-                    prepToLoanPrepHash.put(lp.getPreparation().getId(), lp);
+                    if (lp.getPreparation() != null) {
+                        prepToLoanPrepHash.put(lp.getPreparation().getId(), lp);
+                    }
                 }
             }
         }
-        
+
         DataProviderSessionIFace session = null;
         try {
             session = DataProviderFactory.getInstance().createSession();
@@ -1026,7 +1025,8 @@ public class InteractionsTask extends BaseTask
             CommandDispatcher.dispatch(new CommandAction(INTERACTIONS, LoanPreparationBusRules.REFRESH_PREPS, loan));
         }
     }
-    
+
+
     /**
      * @param existingAccArg
      * @param cos
@@ -1034,7 +1034,7 @@ public class InteractionsTask extends BaseTask
     protected void addCosToAcc(final OneToManyProviderIFace existingAccArg, final RecordSetIFace cos, final Viewable srcViewable) {
     	Accession existingAcc = (Accession)existingAccArg;
     	Accession acc;
-    	
+
     	if (existingAcc == null) {
     		acc = new Accession();
     		acc.initialize();
@@ -1042,12 +1042,12 @@ public class InteractionsTask extends BaseTask
     	} else {
     		acc = existingAcc;
     	}
-    	
+
     	if (cos != null) {
     		DataProviderSessionIFace session = null;
     		try {
     			session = DataProviderFactory.getInstance().createSession();
-            
+
     			for (RecordSetItemIFace coId : cos.getItems()) {
     				CollectionObject co = session.get(CollectionObject.class, coId.getRecordId());
     				if (co != null) {
@@ -1060,7 +1060,7 @@ public class InteractionsTask extends BaseTask
     					co.setAccession(acc);
     				}
     			}
-            
+
     		} catch (Exception ex) {
     			ex.printStackTrace();
     			UsageTracker.incrHandledUsageCount();
@@ -1087,6 +1087,41 @@ public class InteractionsTask extends BaseTask
         }
 
     }
+
+    /**
+     * @param existingAccArg
+     * @param objs
+     */
+    protected void addToLegalDeacc(final OneToManyProviderIFace existingDeaccArg, final RecordSetIFace objs, final Viewable srcViewable) {
+        Deaccession existingLegaldeacc = (Deaccession)existingDeaccArg;
+        Deaccession deacc;
+
+        if (existingLegaldeacc == null) {
+            deacc = new Deaccession();
+            deacc.initialize();
+        } else {
+            deacc = existingLegaldeacc;
+        }
+
+        if (objs != null) {
+            log.error("adding to deaccessions is not implemented");
+        }
+        if (existingLegaldeacc == null) {
+            if (srcViewable != null) {
+                srcViewable.setNewObject(deacc);
+            } else {
+                DataEntryTask dataEntryTask = (DataEntryTask)TaskMgr.getTask(DataEntryTask.DATA_ENTRY);
+                if (dataEntryTask != null) {
+                    DBTableInfo deaccTableInfo = DBTableIdMgr.getInstance().getInfoById(deacc.getTableId());
+                    dataEntryTask.openView(this, null, deaccTableInfo.getDefaultFormName(), "edit", deacc, true);
+                }
+            }
+        } else {
+            CommandDispatcher.dispatch(new CommandAction(INTERACTIONS, AccessionBusRules.REFRESH_COS, deacc));
+        }
+
+    }
+
     /**
      * @param existingLoan
      * @param infoRequest
@@ -1105,11 +1140,11 @@ public class InteractionsTask extends BaseTask
             gift = new Gift();
             gift.initialize();
             
-            Calendar dueDate = Calendar.getInstance();
-            dueDate.add(Calendar.MONTH, 6);                 // XXX PREF Due Date
+            //Calendar dueDate = Calendar.getInstance();
+            //dueDate.add(Calendar.MONTH, 6);                 // XXX PREF Due Date
             
-            Shipment shipment = new Shipment();
-            shipment.initialize();
+            //Shipment shipment = new Shipment();
+            //shipment.initialize();
             
             // Get Defaults for Certain fields
             //SpecifyAppContextMgr appContextMgr     = (SpecifyAppContextMgr)AppContextMgr.getInstance();
@@ -1127,12 +1162,12 @@ public class InteractionsTask extends BaseTask
             //    shipment.setShippedBy((Agent)shippedBy);
             //}
             
-            if (infoRequest != null && infoRequest.getAgent() != null)
-            {
-                shipment.setShippedTo(infoRequest.getAgent());
-            }
+            //if (infoRequest != null && infoRequest.getAgent() != null)
+            //{
+            //    shipment.setShippedTo(infoRequest.getAgent());
+            //}
             
-            gift.addReference(shipment, "shipments");
+            //gift.addReference(shipment, "shipments");
         } else
         {
             gift = existingGift;
@@ -1144,7 +1179,9 @@ public class InteractionsTask extends BaseTask
             prepToGiftPrepHash = new Hashtable<Integer, GiftPreparation>();
             for (GiftPreparation lp : existingGift.getGiftPreparations())
             {
-                prepToGiftPrepHash.put(lp.getPreparation().getId(), lp);
+                if (lp.getPreparation() != null) {
+                    prepToGiftPrepHash.put(lp.getPreparation().getId(), lp);
+                }
             }
         }
         
@@ -1152,7 +1189,13 @@ public class InteractionsTask extends BaseTask
         try
         {
             session = DataProviderFactory.getInstance().createSession();
-            
+
+            if (prepsHash.size() == 0) {
+                GiftPreparation gpo = new GiftPreparation();
+                gpo.initialize();
+                gpo.setGift(gift);
+                gift.getGiftPreparations().add(gpo);
+            }
             for (Integer prepId : prepsHash.keySet())
             {
                 Preparation prep  = session.get(Preparation.class, prepId);
@@ -1172,7 +1215,7 @@ public class InteractionsTask extends BaseTask
                 
                 GiftPreparation gpo = new GiftPreparation();
                 gpo.initialize();
-                gpo.setPreparation(prep);
+                  gpo.setPreparation(prep);
                 gpo.setQuantity(count);
                 gpo.setGift(gift);
                 gift.getGiftPreparations().add(gpo);
@@ -1212,7 +1255,207 @@ public class InteractionsTask extends BaseTask
             CommandDispatcher.dispatch(new CommandAction(INTERACTIONS, "REFRESH_GIFT_PREPS", gift));
         }
     }
-    
+
+    protected void addPrepsToExchangeOut(final OneToManyProviderIFace existingExchangeOutArg,
+                                      final InfoRequest infoRequest,
+                                      final Hashtable<Integer, Integer> prepsHash,
+                                      final Viewable srcViewable) {
+        ExchangeOut existingExchangeOut = (ExchangeOut) existingExchangeOutArg;
+        ExchangeOut exchange;
+
+        if (existingExchangeOut == null) {
+            exchange = new ExchangeOut();
+            exchange.initialize();
+            exchange.setDivision(AppContextMgr.getInstance().getClassObject(Division.class));
+
+            Calendar dueDate = Calendar.getInstance();
+            dueDate.add(Calendar.MONTH, 6);                 // XXX PREF Due Date
+
+            //Shipment shipment = new Shipment();
+            //shipment.initialize();
+
+            // Get Defaults for Certain fields
+            //SpecifyAppContextMgr appContextMgr     = (SpecifyAppContextMgr)AppContextMgr.getInstance();
+
+            // Comment out defaults for now until we can manage them
+            //PickListItemIFace    defShipmentMethod = appContextMgr.getDefaultPickListItem("ShipmentMethod", getResourceString("SHIPMENT_METHOD"));
+            //if (defShipmentMethod != null)
+            //{
+            //     shipment.setShipmentMethod(defShipmentMethod.getValue());
+            //}
+
+            //FormDataObjIFace shippedBy = appContextMgr.getDefaultObject(Agent.class, "ShippedBy", getResourceString("SHIPPED_BY"), true, false);
+            //if (shippedBy != null)
+            //{
+            //    shipment.setShippedBy((Agent)shippedBy);
+            //}
+
+            //if (infoRequest != null && infoRequest.getAgent() != null) {
+            //    shipment.setShippedTo(infoRequest.getAgent());
+            //}
+
+            //exchange.addReference(shipment, "shipments");
+        } else {
+            exchange = existingExchangeOut;
+        }
+
+        Hashtable<Integer, ExchangeOutPrep> prepToExchangeOutPrepHash = null;
+        if (existingExchangeOut != null) {
+            prepToExchangeOutPrepHash = new Hashtable<Integer, ExchangeOutPrep>();
+            for (ExchangeOutPrep lp : existingExchangeOut.getExchangeOutPreps()) {
+                if (lp.getPreparation() != null) {
+                    prepToExchangeOutPrepHash.put(lp.getPreparation().getId(), lp);
+                }
+            }
+        }
+
+        DataProviderSessionIFace session = null;
+        try {
+            session = DataProviderFactory.getInstance().createSession();
+
+            if (prepsHash.isEmpty()) {
+                ExchangeOutPrep eopo = new ExchangeOutPrep();
+                eopo.initialize();
+                eopo.setExchangeOut(exchange);
+                exchange.getExchangeOutPreps().add(eopo);
+            } else for (Integer prepId : prepsHash.keySet()) {
+                Preparation prep = session.get(Preparation.class, prepId);
+                Integer count = prepsHash.get(prepId);
+                if (prepToExchangeOutPrepHash != null) {
+                    ExchangeOutPrep gp = prepToExchangeOutPrepHash.get(prep.getId());
+                    if (gp != null) {
+                        int lpCnt = gp.getQuantity();
+                        lpCnt += count;
+                        gp.setQuantity(lpCnt);
+                        //System.err.println("Adding "+count+"  to "+lp.hashCode());
+                        continue;
+                    }
+                }
+
+                ExchangeOutPrep gpo = new ExchangeOutPrep();
+                gpo.initialize();
+                gpo.setPreparation(prep);
+                gpo.setQuantity(count);
+                gpo.setExchangeOut(exchange);
+                exchange.getExchangeOutPreps().add(gpo);
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(InteractionsTask.class, ex);
+
+        } finally {
+            if (session != null) {
+                session.close();
+            }
+        }
+
+        if (existingExchangeOut == null) {
+            if (srcViewable != null) {
+                srcViewable.setNewObject(exchange);
+
+            } else {
+                DataEntryTask dataEntryTask = (DataEntryTask) TaskMgr.getTask(DataEntryTask.DATA_ENTRY);
+                if (dataEntryTask != null) {
+                    DBTableInfo exchangeTableInfo = DBTableIdMgr.getInstance().getInfoById(exchange.getTableId());
+                    dataEntryTask.openView(this, null, exchangeTableInfo.getDefaultFormName(), "edit", exchange, true);
+                }
+            }
+        } else {
+            CommandDispatcher.dispatch(new CommandAction(INTERACTIONS, "REFRESH_EXCHANGE_PREPS", exchange));
+        }
+    }
+
+    /**
+     *
+     * @param existingDisposalArg
+     * @param infoRequest
+     * @param prepsHash
+     * @param srcViewable
+     */
+    protected void addPrepsToDisposal(final OneToManyProviderIFace existingDisposalArg,
+                                  final InfoRequest               infoRequest,
+                                  final Hashtable<Integer, Integer> prepsHash,
+                                  final Viewable                    srcViewable)
+    {
+        Disposal existingDisposal = (Disposal)existingDisposalArg;
+        Disposal disposal;
+
+        if (existingDisposal == null) {
+            disposal = new Disposal();
+            disposal.initialize();
+        } else {
+            disposal = existingDisposal;
+        }
+
+        Hashtable<Integer, DisposalPreparation> prepToDisposalPrepHash = null;
+        if (existingDisposal != null) {
+            prepToDisposalPrepHash = new Hashtable<>();
+            for (DisposalPreparation lp : existingDisposal.getDisposalPreparations())
+            {
+                if (lp.getPreparation() != null) {
+                    prepToDisposalPrepHash.put(lp.getPreparation().getId(), lp);
+                }
+            }
+        }
+
+        DataProviderSessionIFace session = null;
+        try {
+            session = DataProviderFactory.getInstance().createSession();
+            if (prepsHash.size() == 0) {
+                DisposalPreparation dpo = new DisposalPreparation();
+                dpo.initialize();
+                dpo.setDisposal(disposal);
+                disposal.getDisposalPreparations().add(dpo);
+            }
+            for (Integer prepId : prepsHash.keySet()) {
+                Preparation prep  = session.get(Preparation.class, prepId);
+                Integer     count = prepsHash.get(prepId);
+                if (prepToDisposalPrepHash != null) {
+                    DisposalPreparation dp = prepToDisposalPrepHash.get(prep.getId());
+                    if (dp != null) {
+                        int dpCnt = dp.getQuantity();
+                        dpCnt += count;
+                        dp.setQuantity(dpCnt);
+                        //System.err.println("Adding "+count+"  to "+lp.hashCode());
+                        continue;
+                    }
+                }
+                DisposalPreparation dpo = new DisposalPreparation();
+                dpo.initialize();
+                dpo.setPreparation(prep);
+                dpo.setQuantity(count);
+                dpo.setDisposal(disposal);
+                disposal.getDisposalPreparations().add(dpo);
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(InteractionsTask.class, ex);
+
+        } finally {
+            if (session != null) {
+                session.close();
+            }
+        }
+
+        if (existingDisposal == null) {
+            if (srcViewable != null) {
+                srcViewable.setNewObject(disposal);
+            } else {
+                DataEntryTask dataEntryTask = (DataEntryTask)TaskMgr.getTask(DataEntryTask.DATA_ENTRY);
+                if (dataEntryTask != null) {
+                    DBTableInfo disposalTableInfo = DBTableIdMgr.getInstance().getInfoById(disposal.getTableId());
+                    dataEntryTask.openView(this, null, disposalTableInfo.getDefaultFormName(), "edit", disposal, true);
+                }
+            }
+        } else {
+            CommandDispatcher.dispatch(new CommandAction(INTERACTIONS, "REFRESH_DISPOSAL_PREPS", disposal));
+        }
+    }
+
     /**
      * Displays UI that asks the user to select a predefined label.
      * @return the name of the label file or null if canceled
@@ -1852,11 +2095,14 @@ public class InteractionsTask extends BaseTask
                         loanRetPrep.setQuantityResolved(loanRetInfo.getResolvedQty());
                         loanRetPrep.setQuantityReturned(loanRetInfo.getReturnedQty());
                         
-                        loanPrep.setIsResolved(loanRetInfo.isResolved());
+                        Integer lpReturned = loanPrep.getQuantityReturned() != null ? loanPrep.getQuantityReturned() : 0;
+                        Integer lpResolved = loanPrep.getQuantityResolved() != null ? loanPrep.getQuantityResolved() : 0;
+                        loanPrep.setQuantityResolved(lpResolved + loanRetInfo.getResolvedQty());
+                        loanPrep.setQuantityReturned(lpReturned + loanRetInfo.getReturnedQty());
+                        loanPrep.setIsResolved(loanPrep.getQuantityResolved() == loanPrep.getQuantity());
                         loanRetPrep.setRemarks(loanRetInfo.getRemarks());
-                        loanPrep.setQuantityResolved(loanRetInfo.getResolvedQty());
-                        loanPrep.setQuantityReturned(loanRetInfo.getReturnedQty());
-                        
+                        loanPrep.setTimestampModified(new Timestamp(System.currentTimeMillis()));
+
                         loanPrep.addReference(loanRetPrep, "loanReturnPreparations");
                         
                         if (doingSingleItem)
@@ -1881,7 +2127,7 @@ public class InteractionsTask extends BaseTask
                         {
                             loan.setIsClosed(true);
                         }
-                        
+                        loan.setTimestampModified(new Timestamp(System.currentTimeMillis()));
                         session.save(loanRetPrep);
                         session.saveOrUpdate(loanPrep);
                         session.saveOrUpdate(loan);
@@ -1910,75 +2156,110 @@ public class InteractionsTask extends BaseTask
 
             //Runs on the event-dispatching thread.
             @Override
-            public void finished()
-            {
+            public void finished() {
                 statusBar.setProgressDone(INTERACTIONS);
                 statusBar.setText("");
-                if (multiView != null)
-                {
-                    multiView.setIsNewForm(false, true);
-                    multiView.setData(null);
-                    if (doingSingleItem && mergedLoans.size() == 1)
-                    {
-                        multiView.setData(mergedLoans.values().iterator().next());
-                    }
+                if (multiView != null) {
+                    multiView.getCurrentViewAsFormViewObj().reloadDataObj(true);
                 }
                 UIRegistry.clearSimpleGlassPaneMsg();
-                
                 UIRegistry.showLocalizedMsg(JOptionPane.INFORMATION_MESSAGE, "InteractionsTask.LN_RET_TITLE", "InteractionsTask.RET_LN_SV", numLPR);
             }
         };
         worker.start();
     }
-    
+    /**
+     * Asks where the source of the Loan Preps should come from.
+     * @return the source enum
+     */
+    protected ASK_TYPE askSourceOfPrepsForLoanReturn()
+    {
+        Object[] options = {
+                getResourceString("InteractionsTask.LOAN_RET_RS_FILTER"),
+                getResourceString("InteractionsTask.LOAN_RET_ID_FILTER"),
+                getResourceString("InteractionsTask.LOAN_RET_NO_FILTER")
+        };
+
+        int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(),
+                getResourceString("InteractionsTask.LOAN_RET_FILTER_DLG_MSG"),
+                getResourceString("InteractionsTask.LOAN_RET_FILTER_DLG_TITLE"),
+                JOptionPane.YES_NO_CANCEL_OPTION,
+                JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+        if (userChoice == 1) {
+            return ASK_TYPE.EnterDataObjs;
+        } else if (userChoice == 0) {
+            return ASK_TYPE.ChooseRS;
+        } else if (userChoice == 2) {
+            return ASK_TYPE.None;
+        }
+
+        return ASK_TYPE.Cancel;
+    }
+
     /**
      * Starts process to return a loan
      * @param doPartial true means show dialog and do partial, false means just return the loan
      */
-    protected void returnLoan()
-    {
-        Loan         loan    = null;
-        MultiView    mv      = null;
+    protected void returnLoan() {
+        Loan loan = null;
+        MultiView mv = null;
         SubPaneIFace subPane = SubPaneMgr.getInstance().getCurrentSubPane();
-        if (subPane != null)
-        {
+        if (subPane != null) {
             mv = subPane.getMultiView();
-            if (mv != null)
-            {
-                if (mv.getData() instanceof Loan)
-                {
-                    loan = (Loan)mv.getData();
+            if (mv != null) {
+                if (mv.getData() instanceof Loan) {
+                    loan = (Loan) mv.getData();
                 }
             }
         }
-        
-        if (mv != null && loan != null)
-        {
-            LoanReturnDlg dlg = new LoanReturnDlg(loan);
-            if (dlg.createUI())
-            {
-                dlg.setModal(true);
-                UIHelper.centerAndShow(dlg);
-                dlg.dispose();
-                
-                if (!dlg.isCancelled())
-                {
-                    FormViewObj fvp = mv.getCurrentViewAsFormViewObj();
-                    fvp.setHasNewData(true);
-                    // 03/04/09 Commented out the two lines below so the form doesn't get enabled for saving.
-                    //fvp.getValidator().setHasChanged(true);
-                    //fvp.validationWasOK(fvp.getValidator().getState() == UIValidatable.ErrorType.Valid);
-                   
-                    List<LoanReturnInfo> returns = dlg.getLoanReturnInfo();
-                    if (returns.size() > 0)
-                    {
-                        doReturnLoans(mv, dlg.getAgent(), dlg.getDate(), returns, true);
+        if (mv != null && loan != null) {
+            if (mv.getCurrentViewAsFormViewObj().getSaveComponent().isEnabled()) {
+                displayInfoMsgDlg(getResourceString("InteractionsTask.RET_LOAN_NOT_AVAILABLE_UNSAVED_CHANGES"));
+                return;
+            }
+            ASK_TYPE filter = askSourceOfPrepsForLoanReturn();
+            if (filter == ASK_TYPE.Cancel) {
+                return;
+            }
+            Integer defSrcTblId = AppPreferences.getRemote().getInt(DEFAULT_SRC_TBL_ID, 0);
+            if (defSrcTblId == 0 && (filter == ASK_TYPE.EnterDataObjs || filter == ASK_TYPE.None)) {
+                defSrcTblId = InteractionsProcessor.promptForItemIdTableId();
+            }
+            RecordSetIFace recordSet = null;
+            if (defSrcTblId != null && (defSrcTblId != 0 || filter == ASK_TYPE.ChooseRS || filter == ASK_TYPE.None)) {
+                if (filter == ASK_TYPE.EnterDataObjs) {
+                    recordSet = ((InteractionsTask) subPane.getTask()).askForDataObjRecordSet(defSrcTblId == CollectionObject.getClassTableId() ? CollectionObject.class : Preparation.class,
+                            getInteractionItemLookupField(defSrcTblId), false);
+                } else if (filter == ASK_TYPE.ChooseRS) {
+                    Vector<Integer> tblIds = new Vector<>();
+                    if (defSrcTblId == 0) {
+                        tblIds.add(CollectionObject.getClassTableId());
+                        tblIds.add(Preparation.getClassTableId());
+                    } else {
+                        tblIds.add(defSrcTblId);
+                    }
+                    recordSet = RecordSetTask.askForRecordSet(tblIds, null, true);
+                }
+                LoanReturnDlg dlg = new LoanReturnDlg(loan, recordSet, defSrcTblId);
+                if (dlg.createUI()) {
+                    dlg.setModal(true);
+                    UIHelper.centerAndShow(dlg);
+                    dlg.dispose();
+                    if (!dlg.isCancelled()) {
+                        FormViewObj fvp = mv.getCurrentViewAsFormViewObj();
+                        fvp.setHasNewData(true); //setting to false might eliminate need for changes in formViewObj for #897??
+                        // 03/04/09 Commented out the two lines below so the form doesn't get enabled for saving.
+                        //fvp.getValidator().setHasChanged(true);
+                        //fvp.validationWasOK(fvp.getValidator().getState() == UIValidatable.ErrorType.Valid);
+                        List<LoanReturnInfo> returns = dlg.getLoanReturnInfo();
+                        if (returns.size() > 0) {
+                            doReturnLoans(mv, dlg.getAgent(), dlg.getDate(), returns, true);
+                        }
                     }
                 }
             }
-            
-        } else
-        {
+
+        } else {
             // XXX Show some kind of error dialog
         }
     }
@@ -2079,17 +2360,17 @@ public class InteractionsTask extends BaseTask
                 if (dstObj instanceof RecordSetIFace)
                 {
                     RecordSetIFace rs = (RecordSetIFace)dstObj;
-                    if (rs.getDbTableId() == Loan.getClassTableId())
+                    if (isInteractionTable(rs.getDbTableId()))
                     {
                         DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(rs.getDbTableId());
-                        
                         super.createFormPanel(ti.getTitle(), "view", rs, IconManager.getIcon(ti.getShortClassName(), IconManager.IconSize.Std16));
                     }
                 }
             }
         }
     }
-    
+
+
     /**
      * Processes all Commands of type DB_CMD_TYPE.
      * @param cmdAction the command to be processed
@@ -2268,229 +2549,155 @@ public class InteractionsTask extends BaseTask
      * Processes all Commands of type INTERACTIONS.
      * @param cmdAction the command to be processed
      */
-    protected void processInteractionsCommands(final CommandAction cmdAction)
-    {
-        boolean isNewAccession   = cmdAction.isAction(NEW_ACCESSION);
-    	boolean isNewLoan        = cmdAction.isAction(NEW_LOAN);
-        boolean isNewLoanNoPreps = cmdAction.isAction(LN_NO_PRP);
-        boolean isNewGift        = cmdAction.isAction(NEW_GIFT);
-        boolean isInfoReq        = cmdAction.isAction(INFO_REQ_MESSAGE);
-
-        boolean isOKToAdd;
-        if (AppContextMgr.isSecurityOn())
-        {
-            PermissionSettings loanPerms = DBTableIdMgr.getInstance().getInfoById(Loan.getClassTableId()).getPermissions();
-            PermissionSettings giftPerms = DBTableIdMgr.getInstance().getInfoById(Gift.getClassTableId()).getPermissions();
-            PermissionSettings irPerms   = DBTableIdMgr.getInstance().getInfoById(InfoRequest.getClassTableId()).getPermissions();
-            PermissionSettings accPerms  = DBTableIdMgr.getInstance().getInfoById(Accession.getClassTableId()).getPermissions();
-            
-            isOKToAdd = ((isNewLoan || isNewLoanNoPreps) && (loanPerms == null || loanPerms.canAdd())) ||
-                        (isNewGift && (giftPerms == null || giftPerms.canAdd())) ||
-                        (isInfoReq && (irPerms == null || irPerms.canAdd())) ||
-                        (isNewAccession && (accPerms == null || accPerms.canAdd()));
-        } else
-        {
-            isOKToAdd = isNewLoan || isNewGift || isInfoReq || isNewLoanNoPreps || isNewAccession;
+    protected void processInteractionsCommands(final CommandAction cmdAction) {
+        boolean isBasicNewInteraction = false;
+        DBTableInfo tblInfo = null;
+        InteractionsProcessor<?> processor = null;
+        if (cmdAction.isAction(NEW_ACCESSION)) {
+            tblInfo = DBTableIdMgr.getInstance().getInfoById(Accession.getClassTableId());
+            isBasicNewInteraction = true;
+            processor = accProcessor;
+        } else if (cmdAction.isAction(NEW_DEACC)) {
+            tblInfo = DBTableIdMgr.getInstance().getInfoById(Deaccession.getClassTableId());
+            isBasicNewInteraction = true;
+            processor = legalDeaccProcessor;
+        } else if (cmdAction.isAction(NEW_DISPOSAL)) {
+            tblInfo = DBTableIdMgr.getInstance().getInfoById(Disposal.getClassTableId());
+            isBasicNewInteraction = true;
+            processor = disposalProcessor;
+        } else if (cmdAction.isAction(NEW_LOAN)) {
+            tblInfo = DBTableIdMgr.getInstance().getInfoById(Loan.getClassTableId());
+            isBasicNewInteraction = true;
+            processor = loanProcessor;
+        } else if (cmdAction.isAction(LN_NO_PRP)) {
+            tblInfo = DBTableIdMgr.getInstance().getInfoById(Loan.getClassTableId());
+            processor = loanProcessor;
+        } else if (cmdAction.isAction(NEW_GIFT)) {
+            tblInfo = DBTableIdMgr.getInstance().getInfoById(Gift.getClassTableId());
+            isBasicNewInteraction = true;
+            processor = giftProcessor;
+        } else if (cmdAction.isAction(INFO_REQ_MESSAGE)) {
+            tblInfo = DBTableIdMgr.getInstance().getInfoById(InfoRequest.getClassTableId());
+        } else if (cmdAction.isAction(NEW_EXCHANGE_OUT)) {
+            tblInfo = DBTableIdMgr.getInstance().getInfoById(ExchangeOut.getClassTableId());
+            isBasicNewInteraction = true;
+            processor = exchProcessor;
         }
-        
-        UsageTracker.incrUsageCount("IN."+cmdAction.getType());
+        boolean isOKToAdd;
+        if (AppContextMgr.isSecurityOn() && tblInfo != null) {
+            PermissionSettings perms = tblInfo.getPermissions();
+            isOKToAdd = perms == null || perms.canAdd();
+        } else {
+            isOKToAdd = tblInfo != null;
+        }
 
-        if (cmdAction.isAction(CREATE_MAILMSG))
-        {
+        UsageTracker.incrUsageCount("IN." + cmdAction.getType());
+
+        if (cmdAction.isAction(CREATE_MAILMSG)) {
             createAndSendEMail();
-            
-        } else if (cmdAction.isAction(PRINT_INVOICE))
-        {
-            if (cmdAction.getData() instanceof RecordSetIFace)
-            {
+
+        } else if (cmdAction.isAction(PRINT_INVOICE)) {
+            if (cmdAction.getData() instanceof RecordSetIFace) {
                 printInvoice(null, cmdAction.getData());
-                
-            } if (cmdAction.getData() instanceof CommandAction)
-            {
+
+            }
+            if (cmdAction.getData() instanceof CommandAction) {
                 RecordSetIFace recordSet = RecordSetTask.askForRecordSet(this.printableInvoiceTblIds, null, true);
-                if (recordSet != null)
-                {
+                if (recordSet != null) {
                     printInvoice(cmdAction.getPropertyAsString("file"), recordSet);
                 }
             }
-            
-        } else if (isNewLoan || isNewGift || isNewLoanNoPreps || isNewAccession)
-        {
-            if (cmdAction.getData() == cmdAction)
-            {
-                if (isOKToAdd)
-                {
-                    // We get here when a user clicks on a Loan NB action 
-                    if (isNewLoan)
-                    {
-                        loanProcessor.createOrAdd();
-                        
-                    } else if (isNewLoanNoPreps)
-                    {
-                        createLoanNoPreps(null);
-                        
-                    } else if (isNewAccession)
-                    {
-                    	accProcessor.createOrAdd();
-                    	
-                    } else	
-                    {
-                        giftProcessor.createOrAdd();
-                    }
+
+        } else if (isBasicNewInteraction) {
+            if (cmdAction.getData() == cmdAction) {
+                if (isOKToAdd) {
+                    processor.createOrAdd();
                 }
-                
-            } else if (cmdAction.getData() instanceof RecordSetIFace)
-            {
-                RecordSetIFace rs = (RecordSetIFace)cmdAction.getData();
-                if (rs.getDbTableId() == colObjTableId || rs.getDbTableId() == infoRequestTableId)
-                {
-                    if (isOKToAdd)
-                    {
-                        if (isNewLoan)
-                        {    
-                            loanProcessor.createOrAdd(rs);
-                        } else if(isNewAccession && rs.getDbTableId() == colObjTableId) 
-                        {	
-                        	accProcessor.createOrAdd(rs);
-                        	
-                        } else
-                        {
-                            giftProcessor.createOrAdd(rs);
-                        }
+
+            } else if (cmdAction.getData() instanceof RecordSetIFace) {
+                RecordSetIFace rs = (RecordSetIFace) cmdAction.getData();
+                if (rs.getDbTableId() == colObjTableId || rs.getDbTableId() == infoRequestTableId || rs.getDbTableId() == preparationTableId) {
+                    if (isOKToAdd) {
+                        processor.createOrAdd(rs);
                     }
-                } else
-                {
+                } else {
                     log.error("Dropped wrong table type."); // this shouldn't happen
                 }
-                
-            } else if (cmdAction.getData() instanceof Viewable)
-            {
-                if (isNewLoan)
-                {    
-                    loanProcessor.createOrAdd((Viewable)cmdAction.getData());
-                    
-                } else if (isNewLoanNoPreps)
-                {
-                    createLoanNoPreps((Viewable)cmdAction.getData());
-                    
-                } else if (isNewAccession) {
-                	accProcessor.createOrAdd((Viewable)cmdAction.getData());
-                	
-                } else
-                {
-                    giftProcessor.createOrAdd((Viewable)cmdAction.getData());
-                }
-                
-            } else if (cmdAction.getData() instanceof InfoRequest)
-            {
-                if (isOKToAdd)
-                {
-                    if (isNewLoan)
-                    {
-                        loanProcessor.createFromInfoRequest((InfoRequest)cmdAction.getData());
-                    } else
-                    {
-                        giftProcessor.createFromInfoRequest((InfoRequest)cmdAction.getData());
-                    }
-                }
-                
-            }  else if (cmdAction.getData() instanceof CommandActionForDB)
-            {
-                if (isOKToAdd)
-                {
-                    CommandActionForDB cmdActionDB = (CommandActionForDB)cmdAction.getData();
-                    RecordSetIFace     rs          = RecordSetFactory.getInstance().createRecordSet("", cmdActionDB.getTableId(), RecordSet.GLOBAL);
-                    rs.addItem(cmdActionDB.getId());
-                    
-                    if (isNewLoan)
-                    {
-                        loanProcessor.createOrAdd(rs);
-                    } else
-                    {
-                        giftProcessor.createOrAdd(rs);
-                    }
+
+            } else if (cmdAction.getData() instanceof Viewable) {
+                if (isBasicNewInteraction) {
+                    processor.createOrAdd((Viewable) cmdAction.getData());
+                } else if (tblInfo != null && tblInfo.getName().equalsIgnoreCase("loan"))
+                    createLoanNoPreps((Viewable) cmdAction.getData());
+
+            }
+        } else if (cmdAction.getData() instanceof InfoRequest) {
+            if (isOKToAdd) {
+                processor.createFromInfoRequest((InfoRequest) cmdAction.getData());
+            }
+        } else if (cmdAction.getData() instanceof CommandActionForDB) {
+            if (isOKToAdd) {
+                CommandActionForDB cmdActionDB = (CommandActionForDB) cmdAction.getData();
+                RecordSetIFace rs = RecordSetFactory.getInstance().createRecordSet("", cmdActionDB.getTableId(), RecordSet.GLOBAL);
+                rs.addItem(cmdActionDB.getId());
+                if (isBasicNewInteraction && processor != null) {
+                    processor.createOrAdd(rs);
                 }
             }
-            
-        } else if (cmdAction.isAction(ADD_TO_LOAN))
-        {
-            loanProcessor.createOrAdd((Loan)cmdAction.getData());
-            
-        } else if (cmdAction.isAction(ADD_TO_GIFT))
-        {
-            giftProcessor.createOrAdd((Gift)cmdAction.getData());
-            
-        } else if (cmdAction.isAction(ADD_TO_ACCESSION))
-        {
-        	accProcessor.createOrAdd((Accession)cmdAction.getData());
-        	
-        } else if (cmdAction.isAction(INFO_REQ_MESSAGE))
-        {
-            if (cmdAction.getData() == cmdAction || cmdAction.getData() instanceof Viewable)
-            {
-                // We get here when a user clicks on a InfoRequest NB action 
+        } else if (cmdAction.isAction(ADD_TO_LOAN)) {
+            loanProcessor.createOrAdd((Loan) cmdAction.getData());
+        } else if (cmdAction.isAction(ADD_TO_GIFT)) {
+            giftProcessor.createOrAdd((Gift) cmdAction.getData());
+        } else if (cmdAction.isAction(ADD_TO_ACCESSION)) {
+            accProcessor.createOrAdd((Accession) cmdAction.getData());
+        } else if (cmdAction.isAction(ADD_TO_DISPOSAL)) {
+            disposalProcessor.createOrAdd((Disposal) cmdAction.getData());
+        } else if (cmdAction.isAction(ADD_TO_EXCHANGE)) {
+            exchProcessor.createOrAdd((ExchangeOut) cmdAction.getData());
+        }else if (cmdAction.isAction(INFO_REQ_MESSAGE)) {
+            if (cmdAction.getData() == cmdAction || cmdAction.getData() instanceof Viewable) {
+                // We get here when a user clicks on a InfoRequest NB action
                 createInfoRequest(null, cmdAction);
-                
-            } else if (cmdAction.getData() instanceof RecordSetIFace)
-            {
+            } else if (cmdAction.getData() instanceof RecordSetIFace) {
                 // We get here when a RecordSet is dropped on an InfoRequest
                 Object data = cmdAction.getData();
-                if (data instanceof RecordSetIFace)
-                {
-                    RecordSetIFace rs = (RecordSetIFace)data;
-                    if (rs.getDbTableId() == infoRequestTableId)
-                    {
+                if (data instanceof RecordSetIFace) {
+                    RecordSetIFace rs = (RecordSetIFace) data;
+                    if (rs.getDbTableId() == infoRequestTableId) {
                         showInfoReqForm(null, rs);
-                        
-                    } else if (rs.getDbTableId() == CollectionObject.getClassTableId())
-                    {
-                        createInfoRequest((RecordSetIFace)data, cmdAction);
+                    } else if (rs.getDbTableId() == CollectionObject.getClassTableId()) {
+                        createInfoRequest((RecordSetIFace) data, cmdAction);
                     }
                 }
-            } else if (cmdAction.getData() instanceof CommandActionForDB)
-            {
+            } else if (cmdAction.getData() instanceof CommandActionForDB) {
                 // We get here when a InfoRequest is dropped on an InfoRequest NB action
-                showInfoReqForm((CommandActionForDB)cmdAction.getData(), null);
+                showInfoReqForm((CommandActionForDB) cmdAction.getData(), null);
             }
-            
-        } else if (cmdAction.isAction("ReturnLoan")) // from the 'Return Loan' button on the form
-        {
+        } else if (cmdAction.isAction("ReturnLoan")) {// from the 'Return Loan' button on the form
             returnLoan();
-            
-        } else if (cmdAction.isAction("RET_LOAN")) // from the sidebar
-        {
-            if (cmdAction.getData() instanceof RecordSetIFace)
-            {
-                returnLoan((RecordSetIFace)cmdAction.getData());
-                
-            } else if (cmdAction.getData() == cmdAction)
-            {
+        } else if (cmdAction.isAction("RET_LOAN")) {// from the sidebar
+            if (cmdAction.getData() instanceof RecordSetIFace) {
+                returnLoan((RecordSetIFace) cmdAction.getData());
+            } else if (cmdAction.getData() == cmdAction) {
                 returnLoan(null);
             }
-            
-        } else if (cmdAction.isAction(DELETE_CMD_ACT))
-        {
-            if (cmdAction instanceof CommandActionForDB)
-            {
-                deleteInfoRequest((CommandActionForDB)cmdAction);
+        } else if (cmdAction.isAction(DELETE_CMD_ACT)) {
+            if (cmdAction instanceof CommandActionForDB) {
+                deleteInfoRequest((CommandActionForDB) cmdAction);
             }
-        } else if (cmdAction.isAction(OPEN_NEW_VIEW) || cmdAction.isAction(DataEntryTask.EDIT_DATA))
-        {
-            try
-            {
-                final CommandAction cachedCmdAction = (CommandAction)cmdAction.clone();
-                
+        } else if (cmdAction.isAction(OPEN_NEW_VIEW) || cmdAction.isAction(DataEntryTask.EDIT_DATA)) {
+            try {
+                final CommandAction cachedCmdAction = (CommandAction) cmdAction.clone();
+
                 cmdAction.setType("Data_Entry");
                 cmdAction.setProperty(NavBoxAction.ORGINATING_TASK, this);
                 SwingUtilities.invokeLater(new Runnable() {
-                    public void run()
-                    {
+                    public void run() {
                         CommandDispatcher.dispatch(cmdAction);
                         cmdAction.set(cachedCmdAction);
                     }
                 });
-            } catch (CloneNotSupportedException ex)
-            {
+            } catch (CloneNotSupportedException ex) {
                 //ignore
             }
         }
@@ -2502,7 +2709,7 @@ public class InteractionsTask extends BaseTask
     @Override
     public void doCommand(final CommandAction cmdAction)
     {
-        super.doCommand(cmdAction);
+            super.doCommand(cmdAction);
         
         if (cmdAction.isConsumed())
         {
@@ -2575,5 +2782,35 @@ public class InteractionsTask extends BaseTask
                                 {true, true, false, false},
                                 {true, false, false, false}};
     }
-    
+
+    /**
+     *
+     * @param countQuantity
+     * @param countUnresolved
+     * @param interactionID
+     * @param tblId
+     * @return
+     */
+    public static String getCountContentsSql(boolean countQuantity, boolean countUnresolved, Integer interactionID, Integer tblId) {
+        if (tblId.equals(Loan.getClassTableId())) {
+            String select = countQuantity ? " sum(quantity" + (countUnresolved ? "-ifnull(quantityresolved,0)" : "") + ")"
+                    : " count(*) ";
+            String sql = "select " + select + " from loanpreparation where loanid = " + interactionID;
+            if (countUnresolved) {
+                sql += " and (not isresolved";
+                if (countQuantity) {
+                    sql += " or ifnull(quantity,0) - ifnull(quantityresolved,0) > 0";
+                }
+                sql += ")";
+            }
+            return sql;
+        } else {
+            String tbl =  DBTableIdMgr.getInstance().getInfoById(tblId).getName();
+            String idCol = DBTableIdMgr.getInstance().getInfoById(tblId).getIdColumnName(); //assuming foreign key naming pattern
+            String prepTbl = tbl + (tblId.equals(ExchangeOut.getClassTableId()) ? "prep" : "preparation");
+            String select = countQuantity ? " sum(quantity" +  ")" : " count(*) ";
+            String sql = "select " + select + " from " + prepTbl +  " where " + idCol + " = " + interactionID;
+            return sql;
+        }
+    }
 }

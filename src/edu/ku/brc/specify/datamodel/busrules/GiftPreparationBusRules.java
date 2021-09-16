@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -22,6 +22,8 @@ package edu.ku.brc.specify.datamodel.busrules;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 import javax.swing.JButton;
 
@@ -31,11 +33,14 @@ import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.TableViewObj;
 import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.af.ui.forms.validation.ValSpinner;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Gift;
 import edu.ku.brc.specify.datamodel.GiftPreparation;
+import edu.ku.brc.specify.tasks.InteractionsProcessor;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
+import org.apache.log4j.Logger;
 
 /**
  * @author rod
@@ -47,7 +52,8 @@ import edu.ku.brc.ui.CommandListener;
  */
 public class GiftPreparationBusRules extends BaseBusRules implements CommandListener
 {
-    
+    private static final Logger log = Logger.getLogger(GiftPreparationBusRules.class);
+
     /**
      * 
      */
@@ -113,20 +119,32 @@ public class GiftPreparationBusRules extends BaseBusRules implements CommandList
         {
             GiftPreparation  giftPrep   = (GiftPreparation)dataObj;
             
-            //boolean    isNewObj         = giftPrep.getId() == null;
             ValSpinner quantity         = (ValSpinner)comp;
             
-            // TODO I think this would be better if the Max Range 
-            // was set to the available number of items.
             if (quantity != null)
             {
-                quantity.setRange(0, giftPrep.getQuantity(), giftPrep.getQuantity());
+                int qMax = 5000;
+                if (giftPrep.getPreparation() != null && giftPrep.getPreparation().getId() != null) {
+                    boolean[] settings = {true, true, true, true}; //the false means stuff on loan will be available to gift???
+                    String sql = InteractionsProcessor.getAdjustedCountForPrepSQL("p.preparationid = " + giftPrep.getPreparation().getId(), settings);
+                    Connection conn = InteractionsProcessor.getConnForAvailableCounts();
+                    Object[] amt = BasicSQLUtils.queryForRow(conn, sql);
+                    qMax = amt != null ? Integer.valueOf(amt[1].toString()).intValue() : qMax;
+                    try {
+                        conn.close();
+                    } catch (SQLException x) {
+                        log.warn(x);
+                    }
+                    if (giftPrep.getId() != null) {
+                        qMax += giftPrep.getQuantity();
+                    }
+                }
+                if (0 <= giftPrep.getQuantity() && giftPrep.getQuantity() <= qMax) {
+                    quantity.setRange(0, qMax, giftPrep.getQuantity());
+                } else {
+                    quantity.setRange(giftPrep.getQuantity(), giftPrep.getQuantity(), giftPrep.getQuantity());
+                }
             }
-            
-            //quantityReturned.setEnabled(!isNewObj);
-            //int max = Math.max(loanPrep.getQuantity(), loanPrep.getQuantityReturned());
-            //quantityReturned.setRange(0, max, loanPrep.getQuantityReturned());
-            //formViewObj.getLabelFor(quantityReturned).setEnabled(!isNewObj);
         }
 
     }

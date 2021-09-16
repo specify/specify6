@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -4164,7 +4164,7 @@ public class UploadTable implements Comparable<UploadTable>
 			//}
 			try {
 				if (matchChildrenParents == null || matchChildrenParents.size() == 0) {
-					if (!blank) {
+					if (!blank || !Treeable.class.isAssignableFrom(tblClass)) {
 						findMatch(adjustedRecNum, false, myMatches, parentParams);
 					} else if (nearest != null){
 						myMatches.add(parentParams.get(nearest.getTable()));
@@ -4476,7 +4476,13 @@ public class UploadTable implements Comparable<UploadTable>
             CriteriaIFace critter = critterObj.getSecond();
             ignoringBlankCell = critterObj.getFirst();
             List<DataModelObjBase> matches;
-            List<DataModelObjBase> matchList = critter == null ? new ArrayList<DataModelObjBase>() : (List<DataModelObjBase>) critter.list();
+            List<DataModelObjBase> matchList;
+            try {
+                matchList = critter == null ? new ArrayList<DataModelObjBase>() : (List<DataModelObjBase>) critter.list();
+            } catch (Exception x) {
+                matchList = new ArrayList<>();
+                log.error(x);
+            }
             if (matchList.size() > 1) {
                 // filter out duplicates. This seems very weird, but docs i found say it is normal
                 // for

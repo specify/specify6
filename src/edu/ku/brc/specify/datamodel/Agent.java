@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -117,6 +117,9 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
 
     protected String text1;
     protected String text2;
+    protected String text3;
+    protected String text4;
+    protected String text5;
     protected Integer integer1;
     protected Integer integer2;
     protected Calendar date1;
@@ -134,6 +137,36 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
 
     public void setText1(String text1) {
         this.text1 = text1;
+    }
+
+    @Lob
+    @Column(name = "Text3", unique = false, nullable = true, insertable = true, updatable = true, length = 65535)
+    public String getText3() {
+        return text3;
+    }
+
+    public void setText3(String text3) {
+        this.text3 = text3;
+    }
+
+    @Lob
+    @Column(name = "Text4", unique = false, nullable = true, insertable = true, updatable = true, length = 65535)
+    public String getText4() {
+        return text4;
+    }
+
+    public void setText4(String text4) {
+        this.text4 = text4;
+    }
+
+    @Lob
+    @Column(name = "Text5", unique = false, nullable = true, insertable = true, updatable = true, length = 65535)
+    public String getText5() {
+        return text5;
+    }
+
+    public void setText5(String text5) {
+        this.text5 = text5;
     }
 
     @Lob
@@ -331,6 +364,9 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
         date1Precision = null;
         verbatimDate1 = null;
         text2 = null;
+        text3 = null;
+        text4 = null;
+        text5 = null;
         integer2 = null;
         date2 = null;
         date2Precision = null;

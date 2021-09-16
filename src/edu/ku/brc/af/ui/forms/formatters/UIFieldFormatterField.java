@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -37,26 +37,31 @@ import java.util.regex.Pattern;
  */
 public class UIFieldFormatterField implements Cloneable
 {
-    public enum FieldType {numeric, alphanumeric, alpha, separator, year, anychar, constant}
+    public enum FieldType {numeric, alphanumeric, alpha, separator, year, anychar, constant, regex}
                                                   
     private static String alphaSample        = "";
     private static String anyCharSample      = "";
     private static String alphaNumericSample = "";
     private static String anyNumericSample   = "";
-    
+
     protected FieldType type;
     protected int       size;
+    protected int minSize;
     protected String    value;
+    protected String regex;
+
     protected boolean   incrementer;
     protected boolean   byYear;
-    
+    protected boolean isOptional = false; //should only be true if the field is last in the format
+
     static {
         for (int i=0;i<255;i++)
         {
             alphaNumericSample += "A";
             alphaSample        += "a";
             anyCharSample      += "X";
-            anyNumericSample   += "N";
+            //anyNumericSample   += "N";
+            anyNumericSample   += (i+1) % 10;
      }
     }
     
@@ -71,7 +76,7 @@ public class UIFieldFormatterField implements Cloneable
         incrementer = false;
         byYear      = false;
     }
-    
+
     /**
      * @param type
      * @param size
@@ -79,9 +84,27 @@ public class UIFieldFormatterField implements Cloneable
      * @param incrementer
      * @param byYear
      */
+    public UIFieldFormatterField(final FieldType type,
+                                 final int       size,
+                                 final String    value,
+                                 final boolean   incrementer,
+                                 final boolean   byYear) {
+        this(type, size, size, value, null, incrementer, byYear);
+    }
+
+        /**
+         * @param type
+         * @param size
+         * @param minSize
+         * @param value
+         * @param incrementer
+         * @param byYear
+         */
     public UIFieldFormatterField(final FieldType type, 
-                                 final int       size, 
-                                 final String    value, 
+                                 final int       size,
+                                 final int minSize,
+                                 final String    value,
+                                 final String pattern,
                                  final boolean   incrementer, 
                                  final boolean   byYear)
     {
@@ -89,7 +112,12 @@ public class UIFieldFormatterField implements Cloneable
         
         this.type        = type;
         this.size        = size;
+        this.minSize = minSize;
         this.value       = value;
+        if (type.equals(FieldType.regex)) {
+            this.regex = value;
+            this.value = pattern;
+        }
         this.incrementer = incrementer;
         this.byYear      = byYear;
         
@@ -178,14 +206,29 @@ public class UIFieldFormatterField implements Cloneable
     	
     	return field;
     }
-    
-    
+
+    /**
+     *
+     * @return
+     */
+    public String getRegex() {
+        return regex;
+    }
+
     /**
      * @return
      */
     public int getSize()
     {
         return size;
+    }
+
+    /**
+     * @return
+     */
+    public int getMinSize()
+    {
+        return minSize;
     }
 
     /**
@@ -263,6 +306,57 @@ public class UIFieldFormatterField implements Cloneable
 		}
 		
 		return sample.substring(0, value.length()); 
+    }
+
+    public String getRegExp() {
+        if (type == FieldType.separator) {
+            return value;
+        }
+
+        if (type == FieldType.alphanumeric) {
+            return "\\p{Alnum}{" + getSize() + "}";
+        }
+
+        if (type == FieldType.alpha) {
+            return "\\p{Alpha}{" + getSize() + "}";
+        }
+
+        if (type == FieldType.anychar) {
+            return  ".{" + getSize() + "}";
+        }
+
+        if (type == FieldType.numeric) {
+            if (isIncrementer()) {
+                return "\\p{Digit}{" + getSize() + "}";
+            } else {
+                return "\\p{Digit}{" + getSize() + "}";
+            }
+        }
+
+        if (type == FieldType.year) {
+            return Integer.toString(Calendar.getInstance().get(Calendar.YEAR));
+        }
+
+        if (type == FieldType.constant) {
+            return value.substring(0, value.length());
+        }
+        return "";
+    }
+
+    public String getRegExpGrp(int idx) {
+        String result = "G" + idx + getType().toString();
+        if (isIncrementer()) {
+            result += "INC";
+        } else if (isOptional()) { //assuming incrementers can't be optional
+            result += "OPT";
+        } else {
+            result += "XXX";
+        }
+        return result;
+    }
+
+    public boolean isOptional() {
+        return isOptional;
     }
 
     /**

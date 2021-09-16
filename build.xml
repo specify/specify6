@@ -22,7 +22,7 @@
   <fail unless="specify.SPECIFY_VERSION">Specify version not set.</fail>
 
   <property name="packages.dir" value="packages" />
-  <property name="install4j.dir" value="${user.home}/install4j8.0.4" />
+  <property name="install4j.dir" value="${user.home}/install4j8.0.11" />
   <property name="packaging.dir" value="packaging"/>
 
   <!-- Needed for building help search index -->

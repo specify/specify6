@@ -39,11 +39,14 @@
 		<indexitem text="Agent form" target="Data_Entry_Agent" mergetype="javax.help.SortMerge" />
 		<indexitem text="Attachments" target="Data_Entry_Attachments" mergetype="javax.help.SortMerge" />
 		<indexitem text="Configure Data form side bar" target="DataEntryConfigure" mergetype="javax.help.SortMerge" />
+		<indexitem text="Counts" target="data_counts" />
 		<indexitem text="Determinations form" target="Data_Entry_Determinations" mergetype="javax.help.SortMerge" />
 		<indexitem text="Locality form" target="Data_Entry_Locality" mergetype="javax.help.SortMerge" />
 		<indexitem text="Preparation form" target="Data_Entry_Preparations" mergetype="javax.help.SortMerge" />
+		<indexitem text="Specify Network" target="SpecifyNetwork" />
 		<indexitem text="Taxon form" target="Data_Entry_Taxon" mergetype="javax.help.SortMerge" />
 		<indexitem text="Trees vs Forms" target="Data_Entry_Trees" mergetype="javax.help.SortMerge" />
+		<indexitem text="Unique Identifiers" target="unique_identifier" />
 	</indexitem>
 	<indexitem text="Email" mergetype="javax.help.SortMerge">
 		<indexitem text="Information Request" target="Int_Info_Requests" mergetype="javax.help.SortMerge" />
@@ -70,16 +73,19 @@
 		<indexitem text="Add Discipline" target="Add_Discipline" mergetype="javax.help.SortMerge" />
 		<indexitem text="Add Division" target="Add_Division" mergetype="javax.help.SortMerge" />
 	</indexitem>
-	<indexitem text="Interactions form" target="Interactions" mergetype="javax.help.SortMerge">
+	<indexitem text="Interactions" target="Interactions" mergetype="javax.help.SortMerge">
 		<indexitem text="Accessions" target="Int_Accessions" mergetype="javax.help.SortMerge" />
 		<indexitem text="Borrows" target="Int_Borrows" mergetype="javax.help.SortMerge" />
 		<indexitem text="Configure Interactions side bar" target="InteractionsConfig" mergetype="javax.help.SortMerge" />
+		<indexitem text="Counts" target="inter_counts" />
+		<indexitem text="Gifts" target="gift" mergetype="javax.help.SortMerge" />
+		<indexitem text="Deaccessions" target="deaccessions" />
+		<indexitem text="Disposals" target="disposals" />
 		<indexitem text="Exchange In / Exchange Out" target="Int_Exchange" mergetype="javax.help.SortMerge" />
-		<indexitem text="Gifts" target="Int_Gifts_Loans" mergetype="javax.help.SortMerge" />
+		<indexitem text="Loans" target="loans" mergetype="javax.help.SortMerge" />
 		<indexitem text="Information Requests" target="Int_Info_Requests" mergetype="javax.help.SortMerge" />
-		<indexitem text="Loans" target="Int_Gifts_Loans" mergetype="javax.help.SortMerge" />
-		<indexitem text="Repository Agreement" target="Repos_Agree" mergetype="javax.help.SortMerge" />
 		<indexitem text="Return Loans" target="Int_Return_Loans" mergetype="javax.help.SortMerge" />
+		<indexitem text="Repository Agreement" target="Repos_Agree" mergetype="javax.help.SortMerge" />
 	</indexitem>
 	<indexitem text="Introduction to Specify" target="Intro" mergetype="javax.help.SortMerge" />
 	<indexitem text="Keyboard Shortcuts" target="Keyboard_Functions" mergetype="javax.help.SortMerge" />
@@ -123,6 +129,7 @@
 		<indexitem text="MySQL" target="PrefsMySQL" />
 		<indexitem text="Task Bar" target="PrefsMisc" />
 		<indexitem text="Symbiota" target="PrefsSymbiota" />
+		<indexitem text="Specify Network" target="SpecifyNetwork" />
 	</indexitem>
 	<indexitem text="Query tool" target="QB" mergetype="javax.help.SortMerge">
 		<indexitem text="Add Fields" target="Q_Fields" mergetype="javax.help.SortMerge" />
@@ -277,4 +284,5 @@
 	<indexitem text="iPad Export" target="iPadConfig" />
 	<indexitem text="ISO Codes" target="ISOASSIGN" />
 	<indexitem text="Uncataloged Item Loan" target="loan_uncataloged" />
+	<indexitem text="Specify Network" target="SpecifyNetwork" />
 </index>

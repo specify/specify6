@@ -187,18 +187,15 @@ public class SpExportSchemaMapping extends CollectionMember
      * @return the single export schema.
      */
     @Transient
-	public SpExportSchema getSpExportSchema()
-    {
-    	if (spExportSchemas.size() > 0)
-    	{
-    		if (spExportSchemas.size() > 1)
-    		{
-    			log.warn("getSpExportSchema() called for object with more than one schema.");
-    		}
-    		return spExportSchemas.iterator().next();
-    	}
-    	return null;
-    }
+	public SpExportSchema getSpExportSchema() {
+		if (spExportSchemas.size() > 0) {
+			if (spExportSchemas.size() > 1) {
+				log.warn("getSpExportSchema() called for object with more than one schema.");
+			}
+			return spExportSchemas.iterator().next();
+		}
+		return null;
+	}
 
     /**
      * @param schema the export schema to set.

@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -64,6 +64,8 @@ import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.URI;
+import java.net.URL;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -680,6 +682,10 @@ public class DataEntryTask extends BaseTask
                             }
                             cmdAction.setProperty(NavBoxAction.ORGINATING_TASK, task);
                             ContextMgr.registerService(10, dev.getView(), tblId, cmdAction, this, DATA_ENTRY, tableInfo.getTitle(), true); // the Name gets Hashed
+                            if (isColObj) {
+                                cmdAction.setProperty("displayTableId", 1);
+                                ContextMgr.registerService(10, dev.getView(), 63, cmdAction, this, DATA_ENTRY, tableInfo.getTitle(), true); // the Name gets Hashed
+                            }
                         }
                         
                         if (dev.isSideBar())
@@ -707,6 +713,9 @@ public class DataEntryTask extends BaseTask
                         
                                 // When something is dropped on it
                                 nbb.addDropDataFlavor(new DataFlavorTableExt(RecordSetTask.class, RecordSetTask.RECORD_SET, tableInfo.getTableId()));//RecordSetTask.RECORDSET_FLAVOR);
+                                if (isColObj) {
+                                    nbb.addDropDataFlavor(new DataFlavorTableExt(RecordSetTask.class, RecordSetTask.RECORD_SET, Preparation.getClassTableId()));
+                                }
                             }
                             viewsNavBox.add(nbi);
                         }
@@ -1807,6 +1816,7 @@ public class DataEntryTask extends BaseTask
             Object   data      = cmdAction.getData();
             if (data instanceof RecordSetIFace)
             {
+                data = getDataForEditing(cmdAction);
                 editData(task != null ? task : this, data, viewName);
                 
             } else if (data instanceof Pair<?, ?>)
@@ -1829,7 +1839,7 @@ public class DataEntryTask extends BaseTask
         } else if (cmdAction.isAction(EDIT_DATA))
         {
             Taskable task = (Taskable)cmdAction.getProperty(NavBoxAction.ORGINATING_TASK);
-            editData(task != null ? task : this, cmdAction.getData(), null, cmdAction.getProperty("readonly") != null);
+            editData(task != null ? task : this, getDataForEditing(cmdAction), null, cmdAction.getProperty("readonly") != null);
         } else if (cmdAction.isAction(BATCH_EDIT_DATA)) {
             Object   data      = cmdAction.getData();
             if (data instanceof RecordSetIFace) {
@@ -1873,9 +1883,125 @@ public class DataEntryTask extends BaseTask
         } else if (cmdAction.isAction("PrintColObjLabel"))
         {
             checkToPrintLabel(cmdAction, true);
+        } else if (cmdAction.isAction("SpiceDigOcc") || cmdAction.isAction("SpiceDigTx")) {
+            doSpiceDig(cmdAction);
         }
     }
-    
+
+    /**
+     *
+     * @param cmdAction
+     * @param dobj
+     * @return
+     */
+    private String getSpiceDigArg(String cmdAction, DataModelObjBase dobj) {
+        if (cmdAction.equalsIgnoreCase("SpiceDigOcc")) {
+            if (dobj instanceof CollectionObject && dobj.getId() != null) {
+                return ((CollectionObject)dobj).getGuid().replaceAll(" ", "%20");
+            }
+        } else if (cmdAction.equalsIgnoreCase("SpiceDigTx")) {
+            Taxon tx = null;
+            if (dobj instanceof CollectionObject) {
+                Determination currDet = ((CollectionObject)dobj).getCurrentDetermination();
+                if (currDet != null) {
+                    tx = currDet.getPreferredTaxon();
+                }
+            } else if (dobj instanceof Determination) {
+                tx = ((Determination) dobj).getPreferredTaxon();
+            } else if (dobj instanceof Taxon) {
+                tx = (Taxon) dobj;
+            }
+            if (tx != null && tx.getIsAccepted() && tx.getFullName() != null) {
+                return tx.getFullName().replaceAll(" ", "%20");
+            } else if (tx != null && tx.getAcceptedTaxon() != null) {
+                return tx.getAcceptedTaxon().getFullName().replaceAll(" ", "%20");
+            }
+        }
+        return null;
+    }
+
+    private void doSpiceDig(CommandAction cmdAction) {
+        Object data = cmdAction.getData();
+        DataModelObjBase dobj = cmdAction.getData() instanceof DataModelObjBase ? (DataModelObjBase) cmdAction.getData() : null;
+        if (dobj == null) {
+            SubPaneIFace subPane = SubPaneMgr.getInstance().getCurrentSubPane();
+            if (subPane != null) {
+                MultiView mv = subPane.getMultiView();
+                if (mv != null) {
+                    if (mv.getData() instanceof DataModelObjBase) {
+                        dobj = (DataModelObjBase) mv.getData();
+                    }
+                }
+            }
+        }
+        String spiceArg = getSpiceDigArg(cmdAction.getAction(), dobj);
+        String occNameArg = cmdAction.isAction("SpiceDigOcc") ? getSpiceDigArg("SpiceDigTx", dobj) : null;
+        if (spiceArg != null) {
+            String url = "https://broker.spcoco.org/api/v1/";
+            if (cmdAction.isAction("SpiceDigOcc")) {
+                url += "frontend/?occid=" + spiceArg + (occNameArg != null ? "&namestr=" + occNameArg : "");
+            } else {
+                //no frontend for name only
+                url += "frontend/?occid=&namestr=" + spiceArg;
+            }
+            try {
+                URI uri = new URL(url).toURI();
+                Desktop.getDesktop().browse(uri);
+            } catch (Exception x) {
+                log.error(x);
+                x.printStackTrace();
+            }
+        } else {
+            UIRegistry.displayInfoMsgDlg(getResourceString("CollectionObjectBusRules.RecordUnSpiceDiggable"));
+        }
+        cmdAction.setConsumed(true);
+    }
+
+    private Object getDataForEditing(CommandAction commandAction) {
+        Object result = commandAction.getData();
+        if ((commandAction.getProperties().containsKey("tableInfo") && (commandAction.getProperty("tableInfo") instanceof DBTableInfo)
+            &&  ((DBTableInfo)commandAction.getProperty("tableInfo")).getTableId() == CollectionObject.getClassTableId())
+            ||  "1".equals(commandAction.getPropertyAsString("displayTableId"))) {
+            if ((result instanceof RecordSetIFace) && ((RecordSetIFace) result).getDbTableId() == Preparation.getClassTableId()) {
+                result = getRelatedRecordset((RecordSetIFace)result, CollectionObject.getClassTableId());
+            }
+        }
+        return result;
+    }
+
+    private RecordSetIFace getRelatedRecordset(RecordSetIFace rs, int toTableId) {
+        RecordSetIFace result = rs;
+        if (!(rs.getDbTableId() == Preparation.getClassTableId() && toTableId == CollectionObject.getClassTableId())) {
+            log.warn("Unable to process " + rs.getDbTableId() + " to " + toTableId);
+        } else {
+            String sql;
+            if (result.getRecordSetId() != null) {
+                sql = "select distinct collectionobjectid from preparation p inner join recordsetitem rsi on rsi.recordid = p.preparationid" +
+                        " where rsi.recordsetid = " + rs.getRecordSetId();
+            } else {
+                List<Integer> recIds = new ArrayList<>();
+                for (RecordSetItemIFace item : rs.getItems()) {
+                    recIds.add(item.getRecordId());
+                }
+                String recIdStr = recIds.toString().replace("[", "").replace("]", "");
+                sql = "select distinct collectionobjectid from preparation where preparationid in(" + recIdStr + ")";
+            }
+            Vector<Integer> ids = BasicSQLUtils.queryForInts(sql);
+            RecordSet resultRS = new RecordSet();
+            resultRS.initialize();
+            resultRS.setName(rs.getName() + " -> " + DBTableIdMgr.getInstance().getInfoById(toTableId).getTitle());
+            resultRS.setDbTableId(toTableId);
+            for (Integer id : ids) {
+                RecordSetItem i = new RecordSetItem();
+                i.initialize();
+                i.setRecordSet(resultRS);
+                i.setRecordId(id);
+                resultRS.getRecordSetItems().add(i);
+            }
+            result = resultRS;
+        }
+        return result;
+    }
     /**
      * @param parentTaxon
      * @return
@@ -2144,24 +2270,51 @@ public class DataEntryTask extends BaseTask
         }
         return false;
     }
-    
+
+    private String getDubiousFormPrefName(int tableId) {
+        return "DubiousFormDisplay." + AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getName() + "." + tableId;
+    }
+
+    private boolean confirmDubiousFormDisplay(int tableId) {
+        boolean confirmed = tableId == CollectionObject.getClassTableId();//AppPreferences.getRemote().getBoolean(getDubiousFormPrefName(tableId), false);
+//        if (!confirmed) {
+//            confirmed = UIRegistry.displayConfirm(getResourceString("DataEntryTask.DUBIOUS_FORM_MSG_TITLE"),
+//                    String.format(getResourceString("DataEntryTask.NO_SUITABLE_DATA_ENTRY_FORM_MSG"),
+//                            DBTableIdMgr.getInstance().getInfoById(tableId).getTitle()),
+//                    getResourceString("YES"), getResourceString("NO"), JOptionPane.WARNING_MESSAGE);
+//        }
+        return confirmed;
+    }
+
     /**
      * @param cmdAction
      */
     protected void processRecordSetCommand(final CommandAction cmdAction)
     {
-        if (!processRecordSetCommand(cmdAction, stdViews))
-        {
-            if (!processRecordSetCommand(cmdAction, miscViews) && cmdAction.getDstObj() instanceof RecordSetIFace)
-            {
-                FormPane formPane = createFormFor(this, "", null, null, (RecordSetIFace)cmdAction.getDstObj());
-                if (formPane != null)
-                {
-                    addSubPaneToMgr(formPane);
+        if (!processRecordSetCommand(cmdAction, stdViews)) {
+            if (!processRecordSetCommand(cmdAction, miscViews) && cmdAction.getDstObj() instanceof RecordSetIFace) {
+                RecordSetIFace rs = (RecordSetIFace) cmdAction.getDstObj();
+                if (rs != null && !InteractionsTask.isInteractionTable(rs.getDbTableId())) {
+                    if (rs.getDbTableId() == Preparation.getClassTableId()) {
+                        rs = getRelatedRecordset(rs, CollectionObject.getClassTableId());
+                    }
+                    try {
+                        FormPane formPane = createFormFor(this, "", null, null, rs);
+                        String tblTitle = DBTableIdMgr.getInstance().getInfoById(rs.getDbTableId()).getTitle();
+                        boolean canShow = formPane != null ? confirmDubiousFormDisplay(rs.getDbTableId()) : false;
+                        if (canShow) {
+                            addSubPaneToMgr(formPane);
+                        } else {
+                            UIRegistry.displayInfoMsgDlg(String.format(getResourceString("DataEntryTask.NO_FORM_AVAILABLE"), tblTitle));
+                        }
+
+                    } catch (Exception x) {
+                        //probably not a DataEntryTask action. ignore.
+                        //log.warn(x);
+                    }
                 }
             }
         }
-        
         /*
         if (ContextMgr.getCurrentContext() == this && cmdAction.getSrcObj() instanceof RecordSetIFaced)
         {

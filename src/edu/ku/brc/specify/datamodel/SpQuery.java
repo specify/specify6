@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -278,7 +278,7 @@ public class SpQuery extends DataModelObjBase implements Cloneable
     @Column(name = "IsFavorite", unique = false, nullable = true, insertable = true, updatable = true)
     public Boolean getIsFavorite()
     {
-        return isFavorite == null ? false : isFavorite;
+        return isFavorite == null ? true : isFavorite;
     }
 
     /**

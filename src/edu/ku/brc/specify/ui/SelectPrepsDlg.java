@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -59,6 +59,7 @@ import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import org.apache.commons.lang.StringUtils;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -111,6 +112,7 @@ public class SelectPrepsDlg extends CustomDialog
     
     protected Hashtable<Integer, String>     prepTypeHash;
     protected Hashtable<Integer, ColObjInfo> coToPrepHash;
+    protected int objTblId;
     
     /**
      * @param colObjs
@@ -118,13 +120,15 @@ public class SelectPrepsDlg extends CustomDialog
      */
     public SelectPrepsDlg(final Hashtable<Integer, ColObjInfo> coToPrepHash,
                           final Hashtable<Integer, String>     prepTypeHash,
-                          final String                         title)
+                          final String                         title,
+                          final int objTblId)
     {
         super((Frame)UIRegistry.getTopWindow(), getLocalizedMessage("LoanSelectPrepsDlg.CREATE_FR_PREP", title),//$NON-NLS-1$
                 true, OKCANCELAPPLYHELP, null);
         
         this.coToPrepHash = coToPrepHash;
         this.prepTypeHash = prepTypeHash;
+        this.objTblId = objTblId;
     }
 
         
@@ -179,10 +183,13 @@ public class SelectPrepsDlg extends CustomDialog
                 doEnableOKBtn();
             }
         };
-        
-        DBTableInfo colObjTI = DBTableIdMgr.getInstance().getInfoById(CollectionObject.getClassTableId());
-        DBFieldInfo colObjFI = colObjTI.getFieldByColumnName("CatalogNumber");
-        
+
+
+        UIFieldFormatterIFace idFormatter = null;
+        DBTableInfo objTI = DBTableIdMgr.getInstance().getInfoById(objTblId);
+        DBFieldInfo objFI = objTI.getFieldByColumnName(objTblId == 1 ? "CatalogNumber" : "BarCode");
+        idFormatter = objFI.getFormatter();
+
         int i = 0;
         int y = 1;
         for (ColObjInfo colObjInfo : coFilteredList)
@@ -193,7 +200,9 @@ public class SelectPrepsDlg extends CustomDialog
             }
             y += 2;
             
-            colObjInfo.setCatNo((String)colObjFI.getFormatter().formatToUI(colObjInfo.getCatNo()));
+            if (idFormatter != null) {
+                colObjInfo.setCatNo((String) idFormatter.formatToUI(colObjInfo.getCatNo()));
+            }
             ColObjPanel panel = new ColObjPanel(this, colObjInfo);
             colObjPanels.add(panel);
             panel.addActionListener(al, cl);

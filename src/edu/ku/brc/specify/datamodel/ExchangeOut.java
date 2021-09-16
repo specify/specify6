@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -19,9 +19,7 @@
 */
 package edu.ku.brc.specify.datamodel;
 
-import java.util.Calendar;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -37,6 +35,9 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.tasks.InteractionsTask;
+import org.apache.log4j.Logger;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
@@ -50,12 +51,13 @@ import org.hibernate.annotations.Index;
 @Table(name = "exchangeout")
 @org.hibernate.annotations.Table(appliesTo="exchangeout", indexes =
     {   @Index (name="ExchangeOutdateIDX", columnNames={"ExchangeDate"}),
-		@Index (name="DescriptionOfMaterialIDX2", columnNames={"DescriptionOfMaterial"})
+		@Index (name="DescriptionOfMaterialIDX2", columnNames={"DescriptionOfMaterial"}),
+        @Index (name="ExchangeOutNumberIDX", columnNames={"ExchangeOutNumber"})
     })
 @SuppressWarnings("serial")
-public class ExchangeOut extends DataModelObjBase implements java.io.Serializable {
-
-    // Fields    
+public class ExchangeOut extends DataModelObjBase implements java.io.Serializable, OneToManyProviderIFace {
+    private static final Logger log = Logger.getLogger(ExchangeOut.class);
+    // Fields
 
     protected Integer         exchangeOutId;
     protected String          exchangeOutNumber;
@@ -81,6 +83,7 @@ public class ExchangeOut extends DataModelObjBase implements java.io.Serializabl
     protected Set<Shipment>   shipments;
     protected Division        division;
     protected Set<ExchangeOutPrep> exchangeOutPreps;
+    protected Deaccession            deaccession;
 
 
     // Constructors
@@ -124,6 +127,7 @@ public class ExchangeOut extends DataModelObjBase implements java.io.Serializabl
         exchangeOutPreps = new HashSet<ExchangeOutPrep>();
 
         division         = null;
+        deaccession = null;
     }
     // End Initializer
 
@@ -154,7 +158,7 @@ public class ExchangeOut extends DataModelObjBase implements java.io.Serializabl
     /**
      *      * Invoice number
      */
-    @Column(name = "ExchangeOutNumber", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    @Column(name = "ExchangeOutNumber", unique = false, nullable = false, insertable = true, updatable = true, length = 50)
     public String getExchangeOutNumber() {
         return this.exchangeOutNumber;
     }
@@ -466,7 +470,18 @@ public class ExchangeOut extends DataModelObjBase implements java.io.Serializabl
     {
         this.division = division;
     }
-    
+
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.MERGE, org.hibernate.annotations.CascadeType.LOCK })
+    @JoinColumn(name = "DeaccessionID", unique = false, nullable = true, insertable = true, updatable = true)
+    public Deaccession getDeaccession() {
+        return deaccession;
+    }
+
+    public void setDeaccession(Deaccession deaccession) {
+        this.deaccession = deaccession;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentTableId()
      */
@@ -496,13 +511,62 @@ public class ExchangeOut extends DataModelObjBase implements java.io.Serializabl
     {
         return getClassTableId();
     }
-    
+
+    @Override
+    @Transient
+    public Set<? extends PreparationHolderIFace> getPreparationHolders() {
+        return getExchangeOutPreps();
+    }
+
     /**
      * @return the Table ID for the class.
      */
     public static int getClassTableId()
     {
         return 40;
+    }
+
+    @Transient
+    public Integer getTotalPreps() {
+        return countContents(false);
+    }
+
+    @Transient
+    public Integer getTotalItems() {
+        return countContents(true);
+    }
+
+    protected Integer countContents(Boolean countQuantity) {
+        if (getId() == null) {
+            return null;
+        } else {
+            return BasicSQLUtils.getCountAsInt(getCountContentsSql(countQuantity, getId()));
+        }
+    }
+
+    protected static String getCountContentsSql(boolean countQuantity, int id) {
+        return InteractionsTask.getCountContentsSql(countQuantity, false, id, getClassTableId());
+    }
+
+    @Transient
+    public static List<String> getQueryableTransientFields() {
+        List<String> result = new ArrayList<>();
+        result.add("TotalPreps");
+        result.add("TotalItems");
+        return result;
+    }
+
+    public static Object getQueryableTransientFieldValue(String fldName, Object[] vals) {
+        if (vals == null || vals[0] == null) {
+            return null;
+        } else if (fldName.equalsIgnoreCase("TotalPreps")) {
+            return BasicSQLUtils.getCountAsInt(getCountContentsSql(false, (Integer)vals[0]));
+        } else if (fldName.equalsIgnoreCase("TotalItems")) {
+            return BasicSQLUtils.getCountAsInt(getCountContentsSql(true, (Integer)vals[0]));
+        } else {
+            log.error("Unknown calculated field: " + fldName);
+            return null;
+        }
     }
 
 }

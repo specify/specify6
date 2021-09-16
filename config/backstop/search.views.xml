@@ -134,8 +134,19 @@
                 <altview name="ContainerSearch" viewdef="ContainerSearch" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
-        
-        <view 
+
+        <view
+                name="DisposalSearch"
+                class="edu.ku.brc.specify.datamodel.DisposalSearch"
+                usedefbusrule="false"
+                resourcelabels="false">
+            <desc><![CDATA[The Disposal Search Form]]></desc>
+            <altviews>
+                <altview name="DisposalSearch" viewdef="DisposalSearch" mode="edit" validated="false" default="true"/>
+            </altviews>
+        </view>
+
+        <view
             name="DivisionSearch"
             class="edu.ku.brc.specify.datamodel.Division"
             usedefbusrule="false"
@@ -176,6 +187,17 @@
             <desc><![CDATA[The Journal Search Form]]></desc>
             <altviews>
                 <altview name="JournalSearch" viewdef="JournalSearch" mode="edit" validated="true" default="true"/>
+            </altviews>
+        </view>
+
+        <view
+                name="DeaccessionSearch"
+                class="edu.ku.brc.specify.datamodel.Deaccession"
+                usedefbusrule="false"
+                resourcelabels="false">
+            <desc><![CDATA[The Deaccession Search Form]]></desc>
+            <altviews>
+                <altview name="DeaccessionSearch" viewdef="DeaccessionSearch" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
 
@@ -309,8 +331,8 @@
                 <altview name="ChronosStratSearch" viewdef="ChronosStratSearch" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
-        
-        <view 
+
+        <view
             name="LithoStratSearch"
             class="edu.ku.brc.specify.datamodel.LithoStrat"
             usedefbusrule="false"
@@ -811,8 +833,48 @@ Good: <cell type="field" name="FieldNum" ...>
                     <cell type="field" id="6" name="DateReceived" uitype="formattedtext" uifieldformatter="SearchDate" initialize="ispartial=true;"/>
                 </row>
             </rows>
-        </viewdef>   
-             
+        </viewdef>
+
+        <viewdef type="form"
+                 name="DeaccessionSearch"
+                 class="edu.ku.brc.specify.datamodel.Deaccession"
+                 gettable="edu.ku.brc.af.ui.forms.DataGetterForHashMap"
+                 settable="edu.ku.brc.af.ui.forms.DataSetterForHashMap">
+
+            <desc><![CDATA[The Deaccession Search Form]]></desc>
+            <enableRules/>
+
+            <columnDef>100px,3dlu,p,3dlu,100px,3dlu,p,3dlu,p,3dlu,p,p:g</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p</rowDef>
+
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="deaccessionNumber" initialize="ispartial=true;alledit=true;"/>
+                </row>
+            </rows>
+        </viewdef>
+
+        <viewdef type="form"
+                 name="DisposalSearch"
+                 class="edu.ku.brc.specify.datamodel.Disposal"
+                 gettable="edu.ku.brc.af.ui.forms.DataGetterForHashMap"
+                 settable="edu.ku.brc.af.ui.forms.DataSetterForHashMap">
+
+            <desc><![CDATA[The Disposal Search Form]]></desc>
+            <enableRules/>
+
+            <columnDef>p,3dlu,p</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p</rowDef>
+
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="disposalNumber" isrequired="true" uitype="text"/>
+                </row>
+            </rows>
+        </viewdef>
+
         <viewdef type="form"
             name="LocalitySearch"
             class="edu.ku.brc.specify.datamodel.Locality"

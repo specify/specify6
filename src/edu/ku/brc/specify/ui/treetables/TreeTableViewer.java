@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -80,7 +80,7 @@ import edu.ku.brc.specify.datamodel.*;
 import edu.ku.brc.specify.dbsupport.PostInsertEventListener;
 import edu.ku.brc.specify.dbsupport.PropertyUpdateInfo;
 import org.apache.log4j.Logger;
-import org.apache.poi.hssf.record.formula.functions.T;
+//import org.apache.poi.hssf.record.formula.functions.T;
 
 import edu.ku.brc.af.auth.PermissionSettings;
 import edu.ku.brc.af.core.SubPaneMgr;
@@ -1224,6 +1224,13 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		
 	}
 
+	public void spiceDigSelectedNode(final JList list) {
+	    TreeNode selection = (TreeNode)list.getSelectedValue();
+	    if (selection == null) {
+	        return;
+        }
+
+    }
 	/**
 	 * Sets the visibleRoot property of the tree to the currently selected node.  This provides
 	 * the ability to "zoom in" to a lower level of the tree.

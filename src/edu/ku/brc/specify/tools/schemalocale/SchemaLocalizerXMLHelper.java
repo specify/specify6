@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -33,6 +33,7 @@ import edu.ku.brc.ui.ToggleButtonChooserPanel;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -168,9 +169,9 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
         return loadedOk;
     }
 
-    protected String processText(Element t, String margin) {
+    protected String processText(Element t, String margin, SpLocaleItemStr itemStr) {
         Element text = (Element)t.selectSingleNode("text");
-        String textStr = text == null ? "NULL" : text.getText();
+        String textStr = itemStr != null ? itemStr.getText() : (text == null ? null : text.getText());
         //System.out.println(margin + textStr);
         return textStr;
     }
@@ -192,14 +193,36 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
         return result;
     }
 
-    protected SpLocaleItemStr processTextElement(String textType, Element e, String margin, Map<String, Integer> cnts) {
-        String lang = getAttr(e, "language", "");
-        String country = getAttr(e, "country", "");
-        String variant = getAttr(e, "variant", "");
+    protected SpLocaleItemStr spLocaleItemStrCopy(SpLocaleItemStr s) {
+        SpLocaleItemStr result = new SpLocaleItemStr();
+        result.initialize();
+        String lang = s.getLanguage();
+        String country = s.getCountry();
+        String variant = s.getVariant();
+        result.setLanguage("".equals(lang) ? null : lang);
+        result.setCountry("".equals(country) ? null : country);
+        result.setVariant("".equals(variant) ? null : variant);
+        return result;
+    }
+
+
+    protected SpLocaleItemStr processTextElement(String textType, Element e, String margin, Map<String, Integer> cnts, SpLocaleItemStr name) {
+        String reference = textType.equals("descs") ? getAttr(e, "reference", null) : null;
+        boolean useName = false;
+        if (reference != null) {
+            if (reference.startsWith("../../names/str") && name != null) {
+                useName = true;
+            } else {
+                System.out.println("ignoring reference: " + reference);
+            }
+        }
+        String lang = useName ? name.getLanguage() : getAttr(e, "language", "");
+        String country = useName ? name.getCountry() : getAttr(e, "country", "");
+        String variant = useName ? name.getVariant() : getAttr(e, "variant", "");
         String cntKey = textType + "/" + lang + "/" + country + "/" + variant + "/";
         incrementCnt(cntKey, cnts);
-        String text = processText(e, margin);
-        SpLocaleItemStr result = spLocaleItemStrFromXml(e);
+        String text = processText(e, margin, useName ? name : null);
+        SpLocaleItemStr result = useName ? spLocaleItemStrCopy(name) : spLocaleItemStrFromXml(e);
         result.setText(text);
         if (text == null) {
             incrementCnt("null/" + cntKey, cnts);
@@ -211,12 +234,14 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
         List<SpLocaleItemStr> names = new ArrayList<>();
         List<SpLocaleItemStr> descs = new ArrayList<>();
         for (Object nameObj : e.selectNodes("names/str")) {
-            names.add(processTextElement("names", (Element)nameObj, margin, cnts));
+            names.add(processTextElement("names", (Element)nameObj, margin, cnts, null));
         }
+        int i = 0;
         for (Object descObj : e.selectNodes("descs/str")) {
-            descs.add(processTextElement("descs", (Element)descObj, margin, cnts));
+            SpLocaleItemStr name = i < names.size() ? names.get(i++) : null;
+            descs.add(processTextElement("descs", (Element)descObj, margin, cnts, name));
         }
-        return new Pair<List<SpLocaleItemStr>, List<SpLocaleItemStr>>(names, descs);
+        return new Pair<>(names, descs);
     }
 
     protected void spLocaleBaseFromXml(SpLocaleBase lb, Element e) {
@@ -255,7 +280,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
             c.getNames().add(i);
             i.setContainerName(c);
         }
-        for (SpLocaleItemStr i : texts.getFirst()) {
+        for (SpLocaleItemStr i : texts.getSecond()) {
             c.getDescs().add(i);
             i.setContainerDesc(c);
         }
@@ -266,18 +291,18 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
             ci.getNames().add(i);
             i.setItemName(ci);
         }
-        for (SpLocaleItemStr i : texts.getFirst()) {
+        for (SpLocaleItemStr i : texts.getSecond()) {
             ci.getDescs().add(i);
             i.setItemDesc(ci);
         }
     }
 
-    public Vector<DisciplineBasedContainer> oldSchoolStepByStep(String prefix) throws Exception {
-        String fName = fileName[this.schemaType];
-        if (prefix != null) {
-            fName = prefix + File.separator + fName;
-        }
-        File file = XMLHelper.getConfigDir(fName);
+    public Vector<DisciplineBasedContainer> oldSchoolStepByStep(File file) throws Exception {
+//        String fName = fileName[this.schemaType];
+//        if (prefix != null) {
+//            fName = prefix + File.separator + fName;
+//        }
+//        File file = XMLHelper.getConfigDir(fName);
         Element e = XMLHelper.readFileToDOM4J(file);
         int containerCnt = 0;
         int itemCnt = 0;
@@ -405,16 +430,17 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
         int itemCnt      = 0;
 
         String country = "".equals(countryArg.trim()) ? null : countryArg;
+        String localeStr = getLocaleStr(language, country);
         for (DisciplineBasedContainer container : containers)
         {
-            if (container.getNamesSet().size() == 0)
-            {
-                log.debug("Container: "+container.getName()+" nameSet is empty.");
+            String containerTitle = null;
+            if (getStrForLocale(localeStr, container.getNamesSet()) == null) {
+                log.debug("Container: "+container.getName()+ "no name for " + localeStr + ".");
                 SpLocaleItemStr str = new SpLocaleItemStr();
                 str.initialize();
                 str.setLanguage(language);
                 str.setCountry(country);
-                str.setText(container.getName());
+                str.setText(UIHelper.makeNamePretty(container.getName()));
                 str.setContainerDesc(container);
                 container.getNamesSet().add(str);
                 containerCnt++;
@@ -424,19 +450,23 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                 {
                     if (StringUtils.isEmpty(str.getText()))
                     {
-                        str.setText(container.getName());
+                        str.setText(UIHelper.makeNamePretty(container.getName()));
                         containerCnt++;
+                    } else if (localeStr.equals(getLocaleStr(str))) {
+                        containerTitle = str.getText();
                     }
                 }
             }
-            if (container.getDescsSet().size() == 0)
+
+            if (getStrForLocale(localeStr, container.getDescsSet()) == null)
             {
-                log.debug("Container: "+container.getName()+" descSet is empty.");
+                log.debug("Container: "+container.getName()+" no description for " + localeStr + ".");
+
                 SpLocaleItemStr str = new SpLocaleItemStr();
                 str.initialize();
                 str.setLanguage(language);
                 str.setCountry(country);
-                str.setText(container.getName());
+                str.setText(containerTitle != null ? containerTitle : UIHelper.makeNamePretty(container.getName()));
                 str.setContainerDesc(container);
                 container.getDescsSet().add(str);
                 containerCnt++;
@@ -446,7 +476,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                 {
                     if (StringUtils.isEmpty(str.getText()))
                     {
-                        str.setText(container.getName());
+                        str.setText(containerTitle != null ? containerTitle : UIHelper.makeNamePretty(container.getName())); //should see if there's a name for the str's locale?? but does this case ever occur?
                         containerCnt++;
                     }
                 }
@@ -454,9 +484,10 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
             
             for (SpLocaleContainerItem sci : container.getItems())
             {
-                if (sci.getNamesSet().size() == 0)
+                String itemTitle = null;
+                if (getStrForLocale(localeStr, sci.getNamesSet()) == null)
                 {
-                    log.debug(container.getName()+" Item: "+sci.getName()+" nameSet is empty.");
+                    log.debug(container.getName()+" Item: "+sci.getName()+" no name for " + localeStr + ".");
                     SpLocaleItemStr str = new SpLocaleItemStr();
                     str.initialize();
                     str.setLanguage(language);
@@ -471,19 +502,21 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                     {
                         if (StringUtils.isEmpty(str.getText()))
                         {
-                            str.setText(sci.getName());
+                            str.setText(UIHelper.makeNamePretty(sci.getName())); //should see if there's a name for the str's locale?? but does this case ever occur?
                             itemCnt++;
+                        } else if (localeStr.equals(getLocaleStr(str))) {
+                            itemTitle = str.getText();
                         }
                     }
                 }
-                if (sci.getDescsSet().size() == 0)
+                if (getStrForLocale(localeStr, sci.getDescsSet()) == null)
                 {
-                    //log.debug(container.getName()+" Item: "+sci.getName()+" descSet is empty.");
+                    //log.debug(container.getName()+" Item: "+sci.getName()+" no desc for " + localeStr + ".");
                     SpLocaleItemStr str = new SpLocaleItemStr();
                     str.initialize();
                     str.setLanguage(language);
                     str.setCountry(country);
-                    str.setText(sci.getName());
+                    str.setText(itemTitle != null ? itemTitle : UIHelper.makeNamePretty(sci.getName()));
                     str.setItemDesc(sci);
                     sci.getDescsSet().add(str);
                     itemCnt++;
@@ -493,7 +526,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                     {
                         if (StringUtils.isEmpty(str.getText()))
                         {
-                            str.setText(sci.getName());
+                            str.setText(itemTitle != null ? itemTitle : UIHelper.makeNamePretty(sci.getName()));
                             itemCnt++;
                         }
                     }
@@ -717,17 +750,19 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                     Collections.sort(list);
 
                     boolean cont = false;
-                    while (cont)
-                    {
-                        ToggleButtonChooserDlg<DisplayLocale> dlg = new ToggleButtonChooserDlg<DisplayLocale>((Dialog)null, 
-                                                                   "CHOOSE_LOCALE", list, ToggleButtonChooserPanel.Type.RadioButton);
+                    while (cont) {
+                        ToggleButtonChooserDlg<DisplayLocale> dlg = new ToggleButtonChooserDlg<>((Dialog)UIRegistry.getMostRecentWindow(),
+                                "CHOOSE_LOCALE", list, ToggleButtonChooserPanel.Type.RadioButton);
                         dlg.setUseScrollPane(true);
                         dlg.setVisible(true);
-                        
+
                         cont = dlg.isCancelled();
-                        if (!cont)
-                        {
+                        if (!cont) {
                             lang = dlg.getSelectedObject().getLocale().getLanguage();
+                            country = dlg.getSelectedObject().getLocale().getCountry();
+                            stripToSingleLocale(lang, country, containers);
+                        } else {
+                            return null;
                         }
                     }
                 }
@@ -980,7 +1015,8 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
             
         } catch (Exception ex)
         {
-           UIRegistry.showError("There was a problem reading the XML in the file."); // I18N
+            ex.printStackTrace();
+            UIRegistry.showError("There was a problem reading the XML in the file."); // I18N
         }
            
         return containers;
@@ -1196,7 +1232,15 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
      */
     public boolean save(final String basePath)
     {
+//        fixDescriptions(new File("/home/timo/datas/schemadescfix/schema_localization_with_descs.xml"),
+//                new File("/home/timo/datas/schemadescfix/schema_localization_master.xml"),
+//                new File("/home/timo/datas/fixedschema/"));
+//        fixDescriptions(new File("/home/timo/datas/schemadescfix/schema_localization.xml"),
+//                new File("/home/timo/sp6locale/Good/schema_localization_en.xml"),
+//                new File("/home/timo/sp6locale/Good/schema_localization_en_desced2/"));
+//        fixDescriptionsInWrongLanguage(new File("/home/timo/sp6gitbak/specify6/config/schema_localization.xml"), new File("/home/timo/datas/fixedschema/"));
         boolean savedOk = save(basePath, null, tables);
+
         if (savedOk)
         {
             changesMadeDuringStartup = false;
@@ -1657,6 +1701,321 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
         {
             pcl.propertyChange(new PropertyChangeEvent(this, "count", -1, 100));
         }
+    }
+
+    /**
+     *
+     * @param name
+     * @param descs
+     * @return
+     */
+    private DisciplineBasedContainer getContainerByName(String name, Vector<DisciplineBasedContainer> containers) {
+        for (DisciplineBasedContainer c : containers) {
+            if (c.getName().equals(name)) {
+                return c;
+            }
+        }
+        return null;
+    }
+
+    private SpLocaleContainerItem getContainerItemByName(String name, Set<SpLocaleContainerItem> spLocaleContainerItems) {
+        for (SpLocaleContainerItem c : spLocaleContainerItems) {
+            if (c.getName().equals(name)) {
+                return c;
+            }
+        }
+        return null;
+    }
+
+    private SpLocaleItemStr getStrForLocale(String localeStr, Set<SpLocaleItemStr> strs) {
+        for (SpLocaleItemStr d : strs) {
+            if (getLocaleStr(d).equals(localeStr)) {
+                return d;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * ignores variant
+     * @param item
+     * @return
+     */
+    private String getLocaleStr(SpLocaleItemStr item) {
+        return getLocaleStr(item.getLanguage(), item.getCountry());
+    }
+
+    private String getLocaleStr(String lang, String ctry) {
+        String result = lang;
+        if (ctry != null && !"".equals(ctry)) {
+            result += "_" + ctry;
+        }
+        return result;
+    }
+
+    private String correctDesc(SpLocaleItemStr rightDesc, SpLocaleItemStr wrongDesc, SpLocaleItemStr wrongNameItem) {
+        String wrong = wrongDesc.getText();
+        String right = rightDesc.getText();
+        String wrongName = wrongNameItem.getText();
+        if ((wrong == null || "".equals(wrong) || wrong.equals(wrongName)) && right != null && !"".equals(right)) {
+            if (!wrong.equals(right)) {
+                wrongDesc.setText(rightDesc.getText());
+                return rightDesc.getText();
+            }
+        }
+        return null;
+    }
+
+
+    private boolean matchNameInOtherLanguage(SpLocaleItemStr descItemStr, Set<SpLocaleItemStr> itemStrs) {
+        for (SpLocaleItemStr i : itemStrs) {
+            String iLang = i.getLanguage();
+            String dLang = descItemStr.getLanguage();
+            if (descItemStr.getText().replaceAll(" ", "").equalsIgnoreCase(i.getText()) && !dLang.equals(iLang)) {
+                if (!((iLang.equals("ru") && dLang.equals("uk")) || (iLang.equals("uk") && dLang.equals("ru")))) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private void fixDescsThatAreNames(String itemName, Set<SpLocaleItemStr> descs, Set<SpLocaleItemStr> names,
+                                      List<String> fixes, List<String> problems) {
+        boolean doFix = false;
+        for (SpLocaleItemStr d : descs) {
+            if (matchNameInOtherLanguage(d, names)) {
+                doFix = true;
+                break;
+            }
+        }
+        if (doFix) {
+            for (SpLocaleItemStr d : descs) {
+                SpLocaleItemStr newText = getStrForLocale(getLocaleStr(d), names);
+                if (newText == null){
+                    String msg = "Can't replace text for " + itemName + " " + getLocaleStr(d) + " - " + d.getText();
+                    System.out.println(msg);
+                    problems.add(msg);
+                } else if (!d.getText().replaceAll(" ", "").equalsIgnoreCase(newText.getText())) {
+                    fixes.add(itemName + "[" + d.getText() + " <= " + newText.getText() + "]");
+                    d.setText(newText.getText());
+                }
+            }
+        }
+    }
+
+    private void addMissingNames(DisciplineBasedContainer item, List<String> newNames) {
+        List<String> locales = new ArrayList<>();
+        locales.add("en");
+        //locales.add("pt");
+        //locales.add("pt_BR");
+        //locales.add("ru_RU");
+        //locales.add("uk_UA");
+        for (String locale : locales) {
+            if (getStrForLocale(locale, item.getNames()) == null) {
+                SpLocaleItemStr newItem = new SpLocaleItemStr();
+                newItem.initialize();
+                newItem.setText(UIHelper.makeNamePretty(item.getName()));
+                newItem.setContainerName(item);
+                String[] ls = locale.split("_");
+                newItem.setLanguage(ls[0]);
+                if (ls.length > 1) {
+                    newItem.setCountry(ls[1]);
+                }
+                item.getNames().add(newItem);
+                newNames.add(item.getName() + " for " + locale);
+            }
+            for (SpLocaleContainerItem cItem : item.getItems()) {
+                if (getStrForLocale(locale, cItem.getNames()) == null) {
+                    SpLocaleItemStr newItem = new SpLocaleItemStr();
+                    newItem.initialize();
+                    newItem.setText(UIHelper.makeNamePretty(cItem.getName()));
+                    newItem.setItemName(cItem);
+                    String[] ls = locale.split("_");
+                    newItem.setLanguage(ls[0]);
+                    if (ls.length > 1) {
+                        newItem.setCountry(ls[1]);
+                    }
+                    cItem.getNames().add(newItem);
+                    newNames.add(item.getName()  + "." + cItem.getName() + " for " + locale);
+                }
+
+            }
+        }
+    }
+
+    private void addAllMissingNames(Vector<DisciplineBasedContainer> all) {
+        List<String> newNames = new ArrayList<>();
+        for (DisciplineBasedContainer c : all) {
+            addMissingNames(c, newNames);
+        }
+        try {
+            FileUtils.writeLines(new File("/home/timo/datas/schemadescfix/newNames.txt"), newNames);
+        } catch (IOException x) {
+            System.out.println("error writing new names file.");
+        }
+    }
+
+    private void findDescsWithoutNames(DisciplineBasedContainer item, List<String> descsWoNames) {
+           for (SpLocaleItemStr desc : item.getDescs()) {
+            if (getStrForLocale(getLocaleStr(desc), item.getNames()) == null) {
+                descsWoNames.add(item.getName() + " for " + getLocaleStr(desc));
+            }
+            for (SpLocaleContainerItem cItem : item.getItems()) {
+                for (SpLocaleItemStr cdesc : cItem.getDescs()) {
+                    if (getStrForLocale(getLocaleStr(cdesc), cItem.getNames()) == null) {
+                        descsWoNames.add(item.getName() + "." + cItem.getName() + " for " + getLocaleStr(cdesc));
+                    }
+                }
+            }
+        }
+    }
+    private void findAllDescsWithoutNames(Vector<DisciplineBasedContainer> all) {
+        List<String> newNames = new ArrayList<>();
+        for (DisciplineBasedContainer c : all) {
+            findDescsWithoutNames(c, newNames);
+        }
+        try {
+            FileUtils.writeLines(new File("/home/timo/datas/schemadescfix/descsWoNames.txt"), newNames);
+        } catch (IOException x) {
+            System.out.println("error writing descs w/o names file.");
+        }
+    }
+
+    private void cleanUpParentPointers(Vector<DisciplineBasedContainer> jump) {
+        for (DisciplineBasedContainer j : jump) {
+            cleanUpParentPointers(j);
+        }
+    }
+
+    private void cleanUpParentPointers(DisciplineBasedContainer jump) {
+        cleanUpParentPointers(jump, null);
+        for (SpLocaleContainerItem i : jump.getItems()) {
+            cleanUpParentPointers(null, i);
+        }
+    }
+
+    private void cleanUpParentPointers(DisciplineBasedContainer c, SpLocaleContainerItem i) {
+        if (c != null) {
+            for (SpLocaleItemStr s : c.getNames()) {
+                s.setContainerName(c);
+                s.setContainerDesc(null);
+                c.getDescs().remove(s);
+                s.setItemDesc(null);
+                s.setItemName(null);
+            }
+            for (SpLocaleItemStr s : c.getDescs()) {
+                s.setContainerDesc(c);
+                s.setContainerName(null);
+                c.getNames().remove(s);
+                s.setItemDesc(null);
+                s.setItemName(null);
+            }
+        } else if (i != null) {
+            for (SpLocaleItemStr s : i.getNames()) {
+                s.setContainerName(null);
+                s.setContainerDesc(null);
+                i.getDescs().remove(s);
+                s.setItemDesc(null);
+                s.setItemName(i);
+            }
+            for (SpLocaleItemStr s : i.getDescs()) {
+                s.setContainerDesc(null);
+                s.setContainerName(null);
+                i.getNames().remove(s);
+                s.setItemDesc(i);
+                s.setItemName(null);
+            }
+
+        }
+    }
+
+    private void fixDescriptionsInWrongLanguage(File schemaFile, File exportDirectory) {
+        Vector<DisciplineBasedContainer> litems = null;
+        try {
+            litems = oldSchoolStepByStep(schemaFile);
+        } catch (Exception x) {
+            x.printStackTrace();
+            return;
+        }
+        List<String> fixes = new ArrayList<>();
+        List<String> problems = new ArrayList<>();
+        for (DisciplineBasedContainer desced : litems) {
+            fixDescsThatAreNames(desced.getName(), desced.getDescs(), desced.getNames(), fixes, problems);
+            for (SpLocaleContainerItem descedItem : desced.getItems()) {
+                fixDescsThatAreNames(desced.getName() + "." + descedItem.getName(),
+                        descedItem.getDescs(), descedItem.getNames(), fixes, problems);
+            }
+        }
+        try {
+            FileUtils.writeLines(new File("/home/timo/datas/schemadescfix/problems.txt"), problems);
+            FileUtils.writeLines(new File("/home/timo/datas/schemadescfix/fixes.txt"), fixes);
+        } catch (IOException x) {
+            System.out.println("error writing log files.");
+        }
+        saveContainers(exportDirectory, litems);
+    }
+
+    private void fixDescriptions(File schemaWithDescs, File schemaWithoutDescs, File exportDirectory) {
+        Vector<DisciplineBasedContainer> withDescs = null;
+        Vector<DisciplineBasedContainer> withoutDescs = null;
+
+        try {
+            withDescs = oldSchoolStepByStep(schemaWithDescs);
+            withoutDescs = oldSchoolStepByStep(schemaWithoutDescs);
+        } catch (Exception x) {
+            x.printStackTrace();
+            return;
+        }
+        List<String> fixes = new ArrayList<>();
+        List<String> problems = new ArrayList<>();
+        for (DisciplineBasedContainer desced : withDescs) {
+            DisciplineBasedContainer unDesced = getContainerByName(desced.getName(), withoutDescs);
+            if (unDesced != null) {
+                for (SpLocaleItemStr desc : desced.getDescs()) {
+                    String localeStr = getLocaleStr(desc);
+                    SpLocaleItemStr woDesc = getStrForLocale(localeStr, unDesced.getDescs());
+                    SpLocaleItemStr woName = getStrForLocale(localeStr, unDesced.getNames());
+                    if (woDesc != null) {
+                        String oldDesc = woDesc.getText();
+                        String correction = correctDesc(desc, woDesc, woName);
+                        if (correction != null) {
+                            System.out.println(oldDesc + " <= " + desc.getText());
+                            fixes.add(oldDesc + " <= " + desc.getText());
+                        }
+                    }
+                }
+                fixDescsThatAreNames(unDesced.getName(), unDesced.getDescs(), unDesced.getNames(), fixes, problems);
+                for (SpLocaleContainerItem descedItem : desced.getItems()) {
+                    SpLocaleContainerItem unDescedItem = getContainerItemByName(descedItem.getName(), unDesced.getItems());
+                    if (unDescedItem != null) {
+                        for (SpLocaleItemStr desc : descedItem.getDescs()) {
+                            String localeStr = getLocaleStr(desc);
+                            SpLocaleItemStr woDesc = getStrForLocale(localeStr, unDescedItem.getDescs());
+                            SpLocaleItemStr woName = getStrForLocale(localeStr, unDescedItem.getNames());
+                            if (woDesc != null) {
+                                String oldDesc = woDesc.getText();
+                                String correction = correctDesc(desc, woDesc, woName);
+                                if (correction != null) {
+                                    System.out.println(oldDesc + " <= " + desc.getText());
+                                    fixes.add(oldDesc + " <= " + desc.getText());
+                                }
+                            }
+                        }
+                        fixDescsThatAreNames(unDesced.getName() + "." + unDescedItem.getName(),
+                                unDescedItem.getDescs(), unDescedItem.getNames(), fixes, problems);
+                    }
+                }
+            }
+        }
+        try {
+            FileUtils.writeLines(new File("/home/timo/datas/schemadescfix/problems.txt"), problems);
+            FileUtils.writeLines(new File("/home/timo/datas/schemadescfix/fixes.txt"), fixes);
+        } catch (IOException x) {
+            System.out.println("error writing log files.");
+        }
+        //findAllDescsWithoutNames(withoutDescs);
+        saveContainers(exportDirectory, withoutDescs);
     }
 
     /* (non-Javadoc)

@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -55,6 +55,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 
+import edu.ku.brc.specify.plugins.PartialDateUI;
 import org.apache.commons.lang.StringUtils;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -624,7 +625,7 @@ public class ValFormattedTextField extends JPanel implements ValFormattedTextFie
             {
                 if (!formatter.getFields().get(inx).isIncrementer())
                 {
-                    if (!isPartialOK)
+                    if (!isPartialOK && !formatter.getName().equalsIgnoreCase("world o' pain"))
                     {
                         return null;
                     }
@@ -1006,8 +1007,8 @@ public class ValFormattedTextField extends JPanel implements ValFormattedTextFie
             if ((!f.isIncrementer() || !isAutoFmtOn) && f.getType() != FieldType.constant && f.getType() != FieldType.separator)
             {
                 JFormattedDoc doc = documents.get(inx);
-                int len = f.getSize();
-                if (doc.getLength() != len)
+                int len = f.getMinSize();
+                if (doc.getLength() < len)
                 {
                     return false;
                 }
@@ -1137,14 +1138,14 @@ public class ValFormattedTextField extends JPanel implements ValFormattedTextFie
             {
                 data = (String)value;
 
-            } else if (value instanceof Date)
-            {
-                data = formatter.getDateWrapper().format((Date)value);
-                
-            } else if (value instanceof Calendar)
-            {
-                data = formatter.getDateWrapper().format(((Calendar)value).getTime());
-                
+            } else if (value instanceof Date || value instanceof Calendar) {
+                Date dateValue = value instanceof Calendar ? ((Calendar)value).getTime() : (Date)value;
+                if (formatter.getPartialDateType().equals(UIFieldFormatterIFace.PartialDateEnum.Month)
+                    || formatter.getPartialDateType().equals(UIFieldFormatterIFace.PartialDateEnum.Year)) {
+                    data = PartialDateUI.formatForUI(formatter, dateValue);
+                } else{
+                    data = formatter.getDateWrapper().format(dateValue);
+                }
             } else
             {
                 data = value.toString();

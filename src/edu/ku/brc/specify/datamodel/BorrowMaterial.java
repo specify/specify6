@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -165,7 +165,7 @@ public class BorrowMaterial extends CollectionMember implements java.io.Serializ
     /**
      *      * Description of the material. 'e.g. Bufo bufo skull'
      */
-    @Column(name = "Description", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    @Column(name = "Description", unique = false, nullable = true, insertable = true, updatable = true, length = 250)
     public String getDescription() {
         return this.description;
     }

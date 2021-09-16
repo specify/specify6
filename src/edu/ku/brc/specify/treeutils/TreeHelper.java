@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -359,7 +359,6 @@ public class TreeHelper
     {
         loc.getContainers().size();
         loc.getPreparations().size();
-        loc.getAlternateStoragePreparations().size();
     }
     
     public static void initializeRelatedObjects(GeologicTimePeriod gtp)

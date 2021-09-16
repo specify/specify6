@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -20,8 +20,10 @@
 package edu.ku.brc.helpers;
 
 import edu.ku.brc.af.prefs.AppPreferences;
-import org.apache.commons.httpclient.HostConfiguration;
-import org.apache.commons.httpclient.HttpClient;
+import org.apache.http.HttpHost;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.log4j.Logger;
 
 /**
@@ -128,7 +130,40 @@ public class ProxyHelper
                       false);
     }
 
+    /**
+     * Sets proxy if proxy settings are configured.
+     * For methods that use a request configuration, the request configuration should be created before
+     * calling this method, and built and set after calling.
+     *
+     * @param method
+     * @param requestConfigArg
+     * @return true if proxy settings were applied
+     */
+    public static boolean applyProxySettings(HttpRequestBase method, RequestConfig.Builder requestConfigArg) {
+        String proxyHost = System.getProperty("http.proxyHost");
+        if (proxyHost != null) {
+            boolean builtBuilder = requestConfigArg == null;
+            RequestConfig.Builder requestConfig = builtBuilder ? RequestConfig.custom() : requestConfigArg;
+            Integer proxyPort = null;
+            try {
+                proxyPort = Integer.valueOf(System.getProperty("http.proxyPort"));
+            } catch (Exception e) {
+                //disregard stupid port
+                log.warn("invalid proxy port. defaulting to 3128.");
+                proxyPort = 3128;
+            }
+            requestConfig.setProxy(new HttpHost(proxyHost, proxyPort));
+            if (builtBuilder) {
+                method.setConfig(requestConfig.build());
+            }
+            return true;
+        }
+        return false;
+    }
+
     public static void applyProxySettings(HttpClient httpClient) {
+        log.error("applyProxySettings(HttpClient) is no longer supported.");
+        /*
         String proxyHost = System.getProperty("http.proxyHost");
         if (proxyHost != null) {
             Integer proxyPort = null;
@@ -144,6 +179,7 @@ public class ProxyHelper
             httpClient.setHostConfiguration(hc);
             log.info("applied proxy settings: " + proxyHost + ":" + proxyPort);
         }
+        */
     }
 
 }

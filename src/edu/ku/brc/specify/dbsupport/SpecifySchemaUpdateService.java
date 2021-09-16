@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -19,48 +19,34 @@
 */
 package edu.ku.brc.specify.dbsupport;
 
-import static edu.ku.brc.specify.conversion.BasicSQLUtils.buildSelectFieldList;
-import static edu.ku.brc.specify.conversion.BasicSQLUtils.getCountAsInt;
-import static edu.ku.brc.specify.conversion.BasicSQLUtils.getFieldNamesFromSchema;
-import static edu.ku.brc.specify.conversion.BasicSQLUtils.query;
-import static edu.ku.brc.specify.conversion.BasicSQLUtils.queryForInts;
-import static edu.ku.brc.specify.conversion.BasicSQLUtils.querySingleCol;
-import static edu.ku.brc.specify.conversion.BasicSQLUtils.querySingleObj;
-import static edu.ku.brc.specify.conversion.BasicSQLUtils.update;
-import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
-import static edu.ku.brc.ui.UIRegistry.getResourceString;
-
-import java.awt.Frame;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.lang.Thread.UncaughtExceptionHandler;
-import java.lang.reflect.InvocationTargetException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Vector;
-
-import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
-
-import org.apache.commons.httpclient.NameValuePair;
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.GenericGUIDGeneratorFactory;
+import edu.ku.brc.af.core.SubPaneMgr;
+import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.af.ui.db.DatabaseLoginPanel;
+import edu.ku.brc.dbsupport.*;
+import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.config.SpecifyGUIDGeneratorFactory;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.conversion.IdMapperMgr;
+import edu.ku.brc.specify.conversion.IdTableMapper;
+import edu.ku.brc.specify.conversion.TableWriter;
+import edu.ku.brc.specify.datamodel.*;
+import edu.ku.brc.specify.datamodel.Collection;
+import edu.ku.brc.specify.prefs.S2nPrefsPanel;
+import edu.ku.brc.specify.tasks.subpane.security.NavigationTreeMgr;
+import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
+import edu.ku.brc.specify.tools.export.ExportToMySQLDB;
+import edu.ku.brc.specify.utilapps.BuildSampleDatabase;
+import edu.ku.brc.ui.*;
+import edu.ku.brc.util.AttachmentUtils;
+import edu.ku.brc.util.LatLonConverter;
+import edu.ku.brc.util.Pair;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -68,112 +54,20 @@ import org.dom4j.Element;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
+import javax.swing.*;
+import java.awt.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.*;
+import java.lang.Thread.UncaughtExceptionHandler;
+import java.lang.reflect.InvocationTargetException;
+import java.sql.*;
+import java.util.*;
+import java.util.List;
 
-import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.af.core.GenericGUIDGeneratorFactory;
-import edu.ku.brc.af.core.SubPaneMgr;
-import edu.ku.brc.af.core.db.DBTableIdMgr;
-import edu.ku.brc.af.core.db.DBTableInfo;
-import edu.ku.brc.af.prefs.AppPreferences;
-import edu.ku.brc.af.tasks.StatsTrackerTask;
-import edu.ku.brc.af.ui.db.DatabaseLoginPanel;
-import edu.ku.brc.dbsupport.DBConnection;
-import edu.ku.brc.dbsupport.DBMSUserMgr;
-import edu.ku.brc.dbsupport.DataProviderFactory;
-import edu.ku.brc.dbsupport.DataProviderSessionIFace;
-import edu.ku.brc.dbsupport.DatabaseDriverInfo;
-import edu.ku.brc.dbsupport.SchemaUpdateService;
-import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.specify.config.SpecifyGUIDGeneratorFactory;
-import edu.ku.brc.specify.conversion.BasicSQLUtils;
-import edu.ku.brc.specify.conversion.IdMapperMgr;
-import edu.ku.brc.specify.conversion.IdTableMapper;
-import edu.ku.brc.specify.conversion.TableWriter;
-import edu.ku.brc.specify.datamodel.Accession;
-import edu.ku.brc.specify.datamodel.AccessionAttachment;
-import edu.ku.brc.specify.datamodel.Address;
-import edu.ku.brc.specify.datamodel.Agent;
-import edu.ku.brc.specify.datamodel.AgentAttachment;
-import edu.ku.brc.specify.datamodel.Attachment;
-import edu.ku.brc.specify.datamodel.Borrow;
-import edu.ku.brc.specify.datamodel.BorrowAttachment;
-import edu.ku.brc.specify.datamodel.CollectingEvent;
-import edu.ku.brc.specify.datamodel.CollectingEventAttachment;
-import edu.ku.brc.specify.datamodel.CollectingEventAttribute;
-import edu.ku.brc.specify.datamodel.Collection;
-import edu.ku.brc.specify.datamodel.CollectionObject;
-import edu.ku.brc.specify.datamodel.CollectionObjectAttachment;
-import edu.ku.brc.specify.datamodel.CollectionObjectAttribute;
-import edu.ku.brc.specify.datamodel.Collector;
-import edu.ku.brc.specify.datamodel.ConservDescription;
-import edu.ku.brc.specify.datamodel.ConservDescriptionAttachment;
-import edu.ku.brc.specify.datamodel.ConservEvent;
-import edu.ku.brc.specify.datamodel.ConservEventAttachment;
-import edu.ku.brc.specify.datamodel.DNASequence;
-import edu.ku.brc.specify.datamodel.DNASequenceAttachment;
-import edu.ku.brc.specify.datamodel.DNASequencingRun;
-import edu.ku.brc.specify.datamodel.DNASequencingRunAttachment;
-import edu.ku.brc.specify.datamodel.Determination;
-import edu.ku.brc.specify.datamodel.Discipline;
-import edu.ku.brc.specify.datamodel.Division;
-import edu.ku.brc.specify.datamodel.FieldNotebook;
-import edu.ku.brc.specify.datamodel.FieldNotebookAttachment;
-import edu.ku.brc.specify.datamodel.FieldNotebookPage;
-import edu.ku.brc.specify.datamodel.FieldNotebookPageAttachment;
-import edu.ku.brc.specify.datamodel.FieldNotebookPageSet;
-import edu.ku.brc.specify.datamodel.FieldNotebookPageSetAttachment;
-import edu.ku.brc.specify.datamodel.GeoCoordDetail;
-import edu.ku.brc.specify.datamodel.Geography;
-import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
-import edu.ku.brc.specify.datamodel.Gift;
-import edu.ku.brc.specify.datamodel.GiftAttachment;
-import edu.ku.brc.specify.datamodel.Institution;
-import edu.ku.brc.specify.datamodel.Journal;
-import edu.ku.brc.specify.datamodel.Loan;
-import edu.ku.brc.specify.datamodel.LoanAttachment;
-import edu.ku.brc.specify.datamodel.LoanPreparation;
-import edu.ku.brc.specify.datamodel.Locality;
-import edu.ku.brc.specify.datamodel.LocalityAttachment;
-import edu.ku.brc.specify.datamodel.LocalityDetail;
-import edu.ku.brc.specify.datamodel.PaleoContext;
-import edu.ku.brc.specify.datamodel.Permit;
-import edu.ku.brc.specify.datamodel.PermitAttachment;
-import edu.ku.brc.specify.datamodel.Preparation;
-import edu.ku.brc.specify.datamodel.PreparationAttachment;
-import edu.ku.brc.specify.datamodel.PreparationAttribute;
-import edu.ku.brc.specify.datamodel.ReferenceWork;
-import edu.ku.brc.specify.datamodel.ReferenceWorkAttachment;
-import edu.ku.brc.specify.datamodel.RepositoryAgreement;
-import edu.ku.brc.specify.datamodel.RepositoryAgreementAttachment;
-import edu.ku.brc.specify.datamodel.SpExportSchema;
-import edu.ku.brc.specify.datamodel.SpExportSchemaItem;
-import edu.ku.brc.specify.datamodel.SpExportSchemaMapping;
-import edu.ku.brc.specify.datamodel.SpLocaleContainer;
-import edu.ku.brc.specify.datamodel.SpQuery;
-import edu.ku.brc.specify.datamodel.SpQueryField;
-import edu.ku.brc.specify.datamodel.SpTaskSemaphore;
-import edu.ku.brc.specify.datamodel.SpVersion;
-import edu.ku.brc.specify.datamodel.SpecifyUser;
-import edu.ku.brc.specify.datamodel.Taxon;
-import edu.ku.brc.specify.datamodel.TaxonAttachment;
-import edu.ku.brc.specify.datamodel.WorkbenchRow;
-import edu.ku.brc.specify.tasks.subpane.security.NavigationTreeMgr;
-import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
-import edu.ku.brc.specify.tools.export.ExportToMySQLDB;
-import edu.ku.brc.specify.utilapps.BuildSampleDatabase;
-import edu.ku.brc.ui.ChooseFromListDlg;
-import edu.ku.brc.ui.CommandAction;
-import edu.ku.brc.ui.CommandDispatcher;
-import edu.ku.brc.ui.CustomDialog;
-import edu.ku.brc.ui.ProgressFrame;
-import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.util.AttachmentUtils;
-import edu.ku.brc.util.LatLonConverter;
-import edu.ku.brc.util.Pair;
+import static edu.ku.brc.specify.conversion.BasicSQLUtils.*;
+import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 /**
  * @author rods
@@ -187,7 +81,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 {
     protected static final Logger  log = Logger.getLogger(SpecifySchemaUpdateService.class);
     
-    private final int OVERALL_TOTAL = 71; //the number of incOverall() calls (+1 or +2)
+    private final int OVERALL_TOTAL = 84; //the number of incOverall() calls (+1 or +2)
 
     private static final String TINYINT4 = "TINYINT(4)";
     private static final String INT11    = "INT(11)";
@@ -423,7 +317,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     	fixDuplicatedPaleoContexts(dbConn.getConnection());
                         
                         fixLatLonMethodGEOLocate(dbConn.getConnection());
-                        
+
                         if (doSchemaUpdate || doInsert)
                         {
                             //SpecifySchemaUpdateService.attachUnhandledException();
@@ -513,14 +407,27 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                                 frame.setVisible(false);
                                 
                                 fixSchemaMappingScope(dbConn.getConnection(), dbConn.getDatabaseName());
-                                
                                 fixLocaleSchema();
                                 
                                 // Unhide All GUID fields for Schema 1.8
                                 String updateSQL = "UPDATE splocalecontaineritem SET IsHidden=FALSE WHERE LOWER(Name) = 'guid'";
                                 BasicSQLUtils.update(dbConn.getConnection(), updateSQL);
-                                
-                                
+                                //set picklists for disposals/deaccs.
+                                updateSQL = "update splocalecontaineritem i inner join splocalecontainer c on c.splocalecontainerid = i.splocalecontainerid " +
+                                        " set i.picklistname='DisposalAgentRole' where i.name = 'role' and c.name='disposalagent'"; //but what about multiple disciplines? picklist name competition??
+                                BasicSQLUtils.update(dbConn.getConnection(), updateSQL);
+                                updateSQL = "update splocalecontaineritem i inner join splocalecontainer c on c.splocalecontainerid = i.splocalecontainerid " +
+                                        " set i.picklistname='DeaccessionStatus' where i.name = 'status' and c.name='deaccession'"; //but what about multiple disciplines? picklist name competition??
+                                BasicSQLUtils.update(dbConn.getConnection(), updateSQL);
+                                updateSQL = "update splocalecontaineritem i inner join splocalecontainer c on c.splocalecontainerid = i.splocalecontainerid " +
+                                        " set i.picklistname='DeaccessionType' where i.name = 'type' and c.name='deaccession'"; //but what about multiple disciplines? picklist name competition??
+                                BasicSQLUtils.update(dbConn.getConnection(), updateSQL);
+                                updateSQL = "update splocalecontaineritem i inner join splocalecontainer c on c.splocalecontainerid = i.splocalecontainerid " +
+                                        " set i.picklistname='DisposalType' where i.name = 'type' and c.name='disposal'"; //but what about multiple disciplines? picklist name competition??
+                                BasicSQLUtils.update(dbConn.getConnection(), updateSQL);
+                                updateSQL = "update splocalecontaineritem i inner join splocalecontainer c on c.splocalecontainerid = i.splocalecontainerid " +
+                                        " set i.picklistname='DeaccessionAgentRole' where i.name = 'role' and c.name='deaccessionagent'"; //but what about multiple disciplines? picklist name competition??
+                                BasicSQLUtils.update(dbConn.getConnection(), updateSQL);
                             } else
                             {
                                 //CommandDispatcher.dispatch(new CommandAction(APP, APP_REQ_EXIT, null));
@@ -776,6 +683,55 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     	return true;
     }
 
+    /**
+     * @return
+     */
+    private boolean fixTypeSearchDefResourcesAfterDeaccUpdate() {
+        String sql = "SELECT a.SpAppResourceID FROM spappresource a inner join spappresourcedata ad on ad.spappresourceid = a.spappresourceid where a.`Name`='TypeSearches' and ad.data not like '%<typesearch tableid=\"163\"%'";
+        List<Object> resources = BasicSQLUtils.querySingleCol(sql);
+        if (resources != null && resources.size() > 0) {
+            String deaccSearch = "<typesearch tableid=\"163\" name=\"Deaccession\" searchfield=\"deaccessionNumber\" displaycols=\"deaccessionNumber\" format=\"%s\" dataobjformatter=\"Deaccession\"/>";
+            String disposalSearch = "<typesearch tableid=\"34\" name=\"Disposal\" searchfield=\"disposalNumber\" displaycols=\"disposalNumber\" format=\"%s\" dataobjformatter=\"Disposal\"/>";
+            for (Object resource : resources) {
+                sql = "UPDATE spappresourcedata SET `data`=replace(`data`, '</typesearches>','" + deaccSearch + "'\n'" + disposalSearch + "</typesearches>') WHERE SpAppResourceID=" + resource;
+                if (1 != BasicSQLUtils.update(sql)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private boolean doAddPrepFlavor(Element e) {
+        String table = e.attributeValue("table");
+        String action = e.attributeValue("action");
+        return ("loan".equals(table) && "NEW_LOAN".equals(action)) ||
+                ("loan".equals(table) && "Edit".equals(action)) ||
+                ("gift".equals(table) && "NEW_GIFT".equals(action)) ||
+                ("gift".equals(table) && "Edit".equals(action));
+    }
+    /**
+     * @return
+     */
+    private boolean fixInteractionsTaskInitResourcesAfterDeaccUpdate() {
+        String sql = "select spappresourceid from spappresource where name like 'InteractionsTaskInit'";
+        List<Object> resources = BasicSQLUtils.querySingleCol(sql);
+        if (resources != null && resources.size() > 0) {
+            for (Object resource : resources) {
+                //the nukeyuhler option
+                sql = "delete from spappresourcedata where SpAppResourceID=" + resource;
+                if (1 != BasicSQLUtils.update(sql)) {
+                    return false;
+                }
+                sql = "delete from spappresource where SpAppResourceID=" + resource;
+                if (1 != BasicSQLUtils.update(sql)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     private boolean fixDnaPrimerFormatterAfterDNAModelUpdate() {
     	String sql = "SELECT a.SpAppResourceID FROM spappresource a inner join spappresourcedata ad on ad.spappresourceid = a.spappresourceid where a.`Name`='DataObjFormatters' and ad.data not like '%name=\"DNAPrimer\"%'";
     	List<Object> resources = BasicSQLUtils.querySingleCol(sql);
@@ -853,11 +809,91 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     addCollectingEventAuth(conn);
                     result = doesTableExist(databaseName, "collectingeventauthorization");
                 }
-        	}
+                //fix collations
+                Vector<Object[]> tbls = BasicSQLUtils.query("select table_name, table_collation from information_schema.tables where table_schema = '"
+                        + databaseName + "' and table_collation != 'utf8_general_ci'");
+                for (Object[] tbl : tbls) {
+                    String tblName = (String)tbl[0];
+                    if (!tblName.startsWith("ios_")) {
+                        String sql = "ALTER TABLE `" + tblName + "` CONVERT TO CHARACTER SET utf8";
+                        if (0 > BasicSQLUtils.update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            log.error("update error: " + sql);
+                            result = false;
+                        }
+                    }
+                }
+                /**
+                 * @return
+                 */
+                if (!fixTypeSearchDefResourcesAfterDeaccUpdate()) {
+                    result = false;
+                }
+
+                if (!AppPreferences.getGlobalPrefs().getBoolean("InteractionsTaskAfterDeaccFix", false)) {
+                    if (fixInteractionsTaskInitResourcesAfterDeaccUpdate()) {
+                        AppPreferences.getGlobalPrefs().putBoolean("InteractionsTaskAfterDeaccFix", true);
+                    } else {
+                        result = false;
+                    }
+                }
+                if (!AppPreferences.getGlobalPrefs().getBoolean("UniquenessConstraintsFix", false)) {
+                    if (fixUniquenessConstraints(conn)) {
+                        AppPreferences.getGlobalPrefs().putBoolean("UniquenessConstraintsFix", true);
+                    } else {
+                        result = false;
+                    }
+                }
+            }
         	return result;
         } finally {
             if (dbConn != null) dbConn.close();
         }
+    }
+
+    private boolean fixUniquenessConstraints(Connection conn) {
+        String sql;
+        if (!doesIndexExist("preparation", "PrepBarCodeIdx")) {
+            sql = "alter table preparation add constraint unique collPrepUniqueId(CollectionMemberID, barcode)";
+            if (-1 == BasicSQLUtils.update(conn, sql)) {
+                return false;
+            }
+            sql = "alter table preparation add index PrepBarCodeIdx(barcode)";
+            if (-1 == BasicSQLUtils.update(conn, sql)) {
+                return false;
+            }
+        }
+        if (!doesIndexExist("collectionobject", "COUniqueIdentifierIDX")) {
+            sql = "alter table collectionobject add constraint unique collCoUniqueId(CollectionID, UniqueIdentifier)";
+            if (-1 == BasicSQLUtils.update(conn, sql)) {
+                return false;
+            }
+            sql = "alter table collectionobject add index COUniqueIdentifierIDX(UniqueIdentifier)";
+            if (-1 == BasicSQLUtils.update(conn, sql)) {
+                return false;
+            }
+        }
+        if (!doesIndexExist("collectingevent", "CEUniqueIdentifierIDX")) {
+            sql = "alter table collectingevent add constraint unique dispCEUniqueId(DisciplineID, UniqueIdentifier)";
+            if (-1 == BasicSQLUtils.update(conn, sql)) {
+                return false;
+            }
+            sql = "alter table collectingevent add index CEUniqueIdentifierIDX(UniqueIdentifier)";
+            if (-1 == BasicSQLUtils.update(conn, sql)) {
+                return false;
+            }
+        }
+        if (!doesIndexExist("locality", "LocalityUniqueIdentifierIDX")) {
+            sql = "alter table locality add constraint unique dispLocUniqueId(DisciplineID, UniqueIdentifier)";
+            if (-1 == BasicSQLUtils.update(conn, sql)) {
+                return false;
+            }
+            sql = "alter table locality add index LocalityUniqueIdentifierIDX(UniqueIdentifier)";
+            if (-1 == BasicSQLUtils.update(conn, sql)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private void addCollectingEventAuth(Connection conn) {
@@ -903,8 +939,8 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 //    				}
 //    			}
 //    			edu.ku.brc.specify.tasks.StatsTrackerTask.appendBasicCollStatsStat((Integer)coll[0], null, (Integer)coll[2], (Integer)coll[3], (Integer)coll[4], postparams);
-//    			postparams.add(new NameValuePair("num_co_dna", Integer.toString(codna)));
-//    			postparams.add(new NameValuePair("num_ms_dna", Integer.toString(msdna)));
+//    			postparams.add(new BasicNameValuePair("num_co_dna", Integer.toString(codna)));
+//    			postparams.add(new BasicNameValuePair("num_ms_dna", Integer.toString(msdna)));
 //    			StatsTrackerTask.sendStats(StatsTrackerTask.getVersionCheckURL(), postparams, "StatsTrackerTask");
 //    		} catch (Exception ex) {
 //    			ex.printStackTrace();
@@ -1040,7 +1076,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
      * @param propToGet
      * @return
      */
-    private Object getFieldProp(final Connection conn, final String databaseName, final String tableName, final String fieldName, 
+    private Object getFieldProp(final Connection conn, final String databaseName, final String tableName, final String fieldName,
     		final String propToGet)
     {
         // XXX portability. This is MySQL -specific.
@@ -1206,30 +1242,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         }
                     }
                     frame.incOverall();
-                    
-                    //---------------------------------------------------------------------------
-                    //-- Agent
-                    //---------------------------------------------------------------------------
-                    tblName = getTableNameAndTitleForFrame(Agent.getClassTableId());
-                    len     = getFieldLength(conn, databaseName, tblName, "LastName");
-                    if (len == null) {
-                        errMsgList.add(String.format(UPD_CNT_NO_MATCH, tblName));
-                        return false;
-                    }
-                    if (len.intValue() != 128) {
-                        count = getCount(tblName);
-                        rv = update(conn, "ALTER TABLE agent MODIFY LastName varchar(128)");
-                        if (rv != count) {
-                            //when only agent, the counts might not match, even when length change succeeds
-                            len     = getFieldLength(conn, databaseName, tblName, "LastName");
-                            if (len == null || len.intValue() != 128) {
-                                errMsgList.add(String.format(UPD_CNT_NO_MATCH, tblName));
-                                return false;
-                            }
-                        }
-                    }
-                    frame.incOverall();
-                    
+
                     //---------------------------------------------------------------------------
                     //-- SpExportSchema
                     //---------------------------------------------------------------------------
@@ -2516,6 +2529,16 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     }
                     frame.incOverall();
 
+                    if (!doesTableExist(databaseName, "spstynthy")) {
+                        frame.setDesc("Modifying specify system tables.");
+                        sql = S2nPrefsPanel.getSynthyTblCreateSQL();
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
+                    }
+                    frame.incOverall();
+
                     frame.setDesc("Increasing length of Geography.Name");
                     sql = "alter table geography modify column `Name` varchar(128)";
                     if (-1 == update(conn, sql)) {
@@ -2547,10 +2570,240 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         return false;
                     }
                     frame.incOverall();
-                    frame.setProcess(0, 100);
 
+
+                    //-------------------------------------------------------------------------------
+                    //
+                    // Schema changes for 2.8 & 2.9
+                    //
+                    //-------------------------------------------------------------------------------
+//                    frame.setDesc("Converting deaccessionpreparation.quantity to int");
+//                    String coType = getFieldColumnType(conn, databaseName, "deaccessionpreparation", "quantity");
+//                    if (coType != null && coType.endsWith("int(6)")) {
+//                        sql = "alter table deaccessionpreparation modify quantity int(11)";
+//                        if (-1 == update(conn, sql)) {
+//                            errMsgList.add("update error: " + sql);
+//                            return false;
+//                        }
+//                    }
+//                    frame.setDesc("Removing deaccession.accessionid");
+//                    if (doesColumnExist(databaseName, "deaccession", "accessionid", conn)) {
+//                        sql = "SELECT CONSTRAINT_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE REFERENCED_TABLE_SCHEMA = '"
+//                            + databaseName + "' AND REFERENCED_TABLE_NAME = 'accession' AND TABLE_NAME = 'deaccession' AND COLUMN_NAME = 'AccessionID'";
+//                        String constraint = BasicSQLUtils.querySingleObj(sql);
+//                        if (constraint != null) {
+//                            sql = "alter table deaccession drop foreign key " + constraint;
+//                            if (-1 == update(conn, sql)) {
+//                                errMsgList.add("update error: " + sql);
+//                                return false;
+//                            }
+//                        }
+//                        sql = "alter table deaccession drop column accessionid";
+//                        if (-1 == update(conn, sql)) {
+//                            errMsgList.add("update error: " + sql);
+//                            return false;
+//                        }
+//                    }
+//                    frame.incOverall();
+                    frame.setDesc("Checking for duplicate export mapping names.");
+                    Vector<Object[]> dups = BasicSQLUtils.query("select mappingname from spexportschemamapping group by 1 having count(spexportschemamappingid) > 1");
+                    if (dups != null && dups.size() > 0) {
+                        errMsgList.add("The database schema cannot be updated because it contains duplicate Export Schema Mapping names. Please contact Specify customer support.");
+                        return false;
+                    }
+                    frame.incOverall();
+                    frame.setDesc("Removing old Deaccession tables");
+                    if (!doesTableExist(databaseName, "disposal")) {
+                        if (BasicSQLUtils.getCountAsInt("SELECT COUNT(*) FROM deaccession") > 0) {
+                            errMsgList.add("The database schema cannot be updated because it contains deaccession data. Please contact Specify customer support.");
+                            return false;
+                        }
+                        sql = "SELECT TABLE_NAME,CONSTRAINT_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE "
+                                + "REFERENCED_TABLE_SCHEMA = '" + databaseName + "' AND REFERENCED_TABLE_NAME = 'deaccessionpreparation'";
+                        Vector<Object[]> constraints = query(conn, sql);
+                        for (Object[] c : constraints) {
+                            //sql = "alter table " + c[0] + " drop constraint " + c[1];
+                            sql = "alter table " + c[0] + " drop foreign key " + c[1];
+                            if (-1 == update(conn, sql)) {
+                                errMsgList.add("update error: " + sql);
+                            }
+                        }
+                        sql = "drop table deaccessionpreparation";
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
+                        sql = "drop table deaccessionagent";
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
+                        sql = "drop table deaccession";
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
+                        sql = "select splocalecontainerid from splocalecontainer where name in('deaccessionpreparation',"
+                                + "'deaccessionagent', 'deaccession')";
+                        Vector<Object> ids = BasicSQLUtils.querySingleCol(sql);
+                        String containerIdList = commaSeparate(ids);
+                        sql = "select splocalecontaineritemid from splocalecontaineritem where splocalecontainerid in("
+                            + containerIdList + ")";
+                        ids = BasicSQLUtils.querySingleCol(sql);
+                        String containerItemIdList = commaSeparate(ids);
+                        String inStr = " in(" + containerItemIdList + ") ";
+                        sql = "delete from splocaleitemstr where SpLocaleContainerItemNameID" + inStr
+                                + "or SpLocaleContainerItemDescID" + inStr;
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
+                        inStr = " in(" + containerIdList + ") ";
+                        sql = "delete from splocaleitemstr where SpLocaleContainerDescID" + inStr + "or "
+                                + "SpLocaleContainerNameID" + inStr;
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
+                        sql = "delete from splocalecontaineritem where splocalecontainerid in(" + containerIdList + ")";
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
+                        sql = "delete from splocalecontainer where splocalecontainerid in(" + containerIdList + ")";
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
+                    }
+                    frame.incOverall();
+
+                    if (!doesIndexExist("exchangeout", "ExchangeOutNumberIDX")) {
+                        frame.setDesc("Adding index for ExchangeOut.ExchangeOutNumber");
+                        sql = "create index ExchangeOutNumberIDX on exchangeout(ExchangeOutNumber)";
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
+                    }
+                    frame.incOverall();
+
+                    if (getFieldNullability(conn, databaseName, "exchangeout", "ExchangeOutNumber")) {
+                        frame.setDesc("Requiring ExchangeOut.ExchangeOutNumber");
+                        String usql = "update exchangeout set exchangeoutnumber = '' where exchangeoutnumber is null";
+                        if (update(conn, usql) == -1) {
+                            errMsgList.add("update error: " + usql);
+                            return false;
+                        }
+                        usql = "ALTER TABLE " + databaseName +
+                                ".exchangeout CHANGE COLUMN ExchangeOutNumber ExchangeOutNumber varchar(50) NOT NULL";
+                        if (update(conn, usql) == -1) {
+                            errMsgList.add("update error: " + usql);
+                            return false;
+                        }
+                    }
+                    frame.incOverall();
+
+                    frame.setDesc("Increasing size of Determination.FeatureOrBasis.");
+                    if (getFieldLength(conn, databaseName, "determination", "FeatureOrBasis") != 250) {
+                        sql = "alter table determination modify column FeatureOrBasis varchar(250)";
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
+                    }
+                    frame.incOverall();
+
+                    frame.setDesc("Increasing size of CollectionObject.Description.");
+                    if (!getFieldColumnType(conn, databaseName, "collectionobject", "Description").equalsIgnoreCase("text")) {
+                        sql = "alter table collectionobject modify column Description text(65535)";
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
+                    }
+                    frame.incOverall();
+
+                    frame.setDesc("Increasing size of Referencework.Title.");
+                    if (getFieldLength(conn, databaseName, "referencework", "Title") != 400) {
+                        sql = "alter table referencework modify column Title varchar(400)";
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
+                    }
+                    frame.incOverall();
+
+                    frame.setDesc("Increasing size of Collectingtrip.Collectingtripname.");
+                    if (getFieldLength(conn, databaseName, "collectingtrip", "Collectingtripname") != 400) {
+                        sql = "alter table collectingtrip modify column Collectingtripname varchar(400)";
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
+                    }
+                    frame.incOverall();
+
+                    frame.setDesc("Increasing size of Address.Address3.");
+                    if (getFieldLength(conn, databaseName, "address", "Address3") != 400) {
+                        sql = "alter table address modify column Address3 varchar(400)";
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
+                    }
+                    frame.incOverall();
+
+                    frame.setDesc("Increasing size of Address.Address4.");
+                    if (getFieldLength(conn, databaseName, "address", "Address4") != 400) {
+                        sql = "alter table address modify column Address4 varchar(400)";
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
+                    }
+                    frame.incOverall();
+
+                    frame.setDesc("Increasing size of Address.Address5.");
+                    if (getFieldLength(conn, databaseName, "address", "Address5") != 400) {
+                        sql = "alter table address modify column Address5 varchar(400)";
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
+                    }
+                    frame.incOverall();
+
+                    frame.setDesc("Increasing length of BorrowMaterial.Description");
+                    if (getFieldLength(conn, databaseName, "borrowmaterial", "Description") != 250) {
+                        sql = "alter table borrowmaterial modify column `Description` varchar(250)";
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
+                    }
+                    frame.incOverall();
+
+                    frame.setDesc("Creating picklists.");
+                    sql = "select collectionid from collection";
+                    Vector<Object> colls = BasicSQLUtils.querySingleCol(conn, sql);
+                    String[][] pls = {
+                            {"DeaccessionType", "Gift", "Destructive Sampling", "Exchange", "Lost"},
+                            {"DeaccessionStatus", "No Data", "In Process", "Complete"},
+                            {"DeaccessionAgentRole", "Approver", "Other", "Preparer", "Receiver", "Sponsor", "Staff", "Student"},
+                            {"DisposalAgentRole", "Approver", "Other", "Preparer", "Receiver", "Sponsor", "Staff", "Student"},
+                            {"DisposalType", "Destroyed", "Destructive Sampling", "Lost"}
+                    };
+                    for (Object coll : colls) {
+                        if (!doPicklists(conn, coll, pls)) {
+                            errMsgList.add("error building picklists for collection " + coll);
+                            return false;
+                        }
+                    }
+                    frame.incOverall();
+
+                    frame.setProcess(0, 100);
                     return true;
-                    
                 } catch (Exception ex)
                 {
                     ex.printStackTrace();
@@ -2573,6 +2826,42 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             if (dbConn != null) dbConn.close();
         }
         return false;
+    }
+
+    private boolean doPicklists(Connection conn, Object collId, String[][] pls) {
+        for (String[] pl : pls) {
+            String sql = "select count(*) from picklist where collectionid = " + collId + " and name ='" + pl[0] + "'";
+            if (getCountAsInt(conn, sql) == 0) {
+                sql = "insert into picklist(version,timestampcreated,collectionid,name,issystem,type,readonly,sizelimit)"
+                        + " values(0, now()," + collId + ", '" + pl[0] + "',true,  0, true, " + (pl.length - 1) + ")";
+                if (-1 == update(conn, sql)) {
+                    return false;
+                }
+                for (int i = 1; i < pl.length; i++) {
+                    sql = "insert into picklistitem(TimestampCreated, Version, Title, Value, Picklistid) "
+                            + " values(now(), 0, '" + pl[i] + "', '" + pl[i] + "', (select picklistid from picklist where name = '"
+                            + pl[0] + "' and collectionid = " + collId + "))";
+                    if (-1 == update(conn, sql)) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    private String commaSeparate(Vector<Object> v) {
+        String result = null;
+        if (v != null && v.size() > 0) {
+            result = "";
+            for (Object o : v) {
+                if (result.length() > 0) {
+                    result += ",";
+                }
+                result += o;
+            }
+        }
+        return result;
     }
 
     private boolean fixDupPrepGuids(final Connection conn) {
@@ -3507,7 +3796,6 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         // This update should be very fast
         update(conn, "UPDATE picklistitem SET Title='GEOLocate', Value ='GEOLocate' WHERE LOWER(Title) = 'geolocate' OR LOWER(Value) = 'geolocate'");
     }
-    
     /**
      * @param connection
      */
@@ -5177,6 +5465,27 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 		// AppPreferences.getGlobalPrefs().putBoolean("FixExportSchemaCollectionMemberIDs",
 		// true);
 	}
+
+//	protected void fixSchemaMappingTblNames(final Connection conn, final String databaseName) throws Exception {
+//        String sql = "select distinct SpExportSchemaMappingID, MappingName, CollectionMemberID, SpecifyUserID from spexportschemamapping "
+//                + "em inner join spexportschemaitemmapping im on im.spexportschemamappingid = em.spexportschemamappingid "
+//                + " inner join spqueryfield qf on qf.spqueryfieldid = im.spqueryfieldid inner join spquery q on q.spqueryid = qf.spqueryid";
+//        Vector<Object[]> mappingsToFix = BasicSQLUtils.query(sql);
+//        if (mappingsToFix != null && mappingsToFix.size() > 0) {
+//            for (Object[] row : mappingsToFix) {
+//                String baseTbl = ExportToMySQLDB.fixTblNameForMySQL(row[1].toString());
+//                String fixedTbl = ExportToMySQLDB.getExportMappingTblName(row[1].toString(), row[2].toString(), row[3].toString());
+//                if (doesTableExist(databaseName, baseTbl)) {
+//                    log.info("export mapping " + row[1] + ": renaming cache table from " + baseTbl + " to " + fixedTbl);
+//                    if (!doesTableExist(databaseName, fixedTbl)) {
+//                        sql = "rename table `" + baseTbl + "` to `" + fixedTbl + "`";
+//                    } else {
+//                        throw new Exception("table " + fixedTbl + " already exists.");
+//                    }
+//                }
+//            }
+//        }
+//    }
 
     /**
      * Launches dialog for Importing and Exporting Forms and Resources.

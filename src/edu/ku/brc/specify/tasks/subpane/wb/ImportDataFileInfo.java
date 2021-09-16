@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -72,7 +72,7 @@ public class ImportDataFileInfo
         
         boolean isValid = false;
         String mimeType = getMimeType(file);
-        if (mimeType == ExportFileConfigurationFactory.XLS_MIME_TYPE)
+        if (mimeType == ExportFileConfigurationFactory.XLS_MIME_TYPE || mimeType == ExportFileConfigurationFactory.XLSX_MIME_TYPE)
         {
              config = new ConfigureXLS(file);
             if (config.getStatus() == ConfigureExternalDataIFace.Status.Valid)
@@ -185,18 +185,36 @@ public class ImportDataFileInfo
      * @param file the file to check 
      * @return the mimeType;
      */
-    private String getMimeType(final File file)
+    public static String getMimeType(final String fileName)
     {
-        String extension = FilenameUtils.getExtension(file.getName()).toLowerCase();
+        String extension = FilenameUtils.getExtension(fileName).toLowerCase();
         if (extension.equalsIgnoreCase("xls"))
         {
             return ExportFileConfigurationFactory.XLS_MIME_TYPE;
             
-        } else if (extension.equalsIgnoreCase("csv") || extension.equalsIgnoreCase("txt"))
+        } else if (extension.equalsIgnoreCase("xlsx"))
+        {
+            return ExportFileConfigurationFactory.XLSX_MIME_TYPE;
+
+        }
+        else if (extension.equalsIgnoreCase("csv") || extension.equalsIgnoreCase("txt"))
         {
             return ExportFileConfigurationFactory.CSV_MIME_TYPE;
         }
         return "";
+    }
+
+    /**
+     * Returns mime type for an extension.
+     * @param file the file to check
+     * @return the mimeType;
+     */
+    public static String getMimeType(final File file) {
+        if (file != null) {
+            return ImportDataFileInfo.getMimeType(file.getName());
+        } else {
+            return null;
+        }
     }
 
     /**

@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -162,7 +162,9 @@ public class DNASequence extends CollectionMember implements AttachmentOwnerIFac
     @Override
     public void forceLoad()
     {
-        dnaSequencingRuns.size();
+		for (DNASequencingRun dnar : dnaSequencingRuns) {
+			dnar.forceLoad();
+		}
         attachments.size();
     }
 
@@ -828,7 +830,9 @@ public class DNASequence extends CollectionMember implements AttachmentOwnerIFac
     @Transient
     public Integer getParentTableId()
     {
-        return MaterialSample.getClassTableId();
+        //The CO/Prep parent reporting method used here and in getParentId() should be safe as long as this
+		//methods continues to be used only by the logging module
+    	return materialSample != null ? MaterialSample.getClassTableId() : CollectionObject.getClassTableId();
     }
 
     /* (non-Javadoc)
@@ -838,7 +842,8 @@ public class DNASequence extends CollectionMember implements AttachmentOwnerIFac
     @Transient
     public Integer getParentId()
     {
-        return materialSample != null ? materialSample.getId() : null;
+        return materialSample != null ? materialSample.getId() :
+				(collectionObject != null ? collectionObject.getId() : null);
     }
     
 	/* (non-Javadoc)

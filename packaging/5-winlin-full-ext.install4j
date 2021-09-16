@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="8.0.4" transformSequenceNumber="8">
   <directoryPresets config="../InstallerFiles/images" />
-  <application name="Specify" applicationId="5397-6897-2502-8965" mediaDir="../ExtMedia" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}" shrinkRuntime="false" shortName="Specify" publisher="Biodiversity Research Center, University of Kansas" publisherWeb="http://www.specifysoftware.org" version="6.7.00" allPathsRelative="true" backupOnSave="true" autoSave="true" macVolumeId="925fde729c142ea5" javaMinVersion="1.8">
+  <application name="Specify" applicationId="5397-6897-2502-8965" mediaDir="../ExtMedia" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}" shrinkRuntime="false" shortName="Specify" publisher="Biodiversity Research Center, University of Kansas" publisherWeb="http://www.specifysoftware.org" version="6.7.00" allPathsRelative="true" backupOnSave="true" autoSave="true" macVolumeId="925fde729c142ea5" javaMinVersion="1.8" javaMaxVersion="11">
     <languages>
       <principalLanguage id="en" customLocalizationFile="./localization_en.utf8" />
       <additionalLanguages>
@@ -28,7 +28,7 @@
       <executable name="Specify" iconSet="true" iconFile="ico/specify128.ico" executableDir="bin" redirectStderr="false" executableMode="gui" />
       <splashScreen show="true" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" textOverlay="true">
         <text>
-          <statusLine x="95" y="326" text="Copyright (C) 2020 Specify Collections Consortium. FOSS licensed under GNU GPL2." fontSize="10" />
+          <statusLine x="95" y="326" text="Copyright (C) 2021 Specify Collections Consortium. FOSS licensed under GNU GPL2." fontSize="10" />
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" fontSize="12" />
         </text>
       </splashScreen>
@@ -58,7 +58,7 @@
       <executable name="SpiReport" iconSet="true" iconFile="ico/spireport128.ico" executableDir="bin" redirectStderr="false" executableMode="gui" />
       <splashScreen show="true" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" textOverlay="true">
         <text>
-          <statusLine x="95" y="326" text="Copyright (C) 2020 Specify Collections Consortium. FOSS licensed under GNU GPL2." fontSize="10" />
+          <statusLine x="95" y="326" text="Copyright (C) 2021 Specify Collections Consortium. FOSS licensed under GNU GPL2." fontSize="10" />
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" fontSize="12" />
         </text>
       </splashScreen>
@@ -88,7 +88,7 @@
       <executable name="SpWizard" iconSet="true" iconFile="ico/spwizard128.ico" executableDir="bin" redirectStderr="false" executableMode="gui" />
       <splashScreen show="true" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" textOverlay="true">
         <text>
-          <statusLine x="95" y="326" text="Copyright (C) 2020 Specify Collections Consortium. FOSS licensed under GNU GPL2." fontSize="10" />
+          <statusLine x="95" y="326" text="Copyright (C) 2021 Specify Collections Consortium. FOSS licensed under GNU GPL2." fontSize="10" />
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" fontSize="12" />
         </text>
       </splashScreen>
@@ -118,7 +118,7 @@
       <executable name="SpBackupRestore" iconSet="true" iconFile="ico/spbackup128.ico" executableDir="bin" redirectStderr="false" executableMode="gui" />
       <splashScreen show="true" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" textOverlay="true">
         <text>
-          <statusLine x="95" y="326" text="Copyright (C) 2020 Specify Collections Consortium. FOSS licensed under GNU GPL2." fontSize="10" />
+          <statusLine x="95" y="326" text="Copyright (C) 2021 Specify Collections Consortium. FOSS licensed under GNU GPL2." fontSize="10" />
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" fontSize="12" />
         </text>
       </splashScreen>
@@ -148,7 +148,7 @@
       <executable name="Specify1GB" iconSet="true" iconFile="ico/specify128.ico" executableDir="bin" redirectStderr="false" executableMode="gui" />
       <splashScreen show="true" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" textOverlay="true">
         <text>
-          <statusLine x="95" y="326" text="Copyright (C) 2020 Specify Collections Consortium. FOSS licensed under GNU GPL2." fontSize="10" />
+          <statusLine x="95" y="326" text="Copyright (C) 2021 Specify Collections Consortium. FOSS licensed under GNU GPL2." fontSize="10" />
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" fontSize="12" />
         </text>
       </splashScreen>
@@ -178,7 +178,7 @@
       <executable name="ImportFileSplitter" iconSet="true" iconFile="ico/data_split.ico" executableDir="bin" redirectStderr="false" executableMode="gui" />
       <splashScreen show="true" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" textOverlay="true">
         <text>
-          <statusLine x="95" y="326" text="Copyright (C) 2020 Specify Collections Consortium. FOSS licensed under GNU GPL2." fontSize="10" />
+          <statusLine x="95" y="326" text="Copyright (C) 2021 Specify Collections Consortium. FOSS licensed under GNU GPL2." fontSize="10" />
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" fontSize="12" />
         </text>
       </splashScreen>
@@ -208,7 +208,7 @@
       <executable name="DataExporter" iconSet="true" iconFile="ico/specify128.ico" executableDir="bin" redirectStderr="false" executableMode="gui" singleInstance="true" />
       <splashScreen show="true" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" textOverlay="true">
         <text>
-          <statusLine x="95" y="326" text="Copyright (C) 2020 Specify Collections Consortium. FOSS licensed under GNU GPL2." fontSize="10" />
+          <statusLine x="95" y="326" text="Copyright (C) 2021 Specify Collections Consortium. FOSS licensed under GNU GPL2." fontSize="10" />
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" fontSize="12" />
         </text>
       </splashScreen>
@@ -262,7 +262,7 @@
       <executable name="SpecifyDBSecurityWizard" iconSet="true" iconFile="ico/spsecwizard128.ico" executableDir="bin" redirectStderr="false" executableMode="gui" />
       <splashScreen show="true" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" textOverlay="true">
         <text>
-          <statusLine x="95" y="326" text="Copyright (C) 2020 Specify Collections Consortium. FOSS licensed under GNU GPL2." fontSize="10" />
+          <statusLine x="95" y="326" text="Copyright (C) 2021 Specify Collections Consortium. FOSS licensed under GNU GPL2." fontSize="10" />
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" fontSize="12" />
         </text>
       </splashScreen>
@@ -288,11 +288,11 @@
         <file path="../src/edu/ku/brc/specify/images/spsecwizard32.png" />
       </iconImageFiles>
     </launcher>
-    <launcher name="SpLocalizer" id="2222">
+    <!--<launcher name="SpLocalizer" id="2222">
       <executable name="SpLocalizer" iconSet="true" executableDir="bin" executableMode="gui" />
       <splashScreen show="true" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" textOverlay="true">
         <text>
-          <statusLine x="95" y="326" text="Copyright (C) 2020 Specify Collections Consortium. FOSS licensed under GNU GPL2." fontSize="10" />
+          <statusLine x="95" y="326" text="Copyright (C) 2021 Specify Collections Consortium. FOSS licensed under GNU GPL2." fontSize="10" />
           <versionLine x="330" y="260" text="version ${compiler:sys.version}" fontSize="12" />
         </text>
       </splashScreen>
@@ -317,7 +317,7 @@
         <file path="../src/edu/ku/brc/specify/images/specify16.png" />
         <file path="../src/edu/ku/brc/specify/images/specify32.png" />
       </iconImageFiles>
-    </launcher>
+    </launcher>-->
   </launchers>
   <installerGui suggestPreviousLocations="false">
     <applications>
@@ -432,8 +432,8 @@ return console.askOkCancel(message, true);
           <screen name="Display text" id="823" beanClass="com.install4j.runtime.beans.screens.FormScreen">
             <serializedBean>
               <property name="scrollable" type="boolean" value="false" />
-              <property name="subTitle" type="string">Specify ${compiler:sys.version} includes the following changes:</property>
-              <property name="title" type="string">New This Release</property>
+              <!--property name="subTitle" type="string">Specify ${compiler:sys.version} includes the following changes:</property-->
+              <property name="title" type="string">Specify Collections Consortium</property>
             </serializedBean>
             <formComponents>
               <formComponent id="2239" beanClass="com.install4j.runtime.beans.formcomponents.MultilineLabelComponent" useExternalParametrization="true" externalParametrizationName="Header" externalParametrizationMode="include">
@@ -848,7 +848,7 @@ return console.askYesNo(message, true);
               <action id="125" beanClass="com.install4j.runtime.beans.actions.update.CheckForUpdateAction" actionElevationType="none" failureStrategy="quit">
                 <serializedBean>
                   <property name="showError" type="boolean" value="false" />
-                  <property name="url" type="string">http://update.specifysoftware.org/updates.xml</property>
+                  <property name="url" type="string">https://update.specifysoftware.org/updates.xml</property>
                   <property name="variable" type="string">updateDescriptor</property>
                 </serializedBean>
               </action>

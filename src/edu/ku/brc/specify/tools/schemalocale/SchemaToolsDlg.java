@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -121,13 +121,14 @@ public class SchemaToolsDlg extends CustomDialog
         PanelBuilder builder   = new PanelBuilder(new FormLayout("p,2px,f:p:g", "p,2px,p,16px,p,4px,p,8px,p,10px"));
         builder.addSeparator(getResourceString("SL_LOCALES_IN_USE"), cc.xywh(1, 1, 3, 1));
         builder.add(sp, cc.xywh(1,3,3,1));
-        
+
         builder.addSeparator(getResourceString("SL_TASKS"), cc.xywh(1, 5, 3, 1));
         builder.add(editSchemaBtn,        cc.xy(1,7));
-        builder.add(removeLocaleBtn,      cc.xy(3,7));
+        //builder.add(removeLocaleBtn,      cc.xy(3,7));
         builder.add(exportSchemaLocBtn,   cc.xy(1,9));
-        builder.add(importSchemaLocBtn,   cc.xy(3,9));
-        
+        builder.add(importSchemaLocBtn,   cc.xy(3,7));
+
+
         builder.setDefaultDialogBorder();
         
         contentPanel = builder.getPanel();
@@ -254,13 +255,9 @@ public class SchemaToolsDlg extends CustomDialog
         });
     }
     
-    private void chooseImportType()
-    {
-        int rv = UIRegistry.askYesNoLocalized(SL_CHS_IMP, SL_CHS_LOC, getResourceString("SL_CHOOSEIMPMSG"), "SL_CHOOSEIMPMSG_TITLE");
-        if (rv == JOptionPane.YES_OPTION || rv == JOptionPane.NO_OPTION)
-        {
-            importSchema(rv == JOptionPane.NO_OPTION);
-        }
+    private void chooseImportType() {
+        boolean importType = true; //we choose truth!
+        importSchema(importType);
     }
     
     /**

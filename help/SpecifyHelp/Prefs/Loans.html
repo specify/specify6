@@ -15,18 +15,19 @@
       </tr>
     </table>
     <h2>
-       <img src="../../images/loan.png" width="32" height="32">&nbsp;Loans
+       <img src="../../images/interactions.png" alt="">&nbsp;Interactions
     </h2>
     <p>
-       <a name="prefs_loan" id="prefs_loan"></a>Default settings for fields on the Loan form can be
-      set in the Loan Preference. New loans will include the default values, which are editable.
+       <a name="prefs_loan" id="prefs_loan"></a>Default settings for fields on the Loan and other
+      Interactions forms can be set in the Interactions Preference. New Interactions will include
+      the default values, which are editable.
     </p>
     <ul>
       <li class="michaelschanges">
-        For Mac: Choose <em>Specify &gt; Preferences &gt; Loans.</em>
+        For Mac: Choose <em>Specify &gt; Preferences &gt; Interactions.</em>
       </li>
       <li class="michaelschanges">
-        For Windows and Linux: Choose <em>Edit &gt; Preferences &gt; Loans</em>.
+        For Windows and Linux: Choose <em>Edit &gt; Preferences &gt; Interactions</em>.
       </li>
     </ul>
     <p>
@@ -36,7 +37,7 @@
        <img src="../../images/pref_loan.png">
     </p>
     <p align="center" class="imgcaption">
-       Loans Preference
+       Interactions Preference
     </p>
     <p>
        &nbsp;
@@ -159,17 +160,98 @@
               (edit) icon to open the table in an editable dialog.
             </li>
           </ol>
+          <p>
+             &nbsp;
+          </p>
         </blockquote>
       </li>
     </ul>
     <p>
-       &nbsp;
+       <i>Default Source Table</i> allows users to choose the source for their interactions based
+      on the appropriate table (Collection Object or Preparations) and field with an identifier.
+      For instance, if preparations in the collection include an identifier and the user wishes to
+      reference that identifier then they will choose 'Preparation' as the Default Source for the
+      Table.
     </p>
     <p>
-       &nbsp;
+       <b><u>Note:</u></b>&nbsp;Interactions are scoped to the Discipline level and therefore the
+      settings in the Interactions Preference will affect all other users in the Collection and
+      Discipline. If collections within the Discipline use different tables this setting should be
+      set to 'Ask'.
     </p>
+    <ul>
+      <li>
+        <strong>Table</strong> offers the following choices: 
+        <ul>
+          <li>
+            <b>Ask</b> -&nbsp;indicates that either the Collection Object or Preparations table may
+            be used in Interactions and allows the user to choose the appropriate table at the time
+            that the interaction is created
+          </li>
+          <li>
+            <b>Collection Object</b> - indicates that the Collection Object table is the only one
+            used for Interactions for the Collections in the Discipline.
+          </li>
+          <li>
+            <b>Preparation</b> - indicates that the Preparation table is the only one used for
+            Interactions for the Collections in the Discipline.
+          </li>
+        </ul>
+      </li>
+    </ul>
     <p>
-       &nbsp;
+       <i>Item Identifier Fields</i>&nbsp;allows users to choose the appropriate field for the
+      identifier based on the Default Source Table choice and database setup.&nbsp;
+    </p>
+    <ul>
+      <li>
+        Collection Object table has four fields available to use as an identifier field&nbsp;but
+        fields that&nbsp;are not used and hidden they will not be presented as choices. If the
+        field you require is not shown as a choice you can <a href=
+        "../SchemaConfig/schema_config.html#hide_table">Unhide</a> the field using the Schema
+        Configuration tool. The most common fields are shown below: 
+        <ul>
+          <li>
+            Alt Cat Number
+          </li>
+          <li>
+            Catalog Number
+          </li>
+          <li>
+            GUID
+          </li>
+          <li>
+            Project Number
+          </li>
+        </ul>
+      </li>
+    </ul>
+    <p style=" margin-left: 40.0px;">
+       Other possible fields for IDs in the Collection Object table include Bar Code, Modifier,
+      Name, Project Number, Text1, Text2 and Text 3. Catalog Number and GUID fields are forced to
+      be unique in the system
+    </p>
+    <ul>
+      <li>
+        Preparation table has two fields available to use as a unique identifier field&nbsp;but
+        fields that&nbsp;are not used and hidden they will not be presented as choices. If the
+        field you require is not shown as a choice you can <a href=
+        "../SchemaConfig/schema_config.html#hide_table">unhide</a> the field using the Schema
+        Configuration tool. 
+        <ul>
+          <li>
+            Barcode
+          </li>
+          <li>
+            GUID
+          </li>
+        </ul>
+      </li>
+    </ul>
+    <p style=" margin-left: 40.0px;">
+       Other possible fields for IDs in the Preparation table include Sample Number, Text1, Text2
+      and Text 3, Text 4 ,Text 5, Text 6, Text 7, Text 8, Text 9. Barcode and GUID are forced to be
+      unique in the system.
     </p>
     <p>
        &nbsp;

@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -33,11 +33,8 @@ import javax.swing.SwingUtilities;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
-import edu.ku.brc.specify.datamodel.CollectionObject;
-import edu.ku.brc.specify.datamodel.RecordSet;
-import edu.ku.brc.specify.datamodel.Storage;
-import edu.ku.brc.specify.datamodel.StorageTreeDef;
-import edu.ku.brc.specify.datamodel.StorageTreeDefItem;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.datamodel.*;
 import edu.ku.brc.specify.datamodel.busrules.StorageBusRules;
 import edu.ku.brc.specify.ui.treetables.TreeNodePopupMenu;
 import edu.ku.brc.specify.ui.treetables.TreeTableViewer;
@@ -94,8 +91,11 @@ public class StorageTreeTask extends BaseTreeTask<Storage, StorageTreeDef, Stora
         // this call initializes all of the linked objects
         // it only initializes the immediate links, not objects that are multiple hops away
         ttv.initializeNodeAssociations(storage);
-        
-        if (storage.getPreparations().size() + storage.getAlternateStoragePreparations().size() == 0)
+
+        int altStorCnt = BasicSQLUtils.getCountAsInt("SELECT count(p.preparationid) FROM storage as st INNER JOIN preparation as p ON st.StorageID = p.alternateStorageID " +
+                "WHERE st.StorageID = " +storage.getStorageId()+" AND p.CollectionMemberID = " + AppContextMgr.getInstance().getClassObject(Collection.class).getId());
+
+        if (storage.getPreparations().size() + altStorCnt == 0)
         {
             UIRegistry.getStatusBar().setText(getResourceString("TTV_TAXON_NO_COS_FOR_NODE"));
             return;

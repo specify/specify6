@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -55,6 +55,10 @@ public class DeterminationCitation extends CollectionMember implements java.io.S
      protected String        remarks;
      protected ReferenceWork referenceWork;
      protected Determination determination;
+    protected Boolean isFigured;
+    protected String 			plateNumber;
+    protected String			figureNumber;
+    protected String		    pageNumber;
 
 
     // Constructors
@@ -82,10 +86,75 @@ public class DeterminationCitation extends CollectionMember implements java.io.S
         remarks = null;
         referenceWork = null;
         determination = null;
+        isFigured = null;
+        plateNumber = null;
+        figureNumber = null;
+        pageNumber = null;
     }
     // End Initializer
 
     // Property accessors
+    /**
+     * @return the isFigured
+     */
+    @Column(name = "IsFigured", unique = false, nullable = true, insertable = true, updatable = true)
+    public Boolean getIsFigured()
+    {
+        return isFigured;
+    }
+
+    /**
+     * @param isFigured the isFigured to set
+     */
+    public void setIsFigured(Boolean isFigured)
+    {
+        this.isFigured = isFigured;
+    }
+
+    /**
+     * @return the plateNumber
+     */
+    @Column(name = "PlateNumber", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    public String getPlateNumber() {
+        return plateNumber;
+    }
+
+    /**
+     * @param plateNumber the plateNumber to set
+     */
+    public void setPlateNumber(String plateNumber) {
+        this.plateNumber = plateNumber;
+    }
+
+    /**
+     * @return the figureNumber
+     */
+    @Column(name = "FigureNumber", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    public String getFigureNumber() {
+        return figureNumber;
+    }
+
+    /**
+     * @param figureNumber the figureNumber to set
+     */
+    public void setFigureNumber(String figureNumber) {
+        this.figureNumber = figureNumber;
+    }
+
+    /**
+     * @return the pageNumber
+     */
+    @Column(name = "PageNumber", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    public String getPageNumber() {
+        return pageNumber;
+    }
+
+    /**
+     * @param pageNumber the pageNumber to set
+     */
+    public void setPageNumber(String pageNumber) {
+        this.pageNumber = pageNumber;
+    }
 
     /**
      * 

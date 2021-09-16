@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -64,7 +64,7 @@ public class GenericStringUIFieldFormatter extends BaseUIFieldFormatter
         DBFieldInfo fi = ti.getFieldByName(fieldName);
         
         this.dataClass              = tableClass;
-        this.length                 = fi.getLength();
+        this.length                 = fi == null ? uiDisplayLen : fi.getLength();
         this.uiLength               = uiDisplayLen;
         this.isNumericCatalogNumber = false;
         this.isIncrementer          = false;

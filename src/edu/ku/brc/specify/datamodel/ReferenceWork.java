@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -269,7 +269,7 @@ public class ReferenceWork extends DataModelObjBase implements AttachmentOwnerIF
     /**
      *      * Title of reference
      */
-    @Column(name = "Title", unique = false, nullable = false, insertable = true, updatable = true, length=255)
+    @Column(name = "Title", unique = false, nullable = false, insertable = true, updatable = true, length=500)
     public String getTitle() {
         return this.title;
     }

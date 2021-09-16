@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -22,20 +22,30 @@ package edu.ku.brc.services.biogeomancer;
 import static edu.ku.brc.helpers.XMLHelper.getValue;
 import static edu.ku.brc.helpers.XMLHelper.readStrToDOM4J;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import edu.ku.brc.helpers.ProxyHelper;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.NameValuePair;
-import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.http.client.HttpClient;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.util.EntityUtils;
 import org.dom4j.Element;
 
 import edu.ku.brc.services.mapping.LocalityMapper;
 import edu.ku.brc.services.mapping.SimpleMapLocation;
 import edu.ku.brc.services.mapping.LocalityMapper.MapperListener;
+import scala.actors.threadpool.Arrays;
 
 /**
  * The class is a client-side interface to the BioGeomancer Classic georeferencing service.
@@ -81,9 +91,8 @@ public class BioGeomancer
                                                  final String adm2,
                                                  final String localityArg) throws IOException
     {
-        HttpClient httpClient = new HttpClient();
-        ProxyHelper.applyProxySettings(httpClient);
-        PostMethod postMethod = new PostMethod("http://130.132.27.130/cgi-bin/bgm-0.2/batch_test.pl"); //$NON-NLS-1$
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+        HttpPost postMethod = new HttpPost("http://130.132.27.130/cgi-bin/bgm-0.2/batch_test.pl"); //$NON-NLS-1$
         StringBuilder strBuf = new StringBuilder(128);
         strBuf.append("\""+ id + "\","); //$NON-NLS-1$ //$NON-NLS-2$
         strBuf.append("\""+ country + "\","); //$NON-NLS-1$ //$NON-NLS-2$
@@ -93,17 +102,18 @@ public class BioGeomancer
 
         NameValuePair[] postData = {
                 //new NameValuePair("batchtext", "\"12931\",\"Mexico\",\"Veracruz\",\"\",\"12 km NW of Catemaco\"\r\n"),
-                new NameValuePair("batchtext", strBuf.toString()), //$NON-NLS-1$
-                new NameValuePair("format", "xml") }; //$NON-NLS-1$ //$NON-NLS-2$
+                new BasicNameValuePair("batchtext", strBuf.toString()), //$NON-NLS-1$
+                new BasicNameValuePair("format", "xml") }; //$NON-NLS-1$ //$NON-NLS-2$
 
         // the 2.0 beta1 version has a
-        // PostMethod.setRequestBody(NameValuePair[])
+        // HttpPost.setRequestBody(NameValuePair[])
         // method, as addParameters is deprecated
-        postMethod.addParameters(postData);
+        postMethod.setEntity(new UrlEncodedFormEntity(Arrays.asList(postData), StandardCharsets.UTF_8));
+        ProxyHelper.applyProxySettings(postMethod, null);
 
-        httpClient.executeMethod(postMethod);
+        CloseableHttpResponse response = httpClient.execute(postMethod);
         
-        InputStream iStream = postMethod.getResponseBodyAsStream();
+        InputStream iStream = new ByteArrayInputStream(EntityUtils.toByteArray(response.getEntity()));
         
         StringBuilder sb       = new StringBuilder();
         byte[]        bytes    = new byte[8196];

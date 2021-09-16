@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -46,7 +46,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 
-import org.apache.commons.httpclient.NameValuePair;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.commons.lang.StringUtils;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -248,19 +249,19 @@ public class SpecifyExceptionTracker extends ExceptionTracker
             Division    division    = mgr.getClassObject(Division.class);
             Institution institution = mgr.getClassObject(Institution.class);
             
-            stats.add(new NameValuePair("collection",  collection != null  ? collection.getCollectionName() : "No Collection")); //$NON-NLS-1$ $NON-NLS-2$
-            stats.add(new NameValuePair("discipline",  discipline != null  ? discipline.getName() :           "No Discipline")); //$NON-NLS-1$ $NON-NLS-2$
-            stats.add(new NameValuePair("division",    division != null    ? division.getName() :             "No Division")); //$NON-NLS-1$ $NON-NLS-2$
-            stats.add(new NameValuePair("institution", institution != null ? institution.getName() :          "No Institution")); //$NON-NLS-1$ $NON-NLS-2$
+            stats.add(new BasicNameValuePair("collection",  collection != null  ? collection.getCollectionName() : "No Collection")); //$NON-NLS-1$ $NON-NLS-2$
+            stats.add(new BasicNameValuePair("discipline",  discipline != null  ? discipline.getName() :           "No Discipline")); //$NON-NLS-1$ $NON-NLS-2$
+            stats.add(new BasicNameValuePair("division",    division != null    ? division.getName() :             "No Division")); //$NON-NLS-1$ $NON-NLS-2$
+            stats.add(new BasicNameValuePair("institution", institution != null ? institution.getName() :          "No Institution")); //$NON-NLS-1$ $NON-NLS-2$
             
-            stats.add(new NameValuePair("Collection_number",  collection != null  ? collection.getRegNumber()  : "No Collection Number")); //$NON-NLS-1$ $NON-NLS-2$
-            stats.add(new NameValuePair("Discipline_number",  discipline != null  ? discipline.getRegNumber()  : "No Discipline Number")); //$NON-NLS-1$ $NON-NLS-2$
-            stats.add(new NameValuePair("Division_number",    division != null    ? division.getRegNumber()    : "No Division Number")); //$NON-NLS-1$ $NON-NLS-2$
-            stats.add(new NameValuePair("Institution_number", institution != null ? institution.getRegNumber() : "No Institution Number")); //$NON-NLS-1$ $NON-NLS-2$
+            stats.add(new BasicNameValuePair("Collection_number",  collection != null  ? collection.getRegNumber()  : "No Collection Number")); //$NON-NLS-1$ $NON-NLS-2$
+            stats.add(new BasicNameValuePair("Discipline_number",  discipline != null  ? discipline.getRegNumber()  : "No Discipline Number")); //$NON-NLS-1$ $NON-NLS-2$
+            stats.add(new BasicNameValuePair("Division_number",    division != null    ? division.getRegNumber()    : "No Division Number")); //$NON-NLS-1$ $NON-NLS-2$
+            stats.add(new BasicNameValuePair("Institution_number", institution != null ? institution.getRegNumber() : "No Institution Number")); //$NON-NLS-1$ $NON-NLS-2$
             
             if (collection != null && StringUtils.isNotEmpty(collection.getIsaNumber()))
             {
-                stats.add(new NameValuePair("ISA_number", collection.getIsaNumber())); //$NON-NLS-1$
+                stats.add(new BasicNameValuePair("ISA_number", collection.getIsaNumber())); //$NON-NLS-1$
             }
             
             if (item.isIncludeEmail())
@@ -268,7 +269,7 @@ public class SpecifyExceptionTracker extends ExceptionTracker
                 String email = ((SpecifyAppContextMgr)mgr).getMailAddr(false);
                 if (StringUtils.isNotEmpty(email))
                 {
-                    stats.add(new NameValuePair("email", email)); //$NON-NLS-1$
+                    stats.add(new BasicNameValuePair("email", email)); //$NON-NLS-1$
                 }
             }
         }

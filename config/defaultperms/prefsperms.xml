@@ -210,6 +210,27 @@
     </hashtable>
   </entry>
   <entry>
+    <string>S2N</string>
+    <hashtable>
+      <entry>
+        <string>Manager</string>
+        <tp name="SYSTEM" type="Manager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>Guest</string>
+        <tp name="SYSTEM" type="Guest" view="false" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>LimitedAccess</string>
+        <tp name="SYSTEM" type="LimitedAccess" view="false" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>FullAccess</string>
+        <tp name="SYSTEM" type="FullAccess" view="false" modify="false" del="false" add="false"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
     <string>TREE</string>
     <hashtable>
       <entry>

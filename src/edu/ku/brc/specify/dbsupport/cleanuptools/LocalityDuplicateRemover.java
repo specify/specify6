@@ -733,7 +733,7 @@ public class LocalityDuplicateRemover
 
 	protected static void removeDuplicateAgents() throws Exception {
 		//String connStr = "jdbc:mysql://localhost/wis6?characterEncoding=UTF-8&autoReconnect=true"; 
-		String connStr = "jdbc:mysql://localhost/paf?characterEncoding=UTF-8&autoReconnect=true"; 
+		String connStr = "jdbc:mysql://localhost/bishop?characterEncoding=UTF-8&autoReconnect=true";
 		try
 		{
 			Connection conn = DriverManager.getConnection(connStr, "Master", "Master");
@@ -853,7 +853,7 @@ public class LocalityDuplicateRemover
 		//String connStr = "jdbc:mysql://localhost/plant_shared?characterEncoding=UTF-8&autoReconnect=true"; 
 		//String connStr = "jdbc:mysql://localhost/demopal?characterEncoding=UTF-8&autoReconnect=true"; 
 		//String connStr = "jdbc:mysql://localhost/flamam6?characterEncoding=UTF-8&autoReconnect=true"; 
-		String connStr = "jdbc:mysql://localhost/shell?characterEncoding=UTF-8&autoReconnect=true";
+		String connStr = "jdbc:mysql://localhost/bishop?characterEncoding=UTF-8&autoReconnect=true";
 		try
 		{
 			Connection conn = DriverManager.getConnection(connStr, "Master", "Master");
@@ -928,10 +928,10 @@ public class LocalityDuplicateRemover
 	{
 		try
 		{
-			//removeDuplicateAgents();
+			removeDuplicateAgents();
 			//removeDuplicateCollectingEvents();
 			//assignGeoCoordsFromGeoCoordTexts();
-			removeDuplicateLocalities();
+			//removeDuplicateLocalities();
 			//removeDuplicatePaleoContexts("iowafinaltmp", "Master", "Master", 3);
 			//removeDuplicateAccessions("shell");
 		} catch (Exception e)

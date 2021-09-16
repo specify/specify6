@@ -19,6 +19,7 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Set;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -38,6 +39,8 @@ import javax.swing.SwingConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import edu.ku.brc.af.core.db.DBFieldInfo;
+import edu.ku.brc.specify.datamodel.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
@@ -95,12 +98,13 @@ public class ExportMappingTask extends QueryTask
 {
     private static final Logger log  = Logger.getLogger(ExportMappingTask.class);
     
-	protected SpExportSchema		exportSchema	= null;
+	protected Set<SpExportSchema>		exportSchemas	= null;
 	protected SpExportSchemaMapping	schemaMapping	= null;
 	protected final AtomicBoolean	addingMapping	= new AtomicBoolean(false);
 	
 	protected static final String	DEF_IMP_PREF	= "ExportSchemaMapping.SchemaImportDir";
-	
+	protected static final String PREP_MAPS_ENABLED_PREF = "ExportSchemaMapping.PrepMapsEnabled";
+
 	protected boolean includeMappingsForCurrCollOnly = true;
 	
 	//protected static final String[] unSupportedsubstitutionGroups = {"dwc"
@@ -433,7 +437,7 @@ public class ExportMappingTask extends QueryTask
 
 	/**
 	 * Creates a new Query Data Object.
-	 * 
+	 *
 	 * @param tableInfo
 	 *            the table information
 	 * @return the query
@@ -451,21 +455,19 @@ public class ExportMappingTask extends QueryTask
 		return query;
 	}
 
+
 	/**
 	 * @param query
 	 * @return a QueryBldrPane for query
 	 */
-	protected QueryBldrPane buildQb(final SpQuery query) throws QueryTask.QueryBuilderContextException
-	{
-		if (!addingMapping.get())
-		{
+	protected QueryBldrPane buildQb(final SpQuery query) throws QueryTask.QueryBuilderContextException {
+		if (!addingMapping.get()) {
 			schemaMapping = query.getMapping();
-			if (schemaMapping != null)
-        	{
-        		exportSchema = schemaMapping.getSpExportSchema();
-        	}
+			if (schemaMapping != null) {
+				exportSchemas = schemaMapping.getSpExportSchemas();
+			}
 		}
-        return new QueryBldrPane(query.getName(), this, query, false, exportSchema, schemaMapping);
+		return new QueryBldrPane(query.getName(), this, query, false, exportSchemas, schemaMapping);
 	}
 
 	
@@ -517,42 +519,52 @@ public class ExportMappingTask extends QueryTask
 	protected DBTableInfo getTableInfo()
 	{
 		//XXX will probably need to support schemas that are NOT based on CO
-		return DBTableIdMgr.getInstance().getInfoById(1);
+		//return DBTableIdMgr.getInstance().getInfoById(Preparation.getClassTableId());
+		return DBTableIdMgr.getInstance().getInfoById(CollectionObject.getClassTableId());
 	}
 
+	protected DBTableInfo chooseBaseTable() {
+		DBTableInfo prepInfo = DBTableIdMgr.getInstance().getInfoById(Preparation.getClassTableId());
+		DBTableInfo coInfo = DBTableIdMgr.getInstance().getInfoById(CollectionObject.getClassTableId());
+		Boolean prepsEnabled = false;//AppPreferences.getRemote().getBoolean(PREP_MAPS_ENABLED_PREF, false);
+		int r = prepsEnabled
+				? UIRegistry.askYesNoLocalized(coInfo.getTitle(), prepInfo.getTitle(), "CANCEL",
+						UIRegistry.getResourceString("ExportMappingTask.ChooseBaseTableMsg"),
+						"ExportMappingTask.ChooseBaseTableTitle")
+				: JOptionPane.YES_OPTION;
+		if (r == JOptionPane.YES_OPTION) {
+			return coInfo;
+		} else if (r == JOptionPane.NO_OPTION) {
+			return prepInfo;
+		} else {
+			return null;
+		}
+	}
 	/**
 	 * 
 	 * Prompts to choose ExportSchema and opens new mapping, closing currently
 	 * open mapping if necessary.
 	 */
-	protected void addMapping()
-	{
-		if (queryBldrPane == null || queryBldrPane.aboutToShutdown())
-		{
+	protected void addMapping() {
+		if (queryBldrPane == null || queryBldrPane.aboutToShutdown()) {
 			List<SpExportSchema> selectedSchemas = chooseExportSchema();
-			if (selectedSchemas != null) 
-			{
-				SpExportSchema selectedSchema = selectedSchemas.get(0);
-				
-				if (selectedSchema.getSpExportSchemaId() == null)
-				{
-					exportSchema = null;
-				} else
-				{
-					exportSchema = selectedSchema;
+			if (exportSchemas == null) {
+				exportSchemas = new HashSet<>();
+			}
+			exportSchemas.clear();
+			if (selectedSchemas != null) {
+				for (SpExportSchema selectedSchema : selectedSchemas) {
+					exportSchemas.add(selectedSchema);
 				}
 				schemaMapping = new SpExportSchemaMapping();
 				schemaMapping.initialize();
-				schemaMapping.setSpExportSchema(exportSchema);
+				schemaMapping.setSpExportSchemas(exportSchemas);
 				SpQuery query = createNewQueryDataObj();
-				if (query != null) 
-				{
+				if (query != null) {
 					addingMapping.set(true);
-					try 
-					{
+					try {
 						editQuery(query);
-					} finally 
-					{
+					} finally {
 						addingMapping.set(false);
 					}
 				}
@@ -701,7 +713,7 @@ public class ExportMappingTask extends QueryTask
 	protected boolean isLoadableQuery(SpQuery query)
 	{
 		//assuming query was produced by this.getQueriesForLoading()
-		return true;
+		return QueryTask.isSchemaExportQuery(query);
 	}
 
 	/**
@@ -793,6 +805,17 @@ public class ExportMappingTask extends QueryTask
 		return result;
 	}
 
+	@Override
+	public boolean checkNameUniqueness(final String newQueryName, final DataProviderSessionIFace session) {
+		SpQuery fndQuery = session.getData(SpQuery.class, "name", newQueryName,
+				DataProviderSessionIFace.CompareType.Equals);
+		if (fndQuery != null) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
 	/* (non-Javadoc)
 	 * @see edu.ku.brc.specify.tasks.QueryTask#deleteThisQuery(edu.ku.brc.specify.datamodel.SpQuery, edu.ku.brc.dbsupport.DataProviderSessionIFace)
 	 */
@@ -860,8 +883,12 @@ public class ExportMappingTask extends QueryTask
 			}
 		}
 	}
-	
-	
+
+	@Override
+	protected void getRsNavBoxes() {
+		//nuthin
+	}
+
 	/**
 	 * @param xsdFile
 	 * @return true if the schema was imported

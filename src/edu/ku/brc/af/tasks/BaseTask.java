@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -1308,9 +1308,11 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     public RecordSetIFace askForDataObjRecordSet(final Class<? extends FormDataObjIFace> classForSrc, 
                                                  final String field, final boolean require)
      {
-        String titleKey = "BT_TITLE_"+classForSrc.getSimpleName();
-        String labelKey = "BT_LABEL_"+classForSrc.getSimpleName();
-         AskForNumbersDlg dlg = new AskForNumbersDlg(titleKey, labelKey, classForSrc, field, require);
+         DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByShortClassName(classForSrc.getSimpleName());
+         String fldTitle = tblInfo.getFieldByName(field).getTitle();
+         String title = String.format(getResourceString("BT_TITLE"), tblInfo.getTitle());
+         String label = String.format(getResourceString("BT_LABEL"), fldTitle);
+         AskForNumbersDlg dlg = new AskForNumbersDlg(classForSrc, field, require, title, label);
          dlg.setVisible(true);
          if (!dlg.isCancelled())
          {

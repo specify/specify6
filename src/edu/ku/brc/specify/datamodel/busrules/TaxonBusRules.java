@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -202,8 +202,8 @@ public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTr
                 "collectingeventattribute", "HostTaxonID",
                 
                 //allow cascade deletes for citations
-                //"taxoncitation", "TaxonID", 
-                
+                //"taxoncitation", "TaxonID",
+
                 "taxon",         "HybridParent1ID",
                 "taxon",         "HybridParent2ID",
                 "taxon",         "AcceptedID"
@@ -227,6 +227,7 @@ public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTr
                 "collectingeventattribute", "HostTaxonID",
                 "taxoncitation", "TaxonID", 
                 "taxonattachment", "TaxonID",
+                "commonnametx", "TaxonID",
                 "taxon",         "HybridParent1ID",
                 "taxon",         "HybridParent2ID",
                 "taxon",         "AcceptedID"

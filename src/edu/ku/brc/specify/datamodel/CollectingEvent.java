@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -25,20 +25,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.Vector;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
+import javax.persistence.*;
 
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import org.apache.log4j.Logger;
@@ -58,12 +45,16 @@ import edu.ku.brc.specify.conversion.BasicSQLUtils;
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
-@Table(name = "collectingevent")
+@Table(name = "collectingevent", uniqueConstraints = {
+        @UniqueConstraint(columnNames={"DisciplineID", "UniqueIdentifier"} )
+    }
+)
 @org.hibernate.annotations.Table(appliesTo="collectingevent", indexes =
     {   @Index (name="CEStationFieldNumberIDX", columnNames={"StationFieldNumber"}),
         @Index (name="CEStartDateIDX", columnNames={"StartDate"}),
         @Index (name="CEEndDateIDX", columnNames={"EndDate"}),
-        @Index (name="CEGuidIDX", columnNames={"GUID"})
+            @Index (name="CEUniqueIdentifierIDX", columnNames={"UniqueIdentifier"}),
+            @Index (name="CEGuidIDX", columnNames={"GUID"})
     })
 @SuppressWarnings("serial")
 public class CollectingEvent extends DisciplineMember implements AttachmentOwnerIFace<CollectingEventAttachment>, 
@@ -109,11 +100,15 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
     protected String				text2;
     protected String				text3;	
     protected String				text4;	
-    protected String				text5;	
+    protected String				text5;
+    protected String				text6;
+    protected String				text7;
+    protected String				text8;
     protected String				reservedText1;
     protected String                reservedText2;
     protected PaleoContext			paleoContext;
-    
+    protected String uniqueIdentifier;
+
     protected CollectingEventAttribute          collectingEventAttribute;      // Specify 5 Attributes table
     protected Set<CollectingEventAttr>          collectingEventAttrs;          // Generic Expandable Attributes
     protected Set<CollectingEventAttachment>    collectingEventAttachments;
@@ -172,13 +167,16 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
         text3 = null;
         text4 = null;
         text5 = null;
+        text6 = null;
+        text7 = null;
+        text8 = null;
         reservedText1         = null;
         reservedText2         = null;
         collectionObjects            = new HashSet<CollectionObject>();
         collectors                   = new HashSet<Collector>();
         locality                     = null;
         paleoContext          = null;
-        
+        uniqueIdentifier = null;
         collectingEventAttribute     = null;
         collectingEventAttrs         = new HashSet<CollectingEventAttr>();
         collectingEventAttachments   = new HashSet<CollectingEventAttachment>();
@@ -283,6 +281,17 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
 	public void setStationFieldNumberModifier3(String stationFieldNumberModifier3) {
 		this.stationFieldNumberModifier3 = stationFieldNumberModifier3;
 	}
+    /**
+     *
+     */
+    @Column(name = "UniqueIdentifier", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    public String getUniqueIdentifier() {
+        return this.uniqueIdentifier;
+    }
+
+    public void setUniqueIdentifier(String uniqueIdentifier) {
+        this.uniqueIdentifier = uniqueIdentifier;
+    }
 
 	/**
 	 * @return the     /**
@@ -438,6 +447,54 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
 	public void setText5(String text5) {
 		this.text5 = text5;
 	}
+
+    /**
+     * @return the text6
+     */
+    @Lob
+    @Column(name = "Text6", length = 65535)
+    public String getText6() {
+        return text6;
+    }
+
+    /**
+     * @param text6 the text6 to set
+     */
+    public void setText6(String text6) {
+        this.text6 = text6;
+    }
+
+    /**
+     * @return the text7
+     */
+    @Lob
+    @Column(name = "Text7", length = 65535)
+    public String getText7() {
+        return text7;
+    }
+
+    /**
+     * @param text7 the text7 to set
+     */
+    public void setText7(String text7) {
+        this.text7 = text7;
+    }
+
+    /**
+     * @return the text8
+     */
+    @Lob
+    @Column(name = "Text8", length = 65535)
+    public String getText8() {
+        return text8;
+    }
+
+    /**
+     * @param text8 the text8 to set
+     */
+    public void setText8(String text8) {
+        this.text8 = text8;
+    }
 
     /**
     *

@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -814,5 +814,27 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
     public void setNewObj(boolean isNewObj)
     {
         // no op
+    }
+
+    /**
+     *
+     * @param formatter
+     * @param date
+     * @return
+     */
+    public static String formatForUI(UIFieldFormatterIFace formatter, Date date) {
+        String pattern = formatter.getDateWrapper().getSimpleDateFormat().toPattern();
+        String result = formatter.getDateWrapper().format(date);
+        if (result != null) {
+            if (result.length() > pattern.length()) {
+                log.info("truncating result '" + result + "' to match pattern '" + pattern);
+                result = result.substring(0, pattern.length());
+            } else if (result.trim().endsWith(",")) {
+                log.info("truncating trailing comma ");
+                result = result.trim().substring(0, result.length()-1);
+            }
+
+        }
+        return result;
     }
 }

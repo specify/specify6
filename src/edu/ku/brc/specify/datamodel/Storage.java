@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -86,7 +86,6 @@ public class Storage extends DataModelObjBase implements AttachmentOwnerIFace<St
     protected StorageTreeDefItem definitionItem;
     protected Storage            parent;
     protected Set<Preparation>   preparations;
-    protected Set<Preparation> alternateStoragePreparations;
     protected Set<Container>     containers;
     protected Set<Storage>       children;
 
@@ -131,7 +130,6 @@ public class Storage extends DataModelObjBase implements AttachmentOwnerIFace<St
         definitionItem = null;
         parent = null;
         preparations = new HashSet<Preparation>();
-        alternateStoragePreparations = new HashSet<Preparation>();
         containers = new HashSet<Container>();
         children = new HashSet<Storage>();
         
@@ -461,18 +459,6 @@ public class Storage extends DataModelObjBase implements AttachmentOwnerIFace<St
     public void setParent(Storage parent)
     {
         this.parent = parent;
-    }
-
-    @OneToMany(mappedBy = "alternateStorage")
-    @Cascade( {CascadeType.MERGE, CascadeType.LOCK} )
-    public Set<Preparation> getAlternateStoragePreparations()
-    {
-        return this.alternateStoragePreparations;
-    }
-
-    public void setAlternateStoragePreparations(Set<Preparation> alternateStoragePreparations)
-    {
-        this.alternateStoragePreparations = alternateStoragePreparations;
     }
 
     @OneToMany(mappedBy = "storage")

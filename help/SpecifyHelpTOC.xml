@@ -62,6 +62,7 @@
 			<tocitem text="Task Bar" target="PrefsMisc" />
 			<tocitem text="Tree" target="PrefsTree" />
 			<tocitem text="Web Portal" target="PrefsWebPortal" />
+			<tocitem text="Specify Network" target="SpecifyNetwork" />
 		</tocitem>
 		<tocitem text="Introduction to Specify" target="Intro">
 			<tocitem text="Components in Specify" target="intro_components" />
@@ -80,10 +81,11 @@
 			<tocitem text="Series Data Entry" target="Forms_Series_Entry" />
 			<tocitem text="Batch Identify" target="Forms_Batch_Determine" />
 			<tocitem text="How Editing Affects Related Records" target="Editing_Related_Records" />
+			<tocitem text="Counts" target="data_counts" />
+			<tocitem text="Unique Identifier" target="unique_identifier" />
 			<tocitem text="Data Forms" target="Data_Entry">
 				<tocitem text="Side Bar Configuration" target="Data_Entry_Sidebar" />
 				<tocitem text="Working with Forms and Trees" target="Data_Entry_Trees" />
-				<tocitem text="Alternate Storage Location" target="alt_storage" />
 				<tocitem text="Container" target="Forms_Container" />
 				<tocitem text="Taxon Form" target="Data_Entry_Taxon" />
 				<tocitem text="Determinations Form" target="Data_Entry_Determinations" />
@@ -92,19 +94,23 @@
 				<tocitem text="Agent Form" target="Data_Entry_Agent" />
 				<tocitem text="Preparations Form" target="Data_Entry_Preparations" />
 				<tocitem text="Attachments Form" target="Data_Entry_Attachments" />
-				<tocitem text="Properties" target="Properties Tables" />
 				<tocitem text="Paleo Context" target="paleo_context" />
 				<tocitem text="GUID" target="GUID" />
+				<tocitem text="Specify Network" target="specify_network" />
 			</tocitem>
 			<tocitem text="Interactions Forms" target="Interactions">
-				<tocitem text="Side Bar Configuration" target="InteractionsConfig" />
 				<tocitem text="Accessions" target="Int_Accessions" />
-				<tocitem text="Gifts and Loans" target="Int_Gifts_Loans" />
-				<tocitem text="Returning Loans" target="Int_Return_Loans" />
-				<tocitem text="Information Requests" target="Int_Info_Requests" />
 				<tocitem text="Borrows" target="Int_Borrows" />
+				<tocitem text="Deaccessions" target="deaccessions" />
+				<tocitem text="disposals" target="disposals" />
 				<tocitem text="Exchange In / Exchange Out" target="Int_Exchange" />
+				<tocitem text="Gift" target="gift" />
+				<tocitem text="Counts" target="inter_counts" />
+				<tocitem text="Information Requests" target="Int_Info_Requests" />
+				<tocitem text="Loan" target="loans" />
 				<tocitem text="Repository Agreements" target="Repos_Agree" />
+				<tocitem text="Returning Loans" target="Int_Return_Loans" />
+				<tocitem text="Side Bar Configuration" target="InteractionsConfig" />
 			</tocitem>
 		</tocitem>
 		<tocitem text="Attachments" target="attach_general">
@@ -203,6 +209,7 @@
 			<tocitem text="Schema Mapping" target="schema_map" />
 			<tocitem text="Data Exporter Application" target="schema_tool" />
 		</tocitem>
+		<tocitem text="Specify Network" target="specify_network" />
 		<tocitem text="Stand-Alone Specify Applications" target="separate_apps">
 			<tocitem text="Specify Setup Wizard" target="wizard">
 				<tocitem text="Field Format Editor" target="field_format" />

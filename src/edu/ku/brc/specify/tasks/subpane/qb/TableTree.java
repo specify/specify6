@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -19,7 +19,11 @@
 */
 package edu.ku.brc.specify.tasks.subpane.qb;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Vector;
 
 import edu.ku.brc.af.core.db.DBFieldInfo;
@@ -86,7 +90,28 @@ public class TableTree implements Cloneable, Comparable<TableTree>
             {
                 tableQRI.addField(fi);
             }
+            for (String calcFld : getQueryableTransientFields()) {
+                tableQRI.addField(calcFld);
+            }
         }
+    }
+
+    /**
+     *
+     * @return
+     */
+    protected List<String> getQueryableTransientFields() {
+        List<String> result = new ArrayList<>();
+        if (tableInfo != null) {
+            Class<?> tblClass = tableInfo.getClassObj();
+            try {
+                Method m = tblClass.getMethod("getQueryableTransientFields");
+                result.addAll((List<String>)m.invoke(null));
+            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException x) {
+                //oh well
+            }
+        }
+        return result;
     }
     /**
      * @param parent the parent to set

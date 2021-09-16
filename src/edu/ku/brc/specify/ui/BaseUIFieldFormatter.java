@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -231,7 +231,11 @@ public class BaseUIFieldFormatter implements UIFieldFormatterIFace, Cloneable
         return length;
     }
 
-    
+    @Override
+    public int getMinLength() {
+        return getLength();
+    }
+
     /* (non-Javadoc)
 	 * @see edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace#setLength(int)
 	 */

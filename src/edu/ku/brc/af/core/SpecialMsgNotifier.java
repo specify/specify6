@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -19,6 +19,8 @@
 */
 package edu.ku.brc.af.core;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -28,11 +30,18 @@ import javax.swing.SwingWorker;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.helpers.ProxyHelper;
 import edu.ku.brc.specify.Specify;
-import org.apache.commons.httpclient.HostConfiguration;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.NameValuePair;
-import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.http.HttpHost;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.ui.UIRegistry;
@@ -135,46 +144,43 @@ public class SpecialMsgNotifier
     protected String send(final String url, final String id) throws Exception
     {
         // check the website for the info about the latest version
-        HttpClient httpClient = new HttpClient();
+        CloseableHttpClient httpClient = HttpClients.createDefault();
         httpClient.getParams().setParameter("http.useragent", getClass().getName()); //$NON-NLS-1$
-        ProxyHelper.applyProxySettings(httpClient);
-        httpClient.getHttpConnectionManager().getParams().setConnectionTimeout(15000);
+        //ProxyHelper.applyProxySettings(httpClient);
+        //httpClient.getHttpConnectionManager().getParams().setConnectionTimeout(15000);
 
-        PostMethod postMethod = new PostMethod(url);
-        
+        HttpPost postMethod = new HttpPost(url);
+        RequestConfig.Builder requestConfig = RequestConfig.custom();
+        requestConfig.setConnectTimeout(15000);
+        ProxyHelper.applyProxySettings(postMethod, requestConfig);
+        postMethod.setConfig(requestConfig.build());
+
         Vector<NameValuePair> postParams = new Vector<NameValuePair>();
         
-        postParams.add(new NameValuePair("id", id)); //$NON-NLS-1$
+        postParams.add(new BasicNameValuePair("id", id)); //$NON-NLS-1$
         
         String resAppVersion = UIRegistry.getAppVersion();
         resAppVersion = StringUtils.isEmpty(resAppVersion) ? "Unknown" : resAppVersion;
 
         // get the OS name and version
-        postParams.add(new NameValuePair("os_name",      System.getProperty("os.name"))); //$NON-NLS-1$
-        postParams.add(new NameValuePair("os_version",   System.getProperty("os.version"))); //$NON-NLS-1$
-        postParams.add(new NameValuePair("java_version", System.getProperty("java.version"))); //$NON-NLS-1$
-        postParams.add(new NameValuePair("java_vendor",  System.getProperty("java.vendor"))); //$NON-NLS-1$
-        postParams.add(new NameValuePair("app_version",  UIRegistry.getAppVersion())); //$NON-NLS-1$
+        postParams.add(new BasicNameValuePair("os_name",      System.getProperty("os.name"))); //$NON-NLS-1$
+        postParams.add(new BasicNameValuePair("os_version",   System.getProperty("os.version"))); //$NON-NLS-1$
+        postParams.add(new BasicNameValuePair("java_version", System.getProperty("java.version"))); //$NON-NLS-1$
+        postParams.add(new BasicNameValuePair("java_vendor",  System.getProperty("java.vendor"))); //$NON-NLS-1$
+        postParams.add(new BasicNameValuePair("app_version",  UIRegistry.getAppVersion())); //$NON-NLS-1$
         
-        // create an array from the params
-        NameValuePair[] paramArray = new NameValuePair[postParams.size()];
-        for (int i = 0; i < paramArray.length; ++i)
-        {
-            paramArray[i] = postParams.get(i);
-        }
-
-         postMethod.setRequestBody(paramArray);
-        
+        //postMethod.setRequestBody(paramArray);
+        postMethod.setEntity(new UrlEncodedFormEntity(postParams, StandardCharsets.UTF_8));
         // connect to the server
         try
         {
-            httpClient.executeMethod(postMethod);
+            CloseableHttpResponse response = httpClient.execute(postMethod);
             
-            int status = postMethod.getStatusCode();
+            int status = response.getStatusLine().getStatusCode();
             if (status == 200)
             {
                 // get the server response
-                String responseString = postMethod.getResponseBodyAsString();
+                String responseString = EntityUtils.toString(response.getEntity());
                 
                 if (StringUtils.isNotEmpty(responseString))
                 {

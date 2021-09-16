@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -352,6 +352,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             CollectionObjectAttachment.class,
             ConservDescriptionAttachment.class,
             ConservEventAttachment.class,
+                DeaccessionAttachment.class,
             DNASequenceAttachment.class,
             DNASequencingRunAttachment.class,
             FieldNotebookAttachment.class,
@@ -2186,7 +2187,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         "<a href=\"http://www.specifysoftware.org\">www.specifysoftware.org</a>"+ //$NON-NLS-1$
         "<br><a href=\"mailto:support@specifysoftware.org\">support@specifysoftware.org</a><br>" +  //$NON-NLS-1$
         "<p>Specify Software is a product of the Specify Collections Consortium that is funded by its member institutions. Consortium Founding Members include: University of Michigan, University of Florida, Denmark Consortium of Museums, and the University of Kansas. The Consortium operates under the non-profit, 501(c)3, U.S. tax status of the University of Kansas Center for Research. Specify was supported previously by multiple awards from the U.S. National Science Foundation.<br><br>" + //$NON-NLS-1$
-        "Specify 6 Copyright \u00A9 2020 Specify Collections Consortium. " +
+        "Specify 6 Copyright \u00A9 2021 Specify Collections Consortium. " +
         "Specify comes with ABSOLUTELY NO WARRANTY.<br><br>" + //$NON-NLS-1$
         "This is free software licensed under GNU General Public License 2 (GPL2).</P></font></html>"; //$NON-NLS-1$
 
@@ -2252,6 +2253,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                         AppPreferences.getLocalPrefs().putInt("APP.W", r.width);
                         AppPreferences.getLocalPrefs().putInt("APP.H", r.height);
                         if (UIHelper.isMacOS()) {
+                            log.info("MacOS: APP.MAXIMIZED: " + (topFrame.getExtendedState() == Frame.MAXIMIZED_BOTH));
                             AppPreferences.getLocalPrefs().putBoolean("APP.MAXIMIZED", topFrame.getExtendedState() == Frame.MAXIMIZED_BOTH);
                         }
                     }
@@ -2365,10 +2367,12 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         boolean isMacAndMaxed = UIHelper.isMacOS() && AppPreferences.getLocalPrefs().getBoolean("APP.MAXIMIZED", true);
         if (isMacAndMaxed)
         {
+            log.info("IsMacAndMaxed!");
             f.setExtendedState(Frame.MAXIMIZED_BOTH);
         } else
         {
-        	UIHelper.positionAndFitToScreen(f, x, y, w, h);
+        	log.info("positionAndFitToScreen(" + f + ", " + x + ", " + y + ", " + w + ", " + h + ")");
+            UIHelper.positionAndFitToScreen(f, x, y, w, h);
         }
         f.setVisible(true);
     }

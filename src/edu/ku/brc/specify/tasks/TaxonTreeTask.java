@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -200,7 +200,23 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
             });
             popup.add(lifeMapperDisplay, true);
             popup.setLifeMapperDisplayMenuItem(lifeMapperDisplay);
-/*... Removing lifemapper due to worldwind java8 issues */            
+/*... Removing lifemapper due to worldwind java8 issues */
+
+            JMenuItem spiceDigMenu = new JMenuItem(getResourceString("TTV_SPICEDIG"));
+            spiceDigMenu.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    Taxon     taxon     = ttv.getSelectedNode(popup.getList());
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            UsageTracker.incrUsageCount("TTV.SpiceDigMenu");
+                            CommandDispatcher.dispatch(new CommandAction("Data_Entry", "SpiceDigTx", taxon));
+                        }
+                    });
+                }
+            });
+            popup.add(spiceDigMenu, true);
+            popup.setSpiceDigMenuItem(spiceDigMenu);
+
             DBTableInfo        treeTI    = DBTableIdMgr.getInstance().getByClassName(getTreeClass().getName());
             PermissionSettings treePerms = treeTI.getPermissions();
             if (!isEditMode && treePerms.canAdd())

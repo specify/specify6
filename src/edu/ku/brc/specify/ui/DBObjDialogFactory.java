@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -120,7 +120,7 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
                     Element fileElement = (Element) i.next();
                     String  type        = getAttr(fileElement, "type", "display");
                     String  name        = getAttr(fileElement, "name", null);
-                    boolean isDisplay   = type.equals("display");
+                    boolean isDisplay   = type.equals("display") || type.equals("gbif");
                     
                     DialogInfo di = new DialogInfo(isDisplay ? null : getAttr(fileElement, "viewset", null),
                                                     getAttr(fileElement, "view", null),

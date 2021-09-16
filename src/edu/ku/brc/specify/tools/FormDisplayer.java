@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -542,7 +542,7 @@ public class FormDisplayer
             String zipFilePath = dstDirPath + File.separator + "site.zip";
             System.out.println("["+zipFilePath+"]");
             
-            String           url    = "http://files.specifysoftware.org/site.zip";
+            String           url    = "https://files.specifysoftware.org/site.zip";
             HTTPGetter       getter = new HTTPGetter();
             InputStream      ins    = getter.beginHTTPRequest(url);
             //DataInputStream  dins   = new DataInputStream(ins);

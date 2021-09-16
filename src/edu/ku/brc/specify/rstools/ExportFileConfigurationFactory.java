@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -35,6 +35,7 @@ import edu.ku.brc.specify.tasks.subpane.wb.ConfigureXLS;
 public class ExportFileConfigurationFactory
 {
     public static String XLS_MIME_TYPE = "binary/xls";
+    public static String XLSX_MIME_TYPE = "binary/xlsx";
     public static String CSV_MIME_TYPE = "text/csv";
     
     // This should be a WeakReference somday
@@ -45,10 +46,10 @@ public class ExportFileConfigurationFactory
         //blank
     }
 
-    public static ConfigureExternalDataIFace getConfiguration(final Properties props)
-    {
-        if (props.getProperty("mimetype", XLS_MIME_TYPE) == XLS_MIME_TYPE)
-        {
+    public static ConfigureExternalDataIFace getConfiguration(final Properties props) {
+        if (props.getProperty("mimetype", XLSX_MIME_TYPE) == XLSX_MIME_TYPE) {
+            return new ConfigureXLS(props);
+        } else if (props.getProperty("mimetype") == XLS_MIME_TYPE) {
             return new ConfigureXLS(props);
         }
         return new ConfigureCSV(props);
@@ -64,7 +65,8 @@ public class ExportFileConfigurationFactory
         { 
             ExportFileConfigurationFactory factory = new ExportFileConfigurationFactory(); // cheesey I know
             exportTypes = new Vector<ExportableType>();
-            exportTypes.add(factory.new ExportableType("Excel", XLS_MIME_TYPE, "xls"));
+            //exportTypes.add(factory.new ExportableType("Excel 97-2003", XLS_MIME_TYPE, "xls"));
+            exportTypes.add(factory.new ExportableType("Excel", XLSX_MIME_TYPE, "xlsx"));
             exportTypes.add(factory.new ExportableType("CSV", CSV_MIME_TYPE, "csv"));
         }
 

@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -88,7 +88,8 @@ import javax.swing.UIManager;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.apache.commons.httpclient.NameValuePair;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -1297,19 +1298,19 @@ public class StrLocalizerAppForiOS extends JPanel implements FrameworkAppIFace, 
         {
             // get the install ID
             // get the OS name and version
-            postParams.add(new NameValuePair("doit",    "done")); //$NON-NLS-1$
-            postParams.add(new NameValuePair("ei",      "UTF-8")); //$NON-NLS-1$
-            postParams.add(new NameValuePair("lp",      src)); //$NON-NLS-1$
-            postParams.add(new NameValuePair("fr",      "bf-home")); //$NON-NLS-1$
+            postParams.add(new BasicNameValuePair("doit",    "done")); //$NON-NLS-1$
+            postParams.add(new BasicNameValuePair("ei",      "UTF-8")); //$NON-NLS-1$
+            postParams.add(new BasicNameValuePair("lp",      src)); //$NON-NLS-1$
+            postParams.add(new BasicNameValuePair("fr",      "bf-home")); //$NON-NLS-1$
             
-            postParams.add(new NameValuePair("intl",     "1")); //$NON-NLS-1$
-            postParams.add(new NameValuePair("tt",       "urltext")); //$NON-NLS-1$
-            postParams.add(new NameValuePair("trtext",   inputStr)); //$NON-NLS-1$
-            //postParams.add(new NameValuePair("wl_trglang",   dst)); //$NON-NLS-1$
+            postParams.add(new BasicNameValuePair("intl",     "1")); //$NON-NLS-1$
+            postParams.add(new BasicNameValuePair("tt",       "urltext")); //$NON-NLS-1$
+            postParams.add(new BasicNameValuePair("trtext",   inputStr)); //$NON-NLS-1$
+            //postParams.add(new BasicNameValuePair("wl_trglang",   dst)); //$NON-NLS-1$
 
             
             // create an array from the params
-            NameValuePair[] paramArray = new NameValuePair[postParams.size()];
+            NameValuePair[] paramArray = new BasicNameValuePair[postParams.size()];
             for (int i = 0; i < paramArray.length; ++i)
             {
                 paramArray[i] = postParams.get(i);

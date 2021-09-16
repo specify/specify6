@@ -1,5 +1,5 @@
 <vector>
-  <entry name="accession" table="accession" view="Accession" type="Interactions" action="NEW_ACC" icon="Accession" isonleft="true" 
+  <entry name="accession" table="accession" view="Accession" type="Interactions" action="NEW_ACC" icon="Accession" isonleft="true"
          issrchsrv="false" order="0" enabled="true" visible="true" tooltip="">
     <draggableFlavors/>
     <droppableFlavors>
@@ -22,7 +22,49 @@
       </flavor>
     </droppableFlavors>
   </entry>
-  <entry name="permit" table="permit" view="Permit" type="Interactions" action="OpenNewView" icon="Permit" isonleft="true" 
+
+  <!--entry name="deaccession" table="deaccession" view="Deaccession" type="Interactions" action="NEW_DEACC" icon="Deaccession" isonleft="true"
+         issrchsrv="false" order="0" enabled="true" visible="true" tooltip="">
+  </entry-->
+
+  <entry name="deaccession" table="deaccession" view="Deaccession" type="Interactions" action="OpenNewView" icon="Deaccession" isonleft="false"
+         issrchsrv="true" order="0" enabled="true" visible="false" tooltip="">
+    <draggableFlavors/>
+    <droppableFlavors>
+      <flavor isdrag="false" classname="edu.ku.brc.specify.tasks.RecordSetTask" humanreadable="Record_Set">
+        <tableIds>
+          <int>163</int>
+        </tableIds>
+      </flavor>
+    </droppableFlavors>
+  </entry>
+
+  <entry name="disposal" table="disposal" view="Disposal" type="Interactions" action="NEW_DISPOSAL" icon="Disposal" isonleft="true"
+         issrchsrv="false" order="0" enabled="true" visible="true" tooltip="">
+    <draggableFlavors/>
+    <droppableFlavors>
+      <flavor isdrag="false" classname="edu.ku.brc.specify.tasks.RecordSetTask" humanreadable="Record_Set">
+        <tableIds>
+          <int>1</int>
+          <int>63</int>
+        </tableIds>
+      </flavor>
+    </droppableFlavors>
+  </entry>
+  <entry name="disposal" table="disposal" view="Disposal" type="Interactions" action="Edit" icon="Disposal" isonleft="false"
+         issrchsrv="true" order="0" enabled="true" visible="false" tooltip="">
+    <draggableFlavors/>
+    <droppableFlavors>
+      <flavor isdrag="false" classname="edu.ku.brc.specify.tasks.RecordSetTask" humanreadable="Record_Set">
+        <tableIds>
+          <int>1</int>
+          <int>7</int>
+        </tableIds>
+      </flavor>
+    </droppableFlavors>
+  </entry>
+
+  <entry name="permit" table="permit" view="Permit" type="Interactions" action="OpenNewView" icon="Permit" isonleft="true"
          issrchsrv="true" order="0" enabled="true" visible="true" tooltip="">
     <draggableFlavors/>
     <droppableFlavors>
@@ -42,6 +84,7 @@
           <!--  <int>52</int> -->
           <int>1</int>
           <int>50</int>
+          <int>63</int>
         </tableIds>
       </flavor>
       <flavor isdrag="false" classname="edu.ku.brc.specify.datamodel.InfoRequest" humanreadable="InfoRequest">
@@ -60,15 +103,16 @@
           <int>52</int>
           <int>1</int>
           <int>50</int>
+          <int>63</int>
         </tableIds>
       </flavor>
     </droppableFlavors>
   </entry>  
-  <entry name="loan" table="loan" view="Loan" label="LOAN_NO_PRP" type="Interactions" action="LN_NO_PRP" icon="Loan" isonleft="true" 
+  <!--<entry name="loan" table="loan" view="Loan" label="LOAN_NO_PRP" type="Interactions" action="LN_NO_PRP" icon="Loan" isonleft="true"
          issrchsrv="false" order="0" enabled="true" visible="true" tooltip="InteractionsTask.LN_NO_PREP">
     <draggableFlavors/>
     <droppableFlavors/>
-  </entry>  
+  </entry>-->
   <entry name="gift" table="gift" view="Gift" type="Interactions" action="NEW_GIFT" icon="Gift" isonleft="true" 
          issrchsrv="false" order="0" enabled="true" visible="true" tooltip="InteractionsTask.NEW_GFT">
     <draggableFlavors/>
@@ -78,6 +122,7 @@
           <int>131</int>
           <int>1</int>
           <int>50</int>
+          <int>63</int>
         </tableIds>
       </flavor>
       <flavor isdrag="false" classname="edu.ku.brc.specify.datamodel.InfoRequest" humanreadable="InfoRequest">
@@ -96,12 +141,13 @@
           <int>131</int>
           <int>1</int>
           <int>50</int>
+          <int>63</int>
         </tableIds>
       </flavor>
     </droppableFlavors>
   </entry>
   <entry name="exchangein" table="exchangein" view="ExchangeIn" type="Interactions" action="OpenNewView" icon="ExchangeIn" isonleft="true" 
-         issrchsrv="true" order="0" enabled="true" visible="true" tooltip="">
+         issrchsrv="false" order="0" enabled="true" visible="true" tooltip="">
     <draggableFlavors/>
     <droppableFlavors>
       <flavor isdrag="false" classname="edu.ku.brc.specify.tasks.RecordSetTask" humanreadable="Record_Set">
@@ -111,19 +157,43 @@
       </flavor>
     </droppableFlavors>
   </entry>
-  <entry name="exchangeout" table="exchangeout" view="ExchangeOut" type="Interactions" action="OpenNewView" icon="ExchangeOut" isonleft="true" 
-         issrchsrv="true" order="0" enabled="true" visible="true" tooltip="">
+  <entry name="exchangein" table="exchangein" view="ExchangeIn" type="Interactions" action="Edit" icon="ExchangeIn" isonleft="false"
+         issrchsrv="true" order="0" enabled="true" visible="false" tooltip="">
     <draggableFlavors/>
     <droppableFlavors>
       <flavor isdrag="false" classname="edu.ku.brc.specify.tasks.RecordSetTask" humanreadable="Record_Set">
         <tableIds>
-          <int>40</int>
+          <int>39</int>
         </tableIds>
       </flavor>
     </droppableFlavors>
   </entry>
-  <entry name="borrow" table="borrow" view="Borrow" type="Interactions" action="OpenNewView" icon="Borrow" isonleft="true" 
-         issrchsrv="true" order="0" enabled="true" visible="true" tooltip="">
+  <entry name="exchangeout" table="exchangeout" view="ExchangeOut" type="Interactions" action="NEW_EXCHANGE_OUT" icon="ExchangeOut" isonleft="true"
+         issrchsrv="false" order="0" enabled="true" visible="true" tooltip="">
+    <draggableFlavors/>
+    <droppableFlavors>
+      <flavor isdrag="false" classname="edu.ku.brc.specify.tasks.RecordSetTask" humanreadable="Record_Set">
+        <tableIds>
+          <int>1</int>
+          <int>63</int>
+        </tableIds>
+      </flavor>
+    </droppableFlavors>
+  </entry>
+  <entry name="exchangeout" table="exchangeout" view="ExchangeOut" type="Interactions" action="Edit" icon="ExchangeOut" isonleft="false"
+         issrchsrv="true" order="0" enabled="true" visible="false" tooltip="">
+    <draggableFlavors/>
+    <droppableFlavors>
+      <flavor isdrag="false" classname="edu.ku.brc.specify.tasks.RecordSetTask" humanreadable="Record_Set">
+        <tableIds>
+          <int>1</int>
+          <int>63</int>
+        </tableIds>
+      </flavor>
+    </droppableFlavors>
+  </entry>
+  <entry name="borrow" table="borrow" view="Borrow" type="Interactions" action="OpenNewView" icon="Borrow" isonleft="true"
+         issrchsrv="false" order="0" enabled="true" visible="true" tooltip="">
     <draggableFlavors/>
     <droppableFlavors>
       <flavor isdrag="false" classname="edu.ku.brc.specify.tasks.RecordSetTask" humanreadable="Record_Set">
@@ -133,7 +203,18 @@
       </flavor>
     </droppableFlavors>
   </entry>
-  <entry name="inforequest" table="inforequest" type="Interactions" action="Specify Info Request" icon="InfoRequest" isonleft="true" 
+  <entry name="borrow" table="borrow" view="Borrow" type="Interactions" action="Edit" icon="Borrow" isonleft="false"
+         issrchsrv="true" order="0" enabled="true" visible="false" tooltip="">
+    <draggableFlavors/>
+    <droppableFlavors>
+      <flavor isdrag="false" classname="edu.ku.brc.specify.tasks.RecordSetTask" humanreadable="Record_Set">
+        <tableIds>
+          <int>18</int> <!-- borrow       -->
+        </tableIds>
+      </flavor>
+    </droppableFlavors>
+  </entry>
+  <entry name="inforequest" table="inforequest" type="Interactions" action="Specify Info Request" icon="InfoRequest" isonleft="true"
          issrchsrv="true" order="0" enabled="true" visible="true" tooltip="InteractionsTask.CRE_IR">
     <draggableFlavors/>
     <droppableFlavors>
@@ -164,17 +245,17 @@
     </droppableFlavors>
   </entry>
   
-  <entry name="returnloan" table="loan" label="RET_LOAN" type="Interactions" action="RET_LOAN" icon="Loan" 
+  <!--entry name="returnloan" table="loan" label="RET_LOAN" type="Interactions" action="RET_LOAN" icon="Loan"
          issrchsrv="false" isonleft="true" order="0" enabled="true" visible="true" tooltip="">
     <draggableFlavors/>
     <droppableFlavors>
       <flavor isdrag="false" classname="edu.ku.brc.specify.tasks.RecordSetTask" humanreadable="Record_Set">
         <tableIds>
-          <int>52</int>  <!-- loan         -->
+          <int>52</int>
         </tableIds>
       </flavor>
     </droppableFlavors>
-  </entry>
+  </entry-->
   
   <entry name="printloan" table="loan" label="PRINT_INVOICE" type="Interactions" action="PRINT_INVOICE" icon="Reports" isonleft="true" 
                 issrchsrv="false" order="0" enabled="true" visible="true" tooltip="InteractionsTask.PRT_INV">

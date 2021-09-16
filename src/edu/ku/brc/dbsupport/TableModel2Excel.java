@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -37,6 +37,11 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
 
 import edu.ku.brc.ui.UIRegistry;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 /**
  * Helper that converts a Swing TableModel to an MS-Excel Spreadsheet, HTML Table.
@@ -77,7 +82,7 @@ public class TableModel2Excel
     public static File getTempExcelName()
     {
         String prefix = "collection_items_"; //$NON-NLS-1$
-        String ext    = ".xls"; //$NON-NLS-1$
+        String ext    = ".xlsx"; //$NON-NLS-1$
         try
         {
             String fileName = getFileNameWithoutExt(File.createTempFile(prefix, null).getName());
@@ -106,14 +111,14 @@ public class TableModel2Excel
                                             final short colorIndex, 
                                             final short borderStyle)
     {
-        style.setBorderBottom(borderStyle);
-        style.setBottomBorderColor(colorIndex);
-        style.setBorderLeft(borderStyle);
-        style.setLeftBorderColor(colorIndex);
-        style.setBorderRight(borderStyle);
-        style.setRightBorderColor(colorIndex);
-        style.setBorderTop(borderStyle);
-        style.setTopBorderColor(colorIndex);
+//        style.setBorderBottom(borderStyle);
+//        style.setBottomBorderColor(colorIndex);
+//        style.setBorderLeft(borderStyle);
+//        style.setLeftBorderColor(colorIndex);
+//        style.setBorderRight(borderStyle);
+//        style.setRightBorderColor(colorIndex);
+//        style.setBorderTop(borderStyle);
+//        style.setTopBorderColor(colorIndex);
     }
 
     /**
@@ -150,24 +155,24 @@ public class TableModel2Excel
                 }
                 
                 // create a new workbook
-                HSSFWorkbook wb = new HSSFWorkbook();
+                XSSFWorkbook wb = new XSSFWorkbook();
                 
                 // create a new sheet
-                HSSFSheet sheet = wb.createSheet();
+                Sheet sheet = wb.createSheet();
                 // declare a row object reference
                 
 
                 // Header Captions
-                HSSFFont headerFont = wb.createFont();
+                Font headerFont = wb.createFont();
                 headerFont.setFontHeightInPoints((short) 12);
-                headerFont.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+                //headerFont.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
                 
                 short numColumns = (short)tableModel.getColumnCount();
                 
-                HSSFRow  headerRow  = sheet.createRow(0);
+                Row headerRow  = sheet.createRow(0);
                 for (int i=0;i<numColumns;i++)
                 {
-                    HSSFCell headerCell = headerRow.createCell((short) i);
+                    Cell headerCell = headerRow.createCell((short) i);
                     //headerCell.setCellStyle(headerStyle);
                     
                     //add the date to the header cell
@@ -182,12 +187,12 @@ public class TableModel2Excel
                 for (int rownum = 0; rownum < tableModel.getRowCount(); rownum++)
                 {
                     // create a row
-                    HSSFRow row = sheet.createRow(rownum+1);
+                    Row row = sheet.createRow(rownum+1);
 
                     for (short cellnum = (short) 0; cellnum < numColumns; cellnum++)
                     {
                         // create a numeric cell
-                        HSSFCell cell = row.createCell(cellnum);
+                        Cell cell = row.createCell(cellnum);
                         
                         Object dataVal = tableModel.getValueAt(rownum, cellnum);
                         cell.setCellValue(dataVal != null ? dataVal.toString() : "");

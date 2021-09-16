@@ -1,4 +1,4 @@
-/* Copyright (C) 2020, Specify Collections Consortium
+/* Copyright (C) 2021, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -35,13 +35,6 @@ import java.util.Set;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFDateUtil;
-import org.apache.poi.hssf.usermodel.HSSFHyperlink;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.specify.datamodel.Workbench;
@@ -51,6 +44,7 @@ import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.LatLonConverter;
+import org.apache.poi.ss.usermodel.*;
 
 /**
  * @author timbo
@@ -70,11 +64,11 @@ public class XLSImport extends DataImport implements DataImportIFace
     /**
      * @param headerRow
      */
-    private void getSystemCols(final HSSFRow headerRow)
+    private void getSystemCols(final Row headerRow)
     {
         for (int c = headerRow.getFirstCellNum(); c <= headerRow.getLastCellNum(); c++)
         {
-            HSSFCell cell = headerRow.getCell(c);
+            Cell cell = headerRow.getCell(c);
             int nulls = 0;
             if (cell != null)
             {
@@ -130,9 +124,8 @@ public class XLSImport extends DataImport implements DataImportIFace
             try
             {
                 InputStream     input    = new FileInputStream(config.getFile());
-                POIFSFileSystem fs       = new POIFSFileSystem(input);
-                HSSFWorkbook    workBook = new HSSFWorkbook(fs);
-                HSSFSheet       sheet    = workBook.getSheetAt(0);
+                Workbook workBook = WorkbookFactory.create(input);
+                Sheet sheet    = workBook.getSheetAt(0);
                 int             numRows  = 0;
                 
                 // Calculate the number of rows and columns
@@ -153,13 +146,13 @@ public class XLSImport extends DataImport implements DataImportIFace
                 Collections.sort(wbtmiList);
                 
                 this.truncations.clear();
-                Vector<HSSFHyperlink> activeHyperlinks = new Vector<HSSFHyperlink>();
+                Vector<Hyperlink> activeHyperlinks = new Vector<>();
                 
                 // Iterate over each row in the sheet
                 Iterator<?> rows = sheet.rowIterator();
                 while (rows.hasNext())
                 {
-                    HSSFRow row = (HSSFRow) rows.next();
+                    Row row = (Row) rows.next();
                     if (numRows == 0 && config.getFirstRowHasHeaders())
                     {
                         numRows++;
@@ -183,74 +176,55 @@ public class XLSImport extends DataImport implements DataImportIFace
                                 }
                             }
                         }
-                        HSSFCell cell    = row.getCell(cellNum);
+                        Cell cell    = row.getCell(cellNum);
                         if (cell == null)
                         {
                             continue;
                         }
-                        int      type    = cell.getCellType();
-                        if (type == HSSFCell.CELL_TYPE_FORMULA)
+                        CellType      type    = cell.getCellType();
+                        if (type == CellType.FORMULA)
                         {
                         	type = cell.getCachedFormulaResultType();
                         }
                         String   value   = "";
                         boolean  skip    = false;
     
-                        switch (type)
-                        {
-                            case HSSFCell.CELL_TYPE_NUMERIC:
-                            {
-                                if (HSSFDateUtil.isCellDateFormatted(cell))
-                                {
+                            if (type == CellType.NUMERIC) {
+                                if (DateUtil.isCellDateFormatted(cell)) {
                                     //even if WorkbenchTask.getDataType(wbtmi) is not Calendar or Date. Hmmmm.
                                     value = scrDateFormat.getSimpleDateFormat().format(cell.getDateCellValue());
-                                } else
-                                {
+                                } else {
                                     Class<?> classObj = WorkbenchTask.getDataType(wbtmi, false);
-                                    if (classObj.equals(Integer.class))
-                                    {
+                                    if (classObj.equals(Integer.class)) {
                                         double numeric = cell.getNumericCellValue();
                                         value = Integer.toString((int) numeric);
-        
-                                    } else if (classObj.equals(Calendar.class) || classObj.equals(Date.class))
-                                    {
+                                    } else if (classObj.equals(Calendar.class) || classObj.equals(Date.class)) {
                                         Date d = cell.getDateCellValue();
-                                        if (d != null)
-                                        {
+                                        if (d != null) {
                                         	value = scrDateFormat.getSimpleDateFormat().format(cell.getDateCellValue());
-                                        } else
-                                        {
+                                        } else {
                                         	value = null;
                                         }
-                                    } else 
-                                    {
+                                    } else {
                                         double numeric = cell.getNumericCellValue();
                                         value = nf.format(numeric);
-                                        if (isGeoCoordinate(wbtmi))
-                                        {
+                                        if (isGeoCoordinate(wbtmi)) {
                                             int sepInx = value.indexOf(decSep);
-                                        	if (sepInx > -1 && value.substring(sepInx).length() > nfGeoCoord.getMaximumFractionDigits())
-                                        	{
+                                        	if (sepInx > -1 && value.substring(sepInx).length() > nfGeoCoord.getMaximumFractionDigits()) {
                                         		String value2 = nfGeoCoord.format(numeric);
                                         		int maxlen = wbtmi.getFieldName().startsWith("latitude") 
                                         			? nfGeoCoord.getMaximumFractionDigits() + 3 
                                         			: nfGeoCoord.getMaximumFractionDigits() + 4;
-                                        		if (numeric < 0)
-                                        		{
+                                        		if (numeric < 0) {
                                         			maxlen++;
                                         		}
-                                        		//System.out.println(value + " " + trackTrunc(value, numRows, wbtmi.getViewOrder(), wbtmi.getCaption(), 
-                                        		//		maxlen) + " " + value2);
                                         		value = value2;
                                         	}
                                         }    
                                     }
                                 }
-                                break;
-                            }
-    
-                            case HSSFCell.CELL_TYPE_STRING:
-                                HSSFHyperlink hl = checkHyperlinks(cell, activeHyperlinks);
+                            } else if (type == CellType.STRING) {
+                                Hyperlink hl = checkHyperlinks(cell, activeHyperlinks);
                                 if (hl == null /*|| (hl != null && hl.getType() == HSSFHyperlink.LINK_EMAIL)*/)
                                 {
                                     value = cell.getRichStringCellValue().getString();
@@ -260,21 +234,14 @@ public class XLSImport extends DataImport implements DataImportIFace
                                     //value = hl.getAddress();
                                 	value = hl.getLabel();
                                 }
-                                break;
-    
-                            case HSSFCell.CELL_TYPE_BLANK:
+                            } else if (type == CellType.BLANK) {
                                 value = "";
-                                type = HSSFCell.CELL_TYPE_STRING;
-                                break;
-    
-                            case HSSFCell.CELL_TYPE_BOOLEAN:
+                                type = CellType.STRING;
+                            } else if (type == CellType.BOOLEAN) {
                                 boolean bool = cell.getBooleanCellValue();
                                 value = Boolean.toString(bool);
-                                break;
-    
-                            default:
+                            } else {
                                 skip = true;
-                                break;
                         }
     
                         if (!skip && value != null && !value.trim().equals(""))
@@ -308,11 +275,11 @@ public class XLSImport extends DataImport implements DataImportIFace
      * 
      * NOTE: This code assumes that hyperlinks' row and column ranges do not overlap.   
      */
-    protected HSSFHyperlink checkHyperlinks(final HSSFCell cell, final Vector<HSSFHyperlink> activeHyperlinks)
+    protected Hyperlink checkHyperlinks(final Cell cell, final Vector<Hyperlink> activeHyperlinks)
     {
         if (cell.getHyperlink() != null)
         {
-            HSSFHyperlink l = cell.getHyperlink();
+            Hyperlink l = cell.getHyperlink();
         	if (l.getLastRow() > cell.getRowIndex() || l.getLastColumn() > cell.getColumnIndex())
             {
                 activeHyperlinks.add(l);
@@ -320,7 +287,7 @@ public class XLSImport extends DataImport implements DataImportIFace
             return l;
         }
         
-        for (HSSFHyperlink hl : activeHyperlinks)
+        for (Hyperlink hl : activeHyperlinks)
         {
             if (cell.getRowIndex() >= hl.getFirstRow() && cell.getRowIndex() <= hl.getLastRow() 
                     && cell.getColumnIndex() >= hl.getFirstColumn() && cell.getColumnIndex() <= hl.getLastColumn())
@@ -336,11 +303,11 @@ public class XLSImport extends DataImport implements DataImportIFace
         return null;
     }
     
-    private void addImageInfo(final HSSFRow row, final WorkbenchRow wbRow)
+    private void addImageInfo(final Row row, final WorkbenchRow wbRow)
     {
         for (Integer c : cardImageCols)
         {
-            HSSFCell imgCell = row.getCell(c);
+            Cell imgCell = row.getCell(c);
             if (imgCell != null)
             {
                 String imageSpec[] = imgCell.getRichStringCellValue().getString().split("\\t");
@@ -372,11 +339,11 @@ public class XLSImport extends DataImport implements DataImportIFace
         }
     }
     
-    public void addGeoInfo(final HSSFRow row, final WorkbenchRow wbRow)
+    public void addGeoInfo(final Row row, final WorkbenchRow wbRow)
     {
         if (geoCol != -1)
         {
-            HSSFCell c = row.getCell(geoCol);
+            Cell c = row.getCell(geoCol);
             if (c != null)
             {
                 String geoData = c.getRichStringCellValue().getString();
