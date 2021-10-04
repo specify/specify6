@@ -63,23 +63,11 @@ jobs:
           name: Specify_windows_64
           path: packages/Specify_windows_64.exe
 
-      - name: Upload Specify_windows.exe as artifact
-        uses: actions/upload-artifact@v1
-        with:
-          name: Specify_windows
-          path: packages/Specify_windows.exe
-
       - name: Upload Specify_unix_64.sh as artifact
         uses: actions/upload-artifact@v1
         with:
           name: Specify_unix_64
           path: packages/Specify_unix_64.sh
-
-      - name: Upload Specify_unix.sh as artifact
-        uses: actions/upload-artifact@v1
-        with:
-          name: Specify_unix
-          path: packages/Specify_unix.sh
 
       - name: Upload Specify_macos.dmg as artifact
         uses: actions/upload-artifact@v1
@@ -150,20 +138,10 @@ jobs:
         with:
           name: Specify_windows_64
 
-      - name: Download Specify_windows artifact
-        uses: actions/download-artifact@v1
-        with:
-          name: Specify_windows
-
       - name: Download Specify_unix_64 artifact
         uses: actions/download-artifact@v1
         with:
           name: Specify_unix_64
-
-      - name: Download Specify_unix artifact
-        uses: actions/download-artifact@v1
-        with:
-          name: Specify_unix
 
       - name: Download Specify_macos_with_ticket artifact
         uses: actions/download-artifact@v1
@@ -182,9 +160,7 @@ jobs:
           prerelease: true
           files: |
             Specify_windows_64/*
-            Specify_windows/*
             Specify_unix_64/*
-            Specify_unix/*
             Specify_macos_with_ticket/*
             updates.xml/*
         env:
