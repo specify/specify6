@@ -97,7 +97,7 @@
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" fontSize="12" />
         </text>
       </splashScreen>
-      <java mainClass="edu.ku.brc.specify.config.init.SpecifyDBSetupWizardFrame" vmParameters="-Xmx1024m" arguments="-Dappdir=.. -Dcom.apple.macos.useSmallTabs=true -Dapple.laf.useScreenMenuBar=true -Xdock:icon=&quot;src/edu/ku/brc/specify/images/specify128.png&quot; -Dcom.apple.mrj.application.apple.menu.about.name=SpWizard">
+      <java mainClass="edu.ku.brc.specify.config.init.SpecifyDBSetupWizardFrame" vmParameters="-Xms4096m -Xmx12000m" arguments="-Dappdir=.. -Dcom.apple.macos.useSmallTabs=true -Dapple.laf.useScreenMenuBar=true -Xdock:icon=&quot;src/edu/ku/brc/specify/images/specify128.png&quot; -Dcom.apple.mrj.application.apple.menu.about.name=SpWizard">
         <classPath>
           <archive location="specify.jar" />
           <scanDirectory location="libs" />
@@ -155,7 +155,7 @@
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" fontSize="12" />
         </text>
       </splashScreen>
-      <java mainClass="edu.ku.brc.specify.Specify" vmParameters="-Xmx4096m -Dhttp.agent=&quot;Specify/${compiler:sys.version} (+http://specifysoftware.org)&quot;" arguments="-Dappdir=.. -Dcom.apple.macos.useSmallTabs=true -Dapple.laf.useScreenMenuBar=true -Xdock:icon=&quot;src/edu/ku/brc/specify/images/specify128.png&quot; -Dcom.apple.mrj.application.apple.menu.about.name=Specify4GB">
+      <java mainClass="edu.ku.brc.specify.Specify" vmParameters="-Xms4096m -Xmx12000m -Dhttp.agent=&quot;Specify/${compiler:sys.version} (+http://specifysoftware.org)&quot;" arguments="-Dappdir=.. -Dcom.apple.macos.useSmallTabs=true -Dapple.laf.useScreenMenuBar=true -Xdock:icon=&quot;src/edu/ku/brc/specify/images/specify128.png&quot; -Dcom.apple.mrj.application.apple.menu.about.name=Specify4GB">
         <classPath>
           <archive location="specify.jar" />
           <scanDirectory location="libs" />

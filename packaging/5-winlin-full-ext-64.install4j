@@ -92,7 +92,7 @@
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" fontSize="12" />
         </text>
       </splashScreen>
-      <java mainClass="edu.ku.brc.specify.config.init.SpecifyDBSetupWizardFrame" vmParameters="-Xmx4096m" arguments="-Dappdir=..">
+      <java mainClass="edu.ku.brc.specify.config.init.SpecifyDBSetupWizardFrame" vmParameters="-Xms4096m -Xmx12000m" arguments="-Dappdir=..">
         <classPath>
           <archive location="specify.jar" />
           <scanDirectory location="libs" />
@@ -152,7 +152,7 @@
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" fontSize="12" />
         </text>
       </splashScreen>
-      <java mainClass="edu.ku.brc.specify.Specify" vmParameters="-Xmx4096m -Dhttp.agent=&quot;Specify/${compiler:sys.version} (+http://specifysoftware.org)&quot;" arguments="-Dappdir=..">
+      <java mainClass="edu.ku.brc.specify.Specify" vmParameters="-Xms4096m -Xmx12000m -Dhttp.agent=&quot;Specify/${compiler:sys.version} (+http://specifysoftware.org)&quot;" arguments="-Dappdir=..">
         <classPath>
           <archive location="specify.jar" />
           <scanDirectory location="libs" />
