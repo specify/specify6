@@ -680,12 +680,23 @@
 
  
     <!-- geography -->
-    <field table="Geography" name="continent" treename="geography" maptofield="name" rankid="100"/>
-    <field table="Geography" name="country" treename="geography" maptofield="name" rankid="200"/>
-    <field table="Geography" name="state" treename="geography" maptofield="name" rankid="300"/>
-    <field table="Geography" name="county" treename="geography" maptofield="name" rankid="400"/>
-    <field table="Geography" name="city" treename="geography" maptofield="name" rankid="500"/>
-    
+    <field table="Geography" name="nivell1" treename="geography" maptofield="name" rankid="100"/>
+    <field table="Geography" name="nivell2" treename="geography" maptofield="name" rankid="200"/>
+    <field table="Geography" name="nivell3" treename="geography" maptofield="name" rankid="300"/>
+    <field table="Geography" name="nivell4" treename="geography" maptofield="name" rankid="400"/>
+    <field table="Geography" name="nivell5" treename="geography" maptofield="name" rankid="500"/>
+    <field table="Geography" name="nivell6" treename="geography" maptofield="name" rankid="600"/>
+    <field table="Geography" name="nivell7" treename="geography" maptofield="name" rankid="700"/>
+    <field table="Geography" name="nivell8" treename="geography" maptofield="name" rankid="800"/>
+    <field table="Geography" name="nivell1ID" treename="geography" maptofield="number1" rankid="100"/>
+    <field table="Geography" name="nivell2ID" treename="geography" maptofield="number1" rankid="200"/>
+    <field table="Geography" name="nivell3ID" treename="geography" maptofield="number1" rankid="300"/>
+    <field table="Geography" name="nivell4ID" treename="geography" maptofield="number1" rankid="400"/>
+    <field table="Geography" name="nivell5ID" treename="geography" maptofield="number1" rankid="500"/>
+    <field table="Geography" name="nivell6ID" treename="geography" maptofield="number1" rankid="600"/>
+    <field table="Geography" name="nivell7ID" treename="geography" maptofield="number1" rankid="700"/>
+    <field table="Geography" name="nivell8ID" treename="geography" maptofield="number1" rankid="800"/>
+
     <!-- geologictimeperied -->
    	<field table="GeologicTimePeriod" name="erathem/era" treename="geologictimeperiod" maptofield="name" rankid="100"/>
    	<field table="GeologicTimePeriod" name="system/period" treename="geologictimeperiod" maptofield="name" rankid="200"/>
