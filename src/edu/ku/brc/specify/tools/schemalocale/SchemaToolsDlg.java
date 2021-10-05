@@ -257,7 +257,7 @@ public class SchemaToolsDlg extends CustomDialog
     
     private void chooseImportType() {
         boolean importType = true; //we choose truth!
-        importSchema(importType);
+        importSchema(false);
     }
     
     /**
