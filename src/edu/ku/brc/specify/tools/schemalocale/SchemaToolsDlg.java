@@ -256,8 +256,13 @@ public class SchemaToolsDlg extends CustomDialog
     }
     
     private void chooseImportType() {
-        boolean importType = true; //we choose truth!
-        importSchema(false);
+        //boolean importType = true; //we choose truth!
+        //importSchema(false);
+        int rv = UIRegistry.askYesNoLocalized(SL_CHS_IMP, SL_CHS_LOC, getResourceString("SL_CHOOSEIMPMSG"), "SL_CHOOSEIMPMSG_TITLE");
+        if (rv == JOptionPane.YES_OPTION || rv == JOptionPane.NO_OPTION)
+        {
+            importSchema(rv == JOptionPane.NO_OPTION);
+        }
     }
     
     /**
