@@ -50,7 +50,7 @@ public class DwcMapper
 	final String schemaName;
 	final Integer mappingContextTableId;
 	final String schemaURL;
-	final Boolean getAllManies;
+	Boolean getAllManies;
 	
 	private static boolean debugging = false;
 	
@@ -286,9 +286,15 @@ public class DwcMapper
 		flds = flds.substring(1, flds.length() - 1);
 		return "select " + flds + " from " + ExportPanel.getCacheTableName(mappingName) + " where " + ExportPanel.getCacheTableName(mappingName) + "id = " + collectionObjectId; 
 	}
-	
-	
-	
+
+	public Boolean getGetAllManies() {
+		return getAllManies;
+	}
+
+	public void setGetAllManies(Boolean getAllManies) {
+		this.getAllManies = getAllManies;
+	}
+
 	/**
 	 * @param spec
 	 * @throws Exception

@@ -67,7 +67,7 @@ public class DarwinCoreArchive
 	 * @throws Exception
 	 */
 	public DarwinCoreArchive(Element el, Integer mapperID, SpExportSchemaMapping mapping, boolean useCache) throws Exception {
-		mapper = new DwcMapper(mapperID, mapping, true);
+		mapper = new DwcMapper(mapperID, mapping, false);
 		files = new ArrayList<>();
 		for (Object core : el.selectNodes("/archive")) {
 			for (Object c : ((Element) core).selectNodes("*")) {
@@ -343,13 +343,8 @@ public class DarwinCoreArchive
 		}
 	}
 
-	/**
-	 *
-	 * @param collectionObjectID
-	 * @param archiveData
-	 * @throws Exception
-	 */
-	protected void getExportText(int collectionObjectID, List<Pair<String, List<String>>> archiveData) throws Exception {
+
+	protected DarwinCoreSpecimen setupSpecForExportText(int collectionObjectID) throws Exception {
 		DarwinCoreSpecimen spec = new DarwinCoreSpecimen(mapper);
 		if (useCache) {
 			spec.setCollectionObjectId(collectionObjectID);
@@ -359,18 +354,39 @@ public class DarwinCoreArchive
 				spec.setCollectionObject(co);
 			}
 		}
-			/*for (Pair<String, Object> fld : spec.getFieldValues())
-			{
-				System.out.println(fld.getFirst() + " = " + fld.getSecond());
-			}*/
+		return spec;
+	}
+	/**
+	 *
+	 * @param collectionObjectID
+	 * @param archiveData
+	 * @throws Exception
+	 */
 
-
+	protected void getExportText(int collectionObjectID, List<Pair<String, List<String>>> archiveData) throws Exception {
+		//first the core
+		mapper.setGetAllManies(false);
+		DarwinCoreSpecimen spec = setupSpecForExportText(collectionObjectID);
+		String id = getCOGUID(spec);
+		if (id == null) {
+			log.warn("skipping record without ID");
+			return;
+		}
 		for (Pair<String, List<String>> data : archiveData) {
-			String id = getCOGUID(spec);
-			if (id != null) {
+			DarwinCoreArchiveFile file = getFileByName(data.getFirst());
+			if (file.isCore()) {
 				data.getSecond().addAll(getFileLines(getFileByName(data.getFirst()), spec, id));
-			} else {
-				log.warn("skipping record without ID");
+			}
+		}
+		//now extensions
+		for (Pair<String, List<String>> data : archiveData) {
+			DarwinCoreArchiveFile file = getFileByName(data.getFirst());
+			if (!file.isCore()) {
+				if (!mapper.getGetAllManies()) {
+					mapper.setGetAllManies(true);
+					spec = setupSpecForExportText(collectionObjectID);
+				}
+				data.getSecond().addAll(getFileLines(getFileByName(data.getFirst()), spec, id));
 			}
 		}
 	}
