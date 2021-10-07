@@ -774,10 +774,22 @@
 
   
   <table classname="edu.ku.brc.specify.datamodel.Geography" table="geography" tableid="3" lazy="true">
-    <field column="Continent" name="continent" type="java.lang.String" length="64"/>
-    <field column="Country" name="country" type="java.lang.String" length="64"/>
-    <field column="State" name="state" type="java.lang.String" length="64"/>
-    <field column="County" name="county" type="java.lang.String" length="64"/>
+    <field column="Nivell1" name="nivell1" type="java.lang.String" length="64"/>
+    <field column="Nivell2" name="nivell2" type="java.lang.String" length="64"/>
+    <field column="Nivell3" name="nivell3" type="java.lang.String" length="64"/>
+    <field column="Nivell4" name="nivell4" type="java.lang.String" length="64"/>
+      <field column="Nivell5" name="nivell5" type="java.lang.String" length="64"/>
+      <field column="Nivell6" name="nivell6" type="java.lang.String" length="64"/>
+      <field column="Nivell7" name="nivell7" type="java.lang.String" length="64"/>
+      <field column="Nivell8" name="nivell8" type="java.lang.String" length="64"/>
+      <field column="Nivell1ID" name="nivell1ID" type="java.lang.String" length="64"/>
+      <field column="Nivell2ID" name="nivell2ID" type="java.lang.String" length="64"/>
+      <field column="Nivell3ID" name="nivell3ID" type="java.lang.String" length="64"/>
+      <field column="Nivell4ID" name="nivell4ID" type="java.lang.String" length="64"/>
+      <field column="Nivell5ID" name="nivell5ID" type="java.lang.String" length="64"/>
+      <field column="Nivell6ID" name="nivell6ID" type="java.lang.String" length="64"/>
+      <field column="Nivell7ID" name="nivell7ID" type="java.lang.String" length="64"/>
+      <field column="Nivell8ID" name="nivell8ID" type="java.lang.String" length="64"/>
   </table>
 
   

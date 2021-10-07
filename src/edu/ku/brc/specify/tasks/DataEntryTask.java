@@ -1320,7 +1320,7 @@ public class DataEntryTask extends BaseTask
                 menuItems.add(rsMI);
             }
             //Remove Duplicates menu item
-            if (false && "manager".equalsIgnoreCase(AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getUserType())) {
+            if (true && "manager".equalsIgnoreCase(AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getUserType())) {
                List<JMenuItem> dupRemovers = getDupRemoveMenuItems();
                 if (dupRemovers.size() > 0 ) {
                     menuTitle = "DataEntryTask.REMOVE_DUPLICATE_RECS_MENU";
