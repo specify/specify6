@@ -844,7 +844,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 							if (size > 0) {
 								List<Pair<String, List<String>>> csvs = null;
 								int cnt = 0;
-								int blk = 100000; //dwc.getBlockSize();
+								int blk = dwc.getBlockSize();
 								dwc.setGlobalSession(null);
 								while (cnt < size) {
 									recIds.clear();
