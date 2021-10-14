@@ -1,6 +1,6 @@
-Specify 6 Knowledge Base
+# Specify 6 Knowledge Base
 
-Things to document (Theresa  2021-10-11)
+## Things to document (Theresa  2021-10-11)
 ●	Web portal 
 ○	especially related to combining collections and exports
 ○	Share assetServer, in a separate repo
@@ -29,7 +29,7 @@ Things to document (Theresa  2021-10-11)
 ●	Localization and how it interacts with the Schema config
 ●	Type searches.  Not sure if this is part of understanding the data model and codebase
 
-Aimee/Tim notes 2021-10-6
+## Aimee/Tim notes 2021-10-6
 ●	Conversion 
 ○	scripts and tools 
 ○	Github - Most scripts in Sp 6 repo
@@ -75,7 +75,7 @@ Aimee/Tim notes 2021-10-6
 ○	Othersd?
 
 
-Other considerations
+## Other considerations
 ●	Explain commented code
 ●	Ben can help with building app(s), signing, certificates, etc
 ●	Tim immediate priorities:
