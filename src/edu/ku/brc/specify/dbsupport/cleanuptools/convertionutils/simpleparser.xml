@@ -1,0 +1,204 @@
+<parser name="AgentParser" startsymbol="Agent" quoteenclosers="&quot;&quot;()">
+	<symbols>
+		<symbol name="Agent" terminal="false" eof="false" branch="false" table="agent" field="" />
+		<symbol name="LastName" terminal="false" eof="false" branch="false" table="agent" field="LastName" />
+		<symbol name="First" terminal="false" eof="false" branch="false" table="agent" field="" />
+		<symbol name="First1" terminal="false" eof="false" branch="false" table="agent" field="FirstName1" />
+		<symbol name="First2" terminal="false" eof="false" branch="false" table="agent" field="FirstName2" />
+		<symbol name="Middle1" terminal="false" eof="false" branch="false" table="agent" field="MiddleInitial1" />
+		<symbol name="Middle2" terminal="false" eof="false" branch="false" table="agent" field="MiddleInitial2" />
+		<symbol name="FirstName" terminal="false" eof="false" branch="false" table="" field="" />
+		<symbol name="Middle" terminal="false" eof="false" branch="false" table="" field="" />
+		<symbol name="Suffix" terminal="false" eof="false" branch="false" table="agent" field="Suffix" />
+		<symbol name="Remark" terminal="false" eof="false" branch="false" table="agent" field="Remarks" />
+		<symbol name="Initial" terminal="false" eof="false" branch="false" table="" field="" />
+		<symbol name="Initial2" terminal="false" eof="false" branch="false" table="" field="" />
+		<symbol name="Abbreviation" terminal="false" eof="false" branch="false" table="agent" field="Abbreviation" />
+		<symbol name="Name" terminal="false" eof="false" branch="false" table="" field="" />
+		<symbol name="Str1" terminal="true" eof="false" branch="false" table="" field="" />
+		<symbol name="Str" terminal="true" eof="false" branch="false" table="" field="" />
+		<symbol name="," terminal="true" eof="false" branch="false" table="" field="" />
+		<symbol name="Jr" terminal="true" eof="false" branch="false" table="" field="" />
+		<symbol name="&amp;" terminal="true" eof="false" branch="false" table="" field="" />
+		<symbol name="&quot;" terminal="true" eof="false" branch="false" table="" field="" />
+		<symbol name="(" terminal="true" eof="false" branch="false" table="" field="" />
+		<symbol name=")" terminal="true" eof="false" branch="false" table="" field="" />
+	</symbols>	
+	<rules>
+		<rule name="Agent->First LastName" left="Agent">
+			<rights>
+				<right name="First" />
+				<right name="LastName" />
+			</rights>
+		</rule>
+		<rule name="Agent->First LastName Suffix" left="Agent">
+			<rights>
+				<right name="First" />
+				<right name="LastName" />
+				<right name="Suffix" />
+			</rights>
+		</rule>
+		<rule name="Agent->Abbreviation" left="Agent">
+			<rights>
+				<right name="Abbreviation" />
+			</rights>
+		</rule>
+		<rule name="Agent->LastName Remark" left="Agent" >
+			<rights>
+				<right name="LastName" />
+				<right name="Remark" />
+			</rights>
+		</rule>
+		<rule name="Agent->LastName, First" left="Agent" >
+			<rights>
+				<right name="LastName" />
+				<right name="," />
+				<right name="First" />
+			</rights>
+		</rule>
+		<rule name="Remark->(Str)" left="Remark" >
+			<rights>
+				<right name="(" />
+				<right name="Str" />
+				<right name=")" />
+			</rights>
+		</rule>
+		<!--rule name="Remark->" left="Remark" >
+			<rights>
+			</rights>
+		</rule-->
+		<rule name="First->First1" left="First" >
+			<rights>
+				<right name="First1" />
+			</rights>
+		</rule>
+		<rule name="First->First1 &amp; First2" left="First" >
+			<rights>
+				<right name="First1" />
+				<right name="&amp;" />
+				<right name="First2" />
+			</rights>
+		</rule>
+		<rule name="LastName->Name" left="LastName">
+			<rights>
+				<right name="Name" />
+			</rights>
+		</rule>
+		<rule name="First1->Name Middle1" left="First1">
+			<rights>
+				<right name="Name" />
+				<right name="Middle1" />
+			</rights>
+		</rule>
+		<rule name="First1->Initial Middle1" left="First1">
+			<rights>
+				<right name="Initial" />
+				<right name="Middle1" />
+			</rights>
+		</rule>
+		<rule name="First1->FirstName" left="First1">
+			<rights>
+				<right name="FirstName" />
+			</rights>
+		</rule>
+		<rule name="First2->Name Middle2" left="First2">
+			<rights>
+				<right name="Name" />
+				<right name="Middle2" />
+			</rights>
+		</rule>
+		<rule name="First2->Initial Middle2" left="First2">
+			<rights>
+				<right name="Initial" />
+				<right name="Middle2" />
+			</rights>
+		</rule>
+		<rule name="First2->FirstName" left="First2">
+			<rights>
+				<right name="FirstName" />
+			</rights>
+		</rule>
+		<rule name="Middle1->Middle" left="Middle1">
+			<rights>
+				<right name="Middle" />
+			</rights>
+		</rule>
+		<rule name="Middle2->Middle" left="Middle2">
+			<rights>
+				<right name="Middle" />
+			</rights>
+		</rule>
+		<rule name="FirstName->Name" left="FirstName">
+			<rights>
+				<right name="Name" />
+			</rights>
+		</rule>
+		<rule name="FirstName->Initial" left="FirstName">
+			<rights>
+				<right name="Initial" />
+			</rights>
+		</rule>
+		<rule name="Middle->Name" left="Middle">
+			<rights>
+				<right name="Name" />
+			</rights>
+		</rule>
+		<rule name="Middle->Initial Initial" left="Middle">
+			<rights>
+				<right name="Initial" />
+				<right name="Initial2" />
+			</rights>
+		</rule>
+		<rule name="Middle->Initial" left="Middle">
+			<rights>
+				<right name="Initial" />
+			</rights>
+		</rule>
+		<rule name="Suffix->" left="Suffix">
+			<rights>
+			</rights>
+		</rule>
+		<rule name="Suffix->Jr" left="Suffix">
+			<rights>
+				<right name="Jr" />
+			</rights>
+		</rule>
+		<rule name="Initial->Str1" left="Initial">
+			<rights>
+				<right name="Str1" />
+			</rights>
+		</rule>
+		<rule name="Initial2->Str1" left="Initial2">
+			<rights>
+				<right name="Str1" />
+			</rights>
+		</rule>
+		<rule name="Name->Str" left="Name">
+			<rights>
+				<right name="Str" />
+			</rights>
+		</rule>
+	</rules>
+	<terminators>
+		<terminator text="." />
+		<terminator text="," />
+		<terminator text=" " />
+		<terminator text="/" />
+		<terminator text="(" />
+		<terminator text=")" />
+	</terminators>
+	<literals>
+		<literal text="Jr." parsedtext="Jr" />
+		<literal text="Jr" />
+		<literal text="," />	
+		<literal text=" " />
+		<literal text="&amp;" />	
+		<literal text="(" />
+		<literal text=")" />
+		<literal text="Remark" format="(.*)" />
+	</literals>
+	<directsubstitutions>
+	</directsubstitutions>
+	<errsubs>
+	</errsubs>
+</parser>

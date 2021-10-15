@@ -1,0 +1,87 @@
+<parser name="DateParser" startsymbol="Date">
+	<symbols>
+		<symbol name="Date" table="date" field="" />
+		<symbol name="Year" table="date" field="year" />
+		<symbol name="Year4" table="date" field="year" />	
+		<symbol name="Month" table="date" field="month" />
+		<symbol name="MonthRange" table="date" field="month" />
+		<symbol name="Day" table="date" field="day" />
+		<symbol name="DayRange" terminal="true" table="date" field="day" />
+		<symbol name="Season" table="date" field="season" />
+		<!--symbol name="NumberMonth" terminal="true" /-->
+		<!--symbol name="NumberDay" terminal="true" /-->
+		<symbol name="Number4" terminal="true" />
+		<symbol name="Number2" terminal="true" />
+		<symbol name="Number1" terminal="true" />
+		<!--symbol name="Number2B" terminal="true" />
+		<symbol name="Number1B" terminal="true" />
+		<symbol name="-" terminal="true" /-->
+		<symbol name="StrMonth" />
+	</symbols>
+	<rules>
+		<rule name="Date->Year Month Day" left="Date">
+			<rights>
+				<right name="Year" />
+				<right name="Month" />
+				<right name="Day" />
+			</rights>
+		</rule>
+		<rule name="Year->Number4" left="Year">
+			<rights>
+				<right name="Number4" />
+			</rights>
+		</rule>
+		<rule name="Year->Number2" left="Year">
+			<rights>
+				<right name="Number2" />
+			</rights>
+		</rule>
+		<rule name="Month->Number2" left="Month">
+			<rights>
+				<right name="Number2" />
+			</rights>
+		</rule>
+		<rule name="Month->StrMonth" left="Month">
+			<rights>
+				<right name="StrMonth" />
+			</rights>
+		</rule>
+		<rule name="Month->StrMonth/StrMonth" left="Month">
+			<rights>
+				<right name="StrMonth" />
+				<right name="/" />
+				<right name="StrMonth" />
+			</rights>
+		</rule>
+		<rule name="Day->Number2" left="Day" >
+			<rights>
+				<right name="Number2" />
+			</rights>
+		</rule>
+		<rule name="Day->Number1" left="Day" >
+			<rights>
+				<right name="Number1" />
+			</rights>
+		</rule>
+		<rule name="Season->Winter" left="Season">
+			<rights>
+				<right name="Winter" />
+			</rights>
+		</rule>
+		<rule name="Season->Spring" left="Season">
+			<rights>
+				<right name="Spring" />
+			</rights>
+		</rule>
+		<rule name="Season->Summer" left="Season">
+			<rights>
+				<right name="Summer" />
+			</rights>
+		</rule>
+		<rule name="Season->Autumn" left="Season">
+			<rights>
+				<right name="Autumn" />
+			</rights>
+		</rule>
+	</rules>
+</parser>
