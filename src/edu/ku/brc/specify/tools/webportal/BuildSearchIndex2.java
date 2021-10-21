@@ -276,7 +276,9 @@ public class BuildSearchIndex2
     			+ "left join attachmentimageattribute aia on aia.AttachmentImageAttributeID " 
     			+ "= att.AttachmentImageAttributeID inner join " + attacherTbl + " oatt on oatt.AttachmentID = att.AttachmentID"
 				+ " inner join " + baseTblName + " baset on baset." + baseTblID + " = oatt." + baseTblID
-    			+  " where att.IsPublic and att.MimeType like 'image/%' and baset.GUID = '" + baseGUID + "'";
+    			+  " where att.IsPublic "
+				//+ "and att.MimeType like 'image/%' "
+				+ "and baset.GUID = '" + baseGUID + "'";
     			//+  " where att.IsPublic and baset.GUID = '" + baseGUID + "'";
     	Statement stmt = null;
     	ResultSet rs = null;
