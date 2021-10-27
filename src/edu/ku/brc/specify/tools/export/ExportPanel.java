@@ -197,7 +197,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 		//System.out.println("updateUIAfterMapSelection: Row: " + selectedIdx + ", isBuilt: " + isBuilt + ", updating: " + !notUpdating);
 		this.showIPTSQLBtn.setEnabled(notUpdating && isBuilt);
 		this.createDwcaBtn.setEnabled(isDwcaMapping(selectedIdx));
-		System.out.println("Skipping publishToGbifBtn state update.");
+		//System.out.println("Skipping publishToGbifBtn state update.");
 		//this.publishToGbifBtn.setEnabled(hasGbifRegistration(selectedIdx));
 		this.exportToTabDelimBtn.setEnabled(notUpdating && isBuilt);
 		this.setupWebPortalBtn.setEnabled(notUpdating && isBuilt);
@@ -1189,6 +1189,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 			//buildDwCArchive(map);
 			buildStinkyDwCArchive(map, null);
 		});
+		createDwcaBtn.setVisible(false);
 
 		publishToGbifBtn = UIHelper.createButton(UIRegistry.getResourceString("ExportPanel.ToDwcToGbif"));
 		publishToGbifBtn.setToolTipText(UIRegistry.getResourceString("ExportPanel.to_gbif"));
@@ -1199,6 +1200,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 			buildDwCArchive(map);
 		});
 		publishToGbifBtn.setEnabled(false);
+		publishToGbifBtn.setVisible(false);
 
 		helpBtn = createButton(getResourceString("HELP"));
 		HelpMgr.registerComponent(helpBtn, "schema_tool");
@@ -1207,8 +1209,8 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 		quitBtn = UIHelper.createButton("Quit");
 
 		btnPB.add(helpBtn, cc.xy(1, 1));
-		btnPB.add(createDwcaBtn, cc.xy(4, 1));
-		btnPB.add(publishToGbifBtn, cc.xy(6, 1));
+		//btnPB.add(createDwcaBtn, cc.xy(4, 1));
+		//btnPB.add(publishToGbifBtn, cc.xy(6, 1));
 		btnPB.add(showIPTSQLBtn, cc.xy(8, 1));
 		btnPB.add(exportToTabDelimBtn, cc.xy(10, 1));
 		btnPB.add(exportToDbTblBtn, cc.xy(12, 1));

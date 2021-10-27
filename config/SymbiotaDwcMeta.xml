@@ -51,7 +51,7 @@
   </core>
 
   <extension encoding="ISO-8859-1" fieldsTerminatedBy="," linesTerminatedBy="\n" fieldsEnclosedBy='"' ignoreHeaderLines="1" rowType="http://rs.tdwg.org/dwc/terms/Identification">
-    <files><location>indentifications.csv</location></files>
+    <files><location>identifications.csv</location></files>
     <coreid index="0" />
     <field index="1" term="http://rs.tdwg.org/dwc/terms/class" /> 
     <field index="2" term="http://rs.tdwg.org/dwc/terms/dateIdentified" />
