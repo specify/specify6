@@ -1219,14 +1219,14 @@ public class CheckDBAfterLogin
 		Statement stmt = DBConnection.getInstance().getConnection().createStatement();
 		Integer schemaId = null;
 		try {
+            Integer spuId = Agent.getUserAgent().getId();
 			String sql = "insert into spexportschema(TimestampCreated,Version,Description,SchemaName,SchemaVersion,DisciplineID,CreatedByAgentID) "
 	    			+ "values(now(),0,'http://rs.tdwg.org/dwc/terms','SymbiotaDwc','1.0'," + disciplineId + ","
-	    			+ AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getId() + ")";
+	    			+ spuId + ")";
 			stmt.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
 			ResultSet key = stmt.getGeneratedKeys();
 			key.next();
 			schemaId = key.getInt(1);
-			Integer spuId = AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getId();
 			//XXX This is so stoopid.
 			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','created'," + schemaId + "," + spuId + ")");                             
 			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','description'," + schemaId + "," + spuId + ")");                         
