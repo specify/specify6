@@ -1,7 +1,7 @@
-/* Copyright (C) 2021, Specify Collections Consortium
+/* Copyright (C) 2017, University of Kansas Center for Research
  * 
- * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
+ * Specify Software Project, specify@ku.edu, Biodiversity Institute,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,6 @@ import static org.apache.commons.lang.StringUtils.isEmpty;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.awt.Frame;
-import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
@@ -522,9 +521,8 @@ public class AgentCleanupIndexer extends LuceneHelperBase
         dlg.setCancelLabel(getResourceString("QUIT"));
         dlg.setCloseOnApplyClk(true);
         dlg.createUI();
-        dlg.setPreferredSize(new Dimension(800, Integer.valueOf(Double.valueOf(dlg.getSize().getHeight()).intValue())));
         dlg.pack();
-        dlg.setVisible(true);
+        UIHelper.centerAndShow(dlg, 800, dlg.getSize().height);
         
         return dlg.getBtnPressed();
     }

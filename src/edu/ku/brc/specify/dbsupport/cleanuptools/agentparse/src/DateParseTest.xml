@@ -1,0 +1,524 @@
+<parser name="DateParser" startsymbol="Date">
+	<symbols>
+		<symbol name="Date" table="date" field="" />
+		<symbol name="YearlessDate" table="date" field="" />
+		<symbol name="YearlessDate2" table="date" field="" />
+		<symbol name="Year" table="date" field="year" />
+		<symbol name="Year4" table="date" field="year" />	
+		<symbol name="YearRange" table="date" field="year" terminal="true" />
+		<symbol name="Month" table="date" field="month" />
+		<symbol name="Day" table="date" field="day" />
+		<symbol name="DayRange" terminal="true" table="date" field="day" />
+		<symbol name="Season" table="date" field="season" />
+		<!--symbol name="NumberMonth" terminal="true" /-->
+		<!--symbol name="NumberDay" terminal="true" /-->
+		<symbol name="Number4" terminal="true" />
+		<symbol name="Number2" terminal="true" />
+		<symbol name="Number1" terminal="true" />
+		<!--symbol name="Number2B" terminal="true" />
+		<symbol name="Number1B" terminal="true" />
+		<symbol name="-" terminal="true" /-->
+		<symbol name="StrMonth" />
+		<symbol name="MonthYear" table="date" field="monthyear"/>
+		<!--symbol name="Between" terminal="true" /-->
+		<symbol name="To" terminal="true" />
+		<symbol name="JAN" terminal="true" />
+		<symbol name="JANNumber2" terminal="true" />
+		<symbol name="JANNumber4" terminal="true" />
+		<symbol name="FEB" terminal="true" />
+		<symbol name="FEBNumber2" terminal="true" />
+		<symbol name="FEBNumber4" terminal="true" />
+		<symbol name="MAR" terminal="true" />
+		<symbol name="MARNumber2" terminal="true" />
+		<symbol name="MARNumber4" terminal="true" />
+		<symbol name="APR" terminal="true" />
+		<symbol name="APRNumber2" terminal="true" />
+		<symbol name="APRNumber4" terminal="true" />
+		<symbol name="MAY" terminal="true" />
+		<symbol name="MAYNumber2" terminal="true" />
+		<symbol name="MAYNumber4" terminal="true" />
+		<symbol name="JUN" terminal="true" />
+		<symbol name="JUNNumber2" terminal="true" />
+		<symbol name="JUNNumber4" terminal="true" />
+		<symbol name="JUL" terminal="true" />
+		<symbol name="JULNumber2" terminal="true" />
+		<symbol name="JULNumber4" terminal="true" />
+		<symbol name="AUG" terminal="true" />
+		<symbol name="AUGNumber2" terminal="true" />
+		<symbol name="AUGNumber4" terminal="true" />
+		<symbol name="SEP" terminal="true" />
+		<symbol name="SEPNumber2" terminal="true" />
+		<symbol name="SEPNumber4" terminal="true" />
+		<symbol name="OCT" terminal="true" />
+		<symbol name="OCTNumber2" terminal="true" />
+		<symbol name="OCTNumber4" terminal="true" />
+		<symbol name="NOV" terminal="true" />
+		<symbol name="NOVNumber2" terminal="true" />
+		<symbol name="NOVNumber4" terminal="true" />
+		<symbol name="DEC" terminal="true" />
+		<symbol name="DECNumber2" terminal="true" />
+		<symbol name="DECNumber4" terminal="true" />
+		<symbol name="Autumn" terminal="true" />
+		<symbol name="Winter" terminal="true" />
+		<symbol name="Summer" terminal="true" />
+		<symbol name="Spring" terminal="true" />
+	</symbols>	
+	<rules>
+		<rule name="Date->Year Month Day" left="Date">
+			<rights>
+				<right name="Year" />
+				<right name="Month" />
+				<right name="Day" />
+			</rights>
+		</rule>
+		<rule name="Date->Day Month Year" left="Date">
+			<rights>
+				<right name="Day" />
+				<right name="Month" />
+				<right name="Year" />
+			</rights>
+		</rule>
+		<rule name="Date->Month Day Year" left="Date">
+			<rights>
+				<right name="Month" />
+				<right name="Day" />
+				<right name="Year" />
+			</rights>
+		</rule>
+		<rule name="Date->Year Month" left="Date">
+			<rights>
+				<right name="Year" />
+				<right name="Month" />
+			</rights>
+		</rule>
+		<rule name="Date->Month Year" left="Date">
+			<rights>
+				<right name="Month" />
+				<right name="Year" />
+			</rights>
+		</rule>
+		<rule name="Date->Season Year" left="Date">
+			<rights>
+				<right name="Season" />
+				<right name="Year" />
+			</rights>
+		</rule>
+		<rule name="Date->MonthYear" left="Date">
+			<rights>
+				<right name="MonthYear" />
+			</rights>
+		</rule>
+		<rule name="Date->Year4" left="Date">
+			<rights>
+				<right name="Year4" />
+			</rights>
+		</rule>
+		<rule name="Date->YearRange" left="Date">
+			<rights>
+				<right name="YearRange" />
+			</rights>
+		</rule>
+		<rule name="Date->YearlessDate To YearlessDate Year" left="Date">
+			<rights>
+				<!--right name="Between" /-->
+				<right name="YearlessDate" />
+				<right name="To" />
+				<right name="YearlessDate2" />
+				<right name="Year" />
+			</rights>
+		</rule>
+		<rule name="YearlessDate2 -> YearlessDate" left="YearlessDate2">
+			<rights>
+				<right name="YearlessDate" />
+			</rights>
+		</rule>
+		<rule name="YearlessDate -> Day Month" left="YearlessDate">
+			<rights>
+				<right name="Day" />
+				<right name="Month" />
+			</rights>
+		</rule>
+		<rule name="Year->Number4" left="Year">
+			<rights>
+				<right name="Number4" />
+			</rights>
+		</rule>
+		<rule name="Year->Number2" left="Year">
+			<rights>
+				<right name="Number2" />
+			</rights>
+		</rule>
+		<rule name="Year4->Number4" left="Year4">
+			<rights>
+				<right name="Number4" />
+			</rights>
+		</rule>
+		<rule name="Month->Number2" left="Month">
+			<rights>
+				<right name="Number2" />
+			</rights>
+		</rule>
+		<rule name="Season->Winter" left="Season">
+			<rights>
+				<right name="Winter" />
+			</rights>
+		</rule>
+		<rule name="Season->Spring" left="Season">
+			<rights>
+				<right name="Spring" />
+			</rights>
+		</rule>
+		<rule name="Season->Summer" left="Season">
+			<rights>
+				<right name="Summer" />
+			</rights>
+		</rule>
+		<rule name="Season->Autumn" left="Season">
+			<rights>
+				<right name="Autumn" />
+			</rights>
+		</rule>
+		<rule name="MonthYear->JANNumber2" left="MonthYear">
+			<rights>
+				<right name="JANNumber2" />
+			</rights>
+		</rule>
+		<rule name="MonthYear->JANNumber4" left="MonthYear">
+			<rights>
+				<right name="JANNumber4" />
+			</rights>
+		</rule>
+		<rule name="MonthYear->FEBNumber2" left="MonthYear">
+			<rights>
+				<right name="FEBNumber2" />
+			</rights>
+		</rule>
+		<rule name="MonthYear->FEBNumber4" left="MonthYear">
+			<rights>
+				<right name="FEBNumber4" />
+			</rights>
+		</rule>
+		<rule name="MonthYear->MARNumber2" left="MonthYear">
+			<rights>
+				<right name="MARNumber2" />
+			</rights>
+		</rule>
+		<rule name="MonthYear->MARNumber4" left="MonthYear">
+			<rights>
+				<right name="MARNumber4" />
+			</rights>
+		</rule>
+		<rule name="MonthYear->APRNumber2" left="MonthYear">
+			<rights>
+				<right name="APRNumber2" />
+			</rights>
+		</rule>
+		<rule name="MonthYear->APRNumber4" left="MonthYear">
+			<rights>
+				<right name="APRNumber4" />
+			</rights>
+		</rule>
+		<rule name="MonthYear->MAYNumber2" left="MonthYear">
+			<rights>
+				<right name="MAYNumber2" />
+			</rights>
+		</rule>
+		<rule name="MonthYear->MAYNumber4" left="MonthYear">
+			<rights>
+				<right name="MAYNumber4" />
+			</rights>
+		</rule>
+		<rule name="MonthYear->JUNNumber2" left="MonthYear">
+			<rights>
+				<right name="JUNNumber2" />
+			</rights>
+		</rule>
+		<rule name="MonthYear->JUNNumber4" left="MonthYear">
+			<rights>
+				<right name="JUNNumber4" />
+			</rights>
+		</rule>
+		<rule name="MonthYear->JULNumber2" left="MonthYear">
+			<rights>
+				<right name="JULNumber2" />
+			</rights>
+		</rule>
+		<rule name="MonthYear->JULNumber4" left="MonthYear">
+			<rights>
+				<right name="JULNumber4" />
+			</rights>
+		</rule>
+		<rule name="MonthYear->AUGNumber2" left="MonthYear">
+			<rights>
+				<right name="AUGNumber2" />
+			</rights>
+		</rule>
+		<rule name="MonthYear->AUGNumber4" left="MonthYear">
+			<rights>
+				<right name="AUGNumber4" />
+			</rights>
+		</rule>
+		<rule name="MonthYear->SEPNumber2" left="MonthYear">
+			<rights>
+				<right name="SEPNumber2" />
+			</rights>
+		</rule>
+		<rule name="MonthYear->SEPNumber4" left="MonthYear">
+			<rights>
+				<right name="SEPNumber4" />
+			</rights>
+		</rule>
+		<rule name="MonthYear->OCTNumber2" left="MonthYear">
+			<rights>
+				<right name="OCTNumber2" />
+			</rights>
+		</rule>
+		<rule name="MonthYear->OCTNumber4" left="MonthYear">
+			<rights>
+				<right name="OCTNumber4" />
+			</rights>
+		</rule>
+		<rule name="MonthYear->NOVNumber2" left="MonthYear">
+			<rights>
+				<right name="NOVNumber2" />
+			</rights>
+		</rule>
+		<rule name="MonthYear->NOVNumber4" left="MonthYear">
+			<rights>
+				<right name="NOVNumber4" />
+			</rights>
+		</rule>
+		<rule name="MonthYear->DECNumber2" left="MonthYear">
+			<rights>
+				<right name="DECNumber2" />
+			</rights>
+		</rule>
+		<rule name="MonthYear->DECNumber4" left="MonthYear">
+			<rights>
+				<right name="DECNumber4" />
+			</rights>
+		</rule>
+		<rule name="Month->StrMonth" left="Month">
+			<rights>
+				<right name="StrMonth" />
+			</rights>
+		</rule>
+		<rule name="StrMonth->JAN" left="StrMonth">
+			<rights>
+				<right name="JAN" />
+			</rights>
+		</rule>
+		<rule name="StrMonth->FEB" left="StrMonth">
+			<rights>
+				<right name="FEB" />
+			</rights>
+		</rule>
+		<rule name="StrMonth->MAR" left="StrMonth">
+			<rights>
+				<right name="MAR" />
+			</rights>
+		</rule>
+		<rule name="StrMonth->APR" left="StrMonth">
+			<rights>
+				<right name="APR" />
+			</rights>
+		</rule>
+		<rule name="StrMonth->MAY" left="StrMonth">
+			<rights>
+				<right name="MAY" />
+			</rights>
+		</rule>
+		<rule name="StrMonth->JUN" left="StrMonth">
+			<rights>
+				<right name="JUN" />
+			</rights>
+		</rule>
+		<rule name="StrMonth->JUL" left="StrMonth">
+			<rights>
+				<right name="JUL" />
+			</rights>
+		</rule>
+		<rule name="StrMonth->AUG" left="StrMonth">
+			<rights>
+				<right name="AUG" />
+			</rights>
+		</rule>
+		<rule name="StrMonth->SEP" left="StrMonth">
+			<rights>
+				<right name="SEP" />
+			</rights>
+		</rule>
+		<rule name="StrMonth->OCT" left="StrMonth">
+			<rights>
+				<right name="OCT" />
+			</rights>
+		</rule>
+		<rule name="StrMonth->NOV" left="StrMonth">
+			<rights>
+				<right name="NOV" />
+			</rights>
+		</rule>
+		<rule name="StrMonth->DEC" left="StrMonth">
+			<rights>
+				<right name="DEC" />
+			</rights>
+		</rule>
+		<rule name="Day->Number2" left="Day">
+			<rights>
+				<right name="Number2" />
+			</rights>
+		</rule>
+		<rule name="Day->Number1" left="Day">
+			<rights>
+				<right name="Number1" />
+			</rights>
+		</rule>
+		<rule name="Day->DayRange" left="Day">
+			<rights>
+				<right name="DayRange" />
+			</rights>
+		</rule>
+		<!--rule name="DayRange->Number2-Number2" left="DayRange">
+			<rights>
+				<right name="Number2" />
+				<right name="-" />
+				<right name="Number2B" />
+			</rights>
+		</rule>
+		<rule name="DayRange->Number2-Number1" left="DayRange">
+			<rights>
+				<right name="Number2" />
+				<right name="-" />
+				<right name="Number1" />
+			</rights>
+		</rule>
+		<rule name="DayRange->Number1-Number1" left="DayRange">
+			<rights>
+				<right name="Number1" />
+				<right name="-" />
+				<right name="Number1B" />
+			</rights>
+		</rule>
+		<rule name="DayRange->Number1-Number2" left="DayRange">
+			<rights>
+				<right name="Number1" />
+				<right name="-" />
+				<right name="Number2" />
+			</rights>
+		</rule>
+		<rule name="Number1B->Number1" left="Number1B">
+			<rights>
+				<right name="Number1" />
+			</rights>
+		</rule>
+		<rule name="Number2B->Number2" left="Number2B">
+			<rights>
+				<right name="Number2" />
+			</rights>
+		</rule-->
+	</rules>
+	<terminators>
+		<terminator text="." />
+		<terminator text="," />
+		<terminator text=" " />
+		<terminator text="/" />
+		<!--terminator text="-" /-->
+	</terminators>
+	<literals>
+		<literal text="To" casesensitive="false" />
+		<literal text="-" casesensitive="false" parsedtext="To" />
+		<literal text="JAN" casesensitive="false" />
+		<literal text="january" casesensitive="false" parsedtext="JAN" />
+		<literal text="janurary" casesensitive="false" parsedtext="JAN" />
+		<literal text="i" casesensitive="false" parsedtext="JAN" />
+		<literal text="FEB" casesensitive="false" />
+		<literal text="february" casesensitive="false" parsedtext="FEB" />
+		<literal text="febuary" casesensitive="false" parsedtext="FEB" />
+		<literal text="februrary" casesensitive="false" parsedtext="FEB" />
+		<literal text="februaru" casesensitive="false" parsedtext="FEB" />
+		<literal text="ii" casesensitive="false" parsedtext="FEB" />
+		<literal text="MAR" casesensitive="false" />
+		<literal text="march" casesensitive="false" parsedtext="MAR" />
+		<literal text="iii" casesensitive="false" parsedtext="MAR" />
+		<literal text="APR" casesensitive="false" />
+		<literal text="april" casesensitive="false" parsedtext="APR" />
+		<literal text="aptil" casesensitive="false" parsedtext="APR" />
+		<literal text="iv" casesensitive="false" parsedtext="APR" />
+		<literal text="MAY" casesensitive="false" />
+		<literal text="v" casesensitive="false" parsedtext="MAY" />
+		<literal text="JUN" casesensitive="false" />
+		<literal text="june" casesensitive="false" parsedtext="JUN" />
+		<literal text="vi" casesensitive="false" parsedtext="JUN" />
+		<literal text="JUL" casesensitive="false"/>
+		<literal text="july" casesensitive="false" parsedtext="JUL" />
+		<literal text="jully" casesensitive="false" parsedtext="JUL" />
+		<literal text="vii" casesensitive="false" parsedtext="JUL" />
+		<literal text="AUG" casesensitive="false"/>
+		<literal text="august" casesensitive="false" parsedtext="AUG" />
+		<literal text="auust" casesensitive="false" parsedtext="AUG" />
+		<literal text="augus" casesensitive="false" parsedtext="AUG" />
+		<literal text="viii" casesensitive="false" parsedtext="AUG" />
+		<literal text="SEP" casesensitive="false"/>
+		<literal text="september" casesensitive="false" parsedtext="SEP" />
+		<literal text="seotember" casesensitive="false" parsedtext="SEP" />
+		<literal text="spetember" casesensitive="false" parsedtext="SEP" />
+		<literal text="septemeber" casesensitive="false" parsedtext="SEP" />
+		<literal text="septmeber" casesensitive="false" parsedtext="SEP" />
+		<literal text="setember" casesensitive="false" parsedtext="SEP" />
+		<literal text="setp" casesensitive="false" parsedtext="SEP" />
+		<literal text="sept" casesensitive="false" parsedtext="SEP" />
+		<literal text="ix" casesensitive="false" parsedtext="SEP" />
+		<literal text="OCT" casesensitive="false"/>
+		<literal text="october" casesensitive="false" parsedtext="OCT" />
+		<literal text="octber" casesensitive="false" parsedtext="OCT" />
+		<literal text="octoerb" casesensitive="false" parsedtext="OCT" />
+		<literal text="x" casesensitive="false" parsedtext="OCT" />
+		<literal text="NOV" casesensitive="false"/>
+		<literal text="november" casesensitive="false" parsedtext="NOV" />
+		<literal text="xi" casesensitive="false" parsedtext="NOV" />
+		<literal text="DEC" casesensitive="false"/>
+		<literal text="december" casesensitive="false" parsedtext="DEC" />
+		<literal text="deccember" casesensitive="false" parsedtext="DEC" />
+		<literal text="xii" casesensitive="false" parsedtext="DEC" />
+		<!--literal text="NumberMonth" format="NN" min="1" max="12" /-->
+		<!--literal text="NumberDay" format="NN" min="1" max="31" /--> 
+		<literal text="Number1" format="\p{Digit}{1}" />
+		<literal text="Number2" format="\p{Digit}{2}" />
+		<literal text="Number4" format="\p{Digit}{4}" />
+		<literal text="JANNumber2" format="jan\p{Digit}{2}|january\p{Digit}{2}|janurary\p{Digit}{2}|janauary\p{Digit}{2}|januar\p{Digit}{2}" />
+		<literal text="JANNumber4" format="jan\p{Digit}{4}|january\p{Digit}{4}|janurary\p{Digit}{4}|janauary\p{Digit}{4}|januar\p{Digit}{4}" />
+		<literal text="FEBNumber2" format="feb\p{Digit}{2}|february\p{Digit}{2}|febuary\p{Digit}{2}|februrary\p{Digit}{2}|februaru\p{Digit}{2}" />
+		<literal text="FEBNumber4" format="feb\p{Digit}{4}|february\p{Digit}{4}|febuary\p{Digit}{4}|februrary\p{Digit}{4}|februaru\p{Digit}{4}" />
+		<literal text="MARNumber2" format="mar\p{Digit}{2}|march\p{Digit}{2}" />
+		<literal text="MARNumber4" format="mar\p{Digit}{4}|march\p{Digit}{4}" />
+		<literal text="APRNumber2" format="apr\p{Digit}{2}|april\p{Digit}{2}|aptil\p{Digit}{2}" />
+		<literal text="APRNumber4" format="apr\p{Digit}{4}|april\p{Digit}{4}|aptil\p{Digit}{4}" />
+		<literal text="MAYNumber2" format="may\p{Digit}{2}" />
+		<literal text="MAYNumber4" format="may\p{Digit}{4}" />
+		<literal text="JUNNumber2" format="jun\p{Digit}{2}|june\p{Digit}{2}" />
+		<literal text="JUNNumber4" format="jun\p{Digit}{4}|june\p{Digit}{4}" />
+		<literal text="JULNumber2" format="jul\p{Digit}{2}|july\p{Digit}{2}|jully\p{Digit}{2}" />
+		<literal text="JULNumber4" format="jul\p{Digit}{4}|july\p{Digit}{4}|jully\p{Digit}{4}" />
+		<literal text="AUGNumber2" format="aug\p{Digit}{2}|august\p{Digit}{2}|auust\p{Digit}{2}|augus\p{Digit}{2}" />
+		<literal text="AUGNumber4" format="aug\p{Digit}{4}|august\p{Digit}{4}|auust\p{Digit}{4}|augus\p{Digit}{4}" />
+		<literal text="SEPNumber2" format="sep\p{Digit}{2}|september\p{Digit}{2}|seotember\p{Digit}{2}|spetember\p{Digit}{2}|septemeber\p{Digit}{2}|septmeber\p{Digit}{2}|setember\p{Digit}{2}|setp\p{Digit}{2}|sept\p{Digit}{2}" />
+		<literal text="SEPNumber4" format="sep\p{Digit}{4}|september\p{Digit}{4}|seotember\p{Digit}{4}|spetember\p{Digit}{4}|septemeber\p{Digit}{4}|septmeber\p{Digit}{4}|setember\p{Digit}{4}|setp\p{Digit}{4}|sept\p{Digit}{4}" />
+		<literal text="OCTNumber2" format="oct\p{Digit}{2}|october\p{Digit}{2}|octber\p{Digit}{2}|octoerb\p{Digit}{2}" />
+		<literal text="OCTNumber4" format="oct\p{Digit}{4}|october\p{Digit}{4}|octber\p{Digit}{4}|octoerb\p{Digit}{4}" />
+		<literal text="NOVNumber2" format="nov\p{Digit}{2}|november\p{Digit}{2}" />
+		<literal text="NOVNumber4" format="nov\p{Digit}{4}|november\p{Digit}{4}" />
+		<literal text="DECNumber2" format="dec\p{Digit}{2}|december\p{Digit}{2}|deccember\p{Digit}{2}" />
+		<literal text="DECNumber4" format="dec\p{Digit}{4}|december\p{Digit}{4}|deccember\p{Digit}{4}" />
+		<literal text="DayRange" format="\p{Digit}{1,2}-\p{Digit}{1,2}" />
+		<literal text="YearRange" format="\p{Digit}{4}-\p{Digit}{1,4}" />
+		<literal text="autumn" casesensitive="false" parsedtext="Autumn" />
+		<literal text="fall" casesensitive="false" parsedtext="Autumn" />
+		<literal text="summer" casesensitive="false" parsedtext="Summer" />
+		<literal text="spring" casesensitive="false" parsedtext="Spring" />
+		<literal text="winter" casesensitive="false" parsedtext="Winter" />
+	</literals>
+	<directsubstitutions>
+	</directsubstitutions>
+	<errsubs>
+	</errsubs>
+</parser>

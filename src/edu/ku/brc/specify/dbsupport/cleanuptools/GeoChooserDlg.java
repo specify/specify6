@@ -1,7 +1,7 @@
-/* Copyright (C) 2021, Specify Collections Consortium
+/* Copyright (C) 2017, University of Kansas Center for Research
  * 
- * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
+ * Specify Software Project, specify@ku.edu, Biodiversity Institute,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -487,7 +487,6 @@ public class GeoChooserDlg extends CustomDialog
             setResizable(false);
         }
         setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE); // Must be called at the end 'createUI'
-        pack();
     }
     
     /**
@@ -707,7 +706,7 @@ public class GeoChooserDlg extends CustomDialog
     {
         ISOCodeListDlg dlg = new ISOCodeListDlg(null, OKCANCELHELP);
         dlg.setAlwaysOnTop(true);
-        dlg.setVisible(true);
+        UIHelper.centerAndShow(dlg);
         if (!dlg.isCancelled())
         {
             GeoSearchResultsItem selectedItem = dlg.getSelectedItem();

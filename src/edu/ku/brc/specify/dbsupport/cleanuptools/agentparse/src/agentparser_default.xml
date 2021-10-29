@@ -1,0 +1,47 @@
+<parser name="AgentParserDefault" startsymbol="Agent" quoteenclosers="``" includequoteenclosers="false" >
+	<symbols>
+		<symbol name="Agent" terminal="false" eof="false" branch="false" table="agent" field="" />		
+		<symbol name="Strs" table="agent" record_type="group" field="LastName" />
+		<symbol name="Str" terminal="true" eof="false" branch="false" table="" field="" />
+		<symbol name="Str1" terminal="true" eof="false" branch="false" table="" field="" />
+	</symbols>
+	<rules>
+		<rule name="Agent->Strs" left="Agent" >
+			<rights>
+				<right name="Strs" />
+			</rights>
+		</rule>
+		<rule name="Strs->Str Strs" left="Strs" >
+			<rights>
+				<right name="Str" />
+				<right name="Strs" />
+			</rights>
+		</rule>
+		<rule name="Strs->Str1 Strs" left="Strs" >
+			<rights>
+				<right name="Str1" />
+				<right name="Strs" />
+			</rights>
+		</rule>
+		<rule name= "Strs->Str" left="Strs" >
+			<rights>
+				<right name="Str" />
+			</rights>
+		</rule>
+		<rule name= "Strs->Str1" left="Strs" >
+			<rights>
+				<right name="Str1" />
+			</rights>
+		</rule>
+	</rules>
+	<terminators>
+	</terminators>
+	<literals>
+	</literals>
+	<directsubstitutions>
+			<directsubstitution replace="^" with="`" />
+			<directsubstitution replace="$" with="`" />
+	</directsubstitutions>
+	<errsubs>
+	</errsubs>
+</parser>

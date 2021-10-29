@@ -1,7 +1,7 @@
-/* Copyright (C) 2021, Specify Collections Consortium
+/* Copyright (C) 2017, University of Kansas Center for Research
  * 
- * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
+ * Specify Software Project, specify@ku.edu, Biodiversity Institute,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -196,7 +196,7 @@ public class LocalityCleanup
         pb.add(UIHelper.createScrollPane(table), cc.xy(1,1));
         pb.setDefaultDialogBorder();
         
-        CustomDialog dlg = new CustomDialog((java.awt.Frame)null, "Locality Duplicates", true, pb.getPanel());
+        CustomDialog dlg = new CustomDialog(null, "Locality Duplicates", true, pb.getPanel());
         dlg.setVisible(true);
         if (!dlg.isCancelled())
         {

@@ -1,0 +1,221 @@
+<parser name="AgentParser" startsymbol="Agents">
+	<symbols>
+		<symbol name="Agents" terminal="false" eof="false" branch="false" table="" field="" />
+		<symbol name="Agent" terminal="false" eof="false" branch="false" table="agent" field="" />
+		<symbol name="LastName" terminal="false" eof="false" branch="false" table="agent" field="LastName" />
+		<symbol name="FirstName" terminal="false" eof="false" branch="false" table="agent" field="FirstName" />
+		<symbol name="Middle" terminal="false" eof="false" branch="false" table="agent" field="MiddleInitial" />
+		<symbol name="Suffix" terminal="false" eof="false" branch="false" table="" field="" />
+		<symbol name="Initial" terminal="false" eof="false" branch="false" table="" field="" />
+		<symbol name="Initial2" terminal="false" eof="false" branch="false" table="" field="" />
+		<symbol name="Abbreviation" terminal="false" eof="false" branch="false" table="agent" field="Abbreviation" />
+		<symbol name="Name" terminal="false" eof="false" branch="false" table="" field="" />
+		<symbol name="Connector" terminal="false" eof="false" branch="false" table="" field="" />
+		<symbol name="FinalConnector" terminal="false" eof="false" branch="false" table="" field="" />
+		<symbol name="Str1" terminal="true" eof="false" branch="false" table="" field="" />
+		<symbol name="Str" terminal="true" eof="false" branch="false" table="" field="" />
+		<symbol name="UpStr3" terminal="true" eof="false" branch="false" table="" field="" />
+		<symbol name="," terminal="true" eof="false" branch="false" table="" field="" />
+		<symbol name="and" terminal="true" eof="false" branch="false" table="" field="" />
+		<symbol name="&amp;" terminal="true" eof="false" branch="false" table="" field="" />
+		<symbol name="/" terminal="true" eof="false" branch="false" table="" field="" />
+		<symbol name=";" terminal="true" eof="false" branch="false" table="" field="" />
+		<symbol name="jr" terminal="true" eof="false" branch="false" table="" field="" />
+		<symbol name="FGS" terminal="true" eof="false" branch="false" table="" field="" />
+		<symbol name="FSU" terminal="true" eof="false" branch="false" table="" field="" />
+		<symbol name="USGS" terminal="true" eof="false" branch="false" table="" field="" />
+		<symbol name="USNM" terminal="true" eof="false" branch="false" table="" field="" />
+		<symbol name="PRI" terminal="true" eof="false" branch="false" table="" field="" />
+		<symbol name="DA" terminal="true" eof="false" branch="false" table="" field="" />
+		<symbol name="DEL" terminal="true" eof="false" branch="false" table="" field="" />		
+	</symbols>	
+	<rules>
+		<rule name="Agents->Agent Connector Agents" left="Agents">
+			<rights>
+				<right name="Agent" />
+				<right name="Connector" />
+				<right name="Agents" />
+			</rights>
+		</rule>
+		<rule name="Agents->Agent" left="Agents">
+			<rights>
+				<right name="Agent" />
+			</rights>
+		</rule>
+		<rule name="Agents->Agent FinalConnector Agent" left="Agents">
+			<rights>
+				<right name="Agent" />
+				<right name="FinalConnector" />
+				<right name="Agent" />
+			</rights>
+		</rule>
+		<rule name="Agent->FirstName LastName" left="Agent">
+			<rights>
+				<right name="FirstName" />
+				<right name="LastName" />
+			</rights>
+		</rule>
+		<rule name="Agent->Abbreviation" left="Agent">
+			<rights>
+				<right name="Abbreviation" />
+			</rights>
+		</rule>
+		<rule name="Agent->LastName" left="Agent">
+			<rights>
+				<right name="LastName" />
+			</rights>
+		</rule>
+		<!--<rule name="Agent->LastName, FirstName" left="Agent">
+			<rights>
+				<right name="LastName" />
+				<right name="," />
+				<right name="FirstName" />
+			</rights>
+		</rule>-->
+		<rule name="LastName->Name" left="LastName">
+			<rights>
+				<right name="Name" />
+			</rights>
+		</rule>
+		<rule name="FirstName->Name" left="FirstName">
+			<rights>
+				<right name="Name" />
+			</rights>
+		</rule>
+		<rule name="FirstName->Name Middle" left="FirstName">
+			<rights>
+				<right name="Name" />
+				<right name="Middle" />
+			</rights>
+		</rule>
+		<rule name="FirstName->Initial" left="FirstName">
+			<rights>
+				<right name="Initial" />
+			</rights>
+		</rule>
+		<rule name="FirstName->Initial Middle" left="FirstName">
+			<rights>
+				<right name="Initial" />
+				<right name="Middle" />
+			</rights>
+		</rule>
+		<rule name="Middle->Name" left="Middle">
+			<rights>
+				<right name="Name" />
+			</rights>
+		</rule>
+		<rule name="Middle->Initial" left="Middle">
+			<rights>
+				<right name="Initial" />
+			</rights>
+		</rule>
+		<rule name="Middle->Initial Initial" left="Middle">
+			<rights>
+				<right name="Initial" />
+				<right name="Initial2" />
+			</rights>
+		</rule>
+		<rule name="Suffix->Jr" left="Suffix">
+			<rights>
+				<right name="jr" />
+			</rights>
+		</rule>
+		<rule name="Connector->," left="Connector">
+		<!-- With this included, 'Lone, Pepe' will be parsed as 2 agent last names
+			instead of 'LastName, FirstName.
+			Need to try to offer both possibilities...-->
+			<rights>
+				<right name="," />
+			</rights>
+		</rule>
+		<rule name="Connector->and" left="Connector">
+			<rights>
+				<right name="and" />
+			</rights>
+		</rule>
+		<rule name="FinalConnector->&amp;" left="FinalConnector">
+			<rights>
+				<right name="&amp;" />
+			</rights>
+		</rule>
+		<rule name="Connector->;" left="Connector">
+			<rights>
+				<right name=";" />
+			</rights>
+		</rule>
+		<rule name="Connector->/" left="Connector">
+			<rights>
+				<right name="/" />
+			</rights>
+		</rule>
+		<rule name="Initial->Str1" left="Initial">
+			<rights>
+				<right name="Str1" />
+			</rights>
+		</rule>
+		<rule name="Initial2->Str1" left="Initial2">
+			<rights>
+				<right name="Str1" />
+			</rights>
+		</rule>
+		<rule name="Name->Str" left="Name">
+			<rights>
+				<right name="Str" />
+			</rights>
+		</rule>
+		<rule name="Abbreviation->UpStr3" left="Abbreviation">
+		<!-- doesn't work for florida ivp because everything is uppercase,
+		but they do use 3 (and 4) char abbreviations -->
+			<rights>
+				<right name="UpStr3" />
+			</rights>
+		</rule>
+		<rule name="Abbreviation->FGS" left="Abbreviation">
+			<rights>
+				<right name="FGS" />
+			</rights>
+		</rule>
+		<rule name="Abbreviation->FSU" left="Abbreviation">
+			<rights>
+				<right name="FSU" />
+			</rights>
+		</rule>
+		<rule name="Abbreviation->USGS" left="Abbreviation">
+			<rights>
+				<right name="USGS" />
+			</rights>
+		</rule>
+		<rule name="Abbreviation->USNM" left="Abbreviation">
+			<rights>
+				<right name="USNM" />
+			</rights>
+		</rule>
+		<rule name="Abbreviation->USNM" left="Abbreviation">
+			<rights>
+				<right name="PRI" />
+			</rights>
+		</rule>
+	</rules>
+	<terminators>
+		<terminator text="." />
+		<terminator text="," />
+		<!--<terminator text=", " />-->
+		<terminator text=";" />
+		<terminator text=" " />
+		<terminator text="/" />
+	</terminators>
+	<literals>
+		<literal text="and" />
+		<literal text="&amp;" />	
+		<literal text="Jr" />
+		<literal text="," />	
+		<literal text=";" />
+		<literal text=" " />
+		<literal text="/" />	
+		<literal text="FGS" />	
+		<literal text="FSU" />	
+		<literal text="USGS" />	
+		<literal text="USNM" />	
+		<literal text="PRI" />	
+	</literals>
+</parser>

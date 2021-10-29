@@ -1,7 +1,7 @@
-/* Copyright (C) 2021, Specify Collections Consortium
+/* Copyright (C) 2017, University of Kansas Center for Research
  * 
- * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
+ * Specify Software Project, specify@ku.edu, Biodiversity Institute,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -27,9 +27,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
-import java.awt.Dimension;
 
-import javax.swing.*;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
 import org.apache.commons.lang.StringUtils;
@@ -176,9 +177,8 @@ public class GeographyMerging
         currIndex = -1;
         doNextGeographyInList();
 
-        dlg.setPreferredSize(new Dimension(800, dlg.getHeight()));
         dlg.pack();
-        dlg.setVisible(true);
+        UIHelper.centerAndShow(dlg, 800, dlg.getSize().height);
         
         return true;
     }
