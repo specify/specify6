@@ -9,7 +9,7 @@ operates under the non-profit U.S. tax status of the University of
 Kansas Center for Research. Specify was supported previously by
 multiple awards from the U.S. National Science Foundation.
 
-Specify 6 Copyright © 2021 University of Kansas Center for
+Specify 6 Copyright © 2022 University of Kansas Center for
 Research. Specify comes with ABSOLUTELY NO WARRANTY.  This is free
 software licensed under GNU General Public License 2 (GPL2).
 
