@@ -367,6 +367,16 @@
       </classpath>
     </java>
   </target>
+  
+  <target name="run-wizard-nonmac" depends="make-jar-nonmac, generate-datamodel">
+    <java classname="edu.ku.brc.specify.config.init.SpecifyDBSetupWizardFrame" fork="true" failonerror="true">
+      <classpath>
+        <path refid="compile.classpath.nonmac"/>
+        <pathelement location="${build.root}/${jar.name}-nonmac.jar"/>
+      </classpath>
+    </java>
+  </target>
+  
 
   <target name="run-specify-mac" depends="make-jar-mac, generate-datamodel">
     <java classname="edu.ku.brc.specify.Specify" fork="true" failonerror="true">
