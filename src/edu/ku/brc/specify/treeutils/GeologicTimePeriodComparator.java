@@ -20,6 +20,7 @@
 package edu.ku.brc.specify.treeutils;
 
 import java.util.Comparator;
+import java.math.BigDecimal;
 
 import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
 
@@ -40,8 +41,8 @@ public class GeologicTimePeriodComparator implements Comparator<GeologicTimePeri
 	 */
 	public int compare(GeologicTimePeriod o1, GeologicTimePeriod o2)
 	{
-		Float start1 = o1.getStartPeriod();
-		Float start2 = o2.getStartPeriod();
+		BigDecimal start1 = o1.getStartPeriod();
+		BigDecimal start2 = o2.getStartPeriod();
 		if(start1 == null)
 		{
 			return -1;
@@ -57,8 +58,8 @@ public class GeologicTimePeriodComparator implements Comparator<GeologicTimePeri
 			return start;
 		}
 		
-		Float end1 = o1.getEndPeriod();
-		Float end2 = o2.getEndPeriod();
+		BigDecimal end1 = o1.getEndPeriod();
+		BigDecimal end2 = o2.getEndPeriod();
 		if(end1 == null)
 		{
 			return 1;

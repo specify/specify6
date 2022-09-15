@@ -72,14 +72,14 @@ public class PaleoMapPlugin extends JButton implements GetSetValueIFace, UIPlugi
     	List<Object> info = getMapInfo();
     	Locality locality = (Locality)info.get(0);
     	GeologicTimePeriod geoTime = (GeologicTimePeriod)info.get(1);
-    	Float ma = null;
+    	Double ma = null;
     	if (geoTime != null && (geoTime.getStartPeriod() != null || geoTime.getEndPeriod() != null)) {
     		if (geoTime.getStartPeriod() != null && geoTime.getEndPeriod() != null) {
-    			ma = (geoTime.getStartPeriod() + geoTime.getEndPeriod()) / 2.0F;
+                    ma = (geoTime.getStartPeriod().doubleValue() + geoTime.getEndPeriod().doubleValue()) / 2.0;
     		} else if (geoTime.getStartPeriod() != null) {
-    			ma = geoTime.getStartPeriod();
+    			ma = geoTime.getStartPeriod().doubleValue();
     		} else if (geoTime.getEndPeriod() != null) {
-    			ma = geoTime.getEndPeriod();
+    			ma = geoTime.getEndPeriod().doubleValue();
     		}
     	}
     	if (ma != null && locality != null && locality.getLatitude1() != null && locality.getLongitude1() != null) {
