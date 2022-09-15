@@ -81,7 +81,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 {
     protected static final Logger  log = Logger.getLogger(SpecifySchemaUpdateService.class);
     
-    private final int OVERALL_TOTAL = 84; //the number of incOverall() calls (+1 or +2)
+    private final int OVERALL_TOTAL = 86; //the number of incOverall() calls (+1 or +2)
 
     private static final String TINYINT4 = "TINYINT(4)";
     private static final String INT11    = "INT(11)";
@@ -2801,6 +2801,17 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         }
                     }
                     frame.incOverall();
+
+                    //-------------------------------------------------------------------------------
+                    //
+                    // Schema changes for 2.10
+                    //
+                    //-------------------------------------------------------------------------------
+
+                    frame.setDesc("Converting float fields to decimal.");
+                    SchemaUpdateService.createDBTablesFromSQLFile(conn, "floats_to_decimals.sql");
+                    frame.incOverall();
+
 
                     frame.setProcess(0, 100);
                     return true;

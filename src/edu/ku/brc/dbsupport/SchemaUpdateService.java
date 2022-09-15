@@ -135,6 +135,7 @@ public abstract class SchemaUpdateService
             {
                 String tLine = line.trim();
                 sb.append(tLine);
+                sb.append(" ");
                 
                 if (tLine.endsWith(";"))
                 {
