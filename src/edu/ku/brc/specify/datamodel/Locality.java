@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
+import java.math.BigDecimal;
 
 import javax.persistence.*;
 
@@ -76,12 +77,12 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
     protected String                localityName;
     protected String                verbatimElevation;
     protected String                originalElevationUnit;
-    protected Double                minElevation;
-    protected Double                maxElevation;
+    protected BigDecimal                minElevation;
+    protected BigDecimal                maxElevation;
     protected String			    verbatimLatitude;
     protected String                verbatimLongitude;
     protected String                elevationMethod;
-    protected Double                elevationAccuracy;
+    protected BigDecimal                elevationAccuracy;
     protected Integer               originalLatLongUnit;
     protected String                latLongType;
     protected BigDecimal            latitude1;
@@ -89,7 +90,7 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
     protected BigDecimal            latitude2;
     protected BigDecimal            longitude2;
     protected String                latLongMethod;
-    protected Double                latLongAccuracy;
+    protected BigDecimal                latLongAccuracy;
     protected String                gml;
     protected String                datum;
     protected String                remarks;
@@ -387,13 +388,13 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
     /**
      * * The minimum elevation in Meters
      */
-    @Column(name = "MinElevation", unique = false, nullable = true, insertable = true, updatable = true)
-    public Double getMinElevation()
+    @Column(name = "MinElevation", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getMinElevation()
     {
         return this.minElevation;
     }
 
-    public void setMinElevation(Double minElevation)
+    public void setMinElevation(BigDecimal minElevation)
     {
         this.minElevation = minElevation;
     }
@@ -401,13 +402,13 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
     /**
      * * The maximum elevation in Meters
      */
-    @Column(name = "MaxElevation", unique = false, nullable = true, insertable = true, updatable = true)
-    public Double getMaxElevation()
+    @Column(name = "MaxElevation", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getMaxElevation()
     {
         return this.maxElevation;
     }
 
-    public void setMaxElevation(Double maxElevation)
+    public void setMaxElevation(BigDecimal maxElevation)
     {
         this.maxElevation = maxElevation;
     }
@@ -429,13 +430,13 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
     /**
      * * plus or minus -- in meters
      */
-    @Column(name = "ElevationAccuracy", unique = false, nullable = true, insertable = true, updatable = true)
-    public Double getElevationAccuracy()
+    @Column(name = "ElevationAccuracy", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getElevationAccuracy()
     {
         return this.elevationAccuracy;
     }
 
-    public void setElevationAccuracy(Double elevationAccuracy)
+    public void setElevationAccuracy(BigDecimal elevationAccuracy)
     {
         this.elevationAccuracy = elevationAccuracy;
     }
@@ -550,13 +551,13 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
     /**
      * * radius -- in decimal degrees
      */
-    @Column(name = "LatLongAccuracy", unique = false, nullable = true, insertable = true, updatable = true)
-    public Double getLatLongAccuracy()
+    @Column(name = "LatLongAccuracy", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getLatLongAccuracy()
     {
         return this.latLongAccuracy;
     }
 
-    public void setLatLongAccuracy(Double latLongAccuracy)
+    public void setLatLongAccuracy(BigDecimal latLongAccuracy)
     {
         this.latLongAccuracy = latLongAccuracy;
     }

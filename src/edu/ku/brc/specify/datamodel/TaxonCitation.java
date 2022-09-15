@@ -19,6 +19,8 @@
 */
 package edu.ku.brc.specify.datamodel;
 
+import java.math.BigDecimal;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -46,8 +48,8 @@ public class TaxonCitation extends DataModelObjBase implements java.io.Serializa
      protected String remarks;
      protected String text1;
      protected String text2;
-     protected Float number1;
-     protected Float number2;
+     protected BigDecimal number1;
+     protected BigDecimal number2;
      protected Boolean yesNo1;
      protected Boolean yesNo2;
      protected ReferenceWork referenceWork;
@@ -237,24 +239,24 @@ public class TaxonCitation extends DataModelObjBase implements java.io.Serializa
     /**
      *      * User definable
      */
-    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
-    public Float getNumber1() {
+    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true, length = 24, precision = 20, scale = 10)
+    public BigDecimal getNumber1() {
         return this.number1;
     }
     
-    public void setNumber1(Float number1) {
+    public void setNumber1(BigDecimal number1) {
         this.number1 = number1;
     }
 
     /**
      *      * User definable
      */
-    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
-    public Float getNumber2() {
+    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true, length = 24, precision = 20, scale = 10)
+    public BigDecimal getNumber2() {
         return this.number2;
     }
     
-    public void setNumber2(Float number2) {
+    public void setNumber2(BigDecimal number2) {
         this.number2 = number2;
     }
 

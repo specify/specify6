@@ -22,6 +22,7 @@ package edu.ku.brc.specify.datamodel;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
+import java.math.BigDecimal;
 
 import javax.persistence.*;
 
@@ -53,9 +54,9 @@ public class ConservDescription extends DataModelObjBase implements AttachmentOw
     protected String             shortDesc;
     protected String             description;
     protected String             backgroundInfo;
-    protected Float              width;
-    protected Float              height;
-    protected Float              objLength;
+    protected BigDecimal              width;
+    protected BigDecimal              height;
+    protected BigDecimal              objLength;
     protected String             units;
     protected String             composition;
     protected String             remarks;
@@ -183,13 +184,13 @@ public class ConservDescription extends DataModelObjBase implements AttachmentOw
     /**
      *
      */
-    @Column(name = "Width", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getWidth()
+    @Column(name = "Width", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getWidth()
     {
         return this.width;
     }
 
-    public void setWidth(final Float width)
+    public void setWidth(final BigDecimal width)
     {
         this.width = width;
     }
@@ -197,13 +198,13 @@ public class ConservDescription extends DataModelObjBase implements AttachmentOw
     /**
      *
      */
-    @Column(name = "Height", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getHeight()
+    @Column(name = "Height", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getHeight()
     {
         return this.height;
     }
 
-    public void setHeight(final Float height)
+    public void setHeight(final BigDecimal height)
     {
         this.height = height;
     }
@@ -211,13 +212,13 @@ public class ConservDescription extends DataModelObjBase implements AttachmentOw
     /**
      *
      */
-    @Column(name = "ObjLength", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getObjLength()
+    @Column(name = "ObjLength", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getObjLength()
     {
         return this.objLength;
     }
 
-    public void setObjLength(final Float length)
+    public void setObjLength(final BigDecimal length)
     {
         this.objLength = length;
     }

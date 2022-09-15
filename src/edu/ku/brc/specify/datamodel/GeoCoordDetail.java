@@ -50,7 +50,7 @@ public class GeoCoordDetail extends DataModelObjBase implements Cloneable
     // Manis Fields
     protected Integer               geoCoordDetailId;
     protected BigDecimal            namedPlaceExtent;
-    protected Double			    geoRefAccuracy;
+    protected BigDecimal			    geoRefAccuracy;
     protected String                geoRefAccuracyUnits;
     protected String                geoRefDetRef;
     protected Calendar              geoRefDetDate;
@@ -148,8 +148,8 @@ public class GeoCoordDetail extends DataModelObjBase implements Cloneable
     /**
 	 * @return the geoRefAccuracy
 	 */
-    @Column(name = "GeoRefAccuracy", unique = false, nullable = true, insertable = true, updatable = true)
-	public Double getGeoRefAccuracy() {
+    @Column(name = "GeoRefAccuracy", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+	public BigDecimal getGeoRefAccuracy() {
 		return geoRefAccuracy;
 	}
 
@@ -157,7 +157,7 @@ public class GeoCoordDetail extends DataModelObjBase implements Cloneable
 	/**
 	 * @param geoRefAccuracy the geoRefAccuracy to set
 	 */
-	public void setGeoRefAccuracy(Double geoRefAccuracy) {
+	public void setGeoRefAccuracy(BigDecimal geoRefAccuracy) {
 		this.geoRefAccuracy = geoRefAccuracy;
 	}
 

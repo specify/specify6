@@ -22,6 +22,7 @@ package edu.ku.brc.specify.datamodel;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
+import java.math.BigDecimal;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -82,11 +83,11 @@ public class Determination extends CollectionMember implements java.io.Serializa
     protected String              text6;
     protected String              text7;
     protected String              text8;
-     protected Float               number1;
-     protected Float               number2;
-    protected Float               number3;
-    protected Float               number4;
-    protected Float               number5;
+     protected BigDecimal               number1;
+     protected BigDecimal               number2;
+    protected BigDecimal               number3;
+    protected BigDecimal               number4;
+    protected BigDecimal               number5;
     protected Integer               integer1;
     protected Integer               integer2;
     protected Integer               integer3;
@@ -555,13 +556,13 @@ public class Determination extends CollectionMember implements java.io.Serializa
     /**
      *      * User definable
      */
-    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
-    public Float getNumber1() 
+    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true, length = 24, precision = 20, scale = 10)
+    public BigDecimal getNumber1() 
     {
         return this.number1;
     }
     
-    public void setNumber1(Float number1) 
+    public void setNumber1(BigDecimal number1) 
     {
         this.number1 = number1;
     }
@@ -569,13 +570,13 @@ public class Determination extends CollectionMember implements java.io.Serializa
     /**
      *      * User definable
      */
-    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
-    public Float getNumber2() 
+    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true, length = 24, precision = 20, scale = 10)
+    public BigDecimal getNumber2() 
     {
         return this.number2;
     }
     
-    public void setNumber2(Float number2) 
+    public void setNumber2(BigDecimal number2) 
     {
         this.number2 = number2;
     }
@@ -583,39 +584,39 @@ public class Determination extends CollectionMember implements java.io.Serializa
     /**
      *      * User definable
      */
-    @Column(name = "Number3", unique = false, nullable = true, insertable = true, updatable = true, length = 34)
-    public Float getNumber3()
+    @Column(name = "Number3", unique = false, nullable = true, insertable = true, updatable = true, length = 34, precision = 20, scale = 10)
+    public BigDecimal getNumber3()
     {
         return this.number3;
     }
 
-    public void setNumber3(Float number3)
+    public void setNumber3(BigDecimal number3)
     {
         this.number3 = number3;
     }
     /**
      *      * User definable
      */
-    @Column(name = "Number4", unique = false, nullable = true, insertable = true, updatable = true, length = 44)
-    public Float getNumber4()
+    @Column(name = "Number4", unique = false, nullable = true, insertable = true, updatable = true, length = 44, precision = 20, scale = 10)
+    public BigDecimal getNumber4()
     {
         return this.number4;
     }
 
-    public void setNumber4(Float number4)
+    public void setNumber4(BigDecimal number4)
     {
         this.number4 = number4;
     }
     /**
      *      * User definable
      */
-    @Column(name = "Number5", unique = false, nullable = true, insertable = true, updatable = true, length = 54)
-    public Float getNumber5()
+    @Column(name = "Number5", unique = false, nullable = true, insertable = true, updatable = true, length = 54, precision = 20, scale = 10)
+    public BigDecimal getNumber5()
     {
         return this.number5;
     }
 
-    public void setNumber5(Float number5)
+    public void setNumber5(BigDecimal number5)
     {
         this.number5 = number5;
     }
