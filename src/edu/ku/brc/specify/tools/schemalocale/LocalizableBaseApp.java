@@ -58,7 +58,7 @@ public class LocalizableBaseApp extends JFrame
         panel.add(iconLabel, BorderLayout.WEST);
         panel.add(createLabel("<html>"+appName+" " + appVersion + 
                 "<br><br>Biodiversity Research Center<br>University of Kansas<br>Lawrence, KS  USA 66045<br><br>" + 
-                "www.specifysoftware.org<br>specify@ku.edu<br><br>" + 
+                "www.specifysoftware.org<br>support@specifysoftware.org<br><br>" +
                 "<p>The Specify Software Project is<br>"+
                 "funded by the Biological Databases<br>"+
                 "and Informatics Program of the<br>"+

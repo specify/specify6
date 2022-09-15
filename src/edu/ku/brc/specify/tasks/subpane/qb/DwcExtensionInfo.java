@@ -1,6 +1,6 @@
 /* Copyright (C) 2021, University of Kansas Center for Research
  *
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
+ * Specify Software Project, support@specifysoftware.org, Biodiversity Institute,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
  *
  * This program is free software; you can redistribute it and/or
