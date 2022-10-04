@@ -316,7 +316,8 @@ public class PickListItem extends DataModelObjBase implements PickListItemIFace,
         // Default to title
         if (title != null && obj != null && obj.getTitle() != null)
         {
-            return title.compareTo(obj.getTitle());
+            // Make comparison case-insensitive
+            return title.toLowerCase().compareTo(obj.getTitle().toLowerCase());
         }
         // else
         return 0;
