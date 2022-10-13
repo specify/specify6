@@ -141,6 +141,17 @@ public class CollectionObjectAttribute extends CollectionMember implements Clone
     protected String text28;
     protected String text29;
     protected String text30;
+    protected String text31;
+    protected String text32;
+    protected String text33;
+    protected String text34;
+    protected String text35;
+    protected String text36;
+    protected String text37;
+    protected String text38;
+    protected String text39;
+    protected String text40;
+    
     
     protected String remarks;
     
@@ -287,6 +298,16 @@ public class CollectionObjectAttribute extends CollectionMember implements Clone
         text28 = null;
         text29 = null;
         text30 = null;
+        text31 = null;
+        text32 = null;
+        text33 = null;
+        text34 = null;
+        text35 = null;
+        text36 = null;
+        text37 = null;
+        text38 = null;
+        text39 = null;
+        text40 = null;
 
         yesNo8 = null;
         yesNo9 = null;
@@ -484,6 +505,166 @@ public class CollectionObjectAttribute extends CollectionMember implements Clone
 	 */
 	public void setText30(String text30) {
 		this.text30 = text30;
+	}
+
+	/**
+	 * @return the text31
+	 */
+    @Lob
+    @Column(name = "Text31", length = 65535)
+	public String getText31() {
+		return text31;
+	}
+
+	/**
+	 * @param text31 the text31 to set
+	 */
+	public void setText31(String text31) {
+		this.text31 = text31;
+	}
+
+	/**
+	 * @return the text32
+	 */
+    @Lob
+    @Column(name = "Text32", length = 65535)
+	public String getText32() {
+		return text32;
+	}
+
+	/**
+	 * @param text32 the text32 to set
+	 */
+	public void setText32(String text32) {
+		this.text32 = text32;
+	}
+
+	/**
+	 * @return the text33
+	 */
+    @Lob
+    @Column(name = "Text33", length = 65535)
+	public String getText33() {
+		return text33;
+	}
+
+	/**
+	 * @param text33 the text33 to set
+	 */
+	public void setText33(String text33) {
+		this.text33 = text33;
+	}
+
+	/**
+	 * @return the text34
+	 */
+    @Lob
+    @Column(name = "Text34", length = 65535)
+	public String getText34() {
+		return text34;
+	}
+
+	/**
+	 * @param text34 the text34 to set
+	 */
+	public void setText34(String text34) {
+		this.text34 = text34;
+	}
+
+	/**
+	 * @return the text35
+	 */
+    @Lob
+    @Column(name = "Text35", length = 65535)
+	public String getText35() {
+		return text35;
+	}
+
+	/**
+	 * @param text35 the text35 to set
+	 */
+	public void setText35(String text35) {
+		this.text35 = text35;
+	}
+
+	/**
+	 * @return the text36
+	 */
+    @Lob
+    @Column(name = "Text36", length = 65535)
+	public String getText36() {
+		return text36;
+	}
+
+	/**
+	 * @param text36 the text36 to set
+	 */
+	public void setText36(String text36) {
+		this.text36 = text36;
+	}
+
+	/**
+	 * @return the text37
+	 */
+    @Lob
+    @Column(name = "Text37", length = 65535)
+	public String getText37() {
+		return text37;
+	}
+
+	/**
+	 * @param text37 the text37 to set
+	 */
+	public void setText37(String text37) {
+		this.text37 = text37;
+	}
+
+	/**
+	 * @return the text38
+	 */
+    @Lob
+    @Column(name = "Text38", length = 65535)
+	public String getText38() {
+		return text38;
+	}
+
+	/**
+	 * @param text38 the text38 to set
+	 */
+	public void setText38(String text38) {
+		this.text38 = text38;
+	}
+
+	/**
+	 * @return the text39
+	 */
+    @Lob
+    @Column(name = "Text39", length = 65535)
+	public String getText39() {
+		return text39;
+	}
+
+	/**
+	 * @param text39 the text39 to set
+	 */
+	public void setText39(String text39) {
+		this.text39 = text39;
+	}
+
+	/**
+	 * @return the text40
+	 */
+    @Lob
+    @Column(name = "Text40", length = 65535)
+	public String getText40() {
+		return text40;
+	}
+
+	/**
+	 * @param text40 the text40 to set
+	 */
+	public void setText40(String text40) {
+		this.text40 = text40;
 	}
 
 	/**
