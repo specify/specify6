@@ -74,6 +74,8 @@ public class GeoCoordDetail extends DataModelObjBase implements Cloneable
     protected String                text1;
     protected String                text2;
     protected String                text3;
+    protected String                text4;
+    protected String                text5;
     
     protected Locality              locality;
     
@@ -120,6 +122,8 @@ public class GeoCoordDetail extends DataModelObjBase implements Cloneable
         text1                 = null;
         text2                 = null;
         text3                 = null;
+        text4                 = null;
+        text5                 = null;
         
         locality              = null;
     	//NOTE: if fields are added to this table, the matches method must be updated accordingly!!!! 
@@ -506,6 +510,42 @@ public class GeoCoordDetail extends DataModelObjBase implements Cloneable
     public void setText3(String text3)
     {
         this.text3 = text3;
+    }
+
+    /**
+     * @return the text4
+     */
+    @Lob
+    @Column(name = "Text4", length = 65535)
+    public String getText4()
+    {
+        return text4;
+    }
+
+    /**
+     * @param text4 the text4 to set
+     */
+    public void setText4(String text4)
+    {
+        this.text4 = text4;
+    }
+
+    /**
+     * @return the text5
+     */
+    @Lob
+    @Column(name = "Text5", length = 65535)
+    public String getText5()
+    {
+        return text5;
+    }
+
+    /**
+     * @param text5 the text5 to set
+     */
+    public void setText5(String text5)
+    {
+        this.text5 = text5;
     }
 
     /**
