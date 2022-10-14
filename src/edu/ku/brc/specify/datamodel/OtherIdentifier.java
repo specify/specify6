@@ -19,16 +19,9 @@
 */
 package edu.ku.brc.specify.datamodel;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import java.util.Calendar;
+
+import javax.persistence.*;
 
 import org.hibernate.annotations.Index;
 
@@ -64,6 +57,10 @@ public class OtherIdentifier extends CollectionMember implements java.io.Seriali
     protected Boolean yesNo5;
     protected Agent agent1;
     protected Agent agent2;
+    protected Calendar                    date1;
+    protected Byte                        date1Precision;
+    protected Calendar                    date2;
+    protected Byte                        date2Precision;
 
 
     // Constructors
@@ -104,6 +101,10 @@ public class OtherIdentifier extends CollectionMember implements java.io.Seriali
         yesNo5 = null;
         agent1 = null;
         agent2 = null;
+        date1 = null;
+        date1Precision = 1;
+        date2 = null;
+        date2Precision = 1;
     }
     // End Initializer
 
@@ -326,6 +327,75 @@ public class OtherIdentifier extends CollectionMember implements java.io.Seriali
 
     public void setAgent2(Agent agent2) {
         this.agent2 = agent2;
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "Date1", unique = false, nullable = true, insertable = true, updatable = true)
+    public Calendar getDate1() {
+        return date1;
+    }
+
+    /**
+     *
+     * @param date1
+     */
+    public void setDate1(Calendar date1) {
+        this.date1 = date1;
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Column(name = "Date1Precision", unique = false, nullable = true, insertable = true, updatable = true)
+    public Byte getDate1Precision() {
+        return date1Precision;
+    }
+
+    /**
+     *
+     * @param date1Precision
+     */
+    public void setDate1Precision(Byte date1Precision) {
+        this.date1Precision = date1Precision;
+    }
+    /**
+     *
+     * @return
+     */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "Date2", unique = false, nullable = true, insertable = true, updatable = true)
+    public Calendar getDate2() {
+        return date2;
+    }
+
+    /**
+     *
+     * @param date2
+     */
+    public void setDate2(Calendar date2) {
+        date2 = date2;
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Column(name = "Date2Precision", unique = false, nullable = true, insertable = true, updatable = true)
+    public Byte getDate2Precision() {
+        return date2Precision;
+    }
+
+    /**
+     *
+     * @param date2Precision
+     */
+    public void setDate2Precision(Byte date2Precision) {
+        date2Precision = date2Precision;
     }
 
     /**
