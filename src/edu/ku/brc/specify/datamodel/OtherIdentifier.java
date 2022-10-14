@@ -52,6 +52,12 @@ public class OtherIdentifier extends CollectionMember implements java.io.Seriali
      protected String           remarks;
      protected CollectionObject collectionObject;
 
+    protected String text1;
+    protected String text2;
+    protected String text3;
+    protected String text4;
+    protected String text5;
+
 
     // Constructors
 
@@ -79,6 +85,11 @@ public class OtherIdentifier extends CollectionMember implements java.io.Seriali
         institution = null;
         remarks = null;
         collectionObject = null;
+        text1 = null;
+        text2 = null;
+        text3 = null;
+        text4 = null;
+        text5 = null;
     }
     // End Initializer
 
@@ -144,6 +155,70 @@ public class OtherIdentifier extends CollectionMember implements java.io.Seriali
         this.remarks = remarks;
     }
 
+    /**
+     *      * User definable
+     */
+    @Lob
+    @Column(name = "Text1", length = 65535)
+    public String getText1() {
+        return this.text1;
+    }
+    
+    public void setText1(String text1) {
+        this.text1 = text1;
+    }
+
+    /**
+     *      * User definable
+     */
+    @Lob
+    @Column(name = "Text2", length = 65535)
+    public String getText2() {
+        return this.text2;
+    }
+    
+    public void setText2(String text2) {
+        this.text2 = text2;
+    }
+
+    /**
+     *      * User definable
+     */
+    @Lob
+    @Column(name = "Text3", length = 65535)
+    public String getText3() {
+        return this.text3;
+    }
+    
+    public void setText3(String text3) {
+        this.text3 = text3;
+    }
+
+    /**
+     *      * User definable
+     */
+    @Lob
+    @Column(name = "Text4", length = 65535)
+    public String getText4() {
+        return this.text4;
+    }
+    
+    public void setText4(String text4) {
+        this.text4 = text4;
+    }
+
+    /**
+     *      * User definable
+     */
+    @Lob
+    @Column(name = "Text5", length = 65535)
+    public String getText5() {
+        return this.text5;
+    }
+    
+    public void setText5(String text5) {
+        this.text5 = text5;
+    }
     /**
      *      * ID of object identified by Identifier
      */
