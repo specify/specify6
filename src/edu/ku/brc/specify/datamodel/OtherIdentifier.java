@@ -57,6 +57,11 @@ public class OtherIdentifier extends CollectionMember implements java.io.Seriali
     protected String text3;
     protected String text4;
     protected String text5;
+    protected Boolean yesNo1;
+    protected Boolean yesNo2;
+    protected Boolean yesNo3;
+    protected Boolean yesNo4;
+    protected Boolean yesNo5;
 
 
     // Constructors
@@ -90,6 +95,11 @@ public class OtherIdentifier extends CollectionMember implements java.io.Seriali
         text3 = null;
         text4 = null;
         text5 = null;
+        yesNo1 = null;
+        yesNo2 = null;
+        yesNo3 = null;
+        yesNo4 = null;
+        yesNo5 = null;
     }
     // End Initializer
 
@@ -219,6 +229,81 @@ public class OtherIdentifier extends CollectionMember implements java.io.Seriali
     public void setText5(String text5) {
         this.text5 = text5;
     }
+    /**
+     * @return the yesNo1
+     */
+    @Column(name = "YesNo1", unique = false, nullable = true, insertable = true, updatable = true)
+    public Boolean getYesNo1() {
+        return yesNo1;
+    }
+
+    /**
+     * @param yesNo1 the yesNo1 to set
+     */
+    public void setYesNo1(Boolean yesNo1) {
+        this.yesNo1 = yesNo1;
+    }
+
+    /**
+     * @return the yesNo2
+     */
+    @Column(name = "YesNo2", unique = false, nullable = true, insertable = true, updatable = true)
+    public Boolean getYesNo2() {
+        return yesNo2;
+    }
+
+    /**
+     * @param yesNo2 the yesNo2 to set
+     */
+    public void setYesNo2(Boolean yesNo2) {
+        this.yesNo2 = yesNo2;
+    }
+
+    /**
+     * @return the yesNo3
+     */
+    @Column(name = "YesNo3", unique = false, nullable = true, insertable = true, updatable = true)
+    public Boolean getYesNo3() {
+        return yesNo3;
+    }
+
+    /**
+     * @param yesNo3 the yesNo3 to set
+     */
+    public void setYesNo3(Boolean yesNo3) {
+        this.yesNo3 = yesNo3;
+    }
+    
+    /**
+     * @return the yesNo4
+     */
+    @Column(name = "YesNo4", unique = false, nullable = true, insertable = true, updatable = true)
+    public Boolean getYesNo4() {
+        return yesNo4;
+    }
+
+    /**
+     * @param yesNo4 the yesNo4 to set
+     */
+    public void setYesNo4(Boolean yesNo4) {
+        this.yesNo4 = yesNo4;
+    }
+
+    /**
+     * @return the yesNo5
+     */
+    @Column(name = "YesNo5", unique = false, nullable = true, insertable = true, updatable = true)
+    public Boolean getYesNo5() {
+        return yesNo5;
+    }
+
+    /**
+     * @param yesNo5 the yesNo5 to set
+     */
+    public void setYesNo5(Boolean yesNo5) {
+        this.yesNo5 = yesNo5;
+    }
+    
     /**
      *      * ID of object identified by Identifier
      */
