@@ -81,6 +81,11 @@ public class GeoCoordDetail extends DataModelObjBase implements Cloneable
     protected Integer               integer3;
     protected Integer               integer4;
     protected Integer               integer5;
+    protected BigDecimal               number1;
+    protected BigDecimal               number2;
+    protected BigDecimal               number3;
+    protected BigDecimal               number4;
+    protected BigDecimal               number5;
 
     protected Locality              locality;
     
@@ -135,7 +140,13 @@ public class GeoCoordDetail extends DataModelObjBase implements Cloneable
         integer3 = null;
         integer4 = null;
         integer5 = null;
-        
+
+        number1 = null;
+        number2 = null;
+        number3 = null;
+        number4 = null;
+        number5 = null;
+
         locality              = null;
     	//NOTE: if fields are added to this table, the matches method must be updated accordingly!!!! 
     }
@@ -625,6 +636,74 @@ public class GeoCoordDetail extends DataModelObjBase implements Cloneable
     public void setInteger5(Integer integer5)
     {
         this.integer5 = integer5;
+    }
+
+    /**
+     *      * User definable
+     */
+    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true, length = 24, precision = 20, scale = 10)
+    public BigDecimal getNumber1() 
+    {
+        return this.number1;
+    }
+    
+    public void setNumber1(BigDecimal number1) 
+    {
+        this.number1 = number1;
+    }
+
+    /**
+     *      * User definable
+     */
+    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true, length = 24, precision = 20, scale = 10)
+    public BigDecimal getNumber2() 
+    {
+        return this.number2;
+    }
+    
+    public void setNumber2(BigDecimal number2) 
+    {
+        this.number2 = number2;
+    }
+
+    /**
+     *      * User definable
+     */
+    @Column(name = "Number3", unique = false, nullable = true, insertable = true, updatable = true, length = 34, precision = 20, scale = 10)
+    public BigDecimal getNumber3()
+    {
+        return this.number3;
+    }
+
+    public void setNumber3(BigDecimal number3)
+    {
+        this.number3 = number3;
+    }
+    /**
+     *      * User definable
+     */
+    @Column(name = "Number4", unique = false, nullable = true, insertable = true, updatable = true, length = 44, precision = 20, scale = 10)
+    public BigDecimal getNumber4()
+    {
+        return this.number4;
+    }
+
+    public void setNumber4(BigDecimal number4)
+    {
+        this.number4 = number4;
+    }
+    /**
+     *      * User definable
+     */
+    @Column(name = "Number5", unique = false, nullable = true, insertable = true, updatable = true, length = 54, precision = 20, scale = 10)
+    public BigDecimal getNumber5()
+    {
+        return this.number5;
+    }
+
+    public void setNumber5(BigDecimal number5)
+    {
+        this.number5 = number5;
     }
 
     /**
