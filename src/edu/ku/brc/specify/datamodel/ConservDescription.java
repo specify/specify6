@@ -68,6 +68,17 @@ public class ConservDescription extends DataModelObjBase implements AttachmentOw
     protected String             displayRecommendations;
     protected String             otherRecommendations;
     
+    protected String text1;
+    protected String text2;
+    protected String text3;
+    protected String text4;
+    protected String text5;
+    protected Boolean yesNo1;
+    protected Boolean yesNo2;
+    protected Boolean yesNo3;
+    protected Boolean yesNo4;
+    protected Boolean yesNo5;
+
     protected CollectionObject   collectionObject;
     protected Preparation        preparation;
     protected Division           division;
@@ -115,6 +126,16 @@ public class ConservDescription extends DataModelObjBase implements AttachmentOw
         events               = new HashSet<ConservEvent>();
         conservDescriptionAttachments = new HashSet<ConservDescriptionAttachment>();
 
+        text1 = null;
+        text2 = null;
+        text3 = null;
+        text4 = null;
+        text5 = null;
+        yesNo1 = null;
+        yesNo2 = null;
+        yesNo3 = null;
+        yesNo4 = null;
+        yesNo5 = null;
     }
 
     // End Initializer
@@ -336,6 +357,145 @@ public class ConservDescription extends DataModelObjBase implements AttachmentOw
         this.otherRecommendations = otherRecommendations;
     }
 
+    /**
+     *      * User definable
+     */
+    @Lob
+    @Column(name = "Text1", length = 65535)
+    public String getText1() {
+        return this.text1;
+    }
+    
+    public void setText1(String text1) {
+        this.text1 = text1;
+    }
+
+    /**
+     *      * User definable
+     */
+    @Lob
+    @Column(name = "Text2", length = 65535)
+    public String getText2() {
+        return this.text2;
+    }
+    
+    public void setText2(String text2) {
+        this.text2 = text2;
+    }
+
+    /**
+     *      * User definable
+     */
+    @Lob
+    @Column(name = "Text3", length = 65535)
+    public String getText3() {
+        return this.text3;
+    }
+    
+    public void setText3(String text3) {
+        this.text3 = text3;
+    }
+
+    /**
+     *      * User definable
+     */
+    @Lob
+    @Column(name = "Text4", length = 65535)
+    public String getText4() {
+        return this.text4;
+    }
+    
+    public void setText4(String text4) {
+        this.text4 = text4;
+    }
+
+    /**
+     *      * User definable
+     */
+    @Lob
+    @Column(name = "Text5", length = 65535)
+    public String getText5() {
+        return this.text5;
+    }
+    
+    public void setText5(String text5) {
+        this.text5 = text5;
+    }
+    /**
+     * @return the yesNo1
+     */
+    @Column(name = "YesNo1", unique = false, nullable = true, insertable = true, updatable = true)
+    public Boolean getYesNo1() {
+        return yesNo1;
+    }
+
+    /**
+     * @param yesNo1 the yesNo1 to set
+     */
+    public void setYesNo1(Boolean yesNo1) {
+        this.yesNo1 = yesNo1;
+    }
+
+    /**
+     * @return the yesNo2
+     */
+    @Column(name = "YesNo2", unique = false, nullable = true, insertable = true, updatable = true)
+    public Boolean getYesNo2() {
+        return yesNo2;
+    }
+
+    /**
+     * @param yesNo2 the yesNo2 to set
+     */
+    public void setYesNo2(Boolean yesNo2) {
+        this.yesNo2 = yesNo2;
+    }
+
+    /**
+     * @return the yesNo3
+     */
+    @Column(name = "YesNo3", unique = false, nullable = true, insertable = true, updatable = true)
+    public Boolean getYesNo3() {
+        return yesNo3;
+    }
+
+    /**
+     * @param yesNo3 the yesNo3 to set
+     */
+    public void setYesNo3(Boolean yesNo3) {
+        this.yesNo3 = yesNo3;
+    }
+    
+    /**
+     * @return the yesNo4
+     */
+    @Column(name = "YesNo4", unique = false, nullable = true, insertable = true, updatable = true)
+    public Boolean getYesNo4() {
+        return yesNo4;
+    }
+
+    /**
+     * @param yesNo4 the yesNo4 to set
+     */
+    public void setYesNo4(Boolean yesNo4) {
+        this.yesNo4 = yesNo4;
+    }
+
+    /**
+     * @return the yesNo5
+     */
+    @Column(name = "YesNo5", unique = false, nullable = true, insertable = true, updatable = true)
+    public Boolean getYesNo5() {
+        return yesNo5;
+    }
+
+    /**
+     * @param yesNo5 the yesNo5 to set
+     */
+    public void setYesNo5(Boolean yesNo5) {
+        this.yesNo5 = yesNo5;
+    }
+    
     /**
      *
      */
