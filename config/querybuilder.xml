@@ -250,7 +250,12 @@
       	<alias name="Agent" field="createdByAgent" />
       	<alias name="Agent" field="modifiedByAgent" />
       	
-      	<table name="OtherIdentifier" field="otherIdentifiers" />
+      	<table name="OtherIdentifier" field="otherIdentifiers">
+          <alias name="Agent" field="agent1"/>
+          <alias name="Agent" field="agent2"/>
+          <alias name="Agent" field="createdByAgent"/>
+          <alias name="Agent" field="modifiedByAgent"/>
+        </table>
       	<alias name="Project" field="projects" />
       	<table name="TreatmentEvent" field="treatmentEvents" />
         <table name="VoucherRelationship" field="voucherRelationships" />

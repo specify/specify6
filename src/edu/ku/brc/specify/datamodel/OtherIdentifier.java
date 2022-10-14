@@ -62,6 +62,8 @@ public class OtherIdentifier extends CollectionMember implements java.io.Seriali
     protected Boolean yesNo3;
     protected Boolean yesNo4;
     protected Boolean yesNo5;
+    protected Agent agent1;
+    protected Agent agent2;
 
 
     // Constructors
@@ -100,6 +102,8 @@ public class OtherIdentifier extends CollectionMember implements java.io.Seriali
         yesNo3 = null;
         yesNo4 = null;
         yesNo5 = null;
+        agent1 = null;
+        agent2 = null;
     }
     // End Initializer
 
@@ -304,6 +308,26 @@ public class OtherIdentifier extends CollectionMember implements java.io.Seriali
         this.yesNo5 = yesNo5;
     }
     
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "Agent1ID", unique = false, nullable = true, insertable = true, updatable = true)
+    public Agent getAgent1() {
+        return agent1;
+    }
+
+    public void setAgent1(Agent agent1) {
+        this.agent1 = agent1;
+    }
+
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "Agent2ID", unique = false, nullable = true, insertable = true, updatable = true)
+    public Agent getAgent2() {
+        return agent2;
+    }
+
+    public void setAgent2(Agent agent2) {
+        this.agent2 = agent2;
+    }
+
     /**
      *      * ID of object identified by Identifier
      */
