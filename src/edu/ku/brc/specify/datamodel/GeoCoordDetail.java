@@ -76,7 +76,12 @@ public class GeoCoordDetail extends DataModelObjBase implements Cloneable
     protected String                text3;
     protected String                text4;
     protected String                text5;
-    
+    protected Integer               integer1;
+    protected Integer               integer2;
+    protected Integer               integer3;
+    protected Integer               integer4;
+    protected Integer               integer5;
+
     protected Locality              locality;
     
     /**
@@ -124,6 +129,12 @@ public class GeoCoordDetail extends DataModelObjBase implements Cloneable
         text3                 = null;
         text4                 = null;
         text5                 = null;
+
+        integer1 = null;
+        integer2 = null;
+        integer3 = null;
+        integer4 = null;
+        integer5 = null;
         
         locality              = null;
     	//NOTE: if fields are added to this table, the matches method must be updated accordingly!!!! 
@@ -546,6 +557,74 @@ public class GeoCoordDetail extends DataModelObjBase implements Cloneable
     public void setText5(String text5)
     {
         this.text5 = text5;
+    }
+
+    /**
+     *      * User definable
+     */
+    @Column(name = "Integer1", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
+    public Integer getInteger1()
+    {
+        return this.integer1;
+    }
+
+    public void setInteger1(Integer integer1)
+    {
+        this.integer1 = integer1;
+    }
+
+    /**
+     *      * User definable
+     */
+    @Column(name = "Integer2", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
+    public Integer getInteger2()
+    {
+        return this.integer2;
+    }
+
+    public void setInteger2(Integer integer2)
+    {
+        this.integer2 = integer2;
+    }
+
+    /**
+     *      * User definable
+     */
+    @Column(name = "Integer3", unique = false, nullable = true, insertable = true, updatable = true, length = 34)
+    public Integer getInteger3()
+    {
+        return this.integer3;
+    }
+
+    public void setInteger3(Integer integer3)
+    {
+        this.integer3 = integer3;
+    }
+    /**
+     *      * User definable
+     */
+    @Column(name = "Integer4", unique = false, nullable = true, insertable = true, updatable = true, length = 44)
+    public Integer getInteger4()
+    {
+        return this.integer4;
+    }
+
+    public void setInteger4(Integer integer4)
+    {
+        this.integer4 = integer4;
+    }
+    /**
+     *      * User definable
+     */
+    @Column(name = "Integer5", unique = false, nullable = true, insertable = true, updatable = true, length = 54)
+    public Integer getInteger5()
+    {
+        return this.integer5;
+    }
+
+    public void setInteger5(Integer integer5)
+    {
+        this.integer5 = integer5;
     }
 
     /**
