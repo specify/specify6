@@ -78,6 +78,16 @@ public class ConservDescription extends DataModelObjBase implements AttachmentOw
     protected Boolean yesNo3;
     protected Boolean yesNo4;
     protected Boolean yesNo5;
+    protected Integer integer1;
+    protected Integer integer2;
+    protected Integer integer3;
+    protected Integer integer4;
+    protected Integer integer5;
+    protected BigDecimal number1;
+    protected BigDecimal number2;
+    protected BigDecimal number3;
+    protected BigDecimal number4;
+    protected BigDecimal number5;
 
     protected CollectionObject   collectionObject;
     protected Preparation        preparation;
@@ -136,6 +146,17 @@ public class ConservDescription extends DataModelObjBase implements AttachmentOw
         yesNo3 = null;
         yesNo4 = null;
         yesNo5 = null;
+        integer1 = null;
+        integer2 = null;
+        integer3 = null;
+        integer4 = null;
+        integer5 = null;
+        number1 = null;
+        number2 = null;
+        number3 = null;
+        number4 = null;
+        number5 = null;
+
     }
 
     // End Initializer
@@ -496,6 +517,142 @@ public class ConservDescription extends DataModelObjBase implements AttachmentOw
         this.yesNo5 = yesNo5;
     }
     
+    /**
+     *      * User definable
+     */
+    @Column(name = "Integer1", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
+    public Integer getInteger1()
+    {
+        return this.integer1;
+    }
+
+    public void setInteger1(Integer integer1)
+    {
+        this.integer1 = integer1;
+    }
+
+    /**
+     *      * User definable
+     */
+    @Column(name = "Integer2", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
+    public Integer getInteger2()
+    {
+        return this.integer2;
+    }
+
+    public void setInteger2(Integer integer2)
+    {
+        this.integer2 = integer2;
+    }
+
+    /**
+     *      * User definable
+     */
+    @Column(name = "Integer3", unique = false, nullable = true, insertable = true, updatable = true, length = 34)
+    public Integer getInteger3()
+    {
+        return this.integer3;
+    }
+
+    public void setInteger3(Integer integer3)
+    {
+        this.integer3 = integer3;
+    }
+    /**
+     *      * User definable
+     */
+    @Column(name = "Integer4", unique = false, nullable = true, insertable = true, updatable = true, length = 44)
+    public Integer getInteger4()
+    {
+        return this.integer4;
+    }
+
+    public void setInteger4(Integer integer4)
+    {
+        this.integer4 = integer4;
+    }
+    /**
+     *      * User definable
+     */
+    @Column(name = "Integer5", unique = false, nullable = true, insertable = true, updatable = true, length = 54)
+    public Integer getInteger5()
+    {
+        return this.integer5;
+    }
+
+    public void setInteger5(Integer integer5)
+    {
+        this.integer5 = integer5;
+    }
+
+    /**
+     *      * User definable
+     */
+    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true, length = 24, precision = 20, scale = 10)
+    public BigDecimal getNumber1() 
+    {
+        return this.number1;
+    }
+    
+    public void setNumber1(BigDecimal number1) 
+    {
+        this.number1 = number1;
+    }
+
+    /**
+     *      * User definable
+     */
+    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true, length = 24, precision = 20, scale = 10)
+    public BigDecimal getNumber2() 
+    {
+        return this.number2;
+    }
+    
+    public void setNumber2(BigDecimal number2) 
+    {
+        this.number2 = number2;
+    }
+
+    /**
+     *      * User definable
+     */
+    @Column(name = "Number3", unique = false, nullable = true, insertable = true, updatable = true, length = 34, precision = 20, scale = 10)
+    public BigDecimal getNumber3()
+    {
+        return this.number3;
+    }
+
+    public void setNumber3(BigDecimal number3)
+    {
+        this.number3 = number3;
+    }
+    /**
+     *      * User definable
+     */
+    @Column(name = "Number4", unique = false, nullable = true, insertable = true, updatable = true, length = 44, precision = 20, scale = 10)
+    public BigDecimal getNumber4()
+    {
+        return this.number4;
+    }
+
+    public void setNumber4(BigDecimal number4)
+    {
+        this.number4 = number4;
+    }
+    /**
+     *      * User definable
+     */
+    @Column(name = "Number5", unique = false, nullable = true, insertable = true, updatable = true, length = 54, precision = 20, scale = 10)
+    public BigDecimal getNumber5()
+    {
+        return this.number5;
+    }
+
+    public void setNumber5(BigDecimal number5)
+    {
+        this.number5 = number5;
+    }
+
     /**
      *
      */
