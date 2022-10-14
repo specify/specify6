@@ -88,6 +88,17 @@ public class ConservDescription extends DataModelObjBase implements AttachmentOw
     protected BigDecimal number3;
     protected BigDecimal number4;
     protected BigDecimal number5;
+    protected Calendar                    date1;
+    protected Byte                        date1Precision;
+    protected Calendar                    date2;
+    protected Byte                        date2Precision;
+    protected Calendar                    date3;
+    protected Byte                        date3Precision;
+    protected Calendar                    date4;
+    protected Byte                        date4Precision;
+    protected Calendar                    date5;
+    protected Byte                        date5Precision;
+
 
     protected CollectionObject   collectionObject;
     protected Preparation        preparation;
@@ -156,7 +167,16 @@ public class ConservDescription extends DataModelObjBase implements AttachmentOw
         number3 = null;
         number4 = null;
         number5 = null;
-
+        date1 = null;
+        date1Precision = 1;
+        date2 = null;
+        date2Precision = 1;
+        date3 = null;
+        date3Precision = 1;
+        date4 = null;
+        date4Precision = 1;
+        date5 = null;
+        date5Precision = 1;
     }
 
     // End Initializer
@@ -651,6 +671,181 @@ public class ConservDescription extends DataModelObjBase implements AttachmentOw
     public void setNumber5(BigDecimal number5)
     {
         this.number5 = number5;
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "Date1", unique = false, nullable = true, insertable = true, updatable = true)
+    public Calendar getDate1() {
+        return date1;
+    }
+
+    /**
+     *
+     * @param date1
+     */
+    public void setDate1(Calendar date1) {
+        this.date1 = date1;
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Column(name = "Date1Precision", unique = false, nullable = true, insertable = true, updatable = true)
+    public Byte getDate1Precision() {
+        return date1Precision;
+    }
+
+    /**
+     *
+     * @param date1Precision
+     */
+    public void setDate1Precision(Byte date1Precision) {
+        this.date1Precision = date1Precision;
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "Date2", unique = false, nullable = true, insertable = true, updatable = true)
+    public Calendar getDate2() {
+        return date2;
+    }
+
+    /**
+     *
+     * @param date2
+     */
+    public void setDate2(Calendar date2) {
+        this.date2 = date2;
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Column(name = "Date2Precision", unique = false, nullable = true, insertable = true, updatable = true)
+    public Byte getDate2Precision() {
+        return date2Precision;
+    }
+
+    /**
+     *
+     * @param date2Precision
+     */
+    public void setDate2Precision(Byte date2Precision) {
+        this.date2Precision = date2Precision;
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "Date3", unique = false, nullable = true, insertable = true, updatable = true)
+    public Calendar getDate3() {
+        return date3;
+    }
+
+    /**
+     *
+     * @param date3
+     */
+    public void setDate3(Calendar date3) {
+        this.date3 = date3;
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Column(name = "Date3Precision", unique = false, nullable = true, insertable = true, updatable = true)
+    public Byte getDate3Precision() {
+        return date3Precision;
+    }
+
+    /**
+     *
+     * @param date3Precision
+     */
+    public void setDate3Precision(Byte date3Precision) {
+        this.date3Precision = date3Precision;
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "Date4", unique = false, nullable = true, insertable = true, updatable = true)
+    public Calendar getDate4() {
+        return date4;
+    }
+
+    /**
+     *
+     * @param date4
+     */
+    public void setDate4(Calendar date4) {
+        this.date4 = date4;
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Column(name = "Date4Precision", unique = false, nullable = true, insertable = true, updatable = true)
+    public Byte getDate4Precision() {
+        return date4Precision;
+    }
+
+    /**
+     *
+     * @param date4Precision
+     */
+    public void setDate4Precision(Byte date4Precision) {
+        this.date4Precision = date4Precision;
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "Date5", unique = false, nullable = true, insertable = true, updatable = true)
+    public Calendar getDate5() {
+        return date5;
+    }
+
+    /**
+     *
+     * @param date5
+     */
+    public void setDate5(Calendar date5) {
+        this.date5 = date5;
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Column(name = "Date5Precision", unique = false, nullable = true, insertable = true, updatable = true)
+    public Byte getDate5Precision() {
+        return date5Precision;
+    }
+
+    /**
+     *
+     * @param date5Precision
+     */
+    public void setDate5Precision(Byte date5Precision) {
+        this.date5Precision = date5Precision;
     }
 
     /**
