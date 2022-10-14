@@ -86,6 +86,12 @@ public class GeoCoordDetail extends DataModelObjBase implements Cloneable
     protected BigDecimal               number3;
     protected BigDecimal               number4;
     protected BigDecimal               number5;
+    protected Boolean             yesNo1;
+    protected Boolean             yesNo2;
+    protected Boolean             yesNo3;
+    protected Boolean             yesNo4;
+    protected Boolean             yesNo5;
+
 
     protected Locality              locality;
     
@@ -146,6 +152,12 @@ public class GeoCoordDetail extends DataModelObjBase implements Cloneable
         number3 = null;
         number4 = null;
         number5 = null;
+
+        yesNo1 = null;
+        yesNo2 = null;
+        yesNo3 = null;
+        yesNo4 = null;
+        yesNo5 = null;
 
         locality              = null;
     	//NOTE: if fields are added to this table, the matches method must be updated accordingly!!!! 
@@ -705,6 +717,74 @@ public class GeoCoordDetail extends DataModelObjBase implements Cloneable
     {
         this.number5 = number5;
     }
+
+    /**
+     *      * User definable
+     */
+    @Column(name="YesNo1",unique=false,nullable=true,updatable=true,insertable=true)
+    public Boolean getYesNo1() 
+    {
+        return this.yesNo1;
+    }
+    
+    public void setYesNo1(Boolean yesNo1) 
+    {
+        this.yesNo1 = yesNo1;
+    }
+
+    /**
+     *      * User definable
+     */
+    @Column(name="YesNo2",unique=false,nullable=true,updatable=true,insertable=true)
+    public Boolean getYesNo2() 
+    {
+        return this.yesNo2;
+    }
+    
+    public void setYesNo2(Boolean yesNo2) 
+    {
+        this.yesNo2 = yesNo2;
+    }
+    /**
+     *      * User definable
+     */
+    @Column(name="YesNo3",unique=false,nullable=true,updatable=true,insertable=true)
+    public Boolean getYesNo3()
+    {
+        return this.yesNo3;
+    }
+
+    public void setYesNo3(Boolean yesNo3)
+    {
+        this.yesNo3 = yesNo3;
+    }
+    /**
+     *      * User definable
+     */
+    @Column(name="YesNo4",unique=false,nullable=true,updatable=true,insertable=true)
+    public Boolean getYesNo4()
+    {
+        return this.yesNo4;
+    }
+
+    public void setYesNo4(Boolean yesNo4)
+    {
+        this.yesNo4 = yesNo4;
+    }
+    /**
+     *      * User definable
+     */
+    @Column(name="YesNo5",unique=false,nullable=true,updatable=true,insertable=true)
+    public Boolean getYesNo5()
+    {
+        return this.yesNo5;
+    }
+
+    public void setYesNo5(Boolean yesNo5)
+    {
+        this.yesNo5 = yesNo5;
+    }
+
 
     /**
      * @return the source
