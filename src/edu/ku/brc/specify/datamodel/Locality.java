@@ -346,7 +346,7 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
     /**
      * * The full name of the locality.
      */
-    @Column(name = "LocalityName", unique = false, nullable = false, insertable = true, updatable = true)
+    @Column(name = "LocalityName", unique = false, nullable = false, insertable = true, updatable = true, length=2048)
     public String getLocalityName()
     {
         return this.localityName;
