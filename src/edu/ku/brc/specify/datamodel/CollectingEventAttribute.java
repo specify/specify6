@@ -134,7 +134,7 @@ public class CollectingEventAttribute extends DisciplineMember implements Clonea
         return number9;
     }
 
-    @Column(name = "Text16", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    @Column(name = "Text16", unique = false, nullable = true, insertable = true, updatable = true, length = 65536)
     public String getText16()
     {
         return text16;
@@ -303,7 +303,7 @@ public class CollectingEventAttribute extends DisciplineMember implements Clonea
 		this.integer10 = integer10;
 	}
 
-    @Column(name = "Text17", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    @Column(name = "Text17", unique = false, nullable = true, insertable = true, updatable = true, length = 65536)
     public String getText17()
     {
         return text17;
@@ -377,13 +377,13 @@ public class CollectingEventAttribute extends DisciplineMember implements Clonea
         return remarks;
     }
 
-    @Column(name = "Text14", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    @Column(name = "Text14", unique = false, nullable = true, insertable = true, updatable = true, length = 65536)
     public String getText14()
     {
         return text14;
     }
 
-    @Column(name = "Text15", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    @Column(name = "Text15", unique = false, nullable = true, insertable = true, updatable = true, length = 65536)
     public String getText15()
     {
         return text15;
@@ -396,13 +396,13 @@ public class CollectingEventAttribute extends DisciplineMember implements Clonea
         return text1;
     }
 
-    @Column(name = "Text10", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    @Column(name = "Text10", unique = false, nullable = true, insertable = true, updatable = true, length = 65536)
     public String getText10()
     {
         return text10;
     }
 
-    @Column(name = "Text11", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    @Column(name = "Text11", unique = false, nullable = true, insertable = true, updatable = true, length = 65536)
     public String getText11()
     {
         return text11;
@@ -434,37 +434,37 @@ public class CollectingEventAttribute extends DisciplineMember implements Clonea
         return text5;
     }
 
-    @Column(name = "Text6", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    @Column(name = "Text6", unique = false, nullable = true, insertable = true, updatable = true, length = 65536)
     public String getText6()
     {
         return text6;
     }
 
-    @Column(name = "Text7", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    @Column(name = "Text7", unique = false, nullable = true, insertable = true, updatable = true, length = 65536)
     public String getText7()
     {
         return text7;
     }
 
-    @Column(name = "Text8", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    @Column(name = "Text8", unique = false, nullable = true, insertable = true, updatable = true, length = 65536)
     public String getText8()
     {
         return text8;
     }
 
-    @Column(name = "Text9", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    @Column(name = "Text9", unique = false, nullable = true, insertable = true, updatable = true, length = 65536)
     public String getText9()
     {
         return text9;
     }
 
-    @Column(name = "Text12", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    @Column(name = "Text12", unique = false, nullable = true, insertable = true, updatable = true, length = 65536)
     public String getText12()
     {
         return text12;
     }
 
-    @Column(name = "Text13", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    @Column(name = "Text13", unique = false, nullable = true, insertable = true, updatable = true, length = 65536)
     public String getText13()
     {
         return text13;
