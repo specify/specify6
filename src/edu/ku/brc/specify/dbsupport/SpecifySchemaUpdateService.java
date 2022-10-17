@@ -2822,6 +2822,36 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     }
                     frame.incOverall();
 
+                    frame.setDesc("Increasing size of CollectingEventAttribute.text* fields.");
+                    String[] ceatextfields = {
+                        "Text10",
+                        "Text11",
+                        "Text12",
+                        "Text13",
+                        "Text14",
+                        "Text15",
+                        "Text16",
+                        "Text17",
+                        "Text2",
+                        "Text3",
+                        "Text4",
+                        "Text5",
+                        "Text6",
+                        "Text7",
+                        "Text8",
+                        "Text9"
+                    };
+                    for (String field : ceatextfields) {
+                        if (!getFieldColumnType(conn, databaseName, "collectingeventattribute", field).equalsIgnoreCase("text")) {
+                            sql = "alter table collectingeventattribute modify column " + field + " text(65535)";
+                            if (-1 == update(conn, sql)) {
+                                errMsgList.add("update error: " + sql);
+                                return false;
+                            }
+                        }
+                    }
+                    frame.incOverall();
+                    
                     frame.setProcess(0, 100);
                     return true;
                 } catch (Exception ex)
