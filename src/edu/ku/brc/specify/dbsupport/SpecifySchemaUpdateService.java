@@ -2812,6 +2812,15 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     SchemaUpdateService.createDBTablesFromSQLFile(conn, "floats_to_decimals.sql");
                     frame.incOverall();
 
+                    frame.setDesc("Increasing length of Locality.LocalityName");
+                    if (getFieldLength(conn, databaseName, "locality", "LocalityName") != 2048) {
+                        sql = "alter table locality modify column `LocalityName` varchar(2048) not null";
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
+                    }
+                    frame.incOverall();
 
                     frame.setProcess(0, 100);
                     return true;
