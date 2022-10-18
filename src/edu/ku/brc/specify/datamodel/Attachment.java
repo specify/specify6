@@ -254,7 +254,7 @@ public class Attachment extends DataModelObjBase implements Serializable
         return Attachment.class;
     }
 
-    @Column(name = "MimeType", length = 64)
+    @Column(name = "MimeType", length = 1024)
     public String getMimeType()
     {
         return this.mimeType;
@@ -280,7 +280,7 @@ public class Attachment extends DataModelObjBase implements Serializable
 		this.isPublic = isPublic;
 	}
 
-    @Column(name = "OrigFilename", nullable = false, length = 20000)
+    @Column(name = "OrigFilename", nullable = false, length = 65536)
     public String getOrigFilename()
     {
         return this.origFilename;

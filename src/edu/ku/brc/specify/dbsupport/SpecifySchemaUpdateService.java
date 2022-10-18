@@ -2822,6 +2822,26 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     }
                     frame.incOverall();
 
+                    frame.setDesc("Changing Attachment.origFilename to text.");
+                    if (!getFieldColumnType(conn, databaseName, "attachment", "origFilename").equalsIgnoreCase("text")) {
+                        sql = "alter table attachment modify column origFilename text(65535) not null";
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
+                    }
+                    frame.incOverall();
+
+                    frame.setDesc("Increasing length of Attachment.Mimetype");
+                    if (getFieldLength(conn, databaseName, "attachment", "MimeType") != 1024) {
+                        sql = "alter table attachment modify column `MimeType` varchar(1024)";
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
+                    }
+                    frame.incOverall();
+
                     frame.setDesc("Increasing size of CollectingEventAttribute.text* fields.");
                     String[] ceatextfields = {
                         "Text10",
