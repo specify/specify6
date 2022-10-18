@@ -2879,6 +2879,26 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     }
                     frame.incOverall();
 
+                    frame.setDesc("Changing SpQueryField.StartValue to text.");
+                    if (!getFieldColumnType(conn, databaseName, "spqueryfield", "StartValue").equalsIgnoreCase("text")) {
+                        sql = "alter table spqueryfield modify column StartValue text(65535)";
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
+                    }
+                    frame.incOverall();
+
+                    frame.setDesc("Changing SpQueryField.EndValue to text.");
+                    if (!getFieldColumnType(conn, databaseName, "spqueryfield", "EndValue").equalsIgnoreCase("text")) {
+                        sql = "alter table spqueryfield modify column EndValue text(65535)";
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
+                    }
+                    frame.incOverall();
+
                     frame.setDesc("Increasing length of Attachment.Mimetype");
                     if (getFieldLength(conn, databaseName, "attachment", "MimeType") != 1024) {
                         sql = "alter table attachment modify column `MimeType` varchar(1024)";
