@@ -2822,6 +2822,16 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     }
                     frame.incOverall();
 
+                    frame.setDesc("Increasing length of Workbench.Name");
+                    if (getFieldLength(conn, databaseName, "workbench", "Name") != 256) {
+                        sql = "alter table workbench modify column `Name` varchar(256)";
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
+                    }
+                    frame.incOverall();
+
                     frame.setDesc("Changing Attachment.origFilename to text.");
                     if (!getFieldColumnType(conn, databaseName, "attachment", "origFilename").equalsIgnoreCase("text")) {
                         sql = "alter table attachment modify column origFilename text(65535) not null";
