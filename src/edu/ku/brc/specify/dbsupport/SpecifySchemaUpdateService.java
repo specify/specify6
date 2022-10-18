@@ -2842,6 +2842,26 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     }
                     frame.incOverall();
 
+                    frame.setDesc("Changing Container.Description to text.");
+                    if (!getFieldColumnType(conn, databaseName, "container", "Description").equalsIgnoreCase("text")) {
+                        sql = "alter table container modify column Description text(65535)";
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
+                    }
+                    frame.incOverall();
+
+                    frame.setDesc("Increasing length of Container.Name");
+                    if (getFieldLength(conn, databaseName, "container", "Name") != 1024) {
+                        sql = "alter table container modify column `Name` varchar(1024)";
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
+                    }
+                    frame.incOverall();
+
                     frame.setDesc("Increasing size of CollectingEventAttribute.text* fields.");
                     String[] ceatextfields = {
                         "Text10",

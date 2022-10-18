@@ -164,7 +164,7 @@ public class Container extends CollectionMember implements java.io.Serializable,
     /**
      *
      */
-    @Column(name = "Name", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+    @Column(name = "Name", unique = false, nullable = true, insertable = true, updatable = true, length = 1024)
     public String getName() 
     {
         return this.name;
@@ -178,7 +178,7 @@ public class Container extends CollectionMember implements java.io.Serializable,
     /**
      *
      */
-    @Column(name = "Description", unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "Description", unique = false, nullable = true, insertable = true, updatable = true, length = 65536)
     public String getDescription() 
     {
         return this.description;
