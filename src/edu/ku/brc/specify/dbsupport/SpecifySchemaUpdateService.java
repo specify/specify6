@@ -2832,6 +2832,26 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     }
                     frame.incOverall();
 
+                    frame.setDesc("Increasing length of PicklistItem.Title");
+                    if (getFieldLength(conn, databaseName, "picklistitem", "Title") != 1024) {
+                        sql = "alter table picklistitem modify column `Title` varchar(1024) not null";
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
+                    }
+                    frame.incOverall();
+
+                    frame.setDesc("Increasing length of PicklistItem.Value");
+                    if (getFieldLength(conn, databaseName, "picklistitem", "Value") != 1024) {
+                        sql = "alter table picklistitem modify column `Value` varchar(1024)";
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
+                    }
+                    frame.incOverall();
+
                     frame.setDesc("Increasing length of Workbench.Name");
                     if (getFieldLength(conn, databaseName, "workbench", "Name") != 256) {
                         sql = "alter table workbench modify column `Name` varchar(256)";

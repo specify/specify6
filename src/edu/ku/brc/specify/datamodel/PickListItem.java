@@ -127,7 +127,7 @@ public class PickListItem extends DataModelObjBase implements PickListItemIFace,
     /**
      * 
      */
-    @Column(name = "Title", nullable = false, length = 128)
+    @Column(name = "Title", nullable = false, length = 1024)
     public String getTitle()
     {
         return this.title;
@@ -173,7 +173,7 @@ public class PickListItem extends DataModelObjBase implements PickListItemIFace,
     /**
      * 
      */
-    @Column(name = "Value", length = 128)
+    @Column(name = "Value", length = 1024)
     public String getValue()
     {
         return this.value;// == null ? title : (value.equals("|null|") ? null : value);
