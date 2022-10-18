@@ -1749,12 +1749,12 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                     skip = false;
                 }
                 String oldName = workbench.getName();
-                if ((foundWB != null || (StringUtils.isNotEmpty(newWorkbenchName) && newWorkbenchName.length() > 64)) || alwaysAsk) {
+                if ((foundWB != null || (StringUtils.isNotEmpty(newWorkbenchName) && newWorkbenchName.length() > 256)) || alwaysAsk) {
                     alwaysAsk = false;
                     if (askUserForInfo("Workbench", getResourceString("WB_DATASET_INFO"), workbench, canEdit) && canEdit) {
                         newWorkbenchName = workbench.getName();
                         // length is enforced on the data form so this is unnecessary...
-                        if (StringUtils.isNotEmpty(newWorkbenchName) && newWorkbenchName.length() > 64) {
+                        if (StringUtils.isNotEmpty(newWorkbenchName) && newWorkbenchName.length() > 256) {
                             UIRegistry.getStatusBar().setErrorMessage(getResourceString("WB_NAME_TOO_LONG"));
                             UIRegistry.displayErrorDlg(getResourceString("WB_NAME_TOO_LONG"));
                             error = true;
