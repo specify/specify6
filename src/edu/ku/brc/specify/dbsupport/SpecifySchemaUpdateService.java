@@ -2813,8 +2813,8 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     frame.incOverall();
 
                     frame.setDesc("Increasing length of Locality.LocalityName");
-                    if (getFieldLength(conn, databaseName, "locality", "LocalityName") != 2048) {
-                        sql = "alter table locality modify column `LocalityName` varchar(2048) not null";
+                    if (getFieldLength(conn, databaseName, "locality", "LocalityName") != 1024) {
+                        sql = "alter table locality modify column `LocalityName` varchar(1024) not null";
                         if (-1 == update(conn, sql)) {
                             errMsgList.add("update error: " + sql);
                             return false;
