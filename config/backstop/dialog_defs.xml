@@ -67,6 +67,7 @@
     <dialog type="display" view="DisposalAgent"    name="DisposalAgentDisplay"  class="edu.ku.brc.specify.datamodel.DisposalAgent" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="DisposalPreparation"         name="DisposalPreparationDisplay"        class="edu.ku.brc.specify.datamodel.DisposalPreparation" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="Determination"      name="DeterminationDisplay"     class="edu.ku.brc.specify.datamodel.Determination" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="Determiner"          name="DeterminerDisplay"         class="edu.ku.brc.specify.datamodel.Determiner" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="Division"           name="DivisionDisplay"          class="edu.ku.brc.specify.datamodel.Division" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="DNAPrimer"          name="DNAPrimerDisplay"         class="edu.ku.brc.specify.datamodel.DNAPrimer" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="ExchangeInPrep"     name="ExchangeInPrepDisplay"    class="edu.ku.brc.specify.datamodel.ExchangeInPrep" helpcontext="CBXQViewEdit"/>

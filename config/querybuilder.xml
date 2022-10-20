@@ -120,10 +120,10 @@
     
     <table name="CollectingEvent">
     	<alias name="Locality"/>
-	    <table name="Collector" field="collectors">
-             <alias name="Agent"/>
-             <alias name="Agent" field="createdByAgent" />
-        	 <alias name="Agent" field="modifiedByAgent" />
+	<table name="Collector" field="collectors">
+          <alias name="Agent"/>
+          <alias name="Agent" field="createdByAgent" />
+          <alias name="Agent" field="modifiedByAgent" />
         </table>
         <table name="CollectingEventAttachment" field="collectingEventAttachments">
             <alias name="Attachment"/>
@@ -318,6 +318,12 @@
         <table name="DeterminationCitation" field="determinationCitations">
         	<alias name="ReferenceWork"/>
         </table>
+	<table name="Determiner" field="determiners">
+          <alias name="Agent"/>
+          <alias name="Agent" field="createdByAgent" />
+          <alias name="Agent" field="modifiedByAgent" />
+        </table>
+        
         <!--<table name="DeterminationStatus" field="status"/>-->
         <alias name="Agent" field="determiner"/>
         <alias name="Agent" field="createdByAgent" />

@@ -103,6 +103,7 @@
 		<mapping class="edu.ku.brc.specify.datamodel.DisposalPreparation"/>
 		<mapping class="edu.ku.brc.specify.datamodel.DeterminationCitation"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Determination"/>
+		<mapping class="edu.ku.brc.specify.datamodel.Determiner"/>
 		<!--<mapping class="edu.ku.brc.specify.datamodel.DeterminationStatus"/>-->
 		<mapping class="edu.ku.brc.specify.datamodel.Discipline"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Division"/>

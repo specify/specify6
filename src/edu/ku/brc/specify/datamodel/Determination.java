@@ -33,11 +33,14 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
@@ -104,6 +107,7 @@ public class Determination extends CollectionMember implements java.io.Serializa
      protected CollectionObject    collectionObject;
      protected Set<DeterminationCitation> determinationCitations;
      protected Agent               determiner;
+    protected Set<Determiner>        determiners;
      
 
     // Constructors
@@ -169,6 +173,7 @@ public class Determination extends CollectionMember implements java.io.Serializa
         collectionObject = null;
         determinationCitations = new HashSet<DeterminationCitation>();
         determiner = null;
+        determiners = new HashSet<Determiner>();
         
         hasGUIDField = true;
         setGUID();
@@ -862,6 +867,19 @@ public class Determination extends CollectionMember implements java.io.Serializa
     }
 
 
+    @OneToMany(mappedBy = "determination")
+    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
+    @OrderBy("orderNumber ASC")
+    public Set<Determiner> getDeterminers() 
+    {
+        return this.determiners;
+    }
+    
+    public void setDeterminers(Set<Determiner> determiners) 
+    {
+        this.determiners = determiners;
+    }
+
 
 
 
@@ -895,6 +913,7 @@ public class Determination extends CollectionMember implements java.io.Serializa
 //            ds.getId(); // make sure it is loaded;
 //        }
     	determinationCitations.size();
+        determiners.size();
     }
     
     /* (non-Javadoc)
@@ -946,7 +965,8 @@ public class Determination extends CollectionMember implements java.io.Serializa
         obj.determinationId        = null;
         obj.collectionObject       = null;
         obj.determinationCitations = new HashSet<DeterminationCitation>();
-        
+        obj.determiners = new HashSet<Determiner>();
+
         obj.setGUID();
         
         for (DeterminationCitation dc : determinationCitations)
@@ -955,6 +975,14 @@ public class Determination extends CollectionMember implements java.io.Serializa
             newDC.setDetermination(obj);
             obj.determinationCitations.add(newDC);
         }
+
+        for (Determiner determiner : determiners)
+        {
+            Determiner newDeterminer = (Determiner)determiner.clone();
+            newDeterminer.setDetermination(obj);
+            obj.determiners.add(newDeterminer);
+        }
+
          
         return obj;
     }
