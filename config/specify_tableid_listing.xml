@@ -2,7 +2,7 @@
 
 <!-- 
 
-    Last used ID is 166 or 533
+    Last used ID is 167 or 533
     
     [0] are available
     
@@ -179,6 +179,10 @@
         </table>
         <table name="edu.ku.brc.specify.datamodel.Determination" abbrev="det" id="9" workbench="true" searchable="true">
             <display view="Determination" dataobjformatter="Determination"  searchdlg="DeterminationSearch" newobjdlg="DeterminationDisplay"/>            
+        </table>
+        <table name="edu.ku.brc.specify.datamodel.Determiner" abbrev="detr" id="167" searchable="true">
+            <display view="Determiner" dataobjformatter=""  searchdlg="DeterminerSearch" newobjdlg="DeterminerDisplay"/>
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.DeterminerBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.DeterminationCitation" abbrev="detc" id="38" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.Discipline" abbrev="dsp" id="26">
