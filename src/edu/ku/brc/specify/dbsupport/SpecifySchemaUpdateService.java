@@ -2852,6 +2852,16 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     }
                     frame.incOverall();
 
+                    frame.setDesc("Increasing length of RecordSet.Name");
+                    if (getFieldLength(conn, databaseName, "recordset", "Name") != 280) {
+                        sql = "alter table recordset modify column `Name` varchar(280) not null";
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
+                    }
+                    frame.incOverall();
+
                     frame.setDesc("Increasing length of Workbench.Name");
                     if (getFieldLength(conn, databaseName, "workbench", "Name") != 256) {
                         sql = "alter table workbench modify column `Name` varchar(256)";
