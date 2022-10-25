@@ -2812,6 +2812,26 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     SchemaUpdateService.createDBTablesFromSQLFile(conn, "floats_to_decimals.sql");
                     frame.incOverall();
 
+                    frame.setDesc("Increasing length of Taxon.Name");
+                    if (getFieldLength(conn, databaseName, "taxon", "Name") != 256) {
+                        sql = "alter table taxon modify column `Name` varchar(256) not null";
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
+                    }
+                    frame.incOverall();
+
+                    frame.setDesc("Increasing length of Taxon.FullName");
+                    if (getFieldLength(conn, databaseName, "taxon", "FullName") != 512) {
+                        sql = "alter table taxon modify column `FullName` varchar(512)";
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
+                    }
+                    frame.incOverall();
+
                     frame.setDesc("Increasing length of Locality.LocalityName");
                     if (getFieldLength(conn, databaseName, "locality", "LocalityName") != 1024) {
                         sql = "alter table locality modify column `LocalityName` varchar(1024) not null";
