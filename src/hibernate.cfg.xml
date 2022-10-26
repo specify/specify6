@@ -54,6 +54,7 @@
 		<mapping class="edu.ku.brc.specify.datamodel.AgentGeography"/>
 		<mapping class="edu.ku.brc.specify.datamodel.AgentSpecialty"/>
 		<mapping class="edu.ku.brc.specify.datamodel.AgentVariant"/>
+		<mapping class="edu.ku.brc.specify.datamodel.AgentIdentifier"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Appraisal"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Attachment"/>
 		<mapping class="edu.ku.brc.specify.datamodel.AttachmentImageAttribute"/>

@@ -56,28 +56,29 @@
         </table>
 	</table>
 	
-    <table name="Agent">
-        <table name="Address" field="addresses">
+        <table name="Agent">
+          <table name="Address" field="addresses">
             <alias name="Agent" field="createdByAgent" />
-        	<alias name="Agent" field="modifiedByAgent" />
-        </table>
-        <table name="AgentAttachment" field="agentAttachments">
+            <alias name="Agent" field="modifiedByAgent" />
+          </table>
+          <table name="AgentAttachment" field="agentAttachments">
             <alias name="Attachment"/>
-        </table>
-        <table name="AgentSpecialty" field="agentSpecialties" >
+          </table>
+          <table name="AgentSpecialty" field="agentSpecialties" >
             <alias name="Agent" field="createdByAgent" />
-        	<alias name="Agent" field="modifiedByAgent" />
-        </table>
-        <table name="AgentGeography" field="agentGeographies" >
+            <alias name="Agent" field="modifiedByAgent" />
+          </table>
+          <table name="AgentGeography" field="agentGeographies" >
             <alias name="Agent" field="createdByAgent" />
-        	<alias name="Agent" field="modifiedByAgent" />
-        </table>	
-        <alias name="GroupPerson" field="members" />
-        <alias name="GroupPerson" field="groups" />        
-        <table name="AgentVariant" field="variants"/>
-        <alias name="Agent" field="createdByAgent" />
-        <alias name="Agent" field="modifiedByAgent" />
-    </table>
+            <alias name="Agent" field="modifiedByAgent" />
+          </table>	
+          <alias name="GroupPerson" field="members" />
+          <alias name="GroupPerson" field="groups" />        
+          <table name="AgentVariant" field="variants"/>
+          <table name="AgentIdentifier" field="identifiers"/>
+          <alias name="Agent" field="createdByAgent" />
+          <alias name="Agent" field="modifiedByAgent" />
+        </table>
     
     <table name="GroupPerson">
     	<alias name="Agent" field="group" />

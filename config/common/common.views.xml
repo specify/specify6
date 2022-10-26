@@ -1134,6 +1134,18 @@
             </altviews>
         </view>
 
+        <view name="AgentIdentifiers"
+              class="edu.ku.brc.specify.datamodel.AgentIdentifier"
+        >
+            <desc><![CDATA[Subform within the agent form.]]></desc>
+            <altviews>
+                <altview name="AgentIdentifiers Table View" viewdef="AgentIdentifiers Table" mode="view"/>
+                <altview name="AgentIdentifiers Table Edit" viewdef="AgentIdentifiers Table" mode="edit"/>
+                <altview name="AgentIdentifiers View" viewdef="AgentIdentifiers" mode="view"/>
+                <altview name="AgentIdentifiers Edit" viewdef="AgentIdentifiers" mode="edit" default="true"/>
+            </altviews>
+        </view>
+
         <view name="RepositoryAgreement"
               class="edu.ku.brc.specify.datamodel.RepositoryAgreement"
               isinternal="false"
@@ -2246,7 +2258,7 @@
                 class="edu.ku.brc.specify.datamodel.CollectionObjectProperty"
                 gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
                 settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
-            <desc><![CDATA[Form For OtherIdentifier]]></desc>
+            <desc><![CDATA[Form For CollectionObjectProperty]]></desc>
 
             <columnDef>100px,2px,195px,5px,215px,2px,308px</columnDef>
             <columnDef os="lnx">105px,2px,210px,5px,220px,2px,363px</columnDef>
@@ -6430,8 +6442,19 @@
                 gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
                 settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
 
-            <desc><![CDATA[Preparation subform table for Collection Object form.]]></desc>
+            <desc><![CDATA[OtherIdentifiers subform table for Collection Object form.]]></desc>
             <definition>OtherIdentifiers</definition>
+        </viewdef>
+
+        <viewdef
+                type="formtable"
+                name="AgentIdentifiers Table"
+                class="edu.ku.brc.specify.datamodel.AgentIdentifier"
+                gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+                settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+
+            <desc><![CDATA[AgentIdentifiers subform table for Agent form.]]></desc>
+            <definition>AgentIdentifiers</definition>
         </viewdef>
 
         <viewdef
@@ -6475,6 +6498,48 @@
                 </row>-->
             </rows>
         </viewdef>
+
+        <viewdef
+                type="form"
+                name="AgentIdentifiers"
+                class="edu.ku.brc.specify.datamodel.AgentIdentifier"
+                gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+                settable="edu.ku.brc.af.ui.forms.DataSetterForObj"
+                useresourcelabels="true">
+            <desc><![CDATA[subform on the Agent form.]]></desc>
+            <enableRules/>
+
+            <columnDef>100px,2px,473px,5px,120px,2px,125px,0px,15px,p:g</columnDef>
+            <columnDef os="lnx">115px,2px,510px,5px,85px,2px,198px,0px,15px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,530px,5px,105px,2px,218px,0px,15px,p:g</columnDef>
+            <columnDef os="exp">p,2px,473px,5px:g,p,2px,125px,0px,15px,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="identifier" uitype="text"/>
+                    <cell type="label" labelfor="2"/>
+                    <cell type="field" id="2" name="identifierType" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="7"/>
+                    <cell type="field" id="7" name="remarks" uitype="textareabrief" rows="2" colspan="6"/>
+                </row>
+                <!--<row>
+                    <cell type="label" labelfor="9"/>
+                    <cell type="field" id="9" name="createdByAgent" uitype="label" readonly="true" uifieldformatter="Agent"/>
+                    <cell type="label" labelfor="10"/>
+                    <cell type="field" id="10" name="modifiedByAgent" uitype="label" readonly="true" uifieldformatter="Agent"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="11"/>
+                    <cell type="field" id="11" name="timestampModified" uitype="label" readonly="true"/>
+                    <cell type="label" labelfor="12"/>
+                    <cell type="field" id="12" name="timestampCreated" uitype="label" readonly="true"/>
+                </row>-->
+            </rows>
+        </viewdef>        
 
         <viewdef
                 type="formtable"
@@ -6876,7 +6941,7 @@
                 class="edu.ku.brc.specify.datamodel.PreparationAttribute"
                 gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
                 settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
-            <desc><![CDATA[Form For OtherIdentifier]]></desc>
+            <desc><![CDATA[Form For PreparationAttributes]]></desc>
 
             <columnDef>100px,2px,195px,5px,215px,2px,308px</columnDef>
             <columnDef os="lnx">105px,2px,210px,5px,220px,2px,363px</columnDef>
@@ -7018,7 +7083,7 @@
                 class="edu.ku.brc.specify.datamodel.PreparationProperty"
                 gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
                 settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
-            <desc><![CDATA[Form For OtherIdentifier]]></desc>
+            <desc><![CDATA[Form For PreparationProperty]]></desc>
 
             <columnDef>100px,2px,195px,5px,215px,2px,308px</columnDef>
             <columnDef os="lnx">105px,2px,210px,5px,220px,2px,363px</columnDef>

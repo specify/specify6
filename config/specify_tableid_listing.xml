@@ -2,7 +2,7 @@
 
 <!-- 
 
-    Last used ID is 167 or 533
+    Last used ID is 168 or 533
     
     [0] are available
     
@@ -42,6 +42,9 @@
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentReferenceBaseBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.AgentGeography" abbrev="ageo" id="78" searchable="true"/>
+        <table name="edu.ku.brc.specify.datamodel.AgentIdentifier" abbrev="agidr" id="168" workbench="false" searchable="true">
+        	<display view="AgentIdentifier" newobjdlg="AgentIdentifier"/>
+        </table>
         <table name="edu.ku.brc.specify.datamodel.AgentSpecialty" abbrev="agsp" id="86" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.AgentVariant" abbrev="av" id="107" workbench="false" searchable="true">
         	<display view="AgentVariant" newobjdlg="AgentVariant"/>
