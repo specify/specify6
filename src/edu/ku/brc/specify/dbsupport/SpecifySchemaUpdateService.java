@@ -1231,7 +1231,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         errMsgList.add(String.format(UPD_CNT_NO_MATCH, tblName));
                         return false;
                     }
-                    if (len.intValue() != 64)
+                    if (len.intValue() < 64)
                     {
                         count = BasicSQLUtils.getCount("SELECT COUNT(*) FROM spexportschemaitem");
                         rv = update(conn, "ALTER TABLE spexportschemaitem MODIFY FieldName varchar(64)");
@@ -1253,7 +1253,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         errMsgList.add(String.format(UPD_CNT_NO_MATCH, tblName));
                         return false;
                     }
-                    if (len.intValue() != 80)
+                    if (len.intValue() < 80)
                     {
                         count = getCount(tblName);
                         rv = update(conn, "ALTER TABLE spexportschema MODIFY SchemaName varchar(80)");
@@ -1271,7 +1271,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         errMsgList.add(String.format(UPD_CNT_NO_MATCH, tblName));
                         return false;
                     }
-                    if (len.intValue() != 80)
+                    if (len.intValue() < 80)
                     {
                         count = getCount(tblName);
                         rv = update(conn, "ALTER TABLE spexportschema MODIFY SchemaVersion varchar(80)");
@@ -2420,19 +2420,30 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     //-------------------------------------------------------------------------------
                     
                     frame.setDesc("Picklist value enlengthenization");
-                    sql = "alter table picklistitem modify column `Title` varchar(128), modify column `Value` varchar(128)";
+                    if (getFieldLength(conn, databaseName, "picklistitem", "Title") < 128) {
+                        sql = "alter table picklistitem modify column `Title` varchar(128) not null";
             		if (-1 == update(conn, sql)) {
-        				errMsgList.add("update error: " + sql);
-        				return false;
-        			}
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
+                    }
+                    if (getFieldLength(conn, databaseName, "picklistitem", "Value") < 128) {
+                        sql = "alter table picklistitem modify column `Value` varchar(128)";
+            		if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
+                    }
                     frame.incOverall(); 
 
-                    frame.setDesc("Stretching AltCatalogNumber");
-                    sql = "alter table collectionobject modify column AltCatalogNumber varchar(64)";
+                    if (getFieldLength(conn, databaseName, "collectionobject", "AltCatalogNumber") < 64) {
+                        frame.setDesc("Stretching AltCatalogNumber");
+                        sql = "alter table collectionobject modify column AltCatalogNumber varchar(64)";
             		if (-1 == update(conn, sql)) {
-        				errMsgList.add("update error: " + sql);
-        				return false;
-        			}
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
+                    }
                     frame.incOverall(); 
 
             		//-------------------------------------------------------------------------------
@@ -2472,14 +2483,14 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     //
                     //-------------------------------------------------------------------------------
                     frame.setDesc("Increasing storage size for Query Builder search values.");
-                    if (getFieldLength(conn, databaseName, "spqueryfield", "StartValue") != 1000) {
+                    if (getFieldLength(conn, databaseName, "spqueryfield", "StartValue") < 1000) {
                         sql = "alter table spqueryfield modify column StartValue varchar(1000)";
                         if (-1 == update(conn, sql)) {
                             errMsgList.add("update error: " + sql);
                             return false;
                         }
                     }
-                    if (getFieldLength(conn, databaseName, "spqueryfield", "EndValue") != 1000) {
+                    if (getFieldLength(conn, databaseName, "spqueryfield", "EndValue") < 1000) {
                         sql = "alter table spqueryfield modify column EndValue varchar(1000)";
                         if (-1 == update(conn, sql)) {
                             errMsgList.add("update error: " + sql);
@@ -2499,10 +2510,12 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         errMsgList.add("update error: " + sql);
                         return false;
                     }
-                    sql = "alter table spauditlogfield modify column FieldName varchar(128)";
-                    if (-1 == update(conn, sql)) {
-                        errMsgList.add("update error: " + sql);
-                        return false;
+                    if (getFieldLength(conn, databaseName, "spauditlogfield", "FieldName") < 1000) {
+                        sql = "alter table spauditlogfield modify column FieldName varchar(128)";
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
                     }
                     frame.incOverall();
 
@@ -2522,10 +2535,12 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     frame.incOverall();
 
                     frame.setDesc("Increasing length of TreatmentEvent.type");
-                    sql = "alter table treatmentevent modify column `Type` varchar(128)";
-                    if (-1 == update(conn, sql)) {
-                        errMsgList.add("update error: " + sql);
-                        return false;
+                    if (getFieldLength(conn, databaseName, "treatmentevent", "Type") < 128) {
+                        sql = "alter table treatmentevent modify column `Type` varchar(128)";
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
                     }
                     frame.incOverall();
 
@@ -2540,34 +2555,42 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     frame.incOverall();
 
                     frame.setDesc("Increasing length of Geography.Name");
-                    sql = "alter table geography modify column `Name` varchar(128)";
-                    if (-1 == update(conn, sql)) {
-                        errMsgList.add("update error: " + sql);
-                        return false;
+                    if (getFieldLength(conn, databaseName, "geography", "Name") < 128) {
+                        sql = "alter table geography modify column `Name` varchar(128) not null";
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
                     }
                     frame.incOverall();
 
                     frame.setDesc("Increasing length of Geography.FullName");
-                    sql = "alter table geography modify column `FullName` varchar(500)";
-                    if (-1 == update(conn, sql)) {
-                        errMsgList.add("update error: " + sql);
-                        return false;
+                    if (getFieldLength(conn, databaseName, "geography", "FullName") < 500) {
+                        sql = "alter table geography modify column `FullName` varchar(500)";
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
                     }
                     frame.incOverall();
 
                     frame.setDesc("Increasing length of Agent.LastName");
-                    sql = "alter table agent modify column `LastName` varchar(256)";
-                    if (-1 == update(conn, sql)) {
-                        errMsgList.add("update error: " + sql);
-                        return false;
+                    if (getFieldLength(conn, databaseName, "agent", "LastName") < 256) {
+                        sql = "alter table agent modify column `LastName` varchar(256)";
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
                     }
                     frame.incOverall();
 
                     frame.setDesc("Increasing length of CollectingTrip.CollectingTripName");
-                    sql = "alter table collectingtrip modify column `CollectingTripName` varchar(250)";
-                    if (-1 == update(conn, sql)) {
-                        errMsgList.add("update error: " + sql);
-                        return false;
+                    if (getFieldLength(conn, databaseName, "collectingtrip", "CollectingTripName") < 250) {
+                        sql = "alter table collectingtrip modify column `CollectingTripName` varchar(250)";
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
                     }
                     frame.incOverall();
 
@@ -2705,7 +2728,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     frame.incOverall();
 
                     frame.setDesc("Increasing size of Determination.FeatureOrBasis.");
-                    if (getFieldLength(conn, databaseName, "determination", "FeatureOrBasis") != 250) {
+                    if (getFieldLength(conn, databaseName, "determination", "FeatureOrBasis") < 250) {
                         sql = "alter table determination modify column FeatureOrBasis varchar(250)";
                         if (-1 == update(conn, sql)) {
                             errMsgList.add("update error: " + sql);
@@ -2725,7 +2748,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     frame.incOverall();
 
                     frame.setDesc("Increasing size of Referencework.Title.");
-                    if (getFieldLength(conn, databaseName, "referencework", "Title") != 400) {
+                    if (getFieldLength(conn, databaseName, "referencework", "Title") < 400) {
                         sql = "alter table referencework modify column Title varchar(400)";
                         if (-1 == update(conn, sql)) {
                             errMsgList.add("update error: " + sql);
@@ -2735,7 +2758,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     frame.incOverall();
 
                     frame.setDesc("Increasing size of Collectingtrip.Collectingtripname.");
-                    if (getFieldLength(conn, databaseName, "collectingtrip", "Collectingtripname") != 400) {
+                    if (getFieldLength(conn, databaseName, "collectingtrip", "Collectingtripname") < 400) {
                         sql = "alter table collectingtrip modify column Collectingtripname varchar(400)";
                         if (-1 == update(conn, sql)) {
                             errMsgList.add("update error: " + sql);
@@ -2745,7 +2768,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     frame.incOverall();
 
                     frame.setDesc("Increasing size of Address.Address3.");
-                    if (getFieldLength(conn, databaseName, "address", "Address3") != 400) {
+                    if (getFieldLength(conn, databaseName, "address", "Address3") < 400) {
                         sql = "alter table address modify column Address3 varchar(400)";
                         if (-1 == update(conn, sql)) {
                             errMsgList.add("update error: " + sql);
@@ -2755,7 +2778,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     frame.incOverall();
 
                     frame.setDesc("Increasing size of Address.Address4.");
-                    if (getFieldLength(conn, databaseName, "address", "Address4") != 400) {
+                    if (getFieldLength(conn, databaseName, "address", "Address4") < 400) {
                         sql = "alter table address modify column Address4 varchar(400)";
                         if (-1 == update(conn, sql)) {
                             errMsgList.add("update error: " + sql);
@@ -2765,7 +2788,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     frame.incOverall();
 
                     frame.setDesc("Increasing size of Address.Address5.");
-                    if (getFieldLength(conn, databaseName, "address", "Address5") != 400) {
+                    if (getFieldLength(conn, databaseName, "address", "Address5") < 400) {
                         sql = "alter table address modify column Address5 varchar(400)";
                         if (-1 == update(conn, sql)) {
                             errMsgList.add("update error: " + sql);
@@ -2775,7 +2798,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     frame.incOverall();
 
                     frame.setDesc("Increasing length of BorrowMaterial.Description");
-                    if (getFieldLength(conn, databaseName, "borrowmaterial", "Description") != 250) {
+                    if (getFieldLength(conn, databaseName, "borrowmaterial", "Description") < 250) {
                         sql = "alter table borrowmaterial modify column `Description` varchar(250)";
                         if (-1 == update(conn, sql)) {
                             errMsgList.add("update error: " + sql);
@@ -2813,7 +2836,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     frame.incOverall();
 
                     frame.setDesc("Increasing length of Taxon.Name");
-                    if (getFieldLength(conn, databaseName, "taxon", "Name") != 256) {
+                    if (getFieldLength(conn, databaseName, "taxon", "Name") < 256) {
                         sql = "alter table taxon modify column `Name` varchar(256) not null";
                         if (-1 == update(conn, sql)) {
                             errMsgList.add("update error: " + sql);
@@ -2823,7 +2846,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     frame.incOverall();
 
                     frame.setDesc("Increasing length of Taxon.FullName");
-                    if (getFieldLength(conn, databaseName, "taxon", "FullName") != 512) {
+                    if (getFieldLength(conn, databaseName, "taxon", "FullName") < 512) {
                         sql = "alter table taxon modify column `FullName` varchar(512)";
                         if (-1 == update(conn, sql)) {
                             errMsgList.add("update error: " + sql);
@@ -2833,7 +2856,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     frame.incOverall();
 
                     frame.setDesc("Increasing length of Locality.LocalityName");
-                    if (getFieldLength(conn, databaseName, "locality", "LocalityName") != 1024) {
+                    if (getFieldLength(conn, databaseName, "locality", "LocalityName") < 1024) {
                         sql = "alter table locality modify column `LocalityName` varchar(1024) not null";
                         if (-1 == update(conn, sql)) {
                             errMsgList.add("update error: " + sql);
@@ -2843,7 +2866,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     frame.incOverall();
 
                     frame.setDesc("Increasing length of SpLocaleItemStr.Text");
-                    if (getFieldLength(conn, databaseName, "splocaleitemstr", "Text") != 2048) {
+                    if (getFieldLength(conn, databaseName, "splocaleitemstr", "Text") < 2048) {
                         sql = "alter table splocaleitemstr modify column `Text` varchar(2048) not null";
                         if (-1 == update(conn, sql)) {
                             errMsgList.add("update error: " + sql);
@@ -2853,7 +2876,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     frame.incOverall();
 
                     frame.setDesc("Increasing length of PicklistItem.Title");
-                    if (getFieldLength(conn, databaseName, "picklistitem", "Title") != 1024) {
+                    if (getFieldLength(conn, databaseName, "picklistitem", "Title") < 1024) {
                         sql = "alter table picklistitem modify column `Title` varchar(1024) not null";
                         if (-1 == update(conn, sql)) {
                             errMsgList.add("update error: " + sql);
@@ -2863,7 +2886,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     frame.incOverall();
 
                     frame.setDesc("Increasing length of PicklistItem.Value");
-                    if (getFieldLength(conn, databaseName, "picklistitem", "Value") != 1024) {
+                    if (getFieldLength(conn, databaseName, "picklistitem", "Value") < 1024) {
                         sql = "alter table picklistitem modify column `Value` varchar(1024)";
                         if (-1 == update(conn, sql)) {
                             errMsgList.add("update error: " + sql);
@@ -2873,7 +2896,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     frame.incOverall();
 
                     frame.setDesc("Increasing length of RecordSet.Name");
-                    if (getFieldLength(conn, databaseName, "recordset", "Name") != 280) {
+                    if (getFieldLength(conn, databaseName, "recordset", "Name") < 280) {
                         sql = "alter table recordset modify column `Name` varchar(280) not null";
                         if (-1 == update(conn, sql)) {
                             errMsgList.add("update error: " + sql);
@@ -2883,14 +2906,14 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     frame.incOverall();
 
                     frame.setDesc("Increasing length of Workbench.Name");
-                    if (getFieldLength(conn, databaseName, "workbench", "Name") != 256) {
+                    if (getFieldLength(conn, databaseName, "workbench", "Name") < 256) {
                         sql = "alter table workbench modify column `Name` varchar(256)";
                         if (-1 == update(conn, sql)) {
                             errMsgList.add("update error: " + sql);
                             return false;
                         }
                     }
-                    if (getFieldLength(conn, databaseName, "workbenchtemplate", "Name") != 256) {
+                    if (getFieldLength(conn, databaseName, "workbenchtemplate", "Name") < 256) {
                         sql = "alter table workbenchtemplate modify column `Name` varchar(256)";
                         if (-1 == update(conn, sql)) {
                             errMsgList.add("update error: " + sql);
@@ -2930,7 +2953,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     frame.incOverall();
 
                     frame.setDesc("Increasing length of Attachment.Mimetype");
-                    if (getFieldLength(conn, databaseName, "attachment", "MimeType") != 1024) {
+                    if (getFieldLength(conn, databaseName, "attachment", "MimeType") < 1024) {
                         sql = "alter table attachment modify column `MimeType` varchar(1024)";
                         if (-1 == update(conn, sql)) {
                             errMsgList.add("update error: " + sql);
@@ -2950,7 +2973,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     frame.incOverall();
 
                     frame.setDesc("Increasing length of Container.Name");
-                    if (getFieldLength(conn, databaseName, "container", "Name") != 1024) {
+                    if (getFieldLength(conn, databaseName, "container", "Name") < 1024) {
                         sql = "alter table container modify column `Name` varchar(1024)";
                         if (-1 == update(conn, sql)) {
                             errMsgList.add("update error: " + sql);
