@@ -129,6 +129,8 @@ public class Attachment extends DataModelObjBase implements Serializable
     protected Set<DisposalAttachment>                disposalAttachments;
     protected Set<DNASequenceAttachment>             dnaSequenceAttachments;
     protected Set<DNASequencingRunAttachment>        dnaSequencingRunAttachments;
+    protected Set<ExchangeInAttachment>              exchangeInAttachments;
+    protected Set<ExchangeOutAttachment>              exchangeOutAttachments;
     protected Set<FieldNotebookAttachment>           fieldNotebookAttachments;
     protected Set<FieldNotebookPageAttachment>       fieldNotebookPageAttachments;
     protected Set<FieldNotebookPageSetAttachment>    fieldNotebookPageSetAttachments;
@@ -209,6 +211,8 @@ public class Attachment extends DataModelObjBase implements Serializable
         disposalAttachments = new HashSet<>();
         dnaSequenceAttachments         = new HashSet<DNASequenceAttachment>();
         dnaSequencingRunAttachments    = new HashSet<DNASequencingRunAttachment>();
+        exchangeInAttachments          = new HashSet<ExchangeInAttachment>();
+        exchangeOutAttachments         = new HashSet<ExchangeOutAttachment>();
         giftAttachments                = new HashSet<GiftAttachment>();
         loanAttachments                = new HashSet<LoanAttachment>();
         localityAttachments            = new HashSet<LocalityAttachment>();
@@ -724,6 +728,30 @@ public class Attachment extends DataModelObjBase implements Serializable
     public void setDeaccessionAttachments(Set<DeaccessionAttachment> deaccessionAttachments)
     {
         this.deaccessionAttachments = deaccessionAttachments;
+    }
+
+    @OneToMany(mappedBy = "attachment")
+    @Cascade( {CascadeType.ALL} )
+    public Set<ExchangeInAttachment> getExchangeInAttachments()
+    {
+        return exchangeInAttachments;
+    }
+
+    public void setExchangeInAttachments(Set<ExchangeInAttachment> exchangeInAttachments)
+    {
+        this.exchangeInAttachments = exchangeInAttachments;
+    }
+
+    @OneToMany(mappedBy = "attachment")
+    @Cascade( {CascadeType.ALL} )
+    public Set<ExchangeOutAttachment> getExchangeOutAttachments()
+    {
+        return exchangeOutAttachments;
+    }
+
+    public void setExchangeOutAttachments(Set<ExchangeOutAttachment> exchangeOutAttachments)
+    {
+        this.exchangeOutAttachments = exchangeOutAttachments;
     }
 
     @OneToMany(mappedBy = "attachment")

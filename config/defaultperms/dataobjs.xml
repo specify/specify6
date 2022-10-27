@@ -1134,6 +1134,48 @@
     </hashtable>
   </entry>
   <entry>
+    <string>exchangeinattachment</string>
+    <hashtable>
+      <entry>
+        <string>Manager</string>
+        <tp name="exchangeinattachment" type="Manager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>Guest</string>
+        <tp name="exchangeinattachment" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>LimitedAccess</string>
+        <tp name="exchangeinattachment" type="LimitedAccess" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>FullAccess</string>
+        <tp name="exchangeinattachment" type="FullAccess" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>exchangeoutattachment</string>
+    <hashtable>
+      <entry>
+        <string>Manager</string>
+        <tp name="exchangeoutattachment" type="Manager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>Guest</string>
+        <tp name="exchangeoutattachment" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>LimitedAccess</string>
+        <tp name="exchangeoutattachment" type="LimitedAccess" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>FullAccess</string>
+        <tp name="exchangeoutattachment" type="FullAccess" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
     <string>disposalattachment</string>
     <hashtable>
       <entry>

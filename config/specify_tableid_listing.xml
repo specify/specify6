@@ -2,7 +2,7 @@
 
 <!-- 
 
-    Last used ID is 168 or 533
+    Last used ID is 170 or 533
     
     [0] are available
     
@@ -231,12 +231,20 @@
             <display view="ExchangeIn" />
             <businessrule>edu.ku.brc.specify.datamodel.busrules.ExchangeInBusRules</businessrule>
         </table>
+        <table name="edu.ku.brc.specify.datamodel.ExchangeInAttachment" abbrev="exiat" id="169" searchable="true">
+            <display view="ObjectAttachment" newobjdlg="ExchangeInAttachmentDisplay" searchdlg="AttachmentSearch" />
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentReferenceBaseBusRules</businessrule>
+        </table>
         <table name="edu.ku.brc.specify.datamodel.ExchangeInPrep" abbrev="exip" id="140" searchable="true">
             <display view="ExchangeInPrep" newobjdlg="ExchangeInPrepDisplay"/>
         </table>
         <table name="edu.ku.brc.specify.datamodel.ExchangeOut" abbrev="exo" id="40" searchable="true">
             <display view="ExchangeOut" />
             <businessrule>edu.ku.brc.specify.datamodel.busrules.ExchangeOutBusRules</businessrule>
+        </table>
+        <table name="edu.ku.brc.specify.datamodel.ExchangeOutAttachment" abbrev="exoat" id="170" searchable="true">
+            <display view="ObjectAttachment" newobjdlg="ExchangeOutAttachmentDisplay" searchdlg="AttachmentSearch" />
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentReferenceBaseBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.ExchangeOutPrep" abbrev="exop" id="141" searchable="true">
             <display view="ExchangeOutPrep" newobjdlg="ExchangeOutPrepDisplay"/>

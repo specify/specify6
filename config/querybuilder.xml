@@ -368,6 +368,9 @@
                 <alias name="Agent" field="createdByAgent" />
                 <alias name="Agent" field="modifiedByAgent" />
         </table>
+        <table name="ExchangeInAttachment" field="exchangeInAttachments">
+            <alias name="Attachment"/>
+        </table>        
     </table>
     
     <table name="ExchangeOut" >
@@ -382,6 +385,9 @@
                 <alias name="Preparation"/>
                 <alias name="Agent" field="createdByAgent" />
                 <alias name="Agent" field="modifiedByAgent" />
+        </table>
+        <table name="ExchangeOutAttachment" field="exchangeOutAttachments">
+            <alias name="Attachment"/>
         </table>
    </table>
     

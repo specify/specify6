@@ -31,6 +31,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -56,7 +57,7 @@ import org.hibernate.annotations.Index;
         @Index (name="ExchangeOutNumberIDX", columnNames={"ExchangeOutNumber"})
     })
 @SuppressWarnings("serial")
-public class ExchangeOut extends DataModelObjBase implements java.io.Serializable, OneToManyProviderIFace {
+public class ExchangeOut extends DataModelObjBase implements java.io.Serializable, OneToManyProviderIFace, AttachmentOwnerIFace<ExchangeOutAttachment> {
     private static final Logger log = Logger.getLogger(ExchangeOut.class);
     // Fields
 
@@ -85,6 +86,7 @@ public class ExchangeOut extends DataModelObjBase implements java.io.Serializabl
     protected Division        division;
     protected Set<ExchangeOutPrep> exchangeOutPreps;
     protected Deaccession            deaccession;
+    protected Set<ExchangeOutAttachment> exchangeOutAttachments;
 
 
     // Constructors
@@ -126,6 +128,7 @@ public class ExchangeOut extends DataModelObjBase implements java.io.Serializabl
         agentCatalogedBy = null;
         shipments        = new HashSet<Shipment>();
         exchangeOutPreps = new HashSet<ExchangeOutPrep>();
+        exchangeOutAttachments = new HashSet<>();
 
         division         = null;
         deaccession = null;
@@ -454,6 +457,19 @@ public class ExchangeOut extends DataModelObjBase implements java.io.Serializabl
         this.exchangeOutPreps = exchangeOutPreps;
     }
     
+    @OneToMany(mappedBy = "exchangeOut")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @OrderBy("ordinal ASC")
+    public Set<ExchangeOutAttachment> getExchangeOutAttachments()
+    {
+        return exchangeOutAttachments;
+    }
+
+    public void setExchangeOutAttachments(Set<ExchangeOutAttachment> exchangeOutAttachments)
+    {
+        this.exchangeOutAttachments = exchangeOutAttachments;
+    }
+
     /**
      * @return the division
      */
@@ -570,4 +586,23 @@ public class ExchangeOut extends DataModelObjBase implements java.io.Serializabl
         }
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.AttachmentOwnerIFace#getAttachmentTableId()
+     */
+    @Override
+    @Transient
+    public int getAttachmentTableId()
+    {
+        return getClassTableId();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.AttachmentOwnerIFace#getAttachmentReferences()
+     */
+    @Override
+    @Transient
+    public Set<ExchangeOutAttachment> getAttachmentReferences()
+    {
+        return exchangeOutAttachments;
+    }
 }

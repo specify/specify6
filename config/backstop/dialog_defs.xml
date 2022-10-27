@@ -113,6 +113,8 @@
     <dialog type="display" view="ObjectAttachment" name="DeaccessionAttachmentDisplay"          class="edu.ku.brc.specify.datamodel.DeaccessionAttachment" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="ObjectAttachment" name="DNASequenceAttachmentDisplay"          class="edu.ku.brc.specify.datamodel.DNASequenceAttachment" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="ObjectAttachment" name="DNASequencingRunAttachmentDisplay"     class="edu.ku.brc.specify.datamodel.DNASequencingRunAttachment" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="ObjectAttachment" name="ExchangeInAttachmentDisplay"           class="edu.ku.brc.specify.datamodel.ExchangeInAttachment" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="ObjectAttachment" name="ExchangeOutAttachmentDisplay"          class="edu.ku.brc.specify.datamodel.ExchangeOutAttachment" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="ObjectAttachment" name="FieldNotebookAttachmentDisplay"        class="edu.ku.brc.specify.datamodel.FieldNotebookAttachment" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="ObjectAttachment" name="FieldNotebookPageAttachmentDisplay"    class="edu.ku.brc.specify.datamodel.FieldNotebookPageAttachment" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="ObjectAttachment" name="FieldNotebookPageSetAttachmentDisplay" class="edu.ku.brc.specify.datamodel.FieldNotebookPageSetAttachment" helpcontext="CBXQViewEdit"/>

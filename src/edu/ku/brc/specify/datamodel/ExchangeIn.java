@@ -33,6 +33,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -54,7 +55,7 @@ import org.hibernate.annotations.Index;
 		@Index (name="DescriptionOfMaterialIDX", columnNames={"DescriptionOfMaterial"})
     })
 @SuppressWarnings("serial")
-public class ExchangeIn extends DataModelObjBase implements java.io.Serializable {
+public class ExchangeIn extends DataModelObjBase implements java.io.Serializable, AttachmentOwnerIFace<ExchangeInAttachment>  {
 
     // Fields    
 
@@ -81,7 +82,7 @@ public class ExchangeIn extends DataModelObjBase implements java.io.Serializable
     protected Agent           agentCatalogedBy;
     protected Division        division;
     protected Set<ExchangeInPrep> exchangeInPreps;
-
+    protected Set<ExchangeInAttachment> exchangeInAttachments;
 
     // Constructors
 
@@ -123,6 +124,7 @@ public class ExchangeIn extends DataModelObjBase implements java.io.Serializable
         addressOfRecord   = null;
         division          = null;
         exchangeInPreps = new HashSet<ExchangeInPrep>();
+        exchangeInAttachments = new HashSet<>();
     }
     // End Initializer
 
@@ -408,6 +410,19 @@ public class ExchangeIn extends DataModelObjBase implements java.io.Serializable
         this.exchangeInPreps = exchangeInPreps;
     }
     
+    @OneToMany(mappedBy = "exchangeIn")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @OrderBy("ordinal ASC")
+    public Set<ExchangeInAttachment> getExchangeInAttachments()
+    {
+        return exchangeInAttachments;
+    }
+
+    public void setExchangeInAttachments(Set<ExchangeInAttachment> exchangeInAttachments)
+    {
+        this.exchangeInAttachments = exchangeInAttachments;
+    }
+
     /**
      * @return the division
      */
@@ -462,6 +477,26 @@ public class ExchangeIn extends DataModelObjBase implements java.io.Serializable
     public static int getClassTableId()
     {
         return 39;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.AttachmentOwnerIFace#getAttachmentTableId()
+     */
+    @Override
+    @Transient
+    public int getAttachmentTableId()
+    {
+        return getClassTableId();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.AttachmentOwnerIFace#getAttachmentReferences()
+     */
+    @Override
+    @Transient
+    public Set<ExchangeInAttachment> getAttachmentReferences()
+    {
+        return exchangeInAttachments;
     }
 
 }
