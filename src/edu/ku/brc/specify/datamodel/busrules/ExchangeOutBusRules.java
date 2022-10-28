@@ -22,7 +22,6 @@ package edu.ku.brc.specify.datamodel.busrules;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
-import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.validation.ValComboBox;
@@ -40,7 +39,7 @@ import java.awt.*;
  * Apr 3, 2009
  *
  */
-public class ExchangeOutBusRules extends BaseBusRules
+public class ExchangeOutBusRules extends AttachmentOwnerBaseBusRules
 {
 
     public ExchangeOutBusRules()

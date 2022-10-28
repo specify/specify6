@@ -636,6 +636,8 @@ public class Attachment extends DataModelObjBase implements Serializable
             ConservEvent.getClassTableId(), Attachment.DIVISION_SCOPE,
             DNASequence.getClassTableId(), Attachment.COLLECTION_SCOPE,
             DNASequencingRun.getClassTableId(), Attachment.COLLECTION_SCOPE,
+            ExchangeIn.getClassTableId(), Attachment.DIVISION_SCOPE,
+            ExchangeOut.getClassTableId(), Attachment.DIVISION_SCOPE,
             FieldNotebook.getClassTableId(),  Attachment.DISCIPLINE_SCOPE,
             FieldNotebookPage.getClassTableId(), Attachment.DISCIPLINE_SCOPE,
             FieldNotebookPageSet.getClassTableId(),  Attachment.DISCIPLINE_SCOPE,
