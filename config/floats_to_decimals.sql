@@ -79,8 +79,8 @@ alter table collectionobjectattribute
       modify Number9 decimal(20, 10),
       modify Number37 decimal(20, 10),
       modify Number41 decimal(20, 10),
-      modify topDistance decimal(20, 10),
-      modify bottomDistance decimal(20, 10);
+      modify TopDistance decimal(20, 10),
+      modify BottomDistance decimal(20, 10);
 alter table collectionobjectproperty
       modify Number21 decimal(20, 10),
       modify Number22 decimal(20, 10),
@@ -288,6 +288,6 @@ alter table treatmentevent
       modify Number4 decimal(20, 10),
       modify Number5 decimal(20, 10);
 alter table voucherrelationship
-      modify number1 decimal(20, 10),
-      modify number2 decimal(20, 10),
+      modify Number1 decimal(20, 10),
+      modify Number2 decimal(20, 10),
       modify Number3 decimal(20, 10);
