@@ -627,6 +627,7 @@ public class Attachment extends DataModelObjBase implements Serializable
     {
         int[] ids = {
             Accession.getClassTableId(), Attachment.GLOBAL_SCOPE, // Is Both Division and Institution (special case)
+            Deaccession.getClassTableId(), Attachment.GLOBAL_SCOPE,
             Agent.getClassTableId(), Attachment.DIVISION_SCOPE,
             Borrow.getClassTableId(),  Attachment.COLLECTION_SCOPE,
             CollectionObject.getClassTableId(),  Attachment.COLLECTION_SCOPE,
