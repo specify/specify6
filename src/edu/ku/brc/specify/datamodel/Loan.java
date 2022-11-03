@@ -20,6 +20,7 @@
 package edu.ku.brc.specify.datamodel;
 
 import java.util.*;
+import java.math.BigDecimal;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -92,8 +93,11 @@ public class Loan extends DisciplineMember implements AttachmentOwnerIFace<LoanA
     protected String				  contents;
     protected String                  text1;
     protected String                  text2;
-    protected Float                   number1;
-    protected Float                   number2;
+    protected String                  text3;
+    protected String                  text4;
+    protected String                  text5;
+    protected BigDecimal                   number1;
+    protected BigDecimal                   number2;
     protected Boolean                 isClosed; // Loan Only
     protected Boolean                 yesNo1;
     protected Boolean                 yesNo2;
@@ -151,6 +155,9 @@ public class Loan extends DisciplineMember implements AttachmentOwnerIFace<LoanA
 		contents = null;
 		text1 = null;
 		text2 = null;
+                text3 = null;
+                text4 = null;
+                text5 = null;
 		number1 = null;
 		number2 = null;
 		integer1 = null;
@@ -399,6 +406,46 @@ public class Loan extends DisciplineMember implements AttachmentOwnerIFace<LoanA
     }
 
     /**
+     *      * User definable
+     */
+    @Lob
+    @Column(name = "Text3", length = 65535)
+    public String getText3() {
+        return this.text3;
+    }
+    
+    public void setText3(String text3) {
+        this.text3 = text3;
+    }
+
+    /**
+     *      * User definable
+     */
+    @Lob
+    @Column(name = "Text4", length = 65535)
+    public String getText4() {
+        return this.text4;
+    }
+    
+    public void setText4(String text4) {
+        this.text4 = text4;
+    }
+
+    /**
+     *      * User definable
+     */
+    @Lob
+    @Column(name = "Text5", length = 65535)
+    public String getText5() {
+        return this.text5;
+    }
+    
+    public void setText5(String text5) {
+        this.text5 = text5;
+    }
+
+    
+    /**
 	 * @return the integer1
 	 */
     @Column(name = "Integer1", unique = false, nullable = true, insertable = true, updatable = true)
@@ -446,24 +493,24 @@ public class Loan extends DisciplineMember implements AttachmentOwnerIFace<LoanA
     /**
      *      * User definable
      */
-    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
-    public Float getNumber1() {
+    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true, length = 24, precision = 20, scale = 10)
+    public BigDecimal getNumber1() {
         return this.number1;
     }
     
-    public void setNumber1(Float number1) {
+    public void setNumber1(BigDecimal number1) {
         this.number1 = number1;
     }
 
     /**
      *      * User definable
      */
-    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
-    public Float getNumber2() {
+    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true, length = 24, precision = 20, scale = 10)
+    public BigDecimal getNumber2() {
         return this.number2;
     }
     
-    public void setNumber2(Float number2) {
+    public void setNumber2(BigDecimal number2) {
         this.number2 = number2;
     }
 

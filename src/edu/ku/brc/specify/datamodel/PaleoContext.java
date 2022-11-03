@@ -30,6 +30,7 @@ import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Vector;
+import java.math.BigDecimal;
 
 /**
  * @author rods
@@ -70,11 +71,11 @@ public class PaleoContext extends DisciplineMember implements Cloneable
     protected Boolean yesNo4;
     protected Boolean yesNo5;
     
-    protected Double number1;
-    protected Double number2;
-    protected Double number3;
-    protected Double number4;
-    protected Double number5;
+    protected BigDecimal number1;
+    protected BigDecimal number2;
+    protected BigDecimal number3;
+    protected BigDecimal number4;
+    protected BigDecimal number5;
     
     protected Set<CollectionObject> collectionObjects;
     protected Set<CollectingEvent> collectingEvents;
@@ -399,75 +400,75 @@ public class PaleoContext extends DisciplineMember implements Cloneable
     /**
 	 * @return the number1
 	 */
-    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true)
-	public Double getNumber1() {
+    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+	public BigDecimal getNumber1() {
 		return number1;
 	}
 
 	/**
 	 * @param number1 the number1 to set
 	 */
-	public void setNumber1(Double number1) {
+	public void setNumber1(BigDecimal number1) {
 		this.number1 = number1;
 	}
 
 	/**
 	 * @return the number2
 	 */
-    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true)
-	public Double getNumber2() {
+    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+	public BigDecimal getNumber2() {
 		return number2;
 	}
 
 	/**
 	 * @param number2 the number2 to set
 	 */
-	public void setNumber2(Double number2) {
+	public void setNumber2(BigDecimal number2) {
 		this.number2 = number2;
 	}
 
 	/**
 	 * @return the number3
 	 */
-    @Column(name = "Number3", unique = false, nullable = true, insertable = true, updatable = true)
-	public Double getNumber3() {
+    @Column(name = "Number3", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+	public BigDecimal getNumber3() {
 		return number3;
 	}
 
 	/**
 	 * @param number3 the number3 to set
 	 */
-	public void setNumber3(Double number3) {
+	public void setNumber3(BigDecimal number3) {
 		this.number3 = number3;
 	}
 
 	/**
 	 * @return the number4
 	 */
-    @Column(name = "Number4", unique = false, nullable = true, insertable = true, updatable = true)
-	public Double getNumber4() {
+    @Column(name = "Number4", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+	public BigDecimal getNumber4() {
 		return number4;
 	}
 
 	/**
 	 * @param number4 the number4 to set
 	 */
-	public void setNumber4(Double number4) {
+	public void setNumber4(BigDecimal number4) {
 		this.number4 = number4;
 	}
 
 	/**
 	 * @return the number5
 	 */
-    @Column(name = "Number5", unique = false, nullable = true, insertable = true, updatable = true)
-	public Double getNumber5() {
+    @Column(name = "Number5", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+	public BigDecimal getNumber5() {
 		return number5;
 	}
 
 	/**
 	 * @param number5 the number5 to set
 	 */
-	public void setNumber5(Double number5) {
+	public void setNumber5(BigDecimal number5) {
 		this.number5 = number5;
 	}
 

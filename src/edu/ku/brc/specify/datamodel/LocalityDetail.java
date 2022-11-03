@@ -63,11 +63,11 @@ public class LocalityDetail extends DataModelObjBase
     protected String                drainage;
     
     // Depths primarily for Paleo
-    protected Double                startDepth;
+    protected BigDecimal            startDepth;
     protected String                startDepthUnit;
     protected String                startDepthVerbatim;
     
-    protected Double                endDepth;
+    protected BigDecimal            endDepth;
     protected String                endDepthUnit;
     protected String                endDepthVerbatim;
 
@@ -82,11 +82,11 @@ public class LocalityDetail extends DataModelObjBase
     protected String                text3;
     protected String                text4;
     protected String                text5;
-    protected Double                number1;
-    protected Double                number2;
-    protected Float				    number3;
-    protected Float                 number4;
-    protected Float                 number5;
+    protected BigDecimal            number1;
+    protected BigDecimal            number2;
+    protected BigDecimal   	    number3;
+    protected BigDecimal            number4;
+    protected BigDecimal            number5;
     
     protected Boolean               yesNo1;
     protected Boolean               yesNo2;
@@ -394,8 +394,8 @@ public class LocalityDetail extends DataModelObjBase
     /**
      * @return the startDepth
      */
-    @Column(name = "StartDepth", unique = false, nullable = true, insertable = true, updatable = true)
-    public Double getStartDepth()
+    @Column(name = "StartDepth", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getStartDepth()
     {
         return startDepth;
     }
@@ -403,7 +403,7 @@ public class LocalityDetail extends DataModelObjBase
     /**
      * @param startDepth the startDepth to set
      */
-    public void setStartDepth(Double startDepth)
+    public void setStartDepth(BigDecimal startDepth)
     {
         this.startDepth = startDepth;
     }
@@ -445,8 +445,8 @@ public class LocalityDetail extends DataModelObjBase
     /**
      * @return the endDepth
      */
-    @Column(name = "EndDepth", unique = false, nullable = true, insertable = true, updatable = true)
-    public Double getEndDepth()
+    @Column(name = "EndDepth", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getEndDepth()
     {
         return endDepth;
     }
@@ -454,7 +454,7 @@ public class LocalityDetail extends DataModelObjBase
     /**
      * @param endDepth the endDepth to set
      */
-    public void setEndDepth(Double endDepth)
+    public void setEndDepth(BigDecimal endDepth)
     {
         this.endDepth = endDepth;
     }
@@ -572,13 +572,13 @@ public class LocalityDetail extends DataModelObjBase
     /**
      * * User definable
      */
-    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true)
-    public Double getNumber1()
+    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber1()
     {
         return this.number1;
     }
 
-    public void setNumber1(Double number1)
+    public void setNumber1(BigDecimal number1)
     {
         this.number1 = number1;
     }
@@ -586,13 +586,13 @@ public class LocalityDetail extends DataModelObjBase
     /**
      * * User definable
      */
-    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true)
-    public Double getNumber2()
+    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber2()
     {
         return this.number2;
     }
 
-    public void setNumber2(Double number2)
+    public void setNumber2(BigDecimal number2)
     {
         this.number2 = number2;
     }
@@ -600,39 +600,39 @@ public class LocalityDetail extends DataModelObjBase
     /**
      * * User definable
      */
-    @Column(name = "Number3", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getNumber3()
+    @Column(name = "Number3", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber3()
     {
         return this.number3;
     }
 
-    public void setNumber3(Float number3)
+    public void setNumber3(BigDecimal number3)
     {
         this.number3 = number3;
     }
     /**
      * * User definable
      */
-    @Column(name = "Number4", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getNumber4()
+    @Column(name = "Number4", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber4()
     {
         return this.number4;
     }
 
-    public void setNumber4(Float number4)
+    public void setNumber4(BigDecimal number4)
     {
         this.number4 = number4;
     }
     /**
      * * User definable
      */
-    @Column(name = "Number5", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getNumber5()
+    @Column(name = "Number5", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber5()
     {
         return this.number5;
     }
 
-    public void setNumber5(Float number5)
+    public void setNumber5(BigDecimal number5)
     {
         this.number5 = number5;
     }

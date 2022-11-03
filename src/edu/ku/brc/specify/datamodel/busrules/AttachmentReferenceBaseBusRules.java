@@ -58,6 +58,8 @@ public class AttachmentReferenceBaseBusRules extends BaseBusRules
                DeaccessionAttachment.class,
                DNASequenceAttachment.class,
                DNASequencingRunAttachment.class,
+               ExchangeInAttachment.class,
+               ExchangeOutAttachment.class,
                FieldNotebookAttachment.class,
                FieldNotebookPageAttachment.class,
                FieldNotebookPageSetAttachment.class,

@@ -6907,21 +6907,21 @@ public class BuildSampleDatabase
 
         // Create the defItemLevel0
         GeologicTimePeriod level0 = createGeologicTimePeriod(treeDef, null,
-                "Place Holder", 10.0f, 0.0f, defItemLevel0.getRankId());
+                     "Place Holder", new BigDecimal("10.0"), new BigDecimal("0.0"), defItemLevel0.getRankId());
         newObjs.add(level0);
 
         if (doAddTreeNode)
         {
             GeologicTimePeriod level1 = createGeologicTimePeriod(treeDef, level0,
-                    "Some Really Big Time Period", 5.0f, 0.0f, defItemLevel1.getRankId());
+                      "Some Really Big Time Period", new BigDecimal("5.0"), new BigDecimal("0.0"), defItemLevel1.getRankId());
             GeologicTimePeriod level2 = createGeologicTimePeriod(treeDef, level1,
-                    "A Slightly Smaller Time Period", 1.74f, 0.0f, defItemLevel2.getRankId());
+                      "A Slightly Smaller Time Period", new BigDecimal("1.74"), new BigDecimal("0.0"), defItemLevel2.getRankId());
             GeologicTimePeriod level3_1 = createGeologicTimePeriod(treeDef, level2,
-                    "Yesterday", 0.1f, 0.0f, defItemLevel3.getRankId());
+                      "Yesterday", new BigDecimal("0.1"), new BigDecimal("0.0"), defItemLevel3.getRankId());
             GeologicTimePeriod level3_2 = createGeologicTimePeriod(treeDef, level2,
-                    "A couple of days ago", 0.2f, 0.1f, defItemLevel3.getRankId());
+                      "A couple of days ago", new BigDecimal("0.2"), new BigDecimal("0.1"), defItemLevel3.getRankId());
             GeologicTimePeriod level3_3 = createGeologicTimePeriod(treeDef, level2,
-                    "Last week", 0.7f, 1.4f, defItemLevel3.getRankId());
+                      "Last week", new BigDecimal("0.7"), new BigDecimal("1.4"), defItemLevel3.getRankId());
             newObjs.add(level1);
             newObjs.add(level2);
             newObjs.add(level3_1);
@@ -9871,16 +9871,16 @@ public class BuildSampleDatabase
         newGeo.setName(name);
         Pair<String,String> startArgs = parseMyaArg(startArg);
         if (startArgs != null) {
-        	newGeo.setStartPeriod(Float.valueOf(startArgs.getFirst()));
+        	newGeo.setStartPeriod(new BigDecimal(startArgs.getFirst()));
         	if (startArgs.getSecond() != null) {
-        		newGeo.setStartUncertainty(Float.valueOf(startArgs.getSecond()));
+        		newGeo.setStartUncertainty(new BigDecimal(startArgs.getSecond()));
         	}
         }
         Pair<String,String> endArgs = parseMyaArg(endArg);
         if (endArgs != null) {
-        	newGeo.setEndPeriod(Float.valueOf(endArgs.getFirst()));
+        	newGeo.setEndPeriod(new BigDecimal(endArgs.getFirst()));
         	if (endArgs.getSecond() != null) {
-        		newGeo.setEndUncertainty(Float.valueOf(endArgs.getSecond()));
+        		newGeo.setEndUncertainty(new BigDecimal(endArgs.getSecond()));
         	}
         }
         newGeo.setParent(parentArg);

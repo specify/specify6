@@ -6,6 +6,7 @@ package edu.ku.brc.specify.datamodel;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
+import java.math.BigDecimal;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -37,7 +38,7 @@ import org.hibernate.annotations.Index;
 public class MaterialSample extends CollectionMember {
 	protected Integer materialSampleId;
     protected String  guid;
-    protected Float GGBN_concentration;
+    protected BigDecimal GGBN_concentration;
     protected String GGBN_concentrationUnit;
     protected String GGBN_materialSampleType;
     protected String GGBN_medium;
@@ -46,15 +47,15 @@ public class MaterialSample extends CollectionMember {
 	protected Calendar GGBN_qualityCheckDate;
 	protected Calendar extractionDate;
     protected String GGBN_qualityRemarks;
-    protected Float GGBN_absorbanceRatio260_230;
-    protected Float GGBN_absorbanceRatio260_280;
+    protected BigDecimal GGBN_absorbanceRatio260_230;
+    protected BigDecimal GGBN_absorbanceRatio260_280;
     protected String GGBN_absorbanceRatioMethod;
-    protected Float GGBN_volume;
+    protected BigDecimal GGBN_volume;
     protected String GGBN_volumeUnit;
-    protected Float GGBN_weight;
+    protected BigDecimal GGBN_weight;
     protected String GGBN_weightMethod;
     protected String GGBN_weightUnit;
-    protected Float GGBN_sampleSize;
+    protected BigDecimal GGBN_sampleSize;
     protected String GGBN_sampleDesignation;
     
     protected String sraSampleID;
@@ -65,8 +66,8 @@ public class MaterialSample extends CollectionMember {
 	protected String remarks;
 	protected String text1;
 	protected String text2;
-	protected Float number1;
-	protected Float number2;
+	protected BigDecimal number1;
+	protected BigDecimal number2;
 	protected Integer integer1;
 	protected Integer integer2;
 	protected Boolean yesNo1;
@@ -76,8 +77,8 @@ public class MaterialSample extends CollectionMember {
 	protected String reservedText4;
 	protected Integer reservedInteger3;
 	protected Integer reservedInteger4;
-	protected Float reservedNumber3;
-	protected Float reservedNumber4;
+	protected BigDecimal reservedNumber3;
+	protected BigDecimal reservedNumber4;
 
     protected Preparation preparation;
     protected Agent extractor;
@@ -315,15 +316,15 @@ public class MaterialSample extends CollectionMember {
     /**
 	 * @return the gGBN_concentration
 	 */
-    @Column(name = "GGBNConcentration", unique = false, nullable = true, insertable = true, updatable = true)
-	public Float getGGBN_concentration() {
+    @Column(name = "GGBNConcentration", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+	public BigDecimal getGGBN_concentration() {
 		return GGBN_concentration;
 	}
 
 	/**
 	 * @param gGBN_concentration the gGBN_concentration to set
 	 */
-	public void setGGBN_concentration(Float gGBN_concentration) {
+	public void setGGBN_concentration(BigDecimal gGBN_concentration) {
 		GGBN_concentration = gGBN_concentration;
 	}
 
@@ -438,30 +439,30 @@ public class MaterialSample extends CollectionMember {
 	/**
 	 * @return the gGBN_absorbanceRatio260_230
 	 */
-    @Column(name = "GGBNAbsorbanceRatio260_230", unique = false, nullable = true, insertable = true, updatable = true)
-	public Float getGGBN_absorbanceRatio260_230() {
+    @Column(name = "GGBNAbsorbanceRatio260_230", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+	public BigDecimal getGGBN_absorbanceRatio260_230() {
 		return GGBN_absorbanceRatio260_230;
 	}
 
 	/**
 	 * @param gGBN_absorbanceRatio260_230 the gGBN_absorbanceRatio260_230 to set
 	 */
-	public void setGGBN_absorbanceRatio260_230(Float gGBN_absorbanceRatio260_230) {
+	public void setGGBN_absorbanceRatio260_230(BigDecimal gGBN_absorbanceRatio260_230) {
 		GGBN_absorbanceRatio260_230 = gGBN_absorbanceRatio260_230;
 	}
 
 	/**
 	 * @return the gGBN_absorbanceRation260_280
 	 */
-    @Column(name = "GGBNAbsorbanceRatio260_280", unique = false, nullable = true, insertable = true, updatable = true)
-	public Float getGGBN_absorbanceRatio260_280() {
+    @Column(name = "GGBNAbsorbanceRatio260_280", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+	public BigDecimal getGGBN_absorbanceRatio260_280() {
 		return GGBN_absorbanceRatio260_280;
 	}
 
 	/**
 	 * @param gGBN_absorbanceRation260_280 the gGBN_absorbanceRation260_280 to set
 	 */
-	public void setGGBN_absorbanceRatio260_280(Float gGBN_absorbanceRatio260_280) {
+	public void setGGBN_absorbanceRatio260_280(BigDecimal gGBN_absorbanceRatio260_280) {
 		GGBN_absorbanceRatio260_280 = gGBN_absorbanceRatio260_280;
 	}
 
@@ -483,15 +484,15 @@ public class MaterialSample extends CollectionMember {
 	/**
 	 * @return the gGBN_volume
 	 */
-    @Column(name = "GGBNVolume", unique = false, nullable = true, insertable = true, updatable = true)
-	public Float getGGBN_volume() {
+    @Column(name = "GGBNVolume", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+	public BigDecimal getGGBN_volume() {
 		return GGBN_volume;
 	}
 
 	/**
 	 * @param gGBN_volume the gGBN_volume to set
 	 */
-	public void setGGBN_volume(Float gGBN_volume) {
+	public void setGGBN_volume(BigDecimal gGBN_volume) {
 		GGBN_volume = gGBN_volume;
 	}
 
@@ -513,15 +514,15 @@ public class MaterialSample extends CollectionMember {
 	/**
 	 * @return the gGBN_weight
 	 */
-    @Column(name = "GGBNWeight", unique = false, nullable = true, insertable = true, updatable = true)
-	public Float getGGBN_weight() {
+    @Column(name = "GGBNWeight", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+	public BigDecimal getGGBN_weight() {
 		return GGBN_weight;
 	}
 
 	/**
 	 * @param gGBN_weight the gGBN_weight to set
 	 */
-	public void setGGBN_weight(Float gGBN_weight) {
+	public void setGGBN_weight(BigDecimal gGBN_weight) {
 		GGBN_weight = gGBN_weight;
 	}
 
@@ -572,15 +573,15 @@ public class MaterialSample extends CollectionMember {
 	/**
 	 * @return the gGBN_sampleSize
 	 */
-    @Column(name = "GGBNSampleSize", unique = false, nullable = true, insertable = true, updatable = true)
-	public Float getGGBN_sampleSize() {
+    @Column(name = "GGBNSampleSize", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+	public BigDecimal getGGBN_sampleSize() {
 		return GGBN_sampleSize;
 	}
 
 	/**
 	 * @param gGBN_sampleSize the gGBN_sampleSize to set
 	 */
-	public void setGGBN_sampleSize(Float gGBN_sampleSize) {
+	public void setGGBN_sampleSize(BigDecimal gGBN_sampleSize) {
 		GGBN_sampleSize = gGBN_sampleSize;
 	}
 
@@ -635,30 +636,30 @@ public class MaterialSample extends CollectionMember {
 	/**
 	 * @return the number1
 	 */
-    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true)
-	public Float getNumber1() {
+    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+	public BigDecimal getNumber1() {
 		return number1;
 	}
 
 	/**
 	 * @param number1 the number1 to set
 	 */
-	public void setNumber1(Float number1) {
+	public void setNumber1(BigDecimal number1) {
 		this.number1 = number1;
 	}
 
 	/**
 	 * @return the number2
 	 */
-    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true)
-	public Float getNumber2() {
+    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+	public BigDecimal getNumber2() {
 		return number2;
 	}
 
 	/**
 	 * @param number2 the number2 to set
 	 */
-	public void setNumber2(Float number2) {
+	public void setNumber2(BigDecimal number2) {
 		this.number2 = number2;
 	}
 
@@ -757,30 +758,30 @@ public class MaterialSample extends CollectionMember {
 	/**
 	 * @return 
 	 */
-    @Column(name = "ReservedNumber3", unique = false, nullable = true, insertable = true, updatable = true)
-	public Float getReservedNumber3() {
+    @Column(name = "ReservedNumber3", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+	public BigDecimal getReservedNumber3() {
 		return reservedNumber3;
 	}
 
 	/**
 	 * @param number3 
 	 */
-	public void setReservedNumber3(Float number3) {
+	public void setReservedNumber3(BigDecimal number3) {
 		this.reservedNumber3 = number3;
 	}
 
 	/**
 	 * @return 
 	 */
-    @Column(name = "ReservedNumber4", unique = false, nullable = true, insertable = true, updatable = true)
-	public Float getReservedNumber4() {
+    @Column(name = "ReservedNumber4", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+	public BigDecimal getReservedNumber4() {
 		return reservedNumber4;
 	}
 
 	/**
 	 * @param number4
 	 */
-	public void setReservedNumber4(Float number4) {
+	public void setReservedNumber4(BigDecimal number4) {
 		this.reservedNumber4 = number4;
 	}
 

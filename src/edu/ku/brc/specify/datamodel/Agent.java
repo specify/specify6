@@ -114,6 +114,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
      
     protected Set<Address>                  addresses;
     protected Set<AgentVariant>             variants;
+    protected Set<AgentIdentifier>          identifiers;
 
     protected String text1;
     protected String text2;
@@ -390,6 +391,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
         variants                       = new HashSet<AgentVariant>();
         agentGeographies               = new HashSet<AgentGeography>();
         agentSpecialties               = new HashSet<AgentSpecialty>();
+        identifiers                    = new HashSet<AgentIdentifier>();
 
         hasGUIDField = true;
         setGUID();
@@ -1105,6 +1107,24 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
     }
 
     /**
+     * @return the identifiers
+     */
+    @OneToMany(mappedBy = "agent")
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+    public Set<AgentIdentifier> getIdentifiers()
+    {
+        return identifiers;
+    }
+
+    /**
+     * @param identifiers the identifiers to set
+     */
+    public void setIdentifiers(Set<AgentIdentifier> identifiers)
+    {
+        this.identifiers = identifiers;
+    }
+
+    /**
      * @return the geographies
      */
     @OneToMany(mappedBy = "agent")
@@ -1241,6 +1261,13 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
             newObj.setAgent(dst);
         }
         
+        for (AgentIdentifier cObj : src.identifiers)
+        {
+            AgentIdentifier newObj = (AgentIdentifier)cObj.clone();
+            dst.identifiers.add(newObj);
+            newObj.setAgent(dst);
+        }
+        
         for (AgentGeography cObj : src.agentGeographies)
         {
             AgentGeography newObj = (AgentGeography)cObj.clone();
@@ -1334,6 +1361,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
         obj.addresses                 = new HashSet<Address>();
         obj.agentAttachments          = new HashSet<AgentAttachment>();
         obj.variants                  = new HashSet<AgentVariant>();
+        obj.identifiers               = new HashSet<AgentIdentifier>();
         obj.agentGeographies          = new HashSet<AgentGeography>();
         obj.agentSpecialties          = new HashSet<AgentSpecialty>();
     }

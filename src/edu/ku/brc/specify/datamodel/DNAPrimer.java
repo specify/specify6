@@ -5,6 +5,7 @@ package edu.ku.brc.specify.datamodel;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.math.BigDecimal;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -47,8 +48,8 @@ public class DNAPrimer extends DataModelObjBase {
 	protected String remarks;
 	protected String text1;
 	protected String text2;
-	protected Float number1;
-	protected Float number2;
+	protected BigDecimal number1;
+	protected BigDecimal number2;
 	protected Integer integer1;
 	protected Integer integer2;
 	protected Boolean yesNo1;
@@ -58,8 +59,8 @@ public class DNAPrimer extends DataModelObjBase {
 	protected String reservedText4;
 	protected Integer reservedInteger3;
 	protected Integer reservedInteger4;
-	protected Float reservedNumber3;
-	protected Float reservedNumber4;
+	protected BigDecimal reservedNumber3;
+	protected BigDecimal reservedNumber4;
 	
 	protected Set<DNASequencingRun> dnaSequencingRuns;
 
@@ -338,30 +339,30 @@ public class DNAPrimer extends DataModelObjBase {
 	/**
 	 * @return the number1
 	 */
-    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true)
-	public Float getNumber1() {
+    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+	public BigDecimal getNumber1() {
 		return number1;
 	}
 
 	/**
 	 * @param number1 the number1 to set
 	 */
-	public void setNumber1(Float number1) {
+	public void setNumber1(BigDecimal number1) {
 		this.number1 = number1;
 	}
 
 	/**
 	 * @return the number2
 	 */
-    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true)
-	public Float getNumber2() {
+    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+	public BigDecimal getNumber2() {
 		return number2;
 	}
 
 	/**
 	 * @param number2 the number2 to set
 	 */
-	public void setNumber2(Float number2) {
+	public void setNumber2(BigDecimal number2) {
 		this.number2 = number2;
 	}
 
@@ -460,30 +461,30 @@ public class DNAPrimer extends DataModelObjBase {
 	/**
 	 * @return 
 	 */
-    @Column(name = "ReservedNumber3", unique = false, nullable = true, insertable = true, updatable = true)
-	public Float getReservedNumber3() {
+    @Column(name = "ReservedNumber3", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+	public BigDecimal getReservedNumber3() {
 		return reservedNumber3;
 	}
 
 	/**
 	 * @param number3 
 	 */
-	public void setReservedNumber3(Float number3) {
+	public void setReservedNumber3(BigDecimal number3) {
 		this.reservedNumber3 = number3;
 	}
 
 	/**
 	 * @return 
 	 */
-    @Column(name = "ReservedNumber4", unique = false, nullable = true, insertable = true, updatable = true)
-	public Float getReservedNumber4() {
+    @Column(name = "ReservedNumber4", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+	public BigDecimal getReservedNumber4() {
 		return reservedNumber4;
 	}
 
 	/**
 	 * @param number4
 	 */
-	public void setReservedNumber4(Float number4) {
+	public void setReservedNumber4(BigDecimal number4) {
 		this.reservedNumber4 = number4;
 	}
 

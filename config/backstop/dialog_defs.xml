@@ -43,6 +43,7 @@
     <dialog type="display" view="AccessionAgent"     name="AccessionAgentDisplay"    class="edu.ku.brc.specify.datamodel.Address" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="Address"            name="AddressDisplay"           class="edu.ku.brc.specify.datamodel.Accession" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="Agent"              name="AgentDisplay"             class="edu.ku.brc.specify.datamodel.Agent" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="AgentIdentifier"       name="AgentIdentifier"             class="edu.ku.brc.specify.datamodel.AgentIdentifier" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="AgentVariant"       name="AgentVariant"             class="edu.ku.brc.specify.datamodel.AgentVariant" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="Appraisal"          name="AppraisalDisplay"         class="edu.ku.brc.specify.datamodel.Appraisal" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="AttachmentsForm"    name="AttachmentsForm"          class="edu.ku.brc.specify.datamodel.Attachment" helpcontext="CBXQViewEdit"/>
@@ -67,6 +68,7 @@
     <dialog type="display" view="DisposalAgent"    name="DisposalAgentDisplay"  class="edu.ku.brc.specify.datamodel.DisposalAgent" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="DisposalPreparation"         name="DisposalPreparationDisplay"        class="edu.ku.brc.specify.datamodel.DisposalPreparation" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="Determination"      name="DeterminationDisplay"     class="edu.ku.brc.specify.datamodel.Determination" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="Determiner"          name="DeterminerDisplay"         class="edu.ku.brc.specify.datamodel.Determiner" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="Division"           name="DivisionDisplay"          class="edu.ku.brc.specify.datamodel.Division" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="DNAPrimer"          name="DNAPrimerDisplay"         class="edu.ku.brc.specify.datamodel.DNAPrimer" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="ExchangeInPrep"     name="ExchangeInPrepDisplay"    class="edu.ku.brc.specify.datamodel.ExchangeInPrep" helpcontext="CBXQViewEdit"/>
@@ -111,6 +113,8 @@
     <dialog type="display" view="ObjectAttachment" name="DeaccessionAttachmentDisplay"          class="edu.ku.brc.specify.datamodel.DeaccessionAttachment" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="ObjectAttachment" name="DNASequenceAttachmentDisplay"          class="edu.ku.brc.specify.datamodel.DNASequenceAttachment" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="ObjectAttachment" name="DNASequencingRunAttachmentDisplay"     class="edu.ku.brc.specify.datamodel.DNASequencingRunAttachment" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="ObjectAttachment" name="ExchangeInAttachmentDisplay"           class="edu.ku.brc.specify.datamodel.ExchangeInAttachment" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="ObjectAttachment" name="ExchangeOutAttachmentDisplay"          class="edu.ku.brc.specify.datamodel.ExchangeOutAttachment" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="ObjectAttachment" name="FieldNotebookAttachmentDisplay"        class="edu.ku.brc.specify.datamodel.FieldNotebookAttachment" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="ObjectAttachment" name="FieldNotebookPageAttachmentDisplay"    class="edu.ku.brc.specify.datamodel.FieldNotebookPageAttachment" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="ObjectAttachment" name="FieldNotebookPageSetAttachmentDisplay" class="edu.ku.brc.specify.datamodel.FieldNotebookPageSetAttachment" helpcontext="CBXQViewEdit"/>

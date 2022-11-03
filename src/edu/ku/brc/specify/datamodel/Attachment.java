@@ -129,6 +129,8 @@ public class Attachment extends DataModelObjBase implements Serializable
     protected Set<DisposalAttachment>                disposalAttachments;
     protected Set<DNASequenceAttachment>             dnaSequenceAttachments;
     protected Set<DNASequencingRunAttachment>        dnaSequencingRunAttachments;
+    protected Set<ExchangeInAttachment>              exchangeInAttachments;
+    protected Set<ExchangeOutAttachment>              exchangeOutAttachments;
     protected Set<FieldNotebookAttachment>           fieldNotebookAttachments;
     protected Set<FieldNotebookPageAttachment>       fieldNotebookPageAttachments;
     protected Set<FieldNotebookPageSetAttachment>    fieldNotebookPageSetAttachments;
@@ -209,6 +211,8 @@ public class Attachment extends DataModelObjBase implements Serializable
         disposalAttachments = new HashSet<>();
         dnaSequenceAttachments         = new HashSet<DNASequenceAttachment>();
         dnaSequencingRunAttachments    = new HashSet<DNASequencingRunAttachment>();
+        exchangeInAttachments          = new HashSet<ExchangeInAttachment>();
+        exchangeOutAttachments         = new HashSet<ExchangeOutAttachment>();
         giftAttachments                = new HashSet<GiftAttachment>();
         loanAttachments                = new HashSet<LoanAttachment>();
         localityAttachments            = new HashSet<LocalityAttachment>();
@@ -254,7 +258,7 @@ public class Attachment extends DataModelObjBase implements Serializable
         return Attachment.class;
     }
 
-    @Column(name = "MimeType", length = 64)
+    @Column(name = "MimeType", length = 1024)
     public String getMimeType()
     {
         return this.mimeType;
@@ -280,7 +284,8 @@ public class Attachment extends DataModelObjBase implements Serializable
 		this.isPublic = isPublic;
 	}
 
-    @Column(name = "OrigFilename", nullable = false, length = 20000)
+    @Lob
+    @Column(name = "OrigFilename", nullable = false, length = 65535)
     public String getOrigFilename()
     {
         return this.origFilename;
@@ -623,6 +628,7 @@ public class Attachment extends DataModelObjBase implements Serializable
     {
         int[] ids = {
             Accession.getClassTableId(), Attachment.GLOBAL_SCOPE, // Is Both Division and Institution (special case)
+            Deaccession.getClassTableId(), Attachment.GLOBAL_SCOPE,
             Agent.getClassTableId(), Attachment.DIVISION_SCOPE,
             Borrow.getClassTableId(),  Attachment.COLLECTION_SCOPE,
             CollectionObject.getClassTableId(),  Attachment.COLLECTION_SCOPE,
@@ -632,6 +638,8 @@ public class Attachment extends DataModelObjBase implements Serializable
             ConservEvent.getClassTableId(), Attachment.DIVISION_SCOPE,
             DNASequence.getClassTableId(), Attachment.COLLECTION_SCOPE,
             DNASequencingRun.getClassTableId(), Attachment.COLLECTION_SCOPE,
+            ExchangeIn.getClassTableId(), Attachment.DIVISION_SCOPE,
+            ExchangeOut.getClassTableId(), Attachment.DIVISION_SCOPE,
             FieldNotebook.getClassTableId(),  Attachment.DISCIPLINE_SCOPE,
             FieldNotebookPage.getClassTableId(), Attachment.DISCIPLINE_SCOPE,
             FieldNotebookPageSet.getClassTableId(),  Attachment.DISCIPLINE_SCOPE,
@@ -724,6 +732,30 @@ public class Attachment extends DataModelObjBase implements Serializable
     public void setDeaccessionAttachments(Set<DeaccessionAttachment> deaccessionAttachments)
     {
         this.deaccessionAttachments = deaccessionAttachments;
+    }
+
+    @OneToMany(mappedBy = "attachment")
+    @Cascade( {CascadeType.ALL} )
+    public Set<ExchangeInAttachment> getExchangeInAttachments()
+    {
+        return exchangeInAttachments;
+    }
+
+    public void setExchangeInAttachments(Set<ExchangeInAttachment> exchangeInAttachments)
+    {
+        this.exchangeInAttachments = exchangeInAttachments;
+    }
+
+    @OneToMany(mappedBy = "attachment")
+    @Cascade( {CascadeType.ALL} )
+    public Set<ExchangeOutAttachment> getExchangeOutAttachments()
+    {
+        return exchangeOutAttachments;
+    }
+
+    public void setExchangeOutAttachments(Set<ExchangeOutAttachment> exchangeOutAttachments)
+    {
+        this.exchangeOutAttachments = exchangeOutAttachments;
     }
 
     @OneToMany(mappedBy = "attachment")

@@ -95,6 +95,8 @@ public class CollectionDataFetcher
                 Deaccession.class,        DeaccessionAttachment.class,
                 DNASequence.class,        DNASequenceAttachment.class,
                 DNASequencingRun.class,   DNASequencingRunAttachment.class,
+                ExchangeIn.class,         ExchangeInAttachment.class,
+                ExchangeOut.class,        ExchangeOutAttachment.class,
                 FieldNotebook.class,      FieldNotebookAttachment.class,
                 FieldNotebookPage.class,  FieldNotebookPageAttachment.class,
                 FieldNotebookPageSet.class, FieldNotebookPageSetAttachment.class,

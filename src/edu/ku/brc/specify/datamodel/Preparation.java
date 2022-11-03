@@ -24,6 +24,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
+import java.math.BigDecimal;
 
 import javax.persistence.*;
 
@@ -104,8 +105,8 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
     protected String                      guid;
     protected String barCode;
     
-    protected Float                       number1;
-    protected Float                       number2;
+    protected BigDecimal                       number1;
+    protected BigDecimal                       number2;
     protected Integer					  integer1;
     protected Integer					  integer2;
     protected Integer					  reservedInteger3;
@@ -945,8 +946,8 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
     /**
      * @return the number1
      */
-    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getNumber1()
+    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber1()
     {
         return number1;
     }
@@ -954,7 +955,7 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
     /**
      * @param number1 the number1 to set
      */
-    public void setNumber1(Float number1)
+    public void setNumber1(BigDecimal number1)
     {
         this.number1 = number1;
     }
@@ -962,8 +963,8 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
     /**
      * @return the number2
      */
-    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getNumber2()
+    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber2()
     {
         return number2;
     }
@@ -971,7 +972,7 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
     /**
      * @param number2 the number2 to set
      */
-    public void setNumber2(Float number2)
+    public void setNumber2(BigDecimal number2)
     {
         this.number2 = number2;
     }

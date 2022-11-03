@@ -23,6 +23,7 @@ import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
+import java.math.BigDecimal;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -77,9 +78,9 @@ public class DNASequencingRun extends CollectionMember implements AttachmentOwne
 	protected String sraSubmissionID;
 	protected String dryadDOI;
 	
-	protected Float number1;
-	protected Float number2;
-	protected Float number3;
+	protected BigDecimal number1;
+	protected BigDecimal number2;
+	protected BigDecimal number3;
 	protected String text1;
 	protected String text2;
 	protected String text3;
@@ -422,8 +423,8 @@ public class DNASequencingRun extends CollectionMember implements AttachmentOwne
     /**
 	 * @return the number1
 	 */
-    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true)
-	public Float getNumber1()
+    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+	public BigDecimal getNumber1()
 	{
 		return number1;
 	}
@@ -431,8 +432,8 @@ public class DNASequencingRun extends CollectionMember implements AttachmentOwne
 	/**
 	 * @return the number2
 	 */
-    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true)
-	public Float getNumber2()
+    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+	public BigDecimal getNumber2()
 	{
 		return number2;
 	}
@@ -443,8 +444,8 @@ public class DNASequencingRun extends CollectionMember implements AttachmentOwne
 	/**
 	 * @return the number3
 	 */
-    @Column(name = "Number3", unique = false, nullable = true, insertable = true, updatable = true)
-	public Float getNumber3()
+    @Column(name = "Number3", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+	public BigDecimal getNumber3()
 	{
 		return number3;
 	}
@@ -709,7 +710,7 @@ public class DNASequencingRun extends CollectionMember implements AttachmentOwne
 	/**
 	 * @param number1 the number1 to set
 	 */
-	public void setNumber1(Float number1)
+	public void setNumber1(BigDecimal number1)
 	{
 		this.number1 = number1;
 	}
@@ -717,7 +718,7 @@ public class DNASequencingRun extends CollectionMember implements AttachmentOwne
 	/**
 	 * @param number2 the number2 to set
 	 */
-	public void setNumber2(Float number2)
+	public void setNumber2(BigDecimal number2)
 	{
 		this.number2 = number2;
 	}
@@ -725,7 +726,7 @@ public class DNASequencingRun extends CollectionMember implements AttachmentOwne
 	/**
 	 * @param number3 the number3 to set
 	 */
-	public void setNumber3(Float number3)
+	public void setNumber3(BigDecimal number3)
 	{
 		this.number3 = number3;
 	}

@@ -29,6 +29,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -164,7 +165,7 @@ public class Container extends CollectionMember implements java.io.Serializable,
     /**
      *
      */
-    @Column(name = "Name", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+    @Column(name = "Name", unique = false, nullable = true, insertable = true, updatable = true, length = 1024)
     public String getName() 
     {
         return this.name;
@@ -178,7 +179,8 @@ public class Container extends CollectionMember implements java.io.Serializable,
     /**
      *
      */
-    @Column(name = "Description", unique = false, nullable = true, insertable = true, updatable = true)
+    @Lob
+    @Column(name = "Description", unique = false, nullable = true, insertable = true, updatable = true, length = 65535)
     public String getDescription() 
     {
         return this.description;

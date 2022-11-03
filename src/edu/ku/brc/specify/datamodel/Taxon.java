@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
+import java.math.BigDecimal;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -154,9 +155,9 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
 
     protected Integer              number1;
     protected Integer              number2;
-    protected Float				   number3;
-    protected Float                number4;
-    protected Float                number5;
+    protected BigDecimal				   number3;
+    protected BigDecimal                number4;
+    protected BigDecimal                number5;
     
     protected Long			       integer1;
     protected Long                 integer2;
@@ -408,7 +409,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
 		this.taxonId = taxonId;
 	}
 
-    @Column(name = "Name", nullable=false, length = 64)
+    @Column(name = "Name", nullable=false, length = 256)
     public String getName()
     {
         return this.name;
@@ -419,7 +420,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
         this.name = name;
     }
 
-    @Column(name = "FullName", length = 255)
+    @Column(name = "FullName", length = 512)
     public String getFullName()
     {
         return this.fullName;
@@ -1031,45 +1032,45 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
     /**
 	 * @return the number3
 	 */
-    @Column(name = "Number3", unique = false, nullable = true, insertable = true, updatable = true)
-	public Float getNumber3() {
+    @Column(name = "Number3", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+	public BigDecimal getNumber3() {
 		return number3;
 	}
 
 	/**
 	 * @param number3 the number3 to set
 	 */
-	public void setNumber3(Float number3) {
+	public void setNumber3(BigDecimal number3) {
 		this.number3 = number3;
 	}
 
 	/**
 	 * @return the number4
 	 */
-    @Column(name = "Number4", unique = false, nullable = true, insertable = true, updatable = true)
-	public Float getNumber4() {
+    @Column(name = "Number4", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+	public BigDecimal getNumber4() {
 		return number4;
 	}
 
 	/**
 	 * @param number4 the number4 to set
 	 */
-	public void setNumber4(Float number4) {
+	public void setNumber4(BigDecimal number4) {
 		this.number4 = number4;
 	}
 
 	/**
 	 * @return the number5
 	 */
-    @Column(name = "Number5", unique = false, nullable = true, insertable = true, updatable = true)
-	public Float getNumber5() {
+    @Column(name = "Number5", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+	public BigDecimal getNumber5() {
 		return number5;
 	}
 
 	/**
 	 * @param number5 the number5 to set
 	 */
-	public void setNumber5(Float number5) {
+	public void setNumber5(BigDecimal number5) {
 		this.number5 = number5;
 	}
 

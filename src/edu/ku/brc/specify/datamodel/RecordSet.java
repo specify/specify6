@@ -204,7 +204,7 @@ public class RecordSet extends CollectionMember implements java.io.Serializable,
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.RecordSetIFace#getName()
      */
-    @Column(name = "Name", unique = false, nullable = false, insertable = true, updatable = true, length = 64)
+    @Column(name = "Name", unique = false, nullable = false, insertable = true, updatable = true, length = 280)
     public String getName()
     {
         return this.name;

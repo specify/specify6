@@ -32,7 +32,7 @@ import edu.ku.brc.specify.datamodel.ExchangeIn;
  * Apr 3, 2009
  *
  */
-public class ExchangeInBusRules extends BaseBusRules
+public class ExchangeInBusRules extends AttachmentOwnerBaseBusRules
 {
 
     /**

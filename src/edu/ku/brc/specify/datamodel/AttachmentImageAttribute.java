@@ -6,6 +6,7 @@ package edu.ku.brc.specify.datamodel;
 import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.Set;
+import java.math.BigDecimal;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -40,8 +41,8 @@ public class AttachmentImageAttribute extends DataModelObjBase
     protected String                  imageType;
     protected String				  text1;
     protected String                  text2;
-    protected Double                  number1;
-    protected Double                  number2;
+    protected BigDecimal                  number1;
+    protected BigDecimal                  number2;
     protected Boolean                 yesNo1;
     protected Boolean                 yesNo2;
     protected String				  remarks;
@@ -197,8 +198,8 @@ public class AttachmentImageAttribute extends DataModelObjBase
 	/**
 	 * @return the number1
 	 */
-    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
-	public Double getNumber1() 
+    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true, length = 24, precision = 20, scale = 10)
+	public BigDecimal getNumber1() 
     {
 		return number1;
 	}
@@ -206,7 +207,7 @@ public class AttachmentImageAttribute extends DataModelObjBase
 	/**
 	 * @param number1 the number1 to set
 	 */
-	public void setNumber1(Double number1) 
+	public void setNumber1(BigDecimal number1) 
 	{
 		this.number1 = number1;
 	}
@@ -214,8 +215,8 @@ public class AttachmentImageAttribute extends DataModelObjBase
 	/**
 	 * @return the number2
 	 */
-    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
-	public Double getNumber2() 
+    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true, length = 24, precision = 20, scale = 10)
+	public BigDecimal getNumber2() 
     {
 		return number2;
 	}
@@ -223,7 +224,7 @@ public class AttachmentImageAttribute extends DataModelObjBase
 	/**
 	 * @param number2 the number2 to set
 	 */
-	public void setNumber2(Double number2) 
+	public void setNumber2(BigDecimal number2) 
 	{
 		this.number2 = number2;
 	}
