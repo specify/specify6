@@ -284,7 +284,8 @@ public class Attachment extends DataModelObjBase implements Serializable
 		this.isPublic = isPublic;
 	}
 
-    @Column(name = "OrigFilename", nullable = false, length = 65536)
+    @Lob
+    @Column(name = "OrigFilename", nullable = false, length = 65535)
     public String getOrigFilename()
     {
         return this.origFilename;

@@ -32,6 +32,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -505,7 +506,8 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
     /**
      * @return the startValue
      */
-    @Column(name = "StartValue", unique = false, nullable = false, insertable = true, updatable = true, length = 65536)
+    @Lob
+    @Column(name = "StartValue", unique = false, nullable = false, insertable = true, updatable = true, length = 65535)
     public String getStartValue()
     {
         return startValue;
@@ -514,7 +516,8 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
     /**
      * @return the endValue
      */
-    @Column(name = "EndValue", unique = false, nullable = true, insertable = true, updatable = true, length = 65536)
+    @Lob
+    @Column(name = "EndValue", unique = false, nullable = true, insertable = true, updatable = true, length = 65535)
     public String getEndValue()
     {
         return endValue;
