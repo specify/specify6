@@ -88,7 +88,7 @@ public class ExchangeOutBusRules extends AttachmentOwnerBaseBusRules
             model.addElement(exchangeOut.getDivision());
             cbx.getComboBox().setSelectedIndex(0);
 
-        } else
+        } else if (divComp instanceof JTextField)
         {
             JTextField tf = (JTextField)divComp;
             tf.setText(exchangeOut.getDivision().getName());
