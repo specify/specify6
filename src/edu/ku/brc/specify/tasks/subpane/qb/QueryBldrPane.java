@@ -3640,7 +3640,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 {
                     //newQueryName = query.getName();
                     newQueryName = nameText.getText();
-                    if (StringUtils.isNotEmpty(newQueryName) && newQueryName.length() > 64)
+                    if (StringUtils.isNotEmpty(newQueryName) && newQueryName.length() > 256)
                     {
                         UIRegistry.getStatusBar().setErrorMessage(
                                 getResourceString("QB_NAME_TOO_LONG"));

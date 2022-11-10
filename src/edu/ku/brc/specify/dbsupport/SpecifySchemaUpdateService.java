@@ -81,7 +81,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 {
     protected static final Logger  log = Logger.getLogger(SpecifySchemaUpdateService.class);
     
-    private final int OVERALL_TOTAL = 101; //the number of incOverall() calls (+1 or +2)
+    private final int OVERALL_TOTAL = 102; //the number of incOverall() calls (+1 or +2)
 
     private static final String TINYINT4 = "TINYINT(4)";
     private static final String INT11    = "INT(11)";
@@ -2932,6 +2932,16 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     }
                     frame.incOverall();
 
+                    frame.setDesc("Increasing length of SpQuery.Name");
+                    if (getFieldLength(conn, databaseName, "spquery", "Name") < 256) {
+                        sql = "alter table spquery modify column `Name` varchar(256) not null";
+                        if (-1 == update(conn, sql)) {
+                            errMsgList.add("update error: " + sql);
+                            return false;
+                        }
+                    }
+                    frame.incOverall();
+                    
                     frame.setDesc("Changing SpQueryField.StartValue to text.");
                     if (!getFieldColumnType(conn, databaseName, "spqueryfield", "StartValue").equalsIgnoreCase("text")) {
                         sql = "alter table spqueryfield modify column StartValue text(65535)";
