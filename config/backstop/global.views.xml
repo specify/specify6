@@ -882,10 +882,10 @@
                     <cell type="subview" viewname="AgentVariant" id="10" name="variants" colspan="19"/>
                 </row>
                 <row>
-                    <cell type="separator" label="Attachments" colspan="19"/>
+                    <cell type="subview" viewname="AgentSpecialty" id="50" name="agentSpecialties" colspan="19" rows="3"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="AgentSpecialty" id="50" name="agentSpecialties" colspan="19" rows="3"/>
+                    <cell type="separator" label="Attachments" colspan="19"/>
                 </row>
                 <row>
                     <cell type="subview" id="agentAttachments" viewname="ObjectAttachment" name="agentAttachments" initialize="btn=true;icon=AgentAttachment"/>
