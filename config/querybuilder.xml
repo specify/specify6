@@ -480,6 +480,7 @@
     </table>
     
     <table name="Loan">
+	<alias name="AddressOfRecord"/>
     	<alias name="LoanPreparation" field="loanPreparations"/>
          <table name="LoanAgent" field="loanAgents">
             <alias name="Agent"/>
