@@ -768,10 +768,9 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
             	 * using doubleValue() eliminates trailing zeroes but 
             	 * that leads to conflict with the way big decimals are
             	 * displayed in view mode on forms and in query results
+            	 * Can be solved by using return String.valueOf(data);
             	 */
-                //return String.valueOf(((Number )data).doubleValue());
-            	
-            	return String.valueOf(data);
+                return String.valueOf(((Number )data).doubleValue());
             } else
             {
                 //fmt = "%d";
