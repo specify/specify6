@@ -43,6 +43,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -5297,7 +5298,7 @@ public class FormViewObj implements Viewable,
                         }
                         
                         Object[] values = UIHelper.getFieldValues(cellField.getFieldNames(), dataObj, dg);
-                        
+
                         setDataIntoUIComp(comp, DataObjFieldFormatMgr.getInstance().format(values[0], dataObjFormatName), defaultValue);
 
                     } else
@@ -5828,6 +5829,7 @@ public class FormViewObj implements Viewable,
      */
     public static void setDataIntoUIComp(final Component comp, final Object data, final String defaultValue)
     {
+        log.debug("NAME: " + comp.getClass() + " ||| VALUE: " + data.toString());
         if (comp instanceof GetSetValueIFace)
         {
             ((GetSetValueIFace)comp).setValue(data, defaultValue);
@@ -5839,7 +5841,13 @@ public class FormViewObj implements Viewable,
         } else if (comp instanceof JTextField)
         {
             JTextField tf = (JTextField)comp;
-            tf.setText(data == null ? "" : data.toString());
+            tf.setText(
+                data == null
+                    ? ""
+                    : data instanceof BigDecimal
+                    ? String.valueOf(((Number )data).doubleValue())
+                    : data.toString()
+            );
             tf.setCaretPosition(0);
 
         } else if (comp instanceof JTextArea)
