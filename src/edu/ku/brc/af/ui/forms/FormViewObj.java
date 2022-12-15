@@ -5829,7 +5829,6 @@ public class FormViewObj implements Viewable,
      */
     public static void setDataIntoUIComp(final Component comp, final Object data, final String defaultValue)
     {
-        log.debug("NAME: " + comp.getClass() + " ||| VALUE: " + data.toString());
         if (comp instanceof GetSetValueIFace)
         {
             ((GetSetValueIFace)comp).setValue(data, defaultValue);
