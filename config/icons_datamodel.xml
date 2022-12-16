@@ -115,6 +115,8 @@
 	<icon name="CollectionObjectAttachment"      file="collection_object_attachment.png" sizes="NonStd"/>
     <icon name="DeaccessionAttachment"           file="deaccession_attachment.png" sizes="NonStd"/>
     <icon name="DisposalAttachment"              file="disposal_attachment.png" sizes="NonStd"/>
+    <icon name="ExchangeInAttachment"              file="exchange_in_attachment.png" sizes="NonStd"/>
+    <icon name="ExchangeOutAttachment"              file="exchange_out_attachment.png" sizes="NonStd"/>
 	<icon name="ConservDescriptionAttachment"    file="conserv_description_attachment.png" sizes="NonStd"/>
 	<icon name="ConservEventAttachment"          file="conserv_event_attachment.png" sizes="NonStd"/>
     <icon name="DNASequenceAttachment"           file="dna_attachment.png" sizes="NonStd"/>

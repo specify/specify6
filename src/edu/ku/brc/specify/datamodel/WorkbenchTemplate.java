@@ -196,7 +196,7 @@ public class WorkbenchTemplate extends DataModelObjBase implements java.io.Seria
     /**
      * 
      */
-    @Column(name = "Name", length = 64)
+    @Column(name = "Name", length = 256)
     public String getName() {
         return this.name;
     }

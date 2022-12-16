@@ -50,7 +50,7 @@ public class GeoCoordDetail extends DataModelObjBase implements Cloneable
     // Manis Fields
     protected Integer               geoCoordDetailId;
     protected BigDecimal            namedPlaceExtent;
-    protected Double			    geoRefAccuracy;
+    protected BigDecimal			    geoRefAccuracy;
     protected String                geoRefAccuracyUnits;
     protected String                geoRefDetRef;
     protected Calendar              geoRefDetDate;
@@ -74,7 +74,25 @@ public class GeoCoordDetail extends DataModelObjBase implements Cloneable
     protected String                text1;
     protected String                text2;
     protected String                text3;
-    
+    protected String                text4;
+    protected String                text5;
+    protected Integer               integer1;
+    protected Integer               integer2;
+    protected Integer               integer3;
+    protected Integer               integer4;
+    protected Integer               integer5;
+    protected BigDecimal               number1;
+    protected BigDecimal               number2;
+    protected BigDecimal               number3;
+    protected BigDecimal               number4;
+    protected BigDecimal               number5;
+    protected Boolean             yesNo1;
+    protected Boolean             yesNo2;
+    protected Boolean             yesNo3;
+    protected Boolean             yesNo4;
+    protected Boolean             yesNo5;
+
+
     protected Locality              locality;
     
     /**
@@ -120,7 +138,27 @@ public class GeoCoordDetail extends DataModelObjBase implements Cloneable
         text1                 = null;
         text2                 = null;
         text3                 = null;
-        
+        text4                 = null;
+        text5                 = null;
+
+        integer1 = null;
+        integer2 = null;
+        integer3 = null;
+        integer4 = null;
+        integer5 = null;
+
+        number1 = null;
+        number2 = null;
+        number3 = null;
+        number4 = null;
+        number5 = null;
+
+        yesNo1 = null;
+        yesNo2 = null;
+        yesNo3 = null;
+        yesNo4 = null;
+        yesNo5 = null;
+
         locality              = null;
     	//NOTE: if fields are added to this table, the matches method must be updated accordingly!!!! 
     }
@@ -148,8 +186,8 @@ public class GeoCoordDetail extends DataModelObjBase implements Cloneable
     /**
 	 * @return the geoRefAccuracy
 	 */
-    @Column(name = "GeoRefAccuracy", unique = false, nullable = true, insertable = true, updatable = true)
-	public Double getGeoRefAccuracy() {
+    @Column(name = "GeoRefAccuracy", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+	public BigDecimal getGeoRefAccuracy() {
 		return geoRefAccuracy;
 	}
 
@@ -157,7 +195,7 @@ public class GeoCoordDetail extends DataModelObjBase implements Cloneable
 	/**
 	 * @param geoRefAccuracy the geoRefAccuracy to set
 	 */
-	public void setGeoRefAccuracy(Double geoRefAccuracy) {
+	public void setGeoRefAccuracy(BigDecimal geoRefAccuracy) {
 		this.geoRefAccuracy = geoRefAccuracy;
 	}
 
@@ -507,6 +545,246 @@ public class GeoCoordDetail extends DataModelObjBase implements Cloneable
     {
         this.text3 = text3;
     }
+
+    /**
+     * @return the text4
+     */
+    @Lob
+    @Column(name = "Text4", length = 65535)
+    public String getText4()
+    {
+        return text4;
+    }
+
+    /**
+     * @param text4 the text4 to set
+     */
+    public void setText4(String text4)
+    {
+        this.text4 = text4;
+    }
+
+    /**
+     * @return the text5
+     */
+    @Lob
+    @Column(name = "Text5", length = 65535)
+    public String getText5()
+    {
+        return text5;
+    }
+
+    /**
+     * @param text5 the text5 to set
+     */
+    public void setText5(String text5)
+    {
+        this.text5 = text5;
+    }
+
+    /**
+     *      * User definable
+     */
+    @Column(name = "Integer1", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
+    public Integer getInteger1()
+    {
+        return this.integer1;
+    }
+
+    public void setInteger1(Integer integer1)
+    {
+        this.integer1 = integer1;
+    }
+
+    /**
+     *      * User definable
+     */
+    @Column(name = "Integer2", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
+    public Integer getInteger2()
+    {
+        return this.integer2;
+    }
+
+    public void setInteger2(Integer integer2)
+    {
+        this.integer2 = integer2;
+    }
+
+    /**
+     *      * User definable
+     */
+    @Column(name = "Integer3", unique = false, nullable = true, insertable = true, updatable = true, length = 34)
+    public Integer getInteger3()
+    {
+        return this.integer3;
+    }
+
+    public void setInteger3(Integer integer3)
+    {
+        this.integer3 = integer3;
+    }
+    /**
+     *      * User definable
+     */
+    @Column(name = "Integer4", unique = false, nullable = true, insertable = true, updatable = true, length = 44)
+    public Integer getInteger4()
+    {
+        return this.integer4;
+    }
+
+    public void setInteger4(Integer integer4)
+    {
+        this.integer4 = integer4;
+    }
+    /**
+     *      * User definable
+     */
+    @Column(name = "Integer5", unique = false, nullable = true, insertable = true, updatable = true, length = 54)
+    public Integer getInteger5()
+    {
+        return this.integer5;
+    }
+
+    public void setInteger5(Integer integer5)
+    {
+        this.integer5 = integer5;
+    }
+
+    /**
+     *      * User definable
+     */
+    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true, length = 24, precision = 20, scale = 10)
+    public BigDecimal getNumber1() 
+    {
+        return this.number1;
+    }
+    
+    public void setNumber1(BigDecimal number1) 
+    {
+        this.number1 = number1;
+    }
+
+    /**
+     *      * User definable
+     */
+    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true, length = 24, precision = 20, scale = 10)
+    public BigDecimal getNumber2() 
+    {
+        return this.number2;
+    }
+    
+    public void setNumber2(BigDecimal number2) 
+    {
+        this.number2 = number2;
+    }
+
+    /**
+     *      * User definable
+     */
+    @Column(name = "Number3", unique = false, nullable = true, insertable = true, updatable = true, length = 34, precision = 20, scale = 10)
+    public BigDecimal getNumber3()
+    {
+        return this.number3;
+    }
+
+    public void setNumber3(BigDecimal number3)
+    {
+        this.number3 = number3;
+    }
+    /**
+     *      * User definable
+     */
+    @Column(name = "Number4", unique = false, nullable = true, insertable = true, updatable = true, length = 44, precision = 20, scale = 10)
+    public BigDecimal getNumber4()
+    {
+        return this.number4;
+    }
+
+    public void setNumber4(BigDecimal number4)
+    {
+        this.number4 = number4;
+    }
+    /**
+     *      * User definable
+     */
+    @Column(name = "Number5", unique = false, nullable = true, insertable = true, updatable = true, length = 54, precision = 20, scale = 10)
+    public BigDecimal getNumber5()
+    {
+        return this.number5;
+    }
+
+    public void setNumber5(BigDecimal number5)
+    {
+        this.number5 = number5;
+    }
+
+    /**
+     *      * User definable
+     */
+    @Column(name="YesNo1",unique=false,nullable=true,updatable=true,insertable=true)
+    public Boolean getYesNo1() 
+    {
+        return this.yesNo1;
+    }
+    
+    public void setYesNo1(Boolean yesNo1) 
+    {
+        this.yesNo1 = yesNo1;
+    }
+
+    /**
+     *      * User definable
+     */
+    @Column(name="YesNo2",unique=false,nullable=true,updatable=true,insertable=true)
+    public Boolean getYesNo2() 
+    {
+        return this.yesNo2;
+    }
+    
+    public void setYesNo2(Boolean yesNo2) 
+    {
+        this.yesNo2 = yesNo2;
+    }
+    /**
+     *      * User definable
+     */
+    @Column(name="YesNo3",unique=false,nullable=true,updatable=true,insertable=true)
+    public Boolean getYesNo3()
+    {
+        return this.yesNo3;
+    }
+
+    public void setYesNo3(Boolean yesNo3)
+    {
+        this.yesNo3 = yesNo3;
+    }
+    /**
+     *      * User definable
+     */
+    @Column(name="YesNo4",unique=false,nullable=true,updatable=true,insertable=true)
+    public Boolean getYesNo4()
+    {
+        return this.yesNo4;
+    }
+
+    public void setYesNo4(Boolean yesNo4)
+    {
+        this.yesNo4 = yesNo4;
+    }
+    /**
+     *      * User definable
+     */
+    @Column(name="YesNo5",unique=false,nullable=true,updatable=true,insertable=true)
+    public Boolean getYesNo5()
+    {
+        return this.yesNo5;
+    }
+
+    public void setYesNo5(Boolean yesNo5)
+    {
+        this.yesNo5 = yesNo5;
+    }
+
 
     /**
      * @return the source

@@ -285,23 +285,6 @@
 
         <arg value="--release=${specify.SPECIFY_VERSION}" />
         <arg value="--destination=${packages.dir}" />
-        <arg value="--build-ids=176,179" />
-        <arg value="${packaging.dir}/5-winlin-full-ext.install4j" />
-      </exec>
-      <move file="${packages.dir}/updates.xml" tofile="${packages.dir}/updates.xml.winlinfull"/>
-
-      <exec executable="${install4j.dir}/bin/install4jc">
-        <!-- <arg value="-\-quiet"/> -->
-        <arg value="--faster"/>
-
-        <arg value="--win-keystore-password=${win-keystore-password}" />
-        <arg value="--mac-keystore-password=${mac-keystore-password}"/>
-        <arg value="--disable-signing" unless:true="${code.signing}" />
-        <arg value="-D" />
-        <arg value="macPkcs12File=${mac.pkcs12},windowsPkcs12File=${win.pkcs12}" />
-
-        <arg value="--release=${specify.SPECIFY_VERSION}" />
-        <arg value="--destination=${packages.dir}" />
         <arg value="--build-ids=1965,1873" />
         <arg value="${packaging.dir}/5-winlin-full-ext-64.install4j" />
       </exec>
@@ -317,9 +300,7 @@
   <target name="generate-updates-xml">
     <local name="macos-package-file"/>
     <local name="windows64-package-file"/>
-    <local name="windows-package-file"/>
     <local name="unix64-package-file"/>
-    <local name="unix-package-file"/>
 
     <exec executable="find" outputproperty="macos-package-file" dir="${packages.dir}">
       <arg line="-name '*macos*' -and -not -name '*update*' -printf %f" />
@@ -329,16 +310,8 @@
       <arg line="-name '*windows*64*' -and -not -name '*update*' -printf %f" />
     </exec>
 
-    <exec executable="find" outputproperty="windows-package-file" dir="${packages.dir}">
-      <arg line="-name '*windows*' -and -not -name '*64*' -and -not -name '*update*' -printf %f" />
-    </exec>
-
     <exec executable="find" outputproperty="unix64-package-file" dir="${packages.dir}">
       <arg line="-name '*unix*64*' -and -not -name '*update*' -printf %f" />
-    </exec>
-
-    <exec executable="find" outputproperty="unix-package-file" dir="${packages.dir}">
-      <arg line="-name '*unix*' -and -not -name '*64*' -and -not -name '*update*' -printf %f" />
     </exec>
 
     <exec executable="./packaging/generate_updates_xml.sh">
@@ -346,12 +319,8 @@
       <arg value="${specify.SPECIFY_VERSION}"/>
       <arg value="24"/>
       <arg value="${macos-package-file}"/>
-      <arg value="176"/>
-      <arg value="${windows-package-file}"/>
       <arg value="1873"/>
       <arg value="${windows64-package-file}"/>
-      <arg value="179"/>
-      <arg value="${unix-package-file}"/>
       <arg value="1965"/>
       <arg value="${unix64-package-file}"/>
     </exec>
@@ -367,6 +336,16 @@
       </classpath>
     </java>
   </target>
+  
+  <target name="run-wizard-nonmac" depends="make-jar-nonmac, generate-datamodel">
+    <java classname="edu.ku.brc.specify.config.init.SpecifyDBSetupWizardFrame" fork="true" failonerror="true">
+      <classpath>
+        <path refid="compile.classpath.nonmac"/>
+        <pathelement location="${build.root}/${jar.name}-nonmac.jar"/>
+      </classpath>
+    </java>
+  </target>
+  
 
   <target name="run-specify-mac" depends="make-jar-mac, generate-datamodel">
     <java classname="edu.ku.brc.specify.Specify" fork="true" failonerror="true">

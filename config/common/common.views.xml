@@ -501,6 +501,30 @@
             </altviews>
         </view>
 
+        <view name="Determiner"
+              class="edu.ku.brc.specify.datamodel.Determiner"
+              busrules="edu.ku.brc.specify.datamodel.busrules.DeterminerBusRules"
+        >
+            <desc><![CDATA[The Determiners Form.]]></desc>
+            <altviews>
+                <altview name="Determiner View" viewdef="Determiner" mode="view" validated="false" default="true"/>
+                <altview name="Determiner Edit" viewdef="Determiner" mode="edit" validated="true"/>
+            </altviews>
+        </view>
+
+        <view name="Determiners"
+              class="edu.ku.brc.specify.datamodel.Determiner"
+              busrules="edu.ku.brc.specify.datamodel.busrules.DeterminerBusRules"
+        >
+            <desc><![CDATA[The Determiners Subform.]]></desc>
+            <altviews>
+                <!-- <altview name="Determiners Icon View"  viewdef="DeterminersIconView" mode="view"/>
+                <altview name="Determiners Icon Edit"  viewdef="DeterminersIconView" mode="edit"/>  -->
+                <altview name="Determiners Table View" viewdef="Determiners Table"   mode="view"/>
+                <altview name="Determiners Table Edit" viewdef="Determiners Table"   mode="edit" default="true"/>
+            </altviews>
+        </view>
+
         <view name="DNAPrimer"
               objtitle="DNA Primer"
               class="edu.ku.brc.specify.datamodel.DNAPrimer"
@@ -646,7 +670,7 @@
         <view name="Extractor"
               class="edu.ku.brc.specify.datamodel.Extractor"
               busrules="edu.ku.brc.specify.datamodel.busrules.ExtractorBusRules">
-            <desc><![CDATA[The Collectors Form.]]></desc>
+            <desc><![CDATA[The Extractors Form.]]></desc>
             <altviews>
                 <altview name="Extractor View" viewdef="Extractor" mode="view" validated="false" default="true"/>
                 <altview name="Extractor Edit" viewdef="Extractor" mode="edit" validated="true"/>
@@ -980,7 +1004,7 @@
         <view name="PcrPerson"
               class="edu.ku.brc.specify.datamodel.PcrPerson"
               busrules="edu.ku.brc.specify.datamodel.busrules.PcrPersonBusRules">
-            <desc><![CDATA[The Collectors Form.]]></desc>
+            <desc><![CDATA[The PCRPersons Form.]]></desc>
             <altviews>
                 <altview name="PcrPerson View" viewdef="PcrPerson" mode="view" validated="false" default="true"/>
                 <altview name="PcrPerson Edit" viewdef="PcrPerson" mode="edit" validated="true"/>
@@ -1107,6 +1131,18 @@
                 <altview name="OtherIdentifiers Table Edit" viewdef="OtherIdentifiers Table" mode="edit"/>
                 <altview name="OtherIdentifiers View" viewdef="OtherIdentifiers" mode="view"/>
                 <altview name="OtherIdentifiers Edit" viewdef="OtherIdentifiers" mode="edit" default="true"/>
+            </altviews>
+        </view>
+
+        <view name="AgentIdentifiers"
+              class="edu.ku.brc.specify.datamodel.AgentIdentifier"
+        >
+            <desc><![CDATA[Subform within the agent form.]]></desc>
+            <altviews>
+                <altview name="AgentIdentifiers Table View" viewdef="AgentIdentifiers Table" mode="view"/>
+                <altview name="AgentIdentifiers Table Edit" viewdef="AgentIdentifiers Table" mode="edit"/>
+                <altview name="AgentIdentifiers View" viewdef="AgentIdentifiers" mode="view"/>
+                <altview name="AgentIdentifiers Edit" viewdef="AgentIdentifiers" mode="edit" default="true"/>
             </altviews>
         </view>
 
@@ -2222,7 +2258,7 @@
                 class="edu.ku.brc.specify.datamodel.CollectionObjectProperty"
                 gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
                 settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
-            <desc><![CDATA[Form For OtherIdentifier]]></desc>
+            <desc><![CDATA[Form For CollectionObjectProperty]]></desc>
 
             <columnDef>100px,2px,195px,5px,215px,2px,308px</columnDef>
             <columnDef os="lnx">105px,2px,210px,5px,220px,2px,363px</columnDef>
@@ -3520,6 +3556,98 @@
             </rows>
         </viewdef>
 
+
+        <viewdef
+                type="form"
+                name="Determiner"
+                class="edu.ku.brc.specify.datamodel.Determiner"
+                gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+                settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The Determiner form.]]></desc>
+            <enableRules/>
+
+            <columnDef>105px,2px,210px,5px,100px,2px,98px,300px,p:g</columnDef>
+            <columnDef os="lnx">135px,2px,230px,5px,120px,2px,118px,325px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,215px,5px,140px,2px,138px,395px,p:g</columnDef>
+            <columnDef os="exp">p,2px,p:g,5px:g,p,2px,p:g,p:g(2),p:g</columnDef>
+            <rowDef>p,2dlu,p:g,2dlu,p:g</rowDef>
+
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="agent" uitype="querycbx" initialize="name=Agent;title=Agent"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="3"/>
+                    <cell type="field" id="3" name="remarks" uitype="textareabrief" rows="2" colspan="6"/>
+                </row>
+                <!--<row>
+                    <cell type="label" labelfor="9"/>
+                    <cell type="field" id="9" name="createdByAgent" uitype="label" readonly="true"  uifieldformatter="Agent"/>
+                    <cell type="label" labelfor="10"/>
+                    <cell type="field" id="10" name="modifiedByAgent" uitype="label" readonly="true"  uifieldformatter="Agent"/>
+                    <cell type="label" id="divLabel" label=" " initialize="align=right"/>
+                    <cell type="field" id="4" name="divisionCBX" uitype="combobox" ignore="true"/>
+                </row>
+                <row>
+                	<cell type="field" id="34" uitype="checkbox" name="isPrimary"/>                	
+                </row>
+                <row>
+                    <cell type="label" labelfor="11"/>
+                    <cell type="field" id="11" name="timestampModified" uitype="label" readonly="true"/>
+                    <cell type="label" labelfor="12"/>
+                    <cell type="field" id="12" name="timestampCreated" uitype="label" readonly="true"/>
+                </row>-->
+            </rows>
+        </viewdef>
+
+        <viewdef
+                type="formtable"
+                name="Determiners Table"
+                class="edu.ku.brc.specify.datamodel.Determiner"
+                gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+                settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            <desc><![CDATA[Determiners grid view for Determination form.]]></desc>
+            <definition>Determiners</definition>
+        </viewdef>
+
+        <viewdef
+                type="iconview"
+                name="DeterminersIconView"
+                class="edu.ku.brc.specify.datamodel.Determiner"
+                gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+                settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The Determiners Icon Viewer]]></desc>
+        </viewdef>
+
+        <viewdef
+                type="form"
+                name="Determiners"
+                class="edu.ku.brc.specify.datamodel.Determiner"
+                gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+                settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The Determiners form - UNKNOWN use in database.]]></desc>
+            <enableRules/>
+
+            <columnDef>p,5dlu,p:g,5dlu,p</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+
+            <rows>
+                <row>
+                    <cell type="label" labelfor="3"/>
+                    <cell type="field" id="3" name="agent.lastName" uitype="text" colspan="3"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="5"/>
+                    <cell type="field" id="5" name="agent.firstName" uitype="text" colspan="3"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="7"/>
+                    <cell type="field" id="7" name="remarks" uitype="text" colspan="3"/>
+                </row>
+            </rows>
+        </viewdef>
+
         <viewdef
                 name="DNAPrimer"
                 type="form"
@@ -4598,7 +4726,7 @@
                 class="edu.ku.brc.specify.datamodel.Extractor"
                 gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
                 settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
-            <desc><![CDATA[Collectors grid view for CollectingEvent form.]]></desc>
+            <desc><![CDATA[Extractors grid view for CollectingEvent form.]]></desc>
             <definition>PcrPersons</definition>
         </viewdef>
 
@@ -6314,8 +6442,19 @@
                 gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
                 settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
 
-            <desc><![CDATA[Preparation subform table for Collection Object form.]]></desc>
+            <desc><![CDATA[OtherIdentifiers subform table for Collection Object form.]]></desc>
             <definition>OtherIdentifiers</definition>
+        </viewdef>
+
+        <viewdef
+                type="formtable"
+                name="AgentIdentifiers Table"
+                class="edu.ku.brc.specify.datamodel.AgentIdentifier"
+                gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+                settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+
+            <desc><![CDATA[AgentIdentifiers subform table for Agent form.]]></desc>
+            <definition>AgentIdentifiers</definition>
         </viewdef>
 
         <viewdef
@@ -6359,6 +6498,48 @@
                 </row>-->
             </rows>
         </viewdef>
+
+        <viewdef
+                type="form"
+                name="AgentIdentifiers"
+                class="edu.ku.brc.specify.datamodel.AgentIdentifier"
+                gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+                settable="edu.ku.brc.af.ui.forms.DataSetterForObj"
+                useresourcelabels="true">
+            <desc><![CDATA[subform on the Agent form.]]></desc>
+            <enableRules/>
+
+            <columnDef>100px,2px,473px,5px,120px,2px,125px,0px,15px,p:g</columnDef>
+            <columnDef os="lnx">115px,2px,510px,5px,120px,2px,198px,0px,15px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,530px,5px,105px,2px,218px,0px,15px,p:g</columnDef>
+            <columnDef os="exp">p,2px,473px,5px:g,p,2px,125px,0px,15px,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="identifier" uitype="text"/>
+                    <cell type="label" labelfor="2"/>
+                    <cell type="field" id="2" name="identifierType" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="7"/>
+                    <cell type="field" id="7" name="remarks" uitype="textareabrief" rows="2" colspan="6"/>
+                </row>
+                <!--<row>
+                    <cell type="label" labelfor="9"/>
+                    <cell type="field" id="9" name="createdByAgent" uitype="label" readonly="true" uifieldformatter="Agent"/>
+                    <cell type="label" labelfor="10"/>
+                    <cell type="field" id="10" name="modifiedByAgent" uitype="label" readonly="true" uifieldformatter="Agent"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="11"/>
+                    <cell type="field" id="11" name="timestampModified" uitype="label" readonly="true"/>
+                    <cell type="label" labelfor="12"/>
+                    <cell type="field" id="12" name="timestampCreated" uitype="label" readonly="true"/>
+                </row>-->
+            </rows>
+        </viewdef>        
 
         <viewdef
                 type="formtable"
@@ -6537,7 +6718,7 @@
                 class="edu.ku.brc.specify.datamodel.PcrPerson"
                 gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
                 settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
-            <desc><![CDATA[Collectors grid view for CollectingEvent form.]]></desc>
+            <desc><![CDATA[PrcPersons grid view for CollectingEvent form.]]></desc>
             <definition>PcrPersons</definition>
         </viewdef>
 
@@ -6760,7 +6941,7 @@
                 class="edu.ku.brc.specify.datamodel.PreparationAttribute"
                 gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
                 settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
-            <desc><![CDATA[Form For OtherIdentifier]]></desc>
+            <desc><![CDATA[Form For PreparationAttributes]]></desc>
 
             <columnDef>100px,2px,195px,5px,215px,2px,308px</columnDef>
             <columnDef os="lnx">105px,2px,210px,5px,220px,2px,363px</columnDef>
@@ -6902,7 +7083,7 @@
                 class="edu.ku.brc.specify.datamodel.PreparationProperty"
                 gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
                 settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
-            <desc><![CDATA[Form For OtherIdentifier]]></desc>
+            <desc><![CDATA[Form For PreparationProperty]]></desc>
 
             <columnDef>100px,2px,195px,5px,215px,2px,308px</columnDef>
             <columnDef os="lnx">105px,2px,210px,5px,220px,2px,363px</columnDef>

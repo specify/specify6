@@ -204,7 +204,7 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
     /**
      *      * Name of workbench
      */
-    @Column(name = "Name", length = 64)
+    @Column(name = "Name", length = 256)
     public String getName() {
         return this.name;
     }

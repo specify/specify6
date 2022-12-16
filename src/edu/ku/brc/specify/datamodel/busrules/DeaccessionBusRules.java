@@ -1,11 +1,10 @@
 package edu.ku.brc.specify.datamodel.busrules;
 
-import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.specify.datamodel.Deaccession;
 import edu.ku.brc.specify.datamodel.Gift;
 
-public class DeaccessionBusRules extends BaseBusRules {
+public class DeaccessionBusRules extends AttachmentOwnerBaseBusRules {
     public DeaccessionBusRules() {
         super(DeaccessionBusRules.class);
     }

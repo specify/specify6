@@ -23,6 +23,7 @@ import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Vector;
+import java.math.BigDecimal;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -71,8 +72,8 @@ public class RepositoryAgreement extends DataModelObjBase implements AttachmentO
     protected String                      text1;
     protected String                      text2;
     protected String                      text3;
-    protected Float                       number1;
-    protected Float                       number2;
+    protected BigDecimal                       number1;
+    protected BigDecimal                       number2;
     protected String                      remarks;
     protected Boolean                     yesNo1;
     protected Boolean                     yesNo2;
@@ -277,24 +278,24 @@ public class RepositoryAgreement extends DataModelObjBase implements AttachmentO
     /**
      *
      */
-    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getNumber1() {
+    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber1() {
         return this.number1;
     }
 
-    public void setNumber1(Float number1) {
+    public void setNumber1(BigDecimal number1) {
         this.number1 = number1;
     }
 
     /**
      *
      */
-    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getNumber2() {
+    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber2() {
         return this.number2;
     }
 
-    public void setNumber2(Float number2) {
+    public void setNumber2(BigDecimal number2) {
         this.number2 = number2;
     }
 

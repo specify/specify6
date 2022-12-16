@@ -73,6 +73,7 @@ public class AttachmentBusRules extends BaseBusRules
             "dnasequencerunattachment", "fieldnotebookattachment",      "fieldnotebookpageattachment",
             "fieldnotebookpagesetattachment", "giftattachment", "loanattachment", "localityattachment",
             "permitattachment", "preparationattachment", "referenceworkattachment",
+            "exchangeinattachment", "exchangeoutattachment",
             "repositoryagreementattachment", "taxonattachment"};
     
     static private String BROWSE_DIR_PREF = "AttachmentBrowseDir";

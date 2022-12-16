@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Vector;
+import java.math.BigDecimal;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -65,9 +66,9 @@ public class PreparationAttribute extends CollectionMember implements Cloneable
     protected String text22;  // preparationType
     protected String text23;  // containerType
     protected String text24;  // medium
-    protected Float number1;
-    protected Float number2;
-    protected Float number3;
+    protected BigDecimal number1;
+    protected BigDecimal number2;
+    protected BigDecimal number3;
     protected Integer number4;
     protected Integer number5;
     protected Integer number6;
@@ -210,8 +211,8 @@ public class PreparationAttribute extends CollectionMember implements Cloneable
     /**
      * @return the number1
      */
-    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getNumber1()
+    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber1()
     {
         return number1;
     }
@@ -219,8 +220,8 @@ public class PreparationAttribute extends CollectionMember implements Cloneable
     /**
      * @return the number2
      */
-    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getNumber2()
+    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber2()
     {
         return number2;
     }
@@ -228,8 +229,8 @@ public class PreparationAttribute extends CollectionMember implements Cloneable
     /**
      * @return the number3
      */
-    @Column(name = "Number3", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getNumber3()
+    @Column(name = "Number3", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber3()
     {
         return number3;
     }
@@ -605,7 +606,7 @@ public class PreparationAttribute extends CollectionMember implements Cloneable
     /**
      * @param number1 the number1 to set
      */
-    public void setNumber1(Float number1)
+    public void setNumber1(BigDecimal number1)
     {
         this.number1 = number1;
     }
@@ -613,7 +614,7 @@ public class PreparationAttribute extends CollectionMember implements Cloneable
     /**
      * @param number2 the number2 to set
      */
-    public void setNumber2(Float number2)
+    public void setNumber2(BigDecimal number2)
     {
         this.number2 = number2;
     }
@@ -621,7 +622,7 @@ public class PreparationAttribute extends CollectionMember implements Cloneable
     /**
      * @param number3 the number3 to set
      */
-    public void setNumber3(Float number3)
+    public void setNumber3(BigDecimal number3)
     {
         this.number3 = number3;
     }
