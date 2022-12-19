@@ -818,7 +818,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements ValFormat
 		try {
 			if (cls == BigDecimal.class) {
 				if (bdValidator == null) {
-					bdValidator = CurrencyValidator.getInstance();
+					bdValidator = BigDecimalValidator.getInstance();
 				}
 
 				Number maxVal = formatter.getMaxValue();

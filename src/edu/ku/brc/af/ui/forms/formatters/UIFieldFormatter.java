@@ -458,7 +458,7 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
     {
         if (minValue == null && dataClass == BigDecimal.class)
         {
-            minValue = Double.MIN_VALUE;
+            minValue = -Double.MAX_VALUE;
         }
         return minValue;
     }
