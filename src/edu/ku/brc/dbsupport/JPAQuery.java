@@ -19,6 +19,7 @@
 */
 package edu.ku.brc.dbsupport;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -288,7 +289,7 @@ public class JPAQuery implements CustomQueryIFace
                 	resultsList = objArray;
                 } else
                 {
-                    resultsList = qry.list();
+                    resultsList = proccessQuery(qry.list());
                 }
                 
                if (doDebug)
@@ -348,7 +349,45 @@ public class JPAQuery implements CustomQueryIFace
         
         return !inError;
     }
-
+    
+    /**
+     * Processes and modifies data from the Query Output of a Hibernate SQL command
+     * @param queryList -> A query output from Hibernate
+     * @return newList -> the modified list
+     */
+    public static List<?> proccessQuery(List<?> queryList)
+    {
+    	/* 
+    	 * Hibernate returns data from the database to Java from Query.list() in the form of a List<?>.
+    	 * If there are multiple results per row, Hibernate instead returns a List of Object Arrays. 
+    	 * 
+    	 * See https://docs.jboss.org/hibernate/orm/3.2/api/org/hibernate/Query.html#list()
+    	 */
+    	List<Object> newList = (List<Object>) queryList;
+    	
+    	for (int row =0 ; row < newList.size(); row++)
+    	{
+    		if (newList.get(row) instanceof Object[])
+    		{
+    			Object[] cols = (Object[]) newList.get(row);
+    			for (int col=0; col < cols.length; col++)
+    			{
+    				if (cols[col] != null)
+    				{
+    					/* Strip Bigdecimals of their trailing zeros */
+    					if (cols[col] instanceof BigDecimal)
+    					{
+    						BigDecimal data = ((BigDecimal) cols[col]).stripTrailingZeros();
+    						cols[col] = data;
+    						newList.set(row, cols);
+    					}
+    				}
+    			}
+    		}
+    	}
+    	return newList;
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.CustomQuery#execute(edu.ku.brc.dbsupport.CustomQueryListener)
      */
@@ -386,6 +425,7 @@ public class JPAQuery implements CustomQueryIFace
             ex.printStackTrace();
         }
     }
+    
 
     /**
      * Dumps the results to the log file.
