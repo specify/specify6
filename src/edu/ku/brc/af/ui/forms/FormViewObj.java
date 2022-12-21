@@ -5844,7 +5844,7 @@ public class FormViewObj implements Viewable,
                 data == null
                     ? ""
                     : data instanceof BigDecimal
-                    ? String.valueOf(((Number )data).doubleValue())
+                    ? ((BigDecimal) data).stripTrailingZeros().toPlainString()
                     : data.toString()
             );
             tf.setCaretPosition(0);
