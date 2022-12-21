@@ -289,7 +289,7 @@ public class JPAQuery implements CustomQueryIFace
                 	resultsList = objArray;
                 } else
                 {
-                    resultsList = proccessQuery(qry.list());
+                    resultsList = modifyQueryResults(qry.list());
                 }
                 
                if (doDebug)
@@ -352,24 +352,25 @@ public class JPAQuery implements CustomQueryIFace
     
     /**
      * Processes and modifies data from the Query Output of a Hibernate SQL command
-     * @param queryList -> A query output from Hibernate
+     * @param rawQueryResults -> A query output from Hibernate
      * @return newList -> the modified list
      */
-    public static List<?> proccessQuery(List<?> queryList)
+    public static List<?> modifyQueryResults(List<?> rawQueryResults)
     {
     	/* 
-    	 * Hibernate returns data from the database to Java from Query.list() in the form of a List<?>.
-    	 * If there are multiple results per row, Hibernate instead returns a List of Object Arrays. 
+    	 * Hibernate returns data from the database to Java from Query.list() in the form of a List<?> containing the results.
+    	 * If there are multiple results per row, Hibernate instead returns a List of Object Arrays, each containing results per row.
+    	 *   
     	 * 
     	 * See https://docs.jboss.org/hibernate/orm/3.2/api/org/hibernate/Query.html#list()
     	 */
-    	List<Object> newList = (List<Object>) queryList;
+    	List<Object> modifiedQueryResults = (List<Object>) rawQueryResults;
     	
-    	for (int row =0 ; row < newList.size(); row++)
+    	for (int row =0 ; row < modifiedQueryResults.size(); row++)
     	{
-    		if (newList.get(row) instanceof Object[])
+    		if (modifiedQueryResults.get(row) instanceof Object[])
     		{
-    			Object[] cols = (Object[]) newList.get(row);
+    			Object[] cols = (Object[]) modifiedQueryResults.get(row);
     			for (int col=0; col < cols.length; col++)
     			{
     				if (cols[col] != null)
@@ -377,15 +378,16 @@ public class JPAQuery implements CustomQueryIFace
     					/* Strip Bigdecimals of their trailing zeros */
     					if (cols[col] instanceof BigDecimal)
     					{
-    						BigDecimal data = ((BigDecimal) cols[col]).stripTrailingZeros();
-    						cols[col] = data;
-    						newList.set(row, cols);
+    						BigDecimal rawData = (BigDecimal) cols[col];
+    						BigDecimal newData = new BigDecimal(rawData.stripTrailingZeros().toPlainString());
+    						cols[col] = newData;
+    						modifiedQueryResults.set(row, cols);
     					}
     				}
     			}
     		}
     	}
-    	return newList;
+    	return modifiedQueryResults;
     }
     
     /* (non-Javadoc)
