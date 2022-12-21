@@ -765,12 +765,12 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
                 //fmt = "%" + (size-2) + ".2f";
             	
             	/*
-            	 * using doubleValue() eliminates trailing zeroes but 
-            	 * that leads to conflict with the way big decimals are
-            	 * displayed in view mode on forms and in query results
-            	 * Can be solved by using return String.valueOf(data);
+            	 * This was originally being cast to a double and then converted to string.
+            	 * This may cause unwanted issues when displaying certain values.
+            	 * (See https://stackoverflow.com/questions/16098046/how-do-i-print-a-double-value-without-scientific-notation-using-java)
+            	 * To avoid these issues, the BigDecimal is first stripped of it's trailing zeros and then directly converted to string.
             	 */
-                return String.valueOf(((Number )data).doubleValue());
+                return ((BigDecimal) data).stripTrailingZeros().toPlainString();
             } else
             {
                 //fmt = "%d";
