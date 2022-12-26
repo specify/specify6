@@ -348,5 +348,14 @@ public class TaxonCitation extends DataModelObjBase implements java.io.Serializa
     {
         return 75;
     }
+    
+    @Override
+    public Object clone() throws CloneNotSupportedException
+    {
+    	TaxonCitation obj = (TaxonCitation) super.clone();
+    	obj.setTaxonCitationId(null);
+    	obj.setTaxon(null);
+    	return obj;
+    }
 
 }

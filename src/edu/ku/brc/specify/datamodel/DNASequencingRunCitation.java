@@ -424,5 +424,15 @@ public class DNASequencingRunCitation extends DataModelObjBase
 	public void setPageNumber(String pageNumber) {
 		this.pageNumber = pageNumber;
 	}
+	
+	@Override
+	public Object clone() throws CloneNotSupportedException
+	{
+		DNASequencingRunCitation obj = (DNASequencingRunCitation) super.clone();
+		obj.setDnaSequencingRunCitationId(null);
+		obj.setSequencingRun(null);
+		return obj;
+	}
+	
 
 }
