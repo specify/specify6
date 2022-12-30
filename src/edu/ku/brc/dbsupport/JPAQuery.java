@@ -75,6 +75,7 @@ public class JPAQuery implements CustomQueryIFace
     protected Query                     query       = null;
     
     protected final AtomicBoolean       cancelled   = new AtomicBoolean(false);
+	private boolean 					isModified 	= true;
     
     /**
      * Constructor.
@@ -287,9 +288,12 @@ public class JPAQuery implements CustomQueryIFace
                 	List<Object> objArray = new ArrayList<Object>(1);
                 	objArray.add(qry.list().size());
                 	resultsList = objArray;
-                } else
+                } else if (isModified)
                 {
                     resultsList = modifyQueryResults(qry.list());
+                } else
+                {
+                	resultsList = qry.list();
                 }
                 
                if (doDebug)
@@ -594,7 +598,16 @@ public class JPAQuery implements CustomQueryIFace
 	{
 		this.firstResult = firstResult;
 	}
-
 	
-    
+	/**
+	 * Tell the query whether it should be modified or not (default is true)
+	 * See modifyQueryResults() to see how the query can be modified
+	 * 
+	 * @param isModified
+	 */
+	public void setIsModified(boolean isModified)
+	{
+		this.isModified = isModified;
+	}
+ 
 }

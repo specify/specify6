@@ -545,6 +545,7 @@ public class QBDataSource extends QBDataSourceBase implements CustomQueryListene
         	theQuery.setMaxResults(maxResults.intValue());
         }
         theQuery.setParams(params);
+        theQuery.setIsModified(false);
         theQuery.start();
     }
 
