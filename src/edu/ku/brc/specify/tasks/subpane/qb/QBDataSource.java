@@ -528,6 +528,7 @@ public class QBDataSource extends QBDataSourceBase implements CustomQueryListene
     }    
     
     /**
+     * Run the query and use the results directly from the database
      * 
      */
     public void startDataAcquisition()
@@ -546,6 +547,30 @@ public class QBDataSource extends QBDataSourceBase implements CustomQueryListene
         }
         theQuery.setParams(params);
         theQuery.setIsModified(false);
+        theQuery.start();
+    }
+    
+    /**
+     * Run the query, but modify the query results. 
+     * See JPAQuery.modifyQueryResults(List<?> rawQueryResults) 
+     * to see how the results get modified
+     * 
+     */
+    public void startModifiedQueryDataAcquistion()
+    {
+        firstRow = true;
+        currentRow = 0;
+        theQuery = new JPAQuery(hql, this);
+        
+        if (firstResult > 0) 
+        {
+        	theQuery.setFirstResult(firstResult.intValue());
+        }
+        if (maxResults > 0)
+        {
+        	theQuery.setMaxResults(maxResults.intValue());
+        }
+        theQuery.setParams(params);
         theQuery.start();
     }
 
