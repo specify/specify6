@@ -909,9 +909,6 @@ public class UIFormatterEditorDlg extends CustomDialog
         if (fields.size() == 1 && fields.get(0).getType() == FieldType.numeric)
         {
             //selectedFormat.setType(UIFieldFormatterIFace.FormatterType.numeric);
-        } else if (fields.size() == 1 && fields.get(0).getType() == FieldType.regex)
-        {
-        	selectedFormat.setType(UIFieldFormatterIFace.FormatterType.regex);
         }
         else
         {
