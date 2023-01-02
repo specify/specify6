@@ -25,6 +25,8 @@ import java.util.Calendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.jfree.util.Log;
+
 
 /**
  * @author rods
@@ -115,8 +117,8 @@ public class UIFieldFormatterField implements Cloneable
         this.minSize = minSize;
         this.value       = value;
         if (type.equals(FieldType.regex)) {
-            this.regex = value;
-            this.value = pattern;
+              this.regex = value;
+//            this.value = pattern;
         }
         this.incrementer = incrementer;
         this.byYear      = byYear;
@@ -246,6 +248,25 @@ public class UIFieldFormatterField implements Cloneable
     {
         return value == null ? "" : value;
     }
+    
+    /**
+     * Returns a string stripped of its regex value. 
+     * Useful for determining the pattern to display for 
+     * formatters with more than one field that contain a 
+     * regex expression 
+     * (see af.ui.forms.validation.ValFormattedTextField.java)
+     * 
+     * @return value string stripped of its regex
+     */
+    public String getNoRegexValue()
+    {
+    	boolean hasRegex = this.regex == null ? false : true;
+    	if (hasRegex)
+    	{
+    		return value == null ? "" : value.replace(regex, "");
+    	}
+    	return value;
+    }
 
     /**
      * @return
@@ -300,6 +321,12 @@ public class UIFieldFormatterField implements Cloneable
             return value.substring(0, value.length());
         }
         
+        if (type == FieldType.regex)
+        {
+        	return "";
+        	
+        }
+        
 		if (sample.length() == 0)
 		{
 			return "";
@@ -331,6 +358,10 @@ public class UIFieldFormatterField implements Cloneable
             } else {
                 return "\\p{Digit}{" + getSize() + "}";
             }
+        }
+        if (type == FieldType.regex)
+        {
+        	return value;
         }
 
         if (type == FieldType.year) {

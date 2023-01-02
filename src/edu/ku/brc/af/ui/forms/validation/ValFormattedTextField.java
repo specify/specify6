@@ -76,7 +76,7 @@ import edu.ku.brc.ui.UIRegistry;
 
 /**
  * A Multiple JTextFields (wrapped inside a JPanel) that provides for "formatted" input. The format "mask" is define in XML
- * via the UIFieldFormatterMgr class. This is idea for text fields that have a standard size and a specific format (i.e. Dates)
+ * via the UIFieldFormatterMgr class. This is ideal for text fields that have a standard size and a specific format (i.e. Dates)
  * The mask enables the "fields" and separators to be specifically defined.
  * 
  * NOTE: This impl has multiple Text Field, one for each part of the format.
@@ -420,7 +420,7 @@ public class ValFormattedTextField extends JPanel implements ValFormattedTextFie
                     
                 } else
                 {
-                    JTextField tf = new BGTextField(f.getSize(), isViewOnly ? "" : f.getValue());
+                    JTextField tf = new BGTextField(f.getSize(), isViewOnly ? "" : f.getNoRegexValue());
                     tfToAdd = tf;
                     
                     if (inx == 0)
