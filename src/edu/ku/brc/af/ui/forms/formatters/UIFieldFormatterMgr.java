@@ -666,10 +666,6 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
             {
                 partialDateType = UIFieldFormatter.PartialDateEnum.Full;
             }
-        } else if (StringUtils.isNotEmpty(fType) && fType.equals("regex"))
-        {
-        	type = UIFieldFormatter.FormatterType.regex;
-        	
         }
         
         Class<?> dataClass = null;
