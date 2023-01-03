@@ -420,7 +420,7 @@ public class ValFormattedTextField extends JPanel implements ValFormattedTextFie
                     
                 } else
                 {
-                    JTextField tf = new BGTextField(f.getSize(), isViewOnly ? "" : f.getNoRegexValue());
+                    JTextField tf = new BGTextField(f.getSize(), isViewOnly ? "" : f.formatRegexValue());
                     tfToAdd = tf;
                     
                     if (inx == 0)
@@ -429,7 +429,7 @@ public class ValFormattedTextField extends JPanel implements ValFormattedTextFie
                             @Override
                             public void keyPressed(KeyEvent e)
                             {
-                                checkForPaste(e);
+//                                checkForPaste(e);
                             }
                         });
                     }
@@ -482,7 +482,7 @@ public class ValFormattedTextField extends JPanel implements ValFormattedTextFie
                         cardPanel  = new JPanel(cardLayout);
                         cardPanel.add("edit", tf);
                         
-                        viewTF = new BGTextField(f.getSize(), isViewOnly ? "" : f.getValue());
+                        viewTF = new BGTextField(f.getSize(), isViewOnly ? "" : f.formatRegexValue());
                         viewTF.setDocument(document);
                         cardPanel.add("view", viewTF);
                         
@@ -1186,8 +1186,17 @@ public class ValFormattedTextField extends JPanel implements ValFormattedTextFie
                 }
                 needsUpdating = (StringUtils.isEmpty(strValue) || strValue.length() != formatter.getLength() || strValue.contains("#"))
                         && formatter.getAutoNumber() != null && formatter.isIncrementer();
-
-                fmtVal = (String)formatter.formatToUI(strValue);
+                
+                  /*  
+                   * This sets the whole pattern of the format into the textbox 
+                   * -not just the transparent placeholder- when a formatter has 
+                   * another field beside numeric auto-increment. 
+                   * Disabling this will maintain consistency for solo numeric increment
+                   * formatters. 
+                   * See ()
+                   */
+//                fmtVal = (String)formatter.formatToUI(strValue);
+                  fmtVal = strValue;
 
             } else {
                 if (value == null) {

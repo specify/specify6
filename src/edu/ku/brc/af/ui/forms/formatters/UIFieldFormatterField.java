@@ -25,8 +25,6 @@ import java.util.Calendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.jfree.util.Log;
-
 
 /**
  * @author rods
@@ -51,6 +49,13 @@ public class UIFieldFormatterField implements Cloneable
     protected int minSize;
     protected String    value;
     protected String regex;
+    
+    /*
+     *  customPattern is currently used for regex type FormatterFields 
+     *  in the FieldFormatter Editor (see {@code UIFormatterEditorDlg}
+     *  and lets the user define a custom pattern
+     */
+    protected String customPattern;
 
     protected boolean   incrementer;
     protected boolean   byYear;
@@ -118,6 +123,7 @@ public class UIFieldFormatterField implements Cloneable
         this.value       = value;
         if (type.equals(FieldType.regex)) {
               this.regex = value;
+              this.customPattern = pattern;
 //            this.value = pattern;
         }
         this.incrementer = incrementer;
@@ -260,10 +266,18 @@ public class UIFieldFormatterField implements Cloneable
      */
     public String getNoRegexValue()
     {
-    	boolean hasRegex = this.regex == null ? false : true;
-    	if (hasRegex)
+    	if (type == FieldType.regex)
     	{
     		return value == null ? "" : value.replace(regex, "");
+    	}
+    	return value;
+    }
+    
+    public String formatRegexValue()
+    {
+    	if (type == FieldType.regex)
+    	{
+    		return customPattern == null ? (value == null ? "" : value.replace(regex, "")) : customPattern;
     	}
     	return value;
     }
@@ -323,7 +337,7 @@ public class UIFieldFormatterField implements Cloneable
         
         if (type == FieldType.regex)
         {
-        	return "";
+        	return customPattern == null ? "" : customPattern;
         	
         }
         
@@ -385,6 +399,11 @@ public class UIFieldFormatterField implements Cloneable
         }
         return result;
     }
+    
+    public String getCustomPattern()
+    {
+    	return customPattern;
+    }
 
     public boolean isOptional() {
         return isOptional;
@@ -444,6 +463,7 @@ public class UIFieldFormatterField implements Cloneable
         sb.append("    <field");
         xmlAttr(sb, "type", type.toString());
         xmlAttr(sb, "size", size);
+        xmlAttr(sb, "pattern", customPattern);
         
         if (type != FieldType.numeric)
         {
@@ -488,6 +508,15 @@ public class UIFieldFormatterField implements Cloneable
     public void setByYear(boolean byYear)
     {
         this.byYear = byYear;
+    }
+    
+    /**
+     * 
+     * @param newPattern the new pattenr to set
+     */
+    public void setCustomPattern(String newPattern)
+    {
+    	this.customPattern = newPattern;
     }
 
     public boolean isCurrentYear()

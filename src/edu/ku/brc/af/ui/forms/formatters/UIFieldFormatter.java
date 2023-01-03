@@ -21,6 +21,7 @@ package edu.ku.brc.af.ui.forms.formatters;
 
 import edu.ku.brc.af.core.db.AutoNumberIFace;
 import edu.ku.brc.af.prefs.AppPrefsCache;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterField.FieldType;
 import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
@@ -615,7 +616,14 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
         StringBuilder str = new StringBuilder();
         for (UIFieldFormatterField field : fields)
         {
-            str.append(field.getValue());
+        	if (field.getType() == UIFieldFormatterField.FieldType.regex)
+        	{
+        		str.append(field.formatRegexValue());
+        	} else 
+        	{
+        		str.append(field.getValue());
+        	}
+            
         }
         return str.toString();
     }
@@ -811,6 +819,10 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
             if (StringUtils.isEmpty(val))
             {
                 val = field.getSample();
+            }
+            if (field.type == FieldType.regex)
+            {
+            	val = field.formatRegexValue();
             }
             str.append(val);
         }
