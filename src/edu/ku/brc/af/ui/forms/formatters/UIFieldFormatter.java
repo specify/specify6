@@ -778,7 +778,15 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
             	 * (See https://stackoverflow.com/questions/16098046/how-do-i-print-a-double-value-without-scientific-notation-using-java)
             	 * To avoid these issues, the BigDecimal is first stripped of it's trailing zeros and then directly converted to string.
             	 */
-                return ((BigDecimal) data).stripTrailingZeros().toPlainString();
+            	BigDecimal strippedDecimal = ((BigDecimal) data).stripTrailingZeros();
+            	
+            	// If the BigDecimal is an integer or zero
+            	if (strippedDecimal.scale() <= 0 || strippedDecimal.signum() == 0)
+        		{
+        			// Add a decimal place so the format is #.0
+            		strippedDecimal = strippedDecimal.setScale(1);
+        		}
+            	return strippedDecimal.toPlainString();
             } else
             {
                 //fmt = "%d";

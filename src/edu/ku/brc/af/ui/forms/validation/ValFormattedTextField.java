@@ -1193,7 +1193,7 @@ public class ValFormattedTextField extends JPanel implements ValFormattedTextFie
                    * another field beside numeric auto-increment. 
                    * Disabling this will maintain consistency for solo numeric increment
                    * formatters. 
-                   * See ()
+                   * See (https://github.com/specify/specify6/issues/1190)
                    */
 //                fmtVal = (String)formatter.formatToUI(strValue);
                   fmtVal = strValue;

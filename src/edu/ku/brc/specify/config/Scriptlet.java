@@ -425,7 +425,15 @@ public class Scriptlet extends JRDefaultScriptlet
      */
     public String truncateBigDecimal(final BigDecimal value)
     {
-    	return value.stripTrailingZeros().toPlainString();
+    	BigDecimal newValue = value.stripTrailingZeros();
+    	
+    	// If value stripped of zeroes is an integer or 0
+    	if (newValue.scale() <= 0 || newValue.signum() == 0)
+		{
+			// Add a decimal place so the format is #.0
+    		newValue = newValue.setScale(1);
+		}
+    	return newValue.toPlainString();
     }
     
     /**

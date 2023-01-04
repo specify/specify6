@@ -58,7 +58,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
-
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
@@ -89,8 +88,6 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
 import edu.ku.brc.specify.datamodel.CollectionObject;
-import edu.ku.brc.specify.datamodel.Determination;
-import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.ui.*;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
@@ -5843,8 +5840,12 @@ public class FormViewObj implements Viewable,
             tf.setText(
                 data == null
                     ? ""
+                    // If the BigDecimal is an integer or 0, format it to #.0
+                    // otherwise, strip the zeros
                     : data instanceof BigDecimal
-                    ? ((BigDecimal) data).stripTrailingZeros().toPlainString()
+                    ? ((((BigDecimal)data).stripTrailingZeros().scale() <= 0 || (((BigDecimal)data).stripTrailingZeros().signum()==0)) 
+                    		? ((BigDecimal)data).stripTrailingZeros().setScale(1).toPlainString() 
+                    		: ((BigDecimal)data).stripTrailingZeros().toPlainString())
                     : data.toString()
             );
             tf.setCaretPosition(0);

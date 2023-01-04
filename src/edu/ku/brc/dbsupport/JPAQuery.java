@@ -383,7 +383,14 @@ public class JPAQuery implements CustomQueryIFace
     					if (cols[col] instanceof BigDecimal)
     					{
     						BigDecimal rawData = (BigDecimal) cols[col];
-    						BigDecimal newData = new BigDecimal(rawData.stripTrailingZeros().toPlainString());
+    						BigDecimal newData = rawData.stripTrailingZeros();
+    						
+    						// If the stripped BigDecimal is an integer or zero
+    						if (newData.scale() <= 0 || newData.signum() == 0)
+    						{
+    							// Add a decimal place so the format is #.0
+    							newData = newData.setScale(1);
+    						}
     						cols[col] = newData;
     						modifiedQueryResults.set(row, cols);
     					}
