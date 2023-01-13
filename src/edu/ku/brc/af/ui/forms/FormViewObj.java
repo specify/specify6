@@ -5840,10 +5840,10 @@ public class FormViewObj implements Viewable,
             tf.setText(
                 data == null
                     ? ""
-                    // If the BigDecimal is an integer or 0, format it to #.0
+                    // If the BigDecimal is an integer and not zero, format it to #.0
                     // otherwise, strip the zeros
                     : data instanceof BigDecimal
-                    ? ((((BigDecimal)data).stripTrailingZeros().scale() <= 0 || (((BigDecimal)data).stripTrailingZeros().signum()==0)) 
+                    ? ((((BigDecimal)data).stripTrailingZeros().scale() <= 0 && ((BigDecimal)data).signum() != 0) 
                     		? ((BigDecimal)data).stripTrailingZeros().setScale(1).toPlainString() 
                     		: ((BigDecimal)data).stripTrailingZeros().toPlainString())
                     : data.toString()

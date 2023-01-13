@@ -1063,8 +1063,8 @@ public class ExportToMySQLDB
 					BigDecimal rawData = rows.getBigDecimal(c);
 					BigDecimal newData = rawData.stripTrailingZeros();
 					
-					// If the stripped BigDecimal is an integer or zero
-					if (newData.scale() <= 0 || newData.signum() == 0)
+					// If the stripped BigDecimal is an integer and not zero
+					if (newData.scale() <= 0 && newData.signum() != 0)
 					{
 						// Add a decimal place so the format is #.0
 						newData = newData.setScale(1);

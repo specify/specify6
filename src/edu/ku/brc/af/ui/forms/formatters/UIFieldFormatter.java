@@ -780,8 +780,8 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
             	 */
             	BigDecimal strippedDecimal = ((BigDecimal) data).stripTrailingZeros();
             	
-            	// If the BigDecimal is an integer or zero
-            	if (strippedDecimal.scale() <= 0 || strippedDecimal.signum() == 0)
+            	// If the BigDecimal is an integer and not zero
+            	if (strippedDecimal.scale() <= 0 && strippedDecimal.signum() != 0)
         		{
         			// Add a decimal place so the format is #.0
             		strippedDecimal = strippedDecimal.setScale(1);

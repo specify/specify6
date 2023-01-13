@@ -427,8 +427,8 @@ public class Scriptlet extends JRDefaultScriptlet
     {
     	BigDecimal newValue = value.stripTrailingZeros();
     	
-    	// If value stripped of zeroes is an integer or 0
-    	if (newValue.scale() <= 0 || newValue.signum() == 0)
+    	// If value stripped of zeroes is an integer and not 0
+    	if (newValue.scale() <= 0 && newValue.signum() != 0)
 		{
 			// Add a decimal place so the format is #.0
     		newValue = newValue.setScale(1);

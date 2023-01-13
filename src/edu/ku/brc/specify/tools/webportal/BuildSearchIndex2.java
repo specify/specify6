@@ -672,8 +672,8 @@ public class BuildSearchIndex2
         	{
         		BigDecimal strippedDecimalValue = (new BigDecimal(value)).stripTrailingZeros();
         		
-        		// If the stripped BigDecimal is an integer
-				if (strippedDecimalValue.scale() <= 0)
+        		// If the stripped BigDecimal is an integer and not zero
+				if (strippedDecimalValue.scale() <= 0 && strippedDecimalValue.signum() != 0)
 				{
 					// Add a decimal place so the format is #.0
 					strippedDecimalValue = strippedDecimalValue.setScale(1);
