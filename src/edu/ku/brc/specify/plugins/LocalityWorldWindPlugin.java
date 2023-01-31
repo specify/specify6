@@ -49,6 +49,7 @@ import edu.ku.brc.specify.tasks.subpane.lm.LatLonPlacemark;
 import edu.ku.brc.specify.ui.WorldWindPanel;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 import edu.ku.brc.util.LatLonConverter.FORMAT;
@@ -324,6 +325,11 @@ public class LocalityWorldWindPlugin extends LocalityGoogleEarthPlugin implement
     @Override
     public void initialize(final Properties properties, final boolean isViewMode)
     {
+    	if (UIHelper.getOSType().equals(UIHelper.OSTYPE.MacOSX))
+    	{
+    		return;
+    	}
+    	
         this.isViewMode = isViewMode;
         
         setIcon(IconManager.getIcon("WorldWind", IconManager.STD_ICON_SIZE.Std16));
