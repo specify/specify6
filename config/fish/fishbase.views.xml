@@ -2,17 +2,17 @@
 <viewset name="Fish Views" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     
     <views>
-        
-        <view name="FishBase"
-            class="org.dom4j.Element"
-            resourcelabels="false">
+
+		<view name="FishBase"
+			class="org.dom4j.Element"
+			resourcelabels="false">
             <desc><![CDATA[FishBase]]></desc>
             <altviews>
                 <altview name="FishBase" viewdef="FishBase" mode="view" default="true"/>
             </altviews>
         </view>
-        
-    </views>
+
+	</views>
     
     <!--
         ######################################################################################################
@@ -34,12 +34,11 @@
     
     
     <viewdefs>
-        
-        <viewdef
-            type="form"
-            name="FishBase"
-            class="org.dom4j.Element"
-            gettable="edu.ku.brc.af.ui.forms.DataGetterForDOM">
+
+		<viewdef name="FishBase"
+			type="form"
+			class="org.dom4j.Element"
+			gettable="edu.ku.brc.af.ui.forms.DataGetterForDOM">
             
             <desc><![CDATA[FishBase]]></desc>
             <columnDef>p,2px,p,2px,p,2px,p,2px,p,2px,p,2px</columnDef>
@@ -126,7 +125,8 @@
                 </row>
             </rows>
         </viewdef>
-    </viewdefs>
+
+	</viewdefs>
     
 </viewset>
 

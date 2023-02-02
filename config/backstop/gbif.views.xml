@@ -2,22 +2,24 @@
 
 <viewset name="gbif" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <views>
-        <view
-            name="GBIFCollection"
-            usedefbusrule="false"
-            resourcelabels="false">
+
+		<view name="GBIFCollection"
+			usedefbusrule="false"
+			resourcelabels="false">
             <desc><![CDATA[GBIF Collection Registration Form]]></desc>
             <altviews>
                 <altview name="GBIFCollection View" viewdef="GBIFCollection" mode="edit" validated="true" default="true"/>
                 <altview name="GBIFCollection Edit" viewdef="GBIFCollection" mode="edit"/>
             </altviews>
         </view>
-    </views>
+
+	</views>
     <viewdefs>
-        <viewdef type="form"
-            name="GBIFCollection"
-            gettable="edu.ku.brc.af.ui.forms.DataGetterForHashMap"
-            settable="edu.ku.brc.af.ui.forms.DataSetterForHashMap">
+
+		<viewdef name="GBIFCollection"
+			type="form"
+			gettable="edu.ku.brc.af.ui.forms.DataGetterForHashMap"
+			settable="edu.ku.brc.af.ui.forms.DataSetterForHashMap">
 
             <desc><![CDATA[GBIF Collection Registration Form]]></desc>
             <enableRules/>
@@ -50,5 +52,6 @@
                 -->
             </rows>
         </viewdef>
-    </viewdefs>
+
+	</viewdefs>
 </viewset>
