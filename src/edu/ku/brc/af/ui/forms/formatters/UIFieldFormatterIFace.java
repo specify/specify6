@@ -40,8 +40,6 @@ import edu.ku.brc.util.Pair;
 public interface UIFieldFormatterIFace
 {
     public enum PartialDateEnum {None, Full, Month, Year, Search}
-    
-    // Might need to add regex here as well for separation: currently it is being assigned the 'generic' type
     public enum FormatterType   {generic, date, numeric} // all lower case to follow convention in uiformatters.xml
 
     /**

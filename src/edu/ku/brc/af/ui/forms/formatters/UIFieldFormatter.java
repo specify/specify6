@@ -616,14 +616,7 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
         StringBuilder str = new StringBuilder();
         for (UIFieldFormatterField field : fields)
         {
-        	if (field.getType() == UIFieldFormatterField.FieldType.regex)
-        	{
-        		str.append(field.formatRegexValue());
-        	} else 
-        	{
-        		str.append(field.getValue());
-        	}
-            
+        	str.append(field.getValue());
         }
         return str.toString();
     }
@@ -827,10 +820,6 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
             if (StringUtils.isEmpty(val))
             {
                 val = field.getSample();
-            }
-            if (field.type == FieldType.regex)
-            {
-            	val = field.formatRegexValue();
             }
             str.append(val);
         }

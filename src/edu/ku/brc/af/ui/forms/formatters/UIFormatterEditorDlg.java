@@ -133,10 +133,6 @@ public class UIFormatterEditorDlg extends CustomDialog
     protected JComboBox                 sepCbx;
     protected JCheckBox                 isIncChk;
     
-    protected JTextField				regexExpression;
-    protected JTextField				regexPattern;
-    protected JSpinner 					regexSizeSpinner;
-    
     protected ListSelectionListener     fieldsTblSL                 = null;
     protected boolean                   hasChanged                  = false;
     protected boolean                   isNew;
@@ -312,21 +308,6 @@ public class UIFormatterEditorDlg extends CustomDialog
         //numPB.add(closeBtn,    cc.xy(6, 1));
         numPB.add(isIncChk,    cc.xy(4, 3));
         
-        
-        PanelBuilder regexPB = new PanelBuilder(new FormLayout(colDefs, "p,2px,p,2px,p"));
-        regexExpression = createTextField();
-        regexExpression.setDocument(new PlainDocument());
-        regexPattern = createTextField();
-        regexPattern.setDocument(new PlainDocument());
-        regexSizeSpinner = new JSpinner(new SpinnerNumberModel(1, 1, fieldInfo.getLength(), 1));
-        regexPB.add(createI18NFormLabel("Regex Expression"), cc.xy(2, 1));
-        regexPB.add(regexExpression, cc.xy(4, 1));
-        regexPB.add(createI18NFormLabel("Pattern"), cc.xy(2, 3));
-        regexPB.add(regexPattern, cc.xy(4, 3));
-        regexPB.add(createI18NFormLabel("FFE_LENGTH"), cc.xy(2, 5));
-        regexPB.add(regexSizeSpinner, cc.xy(4, 5));
-        
-        
         sepCbx = new JComboBox(new String[] {"-", ".", "/", "(space)", "_"});
         closeBtn = createClose(1);
         PanelBuilder sepPB = new PanelBuilder(new FormLayout(colDefs, "p,2px,p"));
@@ -342,7 +323,6 @@ public class UIFormatterEditorDlg extends CustomDialog
         cardPanel = new JPanel(cardLayout);
         cardPanel.add("size", numPB.getPanel());
         cardPanel.add("text", txtPB.getPanel());
-        cardPanel.add("regex", regexPB.getPanel());
         cardPanel.add("sep",  sepPB.getPanel());
         cardPanel.add("none", new JLabel(" "));
         
@@ -460,42 +440,6 @@ public class UIFormatterEditorDlg extends CustomDialog
             }
         });
         
-        regexExpression.getDocument().addDocumentListener(new DocumentAdaptor( ) {
-        	@Override
-            protected void changed(DocumentEvent e)
-            {
-                fieldHasChanged = true;
-                updateEnabledState();
-                hasChanged      = true;
-                updateUIEnabled();
-            }
-        });
-        
-        regexPattern.getDocument().addDocumentListener(new DocumentAdaptor()
-        {
-        	@Override
-        	protected void changed(DocumentEvent e)
-        	{
-        		fieldHasChanged = true;
-                updateEnabledState();
-                hasChanged      = true;
-                updateUIEnabled();
-        	}
-        });
-        
-      regexSizeSpinner.addChangeListener(new ChangeListener() 
-      {
-    	  @Override
-          public void stateChanged(ChangeEvent e)
-          {
-              fieldHasChanged = true;
-              updateEnabledState();
-              hasChanged      = true;
-              updateUIEnabled();
-
-          }
-      });
-        
         fieldTypeCbx.setSelectedIndex(-1);
         fieldHasChanged = false;
         updateEnabledState();
@@ -578,10 +522,6 @@ public class UIFormatterEditorDlg extends CustomDialog
                 case year :
                     cardKey = "none";
                     break;
-                    
-                case regex : 
-                	cardKey = "regex";
-                	break;
                 	
                 default: break;
             }
@@ -640,9 +580,6 @@ public class UIFormatterEditorDlg extends CustomDialog
                             isIncChk.setSelected(currentField.isIncrementer());
                             fieldTxt.setText(currentField.getValue());
                             sizeSpinner.setValue(Math.max(1, currentField.getSize()));
-                            regexExpression.setText(currentField.getValue());
-                            regexPattern.setText(currentField.getCustomPattern());
-                            regexSizeSpinner.setValue(Math.max(1, currentField.getSize()));
                             enabledEditorUI(true);
                             
                         } else
@@ -671,9 +608,6 @@ public class UIFormatterEditorDlg extends CustomDialog
         fieldTypeLbl.setEnabled(enable);
         fieldTxt.setEnabled(enable);
         sizeSpinner.setEnabled(enable);
-        regexExpression.setEnabled(enable);
-        regexPattern.setEnabled(enable);
-        regexSizeSpinner.setEnabled(enable);
     }
     
     /**
@@ -766,12 +700,6 @@ public class UIFormatterEditorDlg extends CustomDialog
                 currentField.setValue("YEAR");
                 currentField.setSize(4);
                 break;
-                
-            case regex :
-            	currentField.setValue(regexExpression.getText());
-            	currentField.setCustomPattern(regexPattern.getText());
-            	currentField.setSize((Integer) regexSizeSpinner.getValue());
-            	break;
         }
        
         currentField.setByYear(isByYear);
@@ -797,9 +725,6 @@ public class UIFormatterEditorDlg extends CustomDialog
         fieldTxt.setText("");
         sizeSpinner.setValue(1);
         isIncChk.setSelected(false);
-        regexExpression.setText("");
-        regexPattern.setText("");
-        regexSizeSpinner.setValue(1);
         
         fieldHasChanged = false;
         
@@ -820,7 +745,6 @@ public class UIFormatterEditorDlg extends CustomDialog
             {
                 fieldTypeCbx.setSelectedIndex(-1);
                 fieldTxt.setText(""); // DL attached to this field will set fieldHasChanged to true 
-                // regexExpression.setText("");
                 fields.remove(fieldsTbl.getSelectedRow());
                 selectedFormat.resetLength();
 
@@ -849,9 +773,6 @@ public class UIFormatterEditorDlg extends CustomDialog
             isIncChk.setSelected(currentField.isByYear());
             fieldTxt.setText(currentField.getValue());
             sizeSpinner.setValue(Math.max(1, currentField.getSize()));
-            regexExpression.setText(currentField.getValue());
-            regexPattern.setText(currentField.getCustomPattern());
-            regexSizeSpinner.setValue(Math.max(1, currentField.getSize()));
         }
     }
     
@@ -886,9 +807,8 @@ public class UIFormatterEditorDlg extends CustomDialog
         // save Btn
         if (currentField != null)
         {
-            fieldsPanel.getEditBtn().setEnabled(fieldHasChanged && (currentField.getType() == FieldType.constant 
-            								? !fieldTxt.getText().isEmpty() || !regexExpression.getText().isEmpty() 
-            								|| !regexPattern.getText().isEmpty() : true));
+        	fieldsPanel.getEditBtn().setEnabled(fieldHasChanged && (currentField.getType() == FieldType.constant ? 
+        			!fieldTxt.getText().isEmpty() : true));
         }
         
         orderUpBtn.setEnabled(inx > 0);
@@ -1068,8 +988,6 @@ public class UIFormatterEditorDlg extends CustomDialog
             {
                 fieldTxt.setBackground(currentTxtBGColor);
                 fieldTxt.repaint();
-                regexExpression.setBackground(currentTxtBGColor);
-                regexExpression.repaint();
                 currentTxtBGColor = null;
             }
             return true;
@@ -1081,7 +999,6 @@ public class UIFormatterEditorDlg extends CustomDialog
             {
                 currentTxtBGColor = fieldTxt.getBackground();
                 fieldTxt.setBackground(Color.RED);
-                regexExpression.setBackground(Color.RED);
             }
             Toolkit.getDefaultToolkit().beep();
             return false;
@@ -1089,7 +1006,6 @@ public class UIFormatterEditorDlg extends CustomDialog
         } else if (currentTxtBGColor != null)
         {
             fieldTxt.setBackground(currentTxtBGColor);
-            regexExpression.setBackground(currentTxtBGColor);
         }
         return true;
     }
@@ -1174,10 +1090,7 @@ public class UIFormatterEditorDlg extends CustomDialog
                         case year :
                             totalLen += 4;
                             break;
-                            
-                       case regex : 
-                    	   totalLen += (Integer)regexSizeSpinner.getValue();
-                    	   break;
+                          
                     }
                 }
             }
