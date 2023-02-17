@@ -141,11 +141,7 @@ public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTr
         if (dataObj instanceof Taxon)
         {
             Taxon taxon = (Taxon)dataObj;
-            int citCnt = BasicSQLUtils.getCountAsInt("SELECT COUNT(*) FROM taxoncitation WHERE TaxonID = " + taxon.getId());
-            if (citCnt < 1)
-            {
-                return super.okToDeleteNode(taxon);
-            }
+            return super.okToDeleteNode(taxon);
         }
         else if (dataObj instanceof TaxonTreeDefItem)
         {
