@@ -90,7 +90,7 @@ public class LocalityWorldWindPlugin extends LocalityGoogleEarthPlugin implement
     {
         super();
         
-        if (worldWindEnabled) {
+        if (worldWindEnabled || !UIHelper.getOSType().equals(UIHelper.OSTYPE.MacOSX)) {
         	wwPanel = new WorldWindPanel(false);
         	wwPanel.setPreferredSize(new Dimension(900, 700));
         	wwPanel.setZoomInMeters(600000.0);
@@ -103,12 +103,10 @@ public class LocalityWorldWindPlugin extends LocalityGoogleEarthPlugin implement
     @Override
     protected void doButtonAction()
     {
-        if (!worldWindEnabled) {
+        if (!worldWindEnabled  || UIHelper.getOSType().equals(UIHelper.OSTYPE.MacOSX)) {
         	UIRegistry.showLocalizedMsg("LocalityWorldWindPlugin.WorldWindDisabled");
         	return;
         }
-        
-        
         
     	final List<LatLonPlacemarkIFace> items = new Vector<LatLonPlacemarkIFace>();
         Pair<BigDecimal, BigDecimal> llPair = latLonPlugin.getLatLon();
