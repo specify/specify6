@@ -208,7 +208,7 @@ public class LocalityCitation extends DisciplineMember implements java.io.Serial
     public Object clone() throws CloneNotSupportedException
     {
         LocalityCitation lc = (LocalityCitation)super.clone();
-        localityCitationId = null;
+        lc.setLocalityCitationId(null);
         
         return lc;
     }

@@ -43,6 +43,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -57,7 +58,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
-
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
@@ -88,8 +88,6 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
 import edu.ku.brc.specify.datamodel.CollectionObject;
-import edu.ku.brc.specify.datamodel.Determination;
-import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.ui.*;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
@@ -5297,7 +5295,7 @@ public class FormViewObj implements Viewable,
                         }
                         
                         Object[] values = UIHelper.getFieldValues(cellField.getFieldNames(), dataObj, dg);
-                        
+
                         setDataIntoUIComp(comp, DataObjFieldFormatMgr.getInstance().format(values[0], dataObjFormatName), defaultValue);
 
                     } else
@@ -5839,7 +5837,17 @@ public class FormViewObj implements Viewable,
         } else if (comp instanceof JTextField)
         {
             JTextField tf = (JTextField)comp;
-            tf.setText(data == null ? "" : data.toString());
+            tf.setText(
+                data == null
+                    ? ""
+                    // If the BigDecimal is an integer and not zero, format it to #.0
+                    // otherwise, strip the zeros
+                    : data instanceof BigDecimal
+                    ? ((((BigDecimal)data).stripTrailingZeros().scale() <= 0 && ((BigDecimal)data).signum() != 0) 
+                    		? ((BigDecimal)data).stripTrailingZeros().setScale(1).toPlainString() 
+                    		: ((BigDecimal)data).stripTrailingZeros().toPlainString())
+                    : data.toString()
+            );
             tf.setCaretPosition(0);
 
         } else if (comp instanceof JTextArea)

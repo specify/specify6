@@ -500,8 +500,8 @@ public class UIFormatterEditorDlg extends CustomDialog
             FieldType fieldType = (FieldType)fieldTypeCbx.getSelectedItem();
             switch (fieldType)
             {
-                case alphanumeric : 
-                case alpha : 
+                case alphanumeric : break;
+                case alpha : break;
                 case anychar : 
                     cardKey = "size";
                     break;
@@ -522,6 +522,8 @@ public class UIFormatterEditorDlg extends CustomDialog
                 case year :
                     cardKey = "none";
                     break;
+                	
+                default: break;
             }
         }
         cardLayout.show(cardPanel, cardKey);
@@ -805,7 +807,8 @@ public class UIFormatterEditorDlg extends CustomDialog
         // save Btn
         if (currentField != null)
         {
-            fieldsPanel.getEditBtn().setEnabled(fieldHasChanged && (currentField.getType() == FieldType.constant ? !fieldTxt.getText().isEmpty() : true));
+        	fieldsPanel.getEditBtn().setEnabled(fieldHasChanged && (currentField.getType() == FieldType.constant ? 
+        			!fieldTxt.getText().isEmpty() : true));
         }
         
         orderUpBtn.setEnabled(inx > 0);
@@ -849,7 +852,8 @@ public class UIFormatterEditorDlg extends CustomDialog
         if (fields.size() == 1 && fields.get(0).getType() == FieldType.numeric)
         {
             //selectedFormat.setType(UIFieldFormatterIFace.FormatterType.numeric);
-        } else
+        }
+        else
         {
             selectedFormat.setType(UIFieldFormatterIFace.FormatterType.generic);
         }
@@ -972,7 +976,7 @@ public class UIFormatterEditorDlg extends CustomDialog
     }
     
     /**
-     * @param txtFld
+     * @param currLen
      * @param maxLen
      * @return
      */
@@ -1086,6 +1090,7 @@ public class UIFormatterEditorDlg extends CustomDialog
                         case year :
                             totalLen += 4;
                             break;
+                          
                     }
                 }
             }

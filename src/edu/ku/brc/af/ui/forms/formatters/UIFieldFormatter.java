@@ -21,6 +21,7 @@ package edu.ku.brc.af.ui.forms.formatters;
 
 import edu.ku.brc.af.core.db.AutoNumberIFace;
 import edu.ku.brc.af.prefs.AppPrefsCache;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterField.FieldType;
 import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
@@ -458,7 +459,7 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
     {
         if (minValue == null && dataClass == BigDecimal.class)
         {
-            minValue = Double.MIN_VALUE;
+            minValue = -Double.MAX_VALUE;
         }
         return minValue;
     }
@@ -615,7 +616,7 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
         StringBuilder str = new StringBuilder();
         for (UIFieldFormatterField field : fields)
         {
-            str.append(field.getValue());
+        	str.append(field.getValue());
         }
         return str.toString();
     }
@@ -765,13 +766,20 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
                 //fmt = "%" + (size-2) + ".2f";
             	
             	/*
-            	 * using doubleValue() eliminates trailing zeroes but 
-            	 * that leads to conflict with the way big decimals are
-            	 * displayed in view mode on forms and in query results
+            	 * This was originally being cast to a double and then converted to string.
+            	 * This may cause unwanted issues when displaying certain values.
+            	 * (See https://stackoverflow.com/questions/16098046/how-do-i-print-a-double-value-without-scientific-notation-using-java)
+            	 * To avoid these issues, the BigDecimal is first stripped of it's trailing zeros and then directly converted to string.
             	 */
-                //return String.valueOf(((Number )data).doubleValue());
+            	BigDecimal strippedDecimal = ((BigDecimal) data).stripTrailingZeros();
             	
-            	return String.valueOf(data);
+            	// If the BigDecimal is an integer and not zero
+            	if (strippedDecimal.scale() <= 0 && strippedDecimal.signum() != 0)
+        		{
+        			// Add a decimal place so the format is #.0
+            		strippedDecimal = strippedDecimal.setScale(1);
+        		}
+            	return strippedDecimal.toPlainString();
             } else
             {
                 //fmt = "%d";

@@ -43,7 +43,7 @@ import org.hibernate.annotations.Index;
     {   
         @Index (name="COCITColMemIDX", columnNames={"CollectionMemberID"})
     })
-public class CollectionObjectCitation extends CollectionMember implements java.io.Serializable 
+public class CollectionObjectCitation extends CollectionMember implements java.io.Serializable
 {
 
     // Fields    
@@ -264,6 +264,15 @@ public class CollectionObjectCitation extends CollectionMember implements java.i
     public static int getClassTableId()
     {
         return 29;
+    }
+    
+    @Override
+    public Object clone() throws CloneNotSupportedException
+    {
+    	CollectionObjectCitation obj = (CollectionObjectCitation) super.clone();
+    	obj.setCollectionObjectCitationId(null);
+    	obj.setCollectionObject(null);
+    	return obj;
     }
 
 }

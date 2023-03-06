@@ -19,6 +19,7 @@
 */
 package edu.ku.brc.dbsupport;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -74,6 +75,7 @@ public class JPAQuery implements CustomQueryIFace
     protected Query                     query       = null;
     
     protected final AtomicBoolean       cancelled   = new AtomicBoolean(false);
+	private boolean 					isModified 	= true;
     
     /**
      * Constructor.
@@ -286,9 +288,12 @@ public class JPAQuery implements CustomQueryIFace
                 	List<Object> objArray = new ArrayList<Object>(1);
                 	objArray.add(qry.list().size());
                 	resultsList = objArray;
+                } else if (isModified)
+                {
+                    resultsList = modifyQueryResults(qry.list());
                 } else
                 {
-                    resultsList = qry.list();
+                	resultsList = qry.list();
                 }
                 
                if (doDebug)
@@ -348,7 +353,54 @@ public class JPAQuery implements CustomQueryIFace
         
         return !inError;
     }
-
+    
+    /**
+     * Processes and modifies data from the Query Output of a Hibernate SQL command
+     * @param rawQueryResults -> A query output from Hibernate
+     * @return newList -> the modified list
+     */
+    public static List<?> modifyQueryResults(List<?> rawQueryResults)
+    {
+    	/* 
+    	 * Hibernate returns data from the database to Java from Query.list() in the form of a List<?> containing the results.
+    	 * If there are multiple results per row, Hibernate instead returns a List of Object Arrays, each containing results per row.
+    	 *   
+    	 * 
+    	 * See https://docs.jboss.org/hibernate/orm/3.2/api/org/hibernate/Query.html#list()
+    	 */
+    	List<Object> modifiedQueryResults = (List<Object>) rawQueryResults;
+    	
+    	for (int row =0 ; row < modifiedQueryResults.size(); row++)
+    	{
+    		if (modifiedQueryResults.get(row) instanceof Object[])
+    		{
+    			Object[] cols = (Object[]) modifiedQueryResults.get(row);
+    			for (int col=0; col < cols.length; col++)
+    			{
+    				if (cols[col] != null)
+    				{
+    					/* Strip Bigdecimals of their trailing zeros */
+    					if (cols[col] instanceof BigDecimal)
+    					{
+    						BigDecimal rawData = (BigDecimal) cols[col];
+    						BigDecimal newData = rawData.stripTrailingZeros();
+    						
+    						// If the stripped BigDecimal is an integer and not zero
+    						if (newData.scale() <= 0 && newData.signum() != 0)
+    						{
+    							// Add a decimal place so the format is #.0
+    							newData = newData.setScale(1);
+    						}
+    						cols[col] = newData;
+    						modifiedQueryResults.set(row, cols);
+    					}
+    				}
+    			}
+    		}
+    	}
+    	return modifiedQueryResults;
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.CustomQuery#execute(edu.ku.brc.dbsupport.CustomQueryListener)
      */
@@ -386,6 +438,7 @@ public class JPAQuery implements CustomQueryIFace
             ex.printStackTrace();
         }
     }
+    
 
     /**
      * Dumps the results to the log file.
@@ -552,7 +605,16 @@ public class JPAQuery implements CustomQueryIFace
 	{
 		this.firstResult = firstResult;
 	}
-
 	
-    
+	/**
+	 * Tell the query whether it should be modified or not (default is true)
+	 * See modifyQueryResults() to see how the query can be modified
+	 * 
+	 * @param isModified
+	 */
+	public void setIsModified(boolean isModified)
+	{
+		this.isModified = isModified;
+	}
+ 
 }

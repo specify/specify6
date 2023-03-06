@@ -301,6 +301,12 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
         //{
         //    agentVarSep.setVisible(useAgentVariant);
         //}
+        
+        Component addrSubView = formViewObj.getCompById("9");
+        if (addrSubView != null)
+        {
+        	addrSubView.setVisible(true);
+        }
 
         Component agentVarSubView = formViewObj.getCompById("10");
         if (agentVarSubView != null)
@@ -340,24 +346,7 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
                     boolean enable = agentType == Agent.ORG;
                     addrSubView.setVisible(enable);
                     
-                } else
-                {
-                    if (!isVisible)
-                    {
-                        SwingUtilities.invokeLater(new Runnable() {
-                            public void run()
-                            {
-                                Component topComp = UIHelper.getWindow(addrSubView);
-                                Component topMost = UIRegistry.getTopWindow();
-                                if (topComp != topMost && topComp != null)
-                                {
-                                    ((Window)topComp).pack();
-                                }
-                            }
-                        });
-                    }
-                    addrSubView.setVisible(true);
-                }
+                } 
                 agent.setAgentType(agentType);
                 fixUpFormForAgentType(agent, true);
             }
@@ -421,7 +410,7 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
                 Component addrSubView = formViewObj.getCompById("9");
                 if (addrSubView != null)
                 {
-                    addrSubView.setVisible(false);
+                    addrSubView.setVisible(true);
                 }
             }
             return;
@@ -451,27 +440,36 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
                 typeTxt.setText(typeTitles[agentType]);
             }
         }
-        
-        boolean shouldBeVisible = agentType == Agent.PERSON || agentType == Agent.ORG;
+        /**
+         * This logic is in charge of hiding the Address Subview when Agent Type is Other or Group.
+         * This Business was removed in Specify 7, and is being removed in Specify 6 to maintain consistency
+         * See https://github.com/specify/specify7/pull/2702#issuecomment-1381057692 for additional information
+         */
+//        boolean shouldBeVisible = agentType == Agent.PERSON || agentType == Agent.ORG;
+//        final Component addrSubView = formViewObj.getCompById("9");
+//        if (addrSubView != null)
+//        {
+//            boolean isVisible = addrSubView.isVisible();
+//            if (!isVisible != shouldBeVisible)
+//            {
+//                SwingUtilities.invokeLater(new Runnable() {
+//                    public void run()
+//                    {
+//                        Component topComp = UIHelper.getWindow(addrSubView);
+//                        Component topMost = UIRegistry.getTopWindow();
+//                        if (topComp != topMost && topComp != null)
+//                        {
+//                            ((Window)topComp).pack();
+//                        }
+//                    }
+//                });
+//            }
+//            addrSubView.setVisible(shouldBeVisible);
+//        }
         final Component addrSubView = formViewObj.getCompById("9");
         if (addrSubView != null)
         {
-            boolean isVisible = addrSubView.isVisible();
-            if (!isVisible != shouldBeVisible)
-            {
-                SwingUtilities.invokeLater(new Runnable() {
-                    public void run()
-                    {
-                        Component topComp = UIHelper.getWindow(addrSubView);
-                        Component topMost = UIRegistry.getTopWindow();
-                        if (topComp != topMost && topComp != null)
-                        {
-                            ((Window)topComp).pack();
-                        }
-                    }
-                });
-            }
-            addrSubView.setVisible(shouldBeVisible);
+        	addrSubView.setVisible(true);
         }
     }
 
@@ -643,18 +641,23 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
     @Override
     public boolean beforeSaveCommit(Object dataObj, DataProviderSessionIFace session) throws Exception
     {
-        Agent agent     = (Agent)dataObj;
-        byte  agentType = agent.getAgentType();
-        
-        if (agent.getAddresses().size() > 0 &&
-            (agentType == Agent.OTHER || agentType == Agent.GROUP))
-        {
-            for (Address addr : new ArrayList<Address>(agent.getAddresses()))
-            {
-                agent.removeReference(addr, "addresses");
-                session.delete(addr);
-            }
-        }
+    	 /**
+         * This logic is in charge of ensuring Addresses for Agent's of type Other or Group do not get saved
+         * This Business was removed in Specify 7, and is being removed in Specify 6 to maintain consistency
+         * See https://github.com/specify/specify7/pull/2702#issuecomment-1381057692 for additional information
+         */
+//        Agent agent     = (Agent)dataObj;
+//        byte  agentType = agent.getAgentType();
+//        
+//        if (agent.getAddresses().size() > 0 &&
+//            (agentType == Agent.OTHER || agentType == Agent.GROUP))
+//        {
+//            for (Address addr : new ArrayList<Address>(agent.getAddresses()))
+//            {
+//                agent.removeReference(addr, "addresses");
+//                session.delete(addr);
+//            }
+//        }
         return super.beforeSaveCommit(dataObj, session);
     }
     

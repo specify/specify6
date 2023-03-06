@@ -261,5 +261,14 @@ public class AccessionCitation extends DataModelObjBase implements java.io.Seria
     {
         return 156;
     }
+    
+    @Override
+    public Object clone() throws CloneNotSupportedException
+    {
+    	AccessionCitation obj = (AccessionCitation) super.clone();
+    	obj.setAccessionCitationId(null);
+    	obj.setAccession(null);
+    	return obj;
+    }
 
 }

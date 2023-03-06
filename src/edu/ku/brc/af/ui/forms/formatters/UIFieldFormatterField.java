@@ -115,8 +115,8 @@ public class UIFieldFormatterField implements Cloneable
         this.minSize = minSize;
         this.value       = value;
         if (type.equals(FieldType.regex)) {
-            this.regex = value;
-            this.value = pattern;
+              this.regex = value;
+              this.value = pattern;
         }
         this.incrementer = incrementer;
         this.byYear      = byYear;
@@ -299,7 +299,7 @@ public class UIFieldFormatterField implements Cloneable
         {
             return value.substring(0, value.length());
         }
-        
+
 		if (sample.length() == 0)
 		{
 			return "";
@@ -354,7 +354,7 @@ public class UIFieldFormatterField implements Cloneable
         }
         return result;
     }
-
+    
     public boolean isOptional() {
         return isOptional;
     }
@@ -458,7 +458,7 @@ public class UIFieldFormatterField implements Cloneable
     {
         this.byYear = byYear;
     }
-
+    
     public boolean isCurrentYear()
     {
         return ((type == FieldType.year) && (value.equals("YEAR")));

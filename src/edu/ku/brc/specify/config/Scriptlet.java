@@ -415,6 +415,28 @@ public class Scriptlet extends JRDefaultScriptlet
     }
     
     /**
+     * Remove trailing zeroes from a BigDecimal
+     * 
+     * Returned value is identical to how the value would be formatted 
+     * on Forms and in Query Results in Specify
+     * 
+     * @param value the BigDecimal value to truncate
+     * @return returns value with trailing zeroes cut off
+     */
+    public String truncateBigDecimal(final BigDecimal value)
+    {
+    	BigDecimal newValue = value.stripTrailingZeros();
+    	
+    	// If value stripped of zeroes is an integer and not 0
+    	if (newValue.scale() <= 0 && newValue.signum() != 0)
+		{
+			// Add a decimal place so the format is #.0
+    		newValue = newValue.setScale(1);
+		}
+    	return newValue.toPlainString();
+    }
+    
+    /**
      * Formats a String with a float value as a degrees.
      * @param floatStr
      * @param isLat indicates whether it is a latitude or a longitude

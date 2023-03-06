@@ -124,6 +124,7 @@ import edu.ku.brc.af.ui.forms.validation.ValTristateCheckBox;
 import edu.ku.brc.af.ui.forms.validation.ValidatedJPanel;
 import edu.ku.brc.af.ui.weblink.WebLinkButton;
 import edu.ku.brc.exceptions.ConfigurationException;
+import edu.ku.brc.specify.plugins.LocalityWorldWindPlugin;
 import edu.ku.brc.specify.plugins.SeriesProcCatNumPlugin;
 import edu.ku.brc.ui.ColorChooser;
 import edu.ku.brc.ui.ColorWrapper;
@@ -1096,6 +1097,13 @@ public class ViewFactory
                             }
                         }                        
                     }
+                } else if (uiPlugin instanceof LocalityWorldWindPlugin)
+                {
+                	if (UIHelper.getOSType().equals(UIHelper.OSTYPE.MacOSX))
+                	{
+                		log.error("The WorldWind plugin has been deprecated on MACOS and was hidden on the form");
+                		return null;
+                	}
                 }
 
                 // This needs to be done before the initialize.
