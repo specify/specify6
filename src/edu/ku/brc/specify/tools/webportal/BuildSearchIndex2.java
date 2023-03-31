@@ -54,6 +54,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.*;
@@ -659,7 +660,27 @@ public class BuildSearchIndex2
     protected String processValue(String value, ExportMappingInfo info) {
 		//check for weblink
         DBFieldInfo fld = info.getFldInfo();
+        
         if (fld != null) {
+        	
+        	/**
+			 *  If the value type is BigDecimal, perform the same operation within Specify
+			 *  as seen in Forms, QueryBuilder, and other exports
+			 *  @see JPAQuery#modifyQueryResults(List<?> rawQueryResults)
+			 */
+        	if (fld.getDataClass() == BigDecimal.class)
+        	{
+        		BigDecimal strippedDecimalValue = (new BigDecimal(value)).stripTrailingZeros();
+        		
+        		// If the stripped BigDecimal is an integer and not zero
+				if (strippedDecimalValue.scale() <= 0 && strippedDecimalValue.signum() != 0)
+				{
+					// Add a decimal place so the format is #.0
+					strippedDecimalValue = strippedDecimalValue.setScale(1);
+				}
+				value = strippedDecimalValue.toPlainString();
+        	}
+        	
 			AppPreferences rPrefs = AppPreferences.getRemote();
         	if (rPrefs.getBoolean(PROCESS_WEBLINKS_PREF_NAME, PROCESS_WEBLINKS_PREF_DEFAULT)) {
 				String wl = fld.getWebLinkName();

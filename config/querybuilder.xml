@@ -56,28 +56,29 @@
         </table>
 	</table>
 	
-    <table name="Agent">
-        <table name="Address" field="addresses">
+        <table name="Agent">
+          <table name="Address" field="addresses">
             <alias name="Agent" field="createdByAgent" />
-        	<alias name="Agent" field="modifiedByAgent" />
-        </table>
-        <table name="AgentAttachment" field="agentAttachments">
+            <alias name="Agent" field="modifiedByAgent" />
+          </table>
+          <table name="AgentAttachment" field="agentAttachments">
             <alias name="Attachment"/>
-        </table>
-        <table name="AgentSpecialty" field="agentSpecialties" >
+          </table>
+          <table name="AgentSpecialty" field="agentSpecialties" >
             <alias name="Agent" field="createdByAgent" />
-        	<alias name="Agent" field="modifiedByAgent" />
-        </table>
-        <table name="AgentGeography" field="agentGeographies" >
+            <alias name="Agent" field="modifiedByAgent" />
+          </table>
+          <table name="AgentGeography" field="agentGeographies" >
             <alias name="Agent" field="createdByAgent" />
-        	<alias name="Agent" field="modifiedByAgent" />
-        </table>	
-        <alias name="GroupPerson" field="members" />
-        <alias name="GroupPerson" field="groups" />        
-        <table name="AgentVariant" field="variants"/>
-        <alias name="Agent" field="createdByAgent" />
-        <alias name="Agent" field="modifiedByAgent" />
-    </table>
+            <alias name="Agent" field="modifiedByAgent" />
+          </table>	
+          <alias name="GroupPerson" field="members" />
+          <alias name="GroupPerson" field="groups" />        
+          <table name="AgentVariant" field="variants"/>
+          <table name="AgentIdentifier" field="identifiers"/>
+          <alias name="Agent" field="createdByAgent" />
+          <alias name="Agent" field="modifiedByAgent" />
+        </table>
     
     <table name="GroupPerson">
     	<alias name="Agent" field="group" />
@@ -120,10 +121,10 @@
     
     <table name="CollectingEvent">
     	<alias name="Locality"/>
-	    <table name="Collector" field="collectors">
-             <alias name="Agent"/>
-             <alias name="Agent" field="createdByAgent" />
-        	 <alias name="Agent" field="modifiedByAgent" />
+	<table name="Collector" field="collectors">
+          <alias name="Agent"/>
+          <alias name="Agent" field="createdByAgent" />
+          <alias name="Agent" field="modifiedByAgent" />
         </table>
         <table name="CollectingEventAttachment" field="collectingEventAttachments">
             <alias name="Attachment"/>
@@ -250,7 +251,12 @@
       	<alias name="Agent" field="createdByAgent" />
       	<alias name="Agent" field="modifiedByAgent" />
       	
-      	<table name="OtherIdentifier" field="otherIdentifiers" />
+      	<table name="OtherIdentifier" field="otherIdentifiers">
+          <alias name="Agent" field="agent1"/>
+          <alias name="Agent" field="agent2"/>
+          <alias name="Agent" field="createdByAgent"/>
+          <alias name="Agent" field="modifiedByAgent"/>
+        </table>
       	<alias name="Project" field="projects" />
       	<table name="TreatmentEvent" field="treatmentEvents" />
         <table name="VoucherRelationship" field="voucherRelationships" />
@@ -318,6 +324,12 @@
         <table name="DeterminationCitation" field="determinationCitations">
         	<alias name="ReferenceWork"/>
         </table>
+	<table name="Determiner" field="determiners">
+          <alias name="Agent"/>
+          <alias name="Agent" field="createdByAgent" />
+          <alias name="Agent" field="modifiedByAgent" />
+        </table>
+        
         <!--<table name="DeterminationStatus" field="status"/>-->
         <alias name="Agent" field="determiner"/>
         <alias name="Agent" field="createdByAgent" />
@@ -356,6 +368,9 @@
                 <alias name="Agent" field="createdByAgent" />
                 <alias name="Agent" field="modifiedByAgent" />
         </table>
+        <table name="ExchangeInAttachment" field="exchangeInAttachments">
+            <alias name="Attachment"/>
+        </table>        
     </table>
     
     <table name="ExchangeOut" >
@@ -370,6 +385,9 @@
                 <alias name="Preparation"/>
                 <alias name="Agent" field="createdByAgent" />
                 <alias name="Agent" field="modifiedByAgent" />
+        </table>
+        <table name="ExchangeOutAttachment" field="exchangeOutAttachments">
+            <alias name="Attachment"/>
         </table>
    </table>
     
@@ -480,6 +498,7 @@
     </table>
     
     <table name="Loan">
+	<alias name="AddressOfRecord"/>
     	<alias name="LoanPreparation" field="loanPreparations"/>
          <table name="LoanAgent" field="loanAgents">
             <alias name="Agent"/>

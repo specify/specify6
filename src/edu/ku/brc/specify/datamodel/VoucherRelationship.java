@@ -8,6 +8,7 @@ import org.hibernate.annotations.Index;
 
 import javax.persistence.*;
 import java.util.Vector;
+import java.math.BigDecimal;
 
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
@@ -33,9 +34,9 @@ public class VoucherRelationship extends CollectionMember implements Cloneable {
     protected Boolean yesNo1;
     protected Boolean yesNo2;
     protected Boolean yesNo3;
-    protected Float number1;
-    protected Float number2;
-    protected Float number3;
+    protected BigDecimal number1;
+    protected BigDecimal number2;
+    protected BigDecimal number3;
     protected Integer integer1;
     protected Integer integer2;
     protected Integer integer3;
@@ -201,30 +202,30 @@ public class VoucherRelationship extends CollectionMember implements Cloneable {
         yesNo3 = yesNo3;
     }
 
-    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getNumber1() {
+    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber1() {
         return number1;
     }
 
-    public void setNumber1(Float number1) {
+    public void setNumber1(BigDecimal number1) {
         number1 = number1;
     }
 
-    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getNumber2() {
+    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber2() {
         return number2;
     }
 
-    public void setNumber2(Float number2) {
+    public void setNumber2(BigDecimal number2) {
         number2 = number2;
     }
 
-    @Column(name = "Number3", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getNumber3() {
+    @Column(name = "Number3", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber3() {
         return number3;
     }
 
-    public void setNumber3(Float number3) {
+    public void setNumber3(BigDecimal number3) {
         number3 = number3;
     }
 

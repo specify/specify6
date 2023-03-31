@@ -9,7 +9,7 @@ operates under the non-profit U.S. tax status of the University of
 Kansas Center for Research. Specify was supported previously by
 multiple awards from the U.S. National Science Foundation.
 
-Specify 6 Copyright © 2021 University of Kansas Center for
+Specify 6 Copyright © 2023 University of Kansas Center for
 Research. Specify comes with ABSOLUTELY NO WARRANTY.  This is free
 software licensed under GNU General Public License 2 (GPL2).
 
@@ -145,4 +145,4 @@ A process for producing final releases could be as follows:
    directory.
 
 1. To make the release live for auto updates, copy the contents of the
-   new version directory to the home directory.
+   new version directory to the home directory[![analytics](http://www.google-analytics.com/collect?v=1&t=pageview&dl=https%3A%2F%2Fgithub.com%2Fspecify%2F/specify6&uid=readme&tid=UA-169822764-4)]()

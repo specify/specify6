@@ -63,7 +63,7 @@ SpWizard (Database setup) - edu.ku.brc.specify.config.init.SpecifyDBSetupWizardF
 
 ![Result](./src/configuring-dev-env-4.png)
 
-Click *Ok* to cose the window.
+Click *Ok* to close the window.
 
 Now, the "Run" and "Debug" buttons in the top bar should be active.
 Don't forget to rebuild the project after making changes.

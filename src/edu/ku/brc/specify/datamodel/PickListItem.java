@@ -1,4 +1,4 @@
-/* Copyright (C) 2021, Specify Collections Consortium
+/* Copyright (C) 2023, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -127,7 +127,7 @@ public class PickListItem extends DataModelObjBase implements PickListItemIFace,
     /**
      * 
      */
-    @Column(name = "Title", nullable = false, length = 128)
+    @Column(name = "Title", nullable = false, length = 1024)
     public String getTitle()
     {
         return this.title;
@@ -173,7 +173,7 @@ public class PickListItem extends DataModelObjBase implements PickListItemIFace,
     /**
      * 
      */
-    @Column(name = "Value", length = 128)
+    @Column(name = "Value", length = 1024)
     public String getValue()
     {
         return this.value;// == null ? title : (value.equals("|null|") ? null : value);
@@ -316,7 +316,8 @@ public class PickListItem extends DataModelObjBase implements PickListItemIFace,
         // Default to title
         if (title != null && obj != null && obj.getTitle() != null)
         {
-            return title.compareTo(obj.getTitle());
+            // Make comparison case-insensitive
+            return title.toLowerCase().compareTo(obj.getTitle().toLowerCase());
         }
         // else
         return 0;

@@ -1,4 +1,4 @@
-/* Copyright (C) 2021, Specify Collections Consortium
+/* Copyright (C) 2023, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -196,7 +196,7 @@ public class WorkbenchTemplate extends DataModelObjBase implements java.io.Seria
     /**
      * 
      */
-    @Column(name = "Name", length = 64)
+    @Column(name = "Name", length = 256)
     public String getName() {
         return this.name;
     }

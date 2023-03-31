@@ -1,4 +1,4 @@
-/* Copyright (C) 2021, Specify Collections Consortium
+/* Copyright (C) 2023, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
+import java.math.BigDecimal;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -72,10 +73,10 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
     protected Integer                       nodeNumber;
     protected Integer                       highestChildNodeNumber;
     protected String                        standard;
-    protected Float                         startPeriod;
-    protected Float                         startUncertainty;
-    protected Float                         endPeriod;
-    protected Float                         endUncertainty;
+    protected BigDecimal                         startPeriod;
+    protected BigDecimal                         startUncertainty;
+    protected BigDecimal                         endPeriod;
+    protected BigDecimal                         endUncertainty;
     protected String                        text1;
     protected String                        text2;
     protected Boolean                       isBioStrat;
@@ -293,46 +294,46 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
         this.standard = standard;
     }
 
-    @Column(name = "EndPeriod")
-    public Float getEndPeriod()
+    @Column(name = "EndPeriod", precision = 20, scale = 10)
+    public BigDecimal getEndPeriod()
     {
         return endPeriod;
     }
 
-    public void setEndPeriod(Float end)
+    public void setEndPeriod(BigDecimal end)
     {
         this.endPeriod = end;
     }
 
-    @Column(name = "EndUncertainty")
-    public Float getEndUncertainty()
+    @Column(name = "EndUncertainty", precision = 20, scale = 10)
+    public BigDecimal getEndUncertainty()
     {
         return endUncertainty;
     }
 
-    public void setEndUncertainty(Float endUncertainty)
+    public void setEndUncertainty(BigDecimal endUncertainty)
     {
         this.endUncertainty = endUncertainty;
     }
 
-    @Column(name = "StartPeriod")
-    public Float getStartPeriod()
+    @Column(name = "StartPeriod", precision = 20, scale = 10)
+    public BigDecimal getStartPeriod()
     {
         return startPeriod;
     }
 
-    public void setStartPeriod(Float start)
+    public void setStartPeriod(BigDecimal start)
     {
         this.startPeriod = start;
     }
 
-    @Column(name = "StartUncertainty")
-    public Float getStartUncertainty()
+    @Column(name = "StartUncertainty", precision = 20, scale = 10)
+    public BigDecimal getStartUncertainty()
     {
         return startUncertainty;
     }
 
-    public void setStartUncertainty(Float startUncertainty)
+    public void setStartUncertainty(BigDecimal startUncertainty)
     {
         this.startUncertainty = startUncertainty;
     }

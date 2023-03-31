@@ -1,4 +1,4 @@
-/* Copyright (C) 2021, Specify Collections Consortium
+/* Copyright (C) 2023, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -352,9 +352,11 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             CollectionObjectAttachment.class,
             ConservDescriptionAttachment.class,
             ConservEventAttachment.class,
-                DeaccessionAttachment.class,
+            DeaccessionAttachment.class,
             DNASequenceAttachment.class,
             DNASequencingRunAttachment.class,
+            ExchangeInAttachment.class,
+            ExchangeOutAttachment.class,
             FieldNotebookAttachment.class,
             FieldNotebookPageAttachment.class,
             FieldNotebookPageSetAttachment.class,
@@ -2186,8 +2188,8 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         "Biodiversity Institute<br>University of Kansas<br>1345 Jayhawk Blvd.<br>Lawrence, KS  USA 66045<br><br>" +  //$NON-NLS-1$
         "<a href=\"http://www.specifysoftware.org\">www.specifysoftware.org</a>"+ //$NON-NLS-1$
         "<br><a href=\"mailto:support@specifysoftware.org\">support@specifysoftware.org</a><br>" +  //$NON-NLS-1$
-        "<p>Specify Software is a product of the Specify Collections Consortium that is funded by its member institutions. Consortium Founding Members include: University of Michigan, University of Florida, Denmark Consortium of Museums, and the University of Kansas. The Consortium operates under the non-profit, 501(c)3, U.S. tax status of the University of Kansas Center for Research. Specify was supported previously by multiple awards from the U.S. National Science Foundation.<br><br>" + //$NON-NLS-1$
-        "Specify 6 Copyright \u00A9 2021 Specify Collections Consortium. " +
+        "<p>Specify Software is a product of the Specify Collections Consortium that is funded by its member institutions. Consortium Founding Members include: the Commonwealth Scientific and Industrial Research Organisation (CSIRO), University of Michigan, University of Florida, Denmark Consortium of Museums, and the University of Kansas. The Consortium operates under the non-profit, 501(c)3, U.S. tax status of the University of Kansas Center for Research. Specify was supported previously by multiple awards from the U.S. National Science Foundation.<br><br>" + //$NON-NLS-1$
+        "Specify 6 Copyright \u00A9 2023 Specify Collections Consortium. " +
         "Specify comes with ABSOLUTELY NO WARRANTY.<br><br>" + //$NON-NLS-1$
         "This is free software licensed under GNU General Public License 2 (GPL2).</P></font></html>"; //$NON-NLS-1$
 

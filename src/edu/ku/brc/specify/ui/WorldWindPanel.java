@@ -1,4 +1,4 @@
-/* Copyright (C) 2021, Specify Collections Consortium
+/* Copyright (C) 2023, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -20,6 +20,7 @@
 package edu.ku.brc.specify.ui;
 
 import edu.ku.brc.services.mapping.LatLonPlacemarkIFace;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.util.Pair;
 import gov.nasa.worldwind.Model;
 import gov.nasa.worldwind.View;
@@ -116,7 +117,7 @@ public class WorldWindPanel extends JPanel
      */
     public WorldWindPanel() throws HeadlessException
     {
-        this(true);
+    	this(true);
     }
     
     /**
@@ -124,7 +125,9 @@ public class WorldWindPanel extends JPanel
      */
     public WorldWindPanel(final boolean includeGazetter) throws HeadlessException
     {
+    	
         super();
+        
         this.includeGazetter = includeGazetter;
         
         init();
@@ -135,6 +138,10 @@ public class WorldWindPanel extends JPanel
      */
     protected void init()
     {
+    	if (UIHelper.getOSType().equals(UIHelper.OSTYPE.MacOSX))
+    	{
+    		return;
+    	}
         if (world == null)
         {
             try

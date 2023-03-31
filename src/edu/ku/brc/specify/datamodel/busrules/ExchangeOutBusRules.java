@@ -1,4 +1,4 @@
-/* Copyright (C) 2021, Specify Collections Consortium
+/* Copyright (C) 2023, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -22,7 +22,6 @@ package edu.ku.brc.specify.datamodel.busrules;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
-import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.validation.ValComboBox;
@@ -40,7 +39,7 @@ import java.awt.*;
  * Apr 3, 2009
  *
  */
-public class ExchangeOutBusRules extends BaseBusRules
+public class ExchangeOutBusRules extends AttachmentOwnerBaseBusRules
 {
 
     public ExchangeOutBusRules()
@@ -89,7 +88,7 @@ public class ExchangeOutBusRules extends BaseBusRules
             model.addElement(exchangeOut.getDivision());
             cbx.getComboBox().setSelectedIndex(0);
 
-        } else
+        } else if (divComp instanceof JTextField)
         {
             JTextField tf = (JTextField)divComp;
             tf.setText(exchangeOut.getDivision().getName());

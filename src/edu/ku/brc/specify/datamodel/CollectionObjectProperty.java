@@ -1,4 +1,4 @@
-/* Copyright (C) 2021, Specify Collections Consortium
+/* Copyright (C) 2023, Specify Collections Consortium
  *
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -35,6 +35,7 @@ import java.util.Vector;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.math.BigDecimal;
 
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
@@ -50,37 +51,37 @@ public class CollectionObjectProperty extends CollectionMember implements Clonea
 
     protected Integer collectionObjectPropertyId;
     
-    protected Float number1;
-    protected Float number2;
-    protected Float number3;
-    protected Float number4;
-    protected Float number5;
-    protected Float number6;
-    protected Float number7;
-    protected Float number8;
-    protected Float number9;
-    protected Float number10;
-    protected Float number11;
-    protected Float number12;
-    protected Float number13;
-    protected Float number14;
-    protected Float number15;
-    protected Float number16;
-    protected Float number17;
-    protected Float number18;
-    protected Float number19;
-    protected Float number20;
+    protected BigDecimal number1;
+    protected BigDecimal number2;
+    protected BigDecimal number3;
+    protected BigDecimal number4;
+    protected BigDecimal number5;
+    protected BigDecimal number6;
+    protected BigDecimal number7;
+    protected BigDecimal number8;
+    protected BigDecimal number9;
+    protected BigDecimal number10;
+    protected BigDecimal number11;
+    protected BigDecimal number12;
+    protected BigDecimal number13;
+    protected BigDecimal number14;
+    protected BigDecimal number15;
+    protected BigDecimal number16;
+    protected BigDecimal number17;
+    protected BigDecimal number18;
+    protected BigDecimal number19;
+    protected BigDecimal number20;
 
-    protected Double number21;
-    protected Double number22;
-    protected Double number23;
-    protected Double number24;
-    protected Double number25;
-    protected Double number26;
-    protected Double number27;
-    protected Double number28;
-    protected Double number29;
-    protected Double number30;
+    protected BigDecimal number21;
+    protected BigDecimal number22;
+    protected BigDecimal number23;
+    protected BigDecimal number24;
+    protected BigDecimal number25;
+    protected BigDecimal number26;
+    protected BigDecimal number27;
+    protected BigDecimal number28;
+    protected BigDecimal number29;
+    protected BigDecimal number30;
 
     protected Short integer1;
     protected Short integer2;
@@ -535,93 +536,93 @@ public class CollectionObjectProperty extends CollectionMember implements Clonea
     }
 
 
-    @Column(name = "Number21", unique = false, nullable = true, insertable = true, updatable = true)
-    public Double getNumber21() {
+    @Column(name = "Number21", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber21() {
         return number21;
     }
 
-    public void setNumber21(Double number21) {
+    public void setNumber21(BigDecimal number21) {
         this.number21 = number21;
     }
 
-    @Column(name = "Number22", unique = false, nullable = true, insertable = true, updatable = true)
-    public Double getNumber22() {
+    @Column(name = "Number22", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber22() {
         return number22;
     }
 
-    public void setNumber22(Double number22) {
+    public void setNumber22(BigDecimal number22) {
         this.number22 = number22;
     }
 
-    @Column(name = "Number23", unique = false, nullable = true, insertable = true, updatable = true)
-    public Double getNumber23() {
+    @Column(name = "Number23", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber23() {
         return number23;
     }
 
-    public void setNumber23(Double number23) {
+    public void setNumber23(BigDecimal number23) {
         this.number23 = number23;
     }
 
-    @Column(name = "Number24", unique = false, nullable = true, insertable = true, updatable = true)
-    public Double getNumber24() {
+    @Column(name = "Number24", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber24() {
         return number24;
     }
 
-    public void setNumber24(Double number24) {
+    public void setNumber24(BigDecimal number24) {
         this.number24 = number24;
     }
 
-    @Column(name = "Number25", unique = false, nullable = true, insertable = true, updatable = true)
-    public Double getNumber25() {
+    @Column(name = "Number25", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber25() {
         return number25;
     }
 
-    public void setNumber25(Double number25) {
+    public void setNumber25(BigDecimal number25) {
         this.number25 = number25;
     }
 
-    @Column(name = "Number26", unique = false, nullable = true, insertable = true, updatable = true)
-    public Double getNumber26() {
+    @Column(name = "Number26", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber26() {
         return number26;
     }
 
-    public void setNumber26(Double number26) {
+    public void setNumber26(BigDecimal number26) {
         this.number26 = number26;
     }
 
-    @Column(name = "Number27", unique = false, nullable = true, insertable = true, updatable = true)
-    public Double getNumber27() {
+    @Column(name = "Number27", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber27() {
         return number27;
     }
 
-    public void setNumber27(Double number27) {
+    public void setNumber27(BigDecimal number27) {
         this.number27 = number27;
     }
 
-    @Column(name = "Number28", unique = false, nullable = true, insertable = true, updatable = true)
-    public Double getNumber28() {
+    @Column(name = "Number28", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber28() {
         return number28;
     }
 
-    public void setNumber28(Double number28) {
+    public void setNumber28(BigDecimal number28) {
         this.number28 = number28;
     }
 
-    @Column(name = "Number29", unique = false, nullable = true, insertable = true, updatable = true)
-    public Double getNumber29() {
+    @Column(name = "Number29", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber29() {
         return number29;
     }
 
-    public void setNumber29(Double number29) {
+    public void setNumber29(BigDecimal number29) {
         this.number29 = number29;
     }
 
-    @Column(name = "Number30", unique = false, nullable = true, insertable = true, updatable = true)
-    public Double getNumber30() {
+    @Column(name = "Number30", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber30() {
         return number30;
     }
 
-    public void setNumber30(Double number30) {
+    public void setNumber30(BigDecimal number30) {
         this.number30 = number30;
     }
 
@@ -1581,122 +1582,122 @@ public class CollectionObjectProperty extends CollectionMember implements Clonea
     }
 
 
-    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getNumber1()
+    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber1()
     {
         return number1;
     }
 
-    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getNumber2()
+    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber2()
     {
         return number2;
     }
 
-    @Column(name = "Number3", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getNumber3()
+    @Column(name = "Number3", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber3()
     {
         return number3;
     }
 
-    @Column(name = "Number4", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getNumber4()
+    @Column(name = "Number4", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber4()
     {
         return number4;
     }
 
-    @Column(name = "Number5", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getNumber5()
+    @Column(name = "Number5", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber5()
     {
         return number5;
     }
 
-    @Column(name = "Number6", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getNumber6()
+    @Column(name = "Number6", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber6()
     {
         return number6;
     }
 
-    @Column(name = "Number7", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getNumber7()
+    @Column(name = "Number7", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber7()
     {
         return number7;
     }
 
-    @Column(name = "Number8", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getNumber8()
+    @Column(name = "Number8", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber8()
     {
         return number8;
     }
 
-    @Column(name = "Number9", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getNumber9()
+    @Column(name = "Number9", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber9()
     {
         return number9;
     }
 
-    @Column(name = "Number10", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getNumber10()
+    @Column(name = "Number10", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber10()
     {
         return number10;
     }
 
-    @Column(name = "Number11", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getNumber11()
+    @Column(name = "Number11", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber11()
     {
         return number11;
     }
 
-    @Column(name = "Number12", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getNumber12()
+    @Column(name = "Number12", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber12()
     {
         return number12;
     }
 
-    @Column(name = "Number13", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getNumber13()
+    @Column(name = "Number13", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber13()
     {
         return number13;
     }
 
-    @Column(name = "Number14", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getNumber14()
+    @Column(name = "Number14", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber14()
     {
         return number14;
     }
 
-    @Column(name = "Number15", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getNumber15()
+    @Column(name = "Number15", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber15()
     {
         return number15;
     }
 
-    @Column(name = "Number16", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getNumber16()
+    @Column(name = "Number16", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber16()
     {
         return number16;
     }
 
-    @Column(name = "Number17", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getNumber17()
+    @Column(name = "Number17", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber17()
     {
         return number17;
     }
 
-    @Column(name = "Number18", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getNumber18()
+    @Column(name = "Number18", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber18()
     {
         return number18;
     }
 
-    @Column(name = "Number19", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getNumber19()
+    @Column(name = "Number19", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber19()
     {
         return number19;
     }
 
-    @Column(name = "Number20", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getNumber20()
+    @Column(name = "Number20", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber20()
     {
         return number20;
     }
@@ -1705,7 +1706,7 @@ public class CollectionObjectProperty extends CollectionMember implements Clonea
      *
      * @param number1
      */
-    public void setNumber1(Float number1)
+    public void setNumber1(BigDecimal number1)
     {
         this.number1 = number1;
     }
@@ -1714,7 +1715,7 @@ public class CollectionObjectProperty extends CollectionMember implements Clonea
      *
      * @param number2
      */
-    public void setNumber2(Float number2)
+    public void setNumber2(BigDecimal number2)
     {
         this.number2 = number2;
     }
@@ -1723,7 +1724,7 @@ public class CollectionObjectProperty extends CollectionMember implements Clonea
      *
      * @param number3
      */
-    public void setNumber3(Float number3)
+    public void setNumber3(BigDecimal number3)
     {
         this.number3 = number3;
     }
@@ -1732,7 +1733,7 @@ public class CollectionObjectProperty extends CollectionMember implements Clonea
      *
      * @param number4
      */
-    public void setNumber4(Float number4)
+    public void setNumber4(BigDecimal number4)
     {
         this.number4 = number4;
     }
@@ -1741,7 +1742,7 @@ public class CollectionObjectProperty extends CollectionMember implements Clonea
      *
      * @param number5
      */
-    public void setNumber5(Float number5)
+    public void setNumber5(BigDecimal number5)
     {
         this.number5 = number5;
     }
@@ -1750,7 +1751,7 @@ public class CollectionObjectProperty extends CollectionMember implements Clonea
      *
      * @param number6
      */
-    public void setNumber6(Float number6)
+    public void setNumber6(BigDecimal number6)
     {
         this.number6 = number6;
     }
@@ -1759,7 +1760,7 @@ public class CollectionObjectProperty extends CollectionMember implements Clonea
      *
      * @param number7
      */
-    public void setNumber7(Float number7)
+    public void setNumber7(BigDecimal number7)
     {
         this.number7 = number7;
     }
@@ -1768,7 +1769,7 @@ public class CollectionObjectProperty extends CollectionMember implements Clonea
      *
      * @param number8
      */
-    public void setNumber8(Float number8)
+    public void setNumber8(BigDecimal number8)
     {
         this.number8 = number8;
     }
@@ -1777,7 +1778,7 @@ public class CollectionObjectProperty extends CollectionMember implements Clonea
      *
      * @param number9
      */
-    public void setNumber9(Float number9)
+    public void setNumber9(BigDecimal number9)
     {
         this.number9 = number9;
     }
@@ -1786,7 +1787,7 @@ public class CollectionObjectProperty extends CollectionMember implements Clonea
      *
      * @param number10
      */
-    public void setNumber10(Float number10)
+    public void setNumber10(BigDecimal number10)
     {
         this.number10 = number10;
     }
@@ -1795,7 +1796,7 @@ public class CollectionObjectProperty extends CollectionMember implements Clonea
      *
      * @param number11
      */
-    public void setNumber11(Float number11)
+    public void setNumber11(BigDecimal number11)
     {
         this.number11 = number11;
     }
@@ -1804,7 +1805,7 @@ public class CollectionObjectProperty extends CollectionMember implements Clonea
      *
      * @param number12
      */
-    public void setNumber12(Float number12)
+    public void setNumber12(BigDecimal number12)
     {
         this.number12 = number12;
     }
@@ -1813,7 +1814,7 @@ public class CollectionObjectProperty extends CollectionMember implements Clonea
      *
      * @param number13
      */
-    public void setNumber13(Float number13)
+    public void setNumber13(BigDecimal number13)
     {
         this.number13 = number13;
     }
@@ -1822,7 +1823,7 @@ public class CollectionObjectProperty extends CollectionMember implements Clonea
      *
      * @param number14
      */
-    public void setNumber14(Float number14)
+    public void setNumber14(BigDecimal number14)
     {
         this.number14 = number14;
     }
@@ -1831,7 +1832,7 @@ public class CollectionObjectProperty extends CollectionMember implements Clonea
      *
      * @param number15
      */
-    public void setNumber15(Float number15)
+    public void setNumber15(BigDecimal number15)
     {
         this.number15 = number15;
     }
@@ -1840,7 +1841,7 @@ public class CollectionObjectProperty extends CollectionMember implements Clonea
      *
      * @param number16
      */
-    public void setNumber16(Float number16)
+    public void setNumber16(BigDecimal number16)
     {
         this.number16 = number16;
     }
@@ -1849,7 +1850,7 @@ public class CollectionObjectProperty extends CollectionMember implements Clonea
      *
      * @param number17
      */
-    public void setNumber17(Float number17)
+    public void setNumber17(BigDecimal number17)
     {
         this.number17 = number17;
     }
@@ -1858,7 +1859,7 @@ public class CollectionObjectProperty extends CollectionMember implements Clonea
      *
      * @param number18
      */
-    public void setNumber18(Float number18)
+    public void setNumber18(BigDecimal number18)
     {
         this.number18 = number18;
     }
@@ -1867,7 +1868,7 @@ public class CollectionObjectProperty extends CollectionMember implements Clonea
      *
      * @param number19
      */
-    public void setNumber19(Float number19)
+    public void setNumber19(BigDecimal number19)
     {
         this.number19 = number19;
 
@@ -1877,7 +1878,7 @@ public class CollectionObjectProperty extends CollectionMember implements Clonea
      *
      * @param number20
      */
-    public void setNumber20(Float number20)
+    public void setNumber20(BigDecimal number20)
     {
         this.number20 = number20;
     }

@@ -1,4 +1,4 @@
-/* Copyright (C) 2021, Specify Collections Consortium
+/* Copyright (C) 2023, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -23,6 +23,7 @@ import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
+import java.math.BigDecimal;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -83,9 +84,9 @@ public class DNASequence extends CollectionMember implements AttachmentOwnerIFac
 	protected Integer						compC;
 	protected Integer						compT;
 	protected Integer						ambiguousResidues;
-	protected Float						    number1;
-	protected Float						    number2;
-	protected Float						    number3;
+	protected BigDecimal						    number1;
+	protected BigDecimal						    number2;
+	protected BigDecimal						    number3;
 	protected Calendar						boldLastUpdateDate;
 	protected Calendar sequenceDate;
 	protected Byte                          sequenceDatePrecision;   // Accurate to Year, Month, Day
@@ -371,8 +372,8 @@ public class DNASequence extends CollectionMember implements AttachmentOwnerIFac
 	/**
 	 * @return the number1
 	 */
-    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true)
-	public Float getNumber1()
+    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+	public BigDecimal getNumber1()
 	{
 		return number1;
 	}
@@ -381,8 +382,8 @@ public class DNASequence extends CollectionMember implements AttachmentOwnerIFac
 	/**
 	 * @return the number2
 	 */
-    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true)
-	public Float getNumber2()
+    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+	public BigDecimal getNumber2()
 	{
 		return number2;
 	}
@@ -391,8 +392,8 @@ public class DNASequence extends CollectionMember implements AttachmentOwnerIFac
 	/**
 	 * @return the number3
 	 */
-    @Column(name = "Number3", unique = false, nullable = true, insertable = true, updatable = true)
-	public Float getNumber3()
+    @Column(name = "Number3", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+	public BigDecimal getNumber3()
 	{
 		return number3;
 	}
@@ -581,7 +582,7 @@ public class DNASequence extends CollectionMember implements AttachmentOwnerIFac
 	/**
 	 * @param number1 the number1 to set
 	 */
-	public void setNumber1(Float number1) 
+	public void setNumber1(BigDecimal number1) 
 	{
 		this.number1 = number1;
 	}
@@ -590,7 +591,7 @@ public class DNASequence extends CollectionMember implements AttachmentOwnerIFac
 	/**
 	 * @param number2 the number2 to set
 	 */
-	public void setNumber2(Float number2) 
+	public void setNumber2(BigDecimal number2) 
 	{
 		this.number2 = number2;
 	}
@@ -599,7 +600,7 @@ public class DNASequence extends CollectionMember implements AttachmentOwnerIFac
 	/**
 	 * @param number3 the number3 to set
 	 */
-	public void setNumber3(Float number3) 
+	public void setNumber3(BigDecimal number3) 
 	{
 		this.number3 = number3;
 	}

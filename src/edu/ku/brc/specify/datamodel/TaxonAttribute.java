@@ -9,6 +9,7 @@ import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Vector;
+import java.math.BigDecimal;
 
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert = true, dynamicUpdate = true)
@@ -159,26 +160,26 @@ public class TaxonAttribute extends DataModelObjBase implements Cloneable {
     protected Boolean yesNo81;
     protected Boolean yesNo82;
 
-    protected Float number1;
-    protected Float number2;
-    protected Float number3;
-    protected Float number4;
-    protected Float number5;
-    protected Float number6;
-    protected Float number7;
-    protected Float number8;
-    protected Float number9;
-    protected Float number10;
-    protected Float number11;
-    protected Float number12;
-    protected Float number13;
-    protected Float number14;
-    protected Float number15;
-    protected Float number16;
-    protected Float number17;
-    protected Float number18;
-    protected Float number19;
-    protected Float number20;
+    protected BigDecimal number1;
+    protected BigDecimal number2;
+    protected BigDecimal number3;
+    protected BigDecimal number4;
+    protected BigDecimal number5;
+    protected BigDecimal number6;
+    protected BigDecimal number7;
+    protected BigDecimal number8;
+    protected BigDecimal number9;
+    protected BigDecimal number10;
+    protected BigDecimal number11;
+    protected BigDecimal number12;
+    protected BigDecimal number13;
+    protected BigDecimal number14;
+    protected BigDecimal number15;
+    protected BigDecimal number16;
+    protected BigDecimal number17;
+    protected BigDecimal number18;
+    protected BigDecimal number19;
+    protected BigDecimal number20;
 
     protected Integer integer1;
     protected Integer integer2;
@@ -1700,183 +1701,183 @@ public class TaxonAttribute extends DataModelObjBase implements Cloneable {
         this.yesNo82 = yesNo82;
     }
 
-    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getNumber1() {
+    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber1() {
         return number1;
     }
 
-    public void setNumber1(Float number1) {
+    public void setNumber1(BigDecimal number1) {
         this.number1 = number1;
     }
 
-    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getNumber2() {
+    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber2() {
         return number2;
     }
 
-    public void setNumber2(Float number2) {
+    public void setNumber2(BigDecimal number2) {
         this.number2 = number2;
     }
 
-    @Column(name = "Number3", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getNumber3() {
+    @Column(name = "Number3", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber3() {
         return number3;
     }
 
-    public void setNumber3(Float number3) {
+    public void setNumber3(BigDecimal number3) {
         this.number3 = number3;
     }
 
-    @Column(name = "Number4", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getNumber4() {
+    @Column(name = "Number4", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber4() {
         return number4;
     }
 
-    public void setNumber4(Float number4) {
+    public void setNumber4(BigDecimal number4) {
         this.number4 = number4;
     }
 
-    @Column(name = "Number5", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getNumber5() {
+    @Column(name = "Number5", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber5() {
         return number5;
     }
 
-    public void setNumber5(Float number5) {
+    public void setNumber5(BigDecimal number5) {
         this.number5 = number5;
     }
 
-    @Column(name = "Number6", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getNumber6() {
+    @Column(name = "Number6", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber6() {
         return number6;
     }
 
-    public void setNumber6(Float number6) {
+    public void setNumber6(BigDecimal number6) {
         this.number6 = number6;
     }
 
-    @Column(name = "Number7", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getNumber7() {
+    @Column(name = "Number7", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber7() {
         return number7;
     }
 
-    public void setNumber7(Float number7) {
+    public void setNumber7(BigDecimal number7) {
         this.number7 = number7;
     }
 
-    @Column(name = "Number8", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getNumber8() {
+    @Column(name = "Number8", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber8() {
         return number8;
     }
 
-    public void setNumber8(Float number8) {
+    public void setNumber8(BigDecimal number8) {
         this.number8 = number8;
     }
 
-    @Column(name = "Number9", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getNumber9() {
+    @Column(name = "Number9", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber9() {
         return number9;
     }
 
-    public void setNumber9(Float number9) {
+    public void setNumber9(BigDecimal number9) {
         this.number9 = number9;
     }
 
-    @Column(name = "Number10", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getNumber10() {
+    @Column(name = "Number10", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber10() {
         return number10;
     }
 
-    public void setNumber10(Float number10) {
+    public void setNumber10(BigDecimal number10) {
         this.number10 = number10;
     }
 
-    @Column(name = "Number11", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getNumber11() {
+    @Column(name = "Number11", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber11() {
         return number11;
     }
 
-    public void setNumber11(Float number11) {
+    public void setNumber11(BigDecimal number11) {
         this.number11 = number11;
     }
 
-    @Column(name = "Number12", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getNumber12() {
+    @Column(name = "Number12", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber12() {
         return number12;
     }
 
-    public void setNumber12(Float number12) {
+    public void setNumber12(BigDecimal number12) {
         this.number12 = number12;
     }
 
-    @Column(name = "Number13", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getNumber13() {
+    @Column(name = "Number13", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber13() {
         return number13;
     }
 
-    public void setNumber13(Float number13) {
+    public void setNumber13(BigDecimal number13) {
         this.number13 = number13;
     }
 
-    @Column(name = "Number14", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getNumber14() {
+    @Column(name = "Number14", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber14() {
         return number14;
     }
 
-    public void setNumber14(Float number14) {
+    public void setNumber14(BigDecimal number14) {
         this.number14 = number14;
     }
 
-    @Column(name = "Number15", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getNumber15() {
+    @Column(name = "Number15", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber15() {
         return number15;
     }
 
-    public void setNumber15(Float number15) {
+    public void setNumber15(BigDecimal number15) {
         this.number15 = number15;
     }
 
-    @Column(name = "Number16", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getNumber16() {
+    @Column(name = "Number16", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber16() {
         return number16;
     }
 
-    public void setNumber16(Float number16) {
+    public void setNumber16(BigDecimal number16) {
         this.number16 = number16;
     }
 
-    @Column(name = "Number17", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getNumber17() {
+    @Column(name = "Number17", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber17() {
         return number17;
     }
 
-    public void setNumber17(Float number17) {
+    public void setNumber17(BigDecimal number17) {
         this.number17 = number17;
     }
 
-    @Column(name = "Number18", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getNumber18() {
+    @Column(name = "Number18", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber18() {
         return number18;
     }
 
-    public void setNumber18(Float number18) {
+    public void setNumber18(BigDecimal number18) {
         this.number18 = number18;
     }
 
-    @Column(name = "Number19", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getNumber19() {
+    @Column(name = "Number19", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber19() {
         return number19;
     }
 
-    public void setNumber19(Float number19) {
+    public void setNumber19(BigDecimal number19) {
         this.number19 = number19;
     }
 
-    @Column(name = "Number20", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getNumber20() {
+    @Column(name = "Number20", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getNumber20() {
         return number20;
     }
 
-    public void setNumber20(Float number20) {
+    public void setNumber20(BigDecimal number20) {
         this.number20 = number20;
     }
 

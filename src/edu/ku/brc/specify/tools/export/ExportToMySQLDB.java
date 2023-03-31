@@ -1052,6 +1052,24 @@ public class ExportToMySQLDB
 					val = val.replace("\t", " ");
 					val = val.replace("\n", " ");
 					val = val.replace("\r", " ");
+				} 
+				/**
+				 *  If the SQL type is Decimal, perform the same operation within Specify
+				 *  as seen in Forms and QueryBuilder
+				 *  @see JPAQuery#modifyQueryResults(List<?> rawQueryResults)
+				 */
+				else if (type == java.sql.Types.DECIMAL)
+				{
+					BigDecimal rawData = rows.getBigDecimal(c);
+					BigDecimal newData = rawData.stripTrailingZeros();
+					
+					// If the stripped BigDecimal is an integer and not zero
+					if (newData.scale() <= 0 && newData.signum() != 0)
+					{
+						// Add a decimal place so the format is #.0
+						newData = newData.setScale(1);
+					}
+					val = newData.toPlainString();
 				}
 				result.append(val);
 			}
@@ -1389,7 +1407,10 @@ public class ExportToMySQLDB
 						stmt = conn.createStatement();
 						//List<FieldMetaData> flds = BasicSQLUtils.getFieldMetaDataFromSchema(conn, tableName);
 						String sql = getSQLForTabDelimExport(conn, tableName);
+
 						ResultSet rows = stmt.executeQuery(sql);
+						
+						
 						//no simple way to get record count from ResultSet??
 						rowCount = BasicSQLUtils.getCount(conn, "select count(*) from `" + tableName + "`").longValue();
 						for (QBDataSourceListenerIFace listener : listeners)

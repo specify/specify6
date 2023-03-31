@@ -1,4 +1,4 @@
-/* Copyright (C) 2021, Specify Collections Consortium
+/* Copyright (C) 2023, Specify Collections Consortium
  *
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -687,7 +687,7 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
             //assuming there aren't 10s of 1000s of items in collectionObjectIds
             String idStr = objectIds.toString();
             idStr = idStr.substring(1, idStr.length()-1);
-            String where = recordSet.getDbTableId() == 1 ? "p.collectionobjectid" : "p.preparationid" + " in(" + idStr + ")";
+            String where = (recordSet.getDbTableId() == 1 ? "p.collectionobjectid" : "p.preparationid") + " in(" + idStr + ")";
             String subSql = getAvailableCountForPrepSQL(where);
             sql = sql + " inner join (" + subSql + ") avail on avail.preparationid = p.preparationid"
                     + " inner join preptype pt on pt.preptypeid = p.preptypeid";

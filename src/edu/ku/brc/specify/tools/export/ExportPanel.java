@@ -1821,7 +1821,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 
 			src.setFirstResult(rowsExported);
 			src.setMaxResults(ExportPanel.maxExportRowCount);
-			src.startDataAcquisition();
+			src.startModifiedQueryDataAcquistion();
 			// loading();
 
 			// XXX Assuming specimen-based export - 1 	 for baseTableId.
@@ -1989,7 +1989,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 
             	        src.setFirstResult(rowsExported);
             	        src.setMaxResults(ExportPanel.maxExportRowCount);
-            			src.startDataAcquisition();
+            			src.startModifiedQueryDataAcquistion();
             			loading();
             			
             			//XXX Assuming specimen-based export - 1 for baseTableId.

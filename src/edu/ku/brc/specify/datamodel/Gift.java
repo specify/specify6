@@ -1,4 +1,4 @@
-/* Copyright (C) 2021, Specify Collections Consortium
+/* Copyright (C) 2023, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -20,6 +20,7 @@
 package edu.ku.brc.specify.datamodel;
 
 import java.util.*;
+import java.math.BigDecimal;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -83,8 +84,8 @@ public class Gift extends DisciplineMember implements java.io.Serializable, OneT
     protected String                  text3;
     protected String                  text4;
     protected String                  text5;
-    protected Float                   number1;
-    protected Float                   number2;
+    protected BigDecimal                   number1;
+    protected BigDecimal                   number2;
     protected Boolean                 yesNo1;
     protected Boolean                 yesNo2;
 	protected Integer integer1;
@@ -432,24 +433,24 @@ public class Gift extends DisciplineMember implements java.io.Serializable, OneT
     /**
      *      * User definable
      */
-    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
-    public Float getNumber1() {
+    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true, length = 24, precision = 20, scale = 10)
+    public BigDecimal getNumber1() {
         return this.number1;
     }
     
-    public void setNumber1(Float number1) {
+    public void setNumber1(BigDecimal number1) {
         this.number1 = number1;
     }
 
     /**
      *      * User definable
      */
-    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
-    public Float getNumber2() {
+    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true, length = 24, precision = 20, scale = 10)
+    public BigDecimal getNumber2() {
         return this.number2;
     }
     
-    public void setNumber2(Float number2) {
+    public void setNumber2(BigDecimal number2) {
         this.number2 = number2;
     }
 

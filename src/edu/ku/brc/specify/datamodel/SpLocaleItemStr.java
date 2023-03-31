@@ -1,4 +1,4 @@
-/* Copyright (C) 2021, Specify Collections Consortium
+/* Copyright (C) 2023, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -139,7 +139,7 @@ public class SpLocaleItemStr extends DataModelObjBase implements LocalizableStrI
     /**
      * @return the text
      */
-    @Column(name = "Text", unique = false, nullable = false, insertable = true, updatable = true, length = 255)
+    @Column(name = "Text", unique = false, nullable = false, insertable = true, updatable = true, length = 2048)
     public String getText()
     {
         return text;
@@ -150,10 +150,10 @@ public class SpLocaleItemStr extends DataModelObjBase implements LocalizableStrI
      */
     public void setText(String text)
     {
-        if (text != null && text.length() > 255)
+        if (text != null && text.length() > 2048)
         {
-            log.error("String len: "+text.length()+ " is > 255 ["+text+"]");
-            this.text = text.substring(0, 255);
+            log.error("String len: "+text.length()+ " is > 2048 ["+text+"]");
+            this.text = text.substring(0, 2048);
             
         } else
         {

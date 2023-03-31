@@ -1,4 +1,4 @@
-/* Copyright (C) 2021, Specify Collections Consortium
+/* Copyright (C) 2023, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -141,11 +141,7 @@ public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTr
         if (dataObj instanceof Taxon)
         {
             Taxon taxon = (Taxon)dataObj;
-            int citCnt = BasicSQLUtils.getCountAsInt("SELECT COUNT(*) FROM taxoncitation WHERE TaxonID = " + taxon.getId());
-            if (citCnt < 1)
-            {
-                return super.okToDeleteNode(taxon);
-            }
+            return super.okToDeleteNode(taxon);
         }
         else if (dataObj instanceof TaxonTreeDefItem)
         {

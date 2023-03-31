@@ -1,4 +1,4 @@
-/* Copyright (C) 2021, Specify Collections Consortium
+/* Copyright (C) 2023, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -95,6 +95,8 @@ public class CollectionDataFetcher
                 Deaccession.class,        DeaccessionAttachment.class,
                 DNASequence.class,        DNASequenceAttachment.class,
                 DNASequencingRun.class,   DNASequencingRunAttachment.class,
+                ExchangeIn.class,         ExchangeInAttachment.class,
+                ExchangeOut.class,        ExchangeOutAttachment.class,
                 FieldNotebook.class,      FieldNotebookAttachment.class,
                 FieldNotebookPage.class,  FieldNotebookPageAttachment.class,
                 FieldNotebookPageSet.class, FieldNotebookPageSetAttachment.class,

@@ -1,4 +1,4 @@
-/* Copyright (C) 2021, Specify Collections Consortium
+/* Copyright (C) 2023, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -85,6 +85,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
 import java.util.Vector;
+import java.math.BigDecimal;
 
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
@@ -9201,8 +9202,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 String remarks    = escapeStringLiterals(rs.getString(7));
                 String text1      = escapeStringLiterals(rs.getString(8));
                 String text2      = escapeStringLiterals(rs.getString(9));
-                Double number1    = rs.getObject(10) != null ? rs.getDouble(10)  : null;
-                Double number2    = rs.getObject(11) != null ? rs.getDouble(11)  : null;
+                BigDecimal number1    = rs.getObject(10) != null ? rs.getBigDecimal(10)  : null;
+                BigDecimal number2    = rs.getObject(11) != null ? rs.getBigDecimal(11)  : null;
                 Boolean yesNo1    = rs.getObject(12) != null ? rs.getBoolean(12) : null;
                 Boolean yesNo2    = rs.getObject(13) != null ? rs.getBoolean(13) : null;
                 Integer oldGTPId  = rs.getObject(14) != null ? rs.getInt(14)     : null;
@@ -9509,8 +9510,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 String remarks    = escapeStringLiterals(rs.getString(7));
                 String text1      = escapeStringLiterals(rs.getString(8));
                 String text2      = escapeStringLiterals(rs.getString(9));
-                Double number1    = rs.getObject(10) != null ? rs.getDouble(10)  : null;
-                Double number2    = rs.getObject(11) != null ? rs.getDouble(11)  : null;
+                BigDecimal number1    = rs.getObject(10) != null ? rs.getBigDecimal(10)  : null;
+                BigDecimal number2    = rs.getObject(11) != null ? rs.getBigDecimal(11)  : null;
                 Boolean yesNo1    = rs.getObject(12) != null ? rs.getBoolean(12) : null;
                 Boolean yesNo2    = rs.getObject(13) != null ? rs.getBoolean(13) : null;
                 Integer oldGTPId  = rs.getObject(14) != null ? rs.getInt(14)     : null;
@@ -9946,8 +9947,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                                               final String     remarks,
                                               final String     text1, 
                                               final String     text2, 
-                                              final Double     number1, 
-                                              final Double     number2, 
+                                              final BigDecimal     number1, 
+                                              final BigDecimal     number2, 
                                               final Boolean    yesNo1, 
                                               final Boolean    yesNo2,
                                               final LithoStrat parentArg,
@@ -10021,8 +10022,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                                                final String     remarks,
                                                final String     text1, 
                                                final String     text2, 
-                                               final Double     number1, 
-                                               final Double     number2, 
+                                               final BigDecimal     number1, 
+                                               final BigDecimal     number2, 
                                                final Boolean    yesNo1, 
                                                final Boolean    yesNo2,
                                                final LithoStrat stratRoot,
@@ -10290,9 +10291,9 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         allTime.setRankId(0);
         allTime.setName("Time");
         allTime.setFullName("Time");
-        allTime.setStartPeriod(100000f);
-        allTime.setEndPeriod(0f);
-        allTime.setEndUncertainty(0f);
+        allTime.setStartPeriod(new BigDecimal("100000"));
+        allTime.setEndPeriod(BigDecimal.ZERO);
+        allTime.setEndUncertainty(BigDecimal.ZERO);
         allTime.setTimestampCreated(now);
         ++count;
         newItems.add(allTime);
@@ -10314,10 +10315,10 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 Date      creTDate = rs.getDate(7);
                 Timestamp modT     = (modTDate != null) ? new Timestamp(modTDate.getTime()) : null;
                 Timestamp creT     = (creTDate != null) ? new Timestamp(creTDate.getTime()) : null;
-                Float     upper    = (Float)rs.getObject(8);
-                Float     uError   = (Float)rs.getObject(9);
-                Float     lower    = (Float)rs.getObject(10);
-                Float     lError   = (Float)rs.getObject(11);
+                BigDecimal     upper    = new BigDecimal((Double)rs.getObject(8));
+                BigDecimal     uError   = new BigDecimal((Double)rs.getObject(9));
+                BigDecimal     lower    = new BigDecimal((Double)rs.getObject(10));
+                BigDecimal     lError   = new BigDecimal((Double)rs.getObject(11));
                 
                 if (isEmpty(name))
                 {
@@ -10412,10 +10413,10 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 gtp.setDefinitionItem(defItem);
                 gtp.setRankId(rank);
                 gtp.setDefinition(treeDef);
-                gtp.setStartPeriod(0.0f);
-                gtp.setStartUncertainty(0.0f);
-                gtp.setEndPeriod(0.0f);
-                gtp.setEndUncertainty(0.0f);
+                gtp.setStartPeriod(BigDecimal.ZERO);
+                gtp.setStartUncertainty(BigDecimal.ZERO);
+                gtp.setEndPeriod(BigDecimal.ZERO);
+                gtp.setEndUncertainty(BigDecimal.ZERO);
                 gtp.setStandard(null);
                 gtp.setRemarks(null);
                 gtp.setTimestampCreated(now);
@@ -10430,10 +10431,10 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     gtpPH.setDefinition(treeDef);
                     gtpPH.setDefinitionItem(defItem);
                     gtpPH.setRankId(rank);
-                    gtpPH.setStartPeriod(0.0f);
-                    gtpPH.setStartUncertainty(0.0f);
-                    gtpPH.setEndPeriod(0.0f);
-                    gtpPH.setEndUncertainty(0.0f);
+                    gtpPH.setStartPeriod(BigDecimal.ZERO);
+                    gtpPH.setStartUncertainty(BigDecimal.ZERO);
+                    gtpPH.setEndPeriod(BigDecimal.ZERO);
+                    gtpPH.setEndUncertainty(BigDecimal.ZERO);
                     gtp.addChild(gtpPH);
                 }
             }
@@ -10591,11 +10592,11 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     {
         if (parent == child) { return false; }
 
-        Float startParent = parent.getStartPeriod();
-        Float endParent   = parent.getEndPeriod();
+        Double startParent = parent.getStartPeriod().doubleValue();
+        Double endParent   = parent.getEndPeriod().doubleValue();
 
-        Float startChild = child.getStartPeriod();
-        Float endChild   = child.getEndPeriod();
+        Double startChild = child.getStartPeriod().doubleValue();
+        Double endChild   = child.getEndPeriod().doubleValue();
 
         // remember, the numbers represent MYA (millions of yrs AGO)
         // so the logic seems a little backwards

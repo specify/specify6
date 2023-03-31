@@ -28,7 +28,7 @@
       <executable name="Specify" iconSet="true" iconFile="ico/specify128.ico" executableDir="bin" redirectStderr="false" executableMode="gui" />
       <splashScreen show="true" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" textOverlay="true">
         <text>
-          <statusLine x="95" y="326" text="Copyright (C) 2021 Specify Collections Consortium. FOSS licensed under GNU GPL2." fontSize="10" />
+          <statusLine x="95" y="326" text="Copyright (C) 2023 Specify Collections Consortium. FOSS licensed under GNU GPL2." fontSize="10" />
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" fontSize="12" />
         </text>
       </splashScreen>
@@ -58,7 +58,7 @@
       <executable name="SpiReport" iconSet="true" iconFile="ico/spireport128.ico" executableDir="bin" redirectStderr="false" executableMode="gui" />
       <splashScreen show="true" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" textOverlay="true">
         <text>
-          <statusLine x="95" y="326" text="Copyright (C) 2021 Specify Collections Consortium. FOSS licensed under GNU GPL2." fontSize="10" />
+          <statusLine x="95" y="326" text="Copyright (C) 2023 Specify Collections Consortium. FOSS licensed under GNU GPL2." fontSize="10" />
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" fontSize="12" />
         </text>
       </splashScreen>
@@ -88,7 +88,7 @@
       <executable name="SpWizard" iconSet="true" iconFile="ico/spwizard128.ico" executableDir="bin" redirectStderr="false" executableMode="gui" />
       <splashScreen show="true" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" textOverlay="true">
         <text>
-          <statusLine x="95" y="326" text="Copyright (C) 2021 Specify Collections Consortium. FOSS licensed under GNU GPL2." fontSize="10" />
+          <statusLine x="95" y="326" text="Copyright (C) 2023 Specify Collections Consortium. FOSS licensed under GNU GPL2." fontSize="10" />
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" fontSize="12" />
         </text>
       </splashScreen>
@@ -118,7 +118,7 @@
       <executable name="SpBackupRestore" iconSet="true" iconFile="ico/spbackup128.ico" executableDir="bin" redirectStderr="false" executableMode="gui" />
       <splashScreen show="true" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" textOverlay="true">
         <text>
-          <statusLine x="95" y="326" text="Copyright (C) 2021 Specify Collections Consortium. FOSS licensed under GNU GPL2." fontSize="10" />
+          <statusLine x="95" y="326" text="Copyright (C) 2023 Specify Collections Consortium. FOSS licensed under GNU GPL2." fontSize="10" />
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" fontSize="12" />
         </text>
       </splashScreen>
@@ -148,7 +148,7 @@
       <executable name="Specify4GB" iconSet="true" iconFile="ico/specify128.ico" executableDir="bin" redirectStderr="false" executableMode="gui" />
       <splashScreen show="true" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" textOverlay="true">
         <text>
-          <statusLine x="95" y="326" text="Copyright (C) 2021 Specify Collections Consortium. FOSS licensed under GNU GPL2." fontSize="10" />
+          <statusLine x="95" y="326" text="Copyright (C) 2023 Specify Collections Consortium. FOSS licensed under GNU GPL2." fontSize="10" />
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" fontSize="12" />
         </text>
       </splashScreen>
@@ -178,7 +178,7 @@
       <executable name="ImportFileSplitter" iconSet="true" iconFile="ico/data_split.ico" executableDir="bin" redirectStderr="false" executableMode="gui" />
       <splashScreen show="true" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" textOverlay="true">
         <text>
-          <statusLine x="95" y="326" text="Copyright (C) 2021 Specify Collections Consortium. FOSS licensed under GNU GPL2." fontSize="10" />
+          <statusLine x="95" y="326" text="Copyright (C) 2023 Specify Collections Consortium. FOSS licensed under GNU GPL2." fontSize="10" />
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" fontSize="12" />
         </text>
       </splashScreen>
@@ -208,7 +208,7 @@
       <executable name="DataExporter" iconSet="true" iconFile="ico/specify128.ico" executableDir="bin" redirectStderr="false" executableMode="gui" singleInstance="true" />
       <splashScreen show="true" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" textOverlay="true">
         <text>
-          <statusLine x="95" y="326" text="Copyright (C) 2021 Specify Collections Consortium. FOSS licensed under GNU GPL2." fontSize="10" />
+          <statusLine x="95" y="326" text="Copyright (C) 2023 Specify Collections Consortium. FOSS licensed under GNU GPL2." fontSize="10" />
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" fontSize="12" />
         </text>
       </splashScreen>
@@ -262,7 +262,7 @@
       <executable name="SpLocalizer" iconSet="true" executableDir="bin" redirectStderr="false" executableMode="gui" />
       <splashScreen show="true" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" textOverlay="true">
         <text>
-          <statusLine x="95" y="326" text="Copyright (C) 2021 Specify Collections Consortium. FOSS licensed under GNU GPL2." fontSize="10" />
+          <statusLine x="95" y="326" text="Copyright (C) 2023 Specify Collections Consortium. FOSS licensed under GNU GPL2." fontSize="10" />
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" fontSize="12" />
         </text>
       </splashScreen>
@@ -292,7 +292,7 @@
       <executable name="SpecifyDBSecurityWizard" iconSet="true" iconFile="ico/spsecwizard128.ico" executableDir="bin" redirectStderr="false" executableMode="gui" />
       <splashScreen show="true" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" textOverlay="true">
         <text>
-          <statusLine x="95" y="326" text="Copyright (C) 2021 Specify Collections Consortium. FOSS licensed under GNU GPL2." fontSize="10" />
+          <statusLine x="95" y="326" text="Copyright (C) 2023 Specify Collections Consortium. FOSS licensed under GNU GPL2." fontSize="10" />
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" fontSize="12" />
         </text>
       </splashScreen>

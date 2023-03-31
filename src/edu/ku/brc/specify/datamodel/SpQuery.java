@@ -1,4 +1,4 @@
-/* Copyright (C) 2021, Specify Collections Consortium
+/* Copyright (C) 2023, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -238,7 +238,7 @@ public class SpQuery extends DataModelObjBase implements Cloneable
     /**
      * @return the name
      */
-    @Column(name = "Name", unique = false, nullable = false, insertable = true, updatable = true, length = 64)
+    @Column(name = "Name", unique = false, nullable = false, insertable = true, updatable = true, length = 256)
     public String getName()
     {
         return name;

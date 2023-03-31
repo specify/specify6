@@ -1,4 +1,4 @@
-/* Copyright (C) 2021, Specify Collections Consortium
+/* Copyright (C) 2023, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -863,7 +863,7 @@ public class ReportsBaseTask extends BaseTask
     }
     
     /**
-     * Processes all Commands of type LABELS.
+     * Processes all Commands of type REPORTS.
      * @param cmdAction the command to be processed
      */
     protected void processReportCommands(final CommandAction cmdAction)
@@ -885,6 +885,7 @@ public class ReportsBaseTask extends BaseTask
         Object data = cmdAction.getData();
         UsageTracker.incrUsageCount("RP."+cmdAction.getType()+(data != null ? ("."+data.getClass().getSimpleName()) : ""));
            
+        
         if (cmdAction.isAction(NEWRECORDSET_ACTION))
         {
             if (cmdAction.getData() instanceof GhostActionable)

@@ -1,4 +1,4 @@
-/* Copyright (C) 2021, Specify Collections Consortium
+/* Copyright (C) 2023, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -19,16 +19,9 @@
 */
 package edu.ku.brc.specify.datamodel;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import java.util.Calendar;
+
+import javax.persistence.*;
 
 import org.hibernate.annotations.Index;
 
@@ -51,6 +44,23 @@ public class OtherIdentifier extends CollectionMember implements java.io.Seriali
      protected String           institution;
      protected String           remarks;
      protected CollectionObject collectionObject;
+
+    protected String text1;
+    protected String text2;
+    protected String text3;
+    protected String text4;
+    protected String text5;
+    protected Boolean yesNo1;
+    protected Boolean yesNo2;
+    protected Boolean yesNo3;
+    protected Boolean yesNo4;
+    protected Boolean yesNo5;
+    protected Agent agent1;
+    protected Agent agent2;
+    protected Calendar                    date1;
+    protected Byte                        date1Precision;
+    protected Calendar                    date2;
+    protected Byte                        date2Precision;
 
 
     // Constructors
@@ -79,6 +89,22 @@ public class OtherIdentifier extends CollectionMember implements java.io.Seriali
         institution = null;
         remarks = null;
         collectionObject = null;
+        text1 = null;
+        text2 = null;
+        text3 = null;
+        text4 = null;
+        text5 = null;
+        yesNo1 = null;
+        yesNo2 = null;
+        yesNo3 = null;
+        yesNo4 = null;
+        yesNo5 = null;
+        agent1 = null;
+        agent2 = null;
+        date1 = null;
+        date1Precision = 1;
+        date2 = null;
+        date2Precision = 1;
     }
     // End Initializer
 
@@ -142,6 +168,234 @@ public class OtherIdentifier extends CollectionMember implements java.io.Seriali
     
     public void setRemarks(String remarks) {
         this.remarks = remarks;
+    }
+
+    /**
+     *      * User definable
+     */
+    @Lob
+    @Column(name = "Text1", length = 65535)
+    public String getText1() {
+        return this.text1;
+    }
+    
+    public void setText1(String text1) {
+        this.text1 = text1;
+    }
+
+    /**
+     *      * User definable
+     */
+    @Lob
+    @Column(name = "Text2", length = 65535)
+    public String getText2() {
+        return this.text2;
+    }
+    
+    public void setText2(String text2) {
+        this.text2 = text2;
+    }
+
+    /**
+     *      * User definable
+     */
+    @Lob
+    @Column(name = "Text3", length = 65535)
+    public String getText3() {
+        return this.text3;
+    }
+    
+    public void setText3(String text3) {
+        this.text3 = text3;
+    }
+
+    /**
+     *      * User definable
+     */
+    @Lob
+    @Column(name = "Text4", length = 65535)
+    public String getText4() {
+        return this.text4;
+    }
+    
+    public void setText4(String text4) {
+        this.text4 = text4;
+    }
+
+    /**
+     *      * User definable
+     */
+    @Lob
+    @Column(name = "Text5", length = 65535)
+    public String getText5() {
+        return this.text5;
+    }
+    
+    public void setText5(String text5) {
+        this.text5 = text5;
+    }
+    /**
+     * @return the yesNo1
+     */
+    @Column(name = "YesNo1", unique = false, nullable = true, insertable = true, updatable = true)
+    public Boolean getYesNo1() {
+        return yesNo1;
+    }
+
+    /**
+     * @param yesNo1 the yesNo1 to set
+     */
+    public void setYesNo1(Boolean yesNo1) {
+        this.yesNo1 = yesNo1;
+    }
+
+    /**
+     * @return the yesNo2
+     */
+    @Column(name = "YesNo2", unique = false, nullable = true, insertable = true, updatable = true)
+    public Boolean getYesNo2() {
+        return yesNo2;
+    }
+
+    /**
+     * @param yesNo2 the yesNo2 to set
+     */
+    public void setYesNo2(Boolean yesNo2) {
+        this.yesNo2 = yesNo2;
+    }
+
+    /**
+     * @return the yesNo3
+     */
+    @Column(name = "YesNo3", unique = false, nullable = true, insertable = true, updatable = true)
+    public Boolean getYesNo3() {
+        return yesNo3;
+    }
+
+    /**
+     * @param yesNo3 the yesNo3 to set
+     */
+    public void setYesNo3(Boolean yesNo3) {
+        this.yesNo3 = yesNo3;
+    }
+    
+    /**
+     * @return the yesNo4
+     */
+    @Column(name = "YesNo4", unique = false, nullable = true, insertable = true, updatable = true)
+    public Boolean getYesNo4() {
+        return yesNo4;
+    }
+
+    /**
+     * @param yesNo4 the yesNo4 to set
+     */
+    public void setYesNo4(Boolean yesNo4) {
+        this.yesNo4 = yesNo4;
+    }
+
+    /**
+     * @return the yesNo5
+     */
+    @Column(name = "YesNo5", unique = false, nullable = true, insertable = true, updatable = true)
+    public Boolean getYesNo5() {
+        return yesNo5;
+    }
+
+    /**
+     * @param yesNo5 the yesNo5 to set
+     */
+    public void setYesNo5(Boolean yesNo5) {
+        this.yesNo5 = yesNo5;
+    }
+    
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "Agent1ID", unique = false, nullable = true, insertable = true, updatable = true)
+    public Agent getAgent1() {
+        return agent1;
+    }
+
+    public void setAgent1(Agent agent1) {
+        this.agent1 = agent1;
+    }
+
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "Agent2ID", unique = false, nullable = true, insertable = true, updatable = true)
+    public Agent getAgent2() {
+        return agent2;
+    }
+
+    public void setAgent2(Agent agent2) {
+        this.agent2 = agent2;
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "Date1", unique = false, nullable = true, insertable = true, updatable = true)
+    public Calendar getDate1() {
+        return date1;
+    }
+
+    /**
+     *
+     * @param date1
+     */
+    public void setDate1(Calendar date1) {
+        this.date1 = date1;
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Column(name = "Date1Precision", unique = false, nullable = true, insertable = true, updatable = true)
+    public Byte getDate1Precision() {
+        return date1Precision;
+    }
+
+    /**
+     *
+     * @param date1Precision
+     */
+    public void setDate1Precision(Byte date1Precision) {
+        this.date1Precision = date1Precision;
+    }
+    /**
+     *
+     * @return
+     */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "Date2", unique = false, nullable = true, insertable = true, updatable = true)
+    public Calendar getDate2() {
+        return date2;
+    }
+
+    /**
+     *
+     * @param date2
+     */
+    public void setDate2(Calendar date2) {
+        date2 = date2;
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Column(name = "Date2Precision", unique = false, nullable = true, insertable = true, updatable = true)
+    public Byte getDate2Precision() {
+        return date2Precision;
+    }
+
+    /**
+     *
+     * @param date2Precision
+     */
+    public void setDate2Precision(Byte date2Precision) {
+        date2Precision = date2Precision;
     }
 
     /**

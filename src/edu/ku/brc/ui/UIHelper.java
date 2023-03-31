@@ -1,4 +1,4 @@
-/* Copyright (C) 2021, Specify Collections Consortium
+/* Copyright (C) 2023, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -849,7 +849,7 @@ public final class UIHelper
             } else if (cls == BigDecimal.class)
             {
                 //System.out.println(BigDecimal.valueOf(Double.parseDouble(dataStr)));
-                return StringUtils.isNotEmpty(dataStr) ? BigDecimal.valueOf(Double.parseDouble(dataStr)) : null;
+                return StringUtils.isNotEmpty(dataStr) ? new BigDecimal(dataStr) : null;
                 
             } else if (cls == Long.class)
             {

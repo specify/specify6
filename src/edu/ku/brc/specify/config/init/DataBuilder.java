@@ -1,4 +1,4 @@
-/* Copyright (C) 2021, Specify Collections Consortium
+/* Copyright (C) 2023, Specify Collections Consortium
  * 
  * Specify Collections Consortium, Biodiversity Institute, University of Kansas,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA, support@specifysoftware.org
@@ -1096,8 +1096,8 @@ public class DataBuilder
     public static GeologicTimePeriod createGeologicTimePeriod(final GeologicTimePeriodTreeDef gtptd,
                                                               final GeologicTimePeriod parent,
                                                               final String name,
-                                                              final float startMYA,
-                                                              final float endMYA,
+                                                              final BigDecimal startMYA,
+                                                              final BigDecimal endMYA,
                                                               final int rankId)
     {
         GeologicTimePeriod gtp = new GeologicTimePeriod();
@@ -1112,9 +1112,9 @@ public class DataBuilder
             parent.getChildren().add(gtp);
         }
         gtp.setStartPeriod(startMYA);
-        gtp.setStartUncertainty(0.0f);
+        gtp.setStartUncertainty(BigDecimal.ZERO);
         gtp.setEndPeriod(endMYA);
-        gtp.setEndUncertainty(0.0f);
+        gtp.setEndUncertainty(BigDecimal.ZERO);
         GeologicTimePeriodTreeDefItem defItem = gtptd.getDefItemByRank(rankId);
         if (defItem != null)
         {
@@ -2052,10 +2052,10 @@ public class DataBuilder
                                           final String sectionPart,
                                           final String verbatimElevation,
                                           final String originalElevationUnit,
-                                          final Double minElevation,
-                                          final Double maxElevation,
+                                          final BigDecimal minElevation,
+                                          final BigDecimal maxElevation,
                                           final String elevationMethod,
-                                          final Double elevationAccuracy,
+                                          final BigDecimal elevationAccuracy,
                                           final Integer originalLatLongUnit,
                                           final String latLongType,
                                           final BigDecimal latitude1,
@@ -2063,7 +2063,7 @@ public class DataBuilder
                                           final BigDecimal latitude2,
                                           final BigDecimal longitude2,
                                           final String latLongMethod,
-                                          final Double latLongAccuracy,
+                                          final BigDecimal latLongAccuracy,
                                           final String datum,
                                           final Integer groupPermittedToView,
                                           final String lat1text,
