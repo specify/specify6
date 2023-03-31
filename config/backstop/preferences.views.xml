@@ -2,167 +2,240 @@
 <viewset name="Preferences" i18nresname="preferences" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
     <views>
-        <view
-            name="Attachments"
-            class="java.util.prefs.Preferences">
+
+		<view name="Attachments"
+			class="java.util.prefs.Preferences">
             <desc><![CDATA[Attachments Preference Form.]]></desc>
             <altviews>
                 <altview name="Attachments" viewdef="Attachments" label="V_Attachments" mode="edit" validated="true"/>
             </altviews>
         </view>
-        <view
-                name="Audits"
-                class="java.util.prefs.Preferences">
+
+		<view name="Audits"
+			class="java.util.prefs.Preferences">
             <desc><![CDATA[Audits Preference Form.]]></desc>
             <altviews>
                 <altview name="Audits" viewdef="Audits" label="V_Audits" mode="edit" validated="true"/>
             </altviews>
         </view>
 
-        <view
-            name="EMail"
-            class="java.util.prefs.Preferences">
+		<view name="EMail"
+			class="java.util.prefs.Preferences">
             <desc><![CDATA[EMail Preference Form.]]></desc>
             <altviews>
                 <altview name="EMail" viewdef="EMail" label="V_EMAIL" mode="edit" validated="true"/>
             </altviews>
         </view>
 
-        <view
-            name="Formatting"
-            class="java.util.prefs.Preferences">
+		<view name="Formatting"
+			class="java.util.prefs.Preferences">
             <desc><![CDATA[Formatting Preference Form.]]></desc>
             <altviews>
                 <altview name="Formatting" viewdef="Formatting" label="V_FORMATTING" mode="edit" validated="true"/>
             </altviews>
         </view>
 
-        <view
-            name="Misc"
-            class="java.util.prefs.Preferences">
-            <desc><![CDATA[Misc Preference Form.]]></desc>
+		<view name="GEOLocatePrefs"
+			class="java.util.prefs.Preferences">
+            <desc><![CDATA[GEOLocate Preference Form.]]></desc>
             <altviews>
-                <altview name="Misc" viewdef="Misc" label="V_MISC" mode="edit" validated="true"/>
+                <altview name="GEOLocatePrefs" viewdef="GEOLocatePrefs" label="GEOLocate" mode="edit" validated="true"/>
             </altviews>
         </view>
 
-        <view
-            name="System"
-            class="java.util.prefs.Preferences">
-            <desc><![CDATA[System Preference Form.]]></desc>
-            <altviews>
-                <altview name="System" viewdef="System" label="V_SYSTEM" mode="edit" validated="true"/>
-            </altviews>
-        </view>
-
-        <view
-                name="S2nPrefs"
-                class="java.util.prefs.Preferences">
-            <desc><![CDATA[System Preference Form.]]></desc>
-            <altviews>
-                <altview name="S2nPrefs" viewdef="S2nPrefs" label="V_S2N" mode="edit" validated="true"/>
-            </altviews>
-        </view>
-
-        <view
-            name="Morphbank"
-            class="java.util.prefs.Preferences">
-            <desc><![CDATA[Morphbank Preference Form.]]></desc>
-            <altviews>
-                <altview name="Morphbank" viewdef="Morphbank" label="V_Morphbank" mode="edit" validated="true"/>
-            </altviews>
-        </view>
-
-        <view
-            name="Symbiota"
-            class="java.util.prefs.Preferences">
-            <desc><![CDATA[Symbiota Preference Form.]]></desc>
-            <altviews>
-                <altview name="Symbiota" viewdef="Symbiota" label="V_Symbiota" mode="edit" validated="true"/>
-            </altviews>
-        </view>
-
-        <view
-            name="GoogleEarth"
-            class="java.util.prefs.Preferences">
+		<view name="GoogleEarth"
+			class="java.util.prefs.Preferences">
             <desc><![CDATA[GoogleEarth Preference Form.]]></desc>
             <altviews>
                 <altview name="GoogleEarth" viewdef="GoogleEarth" label="V_GOOGLE_EARTH" mode="edit" validated="true"/>
             </altviews>
         </view>
 
-        <view
-            name="TreeOptions"
-            class="java.util.prefs.Preferences">
+		<view name="LoansPrefs"
+			class="java.util.prefs.Preferences">
+            <desc><![CDATA[Loans Preference Form.]]></desc>
+            <altviews>
+                <altview name="LoansPrefs" viewdef="LoansPrefs" label="LOANS_PREF" mode="edit" validated="true"/>
+            </altviews>
+        </view>
+
+		<view name="LoginPrefs"
+			class="java.util.prefs.Preferences">
+            <desc><![CDATA[Backup Restore Options Preference Form.]]></desc>
+            <altviews>
+                <altview name="LoginPrefs" viewdef="LoginPrefs" label="LOGIN_PREFS" mode="edit" validated="true"/>
+            </altviews>
+        </view>
+
+		<view name="Misc"
+			class="java.util.prefs.Preferences">
+            <desc><![CDATA[Misc Preference Form.]]></desc>
+            <altviews>
+                <altview name="Misc" viewdef="Misc" label="V_MISC" mode="edit" validated="true"/>
+            </altviews>
+        </view>
+
+		<view name="Morphbank"
+			class="java.util.prefs.Preferences">
+            <desc><![CDATA[Morphbank Preference Form.]]></desc>
+            <altviews>
+                <altview name="Morphbank" viewdef="Morphbank" label="V_Morphbank" mode="edit" validated="true"/>
+            </altviews>
+        </view>
+
+		<view name="MySQLBckRstrOptions"
+			class="java.util.prefs.Preferences">
+            <desc><![CDATA[Backup Restore Options Preference Form.]]></desc>
+            <altviews>
+                <altview name="MySQLBckRstrOptions" viewdef="MySQLBckRstrOptions" label="BCKRSTR_OPTIONS" mode="edit" validated="true"/>
+            </altviews>
+        </view>
+
+		<view name="NetworkProxy"
+			class="java.util.prefs.Preferences">
+            <desc><![CDATA[Network Proxy Form.]]></desc>
+            <altviews>
+                <altview name="NetworkProxy" viewdef="NetworkProxy" label="NETWORK_PROXY" mode="edit" validated="true"/>
+            </altviews>
+        </view>
+
+		<view name="S2nPrefs"
+			class="java.util.prefs.Preferences">
+            <desc><![CDATA[System Preference Form.]]></desc>
+            <altviews>
+                <altview name="S2nPrefs" viewdef="S2nPrefs" label="V_S2N" mode="edit" validated="true"/>
+            </altviews>
+        </view>
+
+		<view name="Symbiota"
+			class="java.util.prefs.Preferences">
+            <desc><![CDATA[Symbiota Preference Form.]]></desc>
+            <altviews>
+                <altview name="Symbiota" viewdef="Symbiota" label="V_Symbiota" mode="edit" validated="true"/>
+            </altviews>
+        </view>
+
+		<view name="System"
+			class="java.util.prefs.Preferences">
+            <desc><![CDATA[System Preference Form.]]></desc>
+            <altviews>
+                <altview name="System" viewdef="System" label="V_SYSTEM" mode="edit" validated="true"/>
+            </altviews>
+        </view>
+
+		<view name="TreeOptions"
+			class="java.util.prefs.Preferences">
             <desc><![CDATA[Tree Options Preference Form.]]></desc>
             <altviews>
                 <altview name="TreeOptions" viewdef="TreeOptions" label="V_TREE_OPTIONS" mode="edit" validated="true"/>
             </altviews>
         </view>
 
-        <view
-            name="MySQLBckRstrOptions"
-            class="java.util.prefs.Preferences">
-            <desc><![CDATA[Backup Restore Options Preference Form.]]></desc>
-            <altviews>
-                <altview name="MySQLBckRstrOptions" viewdef="MySQLBckRstrOptions" label="BCKRSTR_OPTIONS" mode="edit" validated="true"/>
-            </altviews>
-        </view>
-        
-        <view
-            name="LoginPrefs"
-            class="java.util.prefs.Preferences">
-            <desc><![CDATA[Backup Restore Options Preference Form.]]></desc>
-            <altviews>
-                <altview name="LoginPrefs" viewdef="LoginPrefs" label="LOGIN_PREFS" mode="edit" validated="true"/>
-            </altviews>
-        </view>
-        
-        <view
-            name="LoansPrefs"
-            class="java.util.prefs.Preferences">
-            <desc><![CDATA[Loans Preference Form.]]></desc>
-            <altviews>
-                <altview name="LoansPrefs" viewdef="LoansPrefs" label="LOANS_PREF" mode="edit" validated="true"/>
-            </altviews>
-        </view>
-        
-        <view
-            name="GEOLocatePrefs"
-            class="java.util.prefs.Preferences">
-            <desc><![CDATA[GEOLocate Preference Form.]]></desc>
-            <altviews>
-                <altview name="GEOLocatePrefs" viewdef="GEOLocatePrefs" label="GEOLocate" mode="edit" validated="true"/>
-            </altviews>
-        </view>
-                
-        <view
-            name="NetworkProxy"
-            class="java.util.prefs.Preferences">
-            <desc><![CDATA[Network Proxy Form.]]></desc>
-            <altviews>
-                <altview name="NetworkProxy" viewdef="NetworkProxy" label="NETWORK_PROXY" mode="edit" validated="true"/>
-            </altviews>
-        </view>
-        <view name="WebPortal" class="java.util.prefs.Preferences">
+		<view name="WebPortal"
+			class="java.util.prefs.Preferences">
             <desc><![CDATA[WebPortal Preference Form.]]></desc>
             <altviews>
                 <altview name="WebPortal" viewdef="WebPortal" label="V_WebPortal" mode="edit" validated="true"/>
             </altviews>
         </view>
 
-    </views>
+	</views>
 
     <!-- ***************************************************************************************** -->
 
     <viewdefs>
-        <viewdef
-             type="form"
-             name="EMail"
-             class="java.util.prefs.Preferences"
-             gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
-             settable="edu.ku.brc.af.prefs.PrefsSettableImpl"
-             useresourcelabels="true">
+
+		<viewdef name="Attachments"
+			type="form"
+			class="java.util.prefs.Preferences"
+			gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
+			settable="edu.ku.brc.af.prefs.PrefsSettableImpl"
+			useresourcelabels="true">
+            
+            <desc><![CDATA[Attachments Preference Form.]]></desc>
+            
+            <columnDef>p,35px,p,4px,p,f:p:g</columnDef>
+            <rowDef>p,10px,p,4px,p,4px,p, 10px,p,4px,p,4px,p,4px,p,4px,p</rowDef>
+               
+            <rows>
+                <row>
+                    <cell type="field" uitype="checkbox" id="attachment.is_public_default" name="is_public_default" label="ATTACHMENT_MAKE_PUBLIC" colspan="6"/>
+                </row>            
+                <row>
+                    <cell type="panel" id="path_panel" name="path_panel" coldef="p" rowdef="p" colspan="6"/>
+                </row>
+                <row>
+                    <cell type="label" label=" "/>
+                    <cell type="separator" label="ATTCH_PATH.TITLE" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="label" label=" "/>
+                    <cell type="label" id="attch_path_lbl" labelfor="attch_path" label="ATTACHMENT_LOC"/>
+                    <cell type="field" id="attch_path" name="attachment.path" cols="30" uitype="browse" initialize="dirsonly=true" colspan="2"/>
+                </row>
+                <row>
+                    <cell type="panel" id="url_panel" name="url_panel" coldef="p" rowdef="p" colspan="6"/>
+                </row>
+                <row>
+                    <cell type="label" label=" "/>
+                    <cell type="separator" label="ATTCH_URL.TITLE" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="label" label=" "/>
+                    <cell type="label" id="attch_url_lbl" labelfor="attch_url" label="ATTACHMENT_URL"/>
+                    <cell type="field" id="attch_url" name="attachment.url" cols="30" uitype="text" colspan="2"/>
+                </row>
+                <row>
+                    <cell type="label" label=" "/>
+                    <cell type="label" id="attch_key_lbl" labelfor="attch_key" label="ATTACHMENT_KEY"/>
+                    <cell type="field" id="attch_key" name="attachment.key" cols="30" uitype="text" colspan="2"/>
+                </row>
+                <row>
+                    <cell type="panel" id="btnpanel" name="btnpanel" coldef="p,f:p:g,p,f:p:g,p,f:p:g" rowdef="p" colspan="6">
+                        <rows>
+                            <row>
+                                <cell type="label" label=" "/>
+                                <cell type="field" uitype="button" ignore="true" id="SaveGGblPrefs" name="SaveGGblPrefs" initialize="title=Save To Global Prefs;"/>
+                                <cell type="field" uitype="button" ignore="true" id="ClearGGblPrefs" name="ClearGGblPrefs" initialize="title=Clear Global Prefs;"/>
+                            </row>
+                        </rows>
+                    </cell>
+                </row>
+             </rows>
+        </viewdef>
+
+		<viewdef name="Audits"
+			type="form"
+			class="java.util.prefs.Preferences"
+			gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
+			settable="edu.ku.brc.af.prefs.PrefsSettableImpl"
+			useresourcelabels="true">
+
+            <desc><![CDATA[Audits Pref Form.]]></desc>
+
+            <columnDef>p,2dlu,p,f:p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+            <rows>
+                <row>
+                    <cell type="field" id="auditing.do_audits" name="auditing.do_audits" uitype="checkbox" label="DO_AUDITS" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="field" id="auditing.audit_field_updates" name="auditing.audit_field_updates" uitype="checkbox" label="DO_AUDIT_FIELDS" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="label" id="audit_lifespan_lbl" labelfor="AUDIT_LIFESPAN_MONTHS" label="AUDIT_LIFESPAN_MONTHS"/>
+                    <cell type="field" id="AUDIT_LIFESPAN_MONTHS" name="AUDIT_LIFESPAN_MONTHS" uitype="spinner" ignore="true" initialize="max=120;min=0"/>
+                </row>
+            </rows>
+
+        </viewdef>
+
+		<viewdef name="EMail"
+			type="form"
+			class="java.util.prefs.Preferences"
+			gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
+			settable="edu.ku.brc.af.prefs.PrefsSettableImpl"
+			useresourcelabels="true">
 
                 <desc><![CDATA[EMail Preference Form.]]></desc>
 
@@ -253,13 +326,12 @@
             </rows>
         </viewdef>
 
-        <viewdef
-            type="form"
-            name="Formatting"
-            class="java.util.prefs.Preferences"
-            gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
-            settable="edu.ku.brc.af.prefs.PrefsSettableImpl"
-            useresourcelabels="true">
+		<viewdef name="Formatting"
+			type="form"
+			class="java.util.prefs.Preferences"
+			gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
+			settable="edu.ku.brc.af.prefs.PrefsSettableImpl"
+			useresourcelabels="true">
             
             <desc><![CDATA[Formatting Preference Form.]]></desc>
             
@@ -372,13 +444,196 @@
             </rows>
         </viewdef>
 
-        <viewdef
-            type="form"
-            name="Misc"
-            class="java.util.prefs.Preferences"
-            gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
-            settable="edu.ku.brc.af.prefs.PrefsSettableImpl"
-            useresourcelabels="true">
+		<viewdef name="GEOLocatePrefs"
+			type="form"
+			class="java.util.prefs.Preferences"
+			gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
+			settable="edu.ku.brc.af.prefs.PrefsSettableImpl"
+			useresourcelabels="true">
+            
+            <desc><![CDATA[GEOLocatePrefs Preference Form.]]></desc>
+            
+            <columnDef>p,2px,p,f:p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+            
+            <rows>
+                <row>
+                    <cell type="separator" label="GEOLocate" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="field" id="GEOLocate.HYWX" name="GEOLocate.HYWX" uitype="checkbox" label="GL_HYWX" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="field" id="GEOLocate.WATERBODY" name="GEOLocate.WATERBODY" uitype="checkbox" label="GL_WATERBODY" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="field" id="GEOLocate.RESTRICTTOLOWESTADM" name="GEOLocate.RESTRICTTOLOWESTADM" uitype="checkbox" label="GL_RESTRICT" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="field" id="GEOLocate.DOUNCERT" name="GEOLocate.DOUNCERT" uitype="checkbox" label="GL_DOUNCERT" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="field" id="GEOLocate.DOPOLY" name="GEOLocate.DOPOLY" uitype="checkbox" label="GL_DOPOLY" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="field" id="GEOLocate.DISPLACEPOLY" name="GEOLocate.DISPLACEPOLY" uitype="checkbox" label="GL_DISPLACEPOLY" colspan="4"/>
+                </row>
+                <!-- no more worldwind bug #9965
+                <row>
+                    <cell type="field" id="GEOLocate.USEGL_MAPS" name="GEOLocate.USEGL_MAPS" uitype="checkbox" label="GL_USEGL_MAPS" colspan="4"/>
+                </row> -->
+                <row>
+                	<cell type="label" labelfor="GEOLocate.LANGUAGEKEY" label="GL_LANGKEY" />
+                    <cell type="field" id="GEOLocate.LANGUAGEKEY" name="GEOLocate.LANGUAGEKEY" uitype="combobox" isrequired="true" 
+                    initialize="data=English, Spanish, Basque, Catalan, Galician"/>
+                </row>
+            </rows>
+        </viewdef>
+
+		<viewdef name="GoogleEarth"
+			type="form"
+			class="java.util.prefs.Preferences"
+			gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
+			settable="edu.ku.brc.af.prefs.PrefsSettableImpl"
+			useresourcelabels="true">
+
+            <desc><![CDATA[GoogleEarth Preference Form.]]></desc>
+
+            <columnDef>p,2px,p,p:g,f:p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+
+            <rows>
+                <row>
+                    <cell type="separator" label="GOOGLE_EARTH" colspan="5"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="1" label="ICON_PATH"/>
+                    <cell type="field" id="1" name="google.earth.icon" cols="30" uitype="browse" colspan="3"/>
+                </row>
+                <row>
+                    <cell type="separator" label="PLACEMARK_BALLOON_CONFIG" colspan="5"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="8" label=""/>
+                    <cell type="field" id="8" name="google.earth.useorigheaders" uitype="checkbox" label="USE_ORIG_EXCEL_HEADERS" colspan="2"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="2" label="BALL_BG_CLR"/>
+                    <cell type="field" uitype="colorchooser" id="2" name="google.earth.bgcolor"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="3" label="BALL_TXT_CLR"/>
+                    <cell type="field" uitype="colorchooser" id="3" name="google.earth.fgcolor"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="4" label="PRI_URL"/>
+                    <cell type="field" id="4" name="google.earth.primaryurl" uitype="text" colspan="3"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="5" label="PRI_URL_TITLE"/>
+                    <cell type="field" id="5" name="google.earth.primaryurltitle" uitype="text" colspan="2"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="6" label="SEC_URL"/>
+                    <cell type="field" id="6" name="google.earth.secondaryurl" uitype="text" colspan="3"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="7" label="SEC_URL_TITLE"/>
+                    <cell type="field" id="7" name="google.earth.secondaryurltitle" uitype="text" colspan="2"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="9" label=""/>
+                    <cell type="field" id="9" name="google.earth.usekmz" uitype="checkbox" label="GE_USE_KMZ" colspan="2"/> 
+                </row>
+            </rows>
+        </viewdef>
+
+		<viewdef name="LoansPrefs"
+			type="form"
+			class="java.util.prefs.Preferences"
+			gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
+			settable="edu.ku.brc.af.prefs.PrefsSettableImpl"
+			useresourcelabels="true">
+            
+            <desc><![CDATA[Loan Preference Form.]]></desc>
+            
+            <columnDef>p,2px,p,p:g,p:g,f:p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+            
+            <rows>
+                <row>
+                    <cell type="separator" label="LOANS_BAR" colspan="5"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="OVERDUETIME" label="OVERDUETIME"/>
+                    <cell type="field" id="OVERDUETIME" name="OVERDUETIME" uitype="spinner" ignore="true" initialize="max=60;min=1"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="SHIPMETH" label="SHIPMETH"/>
+                    <cell type="field" id="SHIPMETH" name="SHIPMETH" uitype="combobox" picklist="ShipmentMethod" ignore="true" colspan="2"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="SHIPPEDBY" label="SHIPPEDBY"/>
+                    <cell type="field" id="SHIPPEDBY" name="SHIPPEDBY" uitype="querycbx" ignore="true" initialize="name=Agent" colspan="3"/>
+                </row>
+                <row>
+                    <cell type="separator" label="LOANS_DEFAULT_SRC_BAR" colspan="5"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="lnDefSrcCBX" label="LOANS_DEFAULT_SRC_LBL"/>
+                    <cell type="field" uitype="combobox" id="lnDefSrcCBX" readonly="false" changesonly="true" />
+                </row>
+                <row>
+                    <cell type="separator" label="LOANS_DEFAULT_ID_FLDS_BAR" colspan="5"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="lnIdFldCoCBX" label="LOANS_DEFAULT_ID_FLDS_BAR"/>
+                    <cell type="field" uitype="combobox" id="lnIdFldCoCBX" readonly="false" changesonly="true" />
+                </row>
+                <row>
+                    <cell type="label" labelfor="lnIdFldPrepCBX" label="LOANS_DEFAULT_ID_FLDS_BAR"/>
+                    <cell type="field" uitype="combobox" id="lnIdFldPrepCBX" readonly="false" changesonly="true" />
+                </row>
+            </rows>
+        </viewdef>
+
+		<viewdef name="LoginPrefs"
+			type="form"
+			class="java.util.prefs.Preferences"
+			gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
+			settable="edu.ku.brc.af.prefs.PrefsSettableImpl"
+			useresourcelabels="true">
+            
+            <desc><![CDATA[Backup and Restore Preference Form.]]></desc>
+            
+            <columnDef>p,2px,p,p:g,f:p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+            
+            <rows>
+                <row>
+                    <cell type="separator" label="LOGIN" colspan="5"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="usernames" label="CLEAR_USERNAMES"/>
+                    <cell type="field" id="usernames" name="usernames" uitype="button" ignore="true" initialize="title=CLEAR;"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="databases" label="CLEAR_DATABASES"/>
+                    <cell type="field" id="databases" name="databases" uitype="button" ignore="true" initialize="title=CLEAR;"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="servers" label="CLEAR_SERVERS"/>
+                    <cell type="field" id="servers" name="servers" uitype="button" ignore="true" initialize="title=CLEAR;"/>
+                </row>
+            </rows>
+        </viewdef>
+
+		<viewdef name="Misc"
+			type="form"
+			class="java.util.prefs.Preferences"
+			gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
+			settable="edu.ku.brc.af.prefs.PrefsSettableImpl"
+			useresourcelabels="true">
 
             <desc><![CDATA[Formatting Misc Form.]]></desc>
 
@@ -410,13 +665,145 @@
             
         </viewdef>
 
-        <viewdef
-                type="form"
-                name="S2nPrefs"
-                class="java.util.prefs.Preferences"
-                gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
-                settable="edu.ku.brc.af.prefs.PrefsSettableImpl"
-                useresourcelabels="true">
+		<viewdef name="Morphbank"
+			type="form"
+			class="java.util.prefs.Preferences"
+			gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
+			settable="edu.ku.brc.af.prefs.PrefsSettableImpl"
+			useresourcelabels="true">
+            
+            <desc><![CDATA[Morphbank Preference Form.]]></desc>
+            
+            <columnDef>p,4px,p,f:p:g</columnDef>
+            <rowDef>p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px</rowDef>
+               
+            <rows>
+                <row>
+                    <cell type="separator" label="MORPHBANK_BASE_URL" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="field" id="10" name="morphbank.baseurl" cols="6" uitype="text" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="separator" label="MORPHBANK_IMAGEPOST_URL" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="field" id="11" name="morphbank.imageposturl" cols="60" uitype="text" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="separator" label="MORPHBANK_DWC_MAPPING" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="field" id="7" name="morphbank.dwcmapping" cols="30" uitype="combobox" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="separator" label="MORPHBANK_USERID" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="field" id="8" name="morphbank.userid" cols="30" uitype="text" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="separator" label="MORPHBANK_GROUPID" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="field" id="9" name="morphbank.groupid" cols="30" uitype="text" colspan="4"/>
+                </row>
+            </rows>
+        </viewdef>
+
+		<viewdef name="MySQLBckRstrOptions"
+			type="form"
+			class="java.util.prefs.Preferences"
+			gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
+			settable="edu.ku.brc.af.prefs.PrefsSettableImpl"
+			useresourcelabels="true">
+            
+            <desc><![CDATA[Backup and Restore Preference Form.]]></desc>
+            
+            <columnDef>p,2px,p,p:g,f:p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+            
+            <rows>
+                <row>
+                    <cell type="separator" label="BCKRSTR_OPTIONS" colspan="5"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="1" label="MYS_DUMP_PATH"/>
+                    <cell type="field" id="1" name="mysqldump.location" cols="30" uitype="browse" colspan="3"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="2" label="MYS_RESTR_PATH"/>
+                    <cell type="field" id="2" name="mysql.location" cols="30" uitype="browse" colspan="3"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="3" label="MYS_BCK_PATH"/>
+                    <cell type="field" id="3" name="backup.location" cols="30" uitype="browse" colspan="3"/>
+                </row>
+                <row>
+                    <cell type="label" id=" " label=" " colspan="5"/>
+                </row>
+                <row>
+                    <cell type="panel" id="4" name="btnpanel" coldef="f:p:g,2px,p,5px,p,f:p:g" rowdef="p" colspan="5">
+                        <rows>
+                            <row>
+                                <cell type="field" uitype="label" id="x" label=" " ignore="true"/>
+                                <cell type="field" uitype="button" id="backup" ignore="true" initialize="title=MYS_BACKUP;"/>
+                                <cell type="field" uitype="button" id="restore" ignore="true" initialize="title=MYS_RESTORE;"/>
+                            </row>
+                        </rows>
+                    </cell>
+                </row>
+                <row>
+                    <cell type="label" id="z" label=" " colspan="5"/>
+                </row>
+            </rows>
+        </viewdef>
+
+		<viewdef name="NetworkProxy"
+			type="form"
+			class="java.util.prefs.Preferences"
+			gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
+			settable="edu.ku.brc.af.prefs.PrefsSettableImpl"
+			useresourcelabels="true">
+            
+            <desc><![CDATA[Network Proxy Preference Form.]]></desc>
+            
+            <columnDef>p,4px,p,p:g,f:p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+               
+            <rows>
+                <row>
+                    <cell type="separator" label="NETWORK_PROXY_SET" colspan="5"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="PROXY_HOST" label="PROXY_HOST"/>
+                    <cell type="field" id="PROXY_HOST" name="PROXY_HOST" uitype="text" cols="30" colspan="2"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="PROXY_PORT" label="PROXY_PORT"/>
+                    <cell type="field" id="PROXY_PORT" name="PROXY_PORT" uitype="text" cols="8"/>
+                </row>
+             <!-- <row>
+                    <cell type="label" labelfor="PROXY_HOST_HTTPS" label="PROXY_HOST_HTTPS"/>
+                    <cell type="field" id="PROXY_HOST_HTTPS" name="PROXY_HOST_HTTPS" uitype="text" colspan="3"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="PROXY_PORT_HTTPS" label="PROXY_PORT_HTTPS"/>
+                    <cell type="field" id="PROXY_PORT_HTTPS" name="PROXY_PORT_HTTPS" uitype="text" cols="8"/>
+                </row> -->
+           <!--      <row>
+                    <cell type="label" labelfor="PROXY_TYPE"/>
+                    <cell type="field" id="PROXY_TYPE" name="PROXY_TYPE" uitype="text" colspan="4"/>
+                </row>  -->
+            </rows>
+        </viewdef>
+
+		<viewdef name="S2nPrefs"
+			type="form"
+			class="java.util.prefs.Preferences"
+			gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
+			settable="edu.ku.brc.af.prefs.PrefsSettableImpl"
+			useresourcelabels="true">
 
             <desc><![CDATA[Formatting Misc Form.]]></desc>
 
@@ -439,100 +826,34 @@
 
         </viewdef>
 
-        <viewdef
-            type="form"
-            name="Attachments"
-            class="java.util.prefs.Preferences"
-            gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
-            settable="edu.ku.brc.af.prefs.PrefsSettableImpl"
-            useresourcelabels="true">
+		<viewdef name="Symbiota"
+			type="form"
+			class="java.util.prefs.Preferences"
+			gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
+			settable="edu.ku.brc.af.prefs.PrefsSettableImpl"
+			useresourcelabels="true">
             
-            <desc><![CDATA[Attachments Preference Form.]]></desc>
+            <desc><![CDATA[Symbiota Preference Form.]]></desc>
             
-            <columnDef>p,35px,p,4px,p,f:p:g</columnDef>
-            <rowDef>p,10px,p,4px,p,4px,p, 10px,p,4px,p,4px,p,4px,p,4px,p</rowDef>
+            <columnDef>p,4px,p,f:p:g</columnDef>
+            <rowDef>p,2px,p,10px,p</rowDef>
                
             <rows>
                 <row>
-                    <cell type="field" uitype="checkbox" id="attachment.is_public_default" name="is_public_default" label="ATTACHMENT_MAKE_PUBLIC" colspan="6"/>
-                </row>            
-                <row>
-                    <cell type="panel" id="path_panel" name="path_panel" coldef="p" rowdef="p" colspan="6"/>
+                    <cell type="separator" label="SymbiotaBaseURL" colspan="4"/>
                 </row>
                 <row>
-                    <cell type="label" label=" "/>
-                    <cell type="separator" label="ATTCH_PATH.TITLE" colspan="4"/>
-                </row>
-                <row>
-                    <cell type="label" label=" "/>
-                    <cell type="label" id="attch_path_lbl" labelfor="attch_path" label="ATTACHMENT_LOC"/>
-                    <cell type="field" id="attch_path" name="attachment.path" cols="30" uitype="browse" initialize="dirsonly=true" colspan="2"/>
-                </row>
-                <row>
-                    <cell type="panel" id="url_panel" name="url_panel" coldef="p" rowdef="p" colspan="6"/>
-                </row>
-                <row>
-                    <cell type="label" label=" "/>
-                    <cell type="separator" label="ATTCH_URL.TITLE" colspan="4"/>
-                </row>
-                <row>
-                    <cell type="label" label=" "/>
-                    <cell type="label" id="attch_url_lbl" labelfor="attch_url" label="ATTACHMENT_URL"/>
-                    <cell type="field" id="attch_url" name="attachment.url" cols="30" uitype="text" colspan="2"/>
-                </row>
-                <row>
-                    <cell type="label" label=" "/>
-                    <cell type="label" id="attch_key_lbl" labelfor="attch_key" label="ATTACHMENT_KEY"/>
-                    <cell type="field" id="attch_key" name="attachment.key" cols="30" uitype="text" colspan="2"/>
-                </row>
-                <row>
-                    <cell type="panel" id="btnpanel" name="btnpanel" coldef="p,f:p:g,p,f:p:g,p,f:p:g" rowdef="p" colspan="6">
-                        <rows>
-                            <row>
-                                <cell type="label" label=" "/>
-                                <cell type="field" uitype="button" ignore="true" id="SaveGGblPrefs" name="SaveGGblPrefs" initialize="title=Save To Global Prefs;"/>
-                                <cell type="field" uitype="button" ignore="true" id="ClearGGblPrefs" name="ClearGGblPrefs" initialize="title=Clear Global Prefs;"/>
-                            </row>
-                        </rows>
-                    </cell>
-                </row>
-             </rows>
-        </viewdef>
-
-        <viewdef
-                type="form"
-                name="Audits"
-                class="java.util.prefs.Preferences"
-                gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
-                settable="edu.ku.brc.af.prefs.PrefsSettableImpl"
-                useresourcelabels="true">
-
-            <desc><![CDATA[Audits Pref Form.]]></desc>
-
-            <columnDef>p,2dlu,p,f:p:g</columnDef>
-            <rowDef auto="true" cell="p" sep="2dlu"/>
-            <rows>
-                <row>
-                    <cell type="field" id="auditing.do_audits" name="auditing.do_audits" uitype="checkbox" label="DO_AUDITS" colspan="4"/>
-                </row>
-                <row>
-                    <cell type="field" id="auditing.audit_field_updates" name="auditing.audit_field_updates" uitype="checkbox" label="DO_AUDIT_FIELDS" colspan="4"/>
-                </row>
-                <row>
-                    <cell type="label" id="audit_lifespan_lbl" labelfor="AUDIT_LIFESPAN_MONTHS" label="AUDIT_LIFESPAN_MONTHS"/>
-                    <cell type="field" id="AUDIT_LIFESPAN_MONTHS" name="AUDIT_LIFESPAN_MONTHS" uitype="spinner" ignore="true" initialize="max=120;min=0"/>
+                    <cell type="field" id="1" name="symbiota.baseurl" cols="60" uitype="text" colspan="4"/>
                 </row>
             </rows>
-
         </viewdef>
 
-        <viewdef
-            type="form"
-            name="System"
-            class="java.util.prefs.Preferences"
-            gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
-            settable="edu.ku.brc.af.prefs.PrefsSettableImpl"
-            useresourcelabels="true">
+		<viewdef name="System"
+			type="form"
+			class="java.util.prefs.Preferences"
+			gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
+			settable="edu.ku.brc.af.prefs.PrefsSettableImpl"
+			useresourcelabels="true">
             
             <desc><![CDATA[System Preference Form.]]></desc>
             
@@ -649,142 +970,12 @@
             </rows>
         </viewdef>
 
-        <viewdef
-            type="form"
-            name="Morphbank"
-            class="java.util.prefs.Preferences"
-            gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
-            settable="edu.ku.brc.af.prefs.PrefsSettableImpl"
-            useresourcelabels="true">
-            
-            <desc><![CDATA[Morphbank Preference Form.]]></desc>
-            
-            <columnDef>p,4px,p,f:p:g</columnDef>
-            <rowDef>p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px</rowDef>
-               
-            <rows>
-                <row>
-                    <cell type="separator" label="MORPHBANK_BASE_URL" colspan="4"/>
-                </row>
-                <row>
-                    <cell type="field" id="10" name="morphbank.baseurl" cols="6" uitype="text" colspan="4"/>
-                </row>
-                <row>
-                    <cell type="separator" label="MORPHBANK_IMAGEPOST_URL" colspan="4"/>
-                </row>
-                <row>
-                    <cell type="field" id="11" name="morphbank.imageposturl" cols="60" uitype="text" colspan="4"/>
-                </row>
-                <row>
-                    <cell type="separator" label="MORPHBANK_DWC_MAPPING" colspan="4"/>
-                </row>
-                <row>
-                    <cell type="field" id="7" name="morphbank.dwcmapping" cols="30" uitype="combobox" colspan="4"/>
-                </row>
-                <row>
-                    <cell type="separator" label="MORPHBANK_USERID" colspan="4"/>
-                </row>
-                <row>
-                    <cell type="field" id="8" name="morphbank.userid" cols="30" uitype="text" colspan="4"/>
-                </row>
-                <row>
-                    <cell type="separator" label="MORPHBANK_GROUPID" colspan="4"/>
-                </row>
-                <row>
-                    <cell type="field" id="9" name="morphbank.groupid" cols="30" uitype="text" colspan="4"/>
-                </row>
-            </rows>
-        </viewdef>
-
-        <viewdef
-            type="form"
-            name="Symbiota"
-            class="java.util.prefs.Preferences"
-            gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
-            settable="edu.ku.brc.af.prefs.PrefsSettableImpl"
-            useresourcelabels="true">
-            
-            <desc><![CDATA[Symbiota Preference Form.]]></desc>
-            
-            <columnDef>p,4px,p,f:p:g</columnDef>
-            <rowDef>p,2px,p,10px,p</rowDef>
-               
-            <rows>
-                <row>
-                    <cell type="separator" label="SymbiotaBaseURL" colspan="4"/>
-                </row>
-                <row>
-                    <cell type="field" id="1" name="symbiota.baseurl" cols="60" uitype="text" colspan="4"/>
-                </row>
-            </rows>
-        </viewdef>
-
-        <viewdef
-            type="form"
-            name="GoogleEarth"
-            class="java.util.prefs.Preferences"
-            gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
-            settable="edu.ku.brc.af.prefs.PrefsSettableImpl"
-            useresourcelabels="true">
-
-            <desc><![CDATA[GoogleEarth Preference Form.]]></desc>
-
-            <columnDef>p,2px,p,p:g,f:p:g</columnDef>
-            <rowDef auto="true" cell="p" sep="2dlu"/>
-
-            <rows>
-                <row>
-                    <cell type="separator" label="GOOGLE_EARTH" colspan="5"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="1" label="ICON_PATH"/>
-                    <cell type="field" id="1" name="google.earth.icon" cols="30" uitype="browse" colspan="3"/>
-                </row>
-                <row>
-                    <cell type="separator" label="PLACEMARK_BALLOON_CONFIG" colspan="5"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="8" label=""/>
-                    <cell type="field" id="8" name="google.earth.useorigheaders" uitype="checkbox" label="USE_ORIG_EXCEL_HEADERS" colspan="2"/> 
-                </row>
-                <row>
-                    <cell type="label" labelfor="2" label="BALL_BG_CLR"/>
-                    <cell type="field" uitype="colorchooser" id="2" name="google.earth.bgcolor"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="3" label="BALL_TXT_CLR"/>
-                    <cell type="field" uitype="colorchooser" id="3" name="google.earth.fgcolor"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="4" label="PRI_URL"/>
-                    <cell type="field" id="4" name="google.earth.primaryurl" uitype="text" colspan="3"/> 
-                </row>
-                <row>
-                    <cell type="label" labelfor="5" label="PRI_URL_TITLE"/>
-                    <cell type="field" id="5" name="google.earth.primaryurltitle" uitype="text" colspan="2"/> 
-                </row>
-                <row>
-                    <cell type="label" labelfor="6" label="SEC_URL"/>
-                    <cell type="field" id="6" name="google.earth.secondaryurl" uitype="text" colspan="3"/> 
-                </row>
-                <row>
-                    <cell type="label" labelfor="7" label="SEC_URL_TITLE"/>
-                    <cell type="field" id="7" name="google.earth.secondaryurltitle" uitype="text" colspan="2"/> 
-                </row>
-                <row>
-                    <cell type="label" labelfor="9" label=""/>
-                    <cell type="field" id="9" name="google.earth.usekmz" uitype="checkbox" label="GE_USE_KMZ" colspan="2"/> 
-                </row>
-            </rows>
-        </viewdef>
-
-        <viewdef
-            type="form"
-            name="TreeOptions"
-            class="java.util.prefs.Preferences"
-            gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
-            settable="edu.ku.brc.af.prefs.PrefsSettableImpl"
-            useresourcelabels="true">
+		<viewdef name="TreeOptions"
+			type="form"
+			class="java.util.prefs.Preferences"
+			gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
+			settable="edu.ku.brc.af.prefs.PrefsSettableImpl"
+			useresourcelabels="true">
 
             <desc><![CDATA[Tree Options Preference Form.]]></desc>
 
@@ -928,232 +1119,13 @@
                 </row>
             </rows>
         </viewdef>
-        
-        <viewdef
-            type="form"
-            name="MySQLBckRstrOptions"
-            class="java.util.prefs.Preferences"
-            gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
-            settable="edu.ku.brc.af.prefs.PrefsSettableImpl"
-            useresourcelabels="true">
-            
-            <desc><![CDATA[Backup and Restore Preference Form.]]></desc>
-            
-            <columnDef>p,2px,p,p:g,f:p:g</columnDef>
-            <rowDef auto="true" cell="p" sep="2dlu"/>
-            
-            <rows>
-                <row>
-                    <cell type="separator" label="BCKRSTR_OPTIONS" colspan="5"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="1" label="MYS_DUMP_PATH"/>
-                    <cell type="field" id="1" name="mysqldump.location" cols="30" uitype="browse" colspan="3"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="2" label="MYS_RESTR_PATH"/>
-                    <cell type="field" id="2" name="mysql.location" cols="30" uitype="browse" colspan="3"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="3" label="MYS_BCK_PATH"/>
-                    <cell type="field" id="3" name="backup.location" cols="30" uitype="browse" colspan="3"/>
-                </row>
-                <row>
-                    <cell type="label" id=" " label=" " colspan="5"/>
-                </row>
-                <row>
-                    <cell type="panel" id="4" name="btnpanel" coldef="f:p:g,2px,p,5px,p,f:p:g" rowdef="p" colspan="5">
-                        <rows>
-                            <row>
-                                <cell type="field" uitype="label" id="x" label=" " ignore="true"/>
-                                <cell type="field" uitype="button" id="backup" ignore="true" initialize="title=MYS_BACKUP;"/>
-                                <cell type="field" uitype="button" id="restore" ignore="true" initialize="title=MYS_RESTORE;"/>
-                            </row>
-                        </rows>
-                    </cell>
-                </row>
-                <row>
-                    <cell type="label" id="z" label=" " colspan="5"/>
-                </row>
-            </rows>
-        </viewdef>
-        
-        <viewdef
-            type="form"
-            name="LoginPrefs"
-            class="java.util.prefs.Preferences"
-            gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
-            settable="edu.ku.brc.af.prefs.PrefsSettableImpl"
-            useresourcelabels="true">
-            
-            <desc><![CDATA[Backup and Restore Preference Form.]]></desc>
-            
-            <columnDef>p,2px,p,p:g,f:p:g</columnDef>
-            <rowDef auto="true" cell="p" sep="2dlu"/>
-            
-            <rows>
-                <row>
-                    <cell type="separator" label="LOGIN" colspan="5"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="usernames" label="CLEAR_USERNAMES"/>
-                    <cell type="field" id="usernames" name="usernames" uitype="button" ignore="true" initialize="title=CLEAR;"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="databases" label="CLEAR_DATABASES"/>
-                    <cell type="field" id="databases" name="databases" uitype="button" ignore="true" initialize="title=CLEAR;"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="servers" label="CLEAR_SERVERS"/>
-                    <cell type="field" id="servers" name="servers" uitype="button" ignore="true" initialize="title=CLEAR;"/>
-                </row>
-            </rows>
-        </viewdef>
-        
-        <viewdef
-            type="form"
-            name="LoansPrefs"
-            class="java.util.prefs.Preferences"
-            gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
-            settable="edu.ku.brc.af.prefs.PrefsSettableImpl"
-            useresourcelabels="true">
-            
-            <desc><![CDATA[Loan Preference Form.]]></desc>
-            
-            <columnDef>p,2px,p,p:g,p:g,f:p:g</columnDef>
-            <rowDef auto="true" cell="p" sep="2dlu"/>
-            
-            <rows>
-                <row>
-                    <cell type="separator" label="LOANS_BAR" colspan="5"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="OVERDUETIME" label="OVERDUETIME"/>
-                    <cell type="field" id="OVERDUETIME" name="OVERDUETIME" uitype="spinner" ignore="true" initialize="max=60;min=1"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="SHIPMETH" label="SHIPMETH"/>
-                    <cell type="field" id="SHIPMETH" name="SHIPMETH" uitype="combobox" picklist="ShipmentMethod" ignore="true" colspan="2"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="SHIPPEDBY" label="SHIPPEDBY"/>
-                    <cell type="field" id="SHIPPEDBY" name="SHIPPEDBY" uitype="querycbx" ignore="true" initialize="name=Agent" colspan="3"/>
-                </row>
-                <row>
-                    <cell type="separator" label="LOANS_DEFAULT_SRC_BAR" colspan="5"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="lnDefSrcCBX" label="LOANS_DEFAULT_SRC_LBL"/>
-                    <cell type="field" uitype="combobox" id="lnDefSrcCBX" readonly="false" changesonly="true" />
-                </row>
-                <row>
-                    <cell type="separator" label="LOANS_DEFAULT_ID_FLDS_BAR" colspan="5"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="lnIdFldCoCBX" label="LOANS_DEFAULT_ID_FLDS_BAR"/>
-                    <cell type="field" uitype="combobox" id="lnIdFldCoCBX" readonly="false" changesonly="true" />
-                </row>
-                <row>
-                    <cell type="label" labelfor="lnIdFldPrepCBX" label="LOANS_DEFAULT_ID_FLDS_BAR"/>
-                    <cell type="field" uitype="combobox" id="lnIdFldPrepCBX" readonly="false" changesonly="true" />
-                </row>
-            </rows>
-        </viewdef>
-        
-        <viewdef
-            type="form"
-            name="GEOLocatePrefs"
-            class="java.util.prefs.Preferences"
-            gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
-            settable="edu.ku.brc.af.prefs.PrefsSettableImpl"
-            useresourcelabels="true">
-            
-            <desc><![CDATA[GEOLocatePrefs Preference Form.]]></desc>
-            
-            <columnDef>p,2px,p,f:p:g</columnDef>
-            <rowDef auto="true" cell="p" sep="2dlu"/>
-            
-            <rows>
-                <row>
-                    <cell type="separator" label="GEOLocate" colspan="4"/>
-                </row>
-                <row>
-                    <cell type="field" id="GEOLocate.HYWX" name="GEOLocate.HYWX" uitype="checkbox" label="GL_HYWX" colspan="4"/>
-                </row>
-                <row>
-                    <cell type="field" id="GEOLocate.WATERBODY" name="GEOLocate.WATERBODY" uitype="checkbox" label="GL_WATERBODY" colspan="4"/>
-                </row>
-                <row>
-                    <cell type="field" id="GEOLocate.RESTRICTTOLOWESTADM" name="GEOLocate.RESTRICTTOLOWESTADM" uitype="checkbox" label="GL_RESTRICT" colspan="4"/>
-                </row>
-                <row>
-                    <cell type="field" id="GEOLocate.DOUNCERT" name="GEOLocate.DOUNCERT" uitype="checkbox" label="GL_DOUNCERT" colspan="4"/>
-                </row>
-                <row>
-                    <cell type="field" id="GEOLocate.DOPOLY" name="GEOLocate.DOPOLY" uitype="checkbox" label="GL_DOPOLY" colspan="4"/>
-                </row>
-                <row>
-                    <cell type="field" id="GEOLocate.DISPLACEPOLY" name="GEOLocate.DISPLACEPOLY" uitype="checkbox" label="GL_DISPLACEPOLY" colspan="4"/>
-                </row>
-                <!-- no more worldwind bug #9965
-                <row>
-                    <cell type="field" id="GEOLocate.USEGL_MAPS" name="GEOLocate.USEGL_MAPS" uitype="checkbox" label="GL_USEGL_MAPS" colspan="4"/>
-                </row> -->
-                <row>
-                	<cell type="label" labelfor="GEOLocate.LANGUAGEKEY" label="GL_LANGKEY" />
-                    <cell type="field" id="GEOLocate.LANGUAGEKEY" name="GEOLocate.LANGUAGEKEY" uitype="combobox" isrequired="true" 
-                    initialize="data=English, Spanish, Basque, Catalan, Galician"/>
-                </row>
-            </rows>
-        </viewdef>
-                
-        <viewdef
-            type="form"
-            name="NetworkProxy"
-            class="java.util.prefs.Preferences"
-            gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
-            settable="edu.ku.brc.af.prefs.PrefsSettableImpl"
-            useresourcelabels="true">
-            
-            <desc><![CDATA[Network Proxy Preference Form.]]></desc>
-            
-            <columnDef>p,4px,p,p:g,f:p:g</columnDef>
-            <rowDef auto="true" cell="p" sep="2dlu"/>
-               
-            <rows>
-                <row>
-                    <cell type="separator" label="NETWORK_PROXY_SET" colspan="5"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="PROXY_HOST" label="PROXY_HOST"/>
-                    <cell type="field" id="PROXY_HOST" name="PROXY_HOST" uitype="text" cols="30" colspan="2"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="PROXY_PORT" label="PROXY_PORT"/>
-                    <cell type="field" id="PROXY_PORT" name="PROXY_PORT" uitype="text" cols="8"/>
-                </row>
-             <!-- <row>
-                    <cell type="label" labelfor="PROXY_HOST_HTTPS" label="PROXY_HOST_HTTPS"/>
-                    <cell type="field" id="PROXY_HOST_HTTPS" name="PROXY_HOST_HTTPS" uitype="text" colspan="3"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="PROXY_PORT_HTTPS" label="PROXY_PORT_HTTPS"/>
-                    <cell type="field" id="PROXY_PORT_HTTPS" name="PROXY_PORT_HTTPS" uitype="text" cols="8"/>
-                </row> -->
-           <!--      <row>
-                    <cell type="label" labelfor="PROXY_TYPE"/>
-                    <cell type="field" id="PROXY_TYPE" name="PROXY_TYPE" uitype="text" colspan="4"/>
-                </row>  -->
-            </rows>
-        </viewdef>
 
-        <viewdef
-                type="form"
-                name="WebPortal"
-                class="java.util.prefs.Preferences"
-                gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
-                settable="edu.ku.brc.af.prefs.PrefsSettableImpl"
-                useresourcelabels="true">
+		<viewdef name="WebPortal"
+			type="form"
+			class="java.util.prefs.Preferences"
+			gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
+			settable="edu.ku.brc.af.prefs.PrefsSettableImpl"
+			useresourcelabels="true">
 
             <desc><![CDATA[WebPortal Pref Form.]]></desc>
 
@@ -1167,5 +1139,5 @@
 
         </viewdef>
 
-    </viewdefs>
+	</viewdefs>
 </viewset>
