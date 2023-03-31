@@ -2,20 +2,90 @@
 <viewset name="SystemSetup" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   
     <views>
-        <view name="PickList"
-            class="edu.ku.brc.specify.datamodel.PickList"
-            busrules="edu.ku.brc.specify.datamodel.busrules.PickListBusRules"
-            resourcelabels="false">
+
+		<view name="AddObjPrefs"
+			class="java.util.Hashtable"
+			resourcelabels="false">
+            <desc><![CDATA[]]></desc>
+            <altviews>
+                <altview name="AddObjPrefs Edit" viewdef="AddObjPrefs" mode="edit" validated="true"/>
+            </altviews>
+        </view>
+
+		<view name="CatalogNumberingScheme"
+			class="edu.ku.brc.specify.datamodel.CatalogNumberingScheme"
+			busrules="edu.ku.brc.specify.datamodel.busrules.CatalogNumberingSchemeBusRules"
+			resourcelabels="false">
+            <desc><![CDATA[The CatalogNumberingScheme Object form.]]></desc>
+            <altviews>
+                <altview name="CatalogNumberingScheme Edit View" viewdef="CatalogNumberingScheme" mode="view" validated="false"/>
+                <altview name="CatalogNumberingScheme Edit" viewdef="CatalogNumberingScheme" mode="edit" validated="true" default="true"/>
+            </altviews>
+        </view>
+
+		<view name="ChangePassword"
+			class="java.util.Hashtable"
+			resourcelabels="false">
+            <desc><![CDATA[]]></desc>
+            <altviews>
+                <altview name="ChangePassword Edit" viewdef="ChangePassword" mode="edit" validated="true"/>
+            </altviews>
+        </view>
+
+		<view name="CollectionRelType"
+			class="edu.ku.brc.specify.datamodel.CollectionRelType"
+			resourcelabels="false">
+            <desc><![CDATA[]]></desc>
+            <altviews>
+                <altview name="CollectionRelType Edit" viewdef="CollectionRelType" mode="edit" validated="true"/>
+            </altviews>
+        </view>
+
+		<view name="DataType"
+			class="edu.ku.brc.specify.datamodel.DataType"
+			busrules="edu.ku.brc.specify.datamodel.busrules.DataTypeBusRules"
+			resourcelabels="false">
+            <desc><![CDATA[The DataType Object form.]]></desc>
+            <altviews>
+                <altview name="DataType Edit View" viewdef="DataType" mode="view" validated="false"/>
+                <altview name="DataType Edit" viewdef="DataType" mode="edit" validated="true" default="true"/>
+            </altviews>
+        </view>
+
+		<view name="DeterminationStatus"
+			class="edu.ku.brc.specify.datamodel.DeterminationStatus"
+			busrules="edu.ku.brc.specify.datamodel.busrules.DeterminationStatusBusRules"
+			resourcelabels="false">
+            <desc><![CDATA[The DeterminationStatus Object form.]]></desc>
+            <altviews>
+                <altview name="DeterminationStatus Edit View" viewdef="DeterminationStatus" mode="view" validated="false"/>
+                <altview name="DeterminationStatus Edit" viewdef="DeterminationStatus" mode="edit" validated="true" default="true"/>
+            </altviews>
+        </view>
+
+		<view name="ExcelExportInfo"
+			class="java.util.Hashtable"
+			resourcelabels="false">
+            <desc><![CDATA[]]></desc>
+            <altviews>
+                <altview name="ExcelExportInfo Edit" viewdef="ExcelExportInfo" mode="edit" validated="true"/>
+            </altviews>
+        </view>
+
+		<view name="PickList"
+			class="edu.ku.brc.specify.datamodel.PickList"
+			busrules="edu.ku.brc.specify.datamodel.busrules.PickListBusRules"
+			resourcelabels="false">
             <desc><![CDATA[The PickList form.]]></desc>
             <altviews>
                 <altview name="Pick List View" viewdef="PickList" mode="view" validated="false"/>
                 <altview name="Pick List Edit" viewdef="PickList" mode="edit" validated="true"/>
             </altviews>
         </view>
-        
-        <view name="PickListItem"
-            class="edu.ku.brc.specify.datamodel.PickListItem"
-            resourcelabels="false">
+
+		<view name="PickListItem"
+			class="edu.ku.brc.specify.datamodel.PickListItem"
+			resourcelabels="false">
             <desc><![CDATA[The PickListItem form.]]></desc>
             <altviews>
                 <altview name="PickListItem View" viewdef="PickListItem" mode="view" validated="false"/>
@@ -25,73 +95,41 @@
                  -->
             </altviews>
         </view>
-        
-        <view name="SendMail"
-            class="java.util.Hashtable"
-            usedefbusrule="false"
-            resourcelabels="false">
-            <desc><![CDATA[New Tree Definition Data Entry Form]]></desc>
-            <altviews>
-                <altview name="SendMail" viewdef="SendMail" mode="edit" validated="true" default="true"/>
-            </altviews>
-        </view>
-        
-        <view name="PrepType"
-            class="edu.ku.brc.specify.datamodel.PrepType"
-            busrules="edu.ku.brc.specify.datamodel.busrules.PrepTypeBusRules"
-            resourcelabels="false">
+
+		<view name="PrepType"
+			class="edu.ku.brc.specify.datamodel.PrepType"
+			busrules="edu.ku.brc.specify.datamodel.busrules.PrepTypeBusRules"
+			resourcelabels="false">
             <desc><![CDATA[The PrepType Object form.]]></desc>
             <altviews>
                 <altview name="PrepType View" viewdef="PrepType" mode="view" validated="false"/>
                 <altview name="PrepType Edit" viewdef="PrepType" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
-        
-        <view name="TypeSearchInfo"
-            class="edu.ku.brc.af.ui.forms.validation.TypeSearchInfo"
-            resourcelabels="false">
+
+		<view name="SendMail"
+			class="java.util.Hashtable"
+			usedefbusrule="false"
+			resourcelabels="false">
+            <desc><![CDATA[New Tree Definition Data Entry Form]]></desc>
+            <altviews>
+                <altview name="SendMail" viewdef="SendMail" mode="edit" validated="true" default="true"/>
+            </altviews>
+        </view>
+
+		<view name="TypeSearchInfo"
+			class="edu.ku.brc.af.ui.forms.validation.TypeSearchInfo"
+			resourcelabels="false">
             <desc><![CDATA[The TypeSearchInfo Object form.]]></desc>
             <altviews>
                 <altview name="TypeSearchInfo Edit" viewdef="TypeSearchInfo" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
-        
-        <!-- <view name="DeterminationStatus"
-            class="edu.ku.brc.specify.datamodel.DeterminationStatus"
-            busrules="edu.ku.brc.specify.datamodel.busrules.DeterminationStatusBusRules"
-            resourcelabels="false">
-            <desc><![CDATA[The DeterminationStatus Object form.]]></desc>
-            <altviews>
-                <altview name="DeterminationStatus Edit View" viewdef="DeterminationStatus" mode="view" validated="false"/>
-                <altview name="DeterminationStatus Edit" viewdef="DeterminationStatus" mode="edit" validated="true" default="true"/>
-            </altviews>
-        </view>-->
 
-        <view name="DataType"
-            class="edu.ku.brc.specify.datamodel.DataType"
-            busrules="edu.ku.brc.specify.datamodel.busrules.DataTypeBusRules"
-            resourcelabels="false">
-            <desc><![CDATA[The DataType Object form.]]></desc>
-            <altviews>
-                <altview name="DataType Edit View" viewdef="DataType" mode="view" validated="false"/>
-                <altview name="DataType Edit" viewdef="DataType" mode="edit" validated="true" default="true"/>
-            </altviews>
-        </view>
-        
-        <view name="UserGroup"
-            class="edu.ku.brc.specify.datamodel.SpPrincipal"
-            resourcelabels="false">
-            <desc><![CDATA[User Group form.]]></desc>
-            <altviews defaultmode="view">
-                <altview name="User Group View"        title="User Group"        viewdef="User Group"        mode="view" validated="false"/>
-                <altview name="User Group Edit"        title="User Group"        viewdef="User Group"        mode="edit" validated="true" default="true"/>
-            </altviews>
-        </view>
-
-        <view name="User"
-            class="edu.ku.brc.specify.datamodel.SpecifyUser"
-            busrules="edu.ku.brc.specify.datamodel.busrules.SpecifyUserBusRules"
-            resourcelabels="false">
+		<view name="User"
+			class="edu.ku.brc.specify.datamodel.SpecifyUser"
+			busrules="edu.ku.brc.specify.datamodel.busrules.SpecifyUserBusRules"
+			resourcelabels="false">
             <desc><![CDATA[User form.]]></desc>
             <altviews defaultmode="view">
                 <altview name="User View"        title="User"        viewdef="User"        mode="view" validated="false"/>
@@ -99,63 +137,26 @@
             </altviews>
         </view>
 
-        <view name="CatalogNumberingScheme"
-            class="edu.ku.brc.specify.datamodel.CatalogNumberingScheme"
-            busrules="edu.ku.brc.specify.datamodel.busrules.CatalogNumberingSchemeBusRules"
-            resourcelabels="false">
-            <desc><![CDATA[The CatalogNumberingScheme Object form.]]></desc>
-            <altviews>
-                <altview name="CatalogNumberingScheme Edit View" viewdef="CatalogNumberingScheme" mode="view" validated="false"/>
-                <altview name="CatalogNumberingScheme Edit" viewdef="CatalogNumberingScheme" mode="edit" validated="true" default="true"/>
+		<view name="UserGroup"
+			class="edu.ku.brc.specify.datamodel.SpPrincipal"
+			resourcelabels="false">
+            <desc><![CDATA[User Group form.]]></desc>
+            <altviews defaultmode="view">
+                <altview name="User Group View"        title="User Group"        viewdef="User Group"        mode="view" validated="false"/>
+                <altview name="User Group Edit"        title="User Group"        viewdef="User Group"        mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
-        
-        <!--  <view name="ViewProps"
-            class="edu.ku.brc.specify.datamodel.SpView"
-            resourcelabels="false">
+
+		<view name="ViewProps"
+			class="edu.ku.brc.specify.datamodel.SpView"
+			resourcelabels="false">
             <desc><![CDATA[]]></desc>
             <altviews>
                 <altview name="View Edit" viewdef="ViewProps" mode="edit" validated="true"/>
             </altviews>
-        </view> -->
-        
-        <view name="ExcelExportInfo"
-            class="java.util.Hashtable"
-            resourcelabels="false">
-            <desc><![CDATA[]]></desc>
-            <altviews>
-                <altview name="ExcelExportInfo Edit" viewdef="ExcelExportInfo" mode="edit" validated="true"/>
-            </altviews>
         </view>
-        
-        <view name="ChangePassword"
-            class="java.util.Hashtable"
-            resourcelabels="false">
-            <desc><![CDATA[]]></desc>
-            <altviews>
-                <altview name="ChangePassword Edit" viewdef="ChangePassword" mode="edit" validated="true"/>
-            </altviews>
-        </view>
-        
-        <view name="CollectionRelType"
-            class="edu.ku.brc.specify.datamodel.CollectionRelType"
-            resourcelabels="false">
-            <desc><![CDATA[]]></desc>
-            <altviews>
-                <altview name="CollectionRelType Edit" viewdef="CollectionRelType" mode="edit" validated="true"/>
-            </altviews>
-        </view>
-        
-        <view name="AddObjPrefs"
-            class="java.util.Hashtable"
-            resourcelabels="false">
-            <desc><![CDATA[]]></desc>
-            <altviews>
-                <altview name="AddObjPrefs Edit" viewdef="AddObjPrefs" mode="edit" validated="true"/>
-            </altviews>
-        </view>
-        
-    </views>
+
+	</views>
   
 	<!--  *************************************************************************************************************************** -->
 	<!--  *************************************************************************************************************************** -->
@@ -163,12 +164,170 @@
 	<!--  *************************************************************************************************************************** -->
 	<!--  *************************************************************************************************************************** -->
     <viewdefs>
-        <viewdef
-            type="form"
-            name="PickList"
-            class="edu.ku.brc.specify.datamodel.PickList"
-            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+
+		<viewdef name="AddObjPrefs"
+			type="form"
+			class="java.util.Hashtable"
+			gettable="edu.ku.brc.af.ui.forms.DataGetterForHashMap"
+			settable="edu.ku.brc.af.ui.forms.DataSetterForHashMap">
+            <desc><![CDATA[AddObjPrefs Data Entry Form]]></desc>
+            <columnDef>p,f:p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+            
+            <rows>
+                <row>
+                    <cell type="separator" label="For Collection Objects" colspan="2"/>
+                </row>
+                <row>
+                    <cell type="field" id="CO_CREATE_COA" name="CO_CREATE_COA" label="Create Collection Object Attribute" uitype="checkbox"/>
+                </row>
+               <row>
+                    <cell type="field" id="CO_CREATE_PREP" name="CO_CREATE_PREP" label="Create Preparation" uitype="checkbox"/>
+                </row>
+               <row>
+                    <cell type="field" id="CO_CREATE_DET" name="CO_CREATE_DET" label="Create Determination" uitype="checkbox"/>
+                </row>
+            </rows>
+        </viewdef>
+
+		<viewdef name="CatalogNumberingScheme"
+			type="form"
+			class="edu.ku.brc.specify.datamodel.CatalogNumberingScheme"
+			gettable="edu.ku.brc.af.ui.forms.DataGetterForHashMap"
+			settable="edu.ku.brc.af.ui.forms.DataSetterForHashMap">
+            
+            <desc><![CDATA[The CatalogNumberingScheme Search Form]]></desc>
+            <enableRules/>
+            
+            <columnDef>p,3dlu,p</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1" label="Name"/>
+                    <cell type="field" id="1" name="schemeName" isrequired="true" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="2" label="Is Numeric"/>
+                    <cell type="field" id="2" name="isNumericOnly" isrequired="true" uitype="text"/>
+                </row>
+            </rows>
+        </viewdef>
+
+		<viewdef name="ChangePassword"
+			type="form"
+			class="java.util.Hashtable"
+			gettable="edu.ku.brc.af.ui.forms.DataGetterForHashMap"
+			settable="edu.ku.brc.af.ui.forms.DataSetterForHashMap">
+            
+            <desc><![CDATA[ChangePassword Form]]></desc>
+            <columnDef>p,3dlu,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1" label="Old Password"/>
+                    <cell type="field" id="1" name="OldPwd" uitype="password" isrequired="true" cols="20"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="2" label="New Password"/>
+                    <cell type="field" id="2" name="NewPwd1" uitype="password" isrequired="true" cols="20"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="3" label="Verify New Password"/>
+                    <cell type="field" id="3" name="NewPwd2" uitype="password" isrequired="true" cols="20"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="4" label="Password Strength"/>
+                    <!-- <cell type="field" id="4" name="strength" uitype="progress" isrequired="true" readonly="true"/> -->
+                    <cell type="field" id="4" uitype="plugin" name="this" initialize="name=PasswordStrengthUI"/>
+                </row>
+            </rows>
+        </viewdef>
+
+		<viewdef name="CollectionRelType"
+			type="form"
+			class="edu.ku.brc.specify.datamodel.CollectionRelType"
+			gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+			settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[CollectionRelType Form]]></desc>
+            <columnDef>p,3dlu,f:p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+            
+            <rows>
+                <row>
+                    <cell type="label" label=" "/>
+                    <cell type="panel" id="desc" name="desc" coldef="p,2px,p,2px,p,1px,f:p:g" rowdef="p" ignore="true">
+                        <rows>
+                            <row>
+                                <cell type="label" id="left"  label="  "/>
+                                <cell type="label" id="mid"   label=" -> "/>
+                                <cell type="label" id="right" label="  "/>
+                                <cell type="label" id="stretch" label="  "/>
+                            </row>
+                        </rows>
+                    </cell>
+                </row>
+                <row>
+                    <cell type="label" labelfor="name"/>
+                    <cell type="field" id="name" name="name" uitype="text" isrequired="true"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="remarks"/>
+                    <cell type="field" id="remarks" name="remarks" uitype="textarea" isrequired="false" cols="50" rows="5"/>
+                </row>
+            </rows>
+        </viewdef>
+
+		<viewdef name="DataType"
+			type="form"
+			class="edu.ku.brc.specify.datamodel.DataType"
+			gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+			settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[DataType Data Entry Form]]></desc>
+            <columnDef>p,3dlu,p,2dlu,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+            
+            <rows>
+                <row>
+                    <cell type="separator" label="Data Type" colspan="5"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="1" label="Name"/>
+                    <cell type="field" id="1" name="name" uitype="text" isrequired="true"/> 
+                </row>
+            </rows>
+        </viewdef>
+
+		<viewdef name="ExcelExportInfo"
+			type="form"
+			class="java.util.Hashtable"
+			gettable="edu.ku.brc.af.ui.forms.DataGetterForHashMap"
+			settable="edu.ku.brc.af.ui.forms.DataSetterForHashMap">
+            
+            <desc><![CDATA[ExcelExportInfo Form]]></desc>
+            <columnDef>p,3dlu,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1" label="Title"/>
+                    <cell type="field" id="1" name="Title" uitype="text" isrequired="true"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="2" label="Filename"/>
+                    <cell type="field" id="2" name="FilePath" uitype="browse" isrequired="true" cols="30" initialize="forinput=false;filefilterdesc=.xlsx files;filefilter=.xlsx;defaultExtension=xlsx"/>
+                </row>
+            </rows>
+        </viewdef>
+
+		<viewdef name="PickList"
+			type="form"
+			class="edu.ku.brc.specify.datamodel.PickList"
+			gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+			settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Form for editing an PickList]]></desc>
             <enableRules>
@@ -217,24 +376,12 @@
                 </row>
           </rows>
         </viewdef>
-        
-        <viewdef
-            type="formtable"
-            name="PickListItem Table"
-            class="edu.ku.brc.specify.datamodel.PickListItem"
-            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
-            
-            <desc><![CDATA[PickListItem grid view for PickList form.]]></desc>
-            <definition>PickListItem</definition>
-        </viewdef>
-        
-        <viewdef
-            type="form"
-            name="PickListItem"
-            class="edu.ku.brc.specify.datamodel.PickListItem"
-            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+
+		<viewdef name="PickListItem"
+			type="form"
+			class="edu.ku.brc.specify.datamodel.PickListItem"
+			gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+			settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[PickListItem]]></desc>
             <enableRules/>
@@ -254,13 +401,41 @@
                 </row>
             </rows>
         </viewdef>
-        
-        <viewdef
-            type="form"
-            name="SendMail"
-            class="java.util.Hashtable"
-            gettable="edu.ku.brc.af.ui.forms.DataGetterForHashMap"
-            settable="edu.ku.brc.af.ui.forms.DataSetterForHashMap">
+
+		<viewdef name="PickListItem Table"
+			type="formtable"
+			class="edu.ku.brc.specify.datamodel.PickListItem"
+			gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+			settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[PickListItem grid view for PickList form.]]></desc>
+            <definition>PickListItem</definition>
+        </viewdef>
+
+		<viewdef name="PrepType"
+			type="form"
+			class="edu.ku.brc.specify.datamodel.PrepType"
+			gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+			settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[PrepType Data Entry Form]]></desc>
+            <columnDef>p,3dlu,p,6dlu,p</columnDef>
+            <rowDef>p,2dlu,p</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1" label="Name"/>
+                    <cell type="field" id="1" name="name" uitype="text" isrequired="true"/> 
+                    <cell type="field" id="2" name="isLoanable" label="Is Loanable" uitype="checkbox"/>
+                </row>
+            </rows>
+        </viewdef>
+
+		<viewdef name="SendMail"
+			type="form"
+			class="java.util.Hashtable"
+			gettable="edu.ku.brc.af.ui.forms.DataGetterForHashMap"
+			settable="edu.ku.brc.af.ui.forms.DataSetterForHashMap">
             
             <desc><![CDATA[Send Mail Email Form]]></desc>
             <columnDef>p,3dlu,p:g</columnDef>
@@ -290,157 +465,12 @@
                 </row>
             </rows>
         </viewdef>
-        
-        <viewdef
-            type="form"
-            name="PrepType"
-            class="edu.ku.brc.specify.datamodel.PrepType"
-            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
-            
-            <desc><![CDATA[PrepType Data Entry Form]]></desc>
-            <columnDef>p,3dlu,p,6dlu,p</columnDef>
-            <rowDef>p,2dlu,p</rowDef>
-            
-            <rows>
-                <row>
-                    <cell type="label" labelfor="1" label="Name"/>
-                    <cell type="field" id="1" name="name" uitype="text" isrequired="true"/> 
-                    <cell type="field" id="2" name="isLoanable" label="Is Loanable" uitype="checkbox"/>
-                </row>
-            </rows>
-        </viewdef>
-        
-        <viewdef
-            type="form"
-            name="DataType"
-            class="edu.ku.brc.specify.datamodel.DataType"
-            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
-            
-            <desc><![CDATA[DataType Data Entry Form]]></desc>
-            <columnDef>p,3dlu,p,2dlu,p:g</columnDef>
-            <rowDef auto="true" cell="p" sep="2dlu"/>
-            
-            <rows>
-                <row>
-                    <cell type="separator" label="Data Type" colspan="5"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="1" label="Name"/>
-                    <cell type="field" id="1" name="name" uitype="text" isrequired="true"/> 
-                </row>
-            </rows>
-        </viewdef>
-        
-        <viewdef
-            type="form"
-            name="User Group"
-            class="edu.ku.brc.specify.datamodel.SpPrincipal"
-            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
-            
-            <desc><![CDATA[User Group Data Entry Form]]></desc>
-            <columnDef>p,3dlu,p,p:g</columnDef>
-            <rowDef auto="true" cell="p" sep="2dlu"/>            
 
-            <rows>
-                <row>
-                    <cell type="separator" label="User Group" colspan="4"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="1" label="Name"/>
-                    <cell type="field" id="1" name="name" uitype="text" cols="40" isrequired="true"/> 
-                </row>
-                <row>
-                    <cell type="label" labelfor="2" label="Remarks"/>
-                    <cell type="field" id="2" name="remarks" uitype="textareabrief" cols="40" rows="2" colspan="2"/>
-                </row>
-            </rows>
-        </viewdef>
-
-        <viewdef
-            type="form"
-            name="User"
-            class="edu.ku.brc.specify.datamodel.SpecifyUser"
-            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
-            
-            <desc><![CDATA[User Data Entry Form]]></desc>
-            <columnDef>p,3dlu,p,6px,p,6px,p,p:g</columnDef>
-            <rowDef auto="true" cell="p" sep="2dlu"/>            
-
-            <rows>
-                <row>
-                    <cell type="separator" label="User" colspan="8"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="5"/>
-                    <cell type="field" id="5" name="userType" uitype="dsptextfield" readonly="true"/> 
-                </row>
-                <row>
-                    <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="name" uitype="text" cols="40" isrequired="true" initialize="editoncreate=true"/> 
-                </row>
-                <row>
-                    <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="password" uitype="password" cols="15"/> 
-                    <cell type="command" id="ShowPwd" name="ShowPwd" label="Show Password" ignore="true"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="6" label="Password Strength"/>
-                    <cell type="field" id="6" uitype="plugin" name="this" initialize="name=PasswordStrengthUI"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="email" uitype="text" cols="40" isrequired="false"/> 
-                </row>
-                <row>
-                    <cell type="label" labelfor="4" label="Agent"/>
-                    <cell type="field" id="4" name="agent" uitype="textfieldinfo" initialize="name=AgentSSPU;title=Agent;" isrequired="false" ignore="true"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="key" label="Key"/>
-                    <cell type="field" id="key" name="key" uitype="text" ignore="true" readonly="true"/> 
-                    <cell type="command" id="GenerateKey" name="GenerateKey" label="Generate Master Key" ignore="true"/>
-                    <cell type="command" id="CopyToCB" name="CopyToCB" label="" initialize="icon=ClipboardCopy;size=24;tooltip=CPY_TO_CB_TT" ignore="true"/>
-                </row>
-                <!--row>
-                    <cell type="label" labelfor="4" label="Retype Password"/>
-                    <cell type="field" id="4" name="password" uitype="text" cols="15"/>
-                    </row-->
-            </rows>
-        </viewdef>
-
-        <viewdef type="form"
-            name="CatalogNumberingScheme"
-            class="edu.ku.brc.specify.datamodel.CatalogNumberingScheme"
-            gettable="edu.ku.brc.af.ui.forms.DataGetterForHashMap"
-            settable="edu.ku.brc.af.ui.forms.DataSetterForHashMap">
-            
-            <desc><![CDATA[The CatalogNumberingScheme Search Form]]></desc>
-            <enableRules/>
-            
-            <columnDef>p,3dlu,p</columnDef>
-            <rowDef>p,2dlu,p,2dlu,p</rowDef>
-            
-            <rows>
-                <row>
-                    <cell type="label" labelfor="1" label="Name"/>
-                    <cell type="field" id="1" name="schemeName" isrequired="true" uitype="text"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="2" label="Is Numeric"/>
-                    <cell type="field" id="2" name="isNumericOnly" isrequired="true" uitype="text"/>
-                </row>
-            </rows>
-        </viewdef>
-        
-        <viewdef type="form"
-            name="TypeSearchInfo"
-            class="edu.ku.brc.af.ui.forms.validation.TypeSearchInfo"
-            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+		<viewdef name="TypeSearchInfo"
+			type="form"
+			class="edu.ku.brc.af.ui.forms.validation.TypeSearchInfo"
+			gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+			settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[The TypeSearchInfo Form]]></desc>
             <enableRules/>
@@ -504,15 +534,89 @@
             </rows>
 
         </viewdef>
-        
-        
-        <!-- 
-        <viewdef
-            type="form"
-            name="ViewProps"
-            class="edu.ku.brc.specify.datamodel.View"
-            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+
+		<viewdef name="User"
+			type="form"
+			class="edu.ku.brc.specify.datamodel.SpecifyUser"
+			gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+			settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[User Data Entry Form]]></desc>
+            <columnDef>p,3dlu,p,6px,p,6px,p,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>            
+
+            <rows>
+                <row>
+                    <cell type="separator" label="User" colspan="8"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="5"/>
+                    <cell type="field" id="5" name="userType" uitype="dsptextfield" readonly="true"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="name" uitype="text" cols="40" isrequired="true" initialize="editoncreate=true"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="3"/>
+                    <cell type="field" id="3" name="password" uitype="password" cols="15"/> 
+                    <cell type="command" id="ShowPwd" name="ShowPwd" label="Show Password" ignore="true"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="6" label="Password Strength"/>
+                    <cell type="field" id="6" uitype="plugin" name="this" initialize="name=PasswordStrengthUI"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="2"/>
+                    <cell type="field" id="2" name="email" uitype="text" cols="40" isrequired="false"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="4" label="Agent"/>
+                    <cell type="field" id="4" name="agent" uitype="textfieldinfo" initialize="name=AgentSSPU;title=Agent;" isrequired="false" ignore="true"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="key" label="Key"/>
+                    <cell type="field" id="key" name="key" uitype="text" ignore="true" readonly="true"/> 
+                    <cell type="command" id="GenerateKey" name="GenerateKey" label="Generate Master Key" ignore="true"/>
+                    <cell type="command" id="CopyToCB" name="CopyToCB" label="" initialize="icon=ClipboardCopy;size=24;tooltip=CPY_TO_CB_TT" ignore="true"/>
+                </row>
+                <!--row>
+                    <cell type="label" labelfor="4" label="Retype Password"/>
+                    <cell type="field" id="4" name="password" uitype="text" cols="15"/>
+                    </row-->
+            </rows>
+        </viewdef>
+
+		<viewdef name="User Group"
+			type="form"
+			class="edu.ku.brc.specify.datamodel.SpPrincipal"
+			gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+			settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[User Group Data Entry Form]]></desc>
+            <columnDef>p,3dlu,p,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>            
+
+            <rows>
+                <row>
+                    <cell type="separator" label="User Group" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="1" label="Name"/>
+                    <cell type="field" id="1" name="name" uitype="text" cols="40" isrequired="true"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="2" label="Remarks"/>
+                    <cell type="field" id="2" name="remarks" uitype="textareabrief" cols="40" rows="2" colspan="2"/>
+                </row>
+            </rows>
+        </viewdef>
+
+		<viewdef name="ViewProps"
+			type="form"
+			class="edu.ku.brc.specify.datamodel.View"
+			gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+			settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
 
             <desc><![CDATA[View Props]]></desc>
 
@@ -560,126 +664,7 @@
                 </row>
 			</rows>
 		</viewdef>
-		 -->
-		 
-        <viewdef
-            type="form"
-            name="ExcelExportInfo"
-            class="java.util.Hashtable"
-            gettable="edu.ku.brc.af.ui.forms.DataGetterForHashMap"
-            settable="edu.ku.brc.af.ui.forms.DataSetterForHashMap">
-            
-            <desc><![CDATA[ExcelExportInfo Form]]></desc>
-            <columnDef>p,3dlu,p:g</columnDef>
-            <rowDef auto="true" cell="p" sep="2dlu"/>
-            
-            <rows>
-                <row>
-                    <cell type="label" labelfor="1" label="Title"/>
-                    <cell type="field" id="1" name="Title" uitype="text" isrequired="true"/> 
-                </row>
-                <row>
-                    <cell type="label" labelfor="2" label="Filename"/>
-                    <cell type="field" id="2" name="FilePath" uitype="browse" isrequired="true" cols="30" initialize="forinput=false;filefilterdesc=.xlsx files;filefilter=.xlsx;defaultExtension=xlsx"/>
-                </row>
-            </rows>
-        </viewdef>
-		
-		
-        <viewdef
-            type="form"
-            name="ChangePassword"
-            class="java.util.Hashtable"
-            gettable="edu.ku.brc.af.ui.forms.DataGetterForHashMap"
-            settable="edu.ku.brc.af.ui.forms.DataSetterForHashMap">
-            
-            <desc><![CDATA[ChangePassword Form]]></desc>
-            <columnDef>p,3dlu,p:g</columnDef>
-            <rowDef auto="true" cell="p" sep="2dlu"/>
-            
-            <rows>
-                <row>
-                    <cell type="label" labelfor="1" label="Old Password"/>
-                    <cell type="field" id="1" name="OldPwd" uitype="password" isrequired="true" cols="20"/> 
-                </row>
-                <row>
-                    <cell type="label" labelfor="2" label="New Password"/>
-                    <cell type="field" id="2" name="NewPwd1" uitype="password" isrequired="true" cols="20"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="3" label="Verify New Password"/>
-                    <cell type="field" id="3" name="NewPwd2" uitype="password" isrequired="true" cols="20"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="4" label="Password Strength"/>
-                    <!-- <cell type="field" id="4" name="strength" uitype="progress" isrequired="true" readonly="true"/> -->
-                    <cell type="field" id="4" uitype="plugin" name="this" initialize="name=PasswordStrengthUI"/>
-                </row>
-            </rows>
-        </viewdef>
-        
-        <viewdef
-            type="form"
-            name="CollectionRelType"
-            class="edu.ku.brc.specify.datamodel.CollectionRelType"
-            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
-            
-            <desc><![CDATA[CollectionRelType Form]]></desc>
-            <columnDef>p,3dlu,f:p:g</columnDef>
-            <rowDef auto="true" cell="p" sep="2dlu"/>
-            
-            <rows>
-                <row>
-                    <cell type="label" label=" "/>
-                    <cell type="panel" id="desc" name="desc" coldef="p,2px,p,2px,p,1px,f:p:g" rowdef="p" ignore="true">
-                        <rows>
-                            <row>
-                                <cell type="label" id="left"  label="  "/>
-                                <cell type="label" id="mid"   label=" -> "/>
-                                <cell type="label" id="right" label="  "/>
-                                <cell type="label" id="stretch" label="  "/>
-                            </row>
-                        </rows>
-                    </cell>
-                </row>
-                <row>
-                    <cell type="label" labelfor="name"/>
-                    <cell type="field" id="name" name="name" uitype="text" isrequired="true"/> 
-                </row>
-                <row>
-                    <cell type="label" labelfor="remarks"/>
-                    <cell type="field" id="remarks" name="remarks" uitype="textarea" isrequired="false" cols="50" rows="5"/>
-                </row>
-            </rows>
-        </viewdef>
 
-        <viewdef
-            type="form"
-            name="AddObjPrefs"
-            class="java.util.Hashtable"
-            gettable="edu.ku.brc.af.ui.forms.DataGetterForHashMap"
-            settable="edu.ku.brc.af.ui.forms.DataSetterForHashMap">
-            <desc><![CDATA[AddObjPrefs Data Entry Form]]></desc>
-            <columnDef>p,f:p:g</columnDef>
-            <rowDef auto="true" cell="p" sep="2dlu"/>
-            
-            <rows>
-                <row>
-                    <cell type="separator" label="For Collection Objects" colspan="2"/>
-                </row>
-                <row>
-                    <cell type="field" id="CO_CREATE_COA" name="CO_CREATE_COA" label="Create Collection Object Attribute" uitype="checkbox"/>
-                </row>
-               <row>
-                    <cell type="field" id="CO_CREATE_PREP" name="CO_CREATE_PREP" label="Create Preparation" uitype="checkbox"/>
-                </row>
-               <row>
-                    <cell type="field" id="CO_CREATE_DET" name="CO_CREATE_DET" label="Create Determination" uitype="checkbox"/>
-                </row>
-            </rows>
-        </viewdef>
-
-    </viewdefs>
+	</viewdefs>
         
 </viewset>
