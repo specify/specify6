@@ -131,7 +131,7 @@
         </view>
 
         <view name="BorrowAgent"
-              Objtitle="Borrow Agent"
+              objtitle="Borrow Agent"
               class="edu.ku.brc.specify.datamodel.BorrowAgent"
         >
             <desc><![CDATA[Agent subform for the Borrow form]]></desc>
@@ -182,7 +182,7 @@
         <view name="CollectingTrip"
               class="edu.ku.brc.specify.datamodel.CollectingTrip"
               busrules="edu.ku.brc.specify.datamodel.busrules.CollectingTripBusRules"
-              resourelabels="false">
+              resourcelabels="false">
             <desc><![CDATA[CollectingTrip Form]]></desc>
             <altviews>
                 <altview name="CollectingTrip View" viewdef="CollectingTrip" mode="view" default="true"/>
@@ -194,7 +194,7 @@
               class="edu.ku.brc.specify.datamodel.CollectingTrip"
               busrules="edu.ku.brc.specify.datamodel.busrules.CollectingTripBusRules"
               isinternal="false"
-              resourelabels="false">
+              resourcelabels="false">
             <desc><![CDATA[CollectingTrip Form]]></desc>
             <altviews>
                 <altview name="CollectingTripForm View" viewdef="CollectingTripForm" mode="view" default="true"/>
@@ -239,7 +239,6 @@
         <view name="Collection Object Search"
               class="edu.ku.brc.specify.datamodel.CollectionObject"
               busrules="edu.ku.brc.specify.datamodel.busrules.CollectionObjectBusRules"
-
         >
             <desc><![CDATA[The Collection Object Search form.]]></desc>
             <altviews>
@@ -249,8 +248,6 @@
 
         <view name="CollectionObjectProperty"
               class="edu.ku.brc.specify.datamodel.CollectionObjectProperty"
-              gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
-              settable="edu.ku.brc.af.ui.forms.DataSetterForObj"
         >
             <desc><![CDATA[Subform within the Collection Object form.]]></desc>
             <altviews>
@@ -702,7 +699,7 @@
         <view name="FieldNotebookPage"
               class="edu.ku.brc.specify.datamodel.FieldNotebookPage"
               busrules="edu.ku.brc.specify.datamodel.busrules.FieldNotebookPageBusRules"
-              resourcelables="false">
+              resourcelabels="false">
             <desc><![CDATA[Field Notebook Page.]]></desc>
             <altviews>
                 <altview name="FieldNotebookPage Edit" viewdef="FieldNotebookPage" mode="edit"/>
@@ -714,7 +711,7 @@
 
         <view name="FieldNotebookPageSet"
               class="edu.ku.brc.specify.datamodel.FieldNotebookPageSet"
-              resourcelables="false">
+              resourcelabels="false">
             <desc><![CDATA[Field Notebook Page.]]></desc>
             <altviews>
                 <altview name="FieldNotebookPageSet Edit" viewdef="FieldNotebookPageSet" mode="edit"/>
@@ -1068,8 +1065,6 @@
 
         <view name="PreparationProperty"
               class="edu.ku.brc.specify.datamodel.PreparationProperty"
-              gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
-              settable="edu.ku.brc.af.ui.forms.DataSetterForObj"
         >
             <desc><![CDATA[Subform within the Collection Object form.]]></desc>
             <altviews>
@@ -3034,7 +3029,7 @@
         <viewdef
                 type="formtable"
                 name="DeaccessionAccession Table"
-                class="edu.ku.brc.specify.datamodel.Deccession"
+                class="edu.ku.brc.specify.datamodel.Deaccession"
                 gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
                 settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[Horizontal interpretation of the Deaccession form from inside the Accession form.]]></desc>
@@ -5632,7 +5627,7 @@
                 <row>
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="catalogedDate" uitype="formattedtext" uifieldformatter="Date"/>
-                    <cell type="label" labelfor="2" uitype="text"/>
+                    <cell type="label" labelfor="2" />
                     <cell type="field" id="2" name="catalogNumber" uitype="formattedtext"/>
                     <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="fieldNumber" uitype="text"/>
