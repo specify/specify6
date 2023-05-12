@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+// FIXME: review this document
 <uicontrols>
     <control type="label">
         <desc>A Label in the UI that will have a ':' appended it is right justified.</desc>

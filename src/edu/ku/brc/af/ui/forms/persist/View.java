@@ -479,7 +479,7 @@ public class View implements ViewIFace
         xmlAttr(sb, "class", className);
         xmlAttr(sb, "busrule", businessRulesClassName);
         xmlAttr(sb, "usedefbusrule", useDefaultBusRules);
-        if (!isInternal) xmlAttr(sb, "isinternal", isInternal);
+        if (!isInternal) xmlAttr(sb, "isinternal", !isInternal);
         sb.append(">\n    ");
         xmlNode(sb, "desc", desc, true);
         sb.append("      <altviews");
