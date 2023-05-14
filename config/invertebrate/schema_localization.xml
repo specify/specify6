@@ -1,3 +1,4 @@
+
 <vector>
   <container name="collectingevent" isHidden="false">
     <version>0</version>
@@ -11,18 +12,18 @@
           <str language="en">
             <version>0</version>
             <text>Method</text>
-            <itemDesc reference="../../.."/>
-            <itemName reference="../../.."/>
+            <itemDesc reference="../../.." />
+            <itemName reference="../../.." />
           </str>
         </names>
         <descs>
-          <str reference="../../names/str"/>
+          <str reference="../../names/str" />
         </descs>
-        <spExportSchemaItems/>
+        <spExportSchemaItems />
       </desc>
     </items>
-    <names/>
-    <descs/>
+    <names />
+    <descs />
   </container>
   <container name="collectionobjectattribute" isHidden="false">
     <version>0</version>
@@ -36,14 +37,14 @@
           <str language="en">
             <version>0</version>
             <text>Stage</text>
-            <itemDesc reference="../../.."/>
-            <itemName reference="../../.."/>
+            <itemDesc reference="../../.." />
+            <itemName reference="../../.." />
           </str>
         </names>
         <descs>
-          <str reference="../../names/str"/>
+          <str reference="../../names/str" />
         </descs>
-        <spExportSchemaItems/>
+        <spExportSchemaItems />
       </desc>
       <desc name="text6" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
@@ -52,14 +53,14 @@
           <str language="en">
             <version>0</version>
             <text>Body Width</text>
-            <itemDesc reference="../../.."/>
-            <itemName reference="../../.."/>
+            <itemDesc reference="../../.." />
+            <itemName reference="../../.." />
           </str>
         </names>
         <descs>
-          <str reference="../../names/str"/>
+          <str reference="../../names/str" />
         </descs>
-        <spExportSchemaItems/>
+        <spExportSchemaItems />
       </desc>
       <desc name="text1" isHidden="false" isUIFormatter="false" pickListName="BiologicalSex" isRequired="false">
         <version>0</version>
@@ -68,14 +69,14 @@
           <str language="en">
             <version>0</version>
             <text>Sex</text>
-            <itemDesc reference="../../.."/>
-            <itemName reference="../../.."/>
+            <itemDesc reference="../../.." />
+            <itemName reference="../../.." />
           </str>
         </names>
         <descs>
-          <str reference="../../names/str"/>
+          <str reference="../../names/str" />
         </descs>
-        <spExportSchemaItems/>
+        <spExportSchemaItems />
       </desc>
       <desc name="text8" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
@@ -84,14 +85,14 @@
           <str language="en">
             <version>0</version>
             <text>Range of Size</text>
-            <itemDesc reference="../../.."/>
-            <itemName reference="../../.."/>
+            <itemDesc reference="../../.." />
+            <itemName reference="../../.." />
           </str>
         </names>
         <descs>
-          <str reference="../../names/str"/>
+          <str reference="../../names/str" />
         </descs>
-        <spExportSchemaItems/>
+        <spExportSchemaItems />
       </desc>
       <desc name="text3" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
@@ -100,14 +101,14 @@
           <str language="en">
             <version>0</version>
             <text>ReproCondition</text>
-            <itemDesc reference="../../.."/>
-            <itemName reference="../../.."/>
+            <itemDesc reference="../../.." />
+            <itemName reference="../../.." />
           </str>
         </names>
         <descs>
-          <str reference="../../names/str"/>
+          <str reference="../../names/str" />
         </descs>
-        <spExportSchemaItems/>
+        <spExportSchemaItems />
       </desc>
       <desc name="text7" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
@@ -116,14 +117,14 @@
           <str language="en">
             <version>0</version>
             <text>Total Length</text>
-            <itemDesc reference="../../.."/>
-            <itemName reference="../../.."/>
+            <itemDesc reference="../../.." />
+            <itemName reference="../../.." />
           </str>
         </names>
         <descs>
-          <str reference="../../names/str"/>
+          <str reference="../../names/str" />
         </descs>
-        <spExportSchemaItems/>
+        <spExportSchemaItems />
       </desc>
       <desc name="text2" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
@@ -132,14 +133,14 @@
           <str language="en">
             <version>0</version>
             <text>Weight</text>
-            <itemDesc reference="../../.."/>
-            <itemName reference="../../.."/>
+            <itemDesc reference="../../.." />
+            <itemName reference="../../.." />
           </str>
         </names>
         <descs>
-          <str reference="../../names/str"/>
+          <str reference="../../names/str" />
         </descs>
-        <spExportSchemaItems/>
+        <spExportSchemaItems />
       </desc>
       <desc name="text5" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
@@ -148,17 +149,17 @@
           <str language="en">
             <version>0</version>
             <text>Head Width</text>
-            <itemDesc reference="../../.."/>
-            <itemName reference="../../.."/>
+            <itemDesc reference="../../.." />
+            <itemName reference="../../.." />
           </str>
         </names>
         <descs>
-          <str reference="../../names/str"/>
+          <str reference="../../names/str" />
         </descs>
-        <spExportSchemaItems/>
+        <spExportSchemaItems />
       </desc>
     </items>
-    <names/>
-    <descs/>
+    <names />
+    <descs />
   </container>
 </vector>
