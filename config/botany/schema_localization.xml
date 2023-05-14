@@ -15,6 +15,12 @@
             <itemDesc reference="../../.." />
             <itemName reference="../../.." />
           </str>
+          <str language="es">
+            <version>0</version>
+            <text>Número del Recolector</text>
+            <itemName reference="../../.." />
+            <itemDesc reference="../../.." />
+          </str>
         </names>
         <descs>
           <str reference="../../names/str" />
@@ -30,6 +36,12 @@
             <text>Locality and\n Habitat Notes</text>
             <itemDesc reference="../../.." />
             <itemName reference="../../.." />
+          </str>
+          <str language="es">
+            <version>0</version>
+            <text>Notas Localidad y\n Hábitat</text>
+            <itemName reference="../../.." />
+            <itemDesc reference="../../.." />
           </str>
         </names>
         <descs>
@@ -56,6 +68,12 @@
             <itemDesc reference="../../.." />
             <itemName reference="../../.." />
           </str>
+          <str language="es">
+            <version>0</version>
+            <text>Fenología</text>
+            <itemName reference="../../.." />
+            <itemDesc reference="../../.." />
+          </str>
         </names>
         <descs>
           <str reference="../../names/str" />
@@ -71,6 +89,12 @@
             <text>Specimen\nDescription</text>
             <itemDesc reference="../../.." />
             <itemName reference="../../.." />
+          </str>
+          <str language="es">
+            <version>0</version>
+            <text>Descripción\n del Ejemplar</text>
+            <itemName reference="../../.." />
+            <itemDesc reference="../../.." />
           </str>
         </names>
         <descs>
@@ -88,6 +112,12 @@
             <itemDesc reference="../../.." />
             <itemName reference="../../.." />
           </str>
+          <str language="es">
+            <version>0</version>
+            <text>Elementos de Exsiccata</text>
+            <itemName reference="../../.." />
+            <itemDesc reference="../../.." />
+          </str>
         </names>
         <descs>
           <str reference="../../names/str" />
@@ -103,6 +133,12 @@
             <text>Col Obj Attribute</text>
             <itemDesc reference="../../.." />
             <itemName reference="../../.." />
+          </str>
+          <str language="es">
+            <version>0</version>
+            <text>Atributo Obj Colecc</text>
+            <itemName reference="../../.." />
+            <itemDesc reference="../../.." />
           </str>
         </names>
         <descs>

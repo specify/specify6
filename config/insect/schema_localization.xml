@@ -15,6 +15,12 @@
             <itemDesc reference="../../.." />
             <itemName reference="../../.." />
           </str>
+          <str language="es">
+            <version>0</version>
+            <text>Texto7</text>
+            <itemName reference="../../.." />
+            <itemDesc reference="../../.." />
+          </str>
         </names>
         <descs>
           <str reference="../../names/str" />
@@ -30,6 +36,12 @@
             <text>Text8</text>
             <itemDesc reference="../../.." />
             <itemName reference="../../.." />
+          </str>
+          <str language="es">
+            <version>0</version>
+            <text>Texto8</text>
+            <itemName reference="../../.." />
+            <itemDesc reference="../../.." />
           </str>
         </names>
         <descs>
@@ -47,6 +59,12 @@
             <itemDesc reference="../../.." />
             <itemName reference="../../.." />
           </str>
+          <str language="es">
+            <version>0</version>
+            <text>Peso</text>
+            <itemName reference="../../.." />
+            <itemDesc reference="../../.." />
+          </str>
         </names>
         <descs>
           <str reference="../../names/str" />
@@ -62,6 +80,12 @@
             <text>Length</text>
             <itemDesc reference="../../.." />
             <itemName reference="../../.." />
+          </str>
+          <str language="es">
+            <version>0</version>
+            <text>Longitud</text>
+            <itemName reference="../../.." />
+            <itemDesc reference="../../.." />
           </str>
         </names>
         <descs>
@@ -79,6 +103,12 @@
             <itemDesc reference="../../.." />
             <itemName reference="../../.." />
           </str>
+          <str language="es">
+            <version>0</version>
+            <text>Texto6</text>
+            <itemName reference="../../.." />
+            <itemDesc reference="../../.." />
+          </str>
         </names>
         <descs>
           <str reference="../../names/str" />
@@ -94,6 +124,12 @@
             <text>Stage</text>
             <itemDesc reference="../../.." />
             <itemName reference="../../.." />
+          </str>
+          <str language="es">
+            <version>0</version>
+            <text>Etapa</text>
+            <itemName reference="../../.." />
+            <itemDesc reference="../../.." />
           </str>
         </names>
         <descs>
@@ -111,6 +147,12 @@
             <itemDesc reference="../../.." />
             <itemName reference="../../.." />
           </str>
+          <str language="es">
+            <version>0</version>
+            <text>Sexo</text>
+            <itemName reference="../../.." />
+            <itemDesc reference="../../.." />
+          </str>
         </names>
         <descs>
           <str reference="../../names/str" />
@@ -126,6 +168,12 @@
             <text>Text5</text>
             <itemDesc reference="../../.." />
             <itemName reference="../../.." />
+          </str>
+          <str language="es">
+            <version>0</version>
+            <text>Texto5</text>
+            <itemName reference="../../.." />
+            <itemDesc reference="../../.." />
           </str>
         </names>
         <descs>

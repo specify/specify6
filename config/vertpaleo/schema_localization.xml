@@ -15,6 +15,12 @@
             <itemDesc reference="../../.." />
             <itemName reference="../../.." />
           </str>
+          <str language="es">
+            <version>0</version>
+            <text>Texto7</text>
+            <itemName reference="../../.." />
+            <itemDesc reference="../../.." />
+          </str>
         </names>
         <descs>
           <str reference="../../names/str" />
@@ -30,6 +36,12 @@
             <text>Text3</text>
             <itemDesc reference="../../.." />
             <itemName reference="../../.." />
+          </str>
+          <str language="es">
+            <version>0</version>
+            <text>Texto3</text>
+            <itemName reference="../../.." />
+            <itemDesc reference="../../.." />
           </str>
         </names>
         <descs>
@@ -47,6 +59,12 @@
             <itemDesc reference="../../.." />
             <itemName reference="../../.." />
           </str>
+          <str language="es">
+            <version>0</version>
+            <text>Texto5</text>
+            <itemName reference="../../.." />
+            <itemDesc reference="../../.." />
+          </str>
         </names>
         <descs>
           <str reference="../../names/str" />
@@ -62,6 +80,12 @@
             <text>Text2</text>
             <itemDesc reference="../../.." />
             <itemName reference="../../.." />
+          </str>
+          <str language="es">
+            <version>0</version>
+            <text>Texto2</text>
+            <itemName reference="../../.." />
+            <itemDesc reference="../../.." />
           </str>
         </names>
         <descs>
@@ -79,6 +103,12 @@
             <itemDesc reference="../../.." />
             <itemName reference="../../.." />
           </str>
+          <str language="es">
+            <version>0</version>
+            <text>Texto6</text>
+            <itemName reference="../../.." />
+            <itemDesc reference="../../.." />
+          </str>
         </names>
         <descs>
           <str reference="../../names/str" />
@@ -94,6 +124,12 @@
             <text>Direction</text>
             <itemDesc reference="../../.." />
             <itemName reference="../../.." />
+          </str>
+          <str language="es">
+            <version>0</version>
+            <text>Dirección</text>
+            <itemName reference="../../.." />
+            <itemDesc reference="../../.." />
           </str>
         </names>
         <descs>
@@ -111,6 +147,12 @@
             <itemDesc reference="../../.." />
             <itemName reference="../../.." />
           </str>
+          <str language="es">
+            <version>0</version>
+            <text>Unidades de Distancia</text>
+            <itemName reference="../../.." />
+            <itemDesc reference="../../.." />
+          </str>
         </names>
         <descs>
           <str reference="../../names/str" />
@@ -126,6 +168,12 @@
             <text>Bottom Distance</text>
             <itemDesc reference="../../.." />
             <itemName reference="../../.." />
+          </str>
+          <str language="es">
+            <version>0</version>
+            <text>Distancia Inferior</text>
+            <itemName reference="../../.." />
+            <itemDesc reference="../../.." />
           </str>
         </names>
         <descs>
@@ -143,6 +191,12 @@
             <itemDesc reference="../../.." />
             <itemName reference="../../.." />
           </str>
+          <str language="es">
+            <version>0</version>
+            <text>Distancia Superior</text>
+            <itemName reference="../../.." />
+            <itemDesc reference="../../.." />
+          </str>
         </names>
         <descs>
           <str reference="../../names/str" />
@@ -158,6 +212,12 @@
             <text>Position State</text>
             <itemDesc reference="../../.." />
             <itemName reference="../../.." />
+          </str>
+          <str language="es">
+            <version>0</version>
+            <text>Position State</text>
+            <itemName reference="../../.." />
+            <itemDesc reference="../../.." />
           </str>
         </names>
         <descs>
@@ -175,6 +235,12 @@
             <itemDesc reference="../../.." />
             <itemName reference="../../.." />
           </str>
+          <str language="es">
+            <version>0</version>
+            <text>Texto8</text>
+            <itemName reference="../../.." />
+            <itemDesc reference="../../.." />
+          </str>
         </names>
         <descs>
           <str reference="../../names/str" />
@@ -191,6 +257,12 @@
             <itemDesc reference="../../.." />
             <itemName reference="../../.." />
           </str>
+          <str language="es">
+            <version>0</version>
+            <text>Texto4</text>
+            <itemName reference="../../.." />
+            <itemDesc reference="../../.." />
+          </str>
         </names>
         <descs>
           <str reference="../../names/str" />
@@ -206,6 +278,12 @@
             <text>Text1</text>
             <itemDesc reference="../../.." />
             <itemName reference="../../.." />
+          </str>
+          <str language="es">
+            <version>0</version>
+            <text>Texto1</text>
+            <itemName reference="../../.." />
+            <itemDesc reference="../../.." />
           </str>
         </names>
         <descs>
@@ -231,6 +309,12 @@
             <text>Col Obj Attribute</text>
             <itemDesc reference="../../.." />
             <itemName reference="../../.." />
+          </str>
+          <str language="es">
+            <version>0</version>
+            <text>Atributo Obj Colecc</text>
+            <itemName reference="../../.." />
+            <itemDesc reference="../../.." />
           </str>
         </names>
         <descs>
