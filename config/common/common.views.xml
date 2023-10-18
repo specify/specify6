@@ -141,7 +141,7 @@
         </view>
 
 		<view name="BorrowAgent"
-			Objtitle="Borrow Agent"
+			objtitle="Borrow Agent"
 			class="edu.ku.brc.specify.datamodel.BorrowAgent">
             <desc><![CDATA[Agent subform for the Borrow form]]></desc>
             <altviews>
@@ -187,7 +187,7 @@
 		<view name="CollectingTrip"
 			class="edu.ku.brc.specify.datamodel.CollectingTrip"
 			busrules="edu.ku.brc.specify.datamodel.busrules.CollectingTripBusRules"
-			resourelabels="false">
+			resourcelabels="false">
             <desc><![CDATA[CollectingTrip Form]]></desc>
             <altviews>
                 <altview name="CollectingTrip View" viewdef="CollectingTrip" mode="view" default="true"/>
@@ -199,7 +199,7 @@
 			class="edu.ku.brc.specify.datamodel.CollectingTrip"
 			busrules="edu.ku.brc.specify.datamodel.busrules.CollectingTripBusRules"
 			isinternal="false"
-			resourelabels="false">
+			resourcelabels="false">
             <desc><![CDATA[CollectingTrip Form]]></desc>
             <altviews>
                 <altview name="CollectingTripForm View" viewdef="CollectingTripForm" mode="view" default="true"/>
@@ -264,9 +264,7 @@
         </view>
 
 		<view name="CollectionObjectProperty"
-			class="edu.ku.brc.specify.datamodel.CollectionObjectProperty"
-			gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
-			settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+			class="edu.ku.brc.specify.datamodel.CollectionObjectProperty">
             <desc><![CDATA[Subform within the Collection Object form.]]></desc>
             <altviews>
                 <altview name="CollectionObjectProperty View" viewdef="CollectionObjectProperty" mode="view" />
@@ -806,7 +804,7 @@
 		<view name="FieldNotebookPage"
 			class="edu.ku.brc.specify.datamodel.FieldNotebookPage"
 			busrules="edu.ku.brc.specify.datamodel.busrules.FieldNotebookPageBusRules"
-			resourcelables="false">
+			resourcelabels="false">
             <desc><![CDATA[Field Notebook Page.]]></desc>
             <altviews>
                 <altview name="FieldNotebookPage Edit" viewdef="FieldNotebookPage" mode="edit"/>
@@ -818,7 +816,7 @@
 
 		<view name="FieldNotebookPageSet"
 			class="edu.ku.brc.specify.datamodel.FieldNotebookPageSet"
-			resourcelables="false">
+			resourcelabels="false">
             <desc><![CDATA[Field Notebook Page.]]></desc>
             <altviews>
                 <altview name="FieldNotebookPageSet Edit" viewdef="FieldNotebookPageSet" mode="edit"/>
@@ -1157,9 +1155,7 @@
         </view>
 
 		<view name="PreparationProperty"
-			class="edu.ku.brc.specify.datamodel.PreparationProperty"
-			gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
-			settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+      class="edu.ku.brc.specify.datamodel.PreparationProperty">
             <desc><![CDATA[Subform within the Collection Object form.]]></desc>
             <altviews>
                 <altview name="PreparationProperty View" viewdef="PreparationProperty" mode="view" />
@@ -3362,7 +3358,7 @@
                 <row>
                     <cell type="label" labelfor="rem"/>
                     <cell type="field" id="rem" name="remarks" uitype="textareabrief" rows="2" colspan="14"/>
-                    <!--cell type="subview" id="attachments" viewname="ObjectAttachment" name="deaccessionAttachments" initialize="btn=true;icon=AccessionAttachment;align=right"/-->
+                    <!--<cell type="subview" id="attachments" viewname="ObjectAttachment" name="deaccessionAttachments" initialize="btn=true;icon=AccessionAttachment;align=right"/>-->
                 </row>
                 <!--row>
                     <cell type="subview" viewname="DeaccessionAgent" id="8" name="deaccessionAgents" desc="Agents" colspan="12" rows="2"/>
@@ -3394,7 +3390,7 @@
 
 		<viewdef name="DeaccessionAccession Table"
 			type="formtable"
-			class="edu.ku.brc.specify.datamodel.Deccession"
+			class="edu.ku.brc.specify.datamodel.Deaccession"
 			gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
 			settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[Horizontal interpretation of the Deaccession form from inside the Accession form.]]></desc>
@@ -6027,7 +6023,7 @@
                 <row>
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="catalogedDate" uitype="formattedtext" uifieldformatter="Date"/>
-                    <cell type="label" labelfor="2" uitype="text"/>
+                    <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="catalogNumber" uitype="formattedtext"/>
                     <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="fieldNumber" uitype="text"/>
@@ -7258,7 +7254,7 @@
                     <cell type="field" id="1" name="preparation.barCode" uitype="formattedtext"/>
                     <!--<cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="giftDate" uitype="formattedtext" uifieldformatter="Date"  default="today"/>
-                    <cell type="label" labelfor="4"/-->
+                    <cell type="label" labelfor="4"/>-->
                 </row>
                 <!--<row>
                     <cell type="label" labelfor="5"/>

@@ -72,7 +72,7 @@
 
 		<view name="AttachmentMetadata"
 			class="edu.ku.brc.specify.datamodel.AttachmentMetadata"
-			resourecelabels="false">
+			resourcelabels="false">
             <desc><![CDATA[The AttachmentMetadata subform.]]></desc>
             <altviews>
                 <altview name="AttachmentMetadata View"  viewdef="AttachmentMetadata"  label="Form"  mode="view" default="true"/>
@@ -421,7 +421,7 @@
 
 		<view name="ReportProperties"
 			class="java.util.prefs.Preferences"
-			useresourcelabels="false">
+			resourcelabels="false">
 			      <desc><![CDATA[Report Properties Form.]]></desc>
 			      <altviews>
 				        <altview name="Report Properties" viewdef="ReportProperties" label="Properties" mode="edit" validated="true"/>
