@@ -1,3 +1,4 @@
+
 <vector>
   <container name="collectingevent" isHidden="false">
     <version>0</version>
@@ -11,14 +12,20 @@
           <str language="en">
             <version>0</version>
             <text>Collector Number</text>
-            <itemDesc reference="../../.."/>
-            <itemName reference="../../.."/>
+            <itemDesc reference="../../.." />
+            <itemName reference="../../.." />
+          </str>
+          <str language="es">
+            <version>0</version>
+            <text>Número del Recolector</text>
+            <itemName reference="../../.." />
+            <itemDesc reference="../../.." />
           </str>
         </names>
         <descs>
-          <str reference="../../names/str"/>
+          <str reference="../../names/str" />
         </descs>
-        <spExportSchemaItems/>
+        <spExportSchemaItems />
       </desc>
       <desc name="remarks" type="text" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
@@ -27,18 +34,24 @@
           <str language="en">
             <version>0</version>
             <text>Locality and\n Habitat Notes</text>
-            <itemDesc reference="../../.."/>
-            <itemName reference="../../.."/>
+            <itemDesc reference="../../.." />
+            <itemName reference="../../.." />
+          </str>
+          <str language="es">
+            <version>0</version>
+            <text>Notas Localidad y\n Hábitat</text>
+            <itemName reference="../../.." />
+            <itemDesc reference="../../.." />
           </str>
         </names>
         <descs>
-          <str reference="../../names/str"/>
+          <str reference="../../names/str" />
         </descs>
-        <spExportSchemaItems/>
+        <spExportSchemaItems />
       </desc>
     </items>
-    <names/>
-    <descs/>
+    <names />
+    <descs />
   </container>
   <container name="collectionobject" isHidden="false">
     <version>0</version>
@@ -52,14 +65,20 @@
           <str language="en">
             <version>0</version>
             <text>Phenology</text>
-            <itemDesc reference="../../.."/>
-            <itemName reference="../../.."/>
+            <itemDesc reference="../../.." />
+            <itemName reference="../../.." />
+          </str>
+          <str language="es">
+            <version>0</version>
+            <text>Fenología</text>
+            <itemName reference="../../.." />
+            <itemDesc reference="../../.." />
           </str>
         </names>
         <descs>
-          <str reference="../../names/str"/>
+          <str reference="../../names/str" />
         </descs>
-        <spExportSchemaItems/>
+        <spExportSchemaItems />
       </desc>
       <desc name="description" type="java.lang.String" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
@@ -68,14 +87,20 @@
           <str language="en">
             <version>0</version>
             <text>Specimen\nDescription</text>
-            <itemDesc reference="../../.."/>
-            <itemName reference="../../.."/>
+            <itemDesc reference="../../.." />
+            <itemName reference="../../.." />
+          </str>
+          <str language="es">
+            <version>0</version>
+            <text>Descripción\n del Ejemplar</text>
+            <itemName reference="../../.." />
+            <itemDesc reference="../../.." />
           </str>
         </names>
         <descs>
-          <str reference="../../names/str"/>
+          <str reference="../../names/str" />
         </descs>
-        <spExportSchemaItems/>
+        <spExportSchemaItems />
       </desc>
       <desc name="exsiccataItems" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
@@ -84,14 +109,20 @@
           <str language="en">
             <version>0</version>
             <text>Exsiccata Items</text>
-            <itemDesc reference="../../.."/>
-            <itemName reference="../../.."/>
+            <itemDesc reference="../../.." />
+            <itemName reference="../../.." />
+          </str>
+          <str language="es">
+            <version>0</version>
+            <text>Elementos de Exsiccata</text>
+            <itemName reference="../../.." />
+            <itemDesc reference="../../.." />
           </str>
         </names>
         <descs>
-          <str reference="../../names/str"/>
+          <str reference="../../names/str" />
         </descs>
-        <spExportSchemaItems/>
+        <spExportSchemaItems />
       </desc>
       <desc name="collectionObjectAttribute" type="ManyToOne" isHidden="true" isUIFormatter="false" isRequired="false">
         <version>0</version>
@@ -100,17 +131,23 @@
           <str language="en">
             <version>0</version>
             <text>Col Obj Attribute</text>
-            <itemDesc reference="../../.."/>
-            <itemName reference="../../.."/>
+            <itemDesc reference="../../.." />
+            <itemName reference="../../.." />
+          </str>
+          <str language="es">
+            <version>0</version>
+            <text>Atributo Obj Colecc</text>
+            <itemName reference="../../.." />
+            <itemDesc reference="../../.." />
           </str>
         </names>
         <descs>
-          <str reference="../../names/str"/>
+          <str reference="../../names/str" />
         </descs>
-        <spExportSchemaItems/>
+        <spExportSchemaItems />
       </desc>
     </items>
-    <names/>
-    <descs/>
+    <names />
+    <descs />
   </container>
 </vector>

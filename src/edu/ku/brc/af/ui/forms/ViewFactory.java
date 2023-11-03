@@ -1646,6 +1646,7 @@ public class ViewFactory
                                                                       cellField.getPropertyAsBoolean("forinput", true));
                         String fileFilter = cellField.getProperty("filefilter");
                         String fileFilterDesc = cellField.getProperty("filefilterdesc");
+                        // FIXME: this is the only upper case prop?
                         String defaultExtension = cellField.getProperty("defaultExtension");
                         if (fileFilter != null && fileFilterDesc != null) {
                         	bbp.setUseNativeFileDlg(false);

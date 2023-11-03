@@ -1,10 +1,10 @@
+
 <vector>
-  <container name="collectionobjectattribute">
+  <container name="collectionobjectattribute" isHidden="false">
     <version>0</version>
-    <isHidden>false</isHidden>
     <isSystem>false</isSystem>
-    <items/>
-    <names/>
-    <descs/>
+    <items />
+    <names />
+    <descs />
   </container>
 </vector>
