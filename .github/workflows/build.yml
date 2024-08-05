@@ -82,49 +82,95 @@ jobs:
           path: packages/updates.xml
 
   notarize:
-    name: Notarize the Specify 6 Mac package
-    needs: build
-    runs-on: macos-latest
+  name: Notarize the Specify 6 Mac package
+  needs: build
+  runs-on: macos-latest
+  steps:
+    - name: Download Specify_macos artifact
+      uses: actions/download-artifact@v1
+      with:
+        name: Specify_macos
+    
+    - name: Check artifact contents
+      run: |
+        echo "Contents of Specify_macos directory:"
+        ls -R Specify_macos
+        
+    - name: Upload the Mac package for notarization
+      run: |
+        echo "Uploading package for notarization..."
+        xcrun altool --notarize-app --primary-bundle-id org.specifysoftware \
+        --username beach@ku.edu --password $AC_PASSWORD \
+        --file Specify_macos/Specify_macos.dmg | tee notarize-app-output.txt
+        
+        if grep -q "RequestUUID = " notarize-app-output.txt; then
+          echo "Package uploaded successfully."
+        else
+          echo "Uploading package for notarization failed!"
+          cat notarize-app-output.txt
+          exit 1
+        fi
+      env:
+        AC_PASSWORD: ${{ secrets.AC_PASSWORD }}
+    
+    - name: Get the request UUID
+      run: |
+        sed -En 's/RequestUUID = (.*)$/\1/p' notarize-app-output.txt | tee request-uuid.txt
+        echo "Request UUID: $(cat request-uuid.txt)"
+    
+    - name: Check the notarization status
+      run: |
+        for i in {1..60}; do
+          echo "Checking notarization status (attempt $i)..."
+          sleep 120
+          xcrun altool --notarization-info $(cat request-uuid.txt) \
+          --username beach@ku.edu --password $AC_PASSWORD \
+          | tee notarization-info.txt
+          
+          if ! grep -q "Status: in progress" notarization-info.txt; then
+            echo "Notarization process completed."
+            break
+          fi
+          
+          echo "Notarization still in progress..."
+        done
+        
+        if grep -q "Status: success" notarization-info.txt; then
+          echo "Notarization succeeded!"
+        else
+          echo "Notarization failed or timed out. Full status:"
+          cat notarization-info.txt
+          exit 1
+        fi
+      env:
+        AC_PASSWORD: ${{ secrets.AC_PASSWORD }}
+    
+    - name: Staple the notarization ticket to the installer
+      run: |
+        echo "Stapling notarization ticket..."
+        xcrun stapler staple Specify_macos/Specify_macos.dmg
+        if [ $? -eq 0 ]; then
+          echo "Stapling successful."
+        else
+          echo "Stapling failed!"
+          exit 1
+        fi
+    
+    - name: Upload the stapled Specify_macos.dmg as artifact
+      uses: actions/upload-artifact@v1
+      with:
+        name: Specify_macos_with_ticket
+        path: Specify_macos/Specify_macos.dmg
 
-    steps:
-      - name: Download Specify_macos artifact
-        uses: actions/download-artifact@v1
-        with:
-          name: Specify_macos
-
-      - name: Upload the Mac package for notarization
-        run: >
-          xcrun altool --notarize-app --primary-bundle-id org.specifysoftware
-          --username beach@ku.edu --password $AC_PASSWORD
-          --file Specify_macos/Specify_macos.dmg | tee notarize-app-output.txt;
-          grep -q "RequestUUID = " notarize-app-output.txt || { echo "Uploading package for notarization failed!"; exit 1; }
-        env:
-          AC_PASSWORD: ${{ secrets.AC_PASSWORD }}
-
-      - name: Get the request UUID
-        run: sed -En 's/RequestUUID = (.*)$/\1/p' notarize-app-output.txt | tee request-uuid.txt
-
-      - name: Check the notarization status
-        run: >
-          for i in {1..60}; do
-          sleep 120;
-          xcrun altool --notarization-info $(< request-uuid.txt)
-          --username beach@ku.edu --password $AC_PASSWORD
-          | tee notarization-info.txt;
-          grep -q "Status: in progress" notarization-info.txt || break;
-          done;
-          grep -q "Status: success" notarization-info.txt || { echo "Notarization failed!"; exit 1; }
-        env:
-          AC_PASSWORD: ${{ secrets.AC_PASSWORD }}
-
-      - name: Staple the notarization ticket to the installer
-        run: xcrun stapler staple Specify_macos/Specify_macos.dmg
-
-      - name: Upload the stapled Specify_macos.dmg as artifact
-        uses: actions/upload-artifact@v1
-        with:
-          name: Specify_macos_with_ticket
-          path: Specify_macos/Specify_macos.dmg
+    - name: Upload log files as artifacts
+      if: always()
+      uses: actions/upload-artifact@v2
+      with:
+        name: notarization-logs
+        path: |
+          notarize-app-output.txt
+          request-uuid.txt
+          notarization-info.txt
 
   release:
     name: Create a Specify 6 release
