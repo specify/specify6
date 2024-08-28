@@ -115,7 +115,7 @@ jobs:
           done;
           grep -q "Status: success" notarization-info.txt || { echo "Notarization failed!"; exit 1; }
         env:
-          AC_PASSWORD: ${{ secrets.AC_PASSWORD }}
+          AC_PASSWORD: ${{ secrets.AC_PASSWORD }} # Updated
 
       - name: Staple the notarization ticket to the installer
         run: xcrun stapler staple Specify_macos/Specify_macos.dmg

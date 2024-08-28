@@ -28,7 +28,7 @@
   </entry-->
 
   <entry name="deaccession" table="deaccession" view="Deaccession" type="Interactions" action="OpenNewView" icon="Deaccession" isonleft="false"
-         issrchsrv="true" order="0" enabled="true" visible="false" tooltip="">
+         issrchsrv="true" order="0" enabled="true" visible="true" tooltip="">
     <draggableFlavors/>
     <droppableFlavors>
       <flavor isdrag="false" classname="edu.ku.brc.specify.tasks.RecordSetTask" humanreadable="Record_Set">
