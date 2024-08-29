@@ -97,10 +97,12 @@ jobs:
           xcrun notarytool submit Specify_macos/Specify_macos.dmg --wait \
             --apple-id "beach@ku.edu" \
             --password "$AC_PASSWORD" \
+            --team-id "$APPLE_TEAM_ID" \
             | tee notarize-app-output.txt
           grep -q "status: Accepted" notarize-app-output.txt || { echo "Notarization failed!"; exit 1; }
         env:
           AC_PASSWORD: ${{ secrets.AC_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
 
       - name: Staple the notarization ticket to the installer
         run: xcrun stapler staple Specify_macos/Specify_macos.dmg
