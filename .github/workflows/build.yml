@@ -98,6 +98,25 @@ jobs:
           pwd
           echo "Contents of current directory:"
           ls -R
+          echo "Searching for DMG file:"
+          find . -name "*.dmg"
+          echo "Searching for APP file:"
+          find . -name "*.app" -type d
+
+      - name: Extract DMG if present
+        run: |
+          DMG_FILE=$(find . -name "*.dmg")
+          if [ -n "$DMG_FILE" ]; then
+            echo "DMG file found: $DMG_FILE"
+            hdiutil attach "$DMG_FILE"
+            MOUNT_POINT=$(hdiutil info | grep -B 1 "Specify" | grep "/Volumes/" | awk '{print $1}')
+            echo "Mount point: $MOUNT_POINT"
+            cp -R "$MOUNT_POINT"/*.app ./Specify.app
+            hdiutil detach "$MOUNT_POINT"
+          else
+            echo "No DMG file found"
+            exit 1
+          fi
 
       - name: Sign binaries in JAR files
         run: |
@@ -141,11 +160,10 @@ jobs:
 
       - name: Re-sign the application
         run: |
-          APP_PATH=$(find . -name "*.app" -type d)
-          if [ -n "$APP_PATH" ]; then
-            codesign --force --options runtime --sign "Developer ID Application: $APPLE_TEAM_ID" --timestamp "$APP_PATH"
+          if [ -d "./Specify.app" ]; then
+            codesign --force --options runtime --sign "Developer ID Application: $APPLE_TEAM_ID" --timestamp "./Specify.app"
           else
-            echo "No .app directory found"
+            echo "Specify.app not found"
             exit 1
           fi
         env:
@@ -153,8 +171,12 @@ jobs:
 
       - name: Create new DMG
         run: |
-          APP_PATH=$(find . -name "*.app" -type d)
-          hdiutil create -volname "Specify Installer" -srcfolder "$APP_PATH" -ov -format UDZO Specify_macos_signed.dmg
+          if [ -d "./Specify.app" ]; then
+            hdiutil create -volname "Specify Installer" -srcfolder "./Specify.app" -ov -format UDZO Specify_macos_signed.dmg
+          else
+            echo "Specify.app not found"
+            exit 1
+          fi
 
       - name: Notarize the Mac package
         run: |
