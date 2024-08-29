@@ -92,28 +92,13 @@ jobs:
         with:
           name: Specify_macos
 
-      - name: Upload the Mac package for notarization
-        run: >
-          xcrun altool --notarize-app --primary-bundle-id org.specifysoftware
-          --username beach@ku.edu --password $AC_PASSWORD
-          --file Specify_macos/Specify_macos.dmg | tee notarize-app-output.txt;
-          grep -q "RequestUUID = " notarize-app-output.txt || { echo "Uploading package for notarization failed!"; exit 1; }
-        env:
-          AC_PASSWORD: ${{ secrets.AC_PASSWORD }}
-
-      - name: Get the request UUID
-        run: sed -En 's/RequestUUID = (.*)$/\1/p' notarize-app-output.txt | tee request-uuid.txt
-
-      - name: Check the notarization status
-        run: >
-          for i in {1..60}; do
-          sleep 120;
-          xcrun altool --notarization-info $(< request-uuid.txt)
-          --username beach@ku.edu --password $AC_PASSWORD
-          | tee notarization-info.txt;
-          grep -q "Status: in progress" notarization-info.txt || break;
-          done;
-          grep -q "Status: success" notarization-info.txt || { echo "Notarization failed!"; exit 1; }
+      - name: Notarize the Mac package
+        run: |
+          xcrun notarytool submit Specify_macos/Specify_macos.dmg --wait \
+            --apple-id "beach@ku.edu" \
+            --password "$AC_PASSWORD" \
+            | tee notarize-app-output.txt
+          grep -q "status: Accepted" notarize-app-output.txt || { echo "Notarization failed!"; exit 1; }
         env:
           AC_PASSWORD: ${{ secrets.AC_PASSWORD }}
 
