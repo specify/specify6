@@ -92,39 +92,132 @@ jobs:
         with:
           name: Specify_macos
 
-      - name: Upload the Mac package for notarization
-        run: >
-          xcrun altool --notarize-app --primary-bundle-id org.specifysoftware
-          --username beach@ku.edu --password $AC_PASSWORD
-          --file Specify_macos/Specify_macos.dmg | tee notarize-app-output.txt;
-          grep -q "RequestUUID = " notarize-app-output.txt || { echo "Uploading package for notarization failed!"; exit 1; }
+      - name: Inspect directory structure
+        run: |
+          echo "Current directory:"
+          pwd
+          echo "Contents of current directory:"
+          ls -R
+          echo "Searching for DMG file:"
+          find . -name "*.dmg"
+          echo "Searching for APP file:"
+          find . -name "*.app" -type d
+
+      - name: Extract DMG if present
+        run: |
+          DMG_FILE=$(find . -name "*.dmg")
+          if [ -n "$DMG_FILE" ]; then
+            echo "DMG file found: $DMG_FILE"
+            hdiutil attach "$DMG_FILE"
+            MOUNT_POINT=$(hdiutil info | grep -B 1 "Specify" | grep "/Volumes/" | awk '{print $1}')
+            echo "Mount point: $MOUNT_POINT"
+            cp -R "$MOUNT_POINT"/*.app ./Specify.app
+            hdiutil detach "$MOUNT_POINT"
+          else
+            echo "No DMG file found"
+            exit 1
+          fi
+
+      - name: Sign binaries in JAR files
+        run: |
+          # For libgluegen-rt.jnilib
+          GLUEGEN_JAR=$(find . -name "gluegen-rt-natives-macosx-universal.jar")
+          if [ -n "$GLUEGEN_JAR" ]; then
+            mkdir -p temp_gluegen
+            cd temp_gluegen
+            unzip "../$GLUEGEN_JAR"
+            if [ -f "libgluegen-rt.jnilib" ]; then
+              codesign --force --options runtime --sign "Developer ID Application: $APPLE_TEAM_ID" --timestamp libgluegen-rt.jnilib
+              zip -u "../$GLUEGEN_JAR" libgluegen-rt.jnilib
+            else
+              echo "libgluegen-rt.jnilib not found in the JAR"
+            fi
+            cd ..
+            rm -rf temp_gluegen
+          else
+            echo "gluegen-rt-natives-macosx-universal.jar not found"
+          fi
+
+          # For mac-universal.lib
+          SQLITE_JAR=$(find . -name "sqlitejdbc.jar")
+          if [ -n "$SQLITE_JAR" ]; then
+            mkdir -p temp_sqlitejdbc
+            cd temp_sqlitejdbc
+            unzip "../$SQLITE_JAR"
+            if [ -f "mac-universal.lib" ]; then
+              codesign --force --options runtime --sign "Developer ID Application: $APPLE_TEAM_ID" --timestamp mac-universal.lib
+              zip -u "../$SQLITE_JAR" mac-universal.lib
+            else
+              echo "mac-universal.lib not found in the JAR"
+            fi
+            cd ..
+            rm -rf temp_sqlitejdbc
+          else
+            echo "sqlitejdbc.jar not found"
+          fi
+        env:
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+
+      - name: Re-sign the application
+        run: |
+          if [ -d "./Specify.app" ]; then
+            codesign --force --options runtime --sign "Developer ID Application: $APPLE_TEAM_ID" --timestamp "./Specify.app"
+          else
+            echo "Specify.app not found"
+            exit 1
+          fi
+        env:
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+
+      - name: Create new DMG
+        run: |
+          if [ -d "./Specify.app" ]; then
+            hdiutil create -volname "Specify Installer" -srcfolder "./Specify.app" -ov -format UDZO Specify_macos_signed.dmg
+          else
+            echo "Specify.app not found"
+            exit 1
+          fi
+
+      - name: Notarize the Mac package
+        run: |
+          SUBMISSION_ID=$(xcrun notarytool submit Specify_macos_signed.dmg \
+            --apple-id "beach@ku.edu" \
+            --password "$AC_PASSWORD" \
+            --team-id "$APPLE_TEAM_ID" \
+            --output-format json | jq -r '.id')
+          echo "Submission ID: $SUBMISSION_ID"
+          
+          xcrun notarytool wait "$SUBMISSION_ID" \
+            --apple-id "beach@ku.edu" \
+            --password "$AC_PASSWORD" \
+            --team-id "$APPLE_TEAM_ID"
+          
+          NOTARIZATION_STATUS=$(xcrun notarytool info "$SUBMISSION_ID" \
+            --apple-id "beach@ku.edu" \
+            --password "$AC_PASSWORD" \
+            --team-id "$APPLE_TEAM_ID" \
+            --output-format json | jq -r '.status')
+          
+          if [ "$NOTARIZATION_STATUS" != "Accepted" ]; then
+            echo "Notarization failed. Fetching logs..."
+            xcrun notarytool log "$SUBMISSION_ID" \
+              --apple-id "beach@ku.edu" \
+              --password "$AC_PASSWORD" \
+              --team-id "$APPLE_TEAM_ID"
+            exit 1
+          fi
         env:
           AC_PASSWORD: ${{ secrets.AC_PASSWORD }}
-
-      - name: Get the request UUID
-        run: sed -En 's/RequestUUID = (.*)$/\1/p' notarize-app-output.txt | tee request-uuid.txt
-
-      - name: Check the notarization status
-        run: >
-          for i in {1..60}; do
-          sleep 120;
-          xcrun altool --notarization-info $(< request-uuid.txt)
-          --username beach@ku.edu --password $AC_PASSWORD
-          | tee notarization-info.txt;
-          grep -q "Status: in progress" notarization-info.txt || break;
-          done;
-          grep -q "Status: success" notarization-info.txt || { echo "Notarization failed!"; exit 1; }
-        env:
-          AC_PASSWORD: ${{ secrets.AC_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
 
       - name: Staple the notarization ticket to the installer
-        run: xcrun stapler staple Specify_macos/Specify_macos.dmg
+        run: xcrun stapler staple Specify_macos_signed.dmg
 
       - name: Upload the stapled Specify_macos.dmg as artifact
         uses: actions/upload-artifact@v1
         with:
           name: Specify_macos_with_ticket
-          path: Specify_macos/Specify_macos.dmg
+          path: Specify_macos_signed.dmg
 
   release:
     name: Create a Specify 6 release
