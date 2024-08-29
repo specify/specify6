@@ -92,37 +92,69 @@ jobs:
         with:
           name: Specify_macos
 
+      - name: Inspect directory structure
+        run: |
+          echo "Current directory:"
+          pwd
+          echo "Contents of current directory:"
+          ls -R
+
       - name: Sign binaries in JAR files
         run: |
           # For libgluegen-rt.jnilib
-          mkdir -p temp_gluegen
-          cd temp_gluegen
-          unzip ../Specify_macos/Specify\ Installer.app/Contents/Resources/app/0.dat/wwlibs/gluegen-rt-natives-macosx-universal.jar
-          codesign --force --options runtime --sign "Developer ID Application: $APPLE_TEAM_ID" --timestamp libgluegen-rt.jnilib
-          zip -u ../Specify_macos/Specify\ Installer.app/Contents/Resources/app/0.dat/wwlibs/gluegen-rt-natives-macosx-universal.jar libgluegen-rt.jnilib
-          cd ..
-          rm -rf temp_gluegen
+          GLUEGEN_JAR=$(find . -name "gluegen-rt-natives-macosx-universal.jar")
+          if [ -n "$GLUEGEN_JAR" ]; then
+            mkdir -p temp_gluegen
+            cd temp_gluegen
+            unzip "../$GLUEGEN_JAR"
+            if [ -f "libgluegen-rt.jnilib" ]; then
+              codesign --force --options runtime --sign "Developer ID Application: $APPLE_TEAM_ID" --timestamp libgluegen-rt.jnilib
+              zip -u "../$GLUEGEN_JAR" libgluegen-rt.jnilib
+            else
+              echo "libgluegen-rt.jnilib not found in the JAR"
+            fi
+            cd ..
+            rm -rf temp_gluegen
+          else
+            echo "gluegen-rt-natives-macosx-universal.jar not found"
+          fi
 
           # For mac-universal.lib
-          mkdir -p temp_sqlitejdbc
-          cd temp_sqlitejdbc
-          unzip ../Specify_macos/Specify\ Installer.app/Contents/Resources/app/0.dat/libs/sqlitejdbc.jar
-          codesign --force --options runtime --sign "Developer ID Application: $APPLE_TEAM_ID" --timestamp mac-universal.lib
-          zip -u ../Specify_macos/Specify\ Installer.app/Contents/Resources/app/0.dat/libs/sqlitejdbc.jar mac-universal.lib
-          cd ..
-          rm -rf temp_sqlitejdbc
+          SQLITE_JAR=$(find . -name "sqlitejdbc.jar")
+          if [ -n "$SQLITE_JAR" ]; then
+            mkdir -p temp_sqlitejdbc
+            cd temp_sqlitejdbc
+            unzip "../$SQLITE_JAR"
+            if [ -f "mac-universal.lib" ]; then
+              codesign --force --options runtime --sign "Developer ID Application: $APPLE_TEAM_ID" --timestamp mac-universal.lib
+              zip -u "../$SQLITE_JAR" mac-universal.lib
+            else
+              echo "mac-universal.lib not found in the JAR"
+            fi
+            cd ..
+            rm -rf temp_sqlitejdbc
+          else
+            echo "sqlitejdbc.jar not found"
+          fi
         env:
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
 
       - name: Re-sign the application
         run: |
-          codesign --force --options runtime --sign "Developer ID Application: $APPLE_TEAM_ID" --timestamp Specify_macos/Specify\ Installer.app
+          APP_PATH=$(find . -name "*.app" -type d)
+          if [ -n "$APP_PATH" ]; then
+            codesign --force --options runtime --sign "Developer ID Application: $APPLE_TEAM_ID" --timestamp "$APP_PATH"
+          else
+            echo "No .app directory found"
+            exit 1
+          fi
         env:
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
 
       - name: Create new DMG
         run: |
-          hdiutil create -volname "Specify Installer" -srcfolder Specify_macos/Specify\ Installer.app -ov -format UDZO Specify_macos_signed.dmg
+          APP_PATH=$(find . -name "*.app" -type d)
+          hdiutil create -volname "Specify Installer" -srcfolder "$APP_PATH" -ov -format UDZO Specify_macos_signed.dmg
 
       - name: Notarize the Mac package
         run: |
