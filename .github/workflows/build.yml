@@ -92,9 +92,41 @@ jobs:
         with:
           name: Specify_macos
 
+      - name: Sign binaries in JAR files
+        run: |
+          # For libgluegen-rt.jnilib
+          mkdir -p temp_gluegen
+          cd temp_gluegen
+          unzip ../Specify_macos/Specify\ Installer.app/Contents/Resources/app/0.dat/wwlibs/gluegen-rt-natives-macosx-universal.jar
+          codesign --force --options runtime --sign "Developer ID Application: $APPLE_TEAM_ID" --timestamp libgluegen-rt.jnilib
+          zip -u ../Specify_macos/Specify\ Installer.app/Contents/Resources/app/0.dat/wwlibs/gluegen-rt-natives-macosx-universal.jar libgluegen-rt.jnilib
+          cd ..
+          rm -rf temp_gluegen
+
+          # For mac-universal.lib
+          mkdir -p temp_sqlitejdbc
+          cd temp_sqlitejdbc
+          unzip ../Specify_macos/Specify\ Installer.app/Contents/Resources/app/0.dat/libs/sqlitejdbc.jar
+          codesign --force --options runtime --sign "Developer ID Application: $APPLE_TEAM_ID" --timestamp mac-universal.lib
+          zip -u ../Specify_macos/Specify\ Installer.app/Contents/Resources/app/0.dat/libs/sqlitejdbc.jar mac-universal.lib
+          cd ..
+          rm -rf temp_sqlitejdbc
+        env:
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+
+      - name: Re-sign the application
+        run: |
+          codesign --force --options runtime --sign "Developer ID Application: $APPLE_TEAM_ID" --timestamp Specify_macos/Specify\ Installer.app
+        env:
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+
+      - name: Create new DMG
+        run: |
+          hdiutil create -volname "Specify Installer" -srcfolder Specify_macos/Specify\ Installer.app -ov -format UDZO Specify_macos_signed.dmg
+
       - name: Notarize the Mac package
         run: |
-          SUBMISSION_ID=$(xcrun notarytool submit Specify_macos/Specify_macos.dmg \
+          SUBMISSION_ID=$(xcrun notarytool submit Specify_macos_signed.dmg \
             --apple-id "beach@ku.edu" \
             --password "$AC_PASSWORD" \
             --team-id "$APPLE_TEAM_ID" \
@@ -125,13 +157,13 @@ jobs:
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
 
       - name: Staple the notarization ticket to the installer
-        run: xcrun stapler staple Specify_macos/Specify_macos.dmg
+        run: xcrun stapler staple Specify_macos_signed.dmg
 
       - name: Upload the stapled Specify_macos.dmg as artifact
         uses: actions/upload-artifact@v1
         with:
           name: Specify_macos_with_ticket
-          path: Specify_macos/Specify_macos.dmg
+          path: Specify_macos_signed.dmg
 
   release:
     name: Create a Specify 6 release
