@@ -94,12 +94,32 @@ jobs:
 
       - name: Notarize the Mac package
         run: |
-          xcrun notarytool submit Specify_macos/Specify_macos.dmg --wait \
+          SUBMISSION_ID=$(xcrun notarytool submit Specify_macos/Specify_macos.dmg \
             --apple-id "beach@ku.edu" \
             --password "$AC_PASSWORD" \
             --team-id "$APPLE_TEAM_ID" \
-            | tee notarize-app-output.txt
-          grep -q "status: Accepted" notarize-app-output.txt || { echo "Notarization failed!"; exit 1; }
+            --output-format json | jq -r '.id')
+          echo "Submission ID: $SUBMISSION_ID"
+          
+          xcrun notarytool wait "$SUBMISSION_ID" \
+            --apple-id "beach@ku.edu" \
+            --password "$AC_PASSWORD" \
+            --team-id "$APPLE_TEAM_ID"
+          
+          NOTARIZATION_STATUS=$(xcrun notarytool info "$SUBMISSION_ID" \
+            --apple-id "beach@ku.edu" \
+            --password "$AC_PASSWORD" \
+            --team-id "$APPLE_TEAM_ID" \
+            --output-format json | jq -r '.status')
+          
+          if [ "$NOTARIZATION_STATUS" != "Accepted" ]; then
+            echo "Notarization failed. Fetching logs..."
+            xcrun notarytool log "$SUBMISSION_ID" \
+              --apple-id "beach@ku.edu" \
+              --password "$AC_PASSWORD" \
+              --team-id "$APPLE_TEAM_ID"
+            exit 1
+          fi
         env:
           AC_PASSWORD: ${{ secrets.AC_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
