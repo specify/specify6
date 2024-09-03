@@ -88,7 +88,7 @@ jobs:
 
     steps:
       - name: Download Specify_macos artifact
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4.1.7
         with:
           name: Specify_macos
 
@@ -134,22 +134,22 @@ jobs:
 
     steps:
       - name: Download Specify_windows_64 artifact
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4.1.7
         with:
           name: Specify_windows_64
 
       - name: Download Specify_unix_64 artifact
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4.1.7
         with:
           name: Specify_unix_64
 
       - name: Download Specify_macos_with_ticket artifact
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4.1.7
         with:
           name: Specify_macos_with_ticket
 
       - name: Download updates.xml artifact
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4.1.7
         with:
           name: updates.xml
 
