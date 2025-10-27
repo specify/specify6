@@ -6369,6 +6369,20 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     {
                         pStmt.setInt(fldInx, getCollectionMemberId());
 
+                    } else if (newFieldName.matches("Integer[1-5]") ||
+                               newFieldName.matches("Number[1-5]")  ||
+                               newFieldName.matches("Text[3-8]")    ||
+                               newFieldName.matches("YesNo[3-5]"))
+                    {
+                        FieldMetaData fldMetaData = newFieldMetaData.get(i);
+                        if (fldMetaData != null)
+                        {
+                            pStmt.setNull(fldInx, fldMetaData.getSqlType());
+                        } else
+                        {
+                            pStmt.setObject(fldInx, null);
+                        }
+
                     } else
                     {
                         Integer index = null;
@@ -10248,6 +10262,38 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         return item;
     }
 
+    private BigDecimal toBigDecimal(final Object value)
+    {
+        if (value == null)
+        {
+            return null;
+        }
+        if (value instanceof BigDecimal)
+        {
+            return (BigDecimal)value;
+        }
+        if (value instanceof Number)
+        {
+            try
+            {
+                return new BigDecimal(value.toString());
+            } catch (NumberFormatException ex)
+            {
+                log.error("Unable to convert numeric value [" + value + "] to BigDecimal", ex);
+                return null;
+            }
+        }
+
+        try
+        {
+            return new BigDecimal(value.toString());
+        } catch (NumberFormatException ex)
+        {
+            log.error("Unable to convert value [" + value + "] to BigDecimal", ex);
+            return null;
+        }
+    }
+
     /**
      * @param tblWriter
      * @param treeDef
@@ -10315,10 +10361,10 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 Date      creTDate = rs.getDate(7);
                 Timestamp modT     = (modTDate != null) ? new Timestamp(modTDate.getTime()) : null;
                 Timestamp creT     = (creTDate != null) ? new Timestamp(creTDate.getTime()) : null;
-                BigDecimal     upper    = new BigDecimal((Double)rs.getObject(8));
-                BigDecimal     uError   = new BigDecimal((Double)rs.getObject(9));
-                BigDecimal     lower    = new BigDecimal((Double)rs.getObject(10));
-                BigDecimal     lError   = new BigDecimal((Double)rs.getObject(11));
+                BigDecimal     upper    = toBigDecimal(rs.getObject(8));
+                BigDecimal     uError   = toBigDecimal(rs.getObject(9));
+                BigDecimal     lower    = toBigDecimal(rs.getObject(10));
+                BigDecimal     lError   = toBigDecimal(rs.getObject(11));
                 
                 if (isEmpty(name))
                 {

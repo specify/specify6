@@ -1792,12 +1792,20 @@ public class BasicSQLUtils
                 
             case java.sql.Types.REAL:
             case java.sql.Types.DOUBLE:
+            case java.sql.Types.NUMERIC:
+            case java.sql.Types.DECIMAL:
                 if (isStr)
                 {
                     pStmt.setString(colInx, (String)data);
                 } else
                 {
-                    pStmt.setDouble(colInx, (Double)data);
+                    if (data instanceof Number)
+                    {
+                        pStmt.setDouble(colInx, ((Number)data).doubleValue());
+                    } else
+                    {
+                        pStmt.setDouble(colInx, Double.parseDouble(data.toString()));
+                    }
                 }
                 break;
                 
